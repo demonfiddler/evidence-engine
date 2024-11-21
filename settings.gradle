@@ -1,0 +1,4 @@
+rootProject.name = 'evidence-engine'
+include 'server'
+//include 'client/web'
+//include 'client/java'

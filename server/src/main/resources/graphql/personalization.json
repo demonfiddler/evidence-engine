@@ -1,0 +1,221 @@
+{
+	"entityPersonalizations": [
+		{
+			"name": "Claim",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
+			"fieldPersonalizations": [
+				{
+					"name": "createdByUser",
+					"addAnnotation": "@jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = false)\n\t@jakarta.persistence.JoinColumn(name = \"created_by_user_id\", nullable = false)"
+				},
+				{
+					"name": "updatedByUser",
+					"addAnnotation": "@jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = true)\n\t@jakarta.persistence.JoinColumn(name = \"updated_by_user_id\", nullable = true)"
+				}
+			]
+		},
+		{
+			"name": "ClaimPage",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
+			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.Claim>"
+		},
+		{
+			"name": "Declaration",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
+			"fieldPersonalizations": [
+				{
+					"name": "createdByUser",
+					"addAnnotation": "@jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = false)\n\t@jakarta.persistence.JoinColumn(name = \"created_by_user_id\", nullable = false)"
+				},
+				{
+					"name": "updatedByUser",
+					"addAnnotation": "@jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = true)\n\t@jakarta.persistence.JoinColumn(name = \"updated_by_user_id\", nullable = true)"
+				},
+				{
+					"name": "country",
+					"addAnnotation": "@jakarta.persistence.Column(name=\"country_code\")"
+				}
+			]
+		},
+		{
+			"name": "DeclarationPage",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
+			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.Declaration>"
+		},
+		{
+			"name": "Journal",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
+			"fieldPersonalizations": [
+				{
+					"name": "createdByUser",
+					"addAnnotation": "@jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = false)\n\t@jakarta.persistence.JoinColumn(name = \"created_by_user_id\", nullable = false)"
+				},
+				{
+					"name": "updatedByUser",
+					"addAnnotation": "@jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = true)\n\t@jakarta.persistence.JoinColumn(name = \"updated_by_user_id\", nullable = true)"
+				},
+				{
+					"name": "publisher",
+					"addAnnotation": "@jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = true)\n\t@jakarta.persistence.JoinColumn(name = \"publisher_id\", nullable = true)"
+				}
+			]
+		},
+		{
+			"name": "JournalPage",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
+			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.Journal>"
+		},
+		{
+			"name": "Log",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional"
+		},
+		{
+			"name": "LogPage",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
+			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.Log>"
+		},
+		{
+			"name": "Mutation",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional"
+		},
+		{
+			"name": "Person",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
+			"fieldPersonalizations": [
+				{
+					"name": "createdByUser",
+					"addAnnotation": "@jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = false)\n\t@jakarta.persistence.JoinColumn(name = \"created_by_user_id\", nullable = false)"
+				},
+				{
+					"name": "updatedByUser",
+					"addAnnotation": "@jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = true)\n\t@jakarta.persistence.JoinColumn(name = \"updated_by_user_id\", nullable = true)"
+				}
+			]
+		},
+		{
+			"name": "PersonPage",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
+			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.Person>"
+		},
+		{
+			"name": "Publication",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
+			"fieldPersonalizations": [
+				{
+					"name": "createdByUser",
+					"addAnnotation": "@jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = false)\n\t@jakarta.persistence.JoinColumn(name = \"created_by_user_id\", nullable = false)"
+				},
+				{
+					"name": "updatedByUser",
+					"addAnnotation": "@jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = true)\n\t@jakarta.persistence.JoinColumn(name = \"updated_by_user_id\", nullable = true)"
+				}
+			]
+		},
+		{
+			"name": "PublicationPage",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
+			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.Publication>"
+		},
+		{
+			"name": "Publisher",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
+			"fieldPersonalizations": [
+				{
+					"name": "createdByUser",
+					"addAnnotation": "@jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = false)\n\t@jakarta.persistence.JoinColumn(name = \"created_by_user_id\", nullable = false)"
+				},
+				{
+					"name": "updatedByUser",
+					"addAnnotation": "@jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = true)\n\t@jakarta.persistence.JoinColumn(name = \"updated_by_user_id\", nullable = true)"
+				},
+				{
+					"name": "country",
+					"addAnnotation": "@jakarta.persistence.Column(name=\"country_code\")"
+				}
+			]
+		},
+		{
+			"name": "PublisherPage",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
+			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.Publisher>"
+		},
+		{
+			"name": "Query",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional(readOnly = true)"
+		},
+		{
+			"name": "Quotation",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
+			"fieldPersonalizations": [
+				{
+					"name": "createdByUser",
+					"addAnnotation": "@jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = false)\n\t@jakarta.persistence.JoinColumn(name = \"created_by_user_id\", nullable = false)"
+				},
+				{
+					"name": "updatedByUser",
+					"addAnnotation": "@jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = true)\n\t@jakarta.persistence.JoinColumn(name = \"updated_by_user_id\", nullable = true)"
+				}
+			]
+		},
+		{
+			"name": "QuotationPage",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
+			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.Quotation>"
+		},
+		{
+			"name": "Topic",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
+			"fieldPersonalizations": [
+				{
+					"name": "createdByUser",
+					"addAnnotation": "@jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = false)\n\t@jakarta.persistence.JoinColumn(name = \"created_by_user_id\", nullable = false)"
+				},
+				{
+					"name": "updatedByUser",
+					"addAnnotation": "@jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = true)\n\t@jakarta.persistence.JoinColumn(name = \"updated_by_user_id\", nullable = true)"
+				},
+				{
+					"name": "parent",
+					"addAnnotation": "@jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = true)\n\t@jakarta.persistence.JoinColumn(name = \"parent_id\", nullable = true)"
+				},
+				{
+					"name": "children",
+					"addAnnotation": "@jakarta.persistence.OneToMany(mappedBy = \"parent\", fetch = jakarta.persistence.FetchType.LAZY)"
+				}
+			]
+		},
+		{
+			"name": "TopicPage",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
+			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.Topic>"
+		},
+		{
+			"name": "TopicRef",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional"
+		},
+		{
+			"name": "TopicRefPage",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
+			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.TopicRef>"
+		},
+		{
+			"name": "User",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
+			"fieldPersonalizations": [
+				{
+					"name": "createdByUser",
+					"addAnnotation": "@jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = false)\n\t@jakarta.persistence.JoinColumn(name = \"created_by_user_id\", nullable = false)"
+				},
+				{
+					"name": "updatedByUser",
+					"addAnnotation": "@jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = true)\n\t@jakarta.persistence.JoinColumn(name = \"updated_by_user_id\", nullable = true)"
+				}
+			]
+		},
+		{
+			"name": "UserPage",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
+			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.User>"
+		}
+	]
+}

@@ -1,0 +1,201 @@
+plugins {
+	id 'java'
+	id 'war'
+	id 'org.springframework.boot' version "${springBootVersion}"
+	id 'io.spring.dependency-management' version "${dependencyManagementPluginVersion}"
+	// id "com.graphql-java-generator.graphql-gradle-plugin3" version "${graphQLPluginVersion}"
+	// id "com.netflix.dgs.codegen" version "6.3.0"
+	id 'org.asciidoctor.jvm.convert' version "${asciidoctorJvmConvertVersion}"
+}
+
+group = 'io.github.demonfiddler.evidence-engine'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+	sourceCompatibility = JavaVersion.VERSION_21
+//	sourceCompatibility = 22
+}
+// tasks.withType(JavaCompile) {
+//     options.compilerArgs += '--enable-preview'
+// }
+// tasks.withType(Test) {
+//     jvmArgs += "--enable-preview"
+// }
+
+// GraphQL Java Generator configuration
+// Because we have modified the generated code, we now generate it only
+// for reference/comparison purposes, and we don't put it on the class path.
+// sourceSets.main.java.srcDirs += '/build/generated/sources/graphqlGradlePlugin'
+// sourceSets.main.resources.srcDirs += '/build/generated/resources/graphqlGradlePlugin'
+// generateServerCodeConf {
+// //	addRelayConnections = false
+// //	batchMappingDataFetcherReturnType = Flux<V>
+// 	copyRuntimeSources = false // will go away in 2.0
+// 	customScalars = [
+// 		[
+// 			graphQLTypeName: "Country",
+// 			javaType: "java.lang.String",
+// 			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.server.types.GraphQLScalarTypes.COUNTRY"
+// 		], [
+// 			graphQLTypeName: "Date",
+// 			javaType: "java.time.LocalDate",
+// 			graphQLScalarTypeStaticField: "graphql.scalars.ExtendedScalars.Date"
+// 		], [
+// 			graphQLTypeName: "DateTime",
+// 			javaType: "java.time.OffsetDateTime",
+// 			graphQLScalarTypeStaticField: "graphql.scalars.ExtendedScalars.DateTime"
+// 		], [
+// 			graphQLTypeName: "ISSN",
+// 			javaType: "java.lang.String",
+// 			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.server.types.GraphQLScalarTypes.ISSN"
+// 		], [
+// 			graphQLTypeName: "Long",
+// 			javaType: "java.lang.Long",
+// 			graphQLScalarTypeStaticField: "graphql.scalars.ExtendedScalars.GraphQLLong"
+// 		], [
+// 			graphQLTypeName: "URI",
+// 			javaType: "java.net.URI",
+// 			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.server.types.GraphQLScalarTypes.URI"
+// 		], [
+// 			graphQLTypeName: "URL",
+// 			javaType: "java.net.URL",
+// 			graphQLScalarTypeStaticField: "graphql.scalars.ExtendedScalars.Url"
+// 		], [
+// 			graphQLTypeName: "Void",
+// 			javaType: "java.lang.Void",
+// 			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.server.types.GraphQLScalarTypes.VOID"
+// 		]
+// 	]
+// //	enumPrefix = 
+// //	enumSuffix = 
+// 	generateBatchLoaderEnvironment = true // will go away in 2.0
+// 	generateBatchMappingDataFetchers = true // false
+// 	generateDataFetcherForEveryFieldsWithArguments = true // false
+// //	batchMappingMethodReturnType = ?
+// //	generateDataLoaderForLists = false
+// 	generateJPAAnnotation = true // false
+// //	ignoredSpringMappings =
+// //	inputPrefix =
+// //	inputSuffix = 
+// //	interfacePrefix =
+// //	interfaceSuffix = 
+// 	javaTypeForIDType = 'java.lang.Long' // 'java.util.UUID'
+// //	jsonGraphqlSchemaFilename = src/main/resources/graphql/schema.graphqls
+// //	maxTokens = Integer.MAX_VALUE (=2147483647)
+// 	packageName = 'io.github.demonfiddler.ee.server' // 'com.generated.graphql'
+// //	queryMutationExecutionProtocol = 'http' | 'webSocket'
+// //	scanBasePackages = 'io.github.demonfiddler.ee.server.util, io.github.demonfiddler.ee.server.impl, io.github.demonfiddler.ee.server.jpa'
+// //	scanBasePackages = 'io.github.demonfiddler.ee.server'
+// 	schemaFileFolder = 'src/main/resources/graphql' // default 'src/main/resources'
+// //	schemaFilePattern = '*.graphqls'
+// 	schemaPersonalizationFile = 'src/main/resources/graphql/personalization.json'
+// 	separateUtilityClasses = true // will go away in 2.0
+// //	skipGenerationIfSchemaHasNotChanged = true // deprecated
+// //	sourceEncoding = 'UTF-8'
+// //	springBeanSuffix = ''
+// //	targetResourceFolder = './build/generated/resources/graphqlGradlePlugin'
+// //	targetSourceFolder = './build/generated/sources/graphqlGradlePlugin'
+// //	templates = {} // see com.graphql_java_generator.plugin.CodeTemplate enum
+// //	typePrefix = ''
+// //	typeSuffix = ''
+// //	unionPrefix = ''
+// //	unionSuffix = ''
+// 	useJakartaEE9 = true
+// }
+
+// // Netflix DGS code generator configuration. See https://netflix.github.io/dgs/generating-code-from-schema/.
+// generateJava{
+// 	schemaPaths = ["${projectDir}/src/main/resources/graphql"] // List of directories containing schema files
+// 	packageName = 'io.github.demonfiddler.ee.server' // The package name to use to generate sources
+// 	// subPackageNameClient = client
+// 	// subPackageNameDatafetchers = datafetchers
+// 	// subPackageNameTypes = types
+// 	// language = java
+// 	// typeMapping (A Map where each key is a GraphQL type, and the value the FQN of a Java class)
+// 	// generateBoxedTypes = false
+// 	generateClient = true // false
+// 	// generateDataTypes = true
+// 	// generateInterfaces = false
+// 	// generatedSourcesDir = build
+// 	// includeQueries = [...]
+// 	// includeMutations = [...]
+// 	// includeSubscriptions= [...]
+// 	// skipEntityQueries = false
+// 	// shortProjectionNames = false
+// 	// maxProjectionDepth = 10
+// 	// includeEnumImports = (map)
+// 	// includeImports = mapOf(Pair("validator", "com.test.validator")),
+// 	// includeClassImports = mapOf("ValidPerson" to mapOf(Pair("BasicValidation", "com.test.validator.groups")))
+// 	// generateCustomAnnotations = false
+// 	// addGeneratedAnnotation = false
+// 	// disableDatesInGeneratedAnnotation = false
+// }
+
+compileJava {
+    options.compilerArgs.add("-g")
+    options.compilerArgs.add("-parameters")
+}
+//compileJava.dependsOn generateServerCode // added per graphql-java-generator example
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+ext {
+	set('snippetsDir', file("build/generated-snippets"))
+	set('springBootAdminVersion', "3.3.4")
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-graphql'
+//	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation "org.springframework.boot:spring-boot-starter-websocket"  // used for subscriptions
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+	implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+	implementation 'org.springframework.boot:spring-boot-starter-jersey'
+//	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'de.codecentric:spring-boot-admin-starter-client'
+	implementation 'de.codecentric:spring-boot-admin-starter-server'
+	implementation 'org.springframework.session:spring-session-core'
+//	implementation 'com.graphql-java-generator:graphql-java-common-dependencies:${graphQLPluginVersion}'
+//	implementation 'com.graphql-java-generator:graphql-java-server-dependencies:${graphQLPluginVersion}' // added per graphql-java-generator example
+	implementation "com.graphql-java-generator:graphql-java-server-runtime:${graphQLPluginVersion}"
+	implementation 'com.graphql-java:graphql-java-extended-scalars:22.0'
+//	implementation 'com.github.dozermapper:dozer-core:6.5.2' // used in graphql-java-generator example
+//  implementation 'io.reactivex.rxjava2:rxjava:2.2.19' // used in graphql-java-generator example
+//	implementation 'commons-logging:commons-logging'
+	implementation 'org.apache.commons:commons-collections4:4.5.0-M2'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+	runtimeOnly 'com.graphql-java-kickstart:graphiql-spring-boot-starter:6.0.1' // added per graphql-java-generator example
+	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.restdocs:spring-restdocs-webtestclient'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'org.springframework:spring-webflux'
+	testImplementation 'org.springframework.graphql:spring-graphql-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "de.codecentric:spring-boot-admin-dependencies:${springBootAdminVersion}"
+	}
+}
+
+tasks.named('test') {
+	outputs.dir snippetsDir
+	useJUnitPlatform()
+}
+
+tasks.named('asciidoctor') {
+	inputs.dir snippetsDir
+	dependsOn test
+}

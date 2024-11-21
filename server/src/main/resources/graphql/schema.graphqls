@@ -1,0 +1,1699 @@
+# Evidence Engine: A system for managing evidence on arbitrary scientific topics.
+# Comprises an SQL database, GraphQL public API, Java app server and web client.
+# Copyright © 2024 Adrian Price. All rights reserved.
+#
+# This file is part of Evidence Engine from {@link https://www.campaign-resources.org/ Campaign Resources}.
+#
+# Evidence Engine is free software: you can redistribute it and/or modify it under the terms of the
+# GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License,
+# or (at your option) any later version.
+#
+# Evidence Engine is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
+# If not, see <https://www.gnu.org/licenses/>. 
+
+#==================================================
+# DIRECTIVES & CUSTOM SCALARS
+
+directive @specifiedBy(url: String!) on SCALAR
+
+# Custom scalar types used in this schema
+scalar Country @specifiedBy(url: "https://www.iso.org/obp/ui/#search")
+scalar Date @specifiedBy(url: "https://www.iso.org/iso-8601-date-and-time-format.html")
+scalar DateTime @specifiedBy(url: "https://www.iso.org/iso-8601-date-and-time-format.html")
+scalar ISSN @specifiedBy(url: "https://www.issn.org/understanding-the-issn/what-is-an-issn/")
+scalar Long @specifiedBy(url: "https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Long.html")
+scalar URI @specifiedBy(url: "http://www.ietf.org/rfc/rfc2396.txt")
+scalar URL @specifiedBy(url: "http://www.ietf.org/rfc/rfc2396.txt")
+scalar Void @specifiedBy(url: "https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Void.html")
+
+#==================================================
+# NON-DOMAIN PARAMETER TYPES
+
+# These types are based on Spring Data's Pageable, Sort, Order, Direction and NullHandling types respectively.
+"An input to specify the page number, size and sort order."
+input PageableInput {
+    "0-based page number, must be >= 0. Omit or set to 0 for first page."
+    pageNumber: Int
+    "The number of records to return. Omit or set to 0 for unpaginated."
+    pageSize: Int
+    "How to sort the results. Default is to use native database order."
+    sort: SortInput
+}
+
+"An input to specify output sort order."
+input SortInput {
+    "A list of field sort specifiers."
+    orders: [OrderInput!]!
+}
+
+"An input to specify how to sort results on a given field."
+input OrderInput {
+    "The field name."
+    property: String!
+    "The sort direction."
+    direction: DirectionKind = ASC
+    "Whether to ignore case."
+    ignoreCase: Boolean = false
+    # could implement with a pseudo-column e.g. ORDER BY IF(col is \N,1,0),col
+    "Defines ordering of ```null``` vs non-```null``` values."
+    nullHandling: NullHandlingKind = NATIVE
+}
+
+"Specifies lexical or numeric sort direction."
+enum DirectionKind {
+    "Ascending direction."
+    ASC
+    "Descending direction."
+    DESC
+}
+
+"Specifies how null values are sorted."
+enum NullHandlingKind {
+    "No special treatment, rely on native database null handling."
+    NATIVE
+    "Nulls sort first when ascending, last when descending."
+    NULLS_FIRST
+    "Nulls sort last when ascending, first when descending."
+    NULLS_LAST
+}
+
+#==================================================
+# DOMAIN INTERFACES
+
+"Interface for entities with a unique system-generated identifier."
+interface IBaseEntity {
+    "The record identifier, unique within the entity type."
+    id: ID!
+}
+
+"Interface for entities with a tracked lifecycle."
+interface ITrackedEntity {
+    "The entity status."
+    status(
+        "How to format the result. SHORT format is per ```StatusKind``` enum."
+        format: FormatKind = LONG
+    ): String
+    "When the record was created."
+    created: DateTime
+    "The user who created the record."
+    createdByUser: User
+    "When the record was last updated."
+    updated: DateTime
+    "The user who last updated the record."
+    updatedByUser: User
+    "Log of transactions involving the record."
+    log(
+        "Filters results."
+        filter: LogQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): LogPage!
+}
+
+"Interface for entities with associated topics."
+interface ITopicalEntity {
+    "The topic(s) associated with the entity."
+    topicRefs(
+        "Filters results."
+        filter: TopicRefQueryFilter,
+        "Sorts and paginates results"
+        pageSort: PageableInput
+    ): TopicRefPage!
+}
+
+# "Returns paginated query results."
+# interface IBaseEntityPage {
+#     "The requested pageful of records."
+#     content: [IBaseEntity!]!
+#     "Whether the page has content."
+#     hasContent: Boolean!
+#     "Whether the page is empty (no content)."
+#     isEmpty: Boolean!
+#     "The current page number."
+#     number: Int!
+#     "The page size."
+#     size: Int!
+#     "The number of elements on this page."
+#     numberOfElements: Int!
+#     "The total number of pages available."
+#     totalPages: Int!
+#     "The total number of records."
+#     totalElements: Long!
+#     "Whether this is the first page."
+#     isFirst: Boolean!
+#     "Whether this is the last page."
+#     isLast: Boolean!
+#     "Whether there is next page."
+#     hasNext: Boolean!
+#     "Whether there is previous page."
+#     hasPrevious: Boolean!
+# }
+
+#==================================================
+# DOMAIN TYPES
+
+#"Polymorphism support. Using this construct results in the generation of an empty interface"
+#union TopicalEntity = Claim | Declaration | Person | Publication | Quotation
+
+"A claim made in respect of given topic(s)."
+type Claim implements IBaseEntity & ITrackedEntity & ITopicalEntity {
+    "The unique claim identifier."
+    id: ID!
+    "The entity status."
+    status(
+        "How to format the result. SHORT format is per ```StatusKind``` enum."
+        format: FormatKind = LONG
+    ): String
+    "When the record was created."
+    created: DateTime
+    "The user who created the record."
+    createdByUser: User
+    "When the record was last updated."
+    updated: DateTime
+    "The user who last updated the record."
+    updatedByUser: User
+    "Log of transactions involving the record."
+    log(
+        "Filters results."
+        filter: LogQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): LogPage!
+    "The topic(s) associated with the claim."
+    topicRefs(
+        "Filters results."
+        filter: TopicRefQueryFilter,
+        "Sorts and paginates results"
+        pageSort: PageableInput
+    ): TopicRefPage!
+    "The text of the claim."
+    text: String
+    "The date the claim was made."
+    date: Date
+    "Added notes about the claim."
+    notes: String
+    # For now, these are all supported by parameterised top-level queries.
+#    "The declarations making the claim."
+#    declarations: [Declaration!]
+#    "The claimants, i.e., the person(s) making the claim"
+#    persons: [Person!]
+#    "The publication(s) making the claim"
+#    publications: [Publication!]
+#    "The quotations making the claim"
+#    quotations: [Quotation!]
+}
+
+"An input for creating or updating a claim."
+input ClaimInput {
+    "The claim identifier, required if updating an existing record."
+    id: ID
+    "The text of the claim."
+    text: String!
+    "The date the claim was made."
+    date: Date
+    "Added notes about the claim."
+    notes: String
+}
+
+"Returns paginated claim query results."
+type ClaimPage {
+    "Dummy ID required for @Entity classes"
+    dummy: ID
+    "The requested pageful of records."
+    content: [Claim!]!
+    "Whether the page has content."
+    hasContent: Boolean!
+    "Whether the page is empty (no content)."
+    isEmpty: Boolean!
+    "The current page number."
+    number: Int!
+    "The page size."
+    size: Int!
+    "The number of elements on this page."
+    numberOfElements: Int!
+    "The total number of pages available."
+    totalPages: Int!
+    "The total number of records."
+    totalElements: Long!
+    "Whether this is the first page."
+    isFirst: Boolean!
+    "Whether this is the last page."
+    isLast: Boolean!
+    "Whether there is next page."
+    hasNext: Boolean!
+    "Whether there is previous page."
+    hasPrevious: Boolean!
+}
+
+"Enumeration that allows selection of country format."
+enum CountryFormatKind {
+    "ISO-3166-1 alpha-2 two-character code."
+    ALPHA_2
+    "ISO-3166-1 alpha-3 three-character code."
+    ALPHA_3
+    "ISO-3166-1 numeric three-digit code."
+    NUMERIC
+    "ISO-3166-1 official country name."
+    ISO_NAME
+    "Common name for the country."
+    COMMON_NAME
+}
+
+"A public declaration or open letter made in respect of given topic(s)."
+type Declaration implements IBaseEntity & ITrackedEntity & ITopicalEntity {
+    "The unique declaration identifier."
+    id: ID!
+    "The entity status."
+    status(
+        "How to format the result. SHORT format is per ```StatusKind``` enum."
+        format: FormatKind = LONG
+    ): String
+    "When the record was created."
+    created: DateTime
+    "The user who created the record."
+    createdByUser: User
+    "When the record was last updated."
+    updated: DateTime
+    "The user who last updated the record."
+    updatedByUser: User
+    "Log of transactions involving the record."
+    log(
+        "Filters results."
+        filter: LogQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): LogPage!
+    "The topic(s) associated with the declaration."
+    topicRefs(
+        "Filters results."
+        filter: TopicRefQueryFilter,
+        "Sorts and paginates results"
+        pageSort: PageableInput
+    ): TopicRefPage!
+    "The kind of declaration."
+    kind(
+        "How to format the result. SHORT format is per ```DeclarationKind``` enum."
+        format: FormatKind = LONG
+    ): String
+    "The declaration name or title."
+    title: String
+    "The date the declaration was published."
+    date: Date
+    "The country to which the declaration relates."
+    country(
+        "How to format the result."
+        format: CountryFormatKind = COMMON_NAME
+    ): String
+    "The URL for the declaration online."
+    url: URL
+    "Flag to indicate that url content is cached on this application server."
+    cached: Boolean
+    "Names of persons who signed the declaration, one per line."
+    signatories: String
+    "The number of signatories."
+    signatoryCount: Int
+    "Added notes about the declaration."
+    notes: String
+    # For now, these are all supported by parameterised top-level queries.
+#    "Claims made by the declaration."
+#    claims: [Claim]
+#    "Persons who signed the declaration."
+#    persons: [Person!]
+#    "Quotations from the declaration."
+#    quotations: [Quotation!]
+}
+
+"An input for creating or updating a declaration."
+input DeclarationInput {
+    "The declaration identifier, required if updating an existing record."
+    id: ID
+    # TODO: consider whether to implement all topic-entity linking functionality in one place.
+    "The kind of declaration."
+    kind: DeclarationKind!
+    "The declaration title."
+    title: String
+    "The date the declaration was published."
+    date: Date
+    "The ISO-3166-1 alpha-2 code for the country to which the declaration relates."
+    country: String
+    "The URL for the declaration online."
+    url: URL
+    "Names of persons who signed the declaration, one per line."
+    signatories: String
+    "Added notes about the declaration."
+    notes: String
+}
+
+"Returns paginated declaration query results."
+type DeclarationPage {
+    "Dummy ID required for @Entity classes"
+    dummy: ID
+    "The requested pageful of records."
+    content: [Declaration!]!
+    "Whether the page has content."
+    hasContent: Boolean!
+    "Whether the page is empty (no content)."
+    isEmpty: Boolean!
+    "The current page number."
+    number: Int!
+    "The page size."
+    size: Int!
+    "The number of elements on this page."
+    numberOfElements: Int!
+    "The total number of pages available."
+    totalPages: Int!
+    "The total number of records."
+    totalElements: Long!
+    "Whether this is the first page."
+    isFirst: Boolean!
+    "Whether this is the last page."
+    isLast: Boolean!
+    "Whether there is next page."
+    hasNext: Boolean!
+    "Whether there is previous page."
+    hasPrevious: Boolean!
+}
+
+"Enumeration of permitted declaration kinds."
+enum DeclarationKind {
+    "Public declaration."
+    DECL
+    "Open letter."
+    OPLE
+    "Petition."
+    PETN
+}
+
+"Enumeration for entity kind."
+enum EntityKind {
+    "Claim."
+    CLA
+    "Country."
+    COU
+    "Declaration."
+    DEC
+    "Journal."
+    JOU
+    "Person."
+    PER
+    "Publication."
+    PUB
+    "Publisher."
+    PBR
+    "Quotation."
+    QUO
+    "Topic."
+    TOP
+    "User."
+    USR
+}
+
+"""
+Enumeration to specify whether to return the short (abbreviated) or long (full) value.
+Applied, for example, to publication kind and journal title, both of which have short and long versions, (e.g., code and label).
+"""
+enum FormatKind {
+    "Short form, abbreviated/coded"
+    SHORT
+    "Long form, human readadble."
+    LONG
+}
+
+"Journal details including abbreviation, publisher, etc."
+type Journal implements IBaseEntity & ITrackedEntity {
+    "The unique abreviation identifier."
+    id: ID!
+    "The entity status."
+    status(
+        "How to format the result. SHORT format is per ```StatusKind``` enum."
+        format: FormatKind = LONG
+    ): String
+    "When the record was created."
+    created: DateTime
+    "The user who created the record."
+    createdByUser: User
+    "When the record was last updated."
+    updated: DateTime
+    "The user who last updated the record."
+    updatedByUser: User
+    "Log of transactions involving the record."
+    log(
+        "Filters results."
+        filter: LogQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): LogPage!
+    "The full journal title."
+    title: String
+    "The official abbreviation."
+    abbreviation: String
+    "Web link to the journal's home page."
+    url: URL
+    "The International Standard Serial Number."
+    issn: ISSN
+    "The journal publisher."
+    publisher: Publisher
+    "Notes about the journal."
+    notes: String
+}
+
+"An input for creating or updating a journal."
+input JournalInput {
+    "The abreviation identifier, required if updating an existing record."
+    id: ID
+    "The full journal title."
+    title: String!
+    "The official abbreviation."
+    abbreviation: String!
+    url: URL
+    "The International Standard Serial Number."
+    issn: ISSN
+    "The ID of the journal publisher."
+    publisherId: Long
+    "Notes about the journal."
+    notes: String
+}
+
+"Returns paginated query results."
+type JournalPage {
+    "Dummy ID required for @Entity classes"
+    dummy: ID
+    "The requested pageful of records."
+    content: [Journal!]!
+    "Whether the page has content."
+    hasContent: Boolean!
+    "Whether the page is empty (no content)."
+    isEmpty: Boolean!
+    "The current page number."
+    number: Int!
+    "The page size."
+    size: Int!
+    "The number of elements on this page."
+    numberOfElements: Int!
+    "The total number of pages available."
+    totalPages: Int!
+    "The total number of records."
+    totalElements: Long!
+    "Whether this is the first page."
+    isFirst: Boolean!
+    "Whether this is the last page."
+    isLast: Boolean!
+    "Whether there is next page."
+    hasNext: Boolean!
+    "Whether there is previous page."
+    hasPrevious: Boolean!
+}
+
+"An input for linking or unlinking two entities."
+input LinkEntitiesInput {
+    "The ID of the 'linked from' entity."
+    fromEntityId: ID!
+    "The kind of the 'linked from' entity."
+    fromEntityKind: EntityKind!
+    "The ID of the 'linked to' entity."
+    toEntityId: ID!
+    "The kind of the 'linked to' entity."
+    toEntityKind: EntityKind!
+}
+
+# TODO: See whether GraphQL has any hook points to perform logging
+"A log entry to show who changed what and when"
+type Log implements IBaseEntity {
+    "The unique identifier for the log entry."
+    id: ID!
+    "The date-time stamp."
+    timestamp: DateTime
+    "The user who made the change."
+    user: User
+    "The kind of transaction."
+    transactionKind(
+        "How to format the result. SHORT format is per ```TransactionKind``` enum."
+        format: FormatKind = LONG
+    ): String
+    "The kind of entity affected."
+    entityKind(
+        "How to format the result. SHORT format is per ```EntityKind``` enum."
+        format: FormatKind = LONG
+    ): String
+    "The ID of the entity affected."
+    entityId: Long
+    "The kind of entity linked/unlinked (where applicable)."
+    linkedEntityKind(
+        "How to format the result. SHORT format is per ```EntityKind``` enum."
+        format: FormatKind = LONG
+    ): String
+    "The ID of the entity linked/unlinked (where applicable)."
+    linkedEntityId: Long
+}
+
+"For filtering log records."
+input LogQueryFilter {
+    "Restrict to specific entity kind."
+    entityKind: EntityKind
+    "Restrict to specific entity ID."
+    entityId: Long
+    "Restrict to transactions performed by a specific user."
+    userId: Long
+    "Restrict to specific transaction kinds."
+    transactionKinds: [TransactionKind!]
+    "Timestamp of first log entry to include."
+    from: DateTime
+    "Timestamp of last log entry to include."
+    to: DateTime
+}
+
+"Returns paginated log query results."
+type LogPage {
+    "Dummy ID required for @Entity classes"
+    dummy: ID
+    "The requested pageful of records."
+    content: [Log!]!
+    "Whether the page has content."
+    hasContent: Boolean!
+    "Whether the page is empty (no content)."
+    isEmpty: Boolean!
+    "The current page number."
+    number: Int!
+    "The page size."
+    size: Int!
+    "The number of elements on this page."
+    numberOfElements: Int!
+    "The total number of pages available."
+    totalPages: Int!
+    "The total number of records."
+    totalElements: Long!
+    "Whether this is the first page."
+    isFirst: Boolean!
+    "Whether this is the last page."
+    isLast: Boolean!
+    "Whether there is next page."
+    hasNext: Boolean!
+    "Whether there is previous page."
+    hasPrevious: Boolean!
+}
+
+"User access permissions."
+enum PermissionKind {
+    "Use administrative functions."
+    ADM
+    "Insert new record."
+    CRE
+    "Delete existing record."
+    DEL
+    "Link existing records."
+    LNK
+    "Read existing record."
+    REA
+    "Update existing record."
+    UPD
+    "Upload file."
+    UPL
+}
+
+"A person associated with given topic(s)."
+type Person implements IBaseEntity & ITrackedEntity & ITopicalEntity {
+    "The unique person identifier."
+    id: ID!
+    "The entity status."
+    status(
+        "How to format the result. SHORT format is per ```StatusKind``` enum."
+        format: FormatKind = LONG
+    ): String
+    "When the record was created."
+    created: DateTime
+    "The user who created the record."
+    createdByUser: User
+    "When the record was last updated."
+    updated: DateTime
+    "The user who last updated the record."
+    updatedByUser: User
+    "Log of transactions involving the record."
+    log(
+        "Filters results."
+        filter: LogQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): LogPage!
+    "The topic(s) associated with the person."
+    topicRefs(
+        "Filters results."
+        filter: TopicRefQueryFilter,
+        "Sorts and paginates results"
+        pageSort: PageableInput
+    ): TopicRefPage!
+    "The person's title(s)."
+    title: String
+    "The person's first name(s)."
+    firstName: String
+    "The person's nickname."
+    nickname: String
+    "The prefix to the person's last name."
+    prefix: String
+    "The person's last name."
+    lastName: String
+    "The suffix to the person's name."
+    suffix: String
+    "Last name alias."
+    alias: String
+    "Brief biography, notes, etc."
+    notes: String
+    "Academic qualifications."
+    qualifications: String
+    "The primary country associated with the person."
+    country: Country
+    "A five-star rating for the person, intended to reflect credibility, experience, qualifications, etc."
+    rating: Int
+    "Whether the person's credentials have been checked."
+    checked: Boolean
+    "Whether the person has authored any peer-reviewed publications."
+    published: Boolean
+}
+
+"An input for creating or updating a person."
+input PersonInput {
+    "The person identifier, required if updating an existing record."
+    id: ID
+    "The person's title(s)."
+    title: String
+    "The person's first name(s)."
+    firstName: String
+    "The person's nickname."
+    nickname: String
+    "The prefix to the person's last name."
+    prefix: String
+    "The person's last name."
+    lastName: String
+    "The suffix to the person's name."
+    suffix: String
+    "Alias name."
+    alias: String
+    "Person's description and biographical details."
+    notes: String
+    "Person's academic qualifications."
+    qualifications: String
+    "The ISO-3166-1 alpha-2 code for the primary country associated with the person."
+    country: String
+    "A five-star rating for the person, intended to reflect credibility, experience, qualifications, etc."
+    rating: Int
+    "Whether the person's credentials have been checked."
+    checked: Boolean
+    "Whether the person has authored any peer-reviewed publications."
+    published: Boolean
+}
+
+"Returns paginated person query results."
+type PersonPage {
+    "Dummy ID required for @Entity classes"
+    dummy: ID
+    "The requested pageful of records."
+    content: [Person!]!
+    "Whether the page has content."
+    hasContent: Boolean!
+    "Whether the page is empty (no content)."
+    isEmpty: Boolean!
+    "The current page number."
+    number: Int!
+    "The page size."
+    size: Int!
+    "The number of elements on this page."
+    numberOfElements: Int!
+    "The total number of pages available."
+    totalPages: Int!
+    "The total number of records."
+    totalElements: Long!
+    "Whether this is the first page."
+    isFirst: Boolean!
+    "Whether this is the last page."
+    isLast: Boolean!
+    "Whether there is next page."
+    hasNext: Boolean!
+    "Whether there is previous page."
+    hasPrevious: Boolean!
+}
+
+"A publication associated with given topics."
+type Publication implements IBaseEntity & ITrackedEntity & ITopicalEntity {
+    "The unique publication identifier."
+    id: ID!
+    "The entity status."
+    status(
+        "How to format the result. SHORT format is per ```StatusKind``` enum."
+        format: FormatKind = LONG
+    ): String
+    "When the record was created."
+    created: DateTime
+    "The user who created the record."
+    createdByUser: User
+    "When the record was last updated."
+    updated: DateTime
+    "The user who last updated the record."
+    updatedByUser: User
+    "Log of transactions involving the record."
+    log(
+        "Filters results."
+        filter: LogQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): LogPage!
+    "The topic(s) associated with the publication."
+    topicRefs(
+        "Filters results."
+        filter: TopicRefQueryFilter,
+        "Sorts and paginates results"
+        pageSort: PageableInput
+    ): TopicRefPage!
+    "The publication title."
+    title: String
+    "The names of the authors, one per line."
+    authors: String
+    "The name of the journal in which the publication appeared."
+    journal: Journal
+    "The publication kind."
+    kind(
+        "How to format the result. SHORT format is per ```PublicationKind``` enum."
+        format: FormatKind = LONG
+    ): String
+    "The location, typically a volume/issue and/or page number(s)."
+    location: String
+    "The publication date."
+    date: Date
+    "The publication year."
+    year: Int
+    "The publication abstract."
+    abstract: String
+    "User notes about the publication."
+    notes: String
+    "Whether the publication has been peer reviewed."
+    peerReviewed: Boolean
+    "The digital object identifier."
+    doi: String
+    "The URL for the publication online."
+    url: URL
+    "The International Standard Serial/Book Number."
+    issnIsbn: String
+    "The date the publication was accessed when compiling the database."
+    accessed: Date
+    # For now, these are all supported by parameterised top-level queries.
+#    "The author(s) of the publication" 
+#    persons: [Person!]
+}
+
+"An input for creating or updating a publication."
+input PublicationInput {
+    "The publication identifier, required if updating an existing record."
+    id: ID
+    "The names of the author, one per line."
+    authorNames: String
+    "The identifier(s) of the author(s) of the publication."
+    authorIds: [ID!]
+    "The publication title."
+    title: String
+    "The name of the journal in which the publication appeared."
+    journal: String # might need to generalise this
+    "The location, typically a volume/issue and/or page number(s)."
+    location: String
+    "The publication type."
+    kind: PublicationKind
+    "The publication date."
+    date: Date
+    "The publication year."
+    year: Int
+    "The publication abstract."
+    abstract: String
+    "User notes about the publication."
+    notes: String
+    "Whether the publication has been peer reviewed."
+    peerReviewed: Boolean
+    "The digital object identifier."
+    doi: String
+    "The International Standard Book Number."
+    isbn: String
+    "The URL for the publication online."
+    url: URL
+    "Flag to indicate that url content is cached on this application server."
+    cached: Boolean
+    "The date the publication was accessed when compiling the database."
+    accessed: Date
+}
+
+"Enumeration of publication type codes, per TY field of the RIS specification."
+enum PublicationKind {
+    "Abstract."
+    ABST
+    "Audiovisual material."
+    ADVS
+    "Aggregated database."
+    AGGR
+    "Ancient text."
+    ANCIENT
+    "Art work."
+    ART
+    "Bill/resolution."
+    BILL
+    "Blog."
+    BLOG
+    "Book, whole."
+    BOOK
+    "Case"
+    CASE
+    "Book section."
+    CHAP
+    "Chart."
+    CHART
+    "Classical work."
+    CLSWK
+    "Computer program."
+    COMP
+    "Conference proceeding."
+    CONF
+    "Conference paper."
+    CPAPER
+    "Catalogue."
+    CTLG
+    "Dataset."
+    DATA
+    "Online database."
+    DBASE
+    "Dictionary."
+    DICT
+    "Electronic book."
+    EBOOK
+    "Electronic book section."
+    ECHAP
+    "Edited book."
+    EDBOOK
+    "Electronic article."
+    EJOUR
+    "Electronic citation."
+    ELEC
+    "Encyclopaedia article."
+    ENCYC
+    "Equation."
+    EQUA
+    "Figure."
+    FIGURE
+    "Generic."
+    GEN
+    "Government document."
+    GOVDOC
+    "Grant."
+    GRANT
+    "Hearing."
+    HEAR
+    "Internet communication."
+    ICOMM
+    "In Press."
+    INPR
+    "Journal (full)."
+    JFULL
+    "Journal."
+    JOUR
+    "Legal rule or regulation."
+    LEGAL
+    "Manuscript."
+    MANSCPT
+    "Map."
+    MAP
+    "Magazine article."
+    MGZN
+    "Motion picture."
+    MPCT
+    "Online multimedia."
+    MULTI
+    "Music score."
+    MUSIC
+    "Newspaper."
+    NEWS
+    "Pamphlet."
+    PAMP
+    "Patent."
+    PAT
+    "Personal communication."
+    PCOMM
+    "Report."
+    RPRT
+    "Serial publication."
+    SER
+    "Slide presentation."
+    SLIDE
+    "Sound recording."
+    SOUND
+    "Standard."
+    STAND
+    "Statute."
+    STAT
+    "Thesis/dissertation."
+    THES
+    "Unenacted bill/resolution."
+    UNBILL
+    "Unpublished work."
+    UNPB
+    "Video recording."
+    VIDEO
+    "Web page."
+    WEB
+}
+
+"Returns paginated publication query results."
+type PublicationPage {
+    "Dummy ID required for @Entity classes"
+    dummy: ID
+    "The requested pageful of records."
+    content: [Publication!]!
+    "Whether the page has content."
+    hasContent: Boolean!
+    "Whether the page is empty (no content)."
+    isEmpty: Boolean!
+    "The current page number."
+    number: Int!
+    "The page size."
+    size: Int!
+    "The number of elements on this page."
+    numberOfElements: Int!
+    "The total number of pages available."
+    totalPages: Int!
+    "The total number of records."
+    totalElements: Long!
+    "Whether this is the first page."
+    isFirst: Boolean!
+    "Whether this is the last page."
+    isLast: Boolean!
+    "Whether there is next page."
+    hasNext: Boolean!
+    "Whether there is previous page."
+    hasPrevious: Boolean!
+}
+
+"Book, journal, etc. publisher details."
+type Publisher implements IBaseEntity & ITrackedEntity {
+    "The unique publisher identifier."
+    id: ID!
+    "The entity status."
+    status(
+        "How to format the result. SHORT format is per ```StatusKind``` enum."
+        format: FormatKind = LONG
+    ): String
+    "When the record was created."
+    created: DateTime
+    "The user who created the record."
+    createdByUser: User
+    "When the record was last updated."
+    updated: DateTime
+    "The user who last updated the record."
+    updatedByUser: User
+    "Log of transactions involving the record."
+    log(
+        "Filters results."
+        filter: LogQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): LogPage!
+    "The publisher name."
+    name: String
+    "The publisher location."
+    location: String
+    "The publisher country."
+    country(
+        "How to format the result."
+        format: CountryFormatKind = COMMON_NAME
+    ): String
+    "URL of publisher's home page."
+    url: URL
+    "The number of journals published."
+    journalCount: Int
+}
+
+"An input for creating or updating a publisher."
+input PublisherInput {
+    "The unique publisher identifier."
+    id: ID!
+    "The publisher name."
+    name: String
+    "The publisher location."
+    location: String
+    "The ISO-3166-1 alpha-2 code for the publisher's country."
+    country: String
+    "URL of publisher's home page."
+    url: URL
+    "The number of journals published."
+    journalCount: Int
+}
+
+"Returns paginated publisher query results."
+type PublisherPage {
+    "Dummy ID required for @Entity classes"
+    dummy: ID
+    "The requested pageful of records."
+    content: [Publisher!]!
+    "Whether the page has content."
+    hasContent: Boolean!
+    "Whether the page is empty (no content)."
+    isEmpty: Boolean!
+    "The current page number."
+    number: Int!
+    "The page size."
+    size: Int!
+    "The number of elements on this page."
+    numberOfElements: Int!
+    "The total number of pages available."
+    totalPages: Int!
+    "The total number of records."
+    totalElements: Long!
+    "Whether this is the first page."
+    isFirst: Boolean!
+    "Whether this is the last page."
+    isLast: Boolean!
+    "Whether there is next page."
+    hasNext: Boolean!
+    "Whether there is previous page."
+    hasPrevious: Boolean!
+}
+
+"A quotation associated with given topics."
+type Quotation implements IBaseEntity & ITrackedEntity & ITopicalEntity {
+    "The unique quotation identifier."
+    id: ID!
+    "The entity status."
+    status(
+        "How to format the result. SHORT format is per ```StatusKind``` enum."
+        format: FormatKind = LONG
+    ): String
+    "When the record was created."
+    created: DateTime
+    "The user who created the record."
+    createdByUser: User
+    "When the record was last updated."
+    updated: DateTime
+    "The user who last updated the record."
+    updatedByUser: User
+    "Log of transactions involving the record."
+    log(
+        "Filters results."
+        filter: LogQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): LogPage!
+    "The topic(s) associated with the quotation."
+    topicRefs(
+        "Filters results."
+        filter: TopicRefQueryFilter,
+        "Sorts and paginates results"
+        pageSort: PageableInput
+    ): TopicRefPage!
+    "The quotation author (quotee)."
+    author: String
+    "The text of the quotation."
+    text: String
+    "The quotation date."
+    date: Date
+    "The quotation source."
+    source: String
+    "The URL for the quotation online."
+    url: URL
+    # For now, these are all supported by parameterised top-level queries.
+#    # TODO: consider whether it is reasonable to associate multiple persons with a single quotation
+#    "The quotees."
+#    person: [Person!]!
+#    # TODO: consider whether it is reasonable to associate multiple publications with a single quotation
+#    "The source publication."
+#    publication: [Publication!]!
+}
+
+"An input for creating or updating a quotation."
+input QuotationInput {
+    "The quotation identifier, required if updating an existing record."
+    id: ID
+    "The text of the quotation."
+    text: String
+    "The identifier of the quotee."
+    personId: Long
+    "The quotation date."
+    date: Date
+    "The quotation source."
+    source: String
+    "The URL for the quotation online."
+    url: URL
+}
+
+"Returns paginated quotation query results."
+type QuotationPage {
+    "Dummy ID required for @Entity classes"
+    dummy: ID
+    "The requested pageful of records."
+    content: [Quotation!]!
+    "Whether the page has content."
+    hasContent: Boolean!
+    "Whether the page is empty (no content)."
+    isEmpty: Boolean!
+    "The current page number."
+    number: Int!
+    "The page size."
+    size: Int!
+    "The number of elements on this page."
+    numberOfElements: Int!
+    "The total number of pages available."
+    totalPages: Int!
+    "The total number of records."
+    totalElements: Long!
+    "Whether this is the first page."
+    isFirst: Boolean!
+    "Whether this is the last page."
+    isLast: Boolean!
+    "Whether there is next page."
+    hasNext: Boolean!
+    "Whether there is previous page."
+    hasPrevious: Boolean!
+}
+
+"Enumeration of lexical or numeric sort orders."
+enum SortKind {
+    "Ascending order."
+    ASC
+    "Descending order."
+    DESC
+}
+
+"Enumeration of ITrackedEntity status codes."
+enum StatusKind {
+    "Record is draft/new."
+    DRA
+    "Record is published/active."
+    PUB
+    "Record is suspended/disabled/hidden."
+    SUS
+    "Record is deleted."
+    DEL
+}
+
+"A node in the topic hierarchy tree."
+type Topic implements IBaseEntity & ITrackedEntity {
+    "The unique topic identifier."
+    id: ID!
+    "The entity status."
+    status(
+        "How to format the result. SHORT format is per ```StatusKind``` enum."
+        format: FormatKind = LONG
+    ): String
+    "When the record was created."
+    created: DateTime
+    "The user who created the record."
+    createdByUser: User
+    "When the record was last updated."
+    updated: DateTime
+    "The user who last updated the record."
+    updatedByUser: User
+    "Log of transactions involving the record."
+    log(
+        "Filters results."
+        filter: LogQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): LogPage!
+    "The topic label for display in the user interface."
+    label: String
+    "The topic description."
+    description: String
+    "The parent topic."
+    parent: Topic
+    "The sub-topics."
+    children: [Topic!]
+    "Referenced entities."
+    entities(
+        "The type of entity to return."
+        entityKind: EntityKind!,
+        "Filters results."
+        filter: TopicalEntityQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): [ITopicalEntity!]
+}
+
+"Parameters to control an ```ITopicalEntity``` query."
+input TopicalEntityQueryFilter {
+    "The topic identifier, mandatory when querying the master list or when master = NONE."
+    topicId: ID
+    "Whether queries including a topicId should be executed recursively."
+    recursive: Boolean = true
+    "The master entity kind, if a master list is designated."
+    masterEntityKind: EntityKind
+    "The master entity identifier, if a master list is designated."
+    masterEntityId: Long
+    "Free text search string."
+    text: String
+    "Whether to search ```text``` in advanced (boolean) mode."
+    advancedSearch: Boolean = false
+    "Return only records with these status codes (default: ALL)."
+    status: [StatusKind!]
+}
+
+"An input for creating or updating a topic."
+input TopicInput {
+    "The unique topic identifier."
+    id: ID
+    "The topic label for display in the user interface."
+    label: String!
+    "The topic description."
+    description: String
+    "The identifier of the parent topic."
+    parentId: Long
+}
+
+"Parameters to filter a topic query."
+input TopicQueryFilter {
+    "The parent topic identifier. Specify to get sub-topics, leave blank for top-level topics."
+    parentId: Long
+    "Free text search string."
+    text: String
+    "Whether to search ```text``` in advanced (boolean) mode."
+    advancedSearch: Boolean = false
+    "Return only topics with these status codes (default: ALL)."
+    status: [StatusKind!]
+    "Whether to return all sub-topics, recursively."
+    recursive: Boolean = false
+}
+
+"Returns paginated topic query results."
+type TopicPage {
+    "Dummy ID required for @Entity classes"
+    dummy: ID
+    "The requested pageful of records."
+    content: [Topic!]!
+    "Whether the page has content."
+    hasContent: Boolean!
+    "Whether the page is empty (no content)."
+    isEmpty: Boolean!
+    "The current page number."
+    number: Int!
+    "The page size."
+    size: Int!
+    "The number of elements on this page."
+    numberOfElements: Int!
+    "The total number of pages available."
+    totalPages: Int!
+    "The total number of records."
+    totalElements: Long!
+    "Whether this is the first page."
+    isFirst: Boolean!
+    "Whether this is the last page."
+    isLast: Boolean!
+    "Whether there is next page."
+    hasNext: Boolean!
+    "Whether there is previous page."
+    hasPrevious: Boolean!
+}
+
+"An association between a topic and an entity record."
+type TopicRef implements IBaseEntity {
+    # NOTE: only necessary because graphql-java-generator emits code with errors (missing ctor) if there is no ID field.
+    "The unique topic ref identifier."
+    id: ID!
+    # "The unique identifier of the associated topic."
+    # topicId: Long!
+    "The associated topic."
+    topic: Topic
+    "The associated entity kind."
+    entityKind(
+        "How to format the result. SHORT format is per ```EntityKind``` enum."
+        format: FormatKind = LONG
+    ): String
+    # TODO: consider whether to return the identifier or the entity record.
+    "The unique identifier of the associated record."
+    entityId: Long!
+    "The associated record."
+    entity: ITopicalEntity!
+    "The locations within the associated record, one per line."
+    locations: [URI!]
+}
+
+"An input for creating or updating an association between a topic and an entity record."
+input TopicRefInput {
+    "The unique topic identifier. Only necessary because graphql-java-generator emits code with errors (missing ctor) if there is no ID field."
+    id: ID!
+    "The unique identifier of the associated topic."
+    topicId: Long!
+    "The associated entity kind."
+    entityKind: EntityKind!
+    "The unique identifier of the associated entity."
+    entityId: Long!
+    "The locations within the associated record, one per line."
+    locations: [URI!]
+}
+
+"Parameters to filter a topic reference query."
+input TopicRefQueryFilter {
+    "The unique identifier of the associated topic."
+    topicId: Long
+    "The associated entity kind."
+    entityKind: EntityKind!
+    "The unique identifier of the associated entity."
+    entityId: Long
+    "Free text search string."
+    text: String
+    "Whether to search ```text``` in advanced (boolean) mode."
+    advancedSearch: Boolean = false
+}
+
+"Returns paginated topic ref query results."
+type TopicRefPage {
+    "Dummy ID required for @Entity classes"
+    dummy: ID
+    "The requested pageful of records."
+    content: [TopicRef!]!
+    "Whether the page has content."
+    hasContent: Boolean!
+    "Whether the page is empty (no content)."
+    isEmpty: Boolean!
+    "The current page number."
+    number: Int!
+    "The page size."
+    size: Int!
+    "The number of elements on this page."
+    numberOfElements: Int!
+    "The total number of pages available."
+    totalPages: Int!
+    "The total number of records."
+    totalElements: Long!
+    "Whether this is the first page."
+    isFirst: Boolean!
+    "Whether this is the last page."
+    isLast: Boolean!
+    "Whether there is next page."
+    hasNext: Boolean!
+    "Whether there is previous page."
+    hasPrevious: Boolean!
+}
+
+"Parameters to filter an ```ITrackedEntity``` query."
+input TrackedEntityQueryFilter {
+    "Return only records with these status codes (default: ALL)."
+    status: [StatusKind!]
+    "Free text search string."
+    text: String
+    "Whether to search ```text``` in advanced (boolean) mode."
+    advancedSearch: Boolean = false
+}
+
+"Enumeration of the possible transaction kinds."
+enum TransactionKind {
+    "Record created."
+    CRE
+    "Record updated."
+    UPD
+    "Record deleted."
+    DEL
+    "Records linked."
+    LNK
+    "Records unlinked."
+    UNL
+}
+
+"Describes a user of the system."
+type User implements IBaseEntity & ITrackedEntity {
+    "The immutable, unique user identifier (system-assigned)."
+    id: ID!
+    "The entity status."
+    status(
+        "How to format the result. SHORT format is per ```StatusKind``` enum."
+        format: FormatKind = LONG
+    ): String
+    "When the record was created."
+    created: DateTime
+    "The user who created the record."
+    createdByUser: User
+    "When the record was last updated."
+    updated: DateTime
+    "The user who last updated the record."
+    updatedByUser: User
+    "Log of transactions involving the record."
+    log(
+        "Filters results."
+        filter: LogQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): LogPage!
+    "The (mutable?) unique login name (user-assigned)."
+    login: String
+    "The user's first name."
+    firstName: String
+    "The user's last name."
+    lastName: String
+    "The user's email address."
+    email: String
+    # TODO: consider whether to reveal this through the GraphQL API.
+    "A hash of the user's password."
+    passwordHash: String
+    "The permissions granted to the user."
+    permissions(
+        "How to format the results. SHORT format is per ```PermissionKind``` enum."
+        format: FormatKind = LONG
+    ): [String!]!
+}
+
+"Input for creating or updating a user of the system."
+input UserInput {
+    "The immutable, unique user identifier (system-assigned)."
+    id: ID!
+    "The (mutable?) unique login name (user-assigned)."
+    login: String!
+    "The user's first name."
+    firstName: String!
+    "The user's last name."
+    lastName: String!
+    "The user's email address."
+    email: String!
+    # TODO: consider whether to reveal this through the GraphQL API.
+    "A hash of the user's password."
+    passwordHash: String
+}
+
+"Returns paginated user query results."
+type UserPage {
+    "Dummy ID required for @Entity classes"
+    dummy: ID
+    "The requested pageful of records."
+    content: [User!]!
+    "Whether the page has content."
+    hasContent: Boolean!
+    "Whether the page is empty (no content)."
+    isEmpty: Boolean!
+    "The current page number."
+    number: Int!
+    "The page size."
+    size: Int!
+    "The number of elements on this page."
+    numberOfElements: Int!
+    "The total number of pages available."
+    totalPages: Int!
+    "The total number of records."
+    totalElements: Long!
+    "Whether this is the first page."
+    isFirst: Boolean!
+    "Whether this is the last page."
+    isLast: Boolean!
+    "Whether there is next page."
+    hasNext: Boolean!
+    "Whether there is previous page."
+    hasPrevious: Boolean!
+}
+
+#==================================================
+# API ENTRY POINTS
+
+"Available queries."
+type Query {
+    "Returns a paged list of claims."
+    claims(
+        "Filters results."
+        filter: TopicalEntityQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): ClaimPage!
+    "Returns a claim given its identifier."
+    claimById(id: ID!): Claim
+
+    "Returns a paged list of declarations."
+    declarations(
+        "Filters results."
+        filter: TopicalEntityQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): DeclarationPage!
+    "Returns a declaration given its identifier."
+    declarationById(id: ID!): Declaration
+
+    "Returns a paged list of journals."
+    journals(
+        "Filters results."
+        filter: TrackedEntityQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): JournalPage!
+    "Returns a journal given its identifier."
+    journalById(id: ID!): Journal
+
+    "Returns a paged list of log entries."
+    log(
+        "Filters results."
+        filter: LogQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): LogPage!
+
+    "Returns a paged list of persons."
+    persons(
+        "Filters results."
+        filter: TopicalEntityQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): PersonPage!
+    "Returns a person given its identifier."
+    personById(id: ID!): Person
+
+    "Returns a paged list of publications."
+    publications(
+        "Filters results."
+        filter: TopicalEntityQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): PublicationPage!
+    "Returns a publication given its identifier."
+    publicationById(id: ID!): Publication
+
+    "Returns a paged list of publishers."
+    publishers(
+        "Filters results."
+        filter: TrackedEntityQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): PublisherPage!
+    "Returns a publisher given its identifier."
+    publisherById(id: ID!): Publisher
+
+    "Returns a paged list of quotations."
+    quotations(
+        "Filters results."
+        filter: TopicalEntityQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): QuotationPage!
+    "Returns a quotation given its identifier."
+    quotationById(id: ID!): Quotation
+
+    "Returns a paged list of topics or sub-topics."
+    topics(
+        "Filters results."
+        filter: TopicQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): TopicPage!
+    "Returns a topic given its identifier."
+    topicById(id: ID!): Topic
+
+    topicRefs(
+        "Filters results."
+        filter: TopicRefQueryFilter,
+        "Sorts and paginates results"
+        pageSort: PageableInput
+    ): TopicRefPage
+    "Returns a topic reference given its identifier."
+    topicRefById(id: ID!): TopicRef
+
+    "Returns a paged list of users."
+    users(
+        "Filters results."
+        filter: TrackedEntityQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): UserPage!
+    "Returns a user given its identifier."
+    userById(id: ID!): User
+    "Returns a user given its login."
+    userByLogin(login: String!): User
+}
+
+"Available mutations."
+type Mutation {
+    "Creates a new claim."
+    createClaim(claim: ClaimInput!): Claim
+    "Updates an existing claim."
+    updateClaim(claim: ClaimInput!): Claim
+    "Deletes an existing claim."
+    deleteClaim(claimId: ID!): Void
+
+    "Creates a new declaration."
+    createDeclaration(declaration: DeclarationInput!): Declaration
+    "Updates an existing declaration."
+    updateDeclaration(declaration: DeclarationInput!): Declaration
+    "Deletes an existing declaration."
+    deleteDeclaration(declarationId: ID!): Void
+
+    "Create a new journal."
+    createJournal(journal: JournalInput!): Journal
+    "Updates an existing journal."
+    updateJournal(journal: JournalInput!): Journal
+    "Deletes an existing journal."
+    deleteJournal(journalId: ID!): Void
+
+    "Creates a new person."
+    createPerson(person: PersonInput!): Person
+    "Updates an existing person."
+    updatePerson(person: PersonInput!): Person
+    "Deletes an existing person."
+    deletePerson(personId: ID!): Void
+
+    "Creates a new publication."
+    createPublication(publication: PublicationInput!): Publication
+    "Updates an existing publication."
+    updatePublication(publication: PublicationInput!): Publication
+    "Deletes an existing publication."
+    deletePublication(publicationId: ID!): Void
+
+    "Creates a new publisher."
+    createPublisher(publisher: PublisherInput!): Publisher
+    "Updates an existing publisher."
+    updatePublisher(publisher: PublisherInput!): Publisher
+    "Deletes an existing publisher."
+    deletePublisher(publisherId: ID!): Void
+
+    "Creates a new quotation."
+    createQuotation(quotation: QuotationInput!): Quotation
+    "Updates an existing quotation."
+    updateQuotation(quotation: QuotationInput!): Quotation
+    "Deletes an existing quotation."
+    deleteQuotation(quotationId: ID!): Void
+
+    "Creates a new topic."
+    createTopic(topic: TopicInput!): Topic
+    "Updates an existing topic."
+    updateTopic(topic: TopicInput!): Topic
+    "Deletes an existing topic."
+    deleteTopic(topicId: ID!): Void
+
+    "Adds a new topic reference."
+    addTopicRef(topicRef: TopicRefInput!): Boolean
+    "Removes a topic reference."
+    removeTopicRef(topicRef: TopicRefInput!): Boolean
+
+    "Links two entities."
+    linkEntities(link: LinkEntitiesInput!) : Boolean
+    "Unlinks two linked entities."
+    unlinkEntities(link: LinkEntitiesInput!) : Boolean
+
+    "Sets entity status."
+    setEntityStatus(entityKind: EntityKind!, entityId: Long!, status: StatusKind!) : Boolean
+
+    "Creates a new user."
+    createUser(user: UserInput!): User
+    "Updates an existing user."
+    updateUser(user: UserInput!): User
+    "Updates an existing user."
+    deleteUser(userId: ID!): Void
+    "Grants permissions to a user. The specified permissions are added to any existing ones."
+    grantUserPermissions(userId: ID!, permissions: [PermissionKind!]!): User
+    "Revokes permissions from a user. The specified permissions are removed from the user; other permissions remain intact."
+    revokeUserPermissions(userId: ID!, permissions: [PermissionKind!]!): User
+}

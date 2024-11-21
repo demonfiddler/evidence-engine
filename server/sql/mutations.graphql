@@ -1,0 +1,60 @@
+mutation {
+  createClaim 
+  	(
+      claim: {
+        text: "Test claim"
+        date: "2024-11-18"
+        notes: "Testing the mutation create claim API"
+      }
+    ){
+    id
+    text
+    notes
+    status
+    created
+    createdByUser {
+      firstName
+      lastName
+    }
+    log {
+      content {
+        timestamp
+        transactionKind
+        user {
+          firstName
+          lastName
+        }
+      }
+    }
+  }
+
+  updateClaim 
+  	(
+      claim: {
+        id: 1
+        text: "Test claim"
+        date: "2024-11-18"
+        notes: "UPDATED: Testing the mutation update claim API"
+      }
+    ){
+    id
+    text
+    notes
+    status
+    created
+    createdByUser {
+      firstName
+      lastName
+    }
+    log {
+      content {
+        timestamp
+        transactionKind
+        user {
+          firstName
+          lastName
+        }
+      }
+    }
+  }
+}
