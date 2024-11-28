@@ -15,7 +15,7 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 -- Dumping data for table evidence_engine.publication_kind: ~57 rows (approximately)
-INSERT INTO `publication_kind` (`kind`, `label`) VALUES
+INSERT INTO "publication_kind" ("kind", "label") VALUES
 	('ABST', 'Abstract'),
 	('ADVS', 'Audiovisual material'),
 	('AGGR', 'Aggregated database'),

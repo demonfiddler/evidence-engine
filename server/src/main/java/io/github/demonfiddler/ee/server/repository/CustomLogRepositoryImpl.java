@@ -121,43 +121,43 @@ public class CustomLogRepositoryImpl implements CustomLogRepository {
             throw new IllegalArgumentException("entityKind must be specifed for entityId");
 
         StringBuilder selectBuf = new StringBuilder();
-        selectBuf.append(" FROM Log");
+        selectBuf.append(" FROM \"log\"");
         boolean needsAnd = false;
         if (m.hasEntityId || m.hasEntityKind || m.hasUserId || m.hasTransactionKinds || m.hasFrom || m.hasTo) {
             selectBuf.append(" WHERE");
         }
         if (m.hasEntityId) {
-            selectBuf.append(" `entity_id` = :entityId");
+            selectBuf.append(" \"entity_id\" = :entityId");
             needsAnd = true;
         }
         if (m.hasEntityKind) {
             if (needsAnd)
                 selectBuf.append(" AND");
-            selectBuf.append(" `entity_kind` = :entityKind");
+            selectBuf.append(" \"entity_kind\" = :entityKind");
             needsAnd = true;
         }
         if (m.hasUserId) {
             if (needsAnd)
                 selectBuf.append(" AND");
-            selectBuf.append(" `user_id` = :userId");
+            selectBuf.append(" \"user_id\" = :userId");
             needsAnd = true;
         }
         if (m.hasTransactionKinds) {
             if (needsAnd)
                 selectBuf.append(" AND");
-            selectBuf.append(" `transaction_kind` IN (:transactionKinds)");
+            selectBuf.append(" \"transaction_kind\" IN (:transactionKinds)");
             needsAnd = true;
         }
         if (m.hasFrom) {
             if (needsAnd)
                 selectBuf.append(" AND");
-            selectBuf.append(" `from` >= :from");
+            selectBuf.append(" \"from\" >= :from");
             needsAnd = true;
         }
         if (m.hasTo) {
             if (needsAnd)
                 selectBuf.append(" AND");
-            selectBuf.append(" `to` <= :to");
+            selectBuf.append(" \"to\" <= :to");
             needsAnd = true;
         }
         StringBuffer countBuf = new StringBuffer(selectBuf);

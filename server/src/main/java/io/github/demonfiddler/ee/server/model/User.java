@@ -20,17 +20,12 @@
 package io.github.demonfiddler.ee.server.model;
 
 import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
-import org.dataloader.DataLoader;
-
-import graphql.schema.DataFetchingEnvironment;
+import java.util.List;
 
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -39,9 +34,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Transient;
-import java.util.List;
-
-import com.graphql_java_generator.annotation.GraphQLDirective;
 
 /**
  * Describes a user of the system.
@@ -51,8 +43,6 @@ import com.graphql_java_generator.annotation.GraphQLDirective;
  */
 @Entity
 @GraphQLObjectType("User")
-// @Transactional
-@SuppressWarnings("unused")
 public class User implements IBaseEntity, ITrackedEntity {
 
 	/**

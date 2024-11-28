@@ -339,7 +339,7 @@ input DeclarationInput {
     "The date the declaration was published."
     date: Date
     "The ISO-3166-1 alpha-2 code for the country to which the declaration relates."
-    country: String
+    country: Country
     "The URL for the declaration online."
     url: URL
     "Names of persons who signed the declaration, one per line."
@@ -664,7 +664,10 @@ type Person implements IBaseEntity & ITrackedEntity & ITopicalEntity {
     "Academic qualifications."
     qualifications: String
     "The primary country associated with the person."
-    country: Country
+    country(
+        "How to format the result."
+        format: CountryFormatKind = COMMON_NAME
+    ): String
     "A five-star rating for the person, intended to reflect credibility, experience, qualifications, etc."
     rating: Int
     "Whether the person's credentials have been checked."
@@ -696,7 +699,7 @@ input PersonInput {
     "Person's academic qualifications."
     qualifications: String
     "The ISO-3166-1 alpha-2 code for the primary country associated with the person."
-    country: String
+    country: Country
     "A five-star rating for the person, intended to reflect credibility, experience, qualifications, etc."
     rating: Int
     "Whether the person's credentials have been checked."
@@ -777,8 +780,6 @@ type Publication implements IBaseEntity & ITrackedEntity & ITopicalEntity {
         "How to format the result. SHORT format is per ```PublicationKind``` enum."
         format: FormatKind = LONG
     ): String
-    "The location, typically a volume/issue and/or page number(s)."
-    location: String
     "The publication date."
     date: Date
     "The publication year."
@@ -789,12 +790,14 @@ type Publication implements IBaseEntity & ITrackedEntity & ITopicalEntity {
     notes: String
     "Whether the publication has been peer reviewed."
     peerReviewed: Boolean
-    "The digital object identifier."
+    "The Digital Object Identifier."
     doi: String
+    "The International Standard Book Number."
+    isbn: String
     "The URL for the publication online."
     url: URL
-    "The International Standard Serial/Book Number."
-    issnIsbn: String
+    "Flag to indicate that url content is cached on this application server."
+    cached: Boolean
     "The date the publication was accessed when compiling the database."
     accessed: Date
     # For now, these are all supported by parameterised top-level queries.
@@ -812,10 +815,8 @@ input PublicationInput {
     authorIds: [ID!]
     "The publication title."
     title: String
-    "The name of the journal in which the publication appeared."
-    journal: String # might need to generalise this
-    "The location, typically a volume/issue and/or page number(s)."
-    location: String
+    "The journal in which the publication appeared."
+    journalId: Long
     "The publication type."
     kind: PublicationKind
     "The publication date."
@@ -1030,13 +1031,13 @@ type Publisher implements IBaseEntity & ITrackedEntity {
 "An input for creating or updating a publisher."
 input PublisherInput {
     "The unique publisher identifier."
-    id: ID!
+    id: ID
     "The publisher name."
     name: String
     "The publisher location."
     location: String
     "The ISO-3166-1 alpha-2 code for the publisher's country."
-    country: String
+    country: Country
     "URL of publisher's home page."
     url: URL
     "The number of journals published."
@@ -1104,16 +1105,18 @@ type Quotation implements IBaseEntity & ITrackedEntity & ITopicalEntity {
         "Sorts and paginates results"
         pageSort: PageableInput
     ): TopicRefPage!
-    "The quotation author (quotee)."
-    author: String
     "The text of the quotation."
     text: String
+    "The person(s) who made the quotation."
+    quotee: String
     "The quotation date."
     date: Date
     "The quotation source."
     source: String
     "The URL for the quotation online."
     url: URL
+    "Notes on the quotation."
+    notes: String
     # For now, these are all supported by parameterised top-level queries.
 #    # TODO: consider whether it is reasonable to associate multiple persons with a single quotation
 #    "The quotees."
@@ -1128,15 +1131,17 @@ input QuotationInput {
     "The quotation identifier, required if updating an existing record."
     id: ID
     "The text of the quotation."
-    text: String
+    text: String!
     "The identifier of the quotee."
-    personId: Long
+    quotee: String!
     "The quotation date."
-    date: Date
+    date: Date!
     "The quotation source."
     source: String
     "The URL for the quotation online."
     url: URL
+    "Notes on the quotation."
+    notes: String
 }
 
 "Returns paginated quotation query results."
@@ -1622,56 +1627,56 @@ type Mutation {
     "Updates an existing claim."
     updateClaim(claim: ClaimInput!): Claim
     "Deletes an existing claim."
-    deleteClaim(claimId: ID!): Void
+    deleteClaim(claimId: ID!): Claim
 
     "Creates a new declaration."
     createDeclaration(declaration: DeclarationInput!): Declaration
     "Updates an existing declaration."
     updateDeclaration(declaration: DeclarationInput!): Declaration
     "Deletes an existing declaration."
-    deleteDeclaration(declarationId: ID!): Void
+    deleteDeclaration(declarationId: ID!): Declaration
 
     "Create a new journal."
     createJournal(journal: JournalInput!): Journal
     "Updates an existing journal."
     updateJournal(journal: JournalInput!): Journal
     "Deletes an existing journal."
-    deleteJournal(journalId: ID!): Void
+    deleteJournal(journalId: ID!): Journal
 
     "Creates a new person."
     createPerson(person: PersonInput!): Person
     "Updates an existing person."
     updatePerson(person: PersonInput!): Person
     "Deletes an existing person."
-    deletePerson(personId: ID!): Void
+    deletePerson(personId: ID!): Person
 
     "Creates a new publication."
     createPublication(publication: PublicationInput!): Publication
     "Updates an existing publication."
     updatePublication(publication: PublicationInput!): Publication
     "Deletes an existing publication."
-    deletePublication(publicationId: ID!): Void
+    deletePublication(publicationId: ID!): Publication
 
     "Creates a new publisher."
     createPublisher(publisher: PublisherInput!): Publisher
     "Updates an existing publisher."
     updatePublisher(publisher: PublisherInput!): Publisher
     "Deletes an existing publisher."
-    deletePublisher(publisherId: ID!): Void
+    deletePublisher(publisherId: ID!): Publisher
 
     "Creates a new quotation."
     createQuotation(quotation: QuotationInput!): Quotation
     "Updates an existing quotation."
     updateQuotation(quotation: QuotationInput!): Quotation
     "Deletes an existing quotation."
-    deleteQuotation(quotationId: ID!): Void
+    deleteQuotation(quotationId: ID!): Quotation
 
     "Creates a new topic."
     createTopic(topic: TopicInput!): Topic
     "Updates an existing topic."
     updateTopic(topic: TopicInput!): Topic
     "Deletes an existing topic."
-    deleteTopic(topicId: ID!): Void
+    deleteTopic(topicId: ID!): Topic
 
     "Adds a new topic reference."
     addTopicRef(topicRef: TopicRefInput!): Boolean
@@ -1691,7 +1696,7 @@ type Mutation {
     "Updates an existing user."
     updateUser(user: UserInput!): User
     "Updates an existing user."
-    deleteUser(userId: ID!): Void
+    deleteUser(userId: ID!): User
     "Grants permissions to a user. The specified permissions are added to any existing ones."
     grantUserPermissions(userId: ID!, permissions: [PermissionKind!]!): User
     "Revokes permissions from a user. The specified permissions are removed from the user; other permissions remain intact."

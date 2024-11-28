@@ -20,18 +20,9 @@
 package io.github.demonfiddler.ee.server.model;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
-import org.dataloader.DataLoader;
-
-import graphql.schema.DataFetchingEnvironment;
 
 import com.graphql_java_generator.annotation.GraphQLInputType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
-
-import com.graphql_java_generator.annotation.GraphQLDirective;
 
 /**
  * An input for creating or updating a journal.
@@ -40,7 +31,6 @@ import com.graphql_java_generator.annotation.GraphQLDirective;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("JournalInput")
-@SuppressWarnings("unused")
 public class JournalInput {
 
 	/**

@@ -20,6 +20,8 @@
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
 import java.util.List;
+import java.util.Map;
+
 import org.dataloader.BatchLoaderEnvironment;
 import org.dataloader.DataLoader;
 import org.springframework.data.domain.Pageable;
@@ -49,7 +51,6 @@ import io.github.demonfiddler.ee.server.repository.PublicationRepository;
 import io.github.demonfiddler.ee.server.repository.QuotationRepository;
 import io.github.demonfiddler.ee.server.repository.TopicRepository;
 import jakarta.annotation.Resource;
-import reactor.core.publisher.Flux;
 
 @Component
 public class DataFetchersDelegateTopicImpl extends DataFetchersDelegateITrackedEntityBaseImpl
@@ -79,17 +80,17 @@ public class DataFetchersDelegateTopicImpl extends DataFetchersDelegateITrackedE
     }
 
     @Override
-    public Flux<User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+    public Map<Topic, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
         List<Topic> keys) {
 
-        return _createdByUser(batchLoaderEnvironment, graphQLContext, keys);
+        return _createdByUserMap(batchLoaderEnvironment, graphQLContext, keys);
     }
 
     @Override
-    public Flux<User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+    public Map<Topic, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
         List<Topic> keys) {
 
-        return _updatedByUser(batchLoaderEnvironment, graphQLContext, keys);
+        return _updatedByUserMap(batchLoaderEnvironment, graphQLContext, keys);
     }
 
     @Override
@@ -100,17 +101,17 @@ public class DataFetchersDelegateTopicImpl extends DataFetchersDelegateITrackedE
     }
 
     @Override
-    public Flux<Topic> parent(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+    public Map<Topic, Topic> parent(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
         List<Topic> keys) {
 
-        return entityUtils.getValues(keys, Topic::getParent);
+        return entityUtils.getValuesMap(keys, Topic::getParent);
     }
 
     @Override
-    public Flux<Topic> children(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-        List<Topic> keys) {
+    public Map<Topic, List<Topic>> children(BatchLoaderEnvironment batchLoaderEnvironment,
+        GraphQLContext graphQLContext, List<Topic> keys) {
 
-        return entityUtils.getListValues(keys, Topic::getChildren);
+        return entityUtils.getListValuesMap(keys, Topic::getChildren);
     }
 
     @Override

@@ -19,18 +19,8 @@
 
 package io.github.demonfiddler.ee.server.model;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
-import org.dataloader.DataLoader;
-
-import graphql.schema.DataFetchingEnvironment;
-
 import com.graphql_java_generator.annotation.GraphQLInputType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
-
-import com.graphql_java_generator.annotation.GraphQLDirective;
 
 /**
  * An input to specify how to sort results on a given field.
@@ -39,7 +29,6 @@ import com.graphql_java_generator.annotation.GraphQLDirective;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("OrderInput")
-@SuppressWarnings("unused")
 public class OrderInput {
 
 	/**
@@ -146,6 +135,7 @@ public class OrderInput {
 	 * {@link #builder()}
 	 */
 	public static class Builder {
+
 		private String property;
 		private DirectionKind direction;
 		private Boolean ignoreCase;
@@ -191,6 +181,7 @@ public class OrderInput {
 			_object.setNullHandling(this.nullHandling);
 			return _object;
 		}
+
 	}
 
 }

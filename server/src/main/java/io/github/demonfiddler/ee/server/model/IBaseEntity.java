@@ -21,11 +21,10 @@ package io.github.demonfiddler.ee.server.model;
 
 import com.graphql_java_generator.annotation.GraphQLInterfaceType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
+
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-
-import com.graphql_java_generator.annotation.GraphQLDirective;
 
 /**
  * Interface for entities with a unique system-generated identifier.
@@ -34,7 +33,6 @@ import com.graphql_java_generator.annotation.GraphQLDirective;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInterfaceType("IBaseEntity")
-@SuppressWarnings("unused")
 public interface IBaseEntity {
 
 	@Id

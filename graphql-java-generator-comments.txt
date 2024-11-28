@@ -1,0 +1,29 @@
+Complaints about graphql-java-generator
+=======================================
+
+Documentation
+-------------
+- The Gradle examples are confusing as they refer to Maven stuff.
+
+Code Generation
+---------------
+- Generated code is messy and poorly formatted.
+- Class modifiers incorrectly ordered (e.g. static public).
+- Not possible to customise generated annotations (can add but not edit).
+- Generated code is not designed to be edited.
+- Cannot inherit GraphQL-annotated members.
+- Empty constructors contain a pointless "// No action" comment.
+- Unnecessary fully-qualified inline references to java.lang.* classes, which are implicitly imported according to the JLS.
+- Generated interface members explicitly marked as public, but they are implicitly public according to the JLS.
+- Multiple unused imports, errors suppressed with @SuppressWarnings("unused") annotations, which causes other compiler warnings about suppressed warnings.
+- GraphQL interfaces that implement other interfaces: the generated Java sub-interfaces duplicate methods they already inherit.
+- Many instances of fully-qualified class names used in member signatures (even for classes generated to the same package!). Should use imports where necessary.
+- Enum constructors placed at the end of the compilation unit.
+- Javadoc contains unresolved parameter references from Velocity templates.
+- Multiple violations of official Javadoc format guidelines.
+- Javadoc contains {@link xxx} to unqualified class names (e.g. Date) that aren't imported. This triggers confusing queries when organising imports.
+- Inaccurate translation of GraphQL inline Common Markdown documentation to Javadoc (e.g., ```xxx``` should be translated to {@code xxx} but isn't).
+
+Runtime
+-------
+- GraphQL annotations on inherited members are not detected, so it's impossible to optimise similar generated classes by extending abstract base class supplying the common functionality.

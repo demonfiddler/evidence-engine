@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import org.dataloader.BatchLoaderEnvironment;
 import org.dataloader.DataLoader;
@@ -50,7 +49,6 @@ import io.github.demonfiddler.ee.server.model.PageableInput;
 import io.github.demonfiddler.ee.server.model.Topic;
 import io.github.demonfiddler.ee.server.model.TopicalEntityQueryFilter;
 import io.github.demonfiddler.ee.server.model.User;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -60,7 +58,7 @@ import reactor.core.publisher.Mono;
  */
 @Controller
 @SchemaMapping(typeName = "Topic")
-@SuppressWarnings("unused")
+
 public class TopicController {
 
 	@Autowired
@@ -128,7 +126,7 @@ public class TopicController {
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
 	@BatchMapping(field = "createdByUser")
-	public Flux<User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+	public Map<Topic, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
 		List<Topic> keys) {
 
 		return this.dataFetchersDelegateTopic.createdByUser(batchLoaderEnvironment, graphQLContext, keys);
@@ -146,7 +144,7 @@ public class TopicController {
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
 	@BatchMapping(field = "updatedByUser")
-	public Flux<User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+	public Map<Topic, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
 		List<Topic> keys) {
 
 		return this.dataFetchersDelegateTopic.updatedByUser(batchLoaderEnvironment, graphQLContext, keys);
@@ -196,7 +194,7 @@ public class TopicController {
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
 	@BatchMapping(field = "parent")
-	public Flux<Topic> parent(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+	public Map<Topic, Topic> parent(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
 		List<Topic> keys) {
 
 		return this.dataFetchersDelegateTopic.parent(batchLoaderEnvironment, graphQLContext, keys);
@@ -214,8 +212,8 @@ public class TopicController {
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
 	@BatchMapping(field = "children")
-	public Flux<Topic> children(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-		List<Topic> keys) {
+	public Map<Topic, List<Topic>> children(BatchLoaderEnvironment batchLoaderEnvironment,
+		GraphQLContext graphQLContext, List<Topic> keys) {
 
 		return this.dataFetchersDelegateTopic.children(batchLoaderEnvironment, graphQLContext, keys);
 	}

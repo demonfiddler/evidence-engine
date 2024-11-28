@@ -19,19 +19,9 @@
 
 package io.github.demonfiddler.ee.server.model;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
-import org.dataloader.DataLoader;
-
-import graphql.schema.DataFetchingEnvironment;
-
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
-
-import com.graphql_java_generator.annotation.GraphQLDirective;
 
 /**
  * Available mutations.
@@ -40,8 +30,6 @@ import com.graphql_java_generator.annotation.GraphQLDirective;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLObjectType("Mutation")
-// @Transactional
-@SuppressWarnings("unused")
 public class Mutation {
 
 	/**
@@ -61,8 +49,8 @@ public class Mutation {
 	/**
 	 * Deletes an existing claim.
 	 */
-	@GraphQLScalar(fieldName = "deleteClaim", graphQLTypeSimpleName = "Void", javaClass = Void.class, listDepth = 0)
-	Void deleteClaim;
+	@GraphQLScalar(fieldName = "deleteClaim", graphQLTypeSimpleName = "Claim", javaClass = Claim.class, listDepth = 0)
+	Claim deleteClaim;
 
 	/**
 	 * Creates a new declaration.
@@ -81,9 +69,9 @@ public class Mutation {
 	/**
 	 * Deletes an existing declaration.
 	 */
-	@GraphQLScalar(fieldName = "deleteDeclaration", graphQLTypeSimpleName = "Void", javaClass = Void.class,
-		listDepth = 0)
-	Void deleteDeclaration;
+	@GraphQLScalar(fieldName = "deleteDeclaration", graphQLTypeSimpleName = "Declaration",
+		javaClass = Declaration.class, listDepth = 0)
+	Declaration deleteDeclaration;
 
 	/**
 	 * Create a new journal.
@@ -102,8 +90,9 @@ public class Mutation {
 	/**
 	 * Deletes an existing journal.
 	 */
-	@GraphQLScalar(fieldName = "deleteJournal", graphQLTypeSimpleName = "Void", javaClass = Void.class, listDepth = 0)
-	Void deleteJournal;
+	@GraphQLScalar(fieldName = "deleteJournal", graphQLTypeSimpleName = "Journal", javaClass = Journal.class,
+		listDepth = 0)
+	Journal deleteJournal;
 
 	/**
 	 * Creates a new person.
@@ -122,8 +111,9 @@ public class Mutation {
 	/**
 	 * Deletes an existing person.
 	 */
-	@GraphQLScalar(fieldName = "deletePerson", graphQLTypeSimpleName = "Void", javaClass = Void.class, listDepth = 0)
-	Void deletePerson;
+	@GraphQLScalar(fieldName = "deletePerson", graphQLTypeSimpleName = "Person", javaClass = Person.class,
+		listDepth = 0)
+	Person deletePerson;
 
 	/**
 	 * Creates a new publication.
@@ -142,9 +132,9 @@ public class Mutation {
 	/**
 	 * Deletes an existing publication.
 	 */
-	@GraphQLScalar(fieldName = "deletePublication", graphQLTypeSimpleName = "Void", javaClass = Void.class,
-		listDepth = 0)
-	Void deletePublication;
+	@GraphQLScalar(fieldName = "deletePublication", graphQLTypeSimpleName = "Publication",
+		javaClass = Publication.class, listDepth = 0)
+	Publication deletePublication;
 
 	/**
 	 * Creates a new publisher.
@@ -163,8 +153,9 @@ public class Mutation {
 	/**
 	 * Deletes an existing publisher.
 	 */
-	@GraphQLScalar(fieldName = "deletePublisher", graphQLTypeSimpleName = "Void", javaClass = Void.class, listDepth = 0)
-	Void deletePublisher;
+	@GraphQLScalar(fieldName = "deletePublisher", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class,
+		listDepth = 0)
+	Publisher deletePublisher;
 
 	/**
 	 * Creates a new quotation.
@@ -183,8 +174,9 @@ public class Mutation {
 	/**
 	 * Deletes an existing quotation.
 	 */
-	@GraphQLScalar(fieldName = "deleteQuotation", graphQLTypeSimpleName = "Void", javaClass = Void.class, listDepth = 0)
-	Void deleteQuotation;
+	@GraphQLScalar(fieldName = "deleteQuotation", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class,
+		listDepth = 0)
+	Quotation deleteQuotation;
 
 	/**
 	 * Creates a new topic.
@@ -203,8 +195,8 @@ public class Mutation {
 	/**
 	 * Deletes an existing topic.
 	 */
-	@GraphQLScalar(fieldName = "deleteTopic", graphQLTypeSimpleName = "Void", javaClass = Void.class, listDepth = 0)
-	Void deleteTopic;
+	@GraphQLScalar(fieldName = "deleteTopic", graphQLTypeSimpleName = "Topic", javaClass = Topic.class, listDepth = 0)
+	Topic deleteTopic;
 
 	/**
 	 * Adds a new topic reference.
@@ -249,8 +241,8 @@ public class Mutation {
 	/**
 	 * Updates an existing user.
 	 */
-	@GraphQLScalar(fieldName = "deleteUser", graphQLTypeSimpleName = "Void", javaClass = Void.class, listDepth = 0)
-	Void deleteUser;
+	@GraphQLScalar(fieldName = "deleteUser", graphQLTypeSimpleName = "User", javaClass = User.class, listDepth = 0)
+	User deleteUser;
 
 	/**
 	 * Grants permissions to a user. The specified permissions are added to any existing ones.
@@ -298,14 +290,14 @@ public class Mutation {
 	/**
 	 * Deletes an existing claim.
 	 */
-	public void setDeleteClaim(Void deleteClaim) {
+	public void setDeleteClaim(Claim deleteClaim) {
 		this.deleteClaim = deleteClaim;
 	}
 
 	/**
 	 * Deletes an existing claim.
 	 */
-	public Void getDeleteClaim() {
+	public Claim getDeleteClaim() {
 		return this.deleteClaim;
 	}
 
@@ -340,14 +332,14 @@ public class Mutation {
 	/**
 	 * Deletes an existing declaration.
 	 */
-	public void setDeleteDeclaration(Void deleteDeclaration) {
+	public void setDeleteDeclaration(Declaration deleteDeclaration) {
 		this.deleteDeclaration = deleteDeclaration;
 	}
 
 	/**
 	 * Deletes an existing declaration.
 	 */
-	public Void getDeleteDeclaration() {
+	public Declaration getDeleteDeclaration() {
 		return this.deleteDeclaration;
 	}
 
@@ -382,14 +374,14 @@ public class Mutation {
 	/**
 	 * Deletes an existing journal.
 	 */
-	public void setDeleteJournal(Void deleteJournal) {
+	public void setDeleteJournal(Journal deleteJournal) {
 		this.deleteJournal = deleteJournal;
 	}
 
 	/**
 	 * Deletes an existing journal.
 	 */
-	public Void getDeleteJournal() {
+	public Journal getDeleteJournal() {
 		return this.deleteJournal;
 	}
 
@@ -424,14 +416,14 @@ public class Mutation {
 	/**
 	 * Deletes an existing person.
 	 */
-	public void setDeletePerson(Void deletePerson) {
+	public void setDeletePerson(Person deletePerson) {
 		this.deletePerson = deletePerson;
 	}
 
 	/**
 	 * Deletes an existing person.
 	 */
-	public Void getDeletePerson() {
+	public Person getDeletePerson() {
 		return this.deletePerson;
 	}
 
@@ -466,14 +458,14 @@ public class Mutation {
 	/**
 	 * Deletes an existing publication.
 	 */
-	public void setDeletePublication(Void deletePublication) {
+	public void setDeletePublication(Publication deletePublication) {
 		this.deletePublication = deletePublication;
 	}
 
 	/**
 	 * Deletes an existing publication.
 	 */
-	public Void getDeletePublication() {
+	public Publication getDeletePublication() {
 		return this.deletePublication;
 	}
 
@@ -508,14 +500,14 @@ public class Mutation {
 	/**
 	 * Deletes an existing publisher.
 	 */
-	public void setDeletePublisher(Void deletePublisher) {
+	public void setDeletePublisher(Publisher deletePublisher) {
 		this.deletePublisher = deletePublisher;
 	}
 
 	/**
 	 * Deletes an existing publisher.
 	 */
-	public Void getDeletePublisher() {
+	public Publisher getDeletePublisher() {
 		return this.deletePublisher;
 	}
 
@@ -550,14 +542,14 @@ public class Mutation {
 	/**
 	 * Deletes an existing quotation.
 	 */
-	public void setDeleteQuotation(Void deleteQuotation) {
+	public void setDeleteQuotation(Quotation deleteQuotation) {
 		this.deleteQuotation = deleteQuotation;
 	}
 
 	/**
 	 * Deletes an existing quotation.
 	 */
-	public Void getDeleteQuotation() {
+	public Quotation getDeleteQuotation() {
 		return this.deleteQuotation;
 	}
 
@@ -592,14 +584,14 @@ public class Mutation {
 	/**
 	 * Deletes an existing topic.
 	 */
-	public void setDeleteTopic(Void deleteTopic) {
+	public void setDeleteTopic(Topic deleteTopic) {
 		this.deleteTopic = deleteTopic;
 	}
 
 	/**
 	 * Deletes an existing topic.
 	 */
-	public Void getDeleteTopic() {
+	public Topic getDeleteTopic() {
 		return this.deleteTopic;
 	}
 
@@ -690,14 +682,14 @@ public class Mutation {
 	/**
 	 * Updates an existing user.
 	 */
-	public void setDeleteUser(Void deleteUser) {
+	public void setDeleteUser(User deleteUser) {
 		this.deleteUser = deleteUser;
 	}
 
 	/**
 	 * Updates an existing user.
 	 */
-	public Void getDeleteUser() {
+	public User getDeleteUser() {
 		return this.deleteUser;
 	}
 
@@ -812,35 +804,35 @@ public class Mutation {
 	public static class Builder {
 		private Claim createClaim;
 		private Claim updateClaim;
-		private Void deleteClaim;
+		private Claim deleteClaim;
 		private Declaration createDeclaration;
 		private Declaration updateDeclaration;
-		private Void deleteDeclaration;
+		private Declaration deleteDeclaration;
 		private Journal createJournal;
 		private Journal updateJournal;
-		private Void deleteJournal;
+		private Journal deleteJournal;
 		private Person createPerson;
 		private Person updatePerson;
-		private Void deletePerson;
+		private Person deletePerson;
 		private Publication createPublication;
 		private Publication updatePublication;
-		private Void deletePublication;
+		private Publication deletePublication;
 		private Publisher createPublisher;
 		private Publisher updatePublisher;
-		private Void deletePublisher;
+		private Publisher deletePublisher;
 		private Quotation createQuotation;
 		private Quotation updateQuotation;
-		private Void deleteQuotation;
+		private Quotation deleteQuotation;
 		private Topic createTopic;
 		private Topic updateTopic;
-		private Void deleteTopic;
+		private Topic deleteTopic;
 		private Boolean addTopicRef;
 		private Boolean removeTopicRef;
 		private Boolean linkEntities;
 		private Boolean unlinkEntities;
 		private User createUser;
 		private User updateUser;
-		private Void deleteUser;
+		private User deleteUser;
 		private User grantUserPermissions;
 		private User revokeUserPermissions;
 
@@ -863,7 +855,7 @@ public class Mutation {
 		/**
 		 * Deletes an existing claim.
 		 */
-		public Builder withDeleteClaim(Void deleteClaimParam) {
+		public Builder withDeleteClaim(Claim deleteClaimParam) {
 			this.deleteClaim = deleteClaimParam;
 			return this;
 		}
@@ -887,7 +879,7 @@ public class Mutation {
 		/**
 		 * Deletes an existing declaration.
 		 */
-		public Builder withDeleteDeclaration(Void deleteDeclarationParam) {
+		public Builder withDeleteDeclaration(Declaration deleteDeclarationParam) {
 			this.deleteDeclaration = deleteDeclarationParam;
 			return this;
 		}
@@ -911,7 +903,7 @@ public class Mutation {
 		/**
 		 * Deletes an existing journal.
 		 */
-		public Builder withDeleteJournal(Void deleteJournalParam) {
+		public Builder withDeleteJournal(Journal deleteJournalParam) {
 			this.deleteJournal = deleteJournalParam;
 			return this;
 		}
@@ -935,7 +927,7 @@ public class Mutation {
 		/**
 		 * Deletes an existing person.
 		 */
-		public Builder withDeletePerson(Void deletePersonParam) {
+		public Builder withDeletePerson(Person deletePersonParam) {
 			this.deletePerson = deletePersonParam;
 			return this;
 		}
@@ -959,7 +951,7 @@ public class Mutation {
 		/**
 		 * Deletes an existing publication.
 		 */
-		public Builder withDeletePublication(Void deletePublicationParam) {
+		public Builder withDeletePublication(Publication deletePublicationParam) {
 			this.deletePublication = deletePublicationParam;
 			return this;
 		}
@@ -983,7 +975,7 @@ public class Mutation {
 		/**
 		 * Deletes an existing publisher.
 		 */
-		public Builder withDeletePublisher(Void deletePublisherParam) {
+		public Builder withDeletePublisher(Publisher deletePublisherParam) {
 			this.deletePublisher = deletePublisherParam;
 			return this;
 		}
@@ -1007,7 +999,7 @@ public class Mutation {
 		/**
 		 * Deletes an existing quotation.
 		 */
-		public Builder withDeleteQuotation(Void deleteQuotationParam) {
+		public Builder withDeleteQuotation(Quotation deleteQuotationParam) {
 			this.deleteQuotation = deleteQuotationParam;
 			return this;
 		}
@@ -1031,7 +1023,7 @@ public class Mutation {
 		/**
 		 * Deletes an existing topic.
 		 */
-		public Builder withDeleteTopic(Void deleteTopicParam) {
+		public Builder withDeleteTopic(Topic deleteTopicParam) {
 			this.deleteTopic = deleteTopicParam;
 			return this;
 		}
@@ -1087,7 +1079,7 @@ public class Mutation {
 		/**
 		 * Updates an existing user.
 		 */
-		public Builder withDeleteUser(Void deleteUserParam) {
+		public Builder withDeleteUser(User deleteUserParam) {
 			this.deleteUser = deleteUserParam;
 			return this;
 		}

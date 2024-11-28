@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import org.dataloader.BatchLoaderEnvironment;
 import org.dataloader.DataLoader;
@@ -50,7 +49,6 @@ import io.github.demonfiddler.ee.server.model.Quotation;
 import io.github.demonfiddler.ee.server.model.TopicRefPage;
 import io.github.demonfiddler.ee.server.model.TopicRefQueryFilter;
 import io.github.demonfiddler.ee.server.model.User;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -60,7 +58,7 @@ import reactor.core.publisher.Mono;
  */
 @Controller
 @SchemaMapping(typeName = "Quotation")
-@SuppressWarnings("unused")
+
 public class QuotationController {
 
 	@Autowired
@@ -128,8 +126,8 @@ public class QuotationController {
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
 	@BatchMapping(field = "createdByUser")
-	public Flux<User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-		List<Quotation> keys) {
+	public Map<Quotation, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment,
+		GraphQLContext graphQLContext, List<Quotation> keys) {
 
 		return this.dataFetchersDelegateQuotation.createdByUser(batchLoaderEnvironment, graphQLContext, keys);
 	}
@@ -146,8 +144,8 @@ public class QuotationController {
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
 	@BatchMapping(field = "updatedByUser")
-	public Flux<User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-		List<Quotation> keys) {
+	public Map<Quotation, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment,
+		GraphQLContext graphQLContext, List<Quotation> keys) {
 
 		return this.dataFetchersDelegateQuotation.updatedByUser(batchLoaderEnvironment, graphQLContext, keys);
 	}

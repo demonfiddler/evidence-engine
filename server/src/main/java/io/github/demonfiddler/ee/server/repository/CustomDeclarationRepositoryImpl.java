@@ -31,7 +31,7 @@ public class CustomDeclarationRepositoryImpl extends CustomITopicalEntityReposit
 
     @Override
     protected String getFulltextColumns() {
-        return "`title`, `signatories`, `notes`";
+        return "\"title\", \"signatories\", \"notes\"";
     }
 
 }

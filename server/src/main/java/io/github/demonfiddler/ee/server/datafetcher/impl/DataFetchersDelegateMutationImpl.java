@@ -27,6 +27,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 
 import graphql.schema.DataFetchingEnvironment;
+import io.github.demonfiddler.ee.common.util.StringUtils;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateMutation;
 import io.github.demonfiddler.ee.server.model.Claim;
 import io.github.demonfiddler.ee.server.model.ClaimInput;
@@ -118,15 +119,22 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         return root;
     }
 
-    private void log(TransactionKind txnKind, IBaseEntity entity) {
-        log(txnKind, entity.getId(), util.getEntityKind(entity.getClass()), null, null);
+    private void log(TransactionKind txnKind, IBaseEntity entity, OffsetDateTime timestamp) {
+        log(txnKind, entity.getId(), util.getEntityKind(entity.getClass()), null, null, timestamp);
     }
 
     private void log(TransactionKind txnKind, Long entityId, EntityKind entityKind, Long linkedEntityId,
         EntityKind linkedEntityKind) {
+
+        log(txnKind, entityId, entityKind, linkedEntityId, linkedEntityKind, null);
+    }
+
+    private void log(TransactionKind txnKind, Long entityId, EntityKind entityKind, Long linkedEntityId,
+        EntityKind linkedEntityKind, OffsetDateTime timestamp) {
+
         Log log = new Log();
         log.setTransactionKind(txnKind.name());
-        log.setTimestamp(OffsetDateTime.now());
+        log.setTimestamp(timestamp);
         log.setUser(getUser());
         log.setEntityId(entityId);
         log.setEntityKind(entityKind.name());
@@ -137,16 +145,16 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         logRepository.save(log);
     }
 
-    private void logCreated(IBaseEntity entity) {
-        log(TransactionKind.CRE, entity);
+    private <T extends IBaseEntity & ITrackedEntity> void logCreated(T entity) {
+        log(TransactionKind.CRE, entity, entity.getCreated());
     }
 
-    private void logUpdated(IBaseEntity entity) {
-        log(TransactionKind.UPD, entity);
+    private <T extends IBaseEntity & ITrackedEntity> void logUpdated(T entity) {
+        log(TransactionKind.UPD, entity, entity.getUpdated());
     }
 
-    private void logDeleted(IBaseEntity entity) {
-        log(TransactionKind.DEL, entity);
+    private <T extends IBaseEntity & ITrackedEntity> void logDeleted(T entity) {
+        log(TransactionKind.DEL, entity, entity.getUpdated());
     }
 
     private void logLinked(Long entityId, EntityKind entityKind, Long linkedEntityId, EntityKind linkedEntityKind) {
@@ -216,11 +224,14 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @Override
     public Object createDeclaration(DataFetchingEnvironment dataFetchingEnvironment, DeclarationInput input) {
         Declaration declaration = new Declaration();
+        declaration.setCached(false);
         declaration.setCountry(input.getCountry());
         declaration.setDate(input.getDate());
         declaration.setKind(input.getKind() == null ? null : input.getKind().name());
         declaration.setNotes(input.getNotes());
-        declaration.setSignatories(input.getSignatories());
+        String signatories = input.getSignatories();
+        declaration.setSignatories(signatories);
+        declaration.setSignatoryCount(StringUtils.countLines(signatories));
         declaration.setTitle(input.getTitle());
         declaration.setUrl(input.getUrl());
         setCreatedFields(declaration);
@@ -244,7 +255,9 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         declaration.setKind(input.getKind() == null ? null : input.getKind().name());
         declaration.setNotes(input.getNotes());
         // declaration.setStatus(input.getStatus());
-        declaration.setSignatories(input.getSignatories());
+        String signatories = input.getSignatories();
+        declaration.setSignatories(signatories);
+        declaration.setSignatoryCount(StringUtils.countLines(signatories));
         declaration.setTitle(input.getTitle());
         declaration.setUrl(input.getUrl());
         setUpdatedFields(declaration);
@@ -267,10 +280,13 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         journal.setAbbreviation(input.getAbbreviation());
         journal.setIssn(input.getIssn());
         journal.setNotes(input.getNotes());
-        Optional<Publisher> publisherOpt = publisherRepository.findById(input.getPublisherId());
-        if (publisherOpt.isPresent()) {
-            Publisher publisher = publisherOpt.get();
-            journal.setPublisher(publisher);
+        Long publisherId = input.getPublisherId();
+        if (publisherId != null) {
+            Optional<Publisher> publisherOpt = publisherRepository.findById(publisherId);
+            if (publisherOpt.isPresent()) {
+                Publisher publisher = publisherOpt.get();
+                journal.setPublisher(publisher);
+            }
         }
         journal.setTitle(input.getTitle());
         journal.setUrl(input.getUrl());
@@ -293,10 +309,13 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         journal.setAbbreviation(input.getAbbreviation());
         journal.setIssn(input.getIssn());
         journal.setNotes(input.getNotes());
-        Optional<Publisher> publisherOpt = publisherRepository.findById(input.getPublisherId());
-        if (publisherOpt.isPresent()) {
-            Publisher publisher = publisherOpt.get();
-            journal.setPublisher(publisher);
+        Long publisherId = input.getPublisherId();
+        if (publisherId != null) {
+            Optional<Publisher> publisherOpt = publisherRepository.findById(publisherId);
+            if (publisherOpt.isPresent()) {
+                Publisher publisher = publisherOpt.get();
+                journal.setPublisher(publisher);
+            }
         }
         // journal.setStatus(input.getStatus());
         journal.setTitle(input.getTitle());
@@ -376,19 +395,23 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
 
     @Override
     public Object createPublication(DataFetchingEnvironment dataFetchingEnvironment, PublicationInput input) {
+        Journal journal = null;
+        if (input.getJournalId() != null)
+            journal = journalRepository.findById(input.getJournalId()).get();
         Publication publication = new Publication();
         publication.setTitle(input.getTitle());
-        // publication.setJournal(input.getJournal());
+        publication.setJournal(journal);
         publication.setAuthors(input.getAuthorNames());
         publication.setAbstract(input.getAbstract());
         publication.setDate(input.getDate());
         publication.setYear(input.getYear());
+        publication.setKind(input.getKind() == null ? null : input.getKind().name());
         publication.setDoi(input.getDoi());
-        publication.setIssnIsbn(input.getIsbn());
+        publication.setIsbn(input.getIsbn());
         publication.setNotes(input.getNotes());
-        publication.setLocation(input.getLocation());
         publication.setPeerReviewed(input.getPeerReviewed());
         publication.setUrl(input.getUrl());
+        publication.setCached(input.getCached());
         publication.setAccessed(input.getAccessed());
         setCreatedFields(publication);
 
@@ -405,19 +428,23 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         if (publicationOpt.isEmpty())
             return null;
 
+        Journal journal = null;
+        if (input.getJournalId() != null)
+            journal = journalRepository.findById(input.getJournalId()).get();
         Publication publication = publicationOpt.get();
         publication.setTitle(input.getTitle());
-        // publication.setJournal(input.getJournal());
+        publication.setJournal(journal);
         publication.setAuthors(input.getAuthorNames());
         publication.setAbstract(input.getAbstract());
         publication.setDate(input.getDate());
         publication.setYear(input.getYear());
+        publication.setKind(input.getKind() == null ? null : input.getKind().name());
         publication.setDoi(input.getDoi());
-        publication.setIssnIsbn(input.getIsbn());
+        publication.setIsbn(input.getIsbn());
         publication.setNotes(input.getNotes());
-        publication.setLocation(input.getLocation());
         publication.setPeerReviewed(input.getPeerReviewed());
         publication.setUrl(input.getUrl());
+        publication.setCached(input.getCached());
         publication.setAccessed(input.getAccessed());
         setUpdatedFields(publication);
 
@@ -479,11 +506,12 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @Override
     public Object createQuotation(DataFetchingEnvironment dataFetchingEnvironment, QuotationInput input) {
         Quotation quotation = new Quotation();
-        quotation.setDate(input.getDate());
-        // quotation.setAuthor(input.getPersonId());
-        quotation.setSource(input.getSource());
+        quotation.setQuotee(input.getQuotee());
         quotation.setText(input.getText());
+        quotation.setDate(input.getDate());
+        quotation.setSource(input.getSource());
         quotation.setUrl(input.getUrl());
+        quotation.setNotes(input.getNotes());
         setCreatedFields(quotation);
 
         quotation = quotationRepository.save(quotation);
@@ -500,11 +528,12 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
             return null;
 
         Quotation quotation = quotationOpt.get();
-        quotation.setDate(input.getDate());
-        // quotation.setAuthor(input.getPersonId());
-        quotation.setSource(input.getSource());
+        quotation.setQuotee(input.getQuotee());
         quotation.setText(input.getText());
+        quotation.setDate(input.getDate());
+        quotation.setSource(input.getSource());
         quotation.setUrl(input.getUrl());
+        quotation.setNotes(input.getNotes());
         setUpdatedFields(quotation);
 
         quotation = quotationRepository.save(quotation);
@@ -522,11 +551,13 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @Override
     public Object createTopic(DataFetchingEnvironment dataFetchingEnvironment, TopicInput input) {
         Topic topic = new Topic();
-        topic.setDescription(input.getDescription());
         topic.setLabel(input.getLabel());
-        Optional<Topic> parentOpt = topicRepository.findById(input.getParentId());
-        // if (parentOpt.isPresent())
-        topic.setParent(parentOpt.get());
+        topic.setDescription(input.getDescription());
+        Long parentId = input.getParentId();
+        if (parentId != null) {
+            Optional<Topic> parentOpt = topicRepository.findById(parentId);
+            topic.setParent(parentOpt.get());
+        }
         setCreatedFields(topic);
 
         topic = topicRepository.save(topic);
@@ -543,11 +574,15 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
             return null;
 
         Topic topic = quotationOpt.get();
-        topic.setDescription(input.getDescription());
         topic.setLabel(input.getLabel());
-        Optional<Topic> parentOpt = topicRepository.findById(input.getParentId());
-        // if (parentOpt.isPresent())
-        topic.setParent(parentOpt.get());
+        topic.setDescription(input.getDescription());
+        Long parentId = input.getParentId();
+        if (parentId == null) {
+            topic.setParent(null);
+        } else {
+            Optional<Topic> parentOpt = topicRepository.findById(parentId);
+            topic.setParent(parentOpt.get());
+        }
         setUpdatedFields(topic);
 
         topic = topicRepository.save(topic);
@@ -700,7 +735,9 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
             ITrackedEntity entity = entityOpt.get();
             entity.setStatus(status.name());
             setUpdatedFields(entity);
-            logUpdated((IBaseEntity)entity);
+            // FIXME: make setEntityStatus() work!
+            // Oh dear - can't invoke logUpdated() because ITrackedEntity does not extend IBaseEntity!
+            // logUpdated(/*(IBaseEntity)*/entity);
             // Oh dear - there's no way to invoke save(), because the compiler doesn't know what ? represents!
             // repository.save(entity);
             return true;

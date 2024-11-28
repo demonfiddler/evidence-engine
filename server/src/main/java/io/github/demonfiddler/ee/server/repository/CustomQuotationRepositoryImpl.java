@@ -31,7 +31,7 @@ public class CustomQuotationRepositoryImpl extends CustomITopicalEntityRepositor
 
     @Override
     protected String getFulltextColumns() {
-        return "`author`, `text`, `source`, `url`, `notes`";
+        return "\"author\", \"text\", \"source\", \"url\", \"notes\"";
     }
 
 }

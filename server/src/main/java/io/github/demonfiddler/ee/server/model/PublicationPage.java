@@ -19,25 +19,17 @@
 
 package io.github.demonfiddler.ee.server.model;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
-import org.dataloader.DataLoader;
-
-import graphql.schema.DataFetchingEnvironment;
+import java.util.List;
 
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Transient;
-import java.util.List;
-
-import com.graphql_java_generator.annotation.GraphQLDirective;
 
 /**
  * Returns paginated publication query results.
@@ -47,8 +39,6 @@ import com.graphql_java_generator.annotation.GraphQLDirective;
  */
 @Entity
 @GraphQLObjectType("PublicationPage")
-// @Transactional
-@SuppressWarnings("unused")
 public class PublicationPage implements IBaseEntityPage<Publication> {
 
 	/**

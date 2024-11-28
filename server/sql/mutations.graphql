@@ -57,4 +57,68 @@ mutation {
       }
     }
   }
+
+  createDeclaration
+    (
+      declaration: {
+        kind: DECL
+        date: "2024-12-09"
+        title: "Test declaration"
+        country: "GB"
+        url: "http://domain.tld"
+        signatories: "Adrian Price\nDemon Fiddler"
+        notes: "Test notes"
+      }
+    ) {
+    id
+    status
+    created
+    createdByUser {
+      id
+      login
+      firstName
+      lastName
+    }
+    updated
+    updatedByUser {
+      id
+      login
+      firstName
+      lastName
+    }
+    log {
+      hasContent
+      isEmpty
+      number
+      size
+      numberOfElements
+      totalPages
+      totalElements
+      isFirst
+      isLast
+      hasNext
+      hasPrevious
+      content {
+        timestamp
+        transactionKind
+        entityId
+        entityKind
+        user {
+          id
+          login
+          firstName
+          lastName
+        }
+      }
+    }
+    kind
+    title
+    date
+    country
+    url
+    cached
+    signatories
+    signatoryCount
+    notes
+  }
 }

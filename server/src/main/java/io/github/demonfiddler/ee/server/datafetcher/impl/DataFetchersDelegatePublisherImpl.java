@@ -20,6 +20,7 @@
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
 import org.dataloader.DataLoader;
@@ -38,7 +39,6 @@ import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.repository.PublisherRepository;
 import io.github.demonfiddler.ee.server.util.CountryUtils;
 import jakarta.annotation.Resource;
-import reactor.core.publisher.Flux;
 
 @Component
 public class DataFetchersDelegatePublisherImpl extends DataFetchersDelegateITrackedEntityBaseImpl
@@ -60,17 +60,17 @@ public class DataFetchersDelegatePublisherImpl extends DataFetchersDelegateITrac
     }
 
     @Override
-    public Flux<User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-        List<Publisher> keys) {
+    public Map<Publisher, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment,
+        GraphQLContext graphQLContext, List<Publisher> keys) {
 
-        return _createdByUser(batchLoaderEnvironment, graphQLContext, keys);
+        return _createdByUserMap(batchLoaderEnvironment, graphQLContext, keys);
     }
 
     @Override
-    public Flux<User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-        List<Publisher> keys) {
+    public Map<Publisher, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment,
+        GraphQLContext graphQLContext, List<Publisher> keys) {
 
-        return _updatedByUser(batchLoaderEnvironment, graphQLContext, keys);
+        return _updatedByUserMap(batchLoaderEnvironment, graphQLContext, keys);
     }
 
     @Override

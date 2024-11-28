@@ -19,18 +19,8 @@
 
 package io.github.demonfiddler.ee.server.model;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
-import org.dataloader.DataLoader;
-
-import graphql.schema.DataFetchingEnvironment;
-
 import com.graphql_java_generator.annotation.GraphQLInputType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
-
-import com.graphql_java_generator.annotation.GraphQLDirective;
 
 /**
  * An input for linking or unlinking two entities.
@@ -39,7 +29,6 @@ import com.graphql_java_generator.annotation.GraphQLDirective;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("LinkEntitiesInput")
-@SuppressWarnings("unused")
 public class LinkEntitiesInput {
 
 	/**
@@ -51,8 +40,8 @@ public class LinkEntitiesInput {
 	/**
 	 * The kind of the 'linked from' entity.
 	 */
-	@GraphQLScalar(fieldName = "fromEntityKind", graphQLTypeSimpleName = "EntityKind",
-		javaClass = EntityKind.class, listDepth = 0)
+	@GraphQLScalar(fieldName = "fromEntityKind", graphQLTypeSimpleName = "EntityKind", javaClass = EntityKind.class,
+		listDepth = 0)
 	EntityKind fromEntityKind;
 
 	/**
@@ -64,8 +53,8 @@ public class LinkEntitiesInput {
 	/**
 	 * The kind of the 'linked to' entity.
 	 */
-	@GraphQLScalar(fieldName = "toEntityKind", graphQLTypeSimpleName = "EntityKind",
-		javaClass = EntityKind.class, listDepth = 0)
+	@GraphQLScalar(fieldName = "toEntityKind", graphQLTypeSimpleName = "EntityKind", javaClass = EntityKind.class,
+		listDepth = 0)
 	EntityKind toEntityKind;
 
 	/**

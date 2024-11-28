@@ -19,19 +19,10 @@
 
 package io.github.demonfiddler.ee.server.model;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
-import org.dataloader.DataLoader;
-
-import graphql.schema.DataFetchingEnvironment;
+import java.util.List;
 
 import com.graphql_java_generator.annotation.GraphQLInputType;
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
-import java.util.List;
-
-import com.graphql_java_generator.annotation.GraphQLDirective;
 
 /**
  * An input to specify output sort order.
@@ -40,7 +31,6 @@ import com.graphql_java_generator.annotation.GraphQLDirective;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("SortInput")
-@SuppressWarnings("unused")
 public class SortInput {
 
 	/**

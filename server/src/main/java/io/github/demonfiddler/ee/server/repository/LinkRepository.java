@@ -56,8 +56,8 @@ public class LinkRepository {
      */
     public int addTopicRef(TopicRefInput topicRef) {
         String template = """
-                        INSERT IGNORE INTO `topic_%s_ref`
-                            (`topic_id`, `%s_id`, `locations`)
+                        INSERT IGNORE INTO \"topic_%s_ref\"
+                            (\"topic_id\", \"%s_id\", \"locations\")
                         VALUES
                             (:topicId, :entityId, :locations);
                         """;
@@ -75,10 +75,10 @@ public class LinkRepository {
      */
     public int removeTopicRef(TopicRefInput topicRef) {
         String template = """
-                        DELETE FROM `topic_%s_ref`
+                        DELETE FROM \"topic_%s_ref\"
                         WHERE
-                            `topic_id` = :topicId
-                            AND `%s_id` = :entityId;
+                            \"topic_id\" = :topicId
+                            AND \"%s_id\" = :entityId;
                         """;
         String entityName = util.getEntityName(topicRef.getEntityKind());
         String sql = String.format(template, entityName, entityName);
@@ -96,8 +96,8 @@ public class LinkRepository {
      */
     public int linkEntities(LinkEntitiesInput linkInput) {
         String template = """
-                        INSERT IGNORE INTO `%s_%s`
-                            (`%s_id`, `%s_id`)
+                        INSERT IGNORE INTO \"%s_%s\"
+                            (\"%s_id\", \"%s_id\")
                         VALUES
                             (:fromEntityId, :toEntityId);
                         """;
@@ -119,10 +119,10 @@ public class LinkRepository {
      */
     public int unlinkEntities(LinkEntitiesInput linkInput) {
         String template = """
-                        DELETE FROM `%s_%s`
+                        DELETE FROM \"%s_%s\"
                         WHERE
-                            `%s_id` = :fromEntityId
-                            AND `%s_id` = :toEntityId;
+                            \"%s_id\" = :fromEntityId
+                            AND \"%s_id\" = :toEntityId;
                         """;
         String fromEntityName = util.getEntityName(linkInput.getFromEntityKind());
         String toEntityName = util.getEntityName(linkInput.getToEntityKind());

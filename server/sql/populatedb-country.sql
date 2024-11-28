@@ -15,7 +15,7 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 -- Dumping data for table evidence_engine.country: ~250 rows (approximately)
-INSERT INTO `country` (`alpha_2`, `alpha_3`, `numeric`, `iso_name`, `common_name`, `year`, `cc_tld`, `notes`) VALUES
+INSERT INTO "country" ("alpha_2", "alpha_3", "numeric", "iso_name", "common_name", "year", "cc_tld", "notes") VALUES
 	('AD', 'AND', '020', 'Andorra', 'Andorra', '1974', '.ad', NULL),
 	('AE', 'ARE', '784', 'United Arab Emirates', 'United Arab Emirates', '1974', '.ae', 'Formerly Trucial States'),
 	('AF', 'AFG', '004', 'Afghanistan', 'Afghanistan', '1974', '.af', NULL),

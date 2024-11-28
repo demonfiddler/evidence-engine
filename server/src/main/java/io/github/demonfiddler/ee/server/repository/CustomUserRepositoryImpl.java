@@ -34,7 +34,7 @@ public class CustomUserRepositoryImpl extends CustomITrackedEntityRepositoryImpl
 
     @Override
     protected String getFulltextColumns() {
-        return "`login`, `first_name`, `last_name`, `email`, `notes`";
+        return "\"login\", \"first_name\", \"last_name\", \"email\", \"notes\"";
     }
 
     @Override

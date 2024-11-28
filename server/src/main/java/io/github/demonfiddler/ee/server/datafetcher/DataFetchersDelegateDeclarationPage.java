@@ -20,22 +20,15 @@
 package io.github.demonfiddler.ee.server.datafetcher;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
+import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
-import org.dataloader.DataLoader;
-import org.reactivestreams.Publisher;
 
-import com.graphql_java_generator.annotation.GraphQLDirective;
 import com.graphql_java_generator.util.GraphqlUtils;
 
 import graphql.GraphQLContext;
-import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.model.Declaration;
 import io.github.demonfiddler.ee.server.model.DeclarationPage;
-import reactor.core.publisher.Flux;
 
 /**
  * This interface contains the fata fetchers that are delegated in the bean that the implementation has to provide, when
@@ -46,7 +39,7 @@ import reactor.core.publisher.Flux;
  * @see <a href=
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
-@SuppressWarnings("unused")
+
 public interface DataFetchersDelegateDeclarationPage {
 
 	/**
@@ -60,8 +53,8 @@ public interface DataFetchersDelegateDeclarationPage {
 	 * <code>batchMappingDataFetcherReturnType</code> plugin parameter. <br/>
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
-	Flux<Declaration> content(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-		List<DeclarationPage> keys);
+	Map<DeclarationPage, List<Declaration>> content(BatchLoaderEnvironment batchLoaderEnvironment,
+		GraphQLContext graphQLContext, List<DeclarationPage> keys);
 
 	/**
 	 * This method loads a list of ${dataFetcher.field.name}, based on the list of id to be fetched. This method is used

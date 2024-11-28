@@ -19,9 +19,11 @@
 
 package io.github.demonfiddler.ee.server.repository;
 
+import static io.github.demonfiddler.ee.server.util.EntityUtils.NL;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,14 +31,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
-// import org.springframework.transaction.annotation.Transactional;
 
+import io.github.demonfiddler.ee.common.util.StringUtils;
 import io.github.demonfiddler.ee.server.model.TopicRef;
 import io.github.demonfiddler.ee.server.model.TopicRefQueryFilter;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
-import io.github.demonfiddler.ee.server.util.StringUtils;
-
-import static io.github.demonfiddler.ee.server.util.EntityUtils.NL;
 import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -56,8 +55,6 @@ public class CustomTopicRefRepositoryImpl implements CustomTopicRefRepository {
     EntityManager em;
     @Resource
     EntityUtils entityUtils;
-    @Resource
-    StringUtils stringUtils;
 
     /**
      * Returns metadata about a query and paging/sorting specification.
@@ -77,7 +74,7 @@ public class CustomTopicRefRepositoryImpl implements CustomTopicRefRepository {
 
         StringBuilder countQueryName = new StringBuilder();
         StringBuilder selectQueryName = new StringBuilder();
-        String entityNameTC = stringUtils.firstToUpper(entityName);
+        String entityNameTC = StringUtils.firstToUpper(entityName);
         countQueryName.append("topicRef.count").append(entityNameTC).append("By");
         selectQueryName.append("topicRef.find").append(entityNameTC).append("By");
         if (hasTopicId) {
@@ -121,8 +118,8 @@ public class CustomTopicRefRepositoryImpl implements CustomTopicRefRepository {
      */
     private QueryPair defineNamedQueries(TopicRefQueryFilter filter, Pageable pageable, QueryMetaData m) {
         /*
-         * SELECT `id`, `topic_id`, '${entityKind}' AS `entity_kind`,
-         * `${entityName}_id`, `locations`
+         * SELECT "id", "topic_id", '${entityKind}' AS "entity_kind",
+         * "${entityName}_id", "locations"
          * FROM topic_${entityName}_ref
          * WHERE
          * topic_id = :topicId
@@ -137,15 +134,15 @@ public class CustomTopicRefRepositoryImpl implements CustomTopicRefRepository {
                         %s%s;
                         """;
 
-        String selectFields = "`id`, `topic_id`, '" + filter.getEntityKind() + "' AS `entity_kind`, `" + m.entityName
-            + "_id` AS `entity_id`, `locations`";
+        String selectFields = "\"id\", \"topic_id\", '" + filter.getEntityKind() + "' AS \"entity_kind\", \""
+            + m.entityName + "_id\" AS \"entity_id\", \"locations\"";
         boolean needsAnd = false;
         StringBuilder whereClause = new StringBuilder();
         StringBuilder orderByClause = new StringBuilder();
         if (m.hasTopicId || m.hasEntityId || m.hasText) {
             whereClause.append("WHERE");
             if (m.hasTopicId) {
-                whereClause.append(NL).append("    `topic_id` = :topicId");
+                whereClause.append(NL).append("    \"topic_id\" = :topicId");
                 needsAnd = true;
             }
             // if (m.hasEntityKind) {
@@ -153,21 +150,21 @@ public class CustomTopicRefRepositoryImpl implements CustomTopicRefRepository {
             // .append(" ");
             // if (needsAnd)
             // whereClause.append("AND ");
-            // whereClause.append("`entity_kind` = :entityKind");
+            // whereClause.append("\"entity_kind\" = :entityKind");
             // needsAnd = true;
             // }
             if (m.hasEntityId) {
                 whereClause.append(NL).append("    ");
                 if (needsAnd)
                     whereClause.append("AND ");
-                whereClause.append('`').append(m.entityName).append("_id` = :entityId");
+                whereClause.append('\"').append(m.entityName).append("_id\" = :entityId");
                 needsAnd = true;
             }
             if (m.hasText) {
                 whereClause.append(NL).append("    ");
                 if (needsAnd)
                     whereClause.append("AND ");
-                whereClause.append("MATCH(`locations`) AGAINST (:text");
+                whereClause.append("MATCH(\"locations\") AGAINST (:text");
                 if (m.isAdvanced)
                     whereClause.append(" IN BOOLEAN MODE");
                 whereClause.append(')');

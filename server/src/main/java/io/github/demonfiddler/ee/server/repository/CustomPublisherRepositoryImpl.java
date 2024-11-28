@@ -31,7 +31,7 @@ public class CustomPublisherRepositoryImpl extends CustomITrackedEntityRepositor
 
     @Override
     protected String getFulltextColumns() {
-        return "`name`, `location`, `url`";
+        return "\"name\", \"location\", \"url\"";
     }
 
 }

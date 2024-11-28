@@ -1,6 +1,6 @@
 -- Data from 'List of Publishers' at http://journalseek.net/publishers.htm on 24/09/2024.
-INSERT INTO `publisher`
-	(`name`,`url`,`journal_count`)
+INSERT INTO "publisher"
+	("name","url","journal_count")
 VALUES
 	('101 Communications','http://www.101com.com/',1),
 	('123Doc Education','https://www.123doc.com/',2),

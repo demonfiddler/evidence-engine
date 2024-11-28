@@ -31,7 +31,7 @@ public class CustomClaimRepositoryImpl extends CustomITopicalEntityRepositoryImp
 
     @Override
     protected String getFulltextColumns() {
-        return "`text`, `notes`";
+        return "\"text\", \"notes\"";
     }
 
 }

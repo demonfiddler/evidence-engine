@@ -20,15 +20,13 @@
 package io.github.demonfiddler.ee.server.datafetcher;
 
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import org.dataloader.BatchLoaderEnvironment;
 import org.dataloader.DataLoader;
-import org.reactivestreams.Publisher;
 
-import com.graphql_java_generator.annotation.GraphQLDirective;
 import com.graphql_java_generator.util.GraphqlUtils;
 
 import graphql.GraphQLContext;
@@ -38,7 +36,6 @@ import io.github.demonfiddler.ee.server.model.LogPage;
 import io.github.demonfiddler.ee.server.model.LogQueryFilter;
 import io.github.demonfiddler.ee.server.model.PageableInput;
 import io.github.demonfiddler.ee.server.model.User;
-import reactor.core.publisher.Flux;
 
 /**
  * This interface contains the fata fetchers that are delegated in the bean that the implementation has to provide, when
@@ -49,7 +46,7 @@ import reactor.core.publisher.Flux;
  * @see <a href=
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
-@SuppressWarnings("unused")
+
 public interface DataFetchersDelegateUser {
 
 	/**
@@ -106,7 +103,7 @@ public interface DataFetchersDelegateUser {
 	 * <code>batchMappingDataFetcherReturnType</code> plugin parameter. <br/>
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
-	Flux<User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+	Map<User, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
 		List<User> keys);
 
 	/**
@@ -120,7 +117,7 @@ public interface DataFetchersDelegateUser {
 	 * <code>batchMappingDataFetcherReturnType</code> plugin parameter. <br/>
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
-	Flux<User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+	Map<User, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
 		List<User> keys);
 
 	/**

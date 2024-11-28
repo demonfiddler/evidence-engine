@@ -20,6 +20,7 @@
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
 import org.springframework.stereotype.Component;
@@ -36,7 +37,6 @@ import io.github.demonfiddler.ee.server.repository.LogRepository;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
 import io.github.demonfiddler.ee.server.util.FormatUtils;
 import jakarta.annotation.Resource;
-import reactor.core.publisher.Flux;
 
 @Component
 public class DataFetchersDelegateLogImpl implements DataFetchersDelegateLog {
@@ -53,10 +53,10 @@ public class DataFetchersDelegateLogImpl implements DataFetchersDelegateLog {
     }
 
     @Override
-    public Flux<User> user(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+    public Map<Log, User> user(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
         List<Log> keys) {
 
-        return entityUtils.getValues(keys, Log::getUser);
+        return entityUtils.getValuesMap(keys, Log::getUser);
     }
 
     @Override

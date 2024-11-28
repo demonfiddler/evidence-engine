@@ -20,18 +20,10 @@
 package io.github.demonfiddler.ee.server.model;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
-import org.dataloader.DataLoader;
-
-import graphql.schema.DataFetchingEnvironment;
+import java.time.LocalDate;
 
 import com.graphql_java_generator.annotation.GraphQLInputType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
-
-import com.graphql_java_generator.annotation.GraphQLDirective;
 
 /**
  * An input for creating or updating a quotation.
@@ -40,7 +32,6 @@ import com.graphql_java_generator.annotation.GraphQLDirective;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("QuotationInput")
-@SuppressWarnings("unused")
 public class QuotationInput {
 
 	/**
@@ -56,17 +47,16 @@ public class QuotationInput {
 	String text;
 
 	/**
-	 * The identifier of the quotee.
+	 * The person(s) who made the quotation.
 	 */
-	@GraphQLScalar(fieldName = "personId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
-	Long personId;
+	@GraphQLScalar(fieldName = "quotee", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String quotee;
 
 	/**
 	 * The quotation date.
 	 */
-	@GraphQLScalar(fieldName = "date", graphQLTypeSimpleName = "Date", javaClass = java.time.LocalDate.class,
-		listDepth = 0)
-	java.time.LocalDate date;
+	@GraphQLScalar(fieldName = "date", graphQLTypeSimpleName = "Date", javaClass = LocalDate.class, listDepth = 0)
+	LocalDate date;
 
 	/**
 	 * The quotation source.
@@ -79,6 +69,12 @@ public class QuotationInput {
 	 */
 	@GraphQLScalar(fieldName = "url", graphQLTypeSimpleName = "URL", javaClass = URL.class, listDepth = 0)
 	URL url;
+
+	/**
+	 * Notes on the quotation.
+	 */
+	@GraphQLScalar(fieldName = "notes", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String notes;
 
 	/**
 	 * The quotation identifier, required if updating an existing record.
@@ -109,30 +105,30 @@ public class QuotationInput {
 	}
 
 	/**
-	 * The identifier of the quotee.
+	 * The person(s) who made the quotation.
 	 */
-	public void setPersonId(Long personId) {
-		this.personId = personId;
+	public void setQuotee(String quotee) {
+		this.quotee = quotee;
 	}
 
 	/**
-	 * The identifier of the quotee.
+	 * The person(s) who made the quotation.
 	 */
-	public Long getPersonId() {
-		return this.personId;
+	public String getQuotee() {
+		return this.quotee;
 	}
 
 	/**
 	 * The quotation date.
 	 */
-	public void setDate(java.time.LocalDate date) {
+	public void setDate(LocalDate date) {
 		this.date = date;
 	}
 
 	/**
 	 * The quotation date.
 	 */
-	public java.time.LocalDate getDate() {
+	public LocalDate getDate() {
 		return this.date;
 	}
 
@@ -164,19 +160,35 @@ public class QuotationInput {
 		return this.url;
 	}
 
+	/**
+	 * Notes on the quotation.
+	 */
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	/**
+	 * Notes on the quotation.
+	 */
+	public String getNotes() {
+		return this.notes;
+	}
+
 	public String toString() {
 		return "QuotationInput {" //$NON-NLS-1$
 			+ "id: " + this.id //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "text: " + this.text //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
-			+ "personId: " + this.personId //$NON-NLS-1$
+			+ "quotee: " + this.quotee //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "date: " + this.date //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "source: " + this.source //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "url: " + this.url //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
+			+ "notes: " + this.notes //$NON-NLS-1$
 			+ "}"; //$NON-NLS-1$
 	}
 
@@ -192,10 +204,11 @@ public class QuotationInput {
 
 		private Long id;
 		private String text;
-		private Long personId;
-		private java.time.LocalDate date;
+		private String quotee;
+		private LocalDate date;
 		private String source;
 		private URL url;
+		private String notes;
 
 		/**
 		 * The quotation identifier, required if updating an existing record.
@@ -214,17 +227,17 @@ public class QuotationInput {
 		}
 
 		/**
-		 * The identifier of the quotee.
+		 * The person(s) who made the quotation.
 		 */
-		public Builder withPersonId(Long personIdParam) {
-			this.personId = personIdParam;
+		public Builder withQuotee(String quoteeParam) {
+			this.quotee = quoteeParam;
 			return this;
 		}
 
 		/**
 		 * The quotation date.
 		 */
-		public Builder withDate(java.time.LocalDate dateParam) {
+		public Builder withDate(LocalDate dateParam) {
 			this.date = dateParam;
 			return this;
 		}
@@ -245,14 +258,23 @@ public class QuotationInput {
 			return this;
 		}
 
+		/**
+		 * Notes on the quotation.
+		 */
+		public Builder withNotes(String notesParam) {
+			this.notes = notesParam;
+			return this;
+		}
+
 		public QuotationInput build() {
 			QuotationInput _object = new QuotationInput();
 			_object.setId(this.id);
 			_object.setText(this.text);
-			_object.setPersonId(this.personId);
+			_object.setQuotee(this.quotee);
 			_object.setDate(this.date);
 			_object.setSource(this.source);
 			_object.setUrl(this.url);
+			_object.setNotes(this.notes);
 			return _object;
 		}
 

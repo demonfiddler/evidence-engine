@@ -20,6 +20,7 @@
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
 import org.dataloader.DataLoader;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Component;
 import graphql.GraphQLContext;
 import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegatePerson;
+import io.github.demonfiddler.ee.server.model.CountryFormatKind;
 import io.github.demonfiddler.ee.server.model.FormatKind;
 import io.github.demonfiddler.ee.server.model.LogPage;
 import io.github.demonfiddler.ee.server.model.LogQueryFilter;
@@ -37,13 +39,15 @@ import io.github.demonfiddler.ee.server.model.TopicRefPage;
 import io.github.demonfiddler.ee.server.model.TopicRefQueryFilter;
 import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.repository.PersonRepository;
+import io.github.demonfiddler.ee.server.util.CountryUtils;
 import jakarta.annotation.Resource;
-import reactor.core.publisher.Flux;
 
 @Component
 public class DataFetchersDelegatePersonImpl extends DataFetchersDelegateITopicalEntityBaseImpl<Person>
     implements DataFetchersDelegatePerson {
 
+    @Resource
+    private CountryUtils countryUtils;
     @Resource
     private PersonRepository personRepository;
 
@@ -58,17 +62,17 @@ public class DataFetchersDelegatePersonImpl extends DataFetchersDelegateITopical
     }
 
     @Override
-    public Flux<User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+    public Map<Person, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
         List<Person> keys) {
 
-        return _createdByUser(batchLoaderEnvironment, graphQLContext, keys);
+        return _createdByUserMap(batchLoaderEnvironment, graphQLContext, keys);
     }
 
     @Override
-    public Flux<User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+    public Map<Person, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
         List<Person> keys) {
 
-        return _updatedByUser(batchLoaderEnvironment, graphQLContext, keys);
+        return _updatedByUserMap(batchLoaderEnvironment, graphQLContext, keys);
     }
 
     @Override
@@ -83,6 +87,12 @@ public class DataFetchersDelegatePersonImpl extends DataFetchersDelegateITopical
         Person origin, TopicRefQueryFilter filter, PageableInput pageSort) {
 
         return _topicRefs(dataFetchingEnvironment, origin, filter, pageSort);
+    }
+
+    @Override
+    public Object country(DataFetchingEnvironment dataFetchingEnvironment, Person origin, CountryFormatKind format) {
+
+        return countryUtils.formatCountry(origin.getCountry(), format);
     }
 
 }

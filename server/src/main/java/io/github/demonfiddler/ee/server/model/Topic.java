@@ -20,17 +20,13 @@
 package io.github.demonfiddler.ee.server.model;
 
 import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
-import org.dataloader.DataLoader;
-
-import graphql.schema.DataFetchingEnvironment;
+import java.util.Collections;
+import java.util.List;
 
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -40,9 +36,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
-import java.util.List;
-
-import com.graphql_java_generator.annotation.GraphQLDirective;
 
 /**
  * A node in the topic hierarchy tree.
@@ -52,8 +45,6 @@ import com.graphql_java_generator.annotation.GraphQLDirective;
  */
 @Entity
 @GraphQLObjectType("Topic")
-// @Transactional
-@SuppressWarnings("unused")
 public class Topic implements IBaseEntity, ITrackedEntity {
 
 	/**
@@ -73,15 +64,15 @@ public class Topic implements IBaseEntity, ITrackedEntity {
 	/**
 	 * When the record was created.
 	 */
-	@GraphQLScalar(fieldName = "created", graphQLTypeSimpleName = "DateTime",
-		javaClass = OffsetDateTime.class, listDepth = 0)
+	@GraphQLScalar(fieldName = "created", graphQLTypeSimpleName = "DateTime", javaClass = OffsetDateTime.class,
+		listDepth = 0)
 	OffsetDateTime created;
 
 	/**
 	 * The user who created the record.
 	 */
-	@GraphQLNonScalar(fieldName = "createdByUser", graphQLTypeSimpleName = "User",
-		javaClass = User.class, listDepth = 0)
+	@GraphQLNonScalar(fieldName = "createdByUser", graphQLTypeSimpleName = "User", javaClass = User.class,
+		listDepth = 0)
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "created_by_user_id", nullable = false)
 	User createdByUser;
@@ -89,15 +80,15 @@ public class Topic implements IBaseEntity, ITrackedEntity {
 	/**
 	 * When the record was last updated.
 	 */
-	@GraphQLScalar(fieldName = "updated", graphQLTypeSimpleName = "DateTime",
-		javaClass = OffsetDateTime.class, listDepth = 0)
+	@GraphQLScalar(fieldName = "updated", graphQLTypeSimpleName = "DateTime", javaClass = OffsetDateTime.class,
+		listDepth = 0)
 	OffsetDateTime updated;
 
 	/**
 	 * The user who last updated the record.
 	 */
-	@GraphQLNonScalar(fieldName = "updatedByUser", graphQLTypeSimpleName = "User",
-		javaClass = User.class, listDepth = 0)
+	@GraphQLNonScalar(fieldName = "updatedByUser", graphQLTypeSimpleName = "User", javaClass = User.class,
+		listDepth = 0)
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinColumn(name = "updated_by_user_id", nullable = true)
 	User updatedByUser;
@@ -106,8 +97,7 @@ public class Topic implements IBaseEntity, ITrackedEntity {
 	 * Log of transactions involving the record.
 	 */
 	@Transient
-	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage",
-		javaClass = LogPage.class, listDepth = 0)
+	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage", javaClass = LogPage.class, listDepth = 0)
 	LogPage log;
 
 	/**
@@ -125,8 +115,7 @@ public class Topic implements IBaseEntity, ITrackedEntity {
 	/**
 	 * The parent topic.
 	 */
-	@GraphQLNonScalar(fieldName = "parent", graphQLTypeSimpleName = "Topic",
-		javaClass = Topic.class, listDepth = 0)
+	@GraphQLNonScalar(fieldName = "parent", graphQLTypeSimpleName = "Topic", javaClass = Topic.class, listDepth = 0)
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinColumn(name = "parent_id", nullable = true)
 	Topic parent;
@@ -134,10 +123,9 @@ public class Topic implements IBaseEntity, ITrackedEntity {
 	/**
 	 * The sub-topics.
 	 */
-	@GraphQLNonScalar(fieldName = "children", graphQLTypeSimpleName = "Topic",
-		javaClass = Topic.class, listDepth = 1)
-	@OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
-	List<Topic> children;
+	@GraphQLNonScalar(fieldName = "children", graphQLTypeSimpleName = "Topic", javaClass = Topic.class, listDepth = 1)
+	@OneToMany(mappedBy = "parent", /*cascade=CascadeType.ALL,*/ fetch = FetchType.LAZY)
+	List<Topic> children = Collections.emptyList();
 
 	/**
 	 * Referenced entities.

@@ -26,10 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import org.dataloader.BatchLoaderEnvironment;
-import org.dataloader.DataLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
@@ -47,7 +45,6 @@ import io.github.demonfiddler.ee.server.model.FormatKind;
 import io.github.demonfiddler.ee.server.model.ITopicalEntity;
 import io.github.demonfiddler.ee.server.model.Topic;
 import io.github.demonfiddler.ee.server.model.TopicRef;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -57,7 +54,7 @@ import reactor.core.publisher.Mono;
  */
 @Controller
 @SchemaMapping(typeName = "TopicRef")
-@SuppressWarnings("unused")
+
 public class TopicRefController {
 
 	@Autowired
@@ -97,7 +94,7 @@ public class TopicRefController {
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
 	@BatchMapping(field = "topic")
-	public Flux<Topic> topic(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+	public Map<TopicRef, Topic> topic(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
 		List<TopicRef> keys) {
 
 		return this.dataFetchersDelegateTopicRef.topic(batchLoaderEnvironment, graphQLContext, keys);
@@ -143,8 +140,8 @@ public class TopicRefController {
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
 	@BatchMapping(field = "entity")
-	public Flux<ITopicalEntity> entity(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-		List<TopicRef> keys) {
+	public Map<TopicRef, ITopicalEntity> entity(BatchLoaderEnvironment batchLoaderEnvironment,
+		GraphQLContext graphQLContext, List<TopicRef> keys) {
 
 		return this.dataFetchersDelegateTopicRef.entity(batchLoaderEnvironment, graphQLContext, keys);
 	}
@@ -161,8 +158,8 @@ public class TopicRefController {
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
 	@BatchMapping(field = "locations")
-	public Flux<URI> locations(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-		List<TopicRef> keys) {
+	public Map<TopicRef, List<URI>> locations(BatchLoaderEnvironment batchLoaderEnvironment,
+		GraphQLContext graphQLContext, List<TopicRef> keys) {
 
 		return this.dataFetchersDelegateTopicRef.locations(batchLoaderEnvironment, graphQLContext, keys);
 	}

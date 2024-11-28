@@ -19,19 +19,11 @@
 
 package io.github.demonfiddler.ee.server.datafetcher;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
-import org.dataloader.BatchLoaderEnvironment;
 import org.dataloader.DataLoader;
-import org.reactivestreams.Publisher;
 
-import com.graphql_java_generator.annotation.GraphQLDirective;
-import com.graphql_java_generator.util.GraphqlUtils;
-
-import graphql.GraphQLContext;
 import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.model.ITopicalEntity;
 import io.github.demonfiddler.ee.server.model.PageableInput;
@@ -47,7 +39,7 @@ import io.github.demonfiddler.ee.server.model.TopicRefQueryFilter;
  * @see <a href=
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
-@SuppressWarnings("unused")
+
 public interface DataFetchersDelegateITopicalEntity {
 
 	/**

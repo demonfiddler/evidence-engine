@@ -20,6 +20,7 @@
 package io.github.demonfiddler.ee.server.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,6 +39,7 @@ import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
+import io.github.demonfiddler.ee.common.util.StringUtils;
 import io.github.demonfiddler.ee.server.model.Claim;
 import io.github.demonfiddler.ee.server.model.Country;
 import io.github.demonfiddler.ee.server.model.Declaration;
@@ -56,9 +58,7 @@ import io.github.demonfiddler.ee.server.model.Topic;
 import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.repository.CustomRepository;
 import io.github.demonfiddler.ee.server.repository.QueryPair;
-import jakarta.annotation.Resource;
 import jakarta.persistence.Query;
-import reactor.core.publisher.Flux;
 
 /**
  * A Spring bean that contains various utilities.
@@ -96,9 +96,6 @@ public class EntityUtils {
 		ENTITY_NAMES.put(User.class, "user");
 	}
 
-	@Resource
-	private StringUtils stringUtils;
-
 	/**
 	 * Converts an {@link Iterable} of a given source class into a list of a given target class.
 	 * @param <T> The target class
@@ -120,41 +117,39 @@ public class EntityUtils {
 	}
 
 	/**
-	 * Returns a {@code Flux} containing the values of a specified field.
+	 * Returns a {@code Map} containing the values of a specified field.
 	 * @param <K> The type of the key
 	 * @param <V> The type of the value
 	 * @param keys A list of keys
 	 * @param accessor The accessor method to retrieve the values.
 	 * @return A list of values extracted from {@code keys} using {@code accessor}.
 	 */
-	public <K, V> Flux<V> getValues(List<K> keys, Function<K, V> accessor) {
-		List<V> values = new ArrayList<>(keys.size());
+	public <K, V> Map<K, V> getValuesMap(List<K> keys, Function<K, V> accessor) {
+		Map<K, V> values = new HashMap<>();
 		for (K key : keys) {
 			V value = accessor.apply(key);
-			values.add(value);
+			if (value != null)
+				values.put(key, value);
 		}
-		return Flux.fromIterable(values);
+		return values;
 	}
 
 	/**
-	 * Returns a {@code Flux} containing the {@code List} values of a specified field.
+	 * Returns a {@code Map} containing the {@code List} values of a specified field.
 	 * @param <K> The type of the key
 	 * @param <V> The type of the value
 	 * @param keys A list of keys
 	 * @param accessor The accessor method to retrieve the values.
-	 * @return A list of values extracted from {@code keys} using {@code accessor}.
+	 * @return A map of list of values extracted from {@code keys} using {@code accessor}.
 	 */
-	@SuppressWarnings("unchecked")
-	public <K, V> Flux<V> getListValues(List<K> keys, Function<K, List<V>> accessor) {
-		List<List<V>> values = new ArrayList<>(keys.size());
+	public <K, V> Map<K, List<V>> getListValuesMap(List<K> keys, Function<K, List<V>> accessor) {
+		Map<K, List<V>> values = new HashMap<>(keys.size());
 		for (K key : keys) {
-			List<V> list = accessor.apply(key);
-			values.add(list);
+			List<V> value = accessor.apply(key);
+			if (value != null)
+				values.put(key, value);
 		}
-		// This ugliness is required because the generated DataFetcher interfaces have
-		// incorrect signatures for multi-valued properties.
-		// FIXME: correct DataFetcher signatures.
-		return (Flux<V>)Flux.fromIterable(values);
+		return values;
 	}
 
 	/**
@@ -341,12 +336,12 @@ public class EntityUtils {
 				}
 				switch (order.getNullHandling()) {
 					case NULLS_FIRST:
-						sql.append("IF(").append(qualifier).append('`').append(order.getProperty())
-							.append("` is NULL, 0, 1), ");
+						sql.append("IF(").append(qualifier).append('\"').append(order.getProperty())
+							.append("\" is NULL, 0, 1), ");
 						break;
 					case NULLS_LAST:
-						sql.append("IF(").append(qualifier).append('`').append(order.getProperty())
-							.append("` is NULL, 1, 0), ");
+						sql.append("IF(").append(qualifier).append('\"').append(order.getProperty())
+							.append("\" is NULL, 1, 0), ");
 						break;
 					default:
 						break;
@@ -354,7 +349,7 @@ public class EntityUtils {
 				if (order.isIgnoreCase())
 					sql.append("LOWER(");
 				// TODO: map domain property name to database column name
-				sql.append(qualifier).append('`').append(order.getProperty()).append('`');
+				sql.append(qualifier).append('\"').append(order.getProperty()).append('\"');
 				if (order.isIgnoreCase())
 					sql.append(')');
 				sql.append(' ').append(order.getDirection());
@@ -370,10 +365,10 @@ public class EntityUtils {
 	 */
 	public void appendOrderByToQueryName(StringBuilder queryName, Pageable pageable) {
 		queryName.append("OrderBy");
-		pageable.getSort().forEach(o -> queryName.append(stringUtils.firstToUpper(o.getProperty()))
+		pageable.getSort().forEach(o -> queryName.append(StringUtils.firstToUpper(o.getProperty()))
 			.append(
-				o.getNullHandling() == NullHandling.NATIVE ? "" : stringUtils.firstToUpper(o.getNullHandling().name()))
-			.append(o.isIgnoreCase() ? "IgnoreCase" : "").append(stringUtils.firstToUpper(o.getDirection().name())));
+				o.getNullHandling() == NullHandling.NATIVE ? "" : StringUtils.firstToUpper(o.getNullHandling().name()))
+			.append(o.isIgnoreCase() ? "IgnoreCase" : "").append(StringUtils.firstToUpper(o.getDirection().name())));
 	}
 
 	/**

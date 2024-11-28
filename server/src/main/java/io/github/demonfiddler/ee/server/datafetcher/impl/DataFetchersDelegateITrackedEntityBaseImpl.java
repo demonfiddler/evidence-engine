@@ -20,6 +20,8 @@
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
 import java.util.List;
+import java.util.Map;
+
 import org.dataloader.BatchLoaderEnvironment;
 import org.springframework.data.domain.Pageable;
 
@@ -35,12 +37,11 @@ import io.github.demonfiddler.ee.server.model.PageableInput;
 import io.github.demonfiddler.ee.server.model.StatusKind;
 import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.repository.LogRepository;
-import io.github.demonfiddler.ee.server.util.FormatUtils;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.FormatUtils;
 import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import reactor.core.publisher.Flux;
 
 /**
  * Base class containing implementations of common methods. It is necessary because the generated DataFetchersDelegate*
@@ -63,16 +64,28 @@ abstract class DataFetchersDelegateITrackedEntityBaseImpl {
         return formatUtils.formatStatusKind(status, format);
     }
 
-    protected Flux<User> _createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-        List<? extends ITrackedEntity> keys) {
+    // protected Flux<User> _createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+    // List<? extends ITrackedEntity> keys) {
 
-        return entityUtils.getValues(keys, ITrackedEntity::getCreatedByUser);
+    // return entityUtils.getValues(keys, ITrackedEntity::getUpdatedByUser);
+    // }
+
+    protected <T extends ITrackedEntity> Map<T, User> _createdByUserMap(BatchLoaderEnvironment batchLoaderEnvironment,
+        GraphQLContext graphQLContext, List<T> keys) {
+
+        return entityUtils.getValuesMap(keys, ITrackedEntity::getCreatedByUser);
     }
 
-    protected Flux<User> _updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-        List<? extends ITrackedEntity> keys) {
+    // protected Flux<User> _updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+    // List<? extends ITrackedEntity> keys) {
 
-        return entityUtils.getValues(keys, ITrackedEntity::getUpdatedByUser);
+    // return entityUtils.getValues(keys, ITrackedEntity::getUpdatedByUser);
+    // }
+
+    protected <T extends ITrackedEntity> Map<T, User> _updatedByUserMap(BatchLoaderEnvironment batchLoaderEnvironment,
+        GraphQLContext graphQLContext, List<T> keys) {
+
+        return entityUtils.getValuesMap(keys, ITrackedEntity::getUpdatedByUser);
     }
 
     protected LogPage _log(DataFetchingEnvironment dataFetchingEnvironment, IBaseEntity origin, LogQueryFilter filter,

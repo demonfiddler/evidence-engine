@@ -19,6 +19,12 @@
 
 package io.github.demonfiddler.ee.server.repository;
 
+import static io.github.demonfiddler.ee.server.util.EntityUtils.NL;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -31,13 +37,6 @@ import io.github.demonfiddler.ee.server.model.IBaseEntity;
 import io.github.demonfiddler.ee.server.model.ITrackedEntity;
 import io.github.demonfiddler.ee.server.model.TrackedEntityQueryFilter;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
-
-import static io.github.demonfiddler.ee.server.util.EntityUtils.NL;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -121,7 +120,7 @@ public abstract class CustomITrackedEntityRepositoryImpl<T extends IBaseEntity &
      */
     private QueryPair defineNamedQueries(TrackedEntityQueryFilter filter, Pageable pageable, QueryMetaData m) {
         StringBuilder selectBuf = new StringBuilder();
-        selectBuf.append(NL).append("FROM `").append(m.entityName).append("`");
+        selectBuf.append(NL).append("FROM \"").append(m.entityName).append("\"");
         boolean needsAnd = false;
         if (m.hasText || m.hasStatus) {
             selectBuf.append(NL).append("WHERE").append(NL).append("    ");
@@ -136,7 +135,7 @@ public abstract class CustomITrackedEntityRepositoryImpl<T extends IBaseEntity &
                 if (needsAnd) {
                     selectBuf.append(NL).append("    AND ");
                 }
-                selectBuf.append("`status` IN (:status)");
+                selectBuf.append("\"status\" IN (:status)");
             }
         }
         StringBuffer countBuf = new StringBuffer(selectBuf);

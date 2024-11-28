@@ -20,6 +20,7 @@
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
 import org.dataloader.DataLoader;
@@ -37,7 +38,6 @@ import io.github.demonfiddler.ee.server.model.Publisher;
 import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.repository.JournalRepository;
 import jakarta.annotation.Resource;
-import reactor.core.publisher.Flux;
 
 @Component
 public class DataFetchersDelegateJournalImpl extends DataFetchersDelegateITrackedEntityBaseImpl
@@ -57,17 +57,17 @@ public class DataFetchersDelegateJournalImpl extends DataFetchersDelegateITracke
     }
 
     @Override
-    public Flux<User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-        List<Journal> keys) {
+    public Map<Journal, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment,
+        GraphQLContext graphQLContext, List<Journal> keys) {
 
-        return _createdByUser(batchLoaderEnvironment, graphQLContext, keys);
+        return _createdByUserMap(batchLoaderEnvironment, graphQLContext, keys);
     }
 
     @Override
-    public Flux<User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-        List<Journal> keys) {
+    public Map<Journal, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment,
+        GraphQLContext graphQLContext, List<Journal> keys) {
 
-        return _updatedByUser(batchLoaderEnvironment, graphQLContext, keys);
+        return _updatedByUserMap(batchLoaderEnvironment, graphQLContext, keys);
     }
 
     @Override
@@ -78,10 +78,10 @@ public class DataFetchersDelegateJournalImpl extends DataFetchersDelegateITracke
     }
 
     @Override
-    public Flux<Publisher> publisher(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-        List<Journal> keys) {
+    public Map<Journal, Publisher> publisher(BatchLoaderEnvironment batchLoaderEnvironment,
+        GraphQLContext graphQLContext, List<Journal> keys) {
 
-        return entityUtils.getValues(keys, Journal::getPublisher);
+        return entityUtils.getValuesMap(keys, Journal::getPublisher);
     }
 
 }

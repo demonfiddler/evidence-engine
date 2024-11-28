@@ -21,19 +21,10 @@ package io.github.demonfiddler.ee.server.model;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
-import org.dataloader.DataLoader;
-
-import graphql.schema.DataFetchingEnvironment;
+import java.util.List;
 
 import com.graphql_java_generator.annotation.GraphQLInputType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
-import java.util.List;
-
-import com.graphql_java_generator.annotation.GraphQLDirective;
 
 /**
  * An input for creating or updating a publication.
@@ -42,7 +33,6 @@ import com.graphql_java_generator.annotation.GraphQLDirective;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("PublicationInput")
-@SuppressWarnings("unused")
 public class PublicationInput {
 
 	/**
@@ -72,14 +62,8 @@ public class PublicationInput {
 	/**
 	 * The name of the journal in which the publication appeared.
 	 */
-	@GraphQLScalar(fieldName = "journal", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	String journal;
-
-	/**
-	 * The location, typically a volume/issue and/or page number(s).
-	 */
-	@GraphQLScalar(fieldName = "location", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	String location;
+	@GraphQLScalar(fieldName = "journalId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
+	Long journalId;
 
 	/**
 	 * The publication type.
@@ -208,29 +192,15 @@ public class PublicationInput {
 	/**
 	 * The name of the journal in which the publication appeared.
 	 */
-	public void setJournal(String journal) {
-		this.journal = journal;
+	public void setJournalId(Long journal) {
+		this.journalId = journal;
 	}
 
 	/**
 	 * The name of the journal in which the publication appeared.
 	 */
-	public String getJournal() {
-		return this.journal;
-	}
-
-	/**
-	 * The location, typically a volume/issue and/or page number(s).
-	 */
-	public void setLocation(String location) {
-		this.location = location;
-	}
-
-	/**
-	 * The location, typically a volume/issue and/or page number(s).
-	 */
-	public String getLocation() {
-		return this.location;
+	public Long getJournalId() {
+		return this.journalId;
 	}
 
 	/**
@@ -397,9 +367,7 @@ public class PublicationInput {
 			+ ", " //$NON-NLS-1$
 			+ "title: " + this.title //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
-			+ "journal: " + this.journal //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "location: " + this.location //$NON-NLS-1$
+			+ "journalId: " + this.journalId //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "kind: " + this.kind //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
@@ -438,8 +406,7 @@ public class PublicationInput {
 		private String authorNames;
 		private List<Long> authorIds;
 		private String title;
-		private String journal;
-		private String location;
+		private Long journalId;
 		private PublicationKind kind;
 		private java.time.LocalDate date;
 		private Integer year;
@@ -487,16 +454,8 @@ public class PublicationInput {
 		/**
 		 * The name of the journal in which the publication appeared.
 		 */
-		public Builder withJournal(String journalParam) {
-			this.journal = journalParam;
-			return this;
-		}
-
-		/**
-		 * The location, typically a volume/issue and/or page number(s).
-		 */
-		public Builder withLocation(String locationParam) {
-			this.location = locationParam;
+		public Builder withJournalId(Long journalIdParam) {
+			this.journalId = journalIdParam;
 			return this;
 		}
 
@@ -594,8 +553,7 @@ public class PublicationInput {
 			_object.setAuthorNames(this.authorNames);
 			_object.setAuthorIds(this.authorIds);
 			_object.setTitle(this.title);
-			_object.setJournal(this.journal);
-			_object.setLocation(this.location);
+			_object.setJournalId(this.journalId);
 			_object.setKind(this.kind);
 			_object.setDate(this.date);
 			_object.setYear(this.year);

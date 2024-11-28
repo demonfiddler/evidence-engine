@@ -15,7 +15,7 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 -- Dumping data for table evidence_engine.status_kind: ~4 rows (approximately)
-INSERT INTO `status_kind` (`code`, `label`, `description`) VALUES
+INSERT INTO "status_kind" ("code", "label", "description") VALUES
 	('DEL', 'Deleted', 'The record still exists but is flagged as deleted'),
 	('DRA', 'Draft', 'A draft/newly inserted record'),
 	('PUB', 'Published', 'The record is officially published'),

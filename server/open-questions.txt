@@ -1,0 +1,5 @@
+Publication[Input].date|.year: do we need both?
+PublicationInput.authorNames|.authorIds: do we need both?
+TopicRef.locations (topic_<ITopicalEntity>_ref.locations): does this have any meaning for Claim, Declaration, Person or Quotation?
+
+Whether to enforce topic link at entity creation?

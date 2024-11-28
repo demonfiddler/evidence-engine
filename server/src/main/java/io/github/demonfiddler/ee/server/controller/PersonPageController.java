@@ -23,28 +23,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import org.dataloader.BatchLoaderEnvironment;
-import org.dataloader.DataLoader;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.graphql.execution.BatchLoaderRegistry;
 import org.springframework.stereotype.Controller;
 
 import com.graphql_java_generator.server.util.GraphqlServerUtils;
-import com.graphql_java_generator.util.GraphqlUtils;
 
 import graphql.GraphQLContext;
-import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegatePersonPage;
 import io.github.demonfiddler.ee.server.model.Person;
 import io.github.demonfiddler.ee.server.model.PersonPage;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -54,7 +46,6 @@ import reactor.core.publisher.Mono;
  */
 @Controller
 @SchemaMapping(typeName = "PersonPage")
-@SuppressWarnings("unused")
 public class PersonPageController {
 
 	@Autowired
@@ -94,8 +85,8 @@ public class PersonPageController {
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
 	@BatchMapping(field = "content")
-	public Flux<Person> content(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-		List<PersonPage> keys) {
+	public Map<PersonPage, List<Person>> content(BatchLoaderEnvironment batchLoaderEnvironment,
+		GraphQLContext graphQLContext, List<PersonPage> keys) {
 
 		return this.dataFetchersDelegatePersonPage.content(batchLoaderEnvironment, graphQLContext, keys);
 	}

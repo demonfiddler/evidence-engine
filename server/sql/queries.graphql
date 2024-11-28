@@ -231,3 +231,69 @@
     }
   }
 }
+
+query {
+  topicById(id: 3) {
+    id
+    status
+    created
+    createdByUser {
+      id
+      login
+      firstName
+      lastName
+    }
+    updated
+    updatedByUser {
+      id
+      login
+      firstName
+      lastName
+    }
+    log {
+      hasContent
+      isEmpty
+      number
+      size
+      numberOfElements
+      totalPages
+      totalElements
+      isFirst
+      isLast
+      hasNext
+      hasPrevious
+      content {
+        timestamp
+        transactionKind
+        entityId
+        entityKind
+        user {
+          id
+          login
+          firstName
+          lastName
+        }
+      }
+    }
+    label
+    description
+    parent {
+      id
+      label
+    }
+    children {
+      id
+      label
+      parent {
+        id
+      }
+      children {
+        id
+        label
+        parent {
+          id
+        }
+      }
+    }
+  }
+}

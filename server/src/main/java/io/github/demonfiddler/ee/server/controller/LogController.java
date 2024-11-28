@@ -25,13 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
-import org.dataloader.BatchLoaderEnvironment;
-import org.dataloader.DataLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
-import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.graphql.execution.BatchLoaderRegistry;
 import org.springframework.stereotype.Controller;
@@ -39,12 +35,10 @@ import org.springframework.stereotype.Controller;
 import com.graphql_java_generator.server.util.GraphqlServerUtils;
 import com.graphql_java_generator.util.GraphqlUtils;
 
-import graphql.GraphQLContext;
 import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateLog;
 import io.github.demonfiddler.ee.server.model.FormatKind;
 import io.github.demonfiddler.ee.server.model.Log;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -54,7 +48,6 @@ import reactor.core.publisher.Mono;
  */
 @Controller
 @SchemaMapping(typeName = "Log")
-@SuppressWarnings("unused")
 public class LogController {
 
 	@Autowired

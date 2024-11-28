@@ -31,7 +31,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
-// import org.springframework.transaction.annotation.Transactional;
 
 import io.github.demonfiddler.ee.server.model.IBaseEntity;
 import io.github.demonfiddler.ee.server.model.ITopicalEntity;
@@ -152,31 +151,46 @@ public abstract class CustomITopicalEntityRepositoryImpl<T extends IBaseEntity &
         // is supplied.
         /*
         -- This is what the template looks like conceptually when ALL filter fields are provided.
+        NOTE: H2 full text indexes work like this:
+        CREATE ALIAS IF NOT EXISTS FT_INIT FOR "org.h2.fulltext.FullText.init";
+        CALL FT_INIT();
+        CALL FT_CREATE_INDEX('SCHEMA', 'TABLE', 'COLUMN-LIST');
+        CALL FT_DROP_INDEX('SCHEMA', 'TABLE');
+        SELECT * FROM FT_SEARCH('Hello', limit, offset); -> QUERY: "PUBLIC"."TEST" WHERE "ID"=1;
+        NOTE: H2 common table expressions look like this:
+        WITH RECURSIVE sub_topic("id", "parent_id")
+        AS (
+            nonRecursiveSelect
+            UNION ALL
+            recursiveSelect
+        )
+        SELECT ...
+        --------
         WITH RECURSIVE sub_topic
         AS (
-            SELECT `id`, `parent_id`
+            SELECT "id", "parent_id"
             FROM topic t
-            WHERE t.`id` = :topicId AND t.`status` IN (:status)
+            WHERE t."id" = :topicId AND t."status" IN (:status)
             UNION
-            SELECT t.`id`, t.`parent_id`
+            SELECT t."id", t."parent_id"
             FROM topic t
             INNER JOIN
-                sub_topic st ON t.`parent_id` = st.`id`
-            WHERE t.`status` IN (:status)
+                sub_topic st ON t."parent_id" = st."id"
+            WHERE t."status" IN (:status)
         )
         SELECT DISTINCT e.*
         FROM ${entityName} e
         INNER JOIN (sub_topic st, topic_${entityName}_ref tr, ${masterEntityName}_${entityName} me)
         ON
-            tr.`topic_id` = st.`id`
-            AND tr.`%s_id` = e.`id`
-            AND me.`${masterEntityName}_id` = :masterEntityId
-            AND me.`${entityName}_id` = e.id
+            tr."topic_id" = st."id"
+            AND tr."%s_id" = e."id"
+            AND me."${masterEntityName}_id" = :masterEntityId
+            AND me."${entityName}_id" = e.id
         WHERE
             MATCH (${fulltextEntityColumns}) AGAINST (:text IN BOOLEAN MODE)
-            AND `status` IN (:status)
+            AND "status" IN (:status)
         ORDER BY
-            e.`${sortField}` ${sortOrder}, ...
+            e."${sortField}" ${sortOrder}, ...
         ;
         */
 
@@ -186,21 +200,21 @@ public abstract class CustomITopicalEntityRepositoryImpl<T extends IBaseEntity &
             String template = """
                             WITH RECURSIVE sub_topic
                             AS (
-                                SELECT `id`, `parent_id`
+                                SELECT \"id\", \"parent_id\"
                                 FROM topic t
-                                WHERE t.`id` = :topicId%s
+                                WHERE t.\"id\" = :topicId%s
                                 UNION ALL
-                                SELECT t.`id`, t.`parent_id`
+                                SELECT t.\"id\", t.\"parent_id\"
                                 FROM topic t
                                 INNER JOIN
-                                    sub_topic st ON t.`parent_id` = st.`id`%s
+                                    sub_topic st ON t.\"parent_id\" = st.\"id\"%s
                             )
                             """;
             StringBuilder recursiveWhereClause1 = new StringBuilder();
             StringBuilder recursiveWhereClause2 = new StringBuilder();
             if (m.hasStatus) {
-                recursiveWhereClause1.append(" AND t.`status` IN (:status)");
-                recursiveWhereClause2.append(NL).append("    WHERE t.`status` IN (:status)");
+                recursiveWhereClause1.append(" AND t.\"status\" IN (:status)");
+                recursiveWhereClause2.append(NL).append("    WHERE t.\"status\" IN (:status)");
             }
             subTopicRecursiveClause = String.format(template, recursiveWhereClause1, recursiveWhereClause2);
         } else {
@@ -216,10 +230,10 @@ public abstract class CustomITopicalEntityRepositoryImpl<T extends IBaseEntity &
         %s --${stJoinTables} = "    sub_topic st,\n    topic_${entityName}_ref tr,"
         %s --${meJoinTable} = "    ${masterEntityName}_${entityName} me"
         %s --${innerJoinClose} = ")\nON"
-        %s --${stJoinCondition} = "    tr.`topic_id` = st.`id`\n    AND tr.`${entityName}_id` = e.`id`"
-        %s --${meJoinCondition} = "    AND me.`${masterEntityName}_id` = :masterEntityId\n    AND me.`${entityName}_id` = e.`id`"
-        %s --${whereClause} = "WHERE\n    MATCH (${getFulltextColumns()}) AGAINST (:text)\n    AND e.`status` IN (:status)"
-        %s --${orderByClause} = "ORDER BY e.`${sortField}` ${sortOrder}"
+        %s --${stJoinCondition} = "    tr."topic_id" = st."id"\n    AND tr."${entityName}_id" = e."id""
+        %s --${meJoinCondition} = "    AND me."${masterEntityName}_id" = :masterEntityId\n    AND me."${entityName}_id" = e."id""
+        %s --${whereClause} = "WHERE\n    MATCH (${getFulltextColumns()}) AGAINST (:text)\n    AND e."status" IN (:status)"
+        %s --${orderByClause} = "ORDER BY e."${sortField}" ${sortOrder}"
         ;
         */
 
@@ -243,8 +257,8 @@ public abstract class CustomITopicalEntityRepositoryImpl<T extends IBaseEntity &
                 .append("_ref tr");
             if (m.hasMasterEntity)
                 stJoinTables.append(',');
-            stJoinCondition.append(NL).append("    tr.`topic_id` = st.`id`").append(NL).append("    AND tr.`")
-                .append(m.entityName).append("_id` = e.`id`");
+            stJoinCondition.append(NL).append("    tr.\"topic_id\" = st.\"id\"").append(NL).append("    AND tr.\"")
+                .append(m.entityName).append("_id\" = e.\"id\"");
             needsAnd = true;
         }
         if (m.hasMasterEntity) {
@@ -254,8 +268,8 @@ public abstract class CustomITopicalEntityRepositoryImpl<T extends IBaseEntity &
             meJoinCondition.append(NL).append("    ");
             if (needsAnd)
                 meJoinCondition.append("AND ");
-            meJoinCondition.append("me.`").append(masterEntityName).append("_id` = :masterEntityId").append(NL)
-                .append("    AND me.`").append(m.entityName).append("_id` = e.`id`");
+            meJoinCondition.append("me.\"").append(masterEntityName).append("_id\" = :masterEntityId").append(NL)
+                .append("    AND me.\"").append(m.entityName).append("_id\" = e.\"id\"");
         }
         if (m.hasTopic || m.hasMasterEntity) {
             innerJoinOpen = NL + "INNER JOIN (";
@@ -274,7 +288,7 @@ public abstract class CustomITopicalEntityRepositoryImpl<T extends IBaseEntity &
             if (m.hasStatus) {
                 if (needsAnd)
                     whereClause.append(NL).append("    AND ");
-                whereClause.append("e.`status` IN (:status)");
+                whereClause.append("e.\"status\" IN (:status)");
             }
         }
         if (m.isSorted)

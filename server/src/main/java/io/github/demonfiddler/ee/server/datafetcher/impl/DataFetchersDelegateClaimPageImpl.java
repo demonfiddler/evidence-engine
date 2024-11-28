@@ -20,6 +20,7 @@
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
 import org.springframework.stereotype.Component;
@@ -30,7 +31,6 @@ import io.github.demonfiddler.ee.server.model.Claim;
 import io.github.demonfiddler.ee.server.model.ClaimPage;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
 import jakarta.annotation.Resource;
-import reactor.core.publisher.Flux;
 
 @Component
 public class DataFetchersDelegateClaimPageImpl implements DataFetchersDelegateClaimPage {
@@ -39,10 +39,10 @@ public class DataFetchersDelegateClaimPageImpl implements DataFetchersDelegateCl
     private EntityUtils util;
 
     @Override
-    public Flux<Claim> content(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-        List<ClaimPage> keys) {
+    public Map<ClaimPage, List<Claim>> content(BatchLoaderEnvironment batchLoaderEnvironment,
+        GraphQLContext graphQLContext, List<ClaimPage> keys) {
 
-        return util.getListValues(keys, ClaimPage::getContent);
+        return util.getListValuesMap(keys, ClaimPage::getContent);
     }
 
 }

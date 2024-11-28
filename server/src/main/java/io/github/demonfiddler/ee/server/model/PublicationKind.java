@@ -19,7 +19,6 @@
 
 package io.github.demonfiddler.ee.server.model;
 
-import com.graphql_java_generator.annotation.GraphQLDirective;
 import com.graphql_java_generator.annotation.GraphQLEnumType;
 
 /**
@@ -29,74 +28,77 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLEnumType("PublicationKind")
-@SuppressWarnings("unused")
 public enum PublicationKind {
 
-	ABST("ABST"), //$NON-NLS-1$
-	ADVS("ADVS"), //$NON-NLS-1$
-	AGGR("AGGR"), //$NON-NLS-1$
-	ANCIENT("ANCIENT"), //$NON-NLS-1$
-	ART("ART"), //$NON-NLS-1$
-	BILL("BILL"), //$NON-NLS-1$
-	BLOG("BLOG"), //$NON-NLS-1$
-	BOOK("BOOK"), //$NON-NLS-1$
-	CASE("CASE"), //$NON-NLS-1$
-	CHAP("CHAP"), //$NON-NLS-1$
-	CHART("CHART"), //$NON-NLS-1$
-	CLSWK("CLSWK"), //$NON-NLS-1$
-	COMP("COMP"), //$NON-NLS-1$
-	CONF("CONF"), //$NON-NLS-1$
-	CPAPER("CPAPER"), //$NON-NLS-1$
-	CTLG("CTLG"), //$NON-NLS-1$
-	DATA("DATA"), //$NON-NLS-1$
-	DBASE("DBASE"), //$NON-NLS-1$
-	DICT("DICT"), //$NON-NLS-1$
-	EBOOK("EBOOK"), //$NON-NLS-1$
-	ECHAP("ECHAP"), //$NON-NLS-1$
-	EDBOOK("EDBOOK"), //$NON-NLS-1$
-	EJOUR("EJOUR"), //$NON-NLS-1$
-	ELEC("ELEC"), //$NON-NLS-1$
-	ENCYC("ENCYC"), //$NON-NLS-1$
-	EQUA("EQUA"), //$NON-NLS-1$
-	FIGURE("FIGURE"), //$NON-NLS-1$
-	GEN("GEN"), //$NON-NLS-1$
-	GOVDOC("GOVDOC"), //$NON-NLS-1$
-	GRANT("GRANT"), //$NON-NLS-1$
-	HEAR("HEAR"), //$NON-NLS-1$
-	ICOMM("ICOMM"), //$NON-NLS-1$
-	INPR("INPR"), //$NON-NLS-1$
-	JFULL("JFULL"), //$NON-NLS-1$
-	JOUR("JOUR"), //$NON-NLS-1$
-	LEGAL("LEGAL"), //$NON-NLS-1$
-	MANSCPT("MANSCPT"), //$NON-NLS-1$
-	MAP("MAP"), //$NON-NLS-1$
-	MGZN("MGZN"), //$NON-NLS-1$
-	MPCT("MPCT"), //$NON-NLS-1$
-	MULTI("MULTI"), //$NON-NLS-1$
-	MUSIC("MUSIC"), //$NON-NLS-1$
-	NEWS("NEWS"), //$NON-NLS-1$
-	PAMP("PAMP"), //$NON-NLS-1$
-	PAT("PAT"), //$NON-NLS-1$
-	PCOMM("PCOMM"), //$NON-NLS-1$
-	RPRT("RPRT"), //$NON-NLS-1$
-	SER("SER"), //$NON-NLS-1$
-	SLIDE("SLIDE"), //$NON-NLS-1$
-	SOUND("SOUND"), //$NON-NLS-1$
-	STAND("STAND"), //$NON-NLS-1$
-	STAT("STAT"), //$NON-NLS-1$
-	THES("THES"), //$NON-NLS-1$
-	UNBILL("UNBILL"), //$NON-NLS-1$
-	UNPB("UNPB"), //$NON-NLS-1$
-	VIDEO("VIDEO"), //$NON-NLS-1$
-	WEB("WEB"); //$NON-NLS-1$
+		ABST("ABST"), //$NON-NLS-1$
+		ADVS("ADVS"), //$NON-NLS-1$
+		AGGR("AGGR"), //$NON-NLS-1$
+		ANCIENT("ANCIENT"), //$NON-NLS-1$
+		ART("ART"), //$NON-NLS-1$
+		BILL("BILL"), //$NON-NLS-1$
+		BLOG("BLOG"), //$NON-NLS-1$
+		BOOK("BOOK"), //$NON-NLS-1$
+		CASE("CASE"), //$NON-NLS-1$
+		CHAP("CHAP"), //$NON-NLS-1$
+		CHART("CHART"), //$NON-NLS-1$
+		CLSWK("CLSWK"), //$NON-NLS-1$
+		COMP("COMP"), //$NON-NLS-1$
+		CONF("CONF"), //$NON-NLS-1$
+		CPAPER("CPAPER"), //$NON-NLS-1$
+		CTLG("CTLG"), //$NON-NLS-1$
+		DATA("DATA"), //$NON-NLS-1$
+		DBASE("DBASE"), //$NON-NLS-1$
+		DICT("DICT"), //$NON-NLS-1$
+		EBOOK("EBOOK"), //$NON-NLS-1$
+		ECHAP("ECHAP"), //$NON-NLS-1$
+		EDBOOK("EDBOOK"), //$NON-NLS-1$
+		EJOUR("EJOUR"), //$NON-NLS-1$
+		ELEC("ELEC"), //$NON-NLS-1$
+		ENCYC("ENCYC"), //$NON-NLS-1$
+		EQUA("EQUA"), //$NON-NLS-1$
+		FIGURE("FIGURE"), //$NON-NLS-1$
+		GEN("GEN"), //$NON-NLS-1$
+		GOVDOC("GOVDOC"), //$NON-NLS-1$
+		GRANT("GRANT"), //$NON-NLS-1$
+		HEAR("HEAR"), //$NON-NLS-1$
+		ICOMM("ICOMM"), //$NON-NLS-1$
+		INPR("INPR"), //$NON-NLS-1$
+		JFULL("JFULL"), //$NON-NLS-1$
+		JOUR("JOUR"), //$NON-NLS-1$
+		LEGAL("LEGAL"), //$NON-NLS-1$
+		MANSCPT("MANSCPT"), //$NON-NLS-1$
+		MAP("MAP"), //$NON-NLS-1$
+		MGZN("MGZN"), //$NON-NLS-1$
+		MPCT("MPCT"), //$NON-NLS-1$
+		MULTI("MULTI"), //$NON-NLS-1$
+		MUSIC("MUSIC"), //$NON-NLS-1$
+		NEWS("NEWS"), //$NON-NLS-1$
+		PAMP("PAMP"), //$NON-NLS-1$
+		PAT("PAT"), //$NON-NLS-1$
+		PCOMM("PCOMM"), //$NON-NLS-1$
+		RPRT("RPRT"), //$NON-NLS-1$
+		SER("SER"), //$NON-NLS-1$
+		SLIDE("SLIDE"), //$NON-NLS-1$
+		SOUND("SOUND"), //$NON-NLS-1$
+		STAND("STAND"), //$NON-NLS-1$
+		STAT("STAT"), //$NON-NLS-1$
+		THES("THES"), //$NON-NLS-1$
+		UNBILL("UNBILL"), //$NON-NLS-1$
+		UNPB("UNPB"), //$NON-NLS-1$
+		VIDEO("VIDEO"), //$NON-NLS-1$
+		WEB("WEB"); //$NON-NLS-1$
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different when the value in the GraphQL schema is a Java reserved keyword.
 	private final String graphQlValue;
 
+	private PublicationKind(String graphQlValue) {
+		this.graphQlValue = graphQlValue;
+	}
+
 	/**
 	 * Returns the value of this constant, as specified in the GraphQL schema. This is usually the same as the enum
-	 * item's name. But it will differ if this name is a java reserved keyword (in which case the name is prefixed by an
+	 * item's name. But it will differ if this name is a Java reserved keyword (in which case the name is prefixed by an
 	 * underscore)
 	 * @return the enum constant with the specified name, as defined in the GraphQL schema
 	 */
@@ -109,7 +111,7 @@ public enum PublicationKind {
 	 * must match exactly an identifier used to declare an enum constant in this type. (Extraneous whitespace characters
 	 * are not permitted.)
 	 * @param graphQlValue The value, as defined in the GraphQL schema. This is usually the same as the enum item's
-	 * name. But it will differ if this name is a java reserved keyword (in which case the name is prefixed by an
+	 * name. But it will differ if this name is a Java reserved keyword (in which case the name is prefixed by an
 	 * underscore)
 	 * @return the enum constant with the specified name
 	 * @throws IllegalArgumentException if this enum type has no constant with the specified GraphQL name
@@ -124,10 +126,6 @@ public enum PublicationKind {
 			}
 		}
 		throw new IllegalArgumentException("No PublicationKind exists with '" + graphQlValue + "' as a GraphQL value"); //$NON-NLS-1$ //$NON-NLS-2$
-	}
-
-	PublicationKind(String graphQlValue) {
-		this.graphQlValue = graphQlValue;
 	}
 
 }

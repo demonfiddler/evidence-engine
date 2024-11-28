@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import org.dataloader.BatchLoaderEnvironment;
 import org.dataloader.DataLoader;
@@ -49,7 +48,6 @@ import io.github.demonfiddler.ee.server.model.LogQueryFilter;
 import io.github.demonfiddler.ee.server.model.PageableInput;
 import io.github.demonfiddler.ee.server.model.Publisher;
 import io.github.demonfiddler.ee.server.model.User;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -59,7 +57,6 @@ import reactor.core.publisher.Mono;
  */
 @Controller
 @SchemaMapping(typeName = "Journal")
-@SuppressWarnings("unused")
 public class JournalController {
 
 	@Autowired
@@ -127,8 +124,8 @@ public class JournalController {
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
 	@BatchMapping(field = "createdByUser")
-	public Flux<User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-		List<Journal> keys) {
+	public Map<Journal, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment,
+		GraphQLContext graphQLContext, List<Journal> keys) {
 
 		return this.dataFetchersDelegateJournal.createdByUser(batchLoaderEnvironment, graphQLContext, keys);
 	}
@@ -145,8 +142,8 @@ public class JournalController {
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
 	@BatchMapping(field = "updatedByUser")
-	public Flux<User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-		List<Journal> keys) {
+	public Map<Journal, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment,
+		GraphQLContext graphQLContext, List<Journal> keys) {
 
 		return this.dataFetchersDelegateJournal.updatedByUser(batchLoaderEnvironment, graphQLContext, keys);
 	}
@@ -195,8 +192,8 @@ public class JournalController {
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
 	@BatchMapping(field = "publisher")
-	public Flux<Publisher> publisher(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-		List<Journal> keys) {
+	public Map<Journal, Publisher> publisher(BatchLoaderEnvironment batchLoaderEnvironment,
+		GraphQLContext graphQLContext, List<Journal> keys) {
 
 		return this.dataFetchersDelegateJournal.publisher(batchLoaderEnvironment, graphQLContext, keys);
 	}

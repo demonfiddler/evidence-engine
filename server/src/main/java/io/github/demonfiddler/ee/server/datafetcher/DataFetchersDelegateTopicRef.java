@@ -21,15 +21,12 @@ package io.github.demonfiddler.ee.server.datafetcher;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import org.dataloader.BatchLoaderEnvironment;
-import org.dataloader.DataLoader;
-import org.reactivestreams.Publisher;
 
-import com.graphql_java_generator.annotation.GraphQLDirective;
 import com.graphql_java_generator.util.GraphqlUtils;
 
 import graphql.GraphQLContext;
@@ -38,7 +35,6 @@ import io.github.demonfiddler.ee.server.model.FormatKind;
 import io.github.demonfiddler.ee.server.model.ITopicalEntity;
 import io.github.demonfiddler.ee.server.model.Topic;
 import io.github.demonfiddler.ee.server.model.TopicRef;
-import reactor.core.publisher.Flux;
 
 /**
  * This interface contains the fata fetchers that are delegated in the bean that the implementation has to provide, when
@@ -49,7 +45,7 @@ import reactor.core.publisher.Flux;
  * @see <a href=
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
-@SuppressWarnings("unused")
+
 public interface DataFetchersDelegateTopicRef {
 
 	/**
@@ -63,7 +59,7 @@ public interface DataFetchersDelegateTopicRef {
 	 * <code>batchMappingDataFetcherReturnType</code> plugin parameter. <br/>
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
-	Flux<Topic> topic(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+	Map<TopicRef, Topic> topic(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
 		List<TopicRef> keys);
 
 	/**
@@ -117,7 +113,7 @@ public interface DataFetchersDelegateTopicRef {
 	 * <code>batchMappingDataFetcherReturnType</code> plugin parameter. <br/>
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
-	Flux<ITopicalEntity> entity(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+	Map<TopicRef, ITopicalEntity> entity(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
 		List<TopicRef> keys);
 
 	/**
@@ -131,7 +127,7 @@ public interface DataFetchersDelegateTopicRef {
 	 * <code>batchMappingDataFetcherReturnType</code> plugin parameter. <br/>
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
-	Flux<URI> locations(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+	Map<TopicRef, List<URI>> locations(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
 		List<TopicRef> keys);
 
 	/**

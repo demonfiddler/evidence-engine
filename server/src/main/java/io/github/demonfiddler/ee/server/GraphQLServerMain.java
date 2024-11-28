@@ -22,20 +22,20 @@ package io.github.demonfiddler.ee.server;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.graphql.GraphQlSourceBuilderCustomizer;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.ComponentScan.Filter;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.graphql.execution.ClassNameTypeResolver;
 import org.springframework.graphql.execution.GraphQlSource;
-
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import com.graphql_java_generator.server.util.GraphqlServerUtils;
 
@@ -44,11 +44,11 @@ import com.graphql_java_generator.server.util.GraphqlServerUtils;
  * @see <a href=
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
-@SpringBootApplication()
+@SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 @ComponentScan(
 	basePackages = { "io.github.demonfiddler.ee.server", "com.graphql_java_generator.server",
 		"com.graphql_java_generator.util" },
-	// To allow Controller overriding, the controller are declared as @Controller (mandatory for the
+	// To allow Controller overriding, the controllers are declared as @Controller (mandatory for the
 	// AnnotatedControllerResolver), but they must be found by the autoconfiguration class to allow them to be
 	// overriding. So we prevent the default component scan to find them. They will be available as default bean in
 	// GraphQLPluginAutoConfiguration.
@@ -57,7 +57,7 @@ import com.graphql_java_generator.server.util.GraphqlServerUtils;
 @EnableJpaRepositories(basePackages = { "io.github.demonfiddler.ee.server.repository", "com.graphql_java_generator" })
 @EntityScan(basePackages = { "io.github.demonfiddler.ee.server.model", "com.graphql_java_generator" })
 @EnableConfigurationProperties
-@SuppressWarnings("unused")
+@PropertySource("classpath:persistence.properties")
 public class GraphQLServerMain extends SpringBootServletInitializer {
 
 	@Autowired

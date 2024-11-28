@@ -15,7 +15,7 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 -- Dumping data for table evidence_engine.topic: ~11 rows (approximately)
-INSERT INTO `topic` (`id`, `label`, `description`, `parent_id`, `status`, `created`, `created_by_user_id`, `updated`, `updated_by_user_id`) VALUES
+INSERT INTO "topic" ("id", "label", "description", "parent_id", "status", "created", "created_by_user_id", "updated", "updated_by_user_id") VALUES
 	(1, 'Climate', 'Contrarian climate science', NULL, 'DRA', '2024-11-10 21:29:42', 0, NULL, NULL),
 	(2, 'Extremes', 'Extremes of weather', 1, 'DRA', '2024-11-10 22:00:32', 0, NULL, NULL),
 	(3, 'Precipitation', 'Extremes of rain, sleet, hail, snow', 2, 'DRA', '2024-11-10 22:19:52', 0, NULL, NULL),

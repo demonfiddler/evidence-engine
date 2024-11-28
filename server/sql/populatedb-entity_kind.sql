@@ -15,7 +15,7 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 -- Dumping data for table evidence_engine.entity_kind: ~10 rows (approximately)
-INSERT INTO `entity_kind` (`code`, `label`) VALUES
+INSERT INTO "entity_kind" ("code", "label") VALUES
 	('CLA', 'Claim'),
 	('COU', 'Country'),
 	('DEC', 'Declaration'),

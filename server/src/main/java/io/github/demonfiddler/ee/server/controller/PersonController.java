@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import org.dataloader.BatchLoaderEnvironment;
 import org.dataloader.DataLoader;
@@ -42,6 +41,7 @@ import com.graphql_java_generator.util.GraphqlUtils;
 import graphql.GraphQLContext;
 import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegatePerson;
+import io.github.demonfiddler.ee.server.model.CountryFormatKind;
 import io.github.demonfiddler.ee.server.model.FormatKind;
 import io.github.demonfiddler.ee.server.model.LogPage;
 import io.github.demonfiddler.ee.server.model.LogQueryFilter;
@@ -50,7 +50,6 @@ import io.github.demonfiddler.ee.server.model.Person;
 import io.github.demonfiddler.ee.server.model.TopicRefPage;
 import io.github.demonfiddler.ee.server.model.TopicRefQueryFilter;
 import io.github.demonfiddler.ee.server.model.User;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -60,7 +59,6 @@ import reactor.core.publisher.Mono;
  */
 @Controller
 @SchemaMapping(typeName = "Person")
-@SuppressWarnings("unused")
 public class PersonController {
 
 	@Autowired
@@ -128,7 +126,7 @@ public class PersonController {
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
 	@BatchMapping(field = "createdByUser")
-	public Flux<User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+	public Map<Person, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
 		List<Person> keys) {
 
 		return this.dataFetchersDelegatePerson.createdByUser(batchLoaderEnvironment, graphQLContext, keys);
@@ -146,7 +144,7 @@ public class PersonController {
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
 	@BatchMapping(field = "updatedByUser")
-	public Flux<User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+	public Map<Person, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
 		List<Person> keys) {
 
 		return this.dataFetchersDelegatePerson.updatedByUser(batchLoaderEnvironment, graphQLContext, keys);
@@ -214,6 +212,34 @@ public class PersonController {
 		Person origin, @Argument("filter") TopicRefQueryFilter filter, @Argument("pageSort") PageableInput pageSort) {
 
 		return this.dataFetchersDelegatePerson.topicRefs(dataFetchingEnvironment, dataLoader, origin, filter, pageSort);
+	}
+
+	/**
+	 * This method loads the data for ${dataFetcher.graphQLType}.country. It returns an Object: the data fetcher
+	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
+	 * the author attribute of the <I>origin</I>, which is an instance of {ObjectType {name:Post, fields:{Field{name:id,
+	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
+	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
+	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * typically contains the id to use in the query.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
+	 * @param format The parameter that will receive the field argument of the same name for the current data to fetch
+	 * @return It may return any value that is valid for a spring-graphql controller, annotated by the
+	 * <code>@SchemaMapping</code> annotation
+	 */
+	@SchemaMapping(field = "country")
+	public Object country(DataFetchingEnvironment dataFetchingEnvironment, Person origin,
+		@Argument("format") String format) {
+
+		return this.dataFetchersDelegatePerson.country(dataFetchingEnvironment, origin,
+			(CountryFormatKind)GraphqlUtils.graphqlUtils.stringToEnumValue(format, CountryFormatKind.class));
 	}
 
 }

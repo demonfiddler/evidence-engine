@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import org.dataloader.BatchLoaderEnvironment;
 import org.dataloader.DataLoader;
@@ -47,7 +46,6 @@ import io.github.demonfiddler.ee.server.model.LogPage;
 import io.github.demonfiddler.ee.server.model.LogQueryFilter;
 import io.github.demonfiddler.ee.server.model.PageableInput;
 import io.github.demonfiddler.ee.server.model.User;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -57,7 +55,7 @@ import reactor.core.publisher.Mono;
  */
 @Controller
 @SchemaMapping(typeName = "User")
-@SuppressWarnings("unused")
+
 public class UserController {
 
 	@Autowired
@@ -125,7 +123,7 @@ public class UserController {
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
 	@BatchMapping(field = "createdByUser")
-	public Flux<User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+	public Map<User, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
 		List<User> keys) {
 
 		return this.dataFetchersDelegateUser.createdByUser(batchLoaderEnvironment, graphQLContext, keys);
@@ -143,7 +141,7 @@ public class UserController {
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
 	@BatchMapping(field = "updatedByUser")
-	public Flux<User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+	public Map<User, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
 		List<User> keys) {
 
 		return this.dataFetchersDelegateUser.updatedByUser(batchLoaderEnvironment, graphQLContext, keys);

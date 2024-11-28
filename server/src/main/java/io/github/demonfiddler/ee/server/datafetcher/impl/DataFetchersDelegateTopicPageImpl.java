@@ -20,6 +20,7 @@
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
 import org.springframework.stereotype.Component;
@@ -30,7 +31,6 @@ import io.github.demonfiddler.ee.server.model.Topic;
 import io.github.demonfiddler.ee.server.model.TopicPage;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
 import jakarta.annotation.Resource;
-import reactor.core.publisher.Flux;
 
 @Component
 public class DataFetchersDelegateTopicPageImpl implements DataFetchersDelegateTopicPage {
@@ -39,10 +39,10 @@ public class DataFetchersDelegateTopicPageImpl implements DataFetchersDelegateTo
     private EntityUtils entityUtils;
 
     @Override
-    public Flux<Topic> content(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-        List<TopicPage> keys) {
+    public Map<TopicPage, List<Topic>> content(BatchLoaderEnvironment batchLoaderEnvironment,
+        GraphQLContext graphQLContext, List<TopicPage> keys) {
 
-        return entityUtils.getListValues(keys, TopicPage::getContent);
+        return entityUtils.getListValuesMap(keys, TopicPage::getContent);
     }
 
 }

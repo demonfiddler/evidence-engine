@@ -23,28 +23,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import org.dataloader.BatchLoaderEnvironment;
-import org.dataloader.DataLoader;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.graphql.execution.BatchLoaderRegistry;
 import org.springframework.stereotype.Controller;
 
 import com.graphql_java_generator.server.util.GraphqlServerUtils;
-import com.graphql_java_generator.util.GraphqlUtils;
 
 import graphql.GraphQLContext;
-import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateTopicPage;
 import io.github.demonfiddler.ee.server.model.Topic;
 import io.github.demonfiddler.ee.server.model.TopicPage;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -54,7 +46,7 @@ import reactor.core.publisher.Mono;
  */
 @Controller
 @SchemaMapping(typeName = "TopicPage")
-@SuppressWarnings("unused")
+
 public class TopicPageController {
 
 	@Autowired
@@ -95,8 +87,8 @@ public class TopicPageController {
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
 	@BatchMapping(field = "content")
-	public Flux<Topic> content(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-		List<TopicPage> keys) {
+	public Map<TopicPage, List<Topic>> content(BatchLoaderEnvironment batchLoaderEnvironment,
+		GraphQLContext graphQLContext, List<TopicPage> keys) {
 
 		return this.dataFetchersDelegateTopicPage.content(batchLoaderEnvironment, graphQLContext, keys);
 	}

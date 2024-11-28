@@ -31,7 +31,7 @@ public class CustomPersonRepositoryImpl extends CustomITopicalEntityRepositoryIm
 
     @Override
     protected String getFulltextColumns() {
-        return "`title`, `first_name`, `nickname`, `prefix`, `last_name`, `suffix`, `alias`, `notes`, `qualifications`";
+        return "\"title\", \"first_name\", \"nickname\", \"prefix\", \"last_name\", \"suffix\", \"alias\", \"notes\", \"qualifications\"";
     }
 
 }

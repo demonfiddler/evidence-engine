@@ -31,7 +31,7 @@ public class CustomPublicationRepositoryImpl extends CustomITopicalEntityReposit
 
     @Override
     protected String getFulltextColumns() {
-        return "`title`, `authors`, `abstract`, `notes`, `doi`, `isbn`, `url`";
+        return "\"title\", \"authors\", \"abstract\", \"notes\", \"doi\", \"isbn\", \"url\"";
     }
 
 }

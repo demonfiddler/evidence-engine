@@ -28,8 +28,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 import org.springframework.stereotype.Component;
 
+import graphql.scalars.ExtendedScalars;
 import graphql.schema.GraphQLScalarType;
-import io.github.demonfiddler.ee.server.scalar.GraphQLScalarTypes;
+import io.github.demonfiddler.ee.common.graphql.CustomScalars;
 
 /**
  * Thanks to spring-graphql, the POJO classes are auto-magically discovered and mapped. But the custom scalars still
@@ -45,15 +46,16 @@ public class GraphQLWiring implements RuntimeWiringConfigurer {
 	protected Logger logger = LoggerFactory.getLogger(GraphQLWiring.class);
 
 	public void configure(graphql.schema.idl.RuntimeWiring.Builder builder) {
-		// Wiring every custom scalar definition.
-		builder.scalar(GraphQLScalarType.newScalar(GraphQLScalarTypes.COUNTRY).name("Country").build())
-			.scalar(GraphQLScalarType.newScalar(graphql.scalars.ExtendedScalars.Date).name("Date").build())
-			.scalar(GraphQLScalarType.newScalar(graphql.scalars.ExtendedScalars.DateTime).name("DateTime").build())
-			.scalar(GraphQLScalarType.newScalar(GraphQLScalarTypes.ISSN).name("ISSN").build())
-			.scalar(GraphQLScalarType.newScalar(graphql.scalars.ExtendedScalars.GraphQLLong).name("Long").build())
-			.scalar(GraphQLScalarType.newScalar(GraphQLScalarTypes.URI).name("URI").build())
-			.scalar(GraphQLScalarType.newScalar(graphql.scalars.ExtendedScalars.Url).name("URL").build())
-			.scalar(GraphQLScalarType.newScalar(GraphQLScalarTypes.VOID).name("Void").build());
+		builder //
+			.scalar(GraphQLScalarType.newScalar(CustomScalars.COUNTRY).name("Country").build())
+			.scalar(GraphQLScalarType.newScalar(ExtendedScalars.Date).name("Date").build())
+			.scalar(GraphQLScalarType.newScalar(ExtendedScalars.DateTime).name("DateTime").build())
+			.scalar(GraphQLScalarType.newScalar(CustomScalars.ISSN).name("ISSN").build())
+			.scalar(GraphQLScalarType.newScalar(ExtendedScalars.GraphQLLong).name("Long").build())
+			.scalar(GraphQLScalarType.newScalar(CustomScalars.URI).name("URI").build())
+			// .scalar(GraphQLScalarType.newScalar(ExtendedScalars.Url).name("URL").build())
+			.scalar(GraphQLScalarType.newScalar(CustomScalars.URL).name("URL").build())
+			.scalar(GraphQLScalarType.newScalar(CustomScalars.VOID).name("Void").build());
 	}
 
 }

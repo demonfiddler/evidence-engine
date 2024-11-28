@@ -31,7 +31,7 @@ public class CustomJournalRepositoryImpl extends CustomITrackedEntityRepositoryI
 
     @Override
     protected String getFulltextColumns() {
-        return "`title`, `abbreviation`, `url`, `issn`, `notes`";
+        return "\"title\", \"abbreviation\", \"url\", \"issn\", \"notes\"";
     }
 
 }

@@ -19,13 +19,11 @@
 
 package io.github.demonfiddler.ee.server.model;
 
+import java.time.OffsetDateTime;
+
 import com.graphql_java_generator.annotation.GraphQLInterfaceType;
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLScalar;
-
-import java.time.OffsetDateTime;
-
-import com.graphql_java_generator.annotation.GraphQLDirective;
 
 /**
  * Interface for entities with a tracked lifecycle.
@@ -34,7 +32,6 @@ import com.graphql_java_generator.annotation.GraphQLDirective;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInterfaceType("ITrackedEntity")
-@SuppressWarnings("unused")
 public interface ITrackedEntity {
 
 	@GraphQLScalar(fieldName = "status", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)

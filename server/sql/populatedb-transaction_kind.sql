@@ -15,7 +15,7 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 -- Dumping data for table evidence_engine.transaction_kind: ~5 rows (approximately)
-INSERT INTO `transaction_kind` (`code`, `label`, `Description`) VALUES
+INSERT INTO "transaction_kind" ("code", "label", "Description") VALUES
 	('CRE', 'Create', 'A new record was created'),
 	('DEL', 'Delete', 'A record was marked as deleted'),
 	('LNK', 'Link', 'One record was linked to another'),

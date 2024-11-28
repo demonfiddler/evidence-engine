@@ -20,16 +20,11 @@
 package io.github.demonfiddler.ee.server.model;
 
 import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
-import org.dataloader.DataLoader;
-
-import graphql.schema.DataFetchingEnvironment;
-
+import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -37,9 +32,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-
-import com.graphql_java_generator.annotation.GraphQLDirective;
-import com.graphql_java_generator.annotation.GraphQLNonScalar;
 
 /**
  * A log entry to show who changed what and when
@@ -49,8 +41,6 @@ import com.graphql_java_generator.annotation.GraphQLNonScalar;
  */
 @Entity
 @GraphQLObjectType("Log")
-// @Transactional
-@SuppressWarnings("unused")
 public class Log implements IBaseEntity {
 
 	/**

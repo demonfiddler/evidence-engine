@@ -117,7 +117,7 @@ public class CustomTopicRepositoryImpl implements CustomTopicRepository {
             boolean needsAnd = false;
             whereClause.append(NL).append("WHERE");
             if (!m.isRecursive) {
-                whereClause.append(NL).append("    ").append("`parent_id` ");
+                whereClause.append(NL).append("    ").append("\"parent_id\" ");
                 if (m.hasParentId)
                     whereClause.append("= :parentId");
                 else
@@ -129,7 +129,7 @@ public class CustomTopicRepositoryImpl implements CustomTopicRepository {
                     whereClause.append(NL).append("    ");
                     if (needsAnd)
                         whereClause.append("AND ");
-                    whereClause.append("MATCH (`label`, `description`, `status`) AGAINST (:text");
+                    whereClause.append("MATCH (\"label\", \"description\", \"status\") AGAINST (:text");
                     if (m.isAdvanced)
                         whereClause.append(" IN BOOLEAN MODE");
                     whereClause.append(')');
@@ -139,7 +139,7 @@ public class CustomTopicRepositoryImpl implements CustomTopicRepository {
                     whereClause.append(NL).append("    ");
                     if (needsAnd)
                         whereClause.append("AND ");
-                    whereClause.append("`status` IN (:status)");
+                    whereClause.append("\"status\" IN (:status)");
                 }
             }
         }
@@ -154,29 +154,38 @@ public class CustomTopicRepositoryImpl implements CustomTopicRepository {
             StringBuilder recursiveWhereClause1 = new StringBuilder();
             StringBuilder recursiveWhereClause2 = new StringBuilder();
             if (m.hasStatus) {
-                recursiveWhereClause1.append(" AND t.`status` IN (:status)");
-                recursiveWhereClause2.append(NL).append("    WHERE t.`status` IN (:status)");
+                recursiveWhereClause1.append(" AND t.\"status\" IN (:status)");
+                recursiveWhereClause2.append(NL).append("    WHERE t.\"status\" IN (:status)");
             }
             // At first sight one might think that it would be more efficient to select the
             // topic records from the sub_topics temporary table, but this doesn't work
             // because that table uses the MEMORY storage engine, which doesn't support full
             // text indexes. Hence the need to select ids only and use them in the final join.
+            // NOTE: H2 requires
+            // WITH RECURSIVE sub_topic("id, "parent_id")
+            // AS (
+            // nonRecursiveSelect
+            // UNION ALL
+            // recursiveSelect
+            // )
+            // SELECT ...
+            // --------
             String template = """
                             WITH RECURSIVE sub_topic
                             AS (
-                                SELECT t.`id`, t.`parent_id`
+                                SELECT t.\"id\", t.\"parent_id\"
                                 FROM topic t
-                                WHERE t.`parent_id` = :parentId%s
+                                WHERE t.\"parent_id\" = :parentId%s
                                 UNION ALL
-                                SELECT t.`id`, t.`parent_id`
+                                SELECT t.\"id\", t.\"parent_id\"
                                 FROM topic t
                                 INNER JOIN
-                                    sub_topic st ON t.`parent_id` = st.`id`%s
+                                    sub_topic st ON t.\"parent_id\" = st.\"id\"%s
                             )
                             SELECT %s
                             FROM topic t
                             JOIN sub_topic st
-                            ON t.`id` = st.`id`%s%s;
+                            ON t.\"id\" = st.\"id\"%s%s;
                             """;
             countSql =
                 String.format(template, recursiveWhereClause1, recursiveWhereClause2, "COUNT(*)", whereClause, "");

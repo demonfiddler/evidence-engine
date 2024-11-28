@@ -20,6 +20,8 @@
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
 import java.util.List;
+import java.util.Map;
+
 import org.dataloader.BatchLoaderEnvironment;
 import org.dataloader.DataLoader;
 import org.springframework.stereotype.Component;
@@ -40,7 +42,6 @@ import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.repository.DeclarationRepository;
 import io.github.demonfiddler.ee.server.util.CountryUtils;
 import jakarta.annotation.Resource;
-import reactor.core.publisher.Flux;
 
 @Component
 public class DataFetchersDelegateDeclarationImpl extends DataFetchersDelegateITopicalEntityBaseImpl<Declaration>
@@ -62,17 +63,17 @@ public class DataFetchersDelegateDeclarationImpl extends DataFetchersDelegateITo
     }
 
     @Override
-    public Flux<User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-        List<Declaration> keys) {
+    public Map<Declaration, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment,
+        GraphQLContext graphQLContext, List<Declaration> keys) {
 
-        return _createdByUser(batchLoaderEnvironment, graphQLContext, keys);
+        return _createdByUserMap(batchLoaderEnvironment, graphQLContext, keys);
     }
 
     @Override
-    public Flux<User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-        List<Declaration> keys) {
+    public Map<Declaration, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment,
+        GraphQLContext graphQLContext, List<Declaration> keys) {
 
-        return _updatedByUser(batchLoaderEnvironment, graphQLContext, keys);
+        return _updatedByUserMap(batchLoaderEnvironment, graphQLContext, keys);
     }
 
     @Override

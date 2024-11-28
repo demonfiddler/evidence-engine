@@ -20,19 +20,18 @@
 package io.github.demonfiddler.ee.server.datafetcher;
 
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import org.dataloader.BatchLoaderEnvironment;
 import org.dataloader.DataLoader;
-import org.reactivestreams.Publisher;
 
-import com.graphql_java_generator.annotation.GraphQLDirective;
 import com.graphql_java_generator.util.GraphqlUtils;
 
 import graphql.GraphQLContext;
 import graphql.schema.DataFetchingEnvironment;
+import io.github.demonfiddler.ee.server.model.CountryFormatKind;
 import io.github.demonfiddler.ee.server.model.FormatKind;
 import io.github.demonfiddler.ee.server.model.LogPage;
 import io.github.demonfiddler.ee.server.model.LogQueryFilter;
@@ -41,7 +40,6 @@ import io.github.demonfiddler.ee.server.model.Person;
 import io.github.demonfiddler.ee.server.model.TopicRefPage;
 import io.github.demonfiddler.ee.server.model.TopicRefQueryFilter;
 import io.github.demonfiddler.ee.server.model.User;
-import reactor.core.publisher.Flux;
 
 /**
  * This interface contains the fata fetchers that are delegated in the bean that the implementation has to provide, when
@@ -52,7 +50,7 @@ import reactor.core.publisher.Flux;
  * @see <a href=
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
-@SuppressWarnings("unused")
+
 public interface DataFetchersDelegatePerson {
 
 	/**
@@ -114,7 +112,7 @@ public interface DataFetchersDelegatePerson {
 	 * <code>batchMappingDataFetcherReturnType</code> plugin parameter. <br/>
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
-	Flux<User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+	Map<Person, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
 		List<Person> keys);
 
 	/**
@@ -128,7 +126,7 @@ public interface DataFetchersDelegatePerson {
 	 * <code>batchMappingDataFetcherReturnType</code> plugin parameter. <br/>
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
-	Flux<User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+	Map<Person, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
 		List<Person> keys);
 
 	/**
@@ -239,6 +237,53 @@ public interface DataFetchersDelegatePerson {
 	 */
 	Object topicRefs(DataFetchingEnvironment dataFetchingEnvironment, DataLoader<Long, TopicRefPage> dataLoader,
 		Person origin, TopicRefQueryFilter filter, PageableInput pageSort);
+
+	/**
+	 * Description for the country field: <br/>
+	 * The country to which the person relates. <br/>
+	 * This method loads the data for Person.country. It may return whatever is accepted by the Spring Controller, that
+	 * is:
+	 * <ul>
+	 * <li>A resolved value of any type (typically, a String)</li>
+	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;String&gt; or a Flux&lt;String&gt;</li>
+	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
+	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
+	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
+	 * Callable&lt;String&gt;</li>
+	 * </ul>
+	 * As a complement to the spring-graphql documentation, you may also return:
+	 * <ul>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<String>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
+	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
+	 * </ul>
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
+	 * the country attribute of the <I>origin</I>, which is an instance of {ObjectType {name:Person,
+	 * fields:{Field{name:id, type:ID!, params:[]},Field{name:status, type:String,
+	 * params:[format:FormatKind]},Field{name:created, type:DateTime, params:[]},Field{name:createdByUser, type:User,
+	 * params:[]},Field{name:updated, type:DateTime, params:[]},Field{name:updatedByUser, type:User,
+	 * params:[]},Field{name:log, type:LogPage!,
+	 * params:[filter:LogQueryFilter,pageSort:PageableInput]},Field{name:topicRefs, type:TopicRefPage!,
+	 * params:[filter:TopicRefQueryFilter,pageSort:PageableInput]},Field{name:kind, type:String,
+	 * params:[format:FormatKind]},Field{name:title, type:String, params:[]},Field{name:date, type:Date,
+	 * params:[]},Field{name:country, type:String, params:[format:CountryFormatKind]},Field{name:url, type:URL,
+	 * params:[]},Field{name:cached, type:Boolean, params:[]},Field{name:signatories, type:String,
+	 * params:[]},Field{name:signatoryCount, type:Int, params:[]},Field{name:notes, type:String, params:[]}}, implements
+	 * IBaseEntity,ITrackedEntity,ITopicalEntity, comments ""}. It depends on your data modle, but it typically contains
+	 * the id to use in the query.
+	 * @param format The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
+	 */
+	Object country(DataFetchingEnvironment dataFetchingEnvironment, Person origin, CountryFormatKind format);
 
 	/**
 	 * This method loads a list of ${dataFetcher.field.name}, based on the list of id to be fetched. This method is used

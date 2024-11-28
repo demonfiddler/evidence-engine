@@ -20,17 +20,12 @@
 package io.github.demonfiddler.ee.server.model;
 
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
-import org.dataloader.DataLoader;
-
-import graphql.schema.DataFetchingEnvironment;
+import java.util.List;
 
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -39,9 +34,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Transient;
-import java.util.List;
-
-import com.graphql_java_generator.annotation.GraphQLDirective;
 
 /**
  * An association between a topic and an entity record.
@@ -51,8 +43,6 @@ import com.graphql_java_generator.annotation.GraphQLDirective;
  */
 @Entity
 @GraphQLObjectType("TopicRef")
-// @Transactional
-@SuppressWarnings("unused")
 public class TopicRef implements IBaseEntity {
 
 	// NOTE: only necessary because graphql-java-generator emits code with errors (missing ctor) if there is no ID

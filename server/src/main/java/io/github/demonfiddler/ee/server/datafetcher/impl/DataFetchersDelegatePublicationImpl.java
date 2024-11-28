@@ -20,6 +20,7 @@
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
 import org.dataloader.DataLoader;
@@ -40,7 +41,6 @@ import io.github.demonfiddler.ee.server.model.TopicRefQueryFilter;
 import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.repository.PublicationRepository;
 import jakarta.annotation.Resource;
-import reactor.core.publisher.Flux;
 
 @Component
 public class DataFetchersDelegatePublicationImpl extends DataFetchersDelegateITopicalEntityBaseImpl<Publication>
@@ -60,17 +60,17 @@ public class DataFetchersDelegatePublicationImpl extends DataFetchersDelegateITo
     }
 
     @Override
-    public Flux<User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-        List<Publication> keys) {
+    public Map<Publication, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment,
+        GraphQLContext graphQLContext, List<Publication> keys) {
 
-        return _createdByUser(batchLoaderEnvironment, graphQLContext, keys);
+        return _createdByUserMap(batchLoaderEnvironment, graphQLContext, keys);
     }
 
     @Override
-    public Flux<User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-        List<Publication> keys) {
+    public Map<Publication, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment,
+        GraphQLContext graphQLContext, List<Publication> keys) {
 
-        return _updatedByUser(batchLoaderEnvironment, graphQLContext, keys);
+        return _updatedByUserMap(batchLoaderEnvironment, graphQLContext, keys);
     }
 
     @Override
@@ -88,10 +88,10 @@ public class DataFetchersDelegatePublicationImpl extends DataFetchersDelegateITo
     }
 
     @Override
-    public Flux<Journal> journal(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-        List<Publication> keys) {
+    public Map<Publication, Journal> journal(BatchLoaderEnvironment batchLoaderEnvironment,
+        GraphQLContext graphQLContext, List<Publication> keys) {
 
-        return entityUtils.getValues(keys, Publication::getJournal);
+        return entityUtils.getValuesMap(keys, Publication::getJournal);
     }
 
     @Override

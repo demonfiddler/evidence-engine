@@ -15,7 +15,7 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 -- Dumping data for table evidence_engine.journal: ~30 rows (approximately)
-INSERT INTO `journal` (`id`, `title`, `abbreviation`, `url`, `issn`, `publisher_id`, `notes`, `status`, `created`, `created_by_user_id`, `updated`, `updated_by_user_id`) VALUES
+INSERT INTO "journal" ("id", "title", "abbreviation", "url", "issn", "publisher_id", "notes", "status", "created", "created_by_user_id", "updated", "updated_by_user_id") VALUES
 	(1, 'Advances in Space Research', 'Adv Space Res', NULL, NULL, NULL, NULL, 'PUB', '2024-10-17 17:22:38', 0, NULL, NULL),
 	(2, 'Annales Geophysicae', 'Ann Geophys', NULL, NULL, NULL, NULL, 'PUB', '2024-10-17 17:22:38', 0, NULL, NULL),
 	(3, 'Applied Physics Research', 'Appl Phys Res', NULL, NULL, NULL, NULL, 'PUB', '2024-10-17 17:22:38', 0, NULL, NULL),

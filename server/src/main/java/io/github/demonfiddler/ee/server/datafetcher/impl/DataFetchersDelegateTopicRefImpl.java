@@ -21,6 +21,8 @@ package io.github.demonfiddler.ee.server.datafetcher.impl;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
+
 import org.dataloader.BatchLoaderEnvironment;
 import org.springframework.stereotype.Component;
 
@@ -36,7 +38,6 @@ import io.github.demonfiddler.ee.server.repository.LinkRepository;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
 import io.github.demonfiddler.ee.server.util.FormatUtils;
 import jakarta.annotation.Resource;
-import reactor.core.publisher.Flux;
 
 @Component
 public class DataFetchersDelegateTopicRefImpl implements DataFetchersDelegateTopicRef {
@@ -54,25 +55,25 @@ public class DataFetchersDelegateTopicRefImpl implements DataFetchersDelegateTop
     }
 
     @Override
-    public Flux<Topic> topic(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+    public Map<TopicRef, Topic> topic(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
         List<TopicRef> keys) {
 
-        return entityUtils.getValues(keys, TopicRef::getTopic);
+        return entityUtils.getValuesMap(keys, TopicRef::getTopic);
     }
 
     @Override
-    public Flux<ITopicalEntity> entity(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-        List<TopicRef> keys) {
+    public Map<TopicRef, ITopicalEntity> entity(BatchLoaderEnvironment batchLoaderEnvironment,
+        GraphQLContext graphQLContext, List<TopicRef> keys) {
 
         // FIXME: JPA cannot handle this property!
-        return entityUtils.getValues(keys, TopicRef::getEntity);
+        return entityUtils.getValuesMap(keys, TopicRef::getEntity);
     }
 
     @Override
-    public Flux<URI> locations(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-        List<TopicRef> keys) {
+    public Map<TopicRef, List<URI>> locations(BatchLoaderEnvironment batchLoaderEnvironment,
+        GraphQLContext graphQLContext, List<TopicRef> keys) {
 
-        return entityUtils.getListValues(keys, TopicRef::getLocations);
+        return entityUtils.getListValuesMap(keys, TopicRef::getLocations);
     }
 
     @Override

@@ -19,18 +19,8 @@
 
 package io.github.demonfiddler.ee.server.model;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
-import org.dataloader.DataLoader;
-
-import graphql.schema.DataFetchingEnvironment;
-
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
-
-import com.graphql_java_generator.annotation.GraphQLDirective;
 
 /**
  * Available queries.
@@ -39,8 +29,6 @@ import com.graphql_java_generator.annotation.GraphQLDirective;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLObjectType("Query")
-// @Transactional(readOnly = true)
-@SuppressWarnings("unused")
 public class Query {
 
 	/**

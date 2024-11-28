@@ -1,0 +1,36 @@
+plugins {
+	id 'java'
+}
+
+group = 'io.github.demonfiddler.evidence-engine'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+	sourceCompatibility = JavaVersion.VERSION_21
+}
+
+compileJava {
+    options.compilerArgs.add("-g")
+    options.compilerArgs.add("-parameters")
+}
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.slf4j:slf4j-api:2.0.16'
+	implementation 'com.graphql-java:graphql-java:22.3'
+	implementation 'com.graphql-java:graphql-java-extended-scalars:22.0'
+}
+
+// dependencyManagement {
+// }
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
