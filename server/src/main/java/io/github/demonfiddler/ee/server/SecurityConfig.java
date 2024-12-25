@@ -1,7 +1,7 @@
 
 /*----------------------------------------------------------------------------------------------------------------------
  * Evidence Engine: A system for managing evidence on arbitrary scientific topics.
- * Comprises an SQL database, GraphQL public API, Java app server and web client.
+ * Comprises an SQL database, GraphQL public API, Java app server, Java and web clients.
  * Copyright © 2024 Adrian Price. All rights reserved.
  *
  * This file is part of Evidence Engine.
@@ -20,6 +20,10 @@
 
 package io.github.demonfiddler.ee.server;
 
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -28,18 +32,38 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
+import io.github.demonfiddler.ee.server.util.ProfileUtils;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Autowired
+    ProfileUtils profileUtils;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(customizer -> customizer.ignoringRequestMatchers("/graphql")) //
+        // For now, only expose the actuator endpoints during integration testing.
+        if (profileUtils.isIntegrationTesting()) {
+            http.csrf(customizer -> customizer //
+                .ignoringRequestMatchers("/actuator/**")) //
+                .authorizeHttpRequests(customizer -> customizer //
+                    .requestMatchers(GET, "/actuator/**").permitAll() //
+                    .requestMatchers(POST, "/actuator/**").permitAll() //
+                );
+        }
+
+        // Authorise application endpoints.
+        http.csrf(customizer -> customizer //
+            .ignoringRequestMatchers("/graphql")) //
             .authorizeHttpRequests(customizer -> {
-                customizer.requestMatchers("/graphiql").authenticated() //
+                customizer //
+                    .requestMatchers("/graphiql").authenticated() //
                     .requestMatchers(HttpMethod.POST, "/graphql").permitAll() //
                     .anyRequest().authenticated();
-            }).formLogin(Customizer.withDefaults());
+            }) //
+            .formLogin(Customizer.withDefaults());
+
         return http.build();
     }
 

@@ -1,3 +1,22 @@
+------------------------------------------------------------------------------------------------------------------------
+-- Evidence Engine: A system for managing evidence on arbitrary scientific topics.
+-- Comprises an SQL database, GraphQL public API, Java app server, Java and web clients.
+-- Copyright © 2024 Adrian Price. All rights reserved.
+--
+-- This file is part of Evidence Engine.
+--
+-- Evidence Engine is free software: you can redistribute it and/or modify it under the terms of the
+-- GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License,
+-- or (at your option) any later version.
+--
+-- Evidence Engine is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+-- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+-- See the GNU Affero General Public License for more details.
+--
+-- You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
+-- If not, see <https://www.gnu.org/licenses/>. 
+------------------------------------------------------------------------------------------------------------------------
+
 INSERT INTO "country" ("alpha_2", "alpha_3", "numeric", "iso_name", "common_name", "year", "cc_tld", "notes") VALUES
 	('AD', 'AND', '020', 'Andorra', 'Andorra', '1974', '.ad', NULL),
 	('AE', 'ARE', '784', 'United Arab Emirates', 'United Arab Emirates', '1974', '.ae', 'Formerly Trucial States'),
@@ -347,3 +366,15 @@ INSERT INTO "transaction_kind" ("code", "label", "description") VALUES
 	('LNK', 'Link', 'One record was linked to another'),
 	('UNL', 'Unlink', 'Two linked records were unlinked'),
 	('UPD', 'Update', 'A record was updated');
+
+INSERT INTO "user" ("id", "login", "first_name", "last_name", "country_code", "password_hash")
+  VALUES (0, 'root', 'Root', 'User', 'GB', '');
+
+INSERT INTO "user_permission" ("user_id", "permission_code") VALUES
+  (0, 'ADM'),
+  (0, 'CRE'),
+  (0, 'DEL'),
+  (0, 'LNK'),
+  (0, 'REA'),
+  (0, 'UPD'),
+  (0, 'UPL');

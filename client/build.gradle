@@ -1,3 +1,22 @@
+/*----------------------------------------------------------------------------------------------------------------------
+ * Evidence Engine: A system for managing evidence on arbitrary scientific topics.
+ * Comprises an SQL database, GraphQL public API, Java app server, Java and web clients.
+ * Copyright © 2024 Adrian Price. All rights reserved.
+ *
+ * This file is part of Evidence Engine.
+ *
+ * Evidence Engine is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * Evidence Engine is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
+ * If not, see <https://www.gnu.org/licenses/>. 
+ *--------------------------------------------------------------------------------------------------------------------*/
+
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version "${springBootVersion}"
@@ -9,18 +28,15 @@ group = 'io.github.demonfiddler.evidence-engine'
 version = '0.0.1-SNAPSHOT'
 
 dependencies {
+	implementation project(':common')
 	implementation 'org.springframework.boot:spring-boot-starter-graphql'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation "org.springframework.boot:spring-boot-starter-websocket"  // used for subscriptions
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	// implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	// implementation 'org.springframework.boot:spring-boot-starter-data-rest'
-	// implementation 'org.springframework.boot:spring-boot-starter-hateoas'
 	implementation 'org.springframework.boot:spring-boot-starter-jersey'
 	implementation 'org.springframework.session:spring-session-core'
 	implementation "com.graphql-java-generator:graphql-java-client-runtime:${graphQLPluginVersion}"
 	implementation 'com.graphql-java:graphql-java-extended-scalars:22.0'
-	implementation project(':common')
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-webtestclient'
@@ -49,81 +65,10 @@ java {
 	sourceCompatibility = JavaVersion.VERSION_21
 }
 
-// sourceSets.test.java.srcDirs += '/build/generated/sources/graphqlClient'
-// sourceSets.test.resources.srcDirs += '/build/generated/resources/graphqlClient'
-// generateClientCodeConf {
-// 	// addRelayConnections = false
-// 	// copyRuntimeSources = false [needs com.graphql-java-generator:graphql-java-runtime dependency]
-// 	customScalars = [
-// 		[
-// 			graphQLTypeName: "Country",
-// 			javaType: "java.lang.String",
-// 			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.common.graphql.CustomScalars.COUNTRY"
-// 		], [
-// 			graphQLTypeName: "Date",
-// 			javaType: "java.time.LocalDate",
-// 			graphQLScalarTypeStaticField: "graphql.scalars.ExtendedScalars.Date"
-// 		], [
-// 			graphQLTypeName: "DateTime",
-// 			javaType: "java.time.OffsetDateTime",
-// 			graphQLScalarTypeStaticField: "graphql.scalars.ExtendedScalars.DateTime"
-// 		], [
-// 			graphQLTypeName: "ISSN",
-// 			javaType: "java.lang.String",
-// 			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.common.graphql.CustomScalars.ISSN"
-// 		], [
-// 			graphQLTypeName: "Long",
-// 			javaType: "java.lang.Long",
-// 			graphQLScalarTypeStaticField: "graphql.scalars.ExtendedScalars.GraphQLLong"
-// 		], [
-// 			graphQLTypeName: "URI",
-// 			javaType: "java.net.URI",
-// 			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.common.graphql.CustomScalars.URI"
-// 		], [
-// 			graphQLTypeName: "URL",
-// 			javaType: "java.net.URL",
-// 			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.common.graphql.CustomScalars.URL"
-// 		], [
-// 			graphQLTypeName: "Void",
-// 			javaType: "java.lang.Void",
-// 			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.common.graphql.CustomScalars.VOID"
-// 		]
-// 	]
-// javaTypeForIDType = 'java.lang.Long'
-// 	// enumPrefix = 
-// 	// enumSuffix = 
-// 	// generateDeprecatedRequestResponse = false
-// 	// inputPrefix = 
-// 	// inputSuffix = 
-// 	// interfacePrefix = 
-// 	// interfaceSuffix = 
-// 	// jsonGraphqlSchemaFilename = 
-// 	// maxTokens = 2147483647
-// 	packageName = 'io.github.demonfiddler.ee.client'
-// 	// queryMutationExecutionProtocol = http | webSocket
-// 	schemaFileFolder = '../server/src/main/resources/graphql' // default /src/main/resources
-// 	// schemaFilePattern = *.graphqls
-// 	// schemaPersonalizationFile = 
-// 	// separateUtilityClasses = true
-// 	// skipGenerationIfSchemaHasNotChanged = true
-// 	// sourceEncoding = UTF-8
-// 	// springBeanSuffix = 
-// 	targetResourceFolder = './build/generated/resources/graphqlClient'
-// 	targetSourceFolder = './build/generated/sources/graphqlClient'
-// 	// templates = 
-// 	// typePrefix = 
-// 	// typeSuffix = 
-// 	// unionPrefix = 
-// 	// unionSuffix = 
-// 	// useJakartaEE9 = false
-// }
-
 compileJava {
     options.compilerArgs.add("-g")
     options.compilerArgs.add("-parameters")
-	// dependsOn generateClientCode
 }
-//compileJava.dependsOn ':server:generateClientCode'
 
 ext {
 	set('snippetsDir', file("build/generated-snippets"))
@@ -131,10 +76,11 @@ ext {
 }
 
 tasks.named('test') {
+	dependsOn project(':server').tasks.named('bootIntegrationTestServerBG')
 	outputs.dir snippetsDir
 	useJUnitPlatform()
+	finalizedBy project(':server').tasks.named('terminateIntegrationTestServer')
 }
 
-// tasks.named('processTestResources') {
-// 	dependsOn('generateClientCode')
-// }
+// Uncomment to enable GraphQL client code generation (NOTE: the generated code has been heavily modified).
+//evaluate(new File("codegen.gradle"))

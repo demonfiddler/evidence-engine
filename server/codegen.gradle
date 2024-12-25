@@ -1,0 +1,109 @@
+/*----------------------------------------------------------------------------------------------------------------------
+ * Evidence Engine: A system for managing evidence on arbitrary scientific topics.
+ * Comprises an SQL database, GraphQL public API, Java app server, Java and web clients.
+ * Copyright © 2024 Adrian Price. All rights reserved.
+ *
+ * This file is part of Evidence Engine.
+ *
+ * Evidence Engine is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * Evidence Engine is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
+ * If not, see <https://www.gnu.org/licenses/>. 
+ *--------------------------------------------------------------------------------------------------------------------*/
+
+// This build script uses GraphQL-Java-Generator to generate server code
+
+tasks.named('compileJava') {
+	dependsOn('generateServerCode')
+}
+
+tasks.named('processTestResources') {
+	dependsOn('generateServerCode')
+}
+
+// GraphQL Java Generator configuration
+// Because we have modified the generated code, we now generate it only
+// for reference/comparison purposes, and we don't put it on the class path.
+//sourceSets.main.java.srcDirs += '/build/generated/sources/graphqlServer'
+//sourceSets.main.resources.srcDirs += '/build/generated/resources/graphqlServer'
+generateServerCodeConf {
+//	addRelayConnections = false
+//	batchMappingDataFetcherReturnType = Flux<V>
+	copyRuntimeSources = false // will go away in 2.0
+	customScalars = [
+		[
+			graphQLTypeName: "Country",
+			javaType: "java.lang.String",
+			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.common.graphql.CustomScalars.COUNTRY"
+		], [
+			graphQLTypeName: "Date",
+			javaType: "java.time.LocalDate",
+			graphQLScalarTypeStaticField: "graphql.scalars.ExtendedScalars.Date"
+		], [
+			graphQLTypeName: "DateTime",
+			javaType: "java.time.OffsetDateTime",
+			graphQLScalarTypeStaticField: "graphql.scalars.ExtendedScalars.DateTime"
+		], [
+			graphQLTypeName: "ISSN",
+			javaType: "java.lang.String",
+			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.common.graphql.CustomScalars.ISSN"
+		], [
+			graphQLTypeName: "Long",
+			javaType: "java.lang.Long",
+			graphQLScalarTypeStaticField: "graphql.scalars.ExtendedScalars.GraphQLLong"
+		], [
+			graphQLTypeName: "URI",
+			javaType: "java.net.URI",
+			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.common.graphql.CustomScalars.URI"
+		], [
+			graphQLTypeName: "URL",
+			javaType: "java.net.URL",
+			graphQLScalarTypeStaticField: "graphql.scalars.ExtendedScalars.Url"
+		], [
+			graphQLTypeName: "Void",
+			javaType: "java.lang.Void",
+			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.common.graphql.CustomScalars.VOID"
+		]
+	]
+//	enumPrefix = 
+//	enumSuffix = 
+	generateBatchLoaderEnvironment = true // will go away in 2.0
+	generateBatchMappingDataFetchers = true // false
+	generateDataFetcherForEveryFieldsWithArguments = true // false
+//	batchMappingMethodReturnType = ?
+//	generateDataLoaderForLists = false
+	generateJPAAnnotation = true // false
+//	ignoredSpringMappings =
+//	inputPrefix =
+//	inputSuffix = 
+//	interfacePrefix =
+//	interfaceSuffix = 
+	javaTypeForIDType = 'java.lang.Long' // 'java.util.UUID'
+//	jsonGraphqlSchemaFilename = src/main/resources/graphql/schema.graphqls
+//	maxTokens = Integer.MAX_VALUE (=2147483647)
+	packageName = 'io.github.demonfiddler.ee.server' // 'com.generated.graphql'
+//	queryMutationExecutionProtocol = 'http' | 'webSocket'
+//	scanBasePackages = 'io.github.demonfiddler.ee.server.util, io.github.demonfiddler.ee.server.impl, io.github.demonfiddler.ee.server.jpa'
+//	scanBasePackages = 'io.github.demonfiddler.ee.server'
+	schemaFileFolder = 'src/main/resources/graphql' // default 'src/main/resources'
+//	schemaFilePattern = '*.graphqls'
+	schemaPersonalizationFile = 'src/main/resources/graphql/personalization.json'
+	separateUtilityClasses = true // will go away in 2.0
+//	skipGenerationIfSchemaHasNotChanged = true // deprecated
+//	sourceEncoding = 'UTF-8'
+//	springBeanSuffix = ''
+//	targetResourceFolder = './build/generated/resources/graphqlServer'
+//	targetSourceFolder = './build/generated/sources/graphqlServer'
+//	templates = {} // see com.graphql_java_generator.plugin.CodeTemplate enum
+//	typePrefix = ''
+//	typeSuffix = ''
+//	unionPrefix = ''
+//	unionSuffix = ''
+	useJakartaEE9 = true
+}

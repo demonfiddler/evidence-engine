@@ -1,6 +1,6 @@
 /*----------------------------------------------------------------------------------------------------------------------
  * Evidence Engine: A system for managing evidence on arbitrary scientific topics.
- * Comprises an SQL database, GraphQL public API, Java app server and web client.
+ * Comprises an SQL database, GraphQL public API, Java app server, Java and web clients.
  * Copyright © 2024 Adrian Price. All rights reserved.
  *
  * This file is part of Evidence Engine.
@@ -21,12 +21,13 @@ package io.github.demonfiddler.ee.client;
 
 import org.junit.platform.suite.api.IncludeClassNamePatterns;
 import org.junit.platform.suite.api.SelectPackages;
-import org.junit.platform.suite.api.Suite;
+// import org.junit.platform.suite.api.Suite;
 import org.junit.platform.suite.api.SuiteDisplayName;
-import org.springframework.boot.test.context.SpringBootTest;
+// import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(classes = GraphQLClientMain.class)
-@Suite
+// I don't think we actually need this test suite, as the framework picks up all the tests automatically.
+// @SpringBootTest(classes = GraphQLClientMain.class)
+// @Suite
 @SuiteDisplayName("Evidence Engine Client Test Suite")
 @SelectPackages("io.github.demonfiddler.ee.client")
 @IncludeClassNamePatterns("^.*Tests?$")

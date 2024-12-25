@@ -1,6 +1,6 @@
 /*----------------------------------------------------------------------------------------------------------------------
  * Evidence Engine: A system for managing evidence on arbitrary scientific topics.
- * Comprises an SQL database, GraphQL public API, Java app server and web client.
+ * Comprises an SQL database, GraphQL public API, Java app server, Java and web clients.
  * Copyright © 2024 Adrian Price. All rights reserved.
  *
  * This file is part of Evidence Engine.
@@ -32,7 +32,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.graphql.execution.ClassNameTypeResolver;
 import org.springframework.graphql.execution.GraphQlSource;
@@ -50,15 +49,14 @@ import com.graphql_java_generator.server.util.GraphqlServerUtils;
 		"com.graphql_java_generator.util" },
 	// To allow Controller overriding, the controllers are declared as @Controller (mandatory for the
 	// AnnotatedControllerResolver), but they must be found by the autoconfiguration class to allow them to be
-	// overriding. So we prevent the default component scan to find them. They will be available as default bean in
-	// GraphQLPluginAutoConfiguration.
+	// overridden. So we prevent the default component scan from finding them. They will be available as default beans
+	// in GraphQLPluginAutoConfiguration.
 	excludeFilters = { @Filter(type = FilterType.REGEX,
 		pattern = "io\\.github\\.demonfiddler\\.ee\\.server\\.controller\\.[^.]*Controller") })
 @EnableJpaRepositories(basePackages = { "io.github.demonfiddler.ee.server.repository", "com.graphql_java_generator" })
 @EntityScan(basePackages = { "io.github.demonfiddler.ee.server.model", "com.graphql_java_generator" })
 @EnableConfigurationProperties
-@PropertySource("classpath:persistence.properties")
-public class GraphQLServerMain extends SpringBootServletInitializer {
+public class EvidenceEngineServer extends SpringBootServletInitializer {
 
 	@Autowired
 	protected ApplicationContext applicationContext;
@@ -67,7 +65,7 @@ public class GraphQLServerMain extends SpringBootServletInitializer {
 	GraphqlServerUtils graphqlServerUtils;
 
 	public static void main(String[] args) {
-		SpringApplication.run(GraphQLServerMain.class, args);
+		SpringApplication.run(EvidenceEngineServer.class, args);
 	}
 
 	/**

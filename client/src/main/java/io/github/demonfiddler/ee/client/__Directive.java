@@ -1,6 +1,6 @@
 /*----------------------------------------------------------------------------------------------------------------------
  * Evidence Engine: A system for managing evidence on arbitrary scientific topics.
- * Comprises an SQL database, GraphQL public API, Java app server and web client.
+ * Comprises an SQL database, GraphQL public API, Java app server, Java and web clients.
  * Copyright © 2024 Adrian Price. All rights reserved.
  *
  * This file is part of Evidence Engine.

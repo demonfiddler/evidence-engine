@@ -1,6 +1,6 @@
 /*----------------------------------------------------------------------------------------------------------------------
  * Evidence Engine: A system for managing evidence on arbitrary scientific topics.
- * Comprises an SQL database, GraphQL public API, Java app server and web client.
+ * Comprises an SQL database, GraphQL public API, Java app server, Java and web clients.
  * Copyright © 2024 Adrian Price. All rights reserved.
  *
  * This file is part of Evidence Engine.
@@ -17,17 +17,13 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-package io.github.demonfiddler.ee.server;
+package io.github.demonfiddler.ee.server.util;
 
-import org.springframework.boot.SpringApplication;
-// import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Profile;
 
-// Looks like there must only be one psv main entry point for Gradle to complete the build.
-// @SpringBootApplication
-public class EvidenceEngineServerApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(EvidenceEngineServerApplication.class, args);
-	}
-
+/**
+ * Do we even need this if we put the properties in application-integration-test.properties?
+ */
+@Profile("integration-test")
+public class IntegrationTestConfig {
 }

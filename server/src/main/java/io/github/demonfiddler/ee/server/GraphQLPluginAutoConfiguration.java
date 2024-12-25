@@ -1,6 +1,6 @@
 /*----------------------------------------------------------------------------------------------------------------------
  * Evidence Engine: A system for managing evidence on arbitrary scientific topics.
- * Comprises an SQL database, GraphQL public API, Java app server and web client.
+ * Comprises an SQL database, GraphQL public API, Java app server, Java and web clients.
  * Copyright © 2024 Adrian Price. All rights reserved.
  *
  * This file is part of Evidence Engine.
@@ -65,7 +65,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.ClaimController</code> bean must be a valid bean that can be
 	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "claimController")
@@ -79,7 +79,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.ClaimPageController</code> bean must be a valid bean that can be
 	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "claimPageController")
@@ -93,7 +93,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.DeclarationController</code> bean must be a valid bean that can
 	 * be discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work.
-	 * But it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * But it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "declarationController")
@@ -107,7 +107,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.DeclarationPageController</code> bean must be a valid bean that
 	 * can be discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to
-	 * work. But it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * work. But it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "declarationPageController")
@@ -121,7 +121,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.JournalController</code> bean must be a valid bean that can be
 	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "journalController")
@@ -135,7 +135,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.JournalPageController</code> bean must be a valid bean that can
 	 * be discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work.
-	 * But it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * But it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "journalPageController")
@@ -149,7 +149,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.LogController</code> bean must be a valid bean that can be
 	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "logController")
@@ -163,7 +163,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.LogPageController</code> bean must be a valid bean that can be
 	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "logPageController")
@@ -177,7 +177,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.PersonController</code> bean must be a valid bean that can be
 	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "personController")
@@ -191,7 +191,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.PersonPageController</code> bean must be a valid bean that can be
 	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "personPageController")
@@ -205,7 +205,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.PublicationController</code> bean must be a valid bean that can
 	 * be discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work.
-	 * But it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * But it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "publicationController")
@@ -219,7 +219,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.PublicationPageController</code> bean must be a valid bean that
 	 * can be discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to
-	 * work. But it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * work. But it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "publicationPageController")
@@ -233,7 +233,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.PublisherController</code> bean must be a valid bean that can be
 	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "publisherController")
@@ -247,7 +247,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.PublisherPageController</code> bean must be a valid bean that can
 	 * be discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work.
-	 * But it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * But it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "publisherPageController")
@@ -261,7 +261,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.QuotationController</code> bean must be a valid bean that can be
 	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "quotationController")
@@ -275,7 +275,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.QuotationPageController</code> bean must be a valid bean that can
 	 * be discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work.
-	 * But it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * But it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "quotationPageController")
@@ -289,7 +289,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.TopicController</code> bean must be a valid bean that can be
 	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "topicController")
@@ -303,7 +303,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.TopicPageController</code> bean must be a valid bean that can be
 	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "topicPageController")
@@ -317,7 +317,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.TopicRefController</code> bean must be a valid bean that can be
 	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "topicRefController")
@@ -331,7 +331,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.TopicRefPageController</code> bean must be a valid bean that can
 	 * be discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work.
-	 * But it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * But it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "topicRefPageController")
@@ -345,7 +345,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.UserController</code> bean must be a valid bean that can be
 	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "userController")
@@ -359,7 +359,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.UserPageController</code> bean must be a valid bean that can be
 	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "userPageController")
@@ -373,7 +373,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.QueryController</code> bean must be a valid bean that can be
 	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "queryController")
@@ -387,7 +387,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.MutationController</code> bean must be a valid bean that can be
 	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "mutationController")
@@ -401,7 +401,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.ITrackedEntityController</code> bean must be a valid bean that
 	 * can be discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to
-	 * work. But it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * work. But it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "iTrackedEntityController")
@@ -415,7 +415,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.ITopicalEntityController</code> bean must be a valid bean that
 	 * can be discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to
-	 * work. But it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * work. But it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "iTopicalEntityController")
@@ -429,7 +429,7 @@ public class GraphQLPluginAutoConfiguration {
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
 	 * The <code>io.github.demonfiddler.ee.server.util.IBaseEntityController</code> bean must be a valid bean that can
 	 * be discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work.
-	 * But it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * But it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "iBaseEntityController")
