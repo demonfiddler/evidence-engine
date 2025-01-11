@@ -1,4 +1,4 @@
-------------------------------------------------------------------------------------------------------------------------
+-- ----------------------------------------------------------------------------------------------------------------------
 -- Evidence Engine: A system for managing evidence on arbitrary scientific topics.
 -- Comprises an SQL database, GraphQL public API, Java app server, Java and web clients.
 -- Copyright © 2024 Adrian Price. All rights reserved.
@@ -15,7 +15,7 @@
 --
 -- You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
 -- If not, see <https://www.gnu.org/licenses/>. 
-------------------------------------------------------------------------------------------------------------------------
+-- ----------------------------------------------------------------------------------------------------------------------
 
 INSERT INTO "country" ("alpha_2", "alpha_3", "numeric", "iso_name", "common_name", "year", "cc_tld", "notes") VALUES
 	('AD', 'AND', '020', 'Andorra', 'Andorra', '1974', '.ad', NULL),
@@ -369,6 +369,8 @@ INSERT INTO "transaction_kind" ("code", "label", "description") VALUES
 
 INSERT INTO "user" ("id", "login", "first_name", "last_name", "country_code", "password_hash")
   VALUES (0, 'root', 'Root', 'User', 'GB', '');
+-- The following update is necessary because the database ignores the specified id value.
+UPDATE "user" SET "id" = 0 WHERE "login" = 'root';
 
 INSERT INTO "user_permission" ("user_id", "permission_code") VALUES
   (0, 'ADM'),

@@ -30,6 +30,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 // import org.springframework.transaction.annotation.Transactional;
+import org.springframework.lang.Nullable;
 
 import io.github.demonfiddler.ee.server.model.Log;
 import io.github.demonfiddler.ee.server.model.LogQueryFilter;
@@ -45,17 +46,17 @@ import jakarta.persistence.Query;
 public class CustomLogRepositoryImpl implements CustomLogRepository {
 
     /** Describes the elements of a query. */
-    static record QueryMetaData(String countQueryName, String selectQueryName, boolean hasEntityId,
-        boolean hasEntityKind, boolean hasUserId, boolean hasTransactionKinds, boolean hasFrom, boolean hasTo,
-        boolean isPaged, boolean isSorted) {
+    static record QueryMetaData(@Nullable LogQueryFilter filter, @NonNull Pageable pageable, String countQueryName,
+        String selectQueryName, boolean hasEntityId, boolean hasEntityKind, boolean hasUserId,
+        boolean hasTransactionKinds, boolean hasFrom, boolean hasTo, boolean isPaged, boolean isSorted) {
     }
 
     private static Logger logger = LoggerFactory.getLogger(CustomLogRepositoryImpl.class);
 
     @PersistenceContext
-    EntityManager em;
+    private EntityManager em;
     @Resource
-    EntityUtils util;
+    private EntityUtils entityUtils;
 
     /**
      * Returns metadata about a query and paging/sorting specification.
@@ -102,11 +103,11 @@ public class CustomLogRepositoryImpl implements CustomLogRepository {
             selectQueryName.append("To");
         }
         if (isSorted) {
-            util.appendOrderByToQueryName(selectQueryName, pageable);
+            entityUtils.appendOrderByToQueryName(selectQueryName, pageable);
         }
 
-        return new QueryMetaData(countQueryName.toString(), selectQueryName.toString(), hasEntityId, hasEntityKind,
-            hasUserId, hasTransactionKinds, hasFrom, hasTo, isPaged, isSorted);
+        return new QueryMetaData(filter, pageable, countQueryName.toString(), selectQueryName.toString(), hasEntityId,
+            hasEntityKind, hasUserId, hasTransactionKinds, hasFrom, hasTo, isPaged, isSorted);
     }
 
     /**
@@ -116,7 +117,7 @@ public class CustomLogRepositoryImpl implements CustomLogRepository {
      * @param m Query metadata.
      * @return An executable query pair.
      */
-    private QueryPair defineNamedQueries(LogQueryFilter filter, Pageable pageable, QueryMetaData m) {
+    private QueryPair defineNamedQueries(QueryMetaData m) {
         if (m.hasEntityId && !m.hasEntityKind)
             throw new IllegalArgumentException("entityKind must be specifed for entityId");
 
@@ -164,9 +165,8 @@ public class CustomLogRepositoryImpl implements CustomLogRepository {
         countBuf.insert(0, "SELECT COUNT(*)");
         countBuf.append(';');
         selectBuf.insert(0, "SELECT *");
-        if (m.isSorted) {
-            util.appendOrderByClause(selectBuf, pageable, "", false);
-        }
+        if (m.isSorted)
+            entityUtils.appendOrderByClause(selectBuf, m.pageable, "", false);
 
         // NOTE: since the COUNT query does not include an ORDER BY clause, multiple executions of the same SELECT query
         // with different ORDER BY clauses will result in the registration of multiple identical COUNT queries, each of
@@ -187,7 +187,7 @@ public class CustomLogRepositoryImpl implements CustomLogRepository {
     @Override
     // @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
-    public Page<Log> findByFilter(@NonNull LogQueryFilter filter, @NonNull Pageable pageable) {
+    public Page<Log> findByFilter(@Nullable LogQueryFilter filter, @NonNull Pageable pageable) {
         QueryMetaData m = getQueryMetaData(filter, pageable);
 
         QueryPair queries;
@@ -196,29 +196,29 @@ public class CustomLogRepositoryImpl implements CustomLogRepository {
             Query selectQuery = em.createNamedQuery(m.selectQueryName, Log.class);
             queries = new QueryPair(countQuery, selectQuery);
         } catch (IllegalArgumentException e) {
-            queries = defineNamedQueries(filter, pageable, m);
+            queries = defineNamedQueries(m);
         }
 
         Map<String, Object> params = new HashMap<>();
         if (m.hasEntityId)
-            params.put("entityId", filter.getEntityId());
+            params.put("entityId", m.filter.getEntityId());
         if (m.hasEntityKind)
-            params.put("entityKind", filter.getEntityKind().name());
+            params.put("entityKind", m.filter.getEntityKind().name());
         if (m.hasUserId)
-            params.put("userId", filter.getUserId());
+            params.put("userId", m.filter.getUserId());
         if (m.hasTransactionKinds)
-            params.put("transactionKinds", filter.getTransactionKinds().stream().map(t -> t.name()).toList());
+            params.put("transactionKinds", m.filter.getTransactionKinds().stream().map(t -> t.name()).toList());
         if (m.hasFrom)
-            params.put("from", filter.getFrom().toInstant().toEpochMilli());
+            params.put("from", m.filter.getFrom().toInstant().toEpochMilli());
         if (m.hasTo)
-            params.put("to", filter.getTo().toInstant().toEpochMilli());
-        util.setQueryParameters(queries, params);
+            params.put("to", m.filter.getTo().toInstant().toEpochMilli());
+        entityUtils.setQueryParameters(queries, params);
         if (m.isPaged)
-            util.setQueryPagination(queries.selectQuery(), pageable);
+            entityUtils.setQueryPagination(queries.selectQuery(), m.pageable);
 
         long total = (Long)queries.countQuery().getSingleResult();
         List<Log> content = queries.selectQuery().getResultList();
-        return new PageImpl<>(content, pageable, total);
+        return new PageImpl<>(content, m.pageable, total);
     }
 
 }

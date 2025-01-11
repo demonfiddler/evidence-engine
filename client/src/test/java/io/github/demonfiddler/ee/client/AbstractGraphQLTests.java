@@ -26,6 +26,8 @@ import io.github.demonfiddler.ee.client.util.QueryExecutor;
 
 abstract class AbstractGraphQLTests<T> {
 
+    protected static final String NL = System.lineSeparator();
+
     @Autowired
     protected QueryExecutor queryExecutor;
     @Autowired

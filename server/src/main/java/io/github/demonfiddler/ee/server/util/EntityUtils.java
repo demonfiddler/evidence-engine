@@ -208,17 +208,32 @@ public class EntityUtils {
 			if (pageable.isPaged()) {
 				page = repository.findAll(pageable);
 			} else {
-				List<T> content;
-				if (pageable.getSort().isSorted())
-					content = repository.findAll(pageable.getSort());
-				else
-					content = repository.findAll();
-				page = new PageImpl<>(content);
+				if (pageable.getSort().isSorted()) {
+					// If the sort involves non-native null precedence, call findByFilter() instead.
+					// TODO: TEMPORARY: JPA 3.2 NullHandling won't be supported until Spring Data JPA 4.0;
+					// see https://github.com/spring-projects/spring-data-jpa/issues/3729
+					if (usesNonNativeNullPrecedence(pageable.getSort()))
+						page = repository.findByFilter(null, pageable);
+					else
+						page = new PageImpl<>(repository.findAll(pageable.getSort()));
+				} else {
+					page = new PageImpl<>(repository.findAll());
+				}
 			}
 		} else {
 			page = repository.findByFilter(filter, pageable);
 		}
 		return toEntityPage(page, ctor);
+	}
+
+	/**
+	 * Indicates whether a sort involves a non-native null precedence specification.
+	 * @param sort The sort specification.
+	 * @return {@code true} if any of {@code sort}'s {@code Order}'s are other than
+	 * {@code NullHandling.NATIVE}.
+	 */
+	private boolean usesNonNativeNullPrecedence(Sort sort) {
+		return !sort.filter(o -> o.getNullHandling() != NullHandling.NATIVE).isEmpty();
 	}
 
 	/**
@@ -326,22 +341,42 @@ public class EntityUtils {
 				sql.append(NL);
 			else
 				sql.append(' ');
-			sql.append("ORDER BY ");
+			sql.append("ORDER BY");
+			if (multiline)
+				sql.append(NL).append("    ");
+			else
+				sql.append(' ');
 			boolean needsComma = false;
 			for (Order order : pageable.getSort().toList()) {
+				String property = toDbColumnName(order.getProperty());
 				if (needsComma) {
-					sql.append(", ");
+					sql.append(',');
 					if (multiline)
-						sql.append(NL);
+						sql.append(NL).append("    ");
+					else
+						sql.append(' ');
 				}
 				switch (order.getNullHandling()) {
 					case NULLS_FIRST:
-						sql.append("IF(").append(qualifier).append('\"').append(order.getProperty())
-							.append("\" is NULL, 0, 1), ");
+						// sql.append("IF(").append(qualifier).append('\"').append(property)
+						// 	.append("\" is NULL, 0, 1), ");
+						// CASE WHEN e."notes" IS NULL THEN 0 ELSE 1 END, 
+						sql.append("CASE WHEN ").append(qualifier).append('\"').append(property)
+							.append("\" is NULL THEN 0 ELSE 1 END, ");
+						if (multiline)
+							sql.append(NL).append("    ");
+						else
+							sql.append(' ');
 						break;
 					case NULLS_LAST:
-						sql.append("IF(").append(qualifier).append('\"').append(order.getProperty())
-							.append("\" is NULL, 1, 0), ");
+						// sql.append("IF(").append(qualifier).append('\"').append(property)
+						// 	.append("\" is NULL, 1, 0), ");
+						sql.append("CASE WHEN ").append(qualifier).append('\"').append(property)
+							.append("\" is NULL THEN 1 ELSE 0 END,");
+						if (multiline)
+							sql.append(NL).append("    ");
+						else
+							sql.append(' ');
 						break;
 					default:
 						break;
@@ -349,7 +384,7 @@ public class EntityUtils {
 				if (order.isIgnoreCase())
 					sql.append("LOWER(");
 				// TODO: map domain property name to database column name
-				sql.append(qualifier).append('\"').append(order.getProperty()).append('\"');
+				sql.append(qualifier).append('\"').append(property).append('\"');
 				if (order.isIgnoreCase())
 					sql.append(')');
 				sql.append(' ').append(order.getDirection());
@@ -366,8 +401,8 @@ public class EntityUtils {
 	public void appendOrderByToQueryName(StringBuilder queryName, Pageable pageable) {
 		queryName.append("OrderBy");
 		pageable.getSort().forEach(o -> queryName.append(StringUtils.firstToUpper(o.getProperty()))
-			.append(
-				o.getNullHandling() == NullHandling.NATIVE ? "" : StringUtils.firstToUpper(o.getNullHandling().name()))
+			.append(o.getNullHandling() == NullHandling.NATIVE //
+				? "" : StringUtils.firstToUpper(o.getNullHandling().name()))
 			.append(o.isIgnoreCase() ? "IgnoreCase" : "").append(StringUtils.firstToUpper(o.getDirection().name())));
 	}
 
@@ -379,7 +414,7 @@ public class EntityUtils {
 	 * @param pageable Specifies pagination.
 	 */
 	public void setQueryPagination(Query query, Pageable pageable) {
-		query.setFirstResult(pageable.getPageNumber() * pageable.getPageSize()).setMaxResults(pageable.getPageSize());
+		query.setFirstResult((int)pageable.getOffset()).setMaxResults(pageable.getPageSize());
 	}
 
 	/**
@@ -400,6 +435,24 @@ public class EntityUtils {
 	public void setQueryParameters(Query query, Map<String, Object> params) {
 		for (Entry<String, Object> param : params.entrySet())
 			query.setParameter(param.getKey(), param.getValue());
+	}
+
+	/**
+	 * Converts a JPA property name to a database name using the default camelCase -&gt; snake_case mapping.
+	 * @param property The JPA property name.
+	 * @return The database column name.
+	 */
+	private String toDbColumnName(String property) {
+		// TODO: see if there is a better way of doing this using the JPA API.
+		StringBuilder buf = new StringBuilder(property.length());
+		for (int i = 0; i < property.length(); i++) {
+			char c = property.charAt(i);
+			if (Character.isUpperCase(c))
+				buf.append('_').append(Character.toLowerCase(c));
+			else
+				buf.append(c);
+		}
+		return buf.toString();
 	}
 
 }

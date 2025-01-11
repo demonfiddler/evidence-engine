@@ -36,6 +36,7 @@ import io.github.demonfiddler.ee.common.util.StringUtils;
 import io.github.demonfiddler.ee.server.model.TopicRef;
 import io.github.demonfiddler.ee.server.model.TopicRefQueryFilter;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.ProfileUtils;
 import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -45,8 +46,8 @@ public class CustomTopicRefRepositoryImpl implements CustomTopicRefRepository {
 
     /** Describes the elements of a query. */
     static record QueryMetaData(String countQueryName, String selectQueryName, boolean hasTopicId, String entityName,
-        boolean hasEntityKind, boolean hasEntityId, boolean hasText, boolean isAdvanced, boolean isPaged,
-        boolean isSorted) {
+        boolean hasEntityKind, boolean hasEntityId, boolean hasText, boolean hasTextH2, boolean hasTextMariaDB,
+        boolean isAdvanced, boolean isPaged, boolean isSorted) {
     }
 
     static Logger logger = LoggerFactory.getLogger(CustomTopicRefRepositoryImpl.class);
@@ -55,6 +56,8 @@ public class CustomTopicRefRepositoryImpl implements CustomTopicRefRepository {
     EntityManager em;
     @Resource
     EntityUtils entityUtils;
+    @Resource
+    ProfileUtils profileUtils;
 
     /**
      * Returns metadata about a query and paging/sorting specification.
@@ -68,6 +71,8 @@ public class CustomTopicRefRepositoryImpl implements CustomTopicRefRepository {
         boolean hasEntityKind = filter.getEntityKind() != null;
         boolean hasEntityId = filter.getEntityId() != null;
         boolean hasText = filter.getText() != null;
+        boolean hasTextH2 = hasText && profileUtils.isIntegrationTesting();
+        boolean hasTextMariaDB = hasText && !profileUtils.isIntegrationTesting();
         boolean isAdvanced = hasText && filter.getAdvancedSearch();
         boolean isPaged = pageable.isPaged();
         boolean isSorted = pageable.getSort().isSorted();
@@ -106,7 +111,7 @@ public class CustomTopicRefRepositoryImpl implements CustomTopicRefRepository {
         }
 
         return new QueryMetaData(countQueryName.toString(), selectQueryName.toString(), hasTopicId, entityName,
-            hasEntityKind, hasEntityId, hasText, isAdvanced, isPaged, isSorted);
+            hasEntityKind, hasEntityId, hasText, hasTextH2, hasTextMariaDB, isAdvanced, isPaged, isSorted);
     }
 
     /**
@@ -118,74 +123,92 @@ public class CustomTopicRefRepositoryImpl implements CustomTopicRefRepository {
      */
     private QueryPair defineNamedQueries(TopicRefQueryFilter filter, Pageable pageable, QueryMetaData m) {
         /*
-         * SELECT "id", "topic_id", '${entityKind}' AS "entity_kind",
-         * "${entityName}_id", "locations"
-         * FROM topic_${entityName}_ref
+         * SELECT tr."id", tr."topic_id", '${entityKind}' AS "entity_kind", tr."${entityName}_id", tr."locations"
+         * FROM "topic_${entityName}_ref" tr
+         * JOIN
+         *     FT_SEARCH_DATA(:text, 0, 0) ft
+         * ON
+         *     ft."TABLE" = 'topic_${entityName}_ref'
+         *     AND tr."id" = ft."KEYS"[1]
          * WHERE
-         * topic_id = :topicId
-         * AND ${entityName}_id = :entityId
-         * AND MATCH(...) AGAINST (:text)
+         *     tr."topic_id" = :topicId
+         *     AND tr."${entityName}_id" = :entityId
+         *     AND MATCH(...) AGAINST (:text)
          * ${orderByClause}
          */
 
-        String template = """
-                        SELECT %s
-                        FROM topic_%s_ref
-                        %s%s;
-                        """;
-
-        String selectFields = "\"id\", \"topic_id\", '" + filter.getEntityKind() + "' AS \"entity_kind\", \""
-            + m.entityName + "_id\" AS \"entity_id\", \"locations\"";
+        String selectFields = "tr.\"id\", tr.\"topic_id\", '" + filter.getEntityKind() + "' AS \"entity_kind\", tr.\""
+            + m.entityName + "_id\" AS \"entity_id\", tr.\"locations\"";
         boolean needsAnd = false;
+        String tableName = "topic_" + m.entityName + "_ref";
+        StringBuilder ftJoinTable = new StringBuilder();
+        StringBuilder ftJoinCondition = new StringBuilder();
         StringBuilder whereClause = new StringBuilder();
         StringBuilder orderByClause = new StringBuilder();
         if (m.hasTopicId || m.hasEntityId || m.hasText) {
             whereClause.append("WHERE");
             if (m.hasTopicId) {
-                whereClause.append(NL).append("    \"topic_id\" = :topicId");
+                whereClause.append(NL) //
+                    .append("    tr.\"topic_id\" = :topicId");
                 needsAnd = true;
             }
             // if (m.hasEntityKind) {
-            // whereClause.append(NL)
-            // .append(" ");
+            // whereClause.append(NL) //
+            // .append("    ");
             // if (needsAnd)
             // whereClause.append("AND ");
             // whereClause.append("\"entity_kind\" = :entityKind");
             // needsAnd = true;
             // }
             if (m.hasEntityId) {
-                whereClause.append(NL).append("    ");
+                whereClause.append(NL) //
+                    .append("    ");
                 if (needsAnd)
                     whereClause.append("AND ");
-                whereClause.append('\"').append(m.entityName).append("_id\" = :entityId");
+                whereClause.append("tr.\"").append(m.entityName).append("_id\" = :entityId");
                 needsAnd = true;
             }
             if (m.hasText) {
-                whereClause.append(NL).append("    ");
-                if (needsAnd)
-                    whereClause.append("AND ");
-                whereClause.append("MATCH(\"locations\") AGAINST (:text");
-                if (m.isAdvanced)
-                    whereClause.append(" IN BOOLEAN MODE");
-                whereClause.append(')');
+                if (m.hasTextH2) {
+                    ftJoinTable.append(NL) //
+                        .append("JOIN").append(NL) //
+                        .append("    FT_SEARCH_DATA(:text, 0, 0) ft");
+                    ftJoinCondition.append(NL) //
+                        .append("ON").append(NL) //
+                        .append("    ft.\"TABLE\" = '").append(tableName).append("'").append(NL) //
+                        .append("    AND tr.\"id\" = ft.\"KEYS\"[1]");
+                } else if (m.hasTextMariaDB) {
+                    whereClause.append(NL) //
+                        .append("    ");
+                    if (needsAnd)
+                        whereClause.append("AND ");
+                    whereClause.append("MATCH(\"locations\") AGAINST (:text");
+                    if (m.isAdvanced)
+                        whereClause.append(" IN BOOLEAN MODE");
+                    whereClause.append(')');
+                }
             }
         }
-        if (m.isSorted) {
+        if (m.isSorted)
             entityUtils.appendOrderByClause(orderByClause, pageable, "", true);
-        }
 
-        // NOTE: since the COUNT query does not include an ORDER BY clause, multiple
-        // executions of the same SELECT query
-        // with different ORDER BY clauses will result in the registration of multiple
-        // identical COUNT queries, each of
-        // which will simply overwrite the previous definition. This is not a problem,
-        // but it is somewhat inefficient.
-        String countSql = String.format(template, "COUNT(*)", m.entityName, whereClause, "");
+        String template = """
+            SELECT %s
+            FROM "%s" tr
+            %s%s%s%s;
+            """;
+
+        // NOTE: since the COUNT query does not include an ORDER BY clause, multiple executions of the same SELECT
+        // query with different ORDER BY clauses will result in the registration of multiple identical COUNT queries,
+        // each of which will simply overwrite the previous definition. This is not a problem, but it is somewhat
+        // inefficient.
+        String countSql = String.format(template, "COUNT(*)", tableName, ftJoinTable, ftJoinCondition, whereClause, "");
         Query countQuery = em.createNativeQuery(countSql, Long.class);
         em.getEntityManagerFactory().addNamedQuery(m.countQueryName, countQuery);
         logger.debug("Defined query '{}' as:\n{}", m.countQueryName, countSql);
 
-        String selectSql = String.format(template, selectFields, m.entityName, whereClause, orderByClause);
+        String selectSql = String.format(template, selectFields, tableName, ftJoinTable, ftJoinCondition, whereClause,
+            orderByClause);
         Query selectQuery = em.createNativeQuery(selectSql, TopicRef.class);
         em.getEntityManagerFactory().addNamedQuery(m.selectQueryName, selectQuery);
         logger.debug("Defined query '{}' as:\n{}", m.selectQueryName, selectSql);

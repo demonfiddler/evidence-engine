@@ -29,6 +29,9 @@ import java.net.URI;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -66,7 +69,6 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 		new IsbnPub4Range((short)1, (short)8672, (short)8675), //
 		new IsbnPub4Range((short)1, (short)9730, (short)9877) //
 	};
-	private static Publication EXPECTED;
 	private static final String RESPONSE_SPEC = //
 		"""
 		{
@@ -129,9 +131,50 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 			accessed
 		}
 		""";
+	private static final String MINIMAL_RESPONSE_SPEC = //
+		"""
+		{
+			id
+			status%s
+			kind
+			title
+			abstract
+			notes
+		}
+		""";
+	private static final String PAGED_RESPONSE_SPEC = //
+		"""
+		{
+			hasContent
+			isEmpty
+			number
+			size
+			numberOfElements
+			totalPages
+			totalElements
+			isFirst
+			isLast
+			hasNext
+			hasPrevious
+			content {
+				id
+				status%s
+				kind
+				title
+				abstract
+				notes
+			}
+		}
+		""";
+	private static Publication EXPECTED;
+	private static List<Publication> PUBLICATIONS;
 
 	static boolean hasExpectedPublication() {
 		return EXPECTED != null;
+	}
+	
+	static boolean hasExpectedPublications() {
+		return PUBLICATIONS != null;
 	}
 
 	@Test
@@ -145,7 +188,6 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 		PublicationInput input = PublicationInput.builder() //
 			.withTitle("Test title") //
 			.withAuthorNames("Fred Bloggs\nJohn Doe") //
-			// .withJournalId(0L) //
 			.withKind(PublicationKind.JOUR) //
 			.withDate(date) //
 			.withYear(date.getYear()) //
@@ -243,6 +285,445 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 			expected.getIsbn(), expected.getUrl(), expected.getCached(), expected.getAccessed(), CRE, UPD, DEL);
 
 		EXPECTED = actual;
+	}
+
+	@Test
+	@Order(5)
+	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublication")
+	void createPublications() throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		// Create another eight publications and store them all in an array together with the previously created one.
+		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted("");
+		final int publicationCount = 8;
+		List<Publication> publications = new ArrayList<>(publicationCount + 1);
+		Publication publication0 = new Publication();
+		publication0.setId(EXPECTED.getId());
+		publication0.setStatus(EXPECTED.getStatus());
+		publication0.setKind(EXPECTED.getKind());
+		publication0.setTitle(EXPECTED.getTitle());
+		publication0.setAbstract(EXPECTED.getAbstract());
+		publication0.setNotes(EXPECTED.getNotes());
+		publication0.set__typename(EXPECTED.get__typename());
+		publications.add(publication0);
+		String[] numbers = {null, "one", "two", "three", "four", "five", "six", "seven", "eight"};
+		for (int i = 1; i <= publicationCount; i++) {
+			String authors = "Author " + numbers[i];
+			String _abstract = "Abstract " + numbers[i];
+			String title = "Publication " + numbers[i];
+			String notes = "Notes #" + i + (i > 4 ? " (filtered)" : "");
+			if (i % 2 != 0)
+				title = title.toUpperCase();
+			if (i % 3 == 0)
+				notes = null;
+			PublicationInput input = PublicationInput.builder() //
+				.withKind(PublicationKind.JOUR) //
+				.withAuthorNames(authors) //
+				.withTitle(title) //
+				.withAbstract(_abstract) //
+				.withNotes(notes) //
+				.withCached(false) //
+				.withPeerReviewed(false) //
+				.build();
+			publications.add(mutationExecutor.createPublication(responseSpec, input));
+		}
+		PUBLICATIONS = publications;
+	}
+
+	@Test
+	@Order(6)
+	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
+	void readPublications() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		PublicationPage actuals = queryExecutor.publications(responseSpec, null, null);
+
+		checkPage(actuals, PUBLICATIONS.size(), 1, PUBLICATIONS.size(), 0, false, false, true, true, PUBLICATIONS, true);
+	}
+
+	@Test
+	@Order(7)
+	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
+	void readPublicationsFiltered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+			.withText("filtered") //
+			.build();
+
+		List<Publication> expected = subList(PUBLICATIONS, 5, 7, 8);
+		PublicationPage actuals = queryExecutor.publications(responseSpec, filter, null);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		filter.setStatus(List.of(StatusKind.DRA));
+		actuals = queryExecutor.publications(responseSpec, filter, null);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		filter.setStatus(List.of(StatusKind.DEL));
+		filter.setText(null);
+		expected = subList(PUBLICATIONS, 0);
+		actuals = queryExecutor.publications(responseSpec, filter, null);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+	}
+
+	@Test
+	@Order(8)
+	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
+	void readPublicationsSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		OrderInput order = OrderInput.builder() //
+			.withProperty("title") //
+			.build();
+		List<OrderInput> orders = Collections.singletonList(order);
+		SortInput sort = SortInput.builder().withOrders(orders).build();
+		PageableInput pageSort = PageableInput.builder().withSort(sort).build();
+
+		// "PUBLICATION FIVE", "PUBLICATION ONE", "PUBLICATION SEVEN", "PUBLICATION THREE", "Publication eight",
+		// "Publication four", "Publication six", "Publication two", "Updated Test publication"
+		// 5, 1, 7, 3, 8, 4, 6, 2, 0
+		List<Publication> expected = subList(PUBLICATIONS, 5, 1, 7, 3, 8, 4, 6, 2, 0);
+
+		PublicationPage actuals = queryExecutor.publications(responseSpec, null, pageSort);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		order.setDirection(DirectionKind.ASC);
+		actuals = queryExecutor.publications(responseSpec, null, pageSort);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		order.setDirection(DirectionKind.DESC);
+		Collections.reverse(expected);
+		actuals = queryExecutor.publications(responseSpec, null, pageSort);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+	}
+
+	@Test
+	@Order(9)
+	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
+	void readPublicationsSortedIgnoreCase() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		OrderInput order = OrderInput.builder() //
+			.withProperty("title") //
+			.withIgnoreCase(true) //
+			.build();
+		List<OrderInput> orders = Collections.singletonList(order);
+		SortInput sort = SortInput.builder().withOrders(orders).build();
+		PageableInput pageSort = PageableInput.builder().withSort(sort).build();
+
+		// "Publication eight", "PUBLICATION FIVE", "Publication four", "PUBLICATION ONE", "PUBLICATION SEVEN",
+		// "Publication six", "PUBLICATION THREE", "Publication two", "Updated Test publication"
+		// 8, 5, 4, 1, 7, 6, 3, 2, 0
+		List<Publication> expected = subList(PUBLICATIONS, 8, 5, 4, 1, 7, 6, 3, 2, 0);
+
+		PublicationPage actuals = queryExecutor.publications(responseSpec, null, pageSort);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		order.setDirection(DirectionKind.ASC);
+		actuals = queryExecutor.publications(responseSpec, null, pageSort);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		order.setDirection(DirectionKind.DESC);
+		actuals = queryExecutor.publications(responseSpec, null, pageSort);
+		Collections.reverse(expected);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+	}
+
+	@Test
+	@Order(10)
+	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
+	void readPublicationsSortedNullOrdered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		OrderInput notesOrder = OrderInput.builder() //
+			.withProperty("notes") //
+			.withNullHandling(NullHandlingKind.NULLS_FIRST) //
+			.build();
+		OrderInput textOrder = OrderInput.builder() //
+			.withProperty("title") //
+			.build();
+		List<OrderInput> orders = List.of(notesOrder, textOrder);
+		SortInput sort = SortInput.builder().withOrders(orders).build();
+		PageableInput pageSort = PageableInput.builder().withSort(sort).build();
+
+		// null/"PUBLICATION THREE", null/"Publication six", "Notes #1"/"PUBLICATION ONE", "Notes #2"/"Publication two",
+		// "Notes #4"/"Publication four", "Notes #5 (filtered)"/"PUBLICATION FIVE", "Notes #7 (filtered)"/"PUBLICATION SEVEN",
+		// "Notes #8 (filtered)"/"Publication eight", "Updated Test notes"/"Updated Test publication"
+		// 3, 6, 1, 2, 4, 5, 7, 8, 0
+		List<Publication> expected = subList(PUBLICATIONS, 3, 6, 1, 2, 4, 5, 7, 8, 0);
+		PublicationPage actuals = queryExecutor.publications(responseSpec, null, pageSort);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		textOrder.setDirection(DirectionKind.ASC);
+		actuals = queryExecutor.publications(responseSpec, null, pageSort);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		textOrder.setDirection(DirectionKind.DESC);
+		actuals = queryExecutor.publications(responseSpec, null, pageSort);
+		expected = subList(PUBLICATIONS, 6, 3, 1, 2, 4, 5, 7, 8, 0);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		// "Notes #1"/"PUBLICATION ONE", "Notes #2"/"Publication two", "Notes #4"/"Publication four", "Notes #5 (filtered)"/"PUBLICATION FIVE",
+		// "Notes #7 (filtered)"/"PUBLICATION SEVEN", "Notes #8 (filtered)"/"Publication eight",
+		// "Updated Test notes"/"Updated Test publication", null/"PUBLICATION THREE", null/"Publication six",
+		// 1, 2, 4, 5, 7, 8, 0, 3, 6
+		notesOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
+		textOrder.setDirection(null);
+		expected = subList(PUBLICATIONS, 1, 2, 4, 5, 7, 8, 0, 3, 6);
+		actuals = queryExecutor.publications(responseSpec, null, pageSort);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		textOrder.setDirection(DirectionKind.ASC);
+		actuals = queryExecutor.publications(responseSpec, null, pageSort);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		textOrder.setDirection(DirectionKind.DESC);
+		actuals = queryExecutor.publications(responseSpec, null, pageSort);
+		expected = subList(PUBLICATIONS, 1, 2, 4, 5, 7, 8, 0, 6, 3);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+	}
+
+	@Test
+	@Order(11)
+	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
+	void readPublicationsFilteredSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+			.withText("filtered") //
+			.build();
+			OrderInput order = OrderInput.builder() //
+			.withProperty("title") //
+			.build();
+		List<OrderInput> orders = Collections.singletonList(order);
+		SortInput sort = SortInput.builder().withOrders(orders).build();
+		PageableInput pageSort = PageableInput.builder().withSort(sort).build();
+
+		// "PUBLICATION FIVE", "PUBLICATION SEVEN", "Publication eight"
+		// 5, 7, 8
+		List<Publication> expected = subList(PUBLICATIONS, 5, 7, 8);
+		PublicationPage actuals = queryExecutor.publications(responseSpec, filter, pageSort);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		order.setDirection(DirectionKind.ASC);
+		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		order.setDirection(DirectionKind.DESC);
+		Collections.reverse(expected);
+		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+	}
+
+	@Test
+	@Order(12)
+	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
+	void readPublicationsFilteredSortedNullHandling() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+			.withText("publication") //
+			.build();
+		OrderInput notesOrder = OrderInput.builder() //
+			.withProperty("notes") //
+			.withNullHandling(NullHandlingKind.NULLS_FIRST) //
+			.build();
+		OrderInput textOrder = OrderInput.builder() //
+			.withProperty("title") //
+			.build();
+		List<OrderInput> orders = List.of(notesOrder, textOrder);
+		SortInput sort = SortInput.builder().withOrders(orders).build();
+		PageableInput pageSort = PageableInput.builder().withSort(sort).build();
+
+		// null/"PUBLICATION THREE", null/"Publication six", "Notes #1"/"PUBLICATION ONE", "Notes #2"/"Publication two",
+		// "Notes #4"/"Publication four", "Notes #5 (filtered)"/"PUBLICATION FIVE", "Notes #7 (filtered)"/"PUBLICATION SEVEN",
+		// "Notes #8 (filtered)"/"Publication eight"
+		// 3, 6, 1, 2, 4, 5, 7, 8
+		List<Publication> expected = subList(PUBLICATIONS, 3, 6, 1, 2, 4, 5, 7, 8);
+		PublicationPage actuals = queryExecutor.publications(responseSpec, filter, pageSort);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		textOrder.setDirection(DirectionKind.ASC);
+		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		textOrder.setDirection(DirectionKind.DESC);
+		expected = subList(PUBLICATIONS, 6, 3, 1, 2, 4, 5, 7, 8);
+		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		// "Notes #1"/"PUBLICATION ONE", "Notes #2"/"Publication two", "Notes #4"/"Publication four", "Notes #5 (filtered)"/"PUBLICATION FIVE",
+		// "Notes #7 (filtered)"/"PUBLICATION SEVEN", "Notes #8 (filtered)"/"Publication eight",
+		// null/"PUBLICATION THREE", null/"Publication six",
+		// 1, 2, 4, 5, 7, 8, 3, 6
+		notesOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
+		textOrder.setDirection(DirectionKind.ASC);
+		expected = subList(PUBLICATIONS, 1, 2, 4, 5, 7, 8, 3, 6);
+		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		textOrder.setDirection(DirectionKind.DESC);
+		expected = subList(PUBLICATIONS, 1, 2, 4, 5, 7, 8, 6, 3);
+		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+	}
+
+	@Test
+	@Order(13)
+	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
+	void readPublicationsPaged() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+		// NOTE: assume that records are returned in the same order as the unpaged query.
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		PageableInput pageSort = PageableInput.builder() //
+			.withPageNumber(0) //
+			.withPageSize(4) //
+			.build();
+		PublicationPage actuals = queryExecutor.publications(responseSpec, null, pageSort);
+		List<Publication> expected = PUBLICATIONS.subList(0, 4);
+		checkPage(actuals, PUBLICATIONS.size(), 3, 4, 0, false, true, true, false, expected, true);
+
+		pageSort.setPageNumber(1);
+		expected = PUBLICATIONS.subList(4, 8);
+		actuals = queryExecutor.publications(responseSpec, null, pageSort);
+		checkPage(actuals, PUBLICATIONS.size(), 3, 4, 1, true, true, false, false, expected, true);
+
+		pageSort.setPageNumber(2);
+		expected = PUBLICATIONS.subList(8, 9);
+		actuals = queryExecutor.publications(responseSpec, null, pageSort);
+		checkPage(actuals, PUBLICATIONS.size(), 3, 4, 2, true, false, false, true, expected, true);
+	}	
+
+	@Test
+	@Order(14)
+	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
+	void readPublicationsPagedFiltered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+			.withText("filtered") //
+			.build();
+		PageableInput pageSort = PageableInput.builder() //
+			.withPageNumber(0) //
+			.withPageSize(2) //
+			.build();
+
+		List<Publication> expected = subList(PUBLICATIONS, 5, 7);
+		PublicationPage actuals = queryExecutor.publications(responseSpec, filter, pageSort);
+		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
+
+		pageSort.setPageNumber(1);
+		expected = subList(PUBLICATIONS,8);
+		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
+		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
+	}
+
+	@Test
+	@Order(15)
+	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
+	void readPublicationsPagedSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		OrderInput order = OrderInput.builder() //
+			.withProperty("title") //
+			.build();
+		List<OrderInput> orders = Collections.singletonList(order);
+		SortInput sort = SortInput.builder().withOrders(orders).build();
+		PageableInput pageSort = PageableInput.builder() //
+			.withSort(sort) //
+			.withPageNumber(0) //
+			.withPageSize(4) //
+			.build();
+
+		// "PUBLICATION FIVE", "PUBLICATION ONE", "PUBLICATION SEVEN", "PUBLICATION THREE", "Publication eight", "Publication four", "Publication six",
+		// "Publication two", "Updated Test publication"
+		// 5, 1, 7, 3, 8, 4, 6, 2, 0
+		List<Publication> expected = subList(PUBLICATIONS, 5, 1, 7, 3);
+		PublicationPage actuals = queryExecutor.publications(responseSpec, null, pageSort);
+		checkPage(actuals, 9, 3, 4, 0, false, true, true, false, expected, true);
+
+		pageSort.setPageNumber(1);
+		expected = subList(PUBLICATIONS, 8, 4, 6, 2);
+		actuals = queryExecutor.publications(responseSpec, null, pageSort);
+		checkPage(actuals, 9, 3, 4, 1, true, true, false, false, expected, true);
+
+		pageSort.setPageNumber(2);
+		expected = subList(PUBLICATIONS, 0);
+		actuals = queryExecutor.publications(responseSpec, null, pageSort);
+		checkPage(actuals, 9, 3, 4, 2, true, false, false, true, expected, true);
+
+		order.setDirection(DirectionKind.ASC);
+		pageSort.setPageNumber(0);
+		expected = subList(PUBLICATIONS, 5, 1, 7, 3);
+		actuals = queryExecutor.publications(responseSpec, null, pageSort);
+		checkPage(actuals, 9, 3, 4, 0, false, true, true, false, expected, true);
+
+		pageSort.setPageNumber(1);
+		expected = subList(PUBLICATIONS, 8, 4, 6, 2);
+		actuals = queryExecutor.publications(responseSpec, null, pageSort);
+		checkPage(actuals, 9, 3, 4, 1, true, true, false, false, expected, true);
+
+		pageSort.setPageNumber(2);
+		expected = subList(PUBLICATIONS, 0);
+		actuals = queryExecutor.publications(responseSpec, null, pageSort);
+		checkPage(actuals, 9, 3, 4, 2, true, false, false, true, expected, true);
+
+		order.setDirection(DirectionKind.DESC);
+		pageSort.setPageNumber(0);
+		expected = subList(PUBLICATIONS, 0, 2, 6, 4);
+		actuals = queryExecutor.publications(responseSpec, null, pageSort);
+		checkPage(actuals, 9, 3, 4, 0, false, true, true, false, expected, true);
+
+		pageSort.setPageNumber(1);
+		expected = subList(PUBLICATIONS, 8, 3, 7, 1);
+		actuals = queryExecutor.publications(responseSpec, null, pageSort);
+		checkPage(actuals, 9, 3, 4, 1, true, true, false, false, expected, true);
+
+		pageSort.setPageNumber(2);
+		expected = subList(PUBLICATIONS, 5);
+		actuals = queryExecutor.publications(responseSpec, null, pageSort);
+		checkPage(actuals, 9, 3, 4, 2, true, false, false, true, expected, true);
+	}
+
+	@Test
+	@Order(16)
+	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
+	void readPublicationsPagedFilteredSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+			.withText("filtered") //
+			.build();
+		OrderInput order = OrderInput.builder() //
+			.withProperty("title") //
+			.build();
+		List<OrderInput> orders = Collections.singletonList(order);
+		SortInput sort = SortInput.builder().withOrders(orders).build();
+		PageableInput pageSort = PageableInput.builder() //
+			.withSort(sort) //
+			.withPageNumber(0) //
+			.withPageSize(2) //
+			.build();
+
+		// "PUBLICATION FIVE", "PUBLICATION SEVEN", "Publication eight"
+		// 5, 7, 8
+		List<Publication> expected = subList(PUBLICATIONS, 5, 7);
+		PublicationPage actuals = queryExecutor.publications(responseSpec, filter, pageSort);
+		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
+
+		pageSort.setPageNumber(1);
+		expected = subList(PUBLICATIONS, 8);
+		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
+		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
+
+		order.setDirection(DirectionKind.ASC);
+		pageSort.setPageNumber(0);
+		expected = subList(PUBLICATIONS, 5, 7);
+		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
+		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
+
+		pageSort.setPageNumber(1);
+		expected = subList(PUBLICATIONS, 8);
+		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
+		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
+
+		order.setDirection(DirectionKind.DESC);
+		pageSort.setPageNumber(0);
+		expected = subList(PUBLICATIONS, 8, 7);
+		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
+		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
+
+		pageSort.setPageNumber(1);
+		expected = subList(PUBLICATIONS, 5);
+		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
+		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 	}
 
 	private void checkPublication(Publication publication, Publication expected, TransactionKind... txnKinds) {

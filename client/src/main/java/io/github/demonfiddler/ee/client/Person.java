@@ -659,6 +659,163 @@ public class Person implements IBaseEntity, ITrackedEntity, ITopicalEntity {
 			+ "}"; //$NON-NLS-1$
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((aliasValues == null) ? 0 : aliasValues.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((status == null) ? 0 : status.hashCode());
+		result = prime * result + ((created == null) ? 0 : created.hashCode());
+		result = prime * result + ((createdByUser == null) ? 0 : createdByUser.hashCode());
+		result = prime * result + ((updated == null) ? 0 : updated.hashCode());
+		result = prime * result + ((updatedByUser == null) ? 0 : updatedByUser.hashCode());
+		result = prime * result + ((log == null) ? 0 : log.hashCode());
+		result = prime * result + ((topicRefs == null) ? 0 : topicRefs.hashCode());
+		result = prime * result + ((title == null) ? 0 : title.hashCode());
+		result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
+		result = prime * result + ((nickname == null) ? 0 : nickname.hashCode());
+		result = prime * result + ((prefix == null) ? 0 : prefix.hashCode());
+		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
+		result = prime * result + ((suffix == null) ? 0 : suffix.hashCode());
+		result = prime * result + ((alias == null) ? 0 : alias.hashCode());
+		result = prime * result + ((notes == null) ? 0 : notes.hashCode());
+		result = prime * result + ((qualifications == null) ? 0 : qualifications.hashCode());
+		result = prime * result + ((country == null) ? 0 : country.hashCode());
+		result = prime * result + ((rating == null) ? 0 : rating.hashCode());
+		result = prime * result + ((checked == null) ? 0 : checked.hashCode());
+		result = prime * result + ((published == null) ? 0 : published.hashCode());
+		result = prime * result + ((__typename == null) ? 0 : __typename.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Person other = (Person)obj;
+		if (aliasValues == null) {
+			if (other.aliasValues != null)
+				return false;
+		} else if (!aliasValues.equals(other.aliasValues))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (status == null) {
+			if (other.status != null)
+				return false;
+		} else if (!status.equals(other.status))
+			return false;
+		if (created == null) {
+			if (other.created != null)
+				return false;
+		} else if (!created.equals(other.created))
+			return false;
+		if (createdByUser == null) {
+			if (other.createdByUser != null)
+				return false;
+		} else if (!createdByUser.equals(other.createdByUser))
+			return false;
+		if (updated == null) {
+			if (other.updated != null)
+				return false;
+		} else if (!updated.equals(other.updated))
+			return false;
+		if (updatedByUser == null) {
+			if (other.updatedByUser != null)
+				return false;
+		} else if (!updatedByUser.equals(other.updatedByUser))
+			return false;
+		if (log == null) {
+			if (other.log != null)
+				return false;
+		} else if (!log.equals(other.log))
+			return false;
+		if (topicRefs == null) {
+			if (other.topicRefs != null)
+				return false;
+		} else if (!topicRefs.equals(other.topicRefs))
+			return false;
+		if (title == null) {
+			if (other.title != null)
+				return false;
+		} else if (!title.equals(other.title))
+			return false;
+		if (firstName == null) {
+			if (other.firstName != null)
+				return false;
+		} else if (!firstName.equals(other.firstName))
+			return false;
+		if (nickname == null) {
+			if (other.nickname != null)
+				return false;
+		} else if (!nickname.equals(other.nickname))
+			return false;
+		if (prefix == null) {
+			if (other.prefix != null)
+				return false;
+		} else if (!prefix.equals(other.prefix))
+			return false;
+		if (lastName == null) {
+			if (other.lastName != null)
+				return false;
+		} else if (!lastName.equals(other.lastName))
+			return false;
+		if (suffix == null) {
+			if (other.suffix != null)
+				return false;
+		} else if (!suffix.equals(other.suffix))
+			return false;
+		if (alias == null) {
+			if (other.alias != null)
+				return false;
+		} else if (!alias.equals(other.alias))
+			return false;
+		if (notes == null) {
+			if (other.notes != null)
+				return false;
+		} else if (!notes.equals(other.notes))
+			return false;
+		if (qualifications == null) {
+			if (other.qualifications != null)
+				return false;
+		} else if (!qualifications.equals(other.qualifications))
+			return false;
+		if (country == null) {
+			if (other.country != null)
+				return false;
+		} else if (!country.equals(other.country))
+			return false;
+		if (rating == null) {
+			if (other.rating != null)
+				return false;
+		} else if (!rating.equals(other.rating))
+			return false;
+		if (checked == null) {
+			if (other.checked != null)
+				return false;
+		} else if (!checked.equals(other.checked))
+			return false;
+		if (published == null) {
+			if (other.published != null)
+				return false;
+		} else if (!published.equals(other.published))
+			return false;
+		if (__typename == null) {
+			if (other.__typename != null)
+				return false;
+		} else if (!__typename.equals(other.__typename))
+			return false;
+		return true;
+	}
+
 	public static Builder builder() {
 		return new Builder();
 	}

@@ -29,14 +29,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 // import org.springframework.transaction.annotation.Transactional;
+import org.springframework.lang.Nullable;
 
 import io.github.demonfiddler.ee.server.model.IBaseEntity;
 import io.github.demonfiddler.ee.server.model.ITrackedEntity;
 import io.github.demonfiddler.ee.server.model.TrackedEntityQueryFilter;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.ProfileUtils;
 import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -50,8 +54,9 @@ public abstract class CustomITrackedEntityRepositoryImpl<T extends IBaseEntity &
     implements CustomRepository<T, TrackedEntityQueryFilter> {
 
     /** Describes the elements of a query. */
-    static record QueryMetaData(String countQueryName, String selectQueryName, String entityName, boolean hasStatus,
-        boolean hasText, boolean isAdvanced, boolean isPaged, boolean isSorted) {
+    static record QueryMetaData(@Nullable TrackedEntityQueryFilter filter, @NonNull Pageable pageable,
+        String countQueryName, String selectQueryName, String entityName, boolean hasStatus, boolean hasText,
+        boolean hasTextH2, boolean hasTextMariaDB, boolean isAdvanced, boolean isPaged, boolean isSorted) {
     }
 
     private static Logger logger = LoggerFactory.getLogger(CustomITrackedEntityRepositoryImpl.class);
@@ -60,6 +65,8 @@ public abstract class CustomITrackedEntityRepositoryImpl<T extends IBaseEntity &
     protected EntityManager em;
     @Resource
     protected EntityUtils entityUtils;
+    @Resource
+    ProfileUtils profileUtils;
 
     /**
      * Returns the runtime entity class corresponding to the {@literal <T>} type parameter.
@@ -75,17 +82,29 @@ public abstract class CustomITrackedEntityRepositoryImpl<T extends IBaseEntity &
 
     /**
      * Returns metadata about a query and paging/sorting specification.
-     * @param filter The query filter, must not be {@code null}.
+     * @param filter The query filter.
      * @param pageable Specifies sorting and pagination, must not be {@code null}.
      * @return Query metadata.
      */
-    private QueryMetaData getQueryMetaData(@NonNull TrackedEntityQueryFilter filter, @NonNull Pageable pageable) {
-        boolean hasText = filter.getText() != null && !filter.getText().isEmpty();
+    @SuppressWarnings("null")
+    private QueryMetaData getQueryMetaData(@Nullable TrackedEntityQueryFilter filter, @NonNull Pageable pageable) {
+        boolean hasFilter = filter != null;
+        boolean hasText = hasFilter && filter.getText() != null && !filter.getText().isEmpty();
+        boolean hasTextH2 = hasText && profileUtils.isIntegrationTesting();
+        boolean hasTextMariaDB = hasText && !profileUtils.isIntegrationTesting();
         boolean isAdvanced = hasText && filter.getAdvancedSearch();
-        boolean hasStatus = filter.getStatus() != null && !filter.getStatus().isEmpty();
+        boolean hasStatus = hasFilter && filter.getStatus() != null && !filter.getStatus().isEmpty();
         boolean isPaged = pageable.isPaged();
         boolean isSorted = pageable.getSort().isSorted();
         String entityName = entityUtils.getEntityName(getEntityClass());
+
+        // For paged queries involving an H2 full text filter, we need to ensure that the sort order includes "id"
+        // because otherwise the join with FT_SEARCH_DATA can result in records duplicated across successive pages.
+        if (hasTextH2 && isPaged && pageable.getSort().filter(o -> o.getProperty().equals("id")).isEmpty()) {
+            Sort sort = pageable.getSort().and(Sort.by("id"));
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+            isSorted = true;
+        }
 
         StringBuilder countQueryName = new StringBuilder();
         StringBuilder selectQueryName = new StringBuilder();
@@ -107,35 +126,60 @@ public abstract class CustomITrackedEntityRepositoryImpl<T extends IBaseEntity &
             entityUtils.appendOrderByToQueryName(selectQueryName, pageable);
         }
 
-        return new QueryMetaData(countQueryName.toString(), selectQueryName.toString(), entityName, hasStatus, hasText,
-            isAdvanced, isPaged, isSorted);
+        return new QueryMetaData(filter, pageable, countQueryName.toString(), selectQueryName.toString(), entityName, hasStatus, hasText,
+            hasTextH2, hasTextMariaDB, isAdvanced, isPaged, isSorted);
     }
 
     /**
      * Defines and registers a pair of COUNT and SELECT named queries with the {@code EntityManagerFactory}.
-     * @param filter The query parameters, must not be {@code null}.
-     * @param pageable Specifies sorting and pagination, must not be {@code null}.
      * @param m Query metadata.
      * @return An executable query pair.
      */
-    private QueryPair defineNamedQueries(TrackedEntityQueryFilter filter, Pageable pageable, QueryMetaData m) {
+    private QueryPair defineNamedQueries(QueryMetaData m) {
+        /*
+        -- This is a representation of the template showing the local variables and their value expressions, as substituted for %s parameter markers.
+        SELECT COUNT(*) | DISTINCT e.*
+        FROM "%s" e --${entityName}
+        %s --${innerJoinOpen} = "INNER JOIN ("
+        %s --${ftJoinTable} = "    FT_SEARCH_DATA(:text, 0, 0) ft"
+        %s --${innerJoinClose} = ")\nON"
+        %s --${ftJoinCondition} = "    ft."TABLE" = '${entityName}'\n    AND "${entityName}"."id" = ft."KEYS"[1]"
+        %s --${whereClause} = "WHERE\n    MATCH (${getFulltextColumns()}) AGAINST (:text)\n    AND e."status" IN (:status)"
+        %s --${orderByClause} = "ORDER BY e."${sortField}" ${sortOrder}"
+        ;
+        */
+
         StringBuilder selectBuf = new StringBuilder();
-        selectBuf.append(NL).append("FROM \"").append(m.entityName).append("\"");
+        selectBuf.append(NL) //
+            .append("FROM \"").append(m.entityName).append("\" e");
         boolean needsAnd = false;
         if (m.hasText || m.hasStatus) {
-            selectBuf.append(NL).append("WHERE").append(NL).append("    ");
-            if (m.hasText) {
-                selectBuf.append("MATCH (").append(getFulltextColumns()).append(") AGAINST (:text");
-                if (m.isAdvanced)
-                    selectBuf.append(" IN BOOLEAN MODE");
-                selectBuf.append(')');
-                needsAnd = true;
+            if (m.hasTextH2) {
+                selectBuf.append(NL) //
+                    .append("INNER JOIN (").append(NL) //
+                    .append("    FT_SEARCH_DATA(:text, 0, 0) ft").append(NL) //
+                    .append(") ON").append(NL) //
+                    .append("    ft.\"TABLE\" = '").append(m.entityName).append('\'').append(NL) //
+                    .append("    AND e.\"id\" = ft.\"KEYS\"[1]");
             }
-            if (m.hasStatus) {
-                if (needsAnd) {
-                    selectBuf.append(NL).append("    AND ");
+            if (m.hasTextMariaDB || m.hasStatus) {
+                selectBuf.append(NL) //
+                    .append("WHERE").append(NL) //
+                    .append("    ");
+                if (m.hasTextMariaDB) {
+                    selectBuf.append("MATCH (").append(getFulltextColumns()).append(") AGAINST (:text");
+                    if (m.isAdvanced)
+                        selectBuf.append(" IN BOOLEAN MODE");
+                    selectBuf.append(')');
+                    needsAnd = true;
                 }
-                selectBuf.append("\"status\" IN (:status)");
+                if (m.hasStatus) {
+                    if (needsAnd) {
+                        selectBuf.append(NL) //
+                            .append("    AND ");
+                    }
+                    selectBuf.append("e.\"status\" IN (:status)");
+                }
             }
         }
         StringBuffer countBuf = new StringBuffer(selectBuf);
@@ -143,7 +187,7 @@ public abstract class CustomITrackedEntityRepositoryImpl<T extends IBaseEntity &
         countBuf.append(';');
         selectBuf.insert(0, "SELECT *");
         if (m.isSorted)
-            entityUtils.appendOrderByClause(selectBuf, pageable, "", true);
+            entityUtils.appendOrderByClause(selectBuf, m.pageable, "e.", true);
         selectBuf.append(';');
 
         // NOTE: since the COUNT query does not include an ORDER BY clause, multiple executions of the same SELECT query
@@ -165,7 +209,7 @@ public abstract class CustomITrackedEntityRepositoryImpl<T extends IBaseEntity &
     @Override
     // @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
-    public Page<T> findByFilter(@NonNull TrackedEntityQueryFilter filter, @NonNull Pageable pageable) {
+    public Page<T> findByFilter(@Nullable TrackedEntityQueryFilter filter, Pageable pageable) {
         QueryMetaData m = getQueryMetaData(filter, pageable);
 
         QueryPair queries;
@@ -174,21 +218,21 @@ public abstract class CustomITrackedEntityRepositoryImpl<T extends IBaseEntity &
             Query selectQuery = em.createNamedQuery(m.selectQueryName, getEntityClass());
             queries = new QueryPair(countQuery, selectQuery);
         } catch (IllegalArgumentException e) {
-            queries = defineNamedQueries(filter, pageable, m);
+            queries = defineNamedQueries(m);
         }
 
         Map<String, Object> params = new HashMap<>();
         if (m.hasText)
-            params.put("text", filter.getText());
+            params.put("text", m.filter.getText());
         if (m.hasStatus)
-            params.put("status", filter.getStatus().stream().map(s -> s.name()).toList());
+            params.put("status", m.filter.getStatus().stream().map(s -> s.name()).toList());
         entityUtils.setQueryParameters(queries, params);
         if (m.isPaged)
-            entityUtils.setQueryPagination(queries.selectQuery(), pageable);
-
+            entityUtils.setQueryPagination(queries.selectQuery(), m.pageable);
+        
         long total = (Long)queries.countQuery().getSingleResult();
         List<T> content = queries.selectQuery().getResultList();
-        return new PageImpl<>(content, pageable, total);
+        return new PageImpl<>(content, m.pageable, total);
     }
 
 }

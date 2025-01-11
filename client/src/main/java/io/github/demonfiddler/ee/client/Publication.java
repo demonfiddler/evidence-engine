@@ -690,6 +690,169 @@ public class Publication implements IBaseEntity, ITrackedEntity, ITopicalEntity 
 			+ "}"; //$NON-NLS-1$
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((aliasValues == null) ? 0 : aliasValues.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((status == null) ? 0 : status.hashCode());
+		result = prime * result + ((created == null) ? 0 : created.hashCode());
+		result = prime * result + ((createdByUser == null) ? 0 : createdByUser.hashCode());
+		result = prime * result + ((updated == null) ? 0 : updated.hashCode());
+		result = prime * result + ((updatedByUser == null) ? 0 : updatedByUser.hashCode());
+		result = prime * result + ((log == null) ? 0 : log.hashCode());
+		result = prime * result + ((topicRefs == null) ? 0 : topicRefs.hashCode());
+		result = prime * result + ((title == null) ? 0 : title.hashCode());
+		result = prime * result + ((authors == null) ? 0 : authors.hashCode());
+		result = prime * result + ((journal == null) ? 0 : journal.hashCode());
+		result = prime * result + ((kind == null) ? 0 : kind.hashCode());
+		result = prime * result + ((date == null) ? 0 : date.hashCode());
+		result = prime * result + ((year == null) ? 0 : year.hashCode());
+		result = prime * result + ((_abstract == null) ? 0 : _abstract.hashCode());
+		result = prime * result + ((notes == null) ? 0 : notes.hashCode());
+		result = prime * result + ((peerReviewed == null) ? 0 : peerReviewed.hashCode());
+		result = prime * result + ((doi == null) ? 0 : doi.hashCode());
+		result = prime * result + ((isbn == null) ? 0 : isbn.hashCode());
+		result = prime * result + ((url == null) ? 0 : url.hashCode());
+		result = prime * result + ((cached == null) ? 0 : cached.hashCode());
+		result = prime * result + ((accessed == null) ? 0 : accessed.hashCode());
+		result = prime * result + ((__typename == null) ? 0 : __typename.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Publication other = (Publication)obj;
+		if (aliasValues == null) {
+			if (other.aliasValues != null)
+				return false;
+		} else if (!aliasValues.equals(other.aliasValues))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (status == null) {
+			if (other.status != null)
+				return false;
+		} else if (!status.equals(other.status))
+			return false;
+		if (created == null) {
+			if (other.created != null)
+				return false;
+		} else if (!created.equals(other.created))
+			return false;
+		if (createdByUser == null) {
+			if (other.createdByUser != null)
+				return false;
+		} else if (!createdByUser.equals(other.createdByUser))
+			return false;
+		if (updated == null) {
+			if (other.updated != null)
+				return false;
+		} else if (!updated.equals(other.updated))
+			return false;
+		if (updatedByUser == null) {
+			if (other.updatedByUser != null)
+				return false;
+		} else if (!updatedByUser.equals(other.updatedByUser))
+			return false;
+		if (log == null) {
+			if (other.log != null)
+				return false;
+		} else if (!log.equals(other.log))
+			return false;
+		if (topicRefs == null) {
+			if (other.topicRefs != null)
+				return false;
+		} else if (!topicRefs.equals(other.topicRefs))
+			return false;
+		if (title == null) {
+			if (other.title != null)
+				return false;
+		} else if (!title.equals(other.title))
+			return false;
+		if (authors == null) {
+			if (other.authors != null)
+				return false;
+		} else if (!authors.equals(other.authors))
+			return false;
+		if (journal == null) {
+			if (other.journal != null)
+				return false;
+		} else if (!journal.equals(other.journal))
+			return false;
+		if (kind == null) {
+			if (other.kind != null)
+				return false;
+		} else if (!kind.equals(other.kind))
+			return false;
+		if (date == null) {
+			if (other.date != null)
+				return false;
+		} else if (!date.equals(other.date))
+			return false;
+		if (year == null) {
+			if (other.year != null)
+				return false;
+		} else if (!year.equals(other.year))
+			return false;
+		if (_abstract == null) {
+			if (other._abstract != null)
+				return false;
+		} else if (!_abstract.equals(other._abstract))
+			return false;
+		if (notes == null) {
+			if (other.notes != null)
+				return false;
+		} else if (!notes.equals(other.notes))
+			return false;
+		if (peerReviewed == null) {
+			if (other.peerReviewed != null)
+				return false;
+		} else if (!peerReviewed.equals(other.peerReviewed))
+			return false;
+		if (doi == null) {
+			if (other.doi != null)
+				return false;
+		} else if (!doi.equals(other.doi))
+			return false;
+		if (isbn == null) {
+			if (other.isbn != null)
+				return false;
+		} else if (!isbn.equals(other.isbn))
+			return false;
+		if (url == null) {
+			if (other.url != null)
+				return false;
+		} else if (!url.equals(other.url))
+			return false;
+		if (cached == null) {
+			if (other.cached != null)
+				return false;
+		} else if (!cached.equals(other.cached))
+			return false;
+		if (accessed == null) {
+			if (other.accessed != null)
+				return false;
+		} else if (!accessed.equals(other.accessed))
+			return false;
+		if (__typename == null) {
+			if (other.__typename != null)
+				return false;
+		} else if (!__typename.equals(other.__typename))
+			return false;
+		return true;
+	}
+
 	public static Builder builder() {
 		return new Builder();
 	}

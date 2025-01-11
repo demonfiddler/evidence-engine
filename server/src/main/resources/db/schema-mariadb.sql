@@ -1,4 +1,4 @@
-------------------------------------------------------------------------------------------------------------------------
+-- ----------------------------------------------------------------------------------------------------------------------
 -- Evidence Engine: A system for managing evidence on arbitrary scientific topics.
 -- Comprises an SQL database, GraphQL public API, Java app server, Java and web clients.
 -- Copyright © 2024 Adrian Price. All rights reserved.
@@ -15,7 +15,7 @@
 --
 -- You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
 -- If not, see <https://www.gnu.org/licenses/>. 
-------------------------------------------------------------------------------------------------------------------------
+-- ----------------------------------------------------------------------------------------------------------------------
 
 -- --------------------------------------------------------
 -- Host:                         DT-ADRIAN

@@ -113,7 +113,7 @@ tasks.register('bootIntegrationTestServer', BootRun) {
 	group = 'application'
 	description = 'Launch the integration test target server in the foreground'
     classpath = sourceSets.main.runtimeClasspath
-	main = 'io.github.demonfiddler.ee.server.EvidenceEngineServer'
+	mainClass = 'io.github.demonfiddler.ee.server.EvidenceEngineServer'
 	args(['--spring.profiles.active=integration-test'])
 	setIgnoreExitValue(true)
 }

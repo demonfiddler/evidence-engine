@@ -22,15 +22,19 @@ package io.github.demonfiddler.ee.client;
 import static com.google.common.truth.Truth.assertThat;
 import static io.github.demonfiddler.ee.client.truth.LogPageSubject.assertThat;
 import static io.github.demonfiddler.ee.client.truth.LogSubject.assertThat;
+import static io.github.demonfiddler.ee.client.truth.PageSubject.assertThat;
 import static io.github.demonfiddler.ee.client.truth.TrackedEntitySubject.assertThatTrackedEntity;
 import static io.github.demonfiddler.ee.client.truth.UserSubject.assertThat;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
+
+import com.google.common.truth.Ordered;
 
 abstract class TrackedEntityTests<T extends IBaseEntity & ITrackedEntity> extends AbstractGraphQLTests<T> {
 
@@ -85,6 +89,28 @@ abstract class TrackedEntityTests<T extends IBaseEntity & ITrackedEntity> extend
 		}
 	}
 
+	void checkPage(AbstractPage<T> actuals, int totalElements, int totalPages, int pageSize, int pageNumber,
+		boolean hasPrevious, boolean hasNext, boolean isFirst, boolean isLast, List<T> expected, boolean checkOrder) {
+
+		assertThat(actuals).hasTotalElements(totalElements);
+		assertThat(actuals).hasTotalPages(totalPages);
+		assertThat(actuals).hasSize(pageSize);
+		assertThat(actuals).hasNumber(pageNumber);
+		assertThat(actuals).hasPrevious().isEqualTo(hasPrevious);
+		assertThat(actuals).hasNext().isEqualTo(hasNext);
+		assertThat(actuals).isFirst().isEqualTo(isFirst);
+		assertThat(actuals).isLast().isEqualTo(isLast);
+		assertThat(actuals).hasContent().isTrue();
+		assertThat(actuals).isEmpty().isFalse();
+		if (expected != null) {
+			assertThat(actuals).hasNumberOfElements(expected.size());
+			assertThat(actuals).content().hasSize(expected.size());
+			Ordered content = assertThat(actuals).content().containsExactlyElementsIn(expected);
+			if (checkOrder)
+				content.inOrder();
+		}
+	}
+
 	void checkUser(User user) {
 		assertThat(user).isNotNull();
 		assertThat(user).hasId(0L);
@@ -99,6 +125,20 @@ abstract class TrackedEntityTests<T extends IBaseEntity & ITrackedEntity> extend
 
 	List<Long> getEntityIds(List<? extends IBaseEntity> entities) {
 		return entities == null ? Collections.emptyList() : entities.stream().map(e -> e.getId()).toList();
+	}
+
+	/**
+	 * Extracts the specified elements of a source list.
+	 * @param <T> The list element type.
+	 * @param src The source list.
+	 * @param indexes The indexes of {@code src} to extract.
+	 * @return A sub-list containing the specified elements from {@code src}.
+	 */
+	List<T> subList(List<T> src, int... indexes) {
+		List<T> subList = new ArrayList<>(indexes.length);
+		for (int i = 0; i < indexes.length; i++)
+			subList.add(src.get(indexes[i]));
+		return subList;
 	}
 
 }

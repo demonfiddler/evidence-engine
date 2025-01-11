@@ -99,10 +99,12 @@ interface ITrackedEntity {
         "How to format the result. SHORT format is per ```StatusKind``` enum."
         format: FormatKind = LONG
     ): String
+    # TODO: support date/time formatting
     "When the record was created."
     created: DateTime
     "The user who created the record."
     createdByUser: User
+    # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
@@ -170,10 +172,12 @@ type Claim implements IBaseEntity & ITrackedEntity & ITopicalEntity {
         "How to format the result. SHORT format is per ```StatusKind``` enum."
         format: FormatKind = LONG
     ): String
+    # TODO: support date/time formatting
     "When the record was created."
     created: DateTime
     "The user who created the record."
     createdByUser: User
+    # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
@@ -194,6 +198,7 @@ type Claim implements IBaseEntity & ITrackedEntity & ITopicalEntity {
     ): TopicRefPage!
     "The text of the claim."
     text: String
+    # TODO: support date formatting
     "The date the claim was made."
     date: Date
     "Added notes about the claim."
@@ -274,10 +279,12 @@ type Declaration implements IBaseEntity & ITrackedEntity & ITopicalEntity {
         "How to format the result. SHORT format is per ```StatusKind``` enum."
         format: FormatKind = LONG
     ): String
+    # TODO: support date/time formatting
     "When the record was created."
     created: DateTime
     "The user who created the record."
     createdByUser: User
+    # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
@@ -303,6 +310,7 @@ type Declaration implements IBaseEntity & ITrackedEntity & ITopicalEntity {
     ): String
     "The declaration name or title."
     title: String
+    # TODO: support date formatting
     "The date the declaration was published."
     date: Date
     "The country to which the declaration relates."
@@ -434,10 +442,12 @@ type Journal implements IBaseEntity & ITrackedEntity {
         "How to format the result. SHORT format is per ```StatusKind``` enum."
         format: FormatKind = LONG
     ): String
+    # TODO: support date/time formatting
     "When the record was created."
     created: DateTime
     "The user who created the record."
     createdByUser: User
+    # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
@@ -527,6 +537,7 @@ input LinkEntitiesInput {
 type Log implements IBaseEntity {
     "The unique identifier for the log entry."
     id: ID!
+    # TODO: support date/time formatting
     "The date-time stamp."
     timestamp: DateTime
     "The user who made the change."
@@ -625,10 +636,12 @@ type Person implements IBaseEntity & ITrackedEntity & ITopicalEntity {
         "How to format the result. SHORT format is per ```StatusKind``` enum."
         format: FormatKind = LONG
     ): String
+    # TODO: support date/time formatting
     "When the record was created."
     created: DateTime
     "The user who created the record."
     createdByUser: User
+    # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
@@ -749,10 +762,12 @@ type Publication implements IBaseEntity & ITrackedEntity & ITopicalEntity {
         "How to format the result. SHORT format is per ```StatusKind``` enum."
         format: FormatKind = LONG
     ): String
+    # TODO: support date/time formatting
     "When the record was created."
     created: DateTime
     "The user who created the record."
     createdByUser: User
+    # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
@@ -782,6 +797,7 @@ type Publication implements IBaseEntity & ITrackedEntity & ITopicalEntity {
         "How to format the result. SHORT format is per ```PublicationKind``` enum."
         format: FormatKind = LONG
     ): String
+    # TODO: support date formatting
     "The publication date."
     date: Date
     "The publication year."
@@ -800,6 +816,7 @@ type Publication implements IBaseEntity & ITrackedEntity & ITopicalEntity {
     url: URL
     "Flag to indicate that url content is cached on this application server."
     cached: Boolean
+    # TODO: support date formatting
     "The date the publication was accessed when compiling the database."
     accessed: Date
     # For now, these are all supported by parameterised top-level queries.
@@ -1000,10 +1017,12 @@ type Publisher implements IBaseEntity & ITrackedEntity {
         "How to format the result. SHORT format is per ```StatusKind``` enum."
         format: FormatKind = LONG
     ): String
+    # TODO: support date/time formatting
     "When the record was created."
     created: DateTime
     "The user who created the record."
     createdByUser: User
+    # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
@@ -1085,10 +1104,12 @@ type Quotation implements IBaseEntity & ITrackedEntity & ITopicalEntity {
         "How to format the result. SHORT format is per ```StatusKind``` enum."
         format: FormatKind = LONG
     ): String
+    # TODO: support date/time formatting
     "When the record was created."
     created: DateTime
     "The user who created the record."
     createdByUser: User
+    # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
@@ -1111,6 +1132,7 @@ type Quotation implements IBaseEntity & ITrackedEntity & ITopicalEntity {
     text: String
     "The person(s) who made the quotation."
     quotee: String
+    # TODO: support date formatting
     "The quotation date."
     date: Date
     "The quotation source."
@@ -1205,10 +1227,12 @@ type Topic implements IBaseEntity & ITrackedEntity {
         "How to format the result. SHORT format is per ```StatusKind``` enum."
         format: FormatKind = LONG
     ): String
+    # TODO: support date/time formatting
     "When the record was created."
     created: DateTime
     "The user who created the record."
     createdByUser: User
+    # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
@@ -1427,10 +1451,12 @@ type User implements IBaseEntity & ITrackedEntity {
         "How to format the result. SHORT format is per ```StatusKind``` enum."
         format: FormatKind = LONG
     ): String
+    # TODO: support date/time formatting
     "When the record was created."
     created: DateTime
     "The user who created the record."
     createdByUser: User
+    # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
