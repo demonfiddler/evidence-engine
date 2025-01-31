@@ -140,10 +140,10 @@ public abstract class CustomITrackedEntityRepositoryImpl<T extends IBaseEntity &
         -- This is a representation of the template showing the local variables and their value expressions, as substituted for %s parameter markers.
         SELECT COUNT(*) | DISTINCT e.*
         FROM "%s" e --${entityName}
-        %s --${innerJoinOpen} = "INNER JOIN ("
+        %s --${innerJoinOpen} = "JOIN ("
         %s --${ftJoinTable} = "    FT_SEARCH_DATA(:text, 0, 0) ft"
         %s --${innerJoinClose} = ")\nON"
-        %s --${ftJoinCondition} = "    ft."TABLE" = '${entityName}'\n    AND "${entityName}"."id" = ft."KEYS"[1]"
+        %s --${ftJoinCondition} = "    ft."TABLE" = '${entityName}'\n    AND ft."KEYS"[1] = "${entityName}"."id""
         %s --${whereClause} = "WHERE\n    MATCH (${getFulltextColumns()}) AGAINST (:text)\n    AND e."status" IN (:status)"
         %s --${orderByClause} = "ORDER BY e."${sortField}" ${sortOrder}"
         ;
@@ -156,11 +156,11 @@ public abstract class CustomITrackedEntityRepositoryImpl<T extends IBaseEntity &
         if (m.hasText || m.hasStatus) {
             if (m.hasTextH2) {
                 selectBuf.append(NL) //
-                    .append("INNER JOIN (").append(NL) //
+                    .append("JOIN (").append(NL) //
                     .append("    FT_SEARCH_DATA(:text, 0, 0) ft").append(NL) //
                     .append(") ON").append(NL) //
                     .append("    ft.\"TABLE\" = '").append(m.entityName).append('\'').append(NL) //
-                    .append("    AND e.\"id\" = ft.\"KEYS\"[1]");
+                    .append("    AND ft.\"KEYS\"[1] = e.\"id\"");
             }
             if (m.hasTextMariaDB || m.hasStatus) {
                 selectBuf.append(NL) //
@@ -185,7 +185,7 @@ public abstract class CustomITrackedEntityRepositoryImpl<T extends IBaseEntity &
         StringBuffer countBuf = new StringBuffer(selectBuf);
         countBuf.insert(0, "SELECT COUNT(*)");
         countBuf.append(';');
-        selectBuf.insert(0, "SELECT *");
+        selectBuf.insert(0, "SELECT e.*");
         if (m.isSorted)
             entityUtils.appendOrderByClause(selectBuf, m.pageable, "e.", true);
         selectBuf.append(';');
@@ -207,7 +207,6 @@ public abstract class CustomITrackedEntityRepositoryImpl<T extends IBaseEntity &
     }
 
     @Override
-    // @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
     public Page<T> findByFilter(@Nullable TrackedEntityQueryFilter filter, Pageable pageable) {
         QueryMetaData m = getQueryMetaData(filter, pageable);

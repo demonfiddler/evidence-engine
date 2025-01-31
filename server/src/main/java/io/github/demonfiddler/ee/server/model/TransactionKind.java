@@ -30,19 +30,21 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
 @GraphQLEnumType("TransactionKind")
 public enum TransactionKind {
 
-		CRE("CRE"), //$NON-NLS-1$
-		UPD("UPD"), //$NON-NLS-1$
-		DEL("DEL"), //$NON-NLS-1$
-		LNK("LNK"), //$NON-NLS-1$
-		UNL("UNL"); //$NON-NLS-1$
+	CRE("CRE", "Created"), //$NON-NLS-1$
+	UPD("UPD", "Updated"), //$NON-NLS-1$
+	DEL("DEL", "Deleted"), //$NON-NLS-1$
+	LNK("LNK", "Linked"), //$NON-NLS-1$
+	UNL("UNL", "Unlinked"); //$NON-NLS-1$
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different
 	// when the value in the GraphQL schema is a Java reserved keyword.
 	private final String graphQlValue;
+	private final String label;
 
-	private TransactionKind(String graphQlValue) {
+	private TransactionKind(String graphQlValue, String label) {
 		this.graphQlValue = graphQlValue;
+		this.label = label;
 	}
 
 	/**
@@ -53,6 +55,14 @@ public enum TransactionKind {
 	 */
 	public String graphQlValue() {
 		return this.graphQlValue;
+	}
+
+	/**
+	 * Returns the label for this constant.
+	 * @return the label
+	 */
+	public String label() {
+		return this.label;
 	}
 
 	/**

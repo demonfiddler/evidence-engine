@@ -38,20 +38,25 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.condition.EnabledIf;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.graphql_java_generator.exception.GraphQLRequestExecutionException;
 import com.graphql_java_generator.exception.GraphQLRequestPreparationException;
 
+import io.github.demonfiddler.ee.client.util.QueryExecutor;
+import io.github.demonfiddler.ee.client.util.SpringContext;
 import io.github.demonfiddler.ee.common.util.StringUtils;
 
 @SpringBootTest(classes = GraphQLClientMain.class)
+@Order(2)
 @TestMethodOrder(OrderAnnotation.class)
-class DeclarationTests extends TopicalEntityTests<Declaration> {
+class DeclarationTests extends AbstractTopicalEntityTests<Declaration> {
 
-	private static Declaration EXPECTED;
+	private static final Logger LOGGER = LoggerFactory.getLogger(DeclarationTests.class);
 
-	private static final String RESPONSE_SPEC = //
+	static final String RESPONSE_SPEC = //
 		"""
 		{
 			id
@@ -106,22 +111,20 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 			notes
 		}
 		""";
-	private static final String MINIMAL_RESPONSE_SPEC = //
+	static final String MINIMAL_RESPONSE_SPEC = //
 		"""
 		{
 			id
-			status%s
+			status
 			date
 			kind
 			title
 			notes
 		}
 		""";
-	private static final String PAGED_RESPONSE_SPEC = //
+	static final String PAGED_RESPONSE_SPEC = //
 		"""
 		{
-			hasContent
-			isEmpty
 			number
 			size
 			numberOfElements
@@ -131,6 +134,8 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 			isLast
 			hasNext
 			hasPrevious
+			isEmpty
+			hasContent
 			content {
 				id
 				status%s
@@ -141,14 +146,30 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 			}
 		}
 		""";
-	private static List<Declaration> DECLARATIONS;
+
+	static Declaration declaration;
+	static List<Declaration> declarations;
 
 	static boolean hasExpectedDeclaration() {
-		return EXPECTED != null;
+		return declaration != null;
 	}
 
 	static boolean hasExpectedDeclarations() {
-		return DECLARATIONS != null;
+		return declarations != null;
+	}
+
+	static void ensureExpectedDeclarations() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+		if (declarations == null) {
+			QueryExecutor queryExecutor = SpringContext.getApplicationContext().getBean(QueryExecutor.class);
+			String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+			List<Declaration> content = queryExecutor.declarations(responseSpec, null, null).getContent();
+			if (content.isEmpty()) {
+				LOGGER.error("Failed to initialise declations list from server");
+			} else {
+				declarations = content;
+				LOGGER.debug("Initialised declarations list from server");
+			}
+		}
 	}
 
 	@Test
@@ -156,7 +177,7 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 	void createDeclaration() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException, //
 		MalformedURLException {
 
-		EXPECTED = null;
+		declaration = null;
 
 		LocalDate declarationDate = LocalDate.now();
 		DeclarationInput input = DeclarationInput.builder() //
@@ -172,25 +193,25 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 		Declaration actual = mutationExecutor.createDeclaration(RESPONSE_SPEC, input);
 
 		LOG_DATES[0] = actual.getCreated();
-		checkDeclaration(actual, StatusKind.DRA.getLabel(), earliestUpdated, null, input.getKind().getLabel(),
+		checkDeclaration(actual, StatusKind.DRA.label(), earliestUpdated, null, input.getKind().label(),
 			input.getTitle(), declarationDate, "United Kingdom", input.getUrl(), input.getSignatories(),
 			input.getNotes(), CRE);
 
-		EXPECTED = actual;
+		declaration = actual;
 	}
 
 	@Test
 	@Order(2)
 	@EnabledIf("io.github.demonfiddler.ee.client.DeclarationTests#hasExpectedDeclaration")
 	void readDeclaration() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		Declaration expected = EXPECTED;
-		EXPECTED = null;
+		Declaration expected = declaration;
+		declaration = null;
 
 		Declaration actual = queryExecutor.declarationById(RESPONSE_SPEC, expected.getId());
 
 		checkDeclaration(actual, expected, CRE);
 
-		EXPECTED = actual;
+		declaration = actual;
 	}
 
 	@Test
@@ -199,8 +220,8 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 	void updateDeclaration()
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException, MalformedURLException {
 
-		Declaration expected = EXPECTED;
-		EXPECTED = null;
+		Declaration expected = declaration;
+		declaration = null;
 
 		DeclarationInput input = DeclarationInput.builder() //
 			.withId(expected.getId()) //
@@ -217,28 +238,28 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 
 		LOG_DATES[1] = actual.getUpdated();
 		checkDeclaration(actual, expected.getStatus(), expected.getCreated(), earliestUpdated,
-			input.getKind().getLabel(), input.getTitle(), input.getDate(), "United States of America", input.getUrl(),
+			input.getKind().label(), input.getTitle(), input.getDate(), "United States of America", input.getUrl(),
 			input.getSignatories(), input.getNotes(), CRE, UPD);
 
-		EXPECTED = actual;
+		declaration = actual;
 	}
 
 	@Test
 	@Order(4)
 	@EnabledIf("io.github.demonfiddler.ee.client.DeclarationTests#hasExpectedDeclaration")
 	void deleteDeclaration() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		Declaration expected = EXPECTED;
-		EXPECTED = null;
+		Declaration expected = declaration;
+		declaration = null;
 
 		OffsetDateTime earliestUpdated = OffsetDateTime.now();
 		Declaration actual = mutationExecutor.deleteDeclaration(RESPONSE_SPEC, expected.getId());
 
 		LOG_DATES[2] = actual.getUpdated();
-		checkDeclaration(actual, StatusKind.DEL.getLabel(), expected.getCreated(), earliestUpdated, expected.getKind(),
+		checkDeclaration(actual, StatusKind.DEL.label(), expected.getCreated(), earliestUpdated, expected.getKind(),
 			expected.getTitle(), expected.getDate(), expected.getCountry(), expected.getUrl(),
 			expected.getSignatories(), expected.getNotes(), CRE, UPD, DEL);
 
-		EXPECTED = actual;
+		declaration = actual;
 	}
 
 	@Test
@@ -246,17 +267,16 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 	@EnabledIf("io.github.demonfiddler.ee.client.DeclarationTests#hasExpectedDeclaration")
 	void createDeclarations() throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		// Create another eight declarations and store them all in an array together with the previously created one.
-		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted("");
 		final int declarationCount = 8;
 		List<Declaration> declarations = new ArrayList<>(declarationCount + 1);
 		Declaration declaration0 = new Declaration();
-		declaration0.setId(EXPECTED.getId());
-		declaration0.setDate(EXPECTED.getDate());
-		declaration0.setStatus(EXPECTED.getStatus());
-		declaration0.setKind(EXPECTED.getKind());
-		declaration0.setTitle(EXPECTED.getTitle());
-		declaration0.setNotes(EXPECTED.getNotes());
-		declaration0.set__typename(EXPECTED.get__typename());
+		declaration0.setId(declaration.getId());
+		declaration0.setDate(declaration.getDate());
+		declaration0.setStatus(declaration.getStatus());
+		declaration0.setKind(declaration.getKind());
+		declaration0.setTitle(declaration.getTitle());
+		declaration0.setNotes(declaration.getNotes());
+		declaration0.set__typename(declaration.get__typename());
 		declarations.add(declaration0);
 		String[] numbers = {null, "one", "two", "three", "four", "five", "six", "seven", "eight"};
 		for (int i = 1; i <= declarationCount; i++) {
@@ -273,9 +293,9 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 				.withTitle(title) //
 				.withNotes(notes) //
 				.build();
-			declarations.add(mutationExecutor.createDeclaration(responseSpec, input));
+			declarations.add(mutationExecutor.createDeclaration(MINIMAL_RESPONSE_SPEC, input));
 		}
-		DECLARATIONS = declarations;
+		DeclarationTests.declarations = declarations;
 	}
 
 	@Test
@@ -285,7 +305,7 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		DeclarationPage actuals = queryExecutor.declarations(responseSpec, null, null);
 
-		checkPage(actuals, DECLARATIONS.size(), 1, DECLARATIONS.size(), 0, false, false, true, true, DECLARATIONS, true);
+		checkPage(actuals, declarations.size(), 1, declarations.size(), 0, false, false, true, true, declarations, true);
 	}
 
 	@Test
@@ -299,7 +319,7 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 
 		// "Notes #5 (filtered)"/"DECLARATION FIVE", "Notes #7 (filtered)"/"DECLARATION SEVEN",
 		// "Notes #8 (filtered)"/"Declaration eight"
-		List<Declaration> expected = subList(DECLARATIONS, 5, 7, 8);
+		List<Declaration> expected = subList(declarations, 5, 7, 8);
 		DeclarationPage actuals = queryExecutor.declarations(responseSpec, filter, null);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -309,7 +329,7 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 
 		filter.setStatus(List.of(StatusKind.DEL));
 		filter.setText(null);
-		expected = subList(DECLARATIONS, 0);
+		expected = subList(declarations, 0);
 		actuals = queryExecutor.declarations(responseSpec, filter, null);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
@@ -327,9 +347,9 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 		PageableInput pageSort = PageableInput.builder().withSort(sort).build();
 
 		// "DECLARATION FIVE", "DECLARATION ONE", "DECLARATION SEVEN", "DECLARATION THREE", "Declaration eight",
-		// "Declaration four", "Declaration six", "Declaration two", "Updated Test declaration"
+		// "Declaration four", "Declaration six", "Declaration two", "Updated test declaration"
 		// 5, 1, 7, 3, 8, 4, 6, 2, 0
-		List<Declaration> expected = subList(DECLARATIONS, 5, 1, 7, 3, 8, 4, 6, 2, 0);
+		List<Declaration> expected = subList(declarations, 5, 1, 7, 3, 8, 4, 6, 2, 0);
 		DeclarationPage actuals = queryExecutor.declarations(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -357,9 +377,9 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 		PageableInput pageSort = PageableInput.builder().withSort(sort).build();
 
 		// "Declaration eight", "DECLARATION FIVE", "Declaration four", "DECLARATION ONE", "DECLARATION SEVEN",
-		// "Declaration six", "DECLARATION THREE", "Declaration two", "Updated Test declaration"
+		// "Declaration six", "DECLARATION THREE", "Declaration two", "Updated test declaration"
 		// 8, 5, 4, 1, 7, 6, 3, 2, 0
-		List<Declaration> expected = subList(DECLARATIONS, 8, 5, 4, 1, 7, 6, 3, 2, 0);
+		List<Declaration> expected = subList(declarations, 8, 5, 4, 1, 7, 6, 3, 2, 0);
 
 		DeclarationPage actuals = queryExecutor.declarations(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
@@ -393,9 +413,9 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 		// null/"DECLARATION THREE", null/"Declaration six", "Notes #1"/"DECLARATION ONE", "Notes #2"/"Declaration two",
 		// "Notes #4"/"Declaration four", "Notes #5 (filtered)"/"DECLARATION FIVE",
 		// "Notes #7 (filtered)"/"DECLARATION SEVEN", "Notes #8 (filtered)"/"Declaration eight",
-		// "Updated Test notes"/"Updated Test declaration"
+		// "Updated test notes"/"Updated test declaration"
 		// 3, 6, 1, 2, 4, 5, 7, 8, 0
-		List<Declaration> expected = subList(DECLARATIONS, 3, 6, 1, 2, 4, 5, 7, 8, 0);
+		List<Declaration> expected = subList(declarations, 3, 6, 1, 2, 4, 5, 7, 8, 0);
 
 		DeclarationPage actuals = queryExecutor.declarations(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
@@ -406,17 +426,17 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 
 		textOrder.setDirection(DirectionKind.DESC);
 		actuals = queryExecutor.declarations(responseSpec, null, pageSort);
-		expected = subList(DECLARATIONS, 6, 3, 1, 2, 4, 5, 7, 8, 0);
+		expected = subList(declarations, 6, 3, 1, 2, 4, 5, 7, 8, 0);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		// "Notes #1"/"DECLARATION ONE", "Notes #2"/"Declaration two", "Notes #4"/"Declaration four",
 		// "Notes #5 (filtered)"/"DECLARATION FIVE", "Notes #7 (filtered)"/"DECLARATION SEVEN",
-		// "Notes #8 (filtered)"/"Declaration eight", "Updated Test notes"/"Updated Test declaration",
+		// "Notes #8 (filtered)"/"Declaration eight", "Updated test notes"/"Updated test declaration",
 		// null/"DECLARATION THREE", null/"Declaration six",
 		// 1, 2, 4, 5, 7, 8, 0, 3, 6
 		notesOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		textOrder.setDirection(null);
-		expected = subList(DECLARATIONS, 1, 2, 4, 5, 7, 8, 0, 3, 6);
+		expected = subList(declarations, 1, 2, 4, 5, 7, 8, 0, 3, 6);
 		actuals = queryExecutor.declarations(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -426,7 +446,7 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 
 		textOrder.setDirection(DirectionKind.DESC);
 		actuals = queryExecutor.declarations(responseSpec, null, pageSort);
-		expected = subList(DECLARATIONS, 1, 2, 4, 5, 7, 8, 0, 6, 3);
+		expected = subList(declarations, 1, 2, 4, 5, 7, 8, 0, 6, 3);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
 
@@ -447,7 +467,7 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 
 		// "DECLARATION FIVE", "DECLARATION SEVEN", "Declaration eight"
 		// 5, 7, 8
-		List<Declaration> expected = subList(DECLARATIONS, 5, 7, 8);
+		List<Declaration> expected = subList(declarations, 5, 7, 8);
 		DeclarationPage actuals = queryExecutor.declarations(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -484,7 +504,7 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 		// "Notes #2"/"Declaration two", "Notes #4"/"Declaration four", "Notes #5 (filtered)"/"DECLARATION FIVE",
 		// "Notes #7 (filtered)"/"DECLARATION SEVEN", "Notes #8 (filtered)"/"Declaration eight"
 		// 3, 6, 1, 2, 4, 5, 7, 8
-		List<Declaration> expected = subList(DECLARATIONS, 3, 6, 1, 2, 4, 5, 7, 8);
+		List<Declaration> expected = subList(declarations, 3, 6, 1, 2, 4, 5, 7, 8);
 		DeclarationPage actuals = queryExecutor.declarations(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -493,7 +513,7 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		textOrder.setDirection(DirectionKind.DESC);
-		expected = subList(DECLARATIONS, 6, 3, 1, 2, 4, 5, 7, 8);
+		expected = subList(declarations, 6, 3, 1, 2, 4, 5, 7, 8);
 		actuals = queryExecutor.declarations(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -503,12 +523,12 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 		// 1, 2, 4, 5, 7, 8, 3, 6
 		notesOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		textOrder.setDirection(DirectionKind.ASC);
-		expected = subList(DECLARATIONS, 1, 2, 4, 5, 7, 8, 3, 6);
+		expected = subList(declarations, 1, 2, 4, 5, 7, 8, 3, 6);
 		actuals = queryExecutor.declarations(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		textOrder.setDirection(DirectionKind.DESC);
-		expected = subList(DECLARATIONS, 1, 2, 4, 5, 7, 8, 6, 3);
+		expected = subList(declarations, 1, 2, 4, 5, 7, 8, 6, 3);
 		actuals = queryExecutor.declarations(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
@@ -517,26 +537,26 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 	@Order(13)
 	@EnabledIf("io.github.demonfiddler.ee.client.DeclarationTests#hasExpectedDeclarations")
 	void readDeclarationsPaged() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		// NOTE: assume that records are returned in the same order as the unpaged query.
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		// NOTE: assume that records are returned in the same order as the unpaged query.
 		PageableInput pageSort = PageableInput.builder() //
 			.withPageNumber(0) //
 			.withPageSize(4) //
 			.build();
 		
-		List<Declaration> expected = DECLARATIONS.subList(0, 4);
+		List<Declaration> expected = declarations.subList(0, 4);
 		DeclarationPage actuals = queryExecutor.declarations(responseSpec, null, pageSort);
-		checkPage(actuals, DECLARATIONS.size(), 3, 4, 0, false, true, true, false, expected, true);
+		checkPage(actuals, declarations.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = DECLARATIONS.subList(4, 8);
+		expected = declarations.subList(4, 8);
 		actuals = queryExecutor.declarations(responseSpec, null, pageSort);
-		checkPage(actuals, DECLARATIONS.size(), 3, 4, 1, true, true, false, false, expected, true);
+		checkPage(actuals, declarations.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = DECLARATIONS.subList(8, 9);
+		expected = declarations.subList(8, 9);
 		actuals = queryExecutor.declarations(responseSpec, null, pageSort);
-		checkPage(actuals, DECLARATIONS.size(), 3, 4, 2, true, false, false, true, expected, true);
+		checkPage(actuals, declarations.size(), 3, 4, 2, true, false, false, true, expected, true);
 	}	
 
 	@Test
@@ -552,12 +572,12 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 			.withPageSize(2) //
 			.build();
 
-		List<Declaration> expected = subList(DECLARATIONS, 5, 7);
+		List<Declaration> expected = subList(declarations, 5, 7);
 		DeclarationPage actuals = queryExecutor.declarations(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(DECLARATIONS,8);
+		expected = subList(declarations,8);
 		actuals = queryExecutor.declarations(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 	}
@@ -579,53 +599,53 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 			.build();
 
 		// "DECLARATION FIVE", "DECLARATION ONE", "DECLARATION SEVEN", "DECLARATION THREE", "Declaration eight",
-		// "Declaration four", "Declaration six", "Declaration two", "Updated Test declaration"
+		// "Declaration four", "Declaration six", "Declaration two", "Updated test declaration"
 		// 5, 1, 7, 3, 8, 4, 6, 2, 0
-		List<Declaration> expected = subList(DECLARATIONS, 5, 1, 7, 3);
+		List<Declaration> expected = subList(declarations, 5, 1, 7, 3);
 		DeclarationPage actuals = queryExecutor.declarations(responseSpec, null, pageSort);
-		checkPage(actuals, DECLARATIONS.size(), 3, 4, 0, false, true, true, false, expected, true);
+		checkPage(actuals, declarations.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(DECLARATIONS, 8, 4, 6, 2);
+		expected = subList(declarations, 8, 4, 6, 2);
 		actuals = queryExecutor.declarations(responseSpec, null, pageSort);
-		checkPage(actuals, DECLARATIONS.size(), 3, 4, 1, true, true, false, false, expected, true);
+		checkPage(actuals, declarations.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(DECLARATIONS, 0);
+		expected = subList(declarations, 0);
 		actuals = queryExecutor.declarations(responseSpec, null, pageSort);
-		checkPage(actuals, DECLARATIONS.size(), 3, 4, 2, true, false, false, true, expected, true);
+		checkPage(actuals, declarations.size(), 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(DECLARATIONS, 5, 1, 7, 3);
+		expected = subList(declarations, 5, 1, 7, 3);
 		actuals = queryExecutor.declarations(responseSpec, null, pageSort);
-		checkPage(actuals, DECLARATIONS.size(), 3, 4, 0, false, true, true, false, expected, true);
+		checkPage(actuals, declarations.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(DECLARATIONS, 8, 4, 6, 2);
+		expected = subList(declarations, 8, 4, 6, 2);
 		actuals = queryExecutor.declarations(responseSpec, null, pageSort);
-		checkPage(actuals, DECLARATIONS.size(), 3, 4, 1, true, true, false, false, expected, true);
+		checkPage(actuals, declarations.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(DECLARATIONS, 0);
+		expected = subList(declarations, 0);
 		actuals = queryExecutor.declarations(responseSpec, null, pageSort);
-		checkPage(actuals, DECLARATIONS.size(), 3, 4, 2, true, false, false, true, expected, true);
+		checkPage(actuals, declarations.size(), 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(DECLARATIONS, 0, 2, 6, 4);
+		expected = subList(declarations, 0, 2, 6, 4);
 		actuals = queryExecutor.declarations(responseSpec, null, pageSort);
-		checkPage(actuals, DECLARATIONS.size(), 3, 4, 0, false, true, true, false, expected, true);
+		checkPage(actuals, declarations.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(DECLARATIONS, 8, 3, 7, 1);
+		expected = subList(declarations, 8, 3, 7, 1);
 		actuals = queryExecutor.declarations(responseSpec, null, pageSort);
-		checkPage(actuals, DECLARATIONS.size(), 3, 4, 1, true, true, false, false, expected, true);
+		checkPage(actuals, declarations.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(DECLARATIONS, 5);
+		expected = subList(declarations, 5);
 		actuals = queryExecutor.declarations(responseSpec, null, pageSort);
-		checkPage(actuals, DECLARATIONS.size(), 3, 4, 2, true, false, false, true, expected, true);
+		checkPage(actuals, declarations.size(), 3, 4, 2, true, false, false, true, expected, true);
 	}
 
 	@Test
@@ -649,34 +669,34 @@ class DeclarationTests extends TopicalEntityTests<Declaration> {
 
 		// "DECLARATION FIVE", "DECLARATION SEVEN", "Declaration eight"
 		// 5, 7, 8
-		List<Declaration> expected = subList(DECLARATIONS, 5, 7);
+		List<Declaration> expected = subList(declarations, 5, 7);
 		DeclarationPage actuals = queryExecutor.declarations(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(DECLARATIONS, 8);
+		expected = subList(declarations, 8);
 		actuals = queryExecutor.declarations(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(DECLARATIONS, 5, 7);
+		expected = subList(declarations, 5, 7);
 		actuals = queryExecutor.declarations(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(DECLARATIONS, 8);
+		expected = subList(declarations, 8);
 		actuals = queryExecutor.declarations(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(DECLARATIONS, 8, 7);
+		expected = subList(declarations, 8, 7);
 		actuals = queryExecutor.declarations(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(DECLARATIONS, 5);
+		expected = subList(declarations, 5);
 		actuals = queryExecutor.declarations(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 	}

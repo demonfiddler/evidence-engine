@@ -37,7 +37,6 @@ import org.springframework.lang.Nullable;
 
 import io.github.demonfiddler.ee.server.model.Topic;
 import io.github.demonfiddler.ee.server.model.TopicQueryFilter;
-import io.github.demonfiddler.ee.server.model.TrackedEntityQueryFilter;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
 import io.github.demonfiddler.ee.server.util.ProfileUtils;
 import jakarta.annotation.Resource;
@@ -48,7 +47,7 @@ import jakarta.persistence.Query;
 public class CustomTopicRepositoryImpl implements CustomTopicRepository {
 
     /** Describes the elements of a query. */
-    static record QueryMetaData(@Nullable TrackedEntityQueryFilter filter, @NonNull Pageable pageable,
+    static record QueryMetaData(@Nullable TopicQueryFilter filter, @NonNull Pageable pageable,
         String countQueryName, String selectQueryName, boolean hasParentId, boolean hasText, boolean hasTextH2,
         boolean hasTextMariaDB, boolean isAdvanced, boolean hasStatus, boolean isRecursive, boolean isPaged,
         boolean isSorted) {
@@ -139,17 +138,19 @@ public class CustomTopicRepositoryImpl implements CustomTopicRepository {
 
         // NOTE: status predicate needs to be applied to both topics and entities but parentId predicate is applied to
         // the recursive predicate when recursive or the main select when non-recursive.
-        if (!m.isRecursive || m.hasText || m.hasStatus) {
+        if (!m.isRecursive && m.hasParentId || m.hasText || m.hasStatus) {
             boolean needsAnd = false;
-            whereClause.append(NL) //
-                .append("WHERE");
-            if (!m.isRecursive) {
+            if (m.hasParentId || m.hasTextMariaDB || m.hasStatus) {
+                whereClause.append(NL) //
+                    .append("WHERE");
+            }
+            if (m.hasParentId) {
                 whereClause.append(NL) //
                     .append("    ").append("\"parent_id\" ");
-                if (m.hasParentId)
-                    whereClause.append("= :parentId");
-                else
+                if (m.filter.getParentId() == -1)
                     whereClause.append("IS NULL");
+                else
+                    whereClause.append("= :parentId");
                 needsAnd = true;
             }
             if (m.hasText || m.hasStatus) {
@@ -160,14 +161,14 @@ public class CustomTopicRepositoryImpl implements CustomTopicRepository {
                                 .append("    FT_SEARCH_DATA(:text, 0, 0) ft");
                             ftJoinCondition.append(NL) //
                                 .append("    AND ft.\"TABLE\" = 'topic'").append(NL) //
-                                .append("    AND t.\"id\" = ft.\"KEYS\"[1]");
+                                .append("    AND ft.\"KEYS\"[1] = t.\"id\"");
                         } else {
                             ftJoinTable.append(NL) //
                                 .append("JOIN FT_SEARCH_DATA(:text, 0, 0) ft");
                             ftJoinCondition.append(NL) //
                                 .append("ON").append(NL) //
                                 .append("    ft.\"TABLE\" = 'topic'").append(NL) //
-                                .append("    AND t.\"id\" = ft.\"KEYS\"[1]");
+                                .append("    AND ft.\"KEYS\"[1] = t.\"id\"");
                         }
                     } else if (m.hasTextMariaDB) {
                         whereClause.append(NL) //
@@ -265,7 +266,7 @@ public class CustomTopicRepositoryImpl implements CustomTopicRepository {
         }
 
         Map<String, Object> params = new HashMap<>();
-        if (m.hasParentId)
+        if (m.hasParentId && m.filter.getParentId() != -1)
             params.put("parentId", filter.getParentId());
         if (m.hasText)
             params.put("text", filter.getText());

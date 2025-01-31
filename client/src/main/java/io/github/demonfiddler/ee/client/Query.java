@@ -243,11 +243,19 @@ public class Query implements GraphQLRequestObject {
 	 * Returns a topic reference given its identifier.
 	 */
 	@JsonProperty("topicRefById")
-	@GraphQLInputParameters(names = { "id" }, types = { "ID" }, mandatories = { true }, listDepths = { 0 },
-		itemsMandatory = { false })
+	@GraphQLInputParameters(names = { "id", "entityKind" }, types = { "ID", "EntityKind" }, mandatories = { true, true }, listDepths = { 0 },
+		itemsMandatory = { false, false })
 	@GraphQLNonScalar(fieldName = "topicRefById", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class,
 		listDepth = 0)
 	TopicRef topicRefById;
+
+	/**
+	 * Returns a topic reference given its topic and entity identifiers.
+	 */
+	@JsonProperty("topicRefByEntityId")
+	@GraphQLInputParameters(names = {"topicId", "entityId", "entityKind"}, types = {"ID", "ID", "EntityKind"}, mandatories = {true, true, true}, listDepths = {0, 0, 0}, itemsMandatory = {false, false, false})
+	@GraphQLNonScalar( fieldName = "topicRefByEntityId", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class, listDepth = 0)
+	TopicRef topicRefByEntityId;
 
 	/**
 	 * Returns a paged list of users.
@@ -591,6 +599,22 @@ public class Query implements GraphQLRequestObject {
 	}
 
 	/**
+	  * Returns a topic reference given its topic and entity identifiers.
+  	 */
+	@JsonProperty("topicRefByEntityId")
+	public void setTopicRefByEntityId(TopicRef topicRefByEntityId) {
+		this.topicRefByEntityId = topicRefByEntityId;
+	}
+
+	/**
+	 * Returns a topic reference given its topic and entity identifiers.
+	 */
+	@JsonProperty("topicRefByEntityId")
+	public TopicRef getTopicRefByEntityId() {
+		return this.topicRefByEntityId;
+	}
+		  
+	  /**
 	 * Returns a paged list of users.
 	 */
 	@JsonProperty("users")
@@ -730,6 +754,8 @@ public class Query implements GraphQLRequestObject {
 			+ ", " //$NON-NLS-1$
 			+ "topicRefById: " + this.topicRefById //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
+			+ "topicRefByEntityId: " + this.topicRefByEntityId //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
 			+ "users: " + this.users //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "userById: " + this.userById //$NON-NLS-1$
@@ -773,6 +799,7 @@ public class Query implements GraphQLRequestObject {
 		private Topic topicById;
 		private TopicRefPage topicRefs;
 		private TopicRef topicRefById;
+		private TopicRef topicRefByEntityId;
 		private UserPage users;
 		private User userById;
 		private User userByLogin;
@@ -929,6 +956,14 @@ public class Query implements GraphQLRequestObject {
 		}
 
 		/**
+		 * Returns a topic reference given its topic and entity identifiers.
+		 */
+		public Builder withTopicRefByEntityId(TopicRef topicRefByEntityIdParam) {
+			this.topicRefByEntityId = topicRefByEntityIdParam;
+			return this;
+		}
+
+		/**
 		 * Returns a paged list of users.
 		 */
 		public Builder withUsers(UserPage usersParam) {
@@ -983,6 +1018,7 @@ public class Query implements GraphQLRequestObject {
 			_object.setTopicById(this.topicById);
 			_object.setTopicRefs(this.topicRefs);
 			_object.setTopicRefById(this.topicRefById);
+			_object.setTopicRefByEntityId(this.topicRefByEntityId);
 			_object.setUsers(this.users);
 			_object.setUserById(this.userById);
 			_object.setUserByLogin(this.userByLogin);

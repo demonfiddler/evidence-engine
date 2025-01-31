@@ -19,9 +19,7 @@
 
 package io.github.demonfiddler.ee.client;
 
-import java.net.URI;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -93,8 +91,8 @@ public class TopicRefInput {
 	 */
 	@JsonProperty("locations")
 	@JsonSerialize(using = CustomJacksonSerializers.ListURI.class)
-	@GraphQLScalar(fieldName = "locations", graphQLTypeSimpleName = "URI", javaClass = URI.class, listDepth = 1)
-	List<URI> locations;
+	@GraphQLScalar(fieldName = "locations", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String locations;
 
 	/**
 	 * The unique topic identifier. Only necessary because graphql-java-generator emits code with errors (missing ctor)
@@ -166,7 +164,7 @@ public class TopicRefInput {
 	 * The locations within the associated record, one per line.
 	 */
 	@JsonProperty("locations")
-	public void setLocations(List<URI> locations) {
+	public void setLocations(String locations) {
 		this.locations = locations;
 	}
 
@@ -174,7 +172,7 @@ public class TopicRefInput {
 	 * The locations within the associated record, one per line.
 	 */
 	@JsonProperty("locations")
-	public List<URI> getLocations() {
+	public String getLocations() {
 		return this.locations;
 	}
 
@@ -228,7 +226,7 @@ public class TopicRefInput {
 		private Long topicId;
 		private EntityKind entityKind;
 		private Long entityId;
-		private List<URI> locations;
+		private String locations;
 
 		/**
 		 * The unique topic identifier. Only necessary because graphql-java-generator emits code with errors (missing
@@ -266,7 +264,7 @@ public class TopicRefInput {
 		/**
 		 * The locations within the associated record, one per line.
 		 */
-		public Builder withLocations(List<URI> locationsParam) {
+		public Builder withLocations(String locationsParam) {
 			this.locations = locationsParam;
 			return this;
 		}

@@ -28,16 +28,17 @@ import com.google.common.truth.Subject;
 import com.google.common.truth.Truth;
 
 import io.github.demonfiddler.ee.client.AbstractPage;
+import io.github.demonfiddler.ee.client.IBaseEntity;
 
-public class PageSubject<ActualT extends AbstractPage<EntityT>, EntityT> extends Subject {
+public class PageSubject<ActualT extends AbstractPage<EntityT>, EntityT extends IBaseEntity> extends Subject {
 
     final ActualT actual;
 
-    public static <ActualT extends AbstractPage<EntityT>, EntityT> PageSubject<ActualT, EntityT> assertThat(ActualT page) {
+    public static <ActualT extends AbstractPage<EntityT>, EntityT extends IBaseEntity> PageSubject<ActualT, EntityT> assertThat(ActualT page) {
         return Truth.<PageSubject<ActualT, EntityT>, ActualT>assertAbout(pages()).that(page);
     }
 
-    public static <ActualT extends AbstractPage<EntityT>, EntityT> Subject.Factory<PageSubject<ActualT, EntityT>, ActualT> pages() {
+    public static <ActualT extends AbstractPage<EntityT>, EntityT extends IBaseEntity> Subject.Factory<PageSubject<ActualT, EntityT>, ActualT> pages() {
         return PageSubject<ActualT, EntityT>::new;
     }
 

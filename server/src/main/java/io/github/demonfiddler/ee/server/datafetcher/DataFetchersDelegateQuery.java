@@ -23,6 +23,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import graphql.schema.DataFetchingEnvironment;
+import io.github.demonfiddler.ee.server.model.EntityKind;
 import io.github.demonfiddler.ee.server.model.LogQueryFilter;
 import io.github.demonfiddler.ee.server.model.PageableInput;
 import io.github.demonfiddler.ee.server.model.TopicQueryFilter;
@@ -715,7 +716,10 @@ public interface DataFetchersDelegateQuery {
 	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
 	 * will take care of the {@link NoSuchElementException} exception.
 	 */
-	Object topicRefById(DataFetchingEnvironment dataFetchingEnvironment, Long id);
+	Object topicRefById(DataFetchingEnvironment dataFetchingEnvironment, Long id, EntityKind entityKind);
+
+	/** Returns a topic reference given its topic and entity identifiers. */
+	Object topicRefByEntityId(DataFetchingEnvironment dataFetchingEnvironment, Long topicId, Long entityId, EntityKind entityKind);
 
 	/**
 	 * Description for the users field: <br/>

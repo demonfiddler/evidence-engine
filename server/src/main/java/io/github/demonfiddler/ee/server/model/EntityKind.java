@@ -30,23 +30,25 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
 @GraphQLEnumType("EntityKind")
 public enum EntityKind {
 
-		CLA("CLA"), //$NON-NLS-1$
-		COU("COU"), //$NON-NLS-1$
-		DEC("DEC"), //$NON-NLS-1$
-		JOU("JOU"), //$NON-NLS-1$
-		PER("PER"), //$NON-NLS-1$
-		PUB("PUB"), //$NON-NLS-1$
-		PBR("PBR"), //$NON-NLS-1$
-		QUO("QUO"), //$NON-NLS-1$
-		TOP("TOP"), //$NON-NLS-1$
-		USR("USR"); //$NON-NLS-1$
+	CLA("CLA", "Claim"), //$NON-NLS-1$
+	COU("COU", "Country"), //$NON-NLS-1$
+	DEC("DEC", "Declaration"), //$NON-NLS-1$
+	JOU("JOU", "Journal"), //$NON-NLS-1$
+	PER("PER", "Person"), //$NON-NLS-1$
+	PUB("PUB", "Publication"), //$NON-NLS-1$
+	PBR("PBR", "Publisher"), //$NON-NLS-1$
+	QUO("QUO", "Quotation"), //$NON-NLS-1$
+	TOP("TOP", "Topic"), //$NON-NLS-1$
+	USR("USR", "User"); //$NON-NLS-1$
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different when the value in the GraphQL schema is a Java reserved keyword.
 	private final String graphQlValue;
+	private final String label;
 
-	private EntityKind(String graphQlValue) {
+	private EntityKind(String graphQlValue, String label) {
 		this.graphQlValue = graphQlValue;
+		this.label = label;
 	}
 
 	/**
@@ -57,6 +59,14 @@ public enum EntityKind {
 	 */
 	public String graphQlValue() {
 		return this.graphQlValue;
+	}
+
+	/**
+	 * Returns the label for this constant.
+	 * @return the label
+	 */
+	public String label() {
+		return this.label;
 	}
 
 	/**

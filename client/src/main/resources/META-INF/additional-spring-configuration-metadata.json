@@ -1,5 +1,12 @@
-{"properties": [{
-  "name": "graphql.endpoint.url",
-  "type": "java.lang.String",
-  "description": "The URL for the GraphQL server endpoint"
-}]}
+{"properties": [
+  {
+    "name": "graphql.endpoint.url",
+    "type": "java.lang.String",
+    "description": "The URL for the GraphQL server endpoint"
+  },
+  {
+    "name": "junit.jupiter.testclass.order.default",
+    "type": "java.lang.Class",
+    "description": "The fully qualified class name of the ClassOrderer to use when ordering test classes"
+  }
+]}

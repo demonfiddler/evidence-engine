@@ -34,41 +34,41 @@ tasks.named('processTestResources') {
 //sourceSets.main.resources.srcDirs += '/build/generated/resources/graphqlServer'
 generateServerCodeConf {
 //	addRelayConnections = false
-//	batchMappingDataFetcherReturnType = Flux<V>
+	batchMappingDataFetcherReturnType = 'MAP' // 'FLUX'
 	copyRuntimeSources = false // will go away in 2.0
 	customScalars = [
 		[
-			graphQLTypeName: "Country",
-			javaType: "java.lang.String",
-			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.common.graphql.CustomScalars.COUNTRY"
+			graphQLTypeName: 'Country',
+			javaType: 'java.lang.String',
+			graphQLScalarTypeStaticField: 'io.github.demonfiddler.ee.common.graphql.CustomScalars.COUNTRY'
 		], [
-			graphQLTypeName: "Date",
-			javaType: "java.time.LocalDate",
-			graphQLScalarTypeStaticField: "graphql.scalars.ExtendedScalars.Date"
+			graphQLTypeName: 'Date',
+			javaType: 'java.time.LocalDate',
+			graphQLScalarTypeStaticField: 'graphql.scalars.ExtendedScalars.Date'
 		], [
-			graphQLTypeName: "DateTime",
-			javaType: "java.time.OffsetDateTime",
-			graphQLScalarTypeStaticField: "graphql.scalars.ExtendedScalars.DateTime"
+			graphQLTypeName: 'DateTime',
+			javaType: 'java.time.OffsetDateTime',
+			graphQLScalarTypeStaticField: 'graphql.scalars.ExtendedScalars.DateTime'
 		], [
-			graphQLTypeName: "ISSN",
-			javaType: "java.lang.String",
-			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.common.graphql.CustomScalars.ISSN"
+			graphQLTypeName: 'ISSN',
+			javaType: 'java.lang.String',
+			graphQLScalarTypeStaticField: 'io.github.demonfiddler.ee.common.graphql.CustomScalars.ISSN'
 		], [
-			graphQLTypeName: "Long",
-			javaType: "java.lang.Long",
-			graphQLScalarTypeStaticField: "graphql.scalars.ExtendedScalars.GraphQLLong"
+			graphQLTypeName: 'Long',
+			javaType: 'java.lang.Long',
+			graphQLScalarTypeStaticField: 'graphql.scalars.ExtendedScalars.GraphQLLong'
 		], [
-			graphQLTypeName: "URI",
-			javaType: "java.net.URI",
-			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.common.graphql.CustomScalars.URI"
+			graphQLTypeName: 'URI',
+			javaType: 'java.net.URI',
+			graphQLScalarTypeStaticField: 'io.github.demonfiddler.ee.common.graphql.CustomScalars.URI'
 		], [
-			graphQLTypeName: "URL",
-			javaType: "java.net.URL",
-			graphQLScalarTypeStaticField: "graphql.scalars.ExtendedScalars.Url"
+			graphQLTypeName: 'URL',
+			javaType: 'java.net.URL',
+			graphQLScalarTypeStaticField: 'io.github.demonfiddler.ee.common.graphql.CustomScalars.URL'
 		], [
-			graphQLTypeName: "Void",
-			javaType: "java.lang.Void",
-			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.common.graphql.CustomScalars.VOID"
+			graphQLTypeName: 'Void',
+			javaType: 'java.lang.Void',
+			graphQLScalarTypeStaticField: 'io.github.demonfiddler.ee.common.graphql.CustomScalars.VOID'
 		]
 	]
 //	enumPrefix = 

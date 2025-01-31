@@ -308,9 +308,17 @@ public class Mutation implements com.graphql_java_generator.client.GraphQLReques
 	@JsonProperty("addTopicRef")
 	@GraphQLInputParameters(names = { "topicRef" }, types = { "TopicRefInput" }, mandatories = { true },
 		listDepths = { 0 }, itemsMandatory = { false })
-	@GraphQLScalar(fieldName = "addTopicRef", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class,
+	@GraphQLNonScalar(fieldName = "addTopicRef", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class,
 		listDepth = 0)
-	Boolean addTopicRef;
+	TopicRef addTopicRef;
+
+	/**
+	 * Updates an existing topic reference.
+	 */
+	@JsonProperty("updateTopicRef")
+	@GraphQLInputParameters(names = {"topicRef"}, types = {"TopicRefInput"}, mandatories = {true}, listDepths = {0}, itemsMandatory = {false})
+	@GraphQLNonScalar( fieldName = "updateTopicRef", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class, listDepth = 0)
+	TopicRef updateTopicRef;
 
 	/**
 	 * Removes a topic reference.
@@ -793,7 +801,7 @@ public class Mutation implements com.graphql_java_generator.client.GraphQLReques
 	 * Adds a new topic reference.
 	 */
 	@JsonProperty("addTopicRef")
-	public void setAddTopicRef(Boolean addTopicRef) {
+	public void setAddTopicRef(TopicRef addTopicRef) {
 		this.addTopicRef = addTopicRef;
 	}
 
@@ -801,10 +809,26 @@ public class Mutation implements com.graphql_java_generator.client.GraphQLReques
 	 * Adds a new topic reference.
 	 */
 	@JsonProperty("addTopicRef")
-	public Boolean getAddTopicRef() {
+	public TopicRef getAddTopicRef() {
 		return this.addTopicRef;
 	}
 
+	/**
+	  * Updates an existing topic reference.
+ 	 */
+	@JsonProperty("updateTopicRef")
+	public void setUpdateTopicRef(TopicRef updateTopicRef) {
+		this.updateTopicRef = updateTopicRef;
+	}
+
+	/**
+	 * Updates an existing topic reference.
+	 */
+	@JsonProperty("updateTopicRef")
+	public TopicRef getUpdateTopicRef() {
+		return this.updateTopicRef;
+	}
+		  
 	/**
 	 * Removes a topic reference.
 	 */
@@ -1035,6 +1059,8 @@ public class Mutation implements com.graphql_java_generator.client.GraphQLReques
 			+ ", " //$NON-NLS-1$
 			+ "addTopicRef: " + this.addTopicRef //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
+			+ "updateTopicRef: " + this.updateTopicRef //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
 			+ "removeTopicRef: " + this.removeTopicRef //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "linkEntities: " + this.linkEntities //$NON-NLS-1$
@@ -1090,7 +1116,8 @@ public class Mutation implements com.graphql_java_generator.client.GraphQLReques
 		private Topic createTopic;
 		private Topic updateTopic;
 		private Topic deleteTopic;
-		private Boolean addTopicRef;
+		private TopicRef addTopicRef;
+		private TopicRef updateTopicRef;
 		private Boolean removeTopicRef;
 		private Boolean linkEntities;
 		private Boolean unlinkEntities;
@@ -1296,8 +1323,16 @@ public class Mutation implements com.graphql_java_generator.client.GraphQLReques
 		/**
 		 * Adds a new topic reference.
 		 */
-		public Builder withAddTopicRef(Boolean addTopicRefParam) {
+		public Builder withAddTopicRef(TopicRef addTopicRefParam) {
 			this.addTopicRef = addTopicRefParam;
+			return this;
+		}
+
+		/**
+		 * Updates an existing topic reference.
+		 */
+		public Builder withUpdateTopicRef(TopicRef updateTopicRefParam) {
+			this.updateTopicRef = updateTopicRefParam;
 			return this;
 		}
 
@@ -1401,6 +1436,7 @@ public class Mutation implements com.graphql_java_generator.client.GraphQLReques
 			_object.setUpdateTopic(this.updateTopic);
 			_object.setDeleteTopic(this.deleteTopic);
 			_object.setAddTopicRef(this.addTopicRef);
+			_object.setUpdateTopicRef(this.updateTopicRef);
 			_object.setRemoveTopicRef(this.removeTopicRef);
 			_object.setLinkEntities(this.linkEntities);
 			_object.setUnlinkEntities(this.unlinkEntities);

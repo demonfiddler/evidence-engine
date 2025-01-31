@@ -1,4 +1,42 @@
--- These records are those created by the entity integration tests.
+-- These records approximate those created programmatically by the entity integration tests (IDs being auto-generated on insert).
+
+DELETE FROM "topic_claim_ref";
+DELETE FROM "topic_declaration_ref";
+DELETE FROM "topic_person_ref";
+DELETE FROM "topic_publication_ref";
+DELETE FROM "topic_quotation_ref";
+DELETE FROM "claim_declaration";
+DELETE FROM "claim_person";
+DELETE FROM "claim_publication";
+DELETE FROM "claim_quotation";
+DELETE FROM "declaration_person";
+DELETE FROM "declaration_quotation";
+DELETE FROM "publication_person";
+DELETE FROM "quotation_person";
+DELETE FROM "quotation_publication";
+DELETE FROM "claim";
+DELETE FROM "declaration";
+DELETE FROM "journal";
+DELETE FROM "person";
+DELETE FROM "publication";
+DELETE FROM "publisher";
+DELETE FROM "quotation";
+DELETE FROM "topic";
+DELETE FROM "log";
+ALTER TABLE "claim" ALTER COLUMN "id" RESTART WITH 1;
+ALTER TABLE "declaration" ALTER COLUMN "id" RESTART WITH 1;
+ALTER TABLE "journal" ALTER COLUMN "id" RESTART WITH 1;
+ALTER TABLE "person" ALTER COLUMN "id" RESTART WITH 1;
+ALTER TABLE "publication" ALTER COLUMN "id" RESTART WITH 1;
+ALTER TABLE "publisher" ALTER COLUMN "id" RESTART WITH 1;
+ALTER TABLE "quotation" ALTER COLUMN "id" RESTART WITH 1;
+ALTER TABLE "topic" ALTER COLUMN "id" RESTART WITH 1;
+ALTER TABLE "topic_claim_ref" ALTER COLUMN "id" RESTART WITH 1;
+ALTER TABLE "topic_declaration_ref" ALTER COLUMN "id" RESTART WITH 1;
+ALTER TABLE "topic_person_ref" ALTER COLUMN "id" RESTART WITH 1;
+ALTER TABLE "topic_publication_ref" ALTER COLUMN "id" RESTART WITH 1;
+ALTER TABLE "topic_quotation_ref" ALTER COLUMN "id" RESTART WITH 1;
+ALTER TABLE "log" ALTER COLUMN "id" RESTART WITH 1;
 
 INSERT INTO "claim"
 	("status", "date", "text", "notes")
@@ -40,17 +78,17 @@ VALUES
 	('DRA', 'Journal eight', 'Jnl 8', null, null, 'Notes #8 (filtered)');
 
 INSERT INTO "person"
-	("status", "first_name", "last_name", "alias", "notes", "rating", "checked", "published")
+	("status", "first_name", "last_name", "alias", "notes", "rating", "qualifications", "checked", "published")
 VALUES
-	('DEL', 'Joanne', 'Smythe', 'Smutt', 'Updated test notes', 4, TRUE, TRUE),
-	('DRA', 'Heidi', 'Andrews', 'Z', 'Notes #1', 1, TRUE, TRUE),
-	('DRA', 'Gary', 'Bosworth', null, 'NOTES #2', 1, TRUE, TRUE),
-	('DRA', 'Fiona', 'Charlton', 'X', null, 1, TRUE, TRUE),
-	('DRA', 'Eric', 'Douglas', null, 'NOTES #4', 1, TRUE, TRUE),
-	('DRA', 'Desmond', 'Edwards', 'v', 'Notes #5 (filtered)', 1, TRUE, TRUE),
-	('DRA', 'Charles', 'Farquhar', null, null, 1, TRUE, TRUE),
-	('DRA', 'Beth', 'Gibson', 't', 'Notes #7 (filtered)', 1, TRUE, TRUE),
-	('DRA', 'Alison', 'Heath', null, 'NOTES #8 (filtered)', 1, TRUE, TRUE);
+	('DEL', 'Joanne', 'Smythe', 'Smutt', 'Updated test notes', 'Updated test qualifications', 4, TRUE, TRUE),
+	('DRA', 'Heidi', 'Andrews', 'Z', 'Notes #1', 'PERSON ONE', 1, TRUE, TRUE),
+	('DRA', 'Gary', 'Bosworth', null, 'Notes #2', 'Person two', 1, TRUE, TRUE),
+	('DRA', 'Fiona', 'Charlton', 'X', null, 'PERSON THREE', 1, TRUE, TRUE),
+	('DRA', 'Eric', 'Douglas', null, 'Notes #4', 'Person four', 1, TRUE, TRUE),
+	('DRA', 'Desmond', 'Edwards', 'v', 'Notes #5 (filtered)', 'PERSON FIVE', 1, TRUE, TRUE),
+	('DRA', 'Charles', 'Farquhar', null, null, 'Person six', 1, TRUE, TRUE),
+	('DRA', 'Beth', 'Gibson', 't', 'Notes #7 (filtered)', 'PERSON SEVEN', 1, TRUE, TRUE),
+	('DRA', 'Alison', 'Heath', null, 'Notes #8 (filtered)', 'Person eight', 1, TRUE, TRUE);
 
 INSERT INTO "publication"
 	("status", "kind", "title", "authors", "date", "year", "abstract", "notes", "peer_reviewed", "doi", "isbn", "url", "cached", "accessed")
@@ -60,10 +98,10 @@ VALUES
 	('DRA', 'JOUR', 'Publication two', 'Author two', CURRENT_DATE(), EXTRACT(YEAR FROM CURRENT_DATE()), 'Abstract two', 'Notes #2', FALSE, null, null, null, FALSE, null),
 	('DRA', 'JOUR', 'PUBLICATION THREE', 'Author three', CURRENT_DATE(), EXTRACT(YEAR FROM CURRENT_DATE()), 'Abstract three', null, FALSE, null, null, null, FALSE, null),
 	('DRA', 'JOUR', 'Publication four', 'Author four', CURRENT_DATE(), EXTRACT(YEAR FROM CURRENT_DATE()), 'Abstract four', 'Notes #4', FALSE, null, null, null, FALSE, null),
-	('DRA', 'JOUR', 'PUBLICATION FIVE', 'Author five', CURRENT_DATE(), EXTRACT(YEAR FROM CURRENT_DATE()), 'Abstract five', 'Notes #5', FALSE, null, null, null, FALSE, null),
+	('DRA', 'JOUR', 'PUBLICATION FIVE', 'Author five', CURRENT_DATE(), EXTRACT(YEAR FROM CURRENT_DATE()), 'Abstract five', 'Notes #5 (filtered)', FALSE, null, null, null, FALSE, null),
 	('DRA', 'JOUR', 'Publication six', 'Author six', CURRENT_DATE(), EXTRACT(YEAR FROM CURRENT_DATE()), 'Abstract six', null, FALSE, null, null, null, FALSE, null),
-	('DRA', 'JOUR', 'PUBLICATION SEVEN', 'Author seven', CURRENT_DATE(), EXTRACT(YEAR FROM CURRENT_DATE()), 'Abstract seven', 'Notes #7', FALSE, null, null, null, FALSE, null),
-	('DRA', 'JOUR', 'Publication eight', 'Author eight', CURRENT_DATE(), EXTRACT(YEAR FROM CURRENT_DATE()), 'Abstract eight', 'Notes #8', FALSE, null, null, null, FALSE, null);
+	('DRA', 'JOUR', 'PUBLICATION SEVEN', 'Author seven', CURRENT_DATE(), EXTRACT(YEAR FROM CURRENT_DATE()), 'Abstract seven', 'Notes #7 (filtered)', FALSE, null, null, null, FALSE, null),
+	('DRA', 'JOUR', 'Publication eight', 'Author eight', CURRENT_DATE(), EXTRACT(YEAR FROM CURRENT_DATE()), 'Abstract eight', 'Notes #8 (filtered)', FALSE, null, null, null, FALSE, null);
 
 INSERT INTO "publisher"
 	("status", "name", "location", "url", "journal_count")
@@ -84,12 +122,12 @@ VALUES
 	('DEL', 'John Doe', CURRENT_DATE(), 'Updated test text', 'Updated test source', 'http://updated-domain.tld', 'Updated test notes'),
 	('DRA', 'Quotee one', CURRENT_DATE(), 'QUOTATION ONE', null, null, 'Notes #1'),
 	('DRA', 'Quotee two', CURRENT_DATE(), 'Quotation two', null, null, 'Notes #2'),
-	('DRA', 'Quotee three', CURRENT_DATE(), 'QUOTATION ONE', null, null, null),
-	('DRA', 'Quotee four', CURRENT_DATE(), 'Quotation two', null, null, 'Notes #4'),
-	('DRA', 'Quotee five', CURRENT_DATE(), 'QUOTATION ONE', null, null, 'Notes #5 (filtered)'),
-	('DRA', 'Quotee six', CURRENT_DATE(), 'Quotation two', null, null, null),
-	('DRA', 'Quotee seven', CURRENT_DATE(), 'QUOTATION ONE', null, null, 'Notes #7 (filtered)'),
-	('DRA', 'Quotee eight', CURRENT_DATE(), 'Quotation two', null, null, 'Notes #8 (filtered)');
+	('DRA', 'Quotee three', CURRENT_DATE(), 'QUOTATION THREE', null, null, null),
+	('DRA', 'Quotee four', CURRENT_DATE(), 'Quotation four', null, null, 'Notes #4'),
+	('DRA', 'Quotee five', CURRENT_DATE(), 'QUOTATION FIVE', null, null, 'Notes #5 (filtered)'),
+	('DRA', 'Quotee six', CURRENT_DATE(), 'Quotation six', null, null, null),
+	('DRA', 'Quotee seven', CURRENT_DATE(), 'QUOTATION SEVEN', null, null, 'Notes #7 (filtered)'),
+	('DRA', 'Quotee eight', CURRENT_DATE(), 'Quotation eight', null, null, 'Notes #8 (filtered)');
 
 INSERT INTO "topic"
 	("status", "parent_id", "label", "description")

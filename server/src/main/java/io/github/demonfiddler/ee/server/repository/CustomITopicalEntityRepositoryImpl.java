@@ -60,7 +60,7 @@ public abstract class CustomITopicalEntityRepositoryImpl<T extends IBaseEntity &
         boolean isAdvanced, boolean isPaged, boolean isSorted) {
     }
 
-    private static final Logger LOG = LoggerFactory.getLogger(CustomITopicalEntityRepositoryImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CustomITopicalEntityRepositoryImpl.class);
 
     @PersistenceContext
     EntityManager em;
@@ -91,7 +91,7 @@ public abstract class CustomITopicalEntityRepositoryImpl<T extends IBaseEntity &
     private QueryMetaData getQueryMetaData(@Nullable TopicalEntityQueryFilter filter, @NonNull Pageable pageable) {
         boolean hasFilter = filter != null;
         boolean hasTopic = hasFilter && filter.getTopicId() != null;
-        boolean isRecursive = hasTopic && filter.getRecursive();
+        boolean isRecursive = hasTopic && filter.getRecursive() != null && filter.getRecursive();
         boolean hasMasterEntity = hasFilter && filter.getMasterEntityKind() != null && filter.getMasterEntityId() != null;
         boolean hasStatus = hasFilter && filter.getStatus() != null && !filter.getStatus().isEmpty();
         boolean hasText = hasFilter && filter.getText() != null;
@@ -103,9 +103,10 @@ public abstract class CustomITopicalEntityRepositoryImpl<T extends IBaseEntity &
         String entityName = entityUtils.getEntityName(getEntityClass());
         String masterEntityName = hasMasterEntity ? entityUtils.getEntityName(filter.getMasterEntityKind()) : "";
 
-        // For paged queries involving an H2 full text filter, we need to ensure that the sort order includes "id"
-        // because otherwise the join with FT_SEARCH_DATA can result in records duplicated across successive pages.
-        if (hasTextH2 && isPaged && pageable.getSort().filter(o -> o.getProperty().equals("id")).isEmpty()) {
+        // For paged queries, we need to ensure that the sort order includes "id" because otherwise the join with H2's
+        // FT_SEARCH_DATA can result in records duplicated across successive pages OR result sets involving JOINs can
+        // be returned in a nondeterministic order.
+        if (isPaged && pageable.getSort().filter(o -> o.getProperty().equals("id")).isEmpty()) {
             Sort sort = pageable.getSort().and(Sort.by("id"));
             pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
             isSorted = true;
@@ -158,181 +159,188 @@ public abstract class CustomITopicalEntityRepositoryImpl<T extends IBaseEntity &
         // One might be tempted to think that we would only need to apply a topic filter when retrieving the master
         // entity list, and that retrieval of associated entities could be done simply via the <master>_<entity>
         // association table.
+        //
         // However, a master entity person might be associated with multiple topics and multiple publications or
         // declarations, each of which may or may not pertain to the specified topic,
         // so if a topic filter is specified, we would not want to include publications or declarations that do not
         // pertain to that topic.
+        //
         // Additionally, if NO topic was selected, we would expect to see ALL associated publications and declarations,
         // whereas when a topic IS selected, we would expect to see ONLY those publications and declarations associated
         // with that topic.
+        //
         // In other words, if a topicId is supplied, it must be used in the query regardless of whether a master entity
         // is supplied.
         /*
-        NOTE: H2 full text indexes work like this:
-        CREATE ALIAS IF NOT EXISTS FT_INIT FOR "org.h2.fulltext.FullText.init";
-        CALL FT_INIT();
-        CALL FT_CREATE_INDEX('SCHEMA', 'TABLE', 'COLUMN-LIST');
-        CALL FT_DROP_INDEX('SCHEMA', 'TABLE');
+        NOTE: MariaDB full text indexes work like this:
+        SELECT * FROM "table"
+        WHERE MATCH("column", ...) AGAINST 'Hello';
+
+        WHEREAS H2 full text indexes work like this:
         SELECT * FROM FT_SEARCH('Hello', limit, offset); -> QUERY: "PUBLIC"."TEST" WHERE "ID"=1;
-        NOTE: H2 common table expressions look like this:
-        WITH RECURSIVE sub_topic("id", "parent_id")
-        AS (
-            nonRecursiveSelect
-            UNION ALL
-            recursiveSelect
-        )
-        SELECT ...
-        CAN JOIN LIKE THIS:
+        -- or better still --
         SELECT * FROM "table"
         JOIN FT_SEARCH_DATA('Hello', 0, 0) ft
-        ON ft."TABLE" = 'table' AND "table"."id" = ft."KEYS"[1];
+        ON ft."TABLE" = 'table' AND ft."KEYS"[1] = "table"."id";
+
+        H2 full text index Initialisation:
+        CREATE ALIAS IF NOT EXISTS FT_INIT FOR "org.h2.fulltext.FullText.init";
+        CALL FT_INIT();
+        CALL FT_CREATE_INDEX('SCHEMA', 'table', 'column-list');
+        CALL FT_DROP_INDEX('SCHEMA', 'table');
+
+        NOTE: H2 common table expressions require a column list:
+        WITH RECURSIVE "sub_topic"("id", "parent_id")
         --------
+
         -- This is what the template looks like conceptually when ALL filter fields are provided.
-        WITH RECURSIVE "sub_topic"
+        -- It includes all combinations of recursive & non-recursive, count & select queries, H2 & MariaDB databases.
+        RECURSIVE QUERY:
+
+        WITH RECURSIVE "sub_topic"("id", "parent_id")
         AS (
             SELECT "id", "parent_id"
             FROM "topic" t
-            WHERE t."id" = :topicId AND t."status" IN (:status)
+            WHERE t."id" = :topicId
+                AND t."status" IN (:status)
             UNION
             SELECT t."id", t."parent_id"
             FROM "topic" t
-            INNER JOIN
-                "sub_topic" st ON t."parent_id" = st."id"
+            JOIN "sub_topic" st
+            ON t."parent_id" = st."id"
             WHERE t."status" IN (:status)
         )
-        SELECT DISTINCT e.*
-        FROM "${entityName}" e
-        INNER JOIN (
-            "sub_topic" st,
-            "topic_${entityName}_ref" tr,
-            "${masterEntityName}_${entityName}" me,
-            FT_SEARCH_DATA(:text, 0, 0) ft
-        )
+        SELECT COUNT(*) | DISTINCT e.*
+        FROM "sub_topic" st
+        JOIN "topic_${entityName}_ref" tr
+        ON tr."topic_id" = st."id"
+        JOIN "${entityName}" e
+        ON e."id" = tr."%s_id"
+
+        JOIN "${masterEntityName}_${entityName}" me
+        ON me."${masterEntityName}_id" = :masterEntityId AND me."${entityName}_id" = e.id
+        JOIN FT_SEARCH_DATA(:text, 0, 0) ft
         ON
-            tr."topic_id" = st."id"
-            AND tr."%s_id" = e."id"
-            AND me."${masterEntityName}_id" = :masterEntityId
-            AND me."${entityName}_id" = e.id
-            AND ft."TABLE" = '${entityName}'
-            AND "${entityName}"."id" = ft."KEYS"[1]
+            ft."TABLE" = '${entityName}'
+            AND ft."KEYS"[1] = e."id"
         WHERE
             MATCH (${fulltextEntityColumns}) AGAINST (:text IN BOOLEAN MODE)
-            AND "status" IN (:status)
+            AND e."status" IN (:status)
+        ORDER BY
+            e."${sortField}" ${sortOrder}, ...
+        ;
+
+        NON-RECURSIVE QUERY:
+
+        SELECT COUNT(*) | DISTINCT e.*
+        FROM "${entityName}" e
+        JOIN "topic_${entityName}_ref" tr
+        ON tr."declaration_id" = e."id" AND tr."topic_id" = :topicId
+        JOIN "topic" t
+        ON t."id" = tr."topic_id" AND t."status" IN (:status)
+
+        JOIN "${masterEntityName}_${entityName}" me
+        ON me."${masterEntityName}_id" = :masterEntityId AND me."${entityName}_id" = e.id
+        JOIN FT_SEARCH_DATA(:text, 0, 0) ft
+        ON
+            ft."TABLE" = '${entityName}'
+            AND ft."KEYS"[1] = e."id"
+        WHERE
+            MATCH (${fulltextEntityColumns}) AGAINST (:text IN BOOLEAN MODE)
+            AND e."status" IN (:status)
         ORDER BY
             e."${sortField}" ${sortOrder}, ...
         ;
         */
 
-        // This is the recursive query that collects all sub-topics of a specified topic (including the latter).
-        String subTopicRecursiveClause;
-        if (m.hasTopic && !m.isRecursive) {
-            String template = """
-                WITH RECURSIVE "sub_topic"
-                AS (
-                    SELECT "id", "parent_id"
-                    FROM "topic" t
-                    WHERE t."id" = :topicId%s
-                    UNION ALL
-                    SELECT t."id", t."parent_id"
-                    FROM "topic" t
-                    INNER JOIN
-                        "sub_topic" st ON t."parent_id" = st."id"%s
-                )
+        String commonTableExpr;
+        String fromClause;
+        if (m.hasTopic) {
+            if (m.isRecursive) {
+                // This is the recursive common table expression that collects a specified topic and its sub-topics.
+                String cteTemplate = //
+                    """
+                    WITH RECURSIVE "sub_topic" ("id", "parent_id")
+                    AS (
+                        SELECT "id", "parent_id"
+                        FROM "topic" t
+                        WHERE t."id" = :topicId%s
+                        UNION ALL
+                        SELECT t."id", t."parent_id"
+                        FROM "topic" t
+                        JOIN "sub_topic" st
+                        ON st."id" = t."parent_id"%s
+                    )
+                    """;
+                StringBuilder statusClause1 = new StringBuilder();
+                StringBuilder statusClause2 = new StringBuilder();
+                if (m.hasStatus) {
+                    statusClause1.append(NL) //
+                        .append("        AND t.\"status\" IN (:status)");
+                    statusClause2.append(NL) //
+                        .append("    WHERE t.\"status\" IN (:status)");
+                }
+                commonTableExpr = String.format(cteTemplate, statusClause1, statusClause2);
+
+                String fcTemplate = //
+                    """
+                    FROM "sub_topic" st
+                    JOIN "topic_%s_ref" tr
+                    ON tr."topic_id" = st."id"
+                    JOIN "%s" e
+                    ON e."id" = tr."%s_id"
+                    """;
+                fromClause = String.format(fcTemplate, m.entityName, m.entityName, m.entityName);
+            } else {
+                commonTableExpr = "";
+
+                String fcTemplate = //
+                """
+                FROM "%s" e
+                JOIN "topic_%s_ref" tr
+                ON
+                    tr."%s_id" = e."id"
+                    AND tr."topic_id" = :topicId
+                JOIN "topic" t
+                ON t."id" = tr."topic_id"%s
                 """;
-            StringBuilder recursiveWhereClause1 = new StringBuilder();
-            StringBuilder recursiveWhereClause2 = new StringBuilder();
-            if (m.hasStatus) {
-                recursiveWhereClause1.append(" AND t.\"status\" IN (:status)");
-                recursiveWhereClause2.append(NL) //
-                    .append("    WHERE t.\"status\" IN (:status)");
+                StringBuilder statusClause = new StringBuilder();
+                if (m.hasStatus) {
+                    statusClause.append(NL) //
+                        .append("    AND t.\"status\" IN (:status)");
+                }
+                fromClause = String.format(fcTemplate, m.entityName, m.entityName, m.entityName, statusClause);
             }
-            subTopicRecursiveClause = String.format(template, recursiveWhereClause1, recursiveWhereClause2);
         } else {
-            subTopicRecursiveClause = "";
+            commonTableExpr = "";
+            fromClause = "FROM \"" + m.entityName + "\" e";
         }
 
-        /*
-        -- This is a representation of the template showing the local variables and their value expressions, as substituted for %s parameter markers.
-        %s --${subTopicRecursiveClause}
-        SELECT COUNT(*) | DISTINCT e.*
-        FROM "%s" e --${entityName}
-        %s --${innerJoinOpen} = "INNER JOIN ("
-        %s --${stJoinTables} = "    "sub_topic" st,\n    "topic_${entityName}_ref" tr,"
-        %s --${meJoinTable} = "    "${masterEntityName}_${entityName}" me,"
-        %s --${ftJoinTable} = "    FT_SEARCH_DATA(:text, 0, 0) ft"
-        %s --${innerJoinClose} = ")\nON"
-        %s --${stJoinCondition} = "    tr."topic_id" = st."id"\n    AND tr."${entityName}_id" = e."id""
-        %s --${meJoinCondition} = "    AND me."${masterEntityName}_id" = :masterEntityId\n    AND me."${entityName}_id" = e."id""
-        %s --${ftJoinCondition} = "    AND ft."TABLE" = '${entityName}'\n    AND "${entityName}"."id" = ft."KEYS"[1]"
-        %s --${whereClause} = "WHERE\n    MATCH (${getFulltextColumns()}) AGAINST (:text)\n    AND e."status" IN (:status)"
-        %s --${orderByClause} = "ORDER BY e."${sortField}" ${sortOrder}"
-        ;
-        */
-
-        String template = """
-            %s
-            SELECT %s
-            FROM "%s" e%s%s%s%s%s%s%s%s%s%s;
-            """;
-
-        StringBuilder innerJoinOpen = new StringBuilder();
-        StringBuilder stJoinTables = new StringBuilder();
-        StringBuilder meJoinTable = new StringBuilder();
-        StringBuilder ftJoinTable = new StringBuilder();
-        StringBuilder innerJoinClose = new StringBuilder();
-        StringBuilder stJoinCondition = new StringBuilder();
-        StringBuilder meJoinCondition = new StringBuilder();
-        StringBuilder ftJoinCondition = new StringBuilder();
+        StringBuilder meJoinClause = new StringBuilder();
+        StringBuilder ftJoinClause = new StringBuilder();
         StringBuilder whereClause = new StringBuilder();
         StringBuilder orderByClause = new StringBuilder();
-        boolean needsAnd = false;
-        if (m.hasTopic) {
-            stJoinTables.append(NL) //
-                .append("    \"sub_topic\" st,").append(NL) //
-                .append("    \"topic_").append(m.entityName).append("_ref\" tr");
-            if (m.hasMasterEntity || m.hasTextMariaDB)
-                stJoinTables.append(',');
-            stJoinCondition.append(NL) //
-                .append("    tr.\"topic_id\" = st.\"id\"").append(NL) //
-                .append("    AND tr.\"").append(m.entityName).append("_id\" = e.\"id\"");
-            needsAnd = true;
-        }
         if (m.hasMasterEntity) {
             String masterEntityName = entityUtils.getEntityName(m.filter.getMasterEntityKind());
-            meJoinTable.append(NL) //
-                .append("    \"").append(masterEntityName).append('_').append(m.entityName).append("\" me");
-            if (m.hasTextH2)
-                meJoinTable.append(',');
-            meJoinCondition.append(NL) //
-                .append("    ");
-            if (needsAnd)
-                meJoinCondition.append("AND ");
-            meJoinCondition.append("me.\"").append(masterEntityName).append("_id\" = :masterEntityId").append(NL)
+            meJoinClause.append(NL) //
+                .append("JOIN \"").append(masterEntityName).append('_').append(m.entityName).append("\" me") //
+                .append(NL) //
+                .append("ON").append(NL) //
+                .append("    me.\"").append(masterEntityName).append("_id\" = :masterEntityId").append(NL) //
                 .append("    AND me.\"").append(m.entityName).append("_id\" = e.\"id\"");
-            needsAnd = true;
         }
         if (m.hasTextH2) {
-            ftJoinTable.append(NL) //
-                .append("    FT_SEARCH_DATA(:text, 0, 0) ft");
-            ftJoinCondition.append(NL) //
-                .append("    ");
-            if (needsAnd)
-                ftJoinCondition.append("AND ");
-            ftJoinCondition.append("ft.\"TABLE\" = '").append(m.entityName).append('\'').append(NL) //
-                .append("    AND e.\"id\" = ft.\"KEYS\"[1]");
-            needsAnd = true;
-        }
-        if (m.hasTopic || m.hasMasterEntity || m.hasTextH2) {
-            innerJoinOpen.append(NL) //
-                .append("INNER JOIN (");
-            innerJoinClose.append(NL) //
-                .append(") ON");
+            ftJoinClause.append(NL) //
+            .append("JOIN FT_SEARCH_DATA(:text, 0, 0) ft").append(NL) //
+            .append("ON").append(NL) //
+            .append("    ft.\"TABLE\" = '").append(m.entityName).append('\'').append(NL) //
+            .append("    AND ft.\"KEYS\"[1] = e.\"id\"");
         }
         if (m.hasTextMariaDB || m.hasStatus) {
             whereClause.append(NL) //
                 .append("WHERE").append(NL) //
                 .append("    ");
-            needsAnd = false;
+            boolean needsAnd = false;
             if (m.hasTextMariaDB) {
                 whereClause.append("MATCH (").append(getFulltextColumns()).append(") AGAINST (:text");
                 if (m.isAdvanced)
@@ -352,28 +360,31 @@ public abstract class CustomITopicalEntityRepositoryImpl<T extends IBaseEntity &
         if (m.isSorted)
             entityUtils.appendOrderByClause(orderByClause, m.pageable, "e.", true);
 
+        String template = //
+            """
+            %sSELECT %s
+            %s%s%s%s%s;
+            """;
+    
         // NOTE: since the COUNT query does not include an ORDER BY clause, multiple executions of the same SELECT query
         // with different ORDER BY clauses will result in the registration of multiple identical COUNT queries, each of
         // which will simply overwrite the previous definition. This is not a problem, but it is somewhat inefficient.
-        String countSql = String.format(template, subTopicRecursiveClause, "COUNT(*)", m.entityName, innerJoinOpen,
-            stJoinTables, meJoinTable, ftJoinTable, innerJoinClose, stJoinCondition, meJoinCondition, ftJoinCondition,
+        String countSql = String.format(template, commonTableExpr, "COUNT(*)", fromClause, meJoinClause, ftJoinClause,
             whereClause, "");
         Query countQuery = em.createNativeQuery(countSql, Long.class);
         em.getEntityManagerFactory().addNamedQuery(m.countQueryName, countQuery);
-        LOG.debug("Defined query '{}' as:\n{}", m.countQueryName, countSql);
+        LOGGER.debug("Defined query '{}' as:\n{}", m.countQueryName, countSql);
 
-        String selectSql = String.format(template, subTopicRecursiveClause, "DISTINCT e.*", m.entityName, innerJoinOpen,
-            stJoinTables, meJoinTable, ftJoinTable, innerJoinClose, stJoinCondition, meJoinCondition, ftJoinCondition,
+        String selectSql = String.format(template, commonTableExpr, "DISTINCT e.*", fromClause, meJoinClause, ftJoinClause,
             whereClause, orderByClause);
         Query selectQuery = em.createNativeQuery(selectSql, getEntityClass());
         em.getEntityManagerFactory().addNamedQuery(m.selectQueryName, selectQuery);
-        LOG.debug("Defined query '{}' as:\n{}", m.selectQueryName, selectSql);
+        LOGGER.debug("Defined query '{}' as:\n{}", m.selectQueryName, selectSql);
 
         return new QueryPair(countQuery, selectQuery);
     }
 
     @Override
-    // @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
     public Page<T> findByFilter(@Nullable TopicalEntityQueryFilter filter, @NonNull Pageable pageable) {
         QueryMetaData m = getQueryMetaData(filter, pageable);

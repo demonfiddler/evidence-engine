@@ -34,6 +34,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
 import com.graphql_java_generator.annotation.RequestType;
 import com.graphql_java_generator.client.GraphQLQueryExecutor;
 import com.graphql_java_generator.client.GraphqlClientUtils;
+import com.graphql_java_generator.client.request.Builder;
 import com.graphql_java_generator.client.request.InputParameter;
 import com.graphql_java_generator.client.request.InputParameter.InputParameterType;
 import com.graphql_java_generator.client.request.ObjectResponse;
@@ -47,6 +48,7 @@ import io.github.demonfiddler.ee.client.Claim;
 import io.github.demonfiddler.ee.client.ClaimPage;
 import io.github.demonfiddler.ee.client.Declaration;
 import io.github.demonfiddler.ee.client.DeclarationPage;
+import io.github.demonfiddler.ee.client.EntityKind;
 import io.github.demonfiddler.ee.client.Journal;
 import io.github.demonfiddler.ee.client.JournalPage;
 import io.github.demonfiddler.ee.client.LogPage;
@@ -170,8 +172,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	public Query execWithBindValues(String queryResponseDef,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	public Query execWithBindValues(String queryResponseDef, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMono(this.queryReactiveExecutor.execWithBindValues(queryResponseDef, parameters));
 	}
 
@@ -270,8 +272,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	public Query execWithBindValues(ObjectResponse objectResponse,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+	public Query execWithBindValues(ObjectResponse objectResponse, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException {
 		return getValueFromMono(this.queryReactiveExecutor.execWithBindValues(objectResponse, parameters));
 	}
 
@@ -332,13 +334,11 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	}
 
 	/**
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for a <B>full request</B>, as expected by the
-	 * exec and execWithBindValues methods.
+	 * Get the {@link Builder} for a <B>full request</B>, as expected by the exec and execWithBindValues methods.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder getResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.getResponseBuilder();
 	}
 
@@ -400,10 +400,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "claims", graphQLTypeSimpleName = "ClaimPage",
-		javaClass = ClaimPage.class)
-	public ClaimPage claimsWithBindValues(String queryResponseDef,
-		TopicalEntityQueryFilter filter,
+	@GraphQLNonScalar(fieldName = "claims", graphQLTypeSimpleName = "ClaimPage", javaClass = ClaimPage.class)
+	public ClaimPage claimsWithBindValues(String queryResponseDef, TopicalEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
@@ -451,12 +449,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "claims", graphQLTypeSimpleName = "ClaimPage",
-		javaClass = ClaimPage.class)
-	public ClaimPage claims(String queryResponseDef,
-		TopicalEntityQueryFilter filter,
-		PageableInput pageSort, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	@GraphQLNonScalar(fieldName = "claims", graphQLTypeSimpleName = "ClaimPage", javaClass = ClaimPage.class)
+	public ClaimPage claims(String queryResponseDef, TopicalEntityQueryFilter filter, PageableInput pageSort,
+		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.claims(queryResponseDef, filter, pageSort, paramsAndValues));
 	}
@@ -506,12 +501,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "claims", graphQLTypeSimpleName = "ClaimPage",
-		javaClass = ClaimPage.class)
-	public ClaimPage claimsWithBindValues(ObjectResponse objectResponse,
-		TopicalEntityQueryFilter filter,
-		PageableInput pageSort, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "claims", graphQLTypeSimpleName = "ClaimPage", javaClass = ClaimPage.class)
+	public ClaimPage claimsWithBindValues(ObjectResponse objectResponse, TopicalEntityQueryFilter filter,
+		PageableInput pageSort, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.claimsWithBindValues(objectResponse, filter, pageSort, parameters));
 	}
@@ -566,25 +558,20 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "claims", graphQLTypeSimpleName = "ClaimPage",
-		javaClass = ClaimPage.class)
-	public ClaimPage claims(ObjectResponse objectResponse,
-		TopicalEntityQueryFilter filter,
-		PageableInput pageSort, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "claims", graphQLTypeSimpleName = "ClaimPage", javaClass = ClaimPage.class)
+	public ClaimPage claims(ObjectResponse objectResponse, TopicalEntityQueryFilter filter, PageableInput pageSort,
+		Object... paramsAndValues) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.claims(objectResponse, filter, pageSort, paramsAndValues));
 	}
 
 	/**
 	 * Returns a paged list of claims.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the ClaimPage, as expected by the claims
-	 * query.
+	 * Get the {@link Builder} for the ClaimPage, as expected by the claims query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getClaimsResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder getClaimsResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.getClaimsResponseBuilder();
 	}
 
@@ -647,10 +634,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "claimById", graphQLTypeSimpleName = "Claim",
-		javaClass = Claim.class)
-	public Claim claimByIdWithBindValues(String queryResponseDef, Long id,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	@GraphQLNonScalar(fieldName = "claimById", graphQLTypeSimpleName = "Claim", javaClass = Claim.class)
+	public Claim claimByIdWithBindValues(String queryResponseDef, Long id, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.claimByIdWithBindValues(queryResponseDef, id, parameters));
 	}
@@ -694,8 +680,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "claimById", graphQLTypeSimpleName = "Claim",
-		javaClass = Claim.class)
+	@GraphQLNonScalar(fieldName = "claimById", graphQLTypeSimpleName = "Claim", javaClass = Claim.class)
 	public Claim claimById(String queryResponseDef, Long id, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(this.queryReactiveExecutor.claimById(queryResponseDef, id, paramsAndValues));
@@ -744,10 +729,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "claimById", graphQLTypeSimpleName = "Claim",
-		javaClass = Claim.class)
-	public Claim claimByIdWithBindValues(ObjectResponse objectResponse, Long id,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "claimById", graphQLTypeSimpleName = "Claim", javaClass = Claim.class)
+	public Claim claimByIdWithBindValues(ObjectResponse objectResponse, Long id, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.claimByIdWithBindValues(objectResponse, id, parameters));
 	}
@@ -799,22 +783,19 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "claimById", graphQLTypeSimpleName = "Claim",
-		javaClass = Claim.class)
-	public Claim claimById(ObjectResponse objectResponse, Long id,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "claimById", graphQLTypeSimpleName = "Claim", javaClass = Claim.class)
+	public Claim claimById(ObjectResponse objectResponse, Long id, Object... paramsAndValues)
+		throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(this.queryReactiveExecutor.claimById(objectResponse, id, paramsAndValues));
 	}
 
 	/**
 	 * Returns a claim given its identifier.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Claim, as expected by the claimById
-	 * query.
+	 * Get the {@link Builder} for the Claim, as expected by the claimById query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getClaimByIdResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder getClaimByIdResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.getClaimByIdResponseBuilder();
 	}
 
@@ -878,8 +859,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "declarations", graphQLTypeSimpleName = "DeclarationPage",
 		javaClass = DeclarationPage.class)
-	public DeclarationPage declarationsWithBindValues(String queryResponseDef,
-		TopicalEntityQueryFilter filter,
+	public DeclarationPage declarationsWithBindValues(String queryResponseDef, TopicalEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
@@ -929,8 +909,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "declarations", graphQLTypeSimpleName = "DeclarationPage",
 		javaClass = DeclarationPage.class)
-	public DeclarationPage declarations(String queryResponseDef,
-		TopicalEntityQueryFilter filter,
+	public DeclarationPage declarations(String queryResponseDef, TopicalEntityQueryFilter filter,
 		PageableInput pageSort, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
@@ -988,10 +967,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "declarations", graphQLTypeSimpleName = "DeclarationPage",
 		javaClass = DeclarationPage.class)
-	public DeclarationPage declarationsWithBindValues(ObjectResponse objectResponse,
-		TopicalEntityQueryFilter filter,
-		PageableInput pageSort, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException {
+	public DeclarationPage declarationsWithBindValues(ObjectResponse objectResponse, TopicalEntityQueryFilter filter,
+		PageableInput pageSort, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.declarationsWithBindValues(objectResponse, filter, pageSort, parameters));
 	}
@@ -1049,23 +1026,19 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "declarations", graphQLTypeSimpleName = "DeclarationPage",
 		javaClass = DeclarationPage.class)
-	public DeclarationPage declarations(ObjectResponse objectResponse,
-		TopicalEntityQueryFilter filter,
-		PageableInput pageSort, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException {
+	public DeclarationPage declarations(ObjectResponse objectResponse, TopicalEntityQueryFilter filter,
+		PageableInput pageSort, Object... paramsAndValues) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.declarations(objectResponse, filter, pageSort, paramsAndValues));
 	}
 
 	/**
 	 * Returns a paged list of declarations.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the DeclarationPage, as expected by the
-	 * declarations query.
+	 * Get the {@link Builder} for the DeclarationPage, as expected by the declarations query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getDeclarationsResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder getDeclarationsResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.getDeclarationsResponseBuilder();
 	}
 
@@ -1131,8 +1104,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "declarationById", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class)
-	public Declaration declarationByIdWithBindValues(String queryResponseDef, Long id,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	public Declaration declarationByIdWithBindValues(String queryResponseDef, Long id, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.declarationByIdWithBindValues(queryResponseDef, id, parameters));
 	}
@@ -1178,8 +1151,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "declarationById", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class)
-	public Declaration declarationById(String queryResponseDef, Long id,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	public Declaration declarationById(String queryResponseDef, Long id, Object... paramsAndValues)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.declarationById(queryResponseDef, id, paramsAndValues));
 	}
@@ -1231,8 +1204,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "declarationById", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class)
-	public Declaration declarationByIdWithBindValues(ObjectResponse objectResponse,
-		Long id, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+	public Declaration declarationByIdWithBindValues(ObjectResponse objectResponse, Long id,
+		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.declarationByIdWithBindValues(objectResponse, id, parameters));
 	}
@@ -1288,21 +1261,19 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "declarationById", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class)
-	public Declaration declarationById(ObjectResponse objectResponse, Long id,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+	public Declaration declarationById(ObjectResponse objectResponse, Long id, Object... paramsAndValues)
+		throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.declarationById(objectResponse, id, paramsAndValues));
 	}
 
 	/**
 	 * Returns a declaration given its identifier.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Declaration, as expected by the
-	 * declarationById query.
+	 * Get the {@link Builder} for the Declaration, as expected by the declarationById query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getDeclarationByIdResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder getDeclarationByIdResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.getDeclarationByIdResponseBuilder();
 	}
 
@@ -1365,10 +1336,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "journals", graphQLTypeSimpleName = "JournalPage",
-		javaClass = JournalPage.class)
-	public JournalPage journalsWithBindValues(String queryResponseDef,
-		TrackedEntityQueryFilter filter,
+	@GraphQLNonScalar(fieldName = "journals", graphQLTypeSimpleName = "JournalPage", javaClass = JournalPage.class)
+	public JournalPage journalsWithBindValues(String queryResponseDef, TrackedEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
@@ -1416,12 +1385,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "journals", graphQLTypeSimpleName = "JournalPage",
-		javaClass = JournalPage.class)
-	public JournalPage journals(String queryResponseDef,
-		TrackedEntityQueryFilter filter,
-		PageableInput pageSort, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	@GraphQLNonScalar(fieldName = "journals", graphQLTypeSimpleName = "JournalPage", javaClass = JournalPage.class)
+	public JournalPage journals(String queryResponseDef, TrackedEntityQueryFilter filter, PageableInput pageSort,
+		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.journals(queryResponseDef, filter, pageSort, paramsAndValues));
 	}
@@ -1471,12 +1437,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "journals", graphQLTypeSimpleName = "JournalPage",
-		javaClass = JournalPage.class)
-	public JournalPage journalsWithBindValues(ObjectResponse objectResponse,
-		TrackedEntityQueryFilter filter,
-		PageableInput pageSort, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "journals", graphQLTypeSimpleName = "JournalPage", javaClass = JournalPage.class)
+	public JournalPage journalsWithBindValues(ObjectResponse objectResponse, TrackedEntityQueryFilter filter,
+		PageableInput pageSort, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.journalsWithBindValues(objectResponse, filter, pageSort, parameters));
 	}
@@ -1531,25 +1494,20 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "journals", graphQLTypeSimpleName = "JournalPage",
-		javaClass = JournalPage.class)
-	public JournalPage journals(ObjectResponse objectResponse,
-		TrackedEntityQueryFilter filter,
-		PageableInput pageSort, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "journals", graphQLTypeSimpleName = "JournalPage", javaClass = JournalPage.class)
+	public JournalPage journals(ObjectResponse objectResponse, TrackedEntityQueryFilter filter, PageableInput pageSort,
+		Object... paramsAndValues) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.journals(objectResponse, filter, pageSort, paramsAndValues));
 	}
 
 	/**
 	 * Returns a paged list of journals.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the JournalPage, as expected by the
-	 * journals query.
+	 * Get the {@link Builder} for the JournalPage, as expected by the journals query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getJournalsResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder getJournalsResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.getJournalsResponseBuilder();
 	}
 
@@ -1612,10 +1570,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "journalById", graphQLTypeSimpleName = "Journal",
-		javaClass = Journal.class)
-	public Journal journalByIdWithBindValues(String queryResponseDef, Long id,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	@GraphQLNonScalar(fieldName = "journalById", graphQLTypeSimpleName = "Journal", javaClass = Journal.class)
+	public Journal journalByIdWithBindValues(String queryResponseDef, Long id, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.journalByIdWithBindValues(queryResponseDef, id, parameters));
 	}
@@ -1659,10 +1616,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "journalById", graphQLTypeSimpleName = "Journal",
-		javaClass = Journal.class)
-	public Journal journalById(String queryResponseDef, Long id,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	@GraphQLNonScalar(fieldName = "journalById", graphQLTypeSimpleName = "Journal", javaClass = Journal.class)
+	public Journal journalById(String queryResponseDef, Long id, Object... paramsAndValues)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(this.queryReactiveExecutor.journalById(queryResponseDef, id, paramsAndValues));
 	}
 
@@ -1710,10 +1666,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "journalById", graphQLTypeSimpleName = "Journal",
-		javaClass = Journal.class)
-	public Journal journalByIdWithBindValues(ObjectResponse objectResponse, Long id,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "journalById", graphQLTypeSimpleName = "Journal", javaClass = Journal.class)
+	public Journal journalByIdWithBindValues(ObjectResponse objectResponse, Long id, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.journalByIdWithBindValues(objectResponse, id, parameters));
 	}
@@ -1766,22 +1721,19 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "journalById", graphQLTypeSimpleName = "Journal",
-		javaClass = Journal.class)
-	public Journal journalById(ObjectResponse objectResponse, Long id,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "journalById", graphQLTypeSimpleName = "Journal", javaClass = Journal.class)
+	public Journal journalById(ObjectResponse objectResponse, Long id, Object... paramsAndValues)
+		throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(this.queryReactiveExecutor.journalById(objectResponse, id, paramsAndValues));
 	}
 
 	/**
 	 * Returns a journal given its identifier.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Journal, as expected by the journalById
-	 * query.
+	 * Get the {@link Builder} for the Journal, as expected by the journalById query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getJournalByIdResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder getJournalByIdResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.getJournalByIdResponseBuilder();
 	}
 
@@ -1844,10 +1796,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage",
-		javaClass = LogPage.class)
-	public LogPage logWithBindValues(String queryResponseDef,
-		LogQueryFilter filter, PageableInput pageSort,
+	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage", javaClass = LogPage.class)
+	public LogPage logWithBindValues(String queryResponseDef, LogQueryFilter filter, PageableInput pageSort,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.logWithBindValues(queryResponseDef, filter, pageSort, parameters));
@@ -1894,10 +1844,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage",
-		javaClass = LogPage.class)
-	public LogPage log(String queryResponseDef,
-		LogQueryFilter filter, PageableInput pageSort,
+	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage", javaClass = LogPage.class)
+	public LogPage log(String queryResponseDef, LogQueryFilter filter, PageableInput pageSort,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.log(queryResponseDef, filter, pageSort, paramsAndValues));
@@ -1948,10 +1896,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage",
-		javaClass = LogPage.class)
-	public LogPage logWithBindValues(ObjectResponse objectResponse,
-		LogQueryFilter filter, PageableInput pageSort,
+	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage", javaClass = LogPage.class)
+	public LogPage logWithBindValues(ObjectResponse objectResponse, LogQueryFilter filter, PageableInput pageSort,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.logWithBindValues(objectResponse, filter, pageSort, parameters));
@@ -2006,10 +1952,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage",
-		javaClass = LogPage.class)
-	public LogPage log(ObjectResponse objectResponse,
-		LogQueryFilter filter, PageableInput pageSort,
+	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage", javaClass = LogPage.class)
+	public LogPage log(ObjectResponse objectResponse, LogQueryFilter filter, PageableInput pageSort,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.log(objectResponse, filter, pageSort, paramsAndValues));
@@ -2017,12 +1961,11 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 
 	/**
 	 * Returns a paged list of log entries.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the LogPage, as expected by the log query.
+	 * Get the {@link Builder} for the LogPage, as expected by the log query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getLogResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder getLogResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.getLogResponseBuilder();
 	}
 
@@ -2087,10 +2030,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "persons", graphQLTypeSimpleName = "PersonPage",
-		javaClass = PersonPage.class)
-	public PersonPage personsWithBindValues(String queryResponseDef,
-		TopicalEntityQueryFilter filter,
+	@GraphQLNonScalar(fieldName = "persons", graphQLTypeSimpleName = "PersonPage", javaClass = PersonPage.class)
+	public PersonPage personsWithBindValues(String queryResponseDef, TopicalEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
@@ -2138,12 +2079,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "persons", graphQLTypeSimpleName = "PersonPage",
-		javaClass = PersonPage.class)
-	public PersonPage persons(String queryResponseDef,
-		TopicalEntityQueryFilter filter,
-		PageableInput pageSort, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	@GraphQLNonScalar(fieldName = "persons", graphQLTypeSimpleName = "PersonPage", javaClass = PersonPage.class)
+	public PersonPage persons(String queryResponseDef, TopicalEntityQueryFilter filter, PageableInput pageSort,
+		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.persons(queryResponseDef, filter, pageSort, paramsAndValues));
 	}
@@ -2193,12 +2131,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "persons", graphQLTypeSimpleName = "PersonPage",
-		javaClass = PersonPage.class)
-	public PersonPage personsWithBindValues(ObjectResponse objectResponse,
-		TopicalEntityQueryFilter filter,
-		PageableInput pageSort, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "persons", graphQLTypeSimpleName = "PersonPage", javaClass = PersonPage.class)
+	public PersonPage personsWithBindValues(ObjectResponse objectResponse, TopicalEntityQueryFilter filter,
+		PageableInput pageSort, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.personsWithBindValues(objectResponse, filter, pageSort, parameters));
 	}
@@ -2253,25 +2188,20 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "persons", graphQLTypeSimpleName = "PersonPage",
-		javaClass = PersonPage.class)
-	public PersonPage persons(ObjectResponse objectResponse,
-		TopicalEntityQueryFilter filter,
-		PageableInput pageSort, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "persons", graphQLTypeSimpleName = "PersonPage", javaClass = PersonPage.class)
+	public PersonPage persons(ObjectResponse objectResponse, TopicalEntityQueryFilter filter, PageableInput pageSort,
+		Object... paramsAndValues) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.persons(objectResponse, filter, pageSort, paramsAndValues));
 	}
 
 	/**
 	 * Returns a paged list of persons.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the PersonPage, as expected by the persons
-	 * query.
+	 * Get the {@link Builder} for the PersonPage, as expected by the persons query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getPersonsResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder getPersonsResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.getPersonsResponseBuilder();
 	}
 
@@ -2334,10 +2264,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "personById", graphQLTypeSimpleName = "Person",
-		javaClass = Person.class)
-	public Person personByIdWithBindValues(String queryResponseDef, Long id,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	@GraphQLNonScalar(fieldName = "personById", graphQLTypeSimpleName = "Person", javaClass = Person.class)
+	public Person personByIdWithBindValues(String queryResponseDef, Long id, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.personByIdWithBindValues(queryResponseDef, id, parameters));
 	}
@@ -2381,10 +2310,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "personById", graphQLTypeSimpleName = "Person",
-		javaClass = Person.class)
-	public Person personById(String queryResponseDef, Long id,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	@GraphQLNonScalar(fieldName = "personById", graphQLTypeSimpleName = "Person", javaClass = Person.class)
+	public Person personById(String queryResponseDef, Long id, Object... paramsAndValues)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(this.queryReactiveExecutor.personById(queryResponseDef, id, paramsAndValues));
 	}
 
@@ -2431,10 +2359,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "personById", graphQLTypeSimpleName = "Person",
-		javaClass = Person.class)
-	public Person personByIdWithBindValues(ObjectResponse objectResponse, Long id,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "personById", graphQLTypeSimpleName = "Person", javaClass = Person.class)
+	public Person personByIdWithBindValues(ObjectResponse objectResponse, Long id, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.personByIdWithBindValues(objectResponse, id, parameters));
 	}
@@ -2487,22 +2414,19 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "personById", graphQLTypeSimpleName = "Person",
-		javaClass = Person.class)
-	public Person personById(ObjectResponse objectResponse, Long id,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "personById", graphQLTypeSimpleName = "Person", javaClass = Person.class)
+	public Person personById(ObjectResponse objectResponse, Long id, Object... paramsAndValues)
+		throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(this.queryReactiveExecutor.personById(objectResponse, id, paramsAndValues));
 	}
 
 	/**
 	 * Returns a person given its identifier.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Person, as expected by the personById
-	 * query.
+	 * Get the {@link Builder} for the Person, as expected by the personById query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getPersonByIdResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder getPersonByIdResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.getPersonByIdResponseBuilder();
 	}
 
@@ -2566,8 +2490,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "publications", graphQLTypeSimpleName = "PublicationPage",
 		javaClass = PublicationPage.class)
-	public PublicationPage publicationsWithBindValues(String queryResponseDef,
-		TopicalEntityQueryFilter filter,
+	public PublicationPage publicationsWithBindValues(String queryResponseDef, TopicalEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
@@ -2617,8 +2540,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "publications", graphQLTypeSimpleName = "PublicationPage",
 		javaClass = PublicationPage.class)
-	public PublicationPage publications(String queryResponseDef,
-		TopicalEntityQueryFilter filter,
+	public PublicationPage publications(String queryResponseDef, TopicalEntityQueryFilter filter,
 		PageableInput pageSort, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
@@ -2676,10 +2598,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "publications", graphQLTypeSimpleName = "PublicationPage",
 		javaClass = PublicationPage.class)
-	public PublicationPage publicationsWithBindValues(ObjectResponse objectResponse,
-		TopicalEntityQueryFilter filter,
-		PageableInput pageSort, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException {
+	public PublicationPage publicationsWithBindValues(ObjectResponse objectResponse, TopicalEntityQueryFilter filter,
+		PageableInput pageSort, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publicationsWithBindValues(objectResponse, filter, pageSort, parameters));
 	}
@@ -2737,23 +2657,19 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "publications", graphQLTypeSimpleName = "PublicationPage",
 		javaClass = PublicationPage.class)
-	public PublicationPage publications(ObjectResponse objectResponse,
-		TopicalEntityQueryFilter filter,
-		PageableInput pageSort, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException {
+	public PublicationPage publications(ObjectResponse objectResponse, TopicalEntityQueryFilter filter,
+		PageableInput pageSort, Object... paramsAndValues) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publications(objectResponse, filter, pageSort, paramsAndValues));
 	}
 
 	/**
 	 * Returns a paged list of publications.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the PublicationPage, as expected by the
-	 * publications query.
+	 * Get the {@link Builder} for the PublicationPage, as expected by the publications query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getPublicationsResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder getPublicationsResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.getPublicationsResponseBuilder();
 	}
 
@@ -2819,8 +2735,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "publicationById", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class)
-	public Publication publicationByIdWithBindValues(String queryResponseDef, Long id,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	public Publication publicationByIdWithBindValues(String queryResponseDef, Long id, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publicationByIdWithBindValues(queryResponseDef, id, parameters));
 	}
@@ -2866,8 +2782,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "publicationById", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class)
-	public Publication publicationById(String queryResponseDef, Long id,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	public Publication publicationById(String queryResponseDef, Long id, Object... paramsAndValues)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publicationById(queryResponseDef, id, paramsAndValues));
 	}
@@ -2919,8 +2835,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "publicationById", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class)
-	public Publication publicationByIdWithBindValues(ObjectResponse objectResponse,
-		Long id, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+	public Publication publicationByIdWithBindValues(ObjectResponse objectResponse, Long id,
+		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publicationByIdWithBindValues(objectResponse, id, parameters));
 	}
@@ -2976,21 +2892,19 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "publicationById", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class)
-	public Publication publicationById(ObjectResponse objectResponse, Long id,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+	public Publication publicationById(ObjectResponse objectResponse, Long id, Object... paramsAndValues)
+		throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publicationById(objectResponse, id, paramsAndValues));
 	}
 
 	/**
 	 * Returns a publication given its identifier.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Publication, as expected by the
-	 * publicationById query.
+	 * Get the {@link Builder} for the Publication, as expected by the publicationById query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getPublicationByIdResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder getPublicationByIdResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.getPublicationByIdResponseBuilder();
 	}
 
@@ -3055,8 +2969,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "publishers", graphQLTypeSimpleName = "PublisherPage",
 		javaClass = PublisherPage.class)
-	public PublisherPage publishersWithBindValues(String queryResponseDef,
-		TrackedEntityQueryFilter filter,
+	public PublisherPage publishersWithBindValues(String queryResponseDef, TrackedEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
@@ -3106,10 +3019,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "publishers", graphQLTypeSimpleName = "PublisherPage",
 		javaClass = PublisherPage.class)
-	public PublisherPage publishers(String queryResponseDef,
-		TrackedEntityQueryFilter filter,
-		PageableInput pageSort, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	public PublisherPage publishers(String queryResponseDef, TrackedEntityQueryFilter filter, PageableInput pageSort,
+		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publishers(queryResponseDef, filter, pageSort, paramsAndValues));
 	}
@@ -3163,10 +3074,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "publishers", graphQLTypeSimpleName = "PublisherPage",
 		javaClass = PublisherPage.class)
-	public PublisherPage publishersWithBindValues(ObjectResponse objectResponse,
-		TrackedEntityQueryFilter filter,
-		PageableInput pageSort, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException {
+	public PublisherPage publishersWithBindValues(ObjectResponse objectResponse, TrackedEntityQueryFilter filter,
+		PageableInput pageSort, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publishersWithBindValues(objectResponse, filter, pageSort, parameters));
 	}
@@ -3223,23 +3132,19 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "publishers", graphQLTypeSimpleName = "PublisherPage",
 		javaClass = PublisherPage.class)
-	public PublisherPage publishers(ObjectResponse objectResponse,
-		TrackedEntityQueryFilter filter,
-		PageableInput pageSort, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException {
+	public PublisherPage publishers(ObjectResponse objectResponse, TrackedEntityQueryFilter filter,
+		PageableInput pageSort, Object... paramsAndValues) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publishers(objectResponse, filter, pageSort, paramsAndValues));
 	}
 
 	/**
 	 * Returns a paged list of publishers.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the PublisherPage, as expected by the
-	 * publishers query.
+	 * Get the {@link Builder} for the PublisherPage, as expected by the publishers query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getPublishersResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder getPublishersResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.getPublishersResponseBuilder();
 	}
 
@@ -3302,10 +3207,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "publisherById", graphQLTypeSimpleName = "Publisher",
-		javaClass = Publisher.class)
-	public Publisher publisherByIdWithBindValues(String queryResponseDef, Long id,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	@GraphQLNonScalar(fieldName = "publisherById", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class)
+	public Publisher publisherByIdWithBindValues(String queryResponseDef, Long id, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publisherByIdWithBindValues(queryResponseDef, id, parameters));
 	}
@@ -3349,10 +3253,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "publisherById", graphQLTypeSimpleName = "Publisher",
-		javaClass = Publisher.class)
-	public Publisher publisherById(String queryResponseDef, Long id,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	@GraphQLNonScalar(fieldName = "publisherById", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class)
+	public Publisher publisherById(String queryResponseDef, Long id, Object... paramsAndValues)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publisherById(queryResponseDef, id, paramsAndValues));
 	}
@@ -3401,10 +3304,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "publisherById", graphQLTypeSimpleName = "Publisher",
-		javaClass = Publisher.class)
-	public Publisher publisherByIdWithBindValues(ObjectResponse objectResponse,
-		Long id, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "publisherById", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class)
+	public Publisher publisherByIdWithBindValues(ObjectResponse objectResponse, Long id, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publisherByIdWithBindValues(objectResponse, id, parameters));
 	}
@@ -3457,22 +3359,19 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "publisherById", graphQLTypeSimpleName = "Publisher",
-		javaClass = Publisher.class)
-	public Publisher publisherById(ObjectResponse objectResponse, Long id,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "publisherById", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class)
+	public Publisher publisherById(ObjectResponse objectResponse, Long id, Object... paramsAndValues)
+		throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(this.queryReactiveExecutor.publisherById(objectResponse, id, paramsAndValues));
 	}
 
 	/**
 	 * Returns a publisher given its identifier.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Publisher, as expected by the
-	 * publisherById query.
+	 * Get the {@link Builder} for the Publisher, as expected by the publisherById query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getPublisherByIdResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder getPublisherByIdResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.getPublisherByIdResponseBuilder();
 	}
 
@@ -3537,8 +3436,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "quotations", graphQLTypeSimpleName = "QuotationPage",
 		javaClass = QuotationPage.class)
-	public QuotationPage quotationsWithBindValues(String queryResponseDef,
-		TopicalEntityQueryFilter filter,
+	public QuotationPage quotationsWithBindValues(String queryResponseDef, TopicalEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
@@ -3588,10 +3486,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "quotations", graphQLTypeSimpleName = "QuotationPage",
 		javaClass = QuotationPage.class)
-	public QuotationPage quotations(String queryResponseDef,
-		TopicalEntityQueryFilter filter,
-		PageableInput pageSort, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	public QuotationPage quotations(String queryResponseDef, TopicalEntityQueryFilter filter, PageableInput pageSort,
+		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.quotations(queryResponseDef, filter, pageSort, paramsAndValues));
 	}
@@ -3645,10 +3541,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "quotations", graphQLTypeSimpleName = "QuotationPage",
 		javaClass = QuotationPage.class)
-	public QuotationPage quotationsWithBindValues(ObjectResponse objectResponse,
-		TopicalEntityQueryFilter filter,
-		PageableInput pageSort, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException {
+	public QuotationPage quotationsWithBindValues(ObjectResponse objectResponse, TopicalEntityQueryFilter filter,
+		PageableInput pageSort, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.quotationsWithBindValues(objectResponse, filter, pageSort, parameters));
 	}
@@ -3705,23 +3599,19 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "quotations", graphQLTypeSimpleName = "QuotationPage",
 		javaClass = QuotationPage.class)
-	public QuotationPage quotations(ObjectResponse objectResponse,
-		TopicalEntityQueryFilter filter,
-		PageableInput pageSort, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException {
+	public QuotationPage quotations(ObjectResponse objectResponse, TopicalEntityQueryFilter filter,
+		PageableInput pageSort, Object... paramsAndValues) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.quotations(objectResponse, filter, pageSort, paramsAndValues));
 	}
 
 	/**
 	 * Returns a paged list of quotations.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the QuotationPage, as expected by the
-	 * quotations query.
+	 * Get the {@link Builder} for the QuotationPage, as expected by the quotations query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getQuotationsResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder getQuotationsResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.getQuotationsResponseBuilder();
 	}
 
@@ -3784,10 +3674,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "quotationById", graphQLTypeSimpleName = "Quotation",
-		javaClass = Quotation.class)
-	public Quotation quotationByIdWithBindValues(String queryResponseDef, Long id,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	@GraphQLNonScalar(fieldName = "quotationById", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class)
+	public Quotation quotationByIdWithBindValues(String queryResponseDef, Long id, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.quotationByIdWithBindValues(queryResponseDef, id, parameters));
 	}
@@ -3831,10 +3720,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "quotationById", graphQLTypeSimpleName = "Quotation",
-		javaClass = Quotation.class)
-	public Quotation quotationById(String queryResponseDef, Long id,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	@GraphQLNonScalar(fieldName = "quotationById", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class)
+	public Quotation quotationById(String queryResponseDef, Long id, Object... paramsAndValues)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.quotationById(queryResponseDef, id, paramsAndValues));
 	}
@@ -3883,10 +3771,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "quotationById", graphQLTypeSimpleName = "Quotation",
-		javaClass = Quotation.class)
-	public Quotation quotationByIdWithBindValues(ObjectResponse objectResponse,
-		Long id, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "quotationById", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class)
+	public Quotation quotationByIdWithBindValues(ObjectResponse objectResponse, Long id, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.quotationByIdWithBindValues(objectResponse, id, parameters));
 	}
@@ -3939,22 +3826,19 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "quotationById", graphQLTypeSimpleName = "Quotation",
-		javaClass = Quotation.class)
-	public Quotation quotationById(ObjectResponse objectResponse, Long id,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "quotationById", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class)
+	public Quotation quotationById(ObjectResponse objectResponse, Long id, Object... paramsAndValues)
+		throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(this.queryReactiveExecutor.quotationById(objectResponse, id, paramsAndValues));
 	}
 
 	/**
 	 * Returns a quotation given its identifier.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Quotation, as expected by the
-	 * quotationById query.
+	 * Get the {@link Builder} for the Quotation, as expected by the quotationById query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getQuotationByIdResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder getQuotationByIdResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.getQuotationByIdResponseBuilder();
 	}
 
@@ -4017,12 +3901,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "topics", graphQLTypeSimpleName = "TopicPage",
-		javaClass = TopicPage.class)
-	public TopicPage topicsWithBindValues(String queryResponseDef,
-		TopicQueryFilter filter,
-		PageableInput pageSort, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	@GraphQLNonScalar(fieldName = "topics", graphQLTypeSimpleName = "TopicPage", javaClass = TopicPage.class)
+	public TopicPage topicsWithBindValues(String queryResponseDef, TopicQueryFilter filter, PageableInput pageSort,
+		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.topicsWithBindValues(queryResponseDef, filter, pageSort, parameters));
 	}
@@ -4068,12 +3949,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "topics", graphQLTypeSimpleName = "TopicPage",
-		javaClass = TopicPage.class)
-	public TopicPage topics(String queryResponseDef,
-		TopicQueryFilter filter,
-		PageableInput pageSort, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	@GraphQLNonScalar(fieldName = "topics", graphQLTypeSimpleName = "TopicPage", javaClass = TopicPage.class)
+	public TopicPage topics(String queryResponseDef, TopicQueryFilter filter, PageableInput pageSort,
+		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.topics(queryResponseDef, filter, pageSort, paramsAndValues));
 	}
@@ -4123,12 +4001,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "topics", graphQLTypeSimpleName = "TopicPage",
-		javaClass = TopicPage.class)
-	public TopicPage topicsWithBindValues(ObjectResponse objectResponse,
-		TopicQueryFilter filter,
-		PageableInput pageSort, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "topics", graphQLTypeSimpleName = "TopicPage", javaClass = TopicPage.class)
+	public TopicPage topicsWithBindValues(ObjectResponse objectResponse, TopicQueryFilter filter,
+		PageableInput pageSort, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.topicsWithBindValues(objectResponse, filter, pageSort, parameters));
 	}
@@ -4183,25 +4058,20 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "topics", graphQLTypeSimpleName = "TopicPage",
-		javaClass = TopicPage.class)
-	public TopicPage topics(ObjectResponse objectResponse,
-		TopicQueryFilter filter,
-		PageableInput pageSort, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "topics", graphQLTypeSimpleName = "TopicPage", javaClass = TopicPage.class)
+	public TopicPage topics(ObjectResponse objectResponse, TopicQueryFilter filter, PageableInput pageSort,
+		Object... paramsAndValues) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.topics(objectResponse, filter, pageSort, paramsAndValues));
 	}
 
 	/**
 	 * Returns a paged list of topics or sub-topics.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the TopicPage, as expected by the topics
-	 * query.
+	 * Get the {@link Builder} for the TopicPage, as expected by the topics query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getTopicsResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder getTopicsResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.getTopicsResponseBuilder();
 	}
 
@@ -4264,10 +4134,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "topicById", graphQLTypeSimpleName = "Topic",
-		javaClass = Topic.class)
-	public Topic topicByIdWithBindValues(String queryResponseDef, Long id,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	@GraphQLNonScalar(fieldName = "topicById", graphQLTypeSimpleName = "Topic", javaClass = Topic.class)
+	public Topic topicByIdWithBindValues(String queryResponseDef, Long id, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.topicByIdWithBindValues(queryResponseDef, id, parameters));
 	}
@@ -4311,8 +4180,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "topicById", graphQLTypeSimpleName = "Topic",
-		javaClass = Topic.class)
+	@GraphQLNonScalar(fieldName = "topicById", graphQLTypeSimpleName = "Topic", javaClass = Topic.class)
 	public Topic topicById(String queryResponseDef, Long id, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(this.queryReactiveExecutor.topicById(queryResponseDef, id, paramsAndValues));
@@ -4361,10 +4229,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "topicById", graphQLTypeSimpleName = "Topic",
-		javaClass = Topic.class)
-	public Topic topicByIdWithBindValues(ObjectResponse objectResponse, Long id,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "topicById", graphQLTypeSimpleName = "Topic", javaClass = Topic.class)
+	public Topic topicByIdWithBindValues(ObjectResponse objectResponse, Long id, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.topicByIdWithBindValues(objectResponse, id, parameters));
 	}
@@ -4416,22 +4283,19 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "topicById", graphQLTypeSimpleName = "Topic",
-		javaClass = Topic.class)
-	public Topic topicById(ObjectResponse objectResponse, Long id,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "topicById", graphQLTypeSimpleName = "Topic", javaClass = Topic.class)
+	public Topic topicById(ObjectResponse objectResponse, Long id, Object... paramsAndValues)
+		throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(this.queryReactiveExecutor.topicById(objectResponse, id, paramsAndValues));
 	}
 
 	/**
 	 * Returns a topic given its identifier.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Topic, as expected by the topicById
-	 * query.
+	 * Get the {@link Builder} for the Topic, as expected by the topicById query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getTopicByIdResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder getTopicByIdResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.getTopicByIdResponseBuilder();
 	}
 
@@ -4492,10 +4356,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "topicRefs", graphQLTypeSimpleName = "TopicRefPage",
-		javaClass = TopicRefPage.class)
-	public TopicRefPage topicRefsWithBindValues(String queryResponseDef,
-		TopicRefQueryFilter filter,
+	@GraphQLNonScalar(fieldName = "topicRefs", graphQLTypeSimpleName = "TopicRefPage", javaClass = TopicRefPage.class)
+	public TopicRefPage topicRefsWithBindValues(String queryResponseDef, TopicRefQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
@@ -4542,12 +4404,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "topicRefs", graphQLTypeSimpleName = "TopicRefPage",
-		javaClass = TopicRefPage.class)
-	public TopicRefPage topicRefs(String queryResponseDef,
-		TopicRefQueryFilter filter,
-		PageableInput pageSort, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	@GraphQLNonScalar(fieldName = "topicRefs", graphQLTypeSimpleName = "TopicRefPage", javaClass = TopicRefPage.class)
+	public TopicRefPage topicRefs(String queryResponseDef, TopicRefQueryFilter filter, PageableInput pageSort,
+		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.topicRefs(queryResponseDef, filter, pageSort, paramsAndValues));
 	}
@@ -4597,12 +4456,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "topicRefs", graphQLTypeSimpleName = "TopicRefPage",
-		javaClass = TopicRefPage.class)
-	public TopicRefPage topicRefsWithBindValues(ObjectResponse objectResponse,
-		TopicRefQueryFilter filter,
-		PageableInput pageSort, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "topicRefs", graphQLTypeSimpleName = "TopicRefPage", javaClass = TopicRefPage.class)
+	public TopicRefPage topicRefsWithBindValues(ObjectResponse objectResponse, TopicRefQueryFilter filter,
+		PageableInput pageSort, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.topicRefsWithBindValues(objectResponse, filter, pageSort, parameters));
 	}
@@ -4656,24 +4512,19 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "topicRefs", graphQLTypeSimpleName = "TopicRefPage",
-		javaClass = TopicRefPage.class)
-	public TopicRefPage topicRefs(ObjectResponse objectResponse,
-		TopicRefQueryFilter filter,
-		PageableInput pageSort, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "topicRefs", graphQLTypeSimpleName = "TopicRefPage", javaClass = TopicRefPage.class)
+	public TopicRefPage topicRefs(ObjectResponse objectResponse, TopicRefQueryFilter filter, PageableInput pageSort,
+		Object... paramsAndValues) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.topicRefs(objectResponse, filter, pageSort, paramsAndValues));
 	}
 
 	/**
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the TopicRefPage, as expected by the
-	 * topicRefs query.
+	 * Get the {@link Builder} for the TopicRefPage, as expected by the topicRefs query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getTopicRefsResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder getTopicRefsResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.getTopicRefsResponseBuilder();
 	}
 
@@ -4735,12 +4586,11 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "topicRefById", graphQLTypeSimpleName = "TopicRef",
-		javaClass = TopicRef.class)
-	public TopicRef topicRefByIdWithBindValues(String queryResponseDef, Long id,
+	@GraphQLNonScalar(fieldName = "topicRefById", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
+	public TopicRef topicRefByIdWithBindValues(String queryResponseDef, Long id, EntityKind entityKind,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
-			this.queryReactiveExecutor.topicRefByIdWithBindValues(queryResponseDef, id, parameters));
+			this.queryReactiveExecutor.topicRefByIdWithBindValues(queryResponseDef, id, entityKind, parameters));
 	}
 
 	/**
@@ -4782,11 +4632,11 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "topicRefById", graphQLTypeSimpleName = "TopicRef",
-		javaClass = TopicRef.class)
-	public TopicRef topicRefById(String queryResponseDef, Long id,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
-		return getValueFromMonoOptional(this.queryReactiveExecutor.topicRefById(queryResponseDef, id, paramsAndValues));
+	@GraphQLNonScalar(fieldName = "topicRefById", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
+	public TopicRef topicRefById(String queryResponseDef, Long id, EntityKind entityKind, Object... paramsAndValues)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		return getValueFromMonoOptional(
+			this.queryReactiveExecutor.topicRefById(queryResponseDef, id, entityKind, paramsAndValues));
 	}
 
 	/**
@@ -4833,12 +4683,11 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "topicRefById", graphQLTypeSimpleName = "TopicRef",
-		javaClass = TopicRef.class)
-	public TopicRef topicRefByIdWithBindValues(ObjectResponse objectResponse, Long id,
+	@GraphQLNonScalar(fieldName = "topicRefById", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
+	public TopicRef topicRefByIdWithBindValues(ObjectResponse objectResponse, Long id, EntityKind entityKind,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
-			this.queryReactiveExecutor.topicRefByIdWithBindValues(objectResponse, id, parameters));
+			this.queryReactiveExecutor.topicRefByIdWithBindValues(objectResponse, id, entityKind, parameters));
 	}
 
 	/**
@@ -4889,22 +4738,20 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "topicRefById", graphQLTypeSimpleName = "TopicRef",
-		javaClass = TopicRef.class)
-	public TopicRef topicRefById(ObjectResponse objectResponse, Long id,
+	@GraphQLNonScalar(fieldName = "topicRefById", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
+	public TopicRef topicRefById(ObjectResponse objectResponse, Long id, EntityKind entityKind,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
-		return getValueFromMonoOptional(this.queryReactiveExecutor.topicRefById(objectResponse, id, paramsAndValues));
+		return getValueFromMonoOptional(
+			this.queryReactiveExecutor.topicRefById(objectResponse, id, entityKind, paramsAndValues));
 	}
 
 	/**
 	 * Returns a topic reference given its identifier.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the TopicRef, as expected by the
-	 * topicRefById query.
+	 * Get the {@link Builder} for the TopicRef, as expected by the topicRefById query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getTopicRefByIdResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder getTopicRefByIdResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.getTopicRefByIdResponseBuilder();
 	}
 
@@ -4919,9 +4766,268 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	public GraphQLRequest getTopicRefByIdGraphQLRequest(String partialRequest)
 		throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "topicRefById" //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "id", "queryTopicRefByIdId", InputParameterType.MANDATORY, "ID", true, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-				0, false));
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "topicRefById", //$NON-NLS-1$
+			InputParameter.newBindParameter("", "id", "queryTopicRefByIdId", InputParameterType.MANDATORY, "ID", true, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+				0, false),
+			InputParameter.newBindParameter("", "entityKind", "queryTopicRefByIdEntityKind", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				InputParameterType.MANDATORY, "EntityKind", true, 0, false) //$NON-NLS-1$
+		);
+	}
+
+	/**
+	 * Returns a topic reference given its topic and entity identifiers.<br/>
+	 * This method executes a partial query on the topicRefByEntityId query against the GraphQL server. That is, the
+	 * query is one of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part
+	 * of the query that follows the field name.<br/>
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the expected fields of the
+	 * <code>topicRefByEntityId</code> of the Query query type. It can be something like "{ id name }", or "" for a
+	 * scalar. Please take a look at the StarWars, Forum and other samples for more complex queries.<br/>
+	 * Here is a sample on how to use it:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Map<String, Object> params = new HashMap<>();
+	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
+	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
+	 * 
+	 * 		TopicRef topicRefByEntityId = executor.topicRefByEntityIdWithBindValues(
+	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 			topicId, // A value for topicRefByEntityId's topicId input parameter
+	 * 			entityId, // A value for topicRefByEntityId's entityId input parameter
+	 * 			entityKind, // A value for topicRefByEntityId's entityKind input parameter
+	 * 			params);
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
+	 * @param topicId Parameter for the topicRefByEntityId field of Query, as defined in the GraphQL schema
+	 * @param entityId Parameter for the topicRefByEntityId field of Query, as defined in the GraphQL schema
+	 * @param entityKind Parameter for the topicRefByEntityId field of Query, as defined in the GraphQL schema
+	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
+	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
+	 * building the {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "topicRefByEntityId", graphQLTypeSimpleName = "TopicRef",
+		javaClass = io.github.demonfiddler.ee.client.TopicRef.class)
+	public TopicRef topicRefByEntityIdWithBindValues(String queryResponseDef, Long topicId, Long entityId,
+		EntityKind entityKind, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		return getValueFromMonoOptional(this.queryReactiveExecutor.topicRefByEntityIdWithBindValues(queryResponseDef,
+			topicId, entityId, entityKind, parameters));
+	}
+
+	/**
+	 * Returns a topic reference given its topic and entity identifiers.<br/>
+	 * This method executes a partial query on the topicRefByEntityId query against the GraphQL server. That is, the
+	 * query is one of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part
+	 * of the query that follows the field name.<br/>
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the expected fields of the
+	 * <code>topicRefByEntityId</code> of the Query query type. It can be something like "{ id name }", or "" for a
+	 * scalar. Please take a look at the StarWars, Forum and other samples for more complex queries.<br/>
+	 * Here is a sample on how to use it:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		TopicRef topicRefByEntityId = executor.topicRefByEntityId(
+	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 			topicId, // A value for topicRefByEntityId's topicId input parameter
+	 * 			entityId, // A value for topicRefByEntityId's entityId input parameter
+	 * 			entityKind, // A value for topicRefByEntityId's entityKind input parameter
+	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
+	 * @param topicId Parameter for the topicRefByEntityId field of Query, as defined in the GraphQL schema
+	 * @param entityId Parameter for the topicRefByEntityId field of Query, as defined in the GraphQL schema
+	 * @param entityKind Parameter for the topicRefByEntityId field of Query, as defined in the GraphQL schema
+	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
+	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
+	 * building the {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "topicRefByEntityId", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
+	public TopicRef topicRefByEntityId(String queryResponseDef, Long topicId, Long entityId, EntityKind entityKind,
+		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		return getValueFromMonoOptional(this.queryReactiveExecutor.topicRefByEntityId(queryResponseDef, topicId,
+			entityId, entityKind, paramsAndValues));
+	}
+
+	/**
+	 * Returns a topic reference given its topic and entity identifiers.<br/>
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<br/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed several times
+	 * 		preparedRequest = executor.getTopicRefByEntityIdGraphQLRequest(
+	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		TopicRef topicRefByEntityId = executor.topicRefByEntityIdWithBindValues(preparedRequest, topicId, // A
+	 * 																											// value
+	 * 																											// for
+	 * 																											// topicRefByEntityId's
+	 * 																											// topicId
+	 * 																											// input
+	 * 																											// parameter
+	 * 			entityId, // A value for topicRefByEntityId's entityId input parameter
+	 * 			entityKind, // A value for topicRefByEntityId's entityKind input parameter
+	 * 			params);
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
+	 * to return<br/>
+	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
+	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
+	 * {@link getTopicRefByEntityIdGraphQLRequest(String)} method.
+	 * @param topicId Parameter for the topicRefByEntityId field of Query, as defined in the GraphQL schema
+	 * @param entityId Parameter for the topicRefByEntityId field of Query, as defined in the GraphQL schema
+	 * @param entityKind Parameter for the topicRefByEntityId field of Query, as defined in the GraphQL schema
+	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
+	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "topicRefByEntityId", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
+	public TopicRef topicRefByEntityIdWithBindValues(ObjectResponse objectResponse, Long topicId, Long entityId,
+		EntityKind entityKind, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+		return getValueFromMonoOptional(this.queryReactiveExecutor.topicRefByEntityIdWithBindValues(objectResponse,
+			topicId, entityId, entityKind, parameters));
+	}
+
+	/**
+	 * Returns a topic reference given its topic and entity identifiers.<br/>
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<br/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed several times
+	 * 		preparedRequest = executor.getTopicRefByEntityIdGraphQLRequest(
+	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		TopicRef topicRefByEntityId = executor.topicRefByEntityId(preparedRequest, topicId, // A value for
+	 * 																							// topicRefByEntityId's
+	 * 																							// topicId input
+	 * 																							// parameter
+	 * 			entityId, // A value for topicRefByEntityId's entityId input parameter
+	 * 			entityKind, // A value for topicRefByEntityId's entityKind input parameter
+	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
+	 * to return<br/>
+	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
+	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
+	 * {@link getTopicRefByEntityIdGraphQLRequest(String)} method.
+	 * @param topicId Parameter for the topicRefByEntityId field of Query, as defined in the GraphQL schema
+	 * @param entityId Parameter for the topicRefByEntityId field of Query, as defined in the GraphQL schema
+	 * @param entityKind Parameter for the topicRefByEntityId field of Query, as defined in the GraphQL schema
+	 * @param paramsAndValues This parameter contains all the name and values for the Bind Variables defined in the
+	 * objectResponse parameter, that must be sent to the server. Optional parameter may not have a value. They will be
+	 * ignored and not sent to the server. Mandatory parameter must be provided in this argument.<br/>
+	 * This parameter contains an even number of parameters: it must be a series of name and values : (paramName1,
+	 * paramValue1, paramName2, paramValue2...)
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "topicRefByEntityId", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
+	public TopicRef topicRefByEntityId(ObjectResponse objectResponse, Long topicId, Long entityId,
+		EntityKind entityKind, Object... paramsAndValues) throws GraphQLRequestExecutionException {
+		return getValueFromMonoOptional(this.queryReactiveExecutor.topicRefByEntityId(objectResponse, topicId, entityId,
+			entityKind, paramsAndValues));
+	}
+
+	/**
+	 * Returns a topic reference given its topic and entity identifiers.<br/>
+	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the TopicRef, as expected by the
+	 * topicRefByEntityId query.
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public Builder getTopicRefByEntityIdResponseBuilder() throws GraphQLRequestPreparationException {
+		return this.queryReactiveExecutor.getTopicRefByEntityIdResponseBuilder();
+	}
+
+	/**
+	 * Returns a topic reference given its topic and entity identifiers.<br/>
+	 * Get the {@link GraphQLRequest} for the topicRefByEntityId EXECUTOR, created with the given Partial request.
+	 * @param partialRequest The Partial GraphQL request, as explained in the
+	 * <A HREF="https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin client
+	 * documentation</A>
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public GraphQLRequest getTopicRefByEntityIdGraphQLRequest(String partialRequest)
+		throws GraphQLRequestPreparationException {
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "topicRefByEntityId", //$NON-NLS-1$
+			InputParameter.newBindParameter("", "topicId", "queryTopicRefByEntityIdTopicId", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				InputParameterType.MANDATORY, "ID", true, 0, false), //$NON-NLS-1$
+			InputParameter.newBindParameter("", "entityId", "queryTopicRefByEntityIdEntityId", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				InputParameterType.MANDATORY, "ID", true, 0, false), //$NON-NLS-1$
+			InputParameter.newBindParameter("", "entityKind", "queryTopicRefByEntityIdEntityKind", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				InputParameterType.MANDATORY, "EntityKind", true, 0, false) //$NON-NLS-1$
+		);
 	}
 
 	/**
@@ -4967,10 +5073,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "users", graphQLTypeSimpleName = "UserPage",
-		javaClass = UserPage.class)
-	public UserPage usersWithBindValues(String queryResponseDef,
-		TrackedEntityQueryFilter filter,
+	@GraphQLNonScalar(fieldName = "users", graphQLTypeSimpleName = "UserPage", javaClass = UserPage.class)
+	public UserPage usersWithBindValues(String queryResponseDef, TrackedEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
@@ -5018,12 +5122,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "users", graphQLTypeSimpleName = "UserPage",
-		javaClass = UserPage.class)
-	public UserPage users(String queryResponseDef,
-		TrackedEntityQueryFilter filter,
-		PageableInput pageSort, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	@GraphQLNonScalar(fieldName = "users", graphQLTypeSimpleName = "UserPage", javaClass = UserPage.class)
+	public UserPage users(String queryResponseDef, TrackedEntityQueryFilter filter, PageableInput pageSort,
+		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.users(queryResponseDef, filter, pageSort, paramsAndValues));
 	}
@@ -5073,12 +5174,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "users", graphQLTypeSimpleName = "UserPage",
-		javaClass = UserPage.class)
-	public UserPage usersWithBindValues(ObjectResponse objectResponse,
-		TrackedEntityQueryFilter filter,
-		PageableInput pageSort, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "users", graphQLTypeSimpleName = "UserPage", javaClass = UserPage.class)
+	public UserPage usersWithBindValues(ObjectResponse objectResponse, TrackedEntityQueryFilter filter,
+		PageableInput pageSort, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.usersWithBindValues(objectResponse, filter, pageSort, parameters));
 	}
@@ -5132,25 +5230,20 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "users", graphQLTypeSimpleName = "UserPage",
-		javaClass = UserPage.class)
-	public UserPage users(ObjectResponse objectResponse,
-		TrackedEntityQueryFilter filter,
-		PageableInput pageSort, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "users", graphQLTypeSimpleName = "UserPage", javaClass = UserPage.class)
+	public UserPage users(ObjectResponse objectResponse, TrackedEntityQueryFilter filter, PageableInput pageSort,
+		Object... paramsAndValues) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.users(objectResponse, filter, pageSort, paramsAndValues));
 	}
 
 	/**
 	 * Returns a paged list of users.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the UserPage, as expected by the users
-	 * query.
+	 * Get the {@link Builder} for the UserPage, as expected by the users query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getUsersResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder getUsersResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.getUsersResponseBuilder();
 	}
 
@@ -5164,10 +5257,10 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestPreparationException
 	 */
 	public GraphQLRequest getUsersGraphQLRequest(String partialRequest) throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "users" //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "filter", "queryUsersFilter", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"TrackedEntityQueryFilter", false, 0, false) //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "pageSort", "queryUsersPageSort", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "users", //$NON-NLS-1$
+			InputParameter.newBindParameter("", "filter", "queryUsersFilter", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				"TrackedEntityQueryFilter", false, 0, false), //$NON-NLS-1$
+			InputParameter.newBindParameter("", "pageSort", "queryUsersPageSort", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				"PageableInput", false, 0, false) //$NON-NLS-1$
 		);
 	}
@@ -5213,10 +5306,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "userById", graphQLTypeSimpleName = "User",
-		javaClass = User.class)
-	public User userByIdWithBindValues(String queryResponseDef, Long id,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	@GraphQLNonScalar(fieldName = "userById", graphQLTypeSimpleName = "User", javaClass = User.class)
+	public User userByIdWithBindValues(String queryResponseDef, Long id, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.userByIdWithBindValues(queryResponseDef, id, parameters));
 	}
@@ -5260,8 +5352,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "userById", graphQLTypeSimpleName = "User",
-		javaClass = User.class)
+	@GraphQLNonScalar(fieldName = "userById", graphQLTypeSimpleName = "User", javaClass = User.class)
 	public User userById(String queryResponseDef, Long id, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(this.queryReactiveExecutor.userById(queryResponseDef, id, paramsAndValues));
@@ -5310,10 +5401,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "userById", graphQLTypeSimpleName = "User",
-		javaClass = User.class)
-	public User userByIdWithBindValues(ObjectResponse objectResponse, Long id,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "userById", graphQLTypeSimpleName = "User", javaClass = User.class)
+	public User userByIdWithBindValues(ObjectResponse objectResponse, Long id, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.userByIdWithBindValues(objectResponse, id, parameters));
 	}
@@ -5365,22 +5455,19 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "userById", graphQLTypeSimpleName = "User",
-		javaClass = User.class)
-	public User userById(ObjectResponse objectResponse, Long id,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "userById", graphQLTypeSimpleName = "User", javaClass = User.class)
+	public User userById(ObjectResponse objectResponse, Long id, Object... paramsAndValues)
+		throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(this.queryReactiveExecutor.userById(objectResponse, id, paramsAndValues));
 	}
 
 	/**
 	 * Returns a user given its identifier.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the User, as expected by the userById
-	 * query.
+	 * Get the {@link Builder} for the User, as expected by the userById query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getUserByIdResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder getUserByIdResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.getUserByIdResponseBuilder();
 	}
 
@@ -5440,10 +5527,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "userByLogin", graphQLTypeSimpleName = "User",
-		javaClass = User.class)
-	public User userByLoginWithBindValues(String queryResponseDef, String login,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	@GraphQLNonScalar(fieldName = "userByLogin", graphQLTypeSimpleName = "User", javaClass = User.class)
+	public User userByLoginWithBindValues(String queryResponseDef, String login, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.userByLoginWithBindValues(queryResponseDef, login, parameters));
 	}
@@ -5487,10 +5573,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "userByLogin", graphQLTypeSimpleName = "User",
-		javaClass = User.class)
-	public User userByLogin(String queryResponseDef, String login,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	@GraphQLNonScalar(fieldName = "userByLogin", graphQLTypeSimpleName = "User", javaClass = User.class)
+	public User userByLogin(String queryResponseDef, String login, Object... paramsAndValues)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.userByLogin(queryResponseDef, login, paramsAndValues));
 	}
@@ -5539,10 +5624,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "userByLogin", graphQLTypeSimpleName = "User",
-		javaClass = User.class)
-	public User userByLoginWithBindValues(ObjectResponse objectResponse, String login,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "userByLogin", graphQLTypeSimpleName = "User", javaClass = User.class)
+	public User userByLoginWithBindValues(ObjectResponse objectResponse, String login, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.userByLoginWithBindValues(objectResponse, login, parameters));
 	}
@@ -5595,22 +5679,19 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "userByLogin", graphQLTypeSimpleName = "User",
-		javaClass = User.class)
-	public User userByLogin(ObjectResponse objectResponse, String login,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "userByLogin", graphQLTypeSimpleName = "User", javaClass = User.class)
+	public User userByLogin(ObjectResponse objectResponse, String login, Object... paramsAndValues)
+		throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(this.queryReactiveExecutor.userByLogin(objectResponse, login, paramsAndValues));
 	}
 
 	/**
 	 * Returns a user given its login.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the User, as expected by the userByLogin
-	 * query.
+	 * Get the {@link Builder} for the User, as expected by the userByLogin query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getUserByLoginResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder getUserByLoginResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.getUserByLoginResponseBuilder();
 	}
 
@@ -5669,10 +5750,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "__schema", graphQLTypeSimpleName = "__Schema",
-		javaClass = __Schema.class)
-	public __Schema __schemaWithBindValues(String queryResponseDef,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	@GraphQLNonScalar(fieldName = "__schema", graphQLTypeSimpleName = "__Schema", javaClass = __Schema.class)
+	public __Schema __schemaWithBindValues(String queryResponseDef, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.__schemaWithBindValues(queryResponseDef, parameters));
 	}
@@ -5713,8 +5793,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "__schema", graphQLTypeSimpleName = "__Schema",
-		javaClass = __Schema.class)
+	@GraphQLNonScalar(fieldName = "__schema", graphQLTypeSimpleName = "__Schema", javaClass = __Schema.class)
 	public __Schema __schema(String queryResponseDef, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(this.queryReactiveExecutor.__schema(queryResponseDef, paramsAndValues));
@@ -5759,10 +5838,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "__schema", graphQLTypeSimpleName = "__Schema",
-		javaClass = __Schema.class)
-	public __Schema __schemaWithBindValues(ObjectResponse objectResponse,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "__schema", graphQLTypeSimpleName = "__Schema", javaClass = __Schema.class)
+	public __Schema __schemaWithBindValues(ObjectResponse objectResponse, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(this.queryReactiveExecutor.__schemaWithBindValues(objectResponse, parameters));
 	}
 
@@ -5812,21 +5890,18 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "__schema", graphQLTypeSimpleName = "__Schema",
-		javaClass = __Schema.class)
+	@GraphQLNonScalar(fieldName = "__schema", graphQLTypeSimpleName = "__Schema", javaClass = __Schema.class)
 	public __Schema __schema(ObjectResponse objectResponse, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(this.queryReactiveExecutor.__schema(objectResponse, paramsAndValues));
 	}
 
 	/**
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the __Schema, as expected by the __schema
-	 * query.
+	 * Get the {@link Builder} for the __Schema, as expected by the __schema query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder get__schemaResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder get__schemaResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.get__schemaResponseBuilder();
 	}
 
@@ -5883,10 +5958,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "__type", graphQLTypeSimpleName = "__Type",
-		javaClass = __Type.class)
-	public __Type __typeWithBindValues(String queryResponseDef, String name,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	@GraphQLNonScalar(fieldName = "__type", graphQLTypeSimpleName = "__Type", javaClass = __Type.class)
+	public __Type __typeWithBindValues(String queryResponseDef, String name, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.__typeWithBindValues(queryResponseDef, name, parameters));
 	}
@@ -5929,10 +6003,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "__type", graphQLTypeSimpleName = "__Type",
-		javaClass = __Type.class)
-	public __Type __type(String queryResponseDef, String name,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	@GraphQLNonScalar(fieldName = "__type", graphQLTypeSimpleName = "__Type", javaClass = __Type.class)
+	public __Type __type(String queryResponseDef, String name, Object... paramsAndValues)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(this.queryReactiveExecutor.__type(queryResponseDef, name, paramsAndValues));
 	}
 
@@ -5978,10 +6051,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "__type", graphQLTypeSimpleName = "__Type",
-		javaClass = __Type.class)
-	public __Type __typeWithBindValues(ObjectResponse objectResponse, String name,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "__type", graphQLTypeSimpleName = "__Type", javaClass = __Type.class)
+	public __Type __typeWithBindValues(ObjectResponse objectResponse, String name, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.__typeWithBindValues(objectResponse, name, parameters));
 	}
@@ -6032,21 +6104,18 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "__type", graphQLTypeSimpleName = "__Type",
-		javaClass = __Type.class)
-	public __Type __type(ObjectResponse objectResponse, String name,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "__type", graphQLTypeSimpleName = "__Type", javaClass = __Type.class)
+	public __Type __type(ObjectResponse objectResponse, String name, Object... paramsAndValues)
+		throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(this.queryReactiveExecutor.__type(objectResponse, name, paramsAndValues));
 	}
 
 	/**
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the __Type, as expected by the __type
-	 * query.
+	 * Get the {@link Builder} for the __Type, as expected by the __type query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder get__typeResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder get__typeResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.get__typeResponseBuilder();
 	}
 
@@ -6250,13 +6319,11 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	}
 
 	/**
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the String, as expected by the __typename
-	 * query.
+	 * Get the {@link Builder} for the String, as expected by the __typename query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder get__typenameResponseBuilder()
-		throws GraphQLRequestPreparationException {
+	public Builder get__typenameResponseBuilder() throws GraphQLRequestPreparationException {
 		return this.queryReactiveExecutor.get__typenameResponseBuilder();
 	}
 

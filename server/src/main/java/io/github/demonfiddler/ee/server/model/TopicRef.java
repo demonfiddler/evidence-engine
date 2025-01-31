@@ -19,21 +19,13 @@
 
 package io.github.demonfiddler.ee.server.model;
 
-import java.net.URI;
-import java.util.List;
-
-import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Transient;
 
 /**
  * An association between a topic and an entity record.
@@ -56,40 +48,28 @@ public class TopicRef implements IBaseEntity {
 	Long id;
 
 	/**
-	 * The associated topic.
+	 * The unique identifier of the associated topic.
 	 */
-	@GraphQLNonScalar(fieldName = "topic", graphQLTypeSimpleName = "Topic", javaClass = Topic.class, listDepth = 0)
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "topic_id", nullable = false)
-	Topic topic;
+	@GraphQLScalar(fieldName = "topicId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
+	Long topicId;
 
 	/**
-	 * The associated entity kind.
-	 */
-	@GraphQLScalar(fieldName = "entityKind", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	String entityKind;
-
-	// TODO: consider whether to return the identifier or the entity record.
-	/**
-	 * The unique identifier of the associated record.
+	 * The unique identifier of the associated entity record.
 	 */
 	@GraphQLScalar(fieldName = "entityId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
 	Long entityId;
 
 	/**
-	 * The associated record.
-	 */
-	@Transient
-	@GraphQLNonScalar(fieldName = "entity", graphQLTypeSimpleName = "ITopicalEntity", javaClass = ITopicalEntity.class,
-		listDepth = 0)
-	ITopicalEntity entity;
+	 * The associated entity kind.
+	 */ 
+	@GraphQLScalar(fieldName = "entityKind", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String entityKind;
 
 	/**
 	 * The locations within the associated record, one per line.
 	 */
-	@Transient
-	@GraphQLScalar(fieldName = "locations", graphQLTypeSimpleName = "URI", javaClass = URI.class, listDepth = 1)
-	List<URI> locations;
+	@GraphQLScalar(fieldName = "locations", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String locations;
 
 	// NOTE: only necessary because graphql-java-generator emits code with errors (missing ctor) if there is no ID
 	// field.
@@ -112,17 +92,31 @@ public class TopicRef implements IBaseEntity {
 	}
 
 	/**
-	 * The associated topic.
+	 * The unique identifier of the associated topic.
 	 */
-	public void setTopic(Topic topic) {
-		this.topic = topic;
+	public void setTopicId(Long topicId) {
+		this.topicId = topicId;
 	}
 
 	/**
-	 * The associated topic.
+	 * The unique identifier of the associated topic.
 	 */
-	public Topic getTopic() {
-		return this.topic;
+	public Long getTopicId() {
+		return this.topicId;
+	}
+
+	/**
+	 * The unique identifier of the associated entity record.
+	 */
+	public void setEntityId(Long entityId) {
+		this.entityId = entityId;
+	}
+
+	/**
+	 * The unique identifier of the associated entity record.
+	 */
+	public Long getEntityId() {
+		return this.entityId;
 	}
 
 	/**
@@ -139,47 +133,17 @@ public class TopicRef implements IBaseEntity {
 		return this.entityKind;
 	}
 
-	// TODO: consider whether to return the identifier or the entity record.
-	/**
-	 * The unique identifier of the associated record.
-	 */
-	public void setEntityId(Long entityId) {
-		this.entityId = entityId;
-	}
-
-	// TODO: consider whether to return the identifier or the entity record.
-	/**
-	 * The unique identifier of the associated record.
-	 */
-	public Long getEntityId() {
-		return this.entityId;
-	}
-
-	/**
-	 * The associated record.
-	 */
-	public void setEntity(ITopicalEntity entity) {
-		this.entity = entity;
-	}
-
-	/**
-	 * The associated record.
-	 */
-	public ITopicalEntity getEntity() {
-		return this.entity;
-	}
-
 	/**
 	 * The locations within the associated record, one per line.
 	 */
-	public void setLocations(List<URI> locations) {
+	public void setLocations(String locations) {
 		this.locations = locations;
 	}
 
 	/**
 	 * The locations within the associated record, one per line.
 	 */
-	public List<URI> getLocations() {
+	public String getLocations() {
 		return this.locations;
 	}
 
@@ -189,13 +153,11 @@ public class TopicRef implements IBaseEntity {
 			+ ", " //$NON-NLS-1$
 			// + "topic_id: " + this.topic_id //$NON-NLS-1$
 			// + ", " //$NON-NLS-1$
-			+ "topic: " + this.topic //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "entityKind: " + this.entityKind //$NON-NLS-1$
+			+ "topicId: " + this.topicId //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "entityId: " + this.entityId //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
-			+ "entity: " + this.entity //$NON-NLS-1$
+			+ "entityKind: " + this.entityKind //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "locations: " + this.locations //$NON-NLS-1$
 			+ "}"; //$NON-NLS-1$
@@ -212,11 +174,10 @@ public class TopicRef implements IBaseEntity {
 	public static class Builder {
 
 		private Long id;
-		private Topic topic;
-		private String entityKind;
+		private Long topicId;
 		private Long entityId;
-		private ITopicalEntity entity;
-		private List<URI> locations;
+		private String entityKind;
+		private String locations;
 
 		// NOTE: only necessary because graphql-java-generator emits code with errors (missing ctor) if there is no ID
 		// field.
@@ -229,22 +190,13 @@ public class TopicRef implements IBaseEntity {
 		}
 
 		/**
-		 * The associated topic.
+		 * The unique identifier of the associated topic.
 		 */
-		public Builder withTopic(Topic topicParam) {
-			this.topic = topicParam;
+		public Builder withTopicId(Long topicIdParam) {
+			this.topicId = topicIdParam;
 			return this;
 		}
 
-		/**
-		 * The associated entity kind.
-		 */
-		public Builder withEntityKind(String entityKindParam) {
-			this.entityKind = entityKindParam;
-			return this;
-		}
-
-		// TODO: consider whether to return the identifier or the entity record.
 		/**
 		 * The unique identifier of the associated record.
 		 */
@@ -254,17 +206,17 @@ public class TopicRef implements IBaseEntity {
 		}
 
 		/**
-		 * The associated record.
-		 */
-		public Builder withEntity(ITopicalEntity entityParam) {
-			this.entity = entityParam;
+		 * The associated entity kind.
+		 */ 
+		public Builder withEntityKind(String entityKindParam) {
+			this.entityKind = entityKindParam;
 			return this;
-		}
+		}	
 
 		/**
 		 * The locations within the associated record, one per line.
 		 */
-		public Builder withLocations(List<URI> locationsParam) {
+		public Builder withLocations(String locationsParam) {
 			this.locations = locationsParam;
 			return this;
 		}
@@ -272,11 +224,9 @@ public class TopicRef implements IBaseEntity {
 		public TopicRef build() {
 			TopicRef _object = new TopicRef();
 			_object.setId(this.id);
-			// _object.setTopic_id(this.topic_id);
-			_object.setTopic(this.topic);
-			_object.setEntityKind(this.entityKind);
+			_object.setTopicId(this.topicId);
 			_object.setEntityId(this.entityId);
-			_object.setEntity(this.entity);
+			_object.setEntityKind(this.entityKind);
 			_object.setLocations(this.locations);
 			return _object;
 		}

@@ -19,16 +19,16 @@
 
 // This build script uses GraphQL-Java-Generator to generate client code
 
-compileJava {
-	dependsOn generateClientCode
+tasks.named('compileJava') {
+	dependsOn('generateClientCode')
 }
 
 tasks.named('processTestResources') {
 	dependsOn('generateClientCode')
 }
 
-sourceSets.test.java.srcDirs += '/build/generated/sources/graphqlClient'
-sourceSets.test.resources.srcDirs += '/build/generated/resources/graphqlClient'
+//sourceSets.test.java.srcDirs += '/build/generated/sources/graphqlClient'
+//sourceSets.test.resources.srcDirs += '/build/generated/resources/graphqlClient'
 generateClientCodeConf {
 	// addRelayConnections = false
 	// copyRuntimeSources = false [needs com.graphql-java-generator:graphql-java-runtime dependency]
@@ -67,7 +67,7 @@ generateClientCodeConf {
 			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.common.graphql.CustomScalars.VOID"
 		]
 	]
-	javaTypeForIDType = 'java.lang.Long'
+	// javaTypeForIDType = 'java.lang.Long' // Incredibly, this setting is not supported for client codegen!
 	// enumPrefix = 
 	// enumSuffix = 
 	// generateDeprecatedRequestResponse = false

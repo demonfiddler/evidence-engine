@@ -72,7 +72,7 @@ public enum PermissionKind {
 	 * @return the enum constant with the specified name
 	 * @throws IllegalArgumentException if this enum type has no constant with the specified GraphQL name
 	 */
-	static public PermissionKind fromGraphQlValue(String graphQlValue) {
+	public static PermissionKind fromGraphQlValue(String graphQlValue) {
 		if (graphQlValue == null) {
 			return null;
 		}

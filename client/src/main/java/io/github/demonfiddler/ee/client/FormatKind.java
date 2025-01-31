@@ -63,7 +63,7 @@ public enum FormatKind {
 	 * @return the enum constant with the specified name
 	 * @throws IllegalArgumentException if this enum type has no constant with the specified GraphQL name
 	 */
-	static public FormatKind fromGraphQlValue(String graphQlValue) {
+	public static FormatKind fromGraphQlValue(String graphQlValue) {
 		if (graphQlValue == null) {
 			return null;
 		}

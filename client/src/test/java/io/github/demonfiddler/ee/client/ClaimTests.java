@@ -35,16 +35,23 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.condition.EnabledIf;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.graphql_java_generator.exception.GraphQLRequestExecutionException;
 import com.graphql_java_generator.exception.GraphQLRequestPreparationException;
 
-@SpringBootTest(classes = GraphQLClientMain.class)
-@TestMethodOrder(OrderAnnotation.class)
-class ClaimTests extends TopicalEntityTests<Claim> {
+import io.github.demonfiddler.ee.client.util.QueryExecutor;
+import io.github.demonfiddler.ee.client.util.SpringContext;
 
-	private static Claim EXPECTED;
+@SpringBootTest(classes = GraphQLClientMain.class)
+@Order(1)
+@TestMethodOrder(OrderAnnotation.class)
+class ClaimTests extends AbstractTopicalEntityTests<Claim> {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ClaimTests.class);
+
 	private static final String RESPONSE_SPEC = //
 		"""
 		{
@@ -104,11 +111,9 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 			notes
 		}
 		""";
-	private static final String PAGED_RESPONSE_SPEC = //
+	static final String PAGED_RESPONSE_SPEC = //
 		"""
 		{
-			hasContent
-			isEmpty
 			number
 			size
 			numberOfElements
@@ -118,6 +123,8 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 			isLast
 			hasNext
 			hasPrevious
+			isEmpty
+			hasContent
 			content {
 				id
 				status%s
@@ -127,20 +134,36 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 			}
 		}
 		""";
-	private static List<Claim> CLAIMS;
+
+	static Claim claim;
+	static List<Claim> claims;
 
 	static boolean hasExpectedClaim() {
-		return EXPECTED != null;
+		return claim != null;
 	}
 
 	static boolean hasExpectedClaims() {
-		return CLAIMS != null;
+		return claims != null;
+	}
+
+	static void ensureExpectedClaims() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+		if (claims == null) {
+			QueryExecutor queryExecutor = SpringContext.getApplicationContext().getBean(QueryExecutor.class);
+			String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+			List<Claim> content = queryExecutor.claims(responseSpec, null, null).getContent();
+			if (content.isEmpty()) {
+				LOGGER.error("Failed to initialise claims list from server");
+			} else {
+				claims = content;
+				LOGGER.debug("Initialised claims list from server");
+			}
+		}
 	}
 
 	@Test
 	@Order(1)
 	void createClaim() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		EXPECTED = null;
+		claim = null;
 
 		LocalDate claimDate = LocalDate.now();
 		ClaimInput input = ClaimInput.builder() //
@@ -152,37 +175,37 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 		Claim actual = mutationExecutor.createClaim(RESPONSE_SPEC, input);
 
 		LOG_DATES[0] = actual.getCreated();
-		checkClaim(actual, StatusKind.DRA.getLabel(), earliestUpdated, null, claimDate, input.getText(),
+		checkClaim(actual, StatusKind.DRA.label(), earliestUpdated, null, claimDate, input.getText(),
 			input.getNotes(), CRE);
 
-		EXPECTED = actual;
+		claim = actual;
 	}
 
 	@Test
 	@Order(2)
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaim")
 	void readClaim() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		Claim expected = EXPECTED;
-		EXPECTED = null;
+		Claim expected = claim;
+		claim = null;
 
 		Claim actual = queryExecutor.claimById(RESPONSE_SPEC, expected.getId());
 
 		checkClaim(actual, expected, CRE);
-		EXPECTED = actual;
+		claim = actual;
 	}
 
 	@Test
 	@Order(3)
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaim")
 	void updateClaim() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		Claim expected = EXPECTED;
-		EXPECTED = null;
+		Claim expected = claim;
+		claim = null;
 
 		ClaimInput input = ClaimInput.builder() //
 			.withId(expected.getId()) //
 			.withDate(expected.getDate()) //
-			.withText("Updated Test title") //
-			.withNotes("Updated Test notes") //
+			.withText("Updated test text") //
+			.withNotes("Updated test notes") //
 			.build();
 		OffsetDateTime earliestUpdated = OffsetDateTime.now();
 		Claim actual = mutationExecutor.updateClaim(RESPONSE_SPEC, input);
@@ -191,24 +214,24 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 		checkClaim(actual, expected.getStatus(), expected.getCreated(), earliestUpdated, expected.getDate(),
 			input.getText(), input.getNotes(), CRE, UPD);
 
-		EXPECTED = actual;
+		claim = actual;
 	}
 
 	@Test
 	@Order(4)
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaim")
 	void deleteClaim() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		Claim expected = EXPECTED;
-		EXPECTED = null;
+		Claim expected = claim;
+		claim = null;
 
 		OffsetDateTime earliestUpdated = OffsetDateTime.now();
 		Claim actual = mutationExecutor.deleteClaim(RESPONSE_SPEC, expected.getId());
 
 		LOG_DATES[2] = actual.getUpdated();
-		checkClaim(actual, StatusKind.DEL.getLabel(), expected.getCreated(), earliestUpdated, expected.getDate(),
+		checkClaim(actual, StatusKind.DEL.label(), expected.getCreated(), earliestUpdated, expected.getDate(),
 			expected.getText(), expected.getNotes(), CRE, UPD, DEL);
 
-		EXPECTED = actual;
+		claim = actual;
 	}
 
 	@Test
@@ -220,12 +243,12 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 		final int claimCount = 8;
 		List<Claim> claims = new ArrayList<>(claimCount + 1);
 		Claim claim0 = new Claim();
-		claim0.setId(EXPECTED.getId());
-		claim0.setDate(EXPECTED.getDate());
-		claim0.setStatus(EXPECTED.getStatus());
-		claim0.setText(EXPECTED.getText());
-		claim0.setNotes(EXPECTED.getNotes());
-		claim0.set__typename(EXPECTED.get__typename());
+		claim0.setId(claim.getId());
+		claim0.setDate(claim.getDate());
+		claim0.setStatus(claim.getStatus());
+		claim0.setText(claim.getText());
+		claim0.setNotes(claim.getNotes());
+		claim0.set__typename(claim.get__typename());
 		claims.add(claim0);
 		String[] numbers = {null, "one", "two", "three", "four", "five", "six", "seven", "eight"};
 		for (int i = 1; i <= claimCount; i++) {
@@ -243,7 +266,7 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 				.build();
 			claims.add(mutationExecutor.createClaim(responseSpec, input));
 		}
-		CLAIMS = claims;
+		ClaimTests.claims = claims;
 	}
 
 	@Test
@@ -253,7 +276,7 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		ClaimPage actuals = queryExecutor.claims(responseSpec, null, null);
 
-		checkPage(actuals, CLAIMS.size(), 1, CLAIMS.size(), 0, false, false, true, true, CLAIMS, true);
+		checkPage(actuals, claims.size(), 1, claims.size(), 0, false, false, true, true, claims, true);
 	}
 
 	@Test
@@ -265,7 +288,7 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 			.withText("filtered") //
 			.build();
 
-		List<Claim> expected = subList(CLAIMS, 5, 7, 8);
+		List<Claim> expected = subList(claims, 5, 7, 8);
 		ClaimPage actuals = queryExecutor.claims(responseSpec, filter, null);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -275,7 +298,7 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 
 		filter.setStatus(List.of(StatusKind.DEL));
 		filter.setText(null);
-		expected = subList(CLAIMS, 0);
+		expected = subList(claims, 0);
 		actuals = queryExecutor.claims(responseSpec, filter, null);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
@@ -293,9 +316,9 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 		PageableInput pageSort = PageableInput.builder().withSort(sort).build();
 
 		// "CLAIM FIVE", "CLAIM ONE", "CLAIM SEVEN", "CLAIM THREE", "Claim eight", "Claim four", "Claim six",
-		// "Claim two", "Updated Test title"
+		// "Claim two", "Updated test title"
 		// 5, 1, 7, 3, 8, 4, 6, 2, 0
-		List<Claim> expected = subList(CLAIMS, 5, 1, 7, 3, 8, 4, 6, 2, 0);
+		List<Claim> expected = subList(claims, 5, 1, 7, 3, 8, 4, 6, 2, 0);
 
 		ClaimPage actuals = queryExecutor.claims(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
@@ -324,9 +347,9 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 		PageableInput pageSort = PageableInput.builder().withSort(sort).build();
 
 		// "Claim eight", "CLAIM FIVE", "Claim four", "CLAIM ONE", "CLAIM SEVEN", "Claim six", "CLAIM THREE",
-		// "Claim two", "Updated Test title"
+		// "Claim two", "Updated test title"
 		// 8, 5, 4, 1, 7, 6, 3, 2, 0
-		List<Claim> expected = subList(CLAIMS, 8, 5, 4, 1, 7, 6, 3, 2, 0);
+		List<Claim> expected = subList(claims, 8, 5, 4, 1, 7, 6, 3, 2, 0);
 
 		ClaimPage actuals = queryExecutor.claims(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
@@ -336,8 +359,8 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
-		actuals = queryExecutor.claims(responseSpec, null, pageSort);
 		Collections.reverse(expected);
+		actuals = queryExecutor.claims(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
 
@@ -359,9 +382,9 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 
 		// null/"CLAIM THREE", null/"Claim six", "Notes #1"/"CLAIM ONE", "Notes #2"/"Claim two",
 		// "Notes #4"/"Claim four", "Notes #5 (filtered)"/"CLAIM FIVE", "Notes #7 (filtered)"/"CLAIM SEVEN",
-		// "Notes #8 (filtered)"/"Claim eight", "Updated Test notes"/"Updated Test title"
+		// "Notes #8 (filtered)"/"Claim eight", "Updated test notes"/"Updated test title"
 		// 3, 6, 1, 2, 4, 5, 7, 8, 0
-		List<Claim> expected = subList(CLAIMS, 3, 6, 1, 2, 4, 5, 7, 8, 0);
+		List<Claim> expected = subList(claims, 3, 6, 1, 2, 4, 5, 7, 8, 0);
 
 		ClaimPage actuals = queryExecutor.claims(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
@@ -372,16 +395,16 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 
 		textOrder.setDirection(DirectionKind.DESC);
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
-		expected = subList(CLAIMS, 6, 3, 1, 2, 4, 5, 7, 8, 0);
+		expected = subList(claims, 6, 3, 1, 2, 4, 5, 7, 8, 0);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		// "Notes #1"/"CLAIM ONE", "Notes #2"/"Claim two", "Notes #4"/"Claim four", "Notes #5 (filtered)"/"CLAIM FIVE",
 		// "Notes #7 (filtered)"/"CLAIM SEVEN", "Notes #8 (filtered)"/"Claim eight",
-		// "Updated Test notes"/"Updated Test title", null/"CLAIM THREE", null/"Claim six",
+		// "Updated test notes"/"Updated test title", null/"CLAIM THREE", null/"Claim six",
 		// 1, 2, 4, 5, 7, 8, 0, 3, 6
 		notesOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		textOrder.setDirection(null);
-		expected = subList(CLAIMS, 1, 2, 4, 5, 7, 8, 0, 3, 6);
+		expected = subList(claims, 1, 2, 4, 5, 7, 8, 0, 3, 6);
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -391,7 +414,7 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 
 		textOrder.setDirection(DirectionKind.DESC);
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
-		expected = subList(CLAIMS, 1, 2, 4, 5, 7, 8, 0, 6, 3);
+		expected = subList(claims, 1, 2, 4, 5, 7, 8, 0, 6, 3);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
 
@@ -410,9 +433,9 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 		SortInput sort = SortInput.builder().withOrders(orders).build();
 		PageableInput pageSort = PageableInput.builder().withSort(sort).build();
 
-		// "CLAIM FIVE", "CLAIM SEVEN", "Claim eight", "Claim six"
-		// 5, 7, 8, 6
-		List<Claim> expected = subList(CLAIMS, 5, 7, 8);
+		// "CLAIM FIVE", "CLAIM SEVEN", "Claim eight"
+		// 5, 7, 8
+		List<Claim> expected = subList(claims, 5, 7, 8);
 		ClaimPage actuals = queryExecutor.claims(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 1, 3, 0, false, false, true, true, expected, true);
 
@@ -421,8 +444,8 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 		checkPage(actuals, 3, 1, 3, 0, false, false, true, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
-		actuals = queryExecutor.claims(responseSpec, filter, pageSort);
 		Collections.reverse(expected);
+		actuals = queryExecutor.claims(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 1, 3, 0, false, false, true, true, expected, true);
 	}
 
@@ -447,9 +470,9 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 
 		// null/"CLAIM THREE", null/"Claim six", "Notes #1"/"CLAIM ONE", "Notes #2"/"Claim two",
 		// "Notes #4"/"Claim four", "Notes #5 (filtered)"/"CLAIM FIVE", "Notes #7 (filtered)"/"CLAIM SEVEN",
-		// "Notes #8 (filtered)"/"Claim eight", "Updated Test notes"/"Updated Test title"
+		// "Notes #8 (filtered)"/"Claim eight", "Updated test notes"/"Updated test title"
 		// 3, 6, 1, 2, 4, 5, 7, 8
-		List<Claim> expected = subList(CLAIMS, 3, 6, 1, 2, 4, 5, 7, 8);
+		List<Claim> expected = subList(claims, 3, 6, 1, 2, 4, 5, 7, 8);
 		ClaimPage actuals = queryExecutor.claims(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -458,7 +481,7 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		textOrder.setDirection(DirectionKind.DESC);
-		expected = subList(CLAIMS, 6, 3, 1, 2, 4, 5, 7, 8);
+		expected = subList(claims, 6, 3, 1, 2, 4, 5, 7, 8);
 		actuals = queryExecutor.claims(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -467,12 +490,12 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 		// 1, 2, 4, 5, 7, 8, 3, 6
 		notesOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		textOrder.setDirection(DirectionKind.ASC);
-		expected = subList(CLAIMS, 1, 2, 4, 5, 7, 8, 3, 6);
+		expected = subList(claims, 1, 2, 4, 5, 7, 8, 3, 6);
 		actuals = queryExecutor.claims(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		textOrder.setDirection(DirectionKind.DESC);
-		expected = subList(CLAIMS, 1, 2, 4, 5, 7, 8, 6, 3);
+		expected = subList(claims, 1, 2, 4, 5, 7, 8, 6, 3);
 		actuals = queryExecutor.claims(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
@@ -488,18 +511,18 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 			.withPageSize(4) //
 			.build();
 		ClaimPage actuals = queryExecutor.claims(responseSpec, null, pageSort);
-		List<Claim> expected = CLAIMS.subList(0, 4);
-		checkPage(actuals, CLAIMS.size(), 3, 4, 0, false, true, true, false, expected, true);
+		List<Claim> expected = claims.subList(0, 4);
+		checkPage(actuals, claims.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
-		expected = CLAIMS.subList(4, 8);
-		checkPage(actuals, CLAIMS.size(), 3, 4, 1, true, true, false, false, expected, true);
+		expected = claims.subList(4, 8);
+		checkPage(actuals, claims.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
-		expected = CLAIMS.subList(8, 9);
-		checkPage(actuals, CLAIMS.size(), 3, 4, 2, true, false, false, true, expected, true);
+		expected = claims.subList(8, 9);
+		checkPage(actuals, claims.size(), 3, 4, 2, true, false, false, true, expected, true);
 	}	
 
 	@Test
@@ -516,12 +539,12 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 			.build();
 
 		ClaimPage actuals = queryExecutor.claims(responseSpec, filter, pageSort);
-		List<Claim> expected = subList(CLAIMS, 5, 7);
+		List<Claim> expected = subList(claims, 5, 7);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
 		actuals = queryExecutor.claims(responseSpec, filter, pageSort);
-		expected = subList(CLAIMS,8);
+		expected = subList(claims,8);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 	}
 
@@ -542,53 +565,53 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 			.build();
 
 		// "CLAIM FIVE", "CLAIM ONE", "CLAIM SEVEN", "CLAIM THREE", "Claim eight", "Claim four", "Claim six",
-		// "Claim two", "Updated Test title"
+		// "Claim two", "Updated test title"
 		// 5, 1, 7, 3, 8, 4, 6, 2, 0
-		List<Claim> expected = subList(CLAIMS, 5, 1, 7, 3);
+		List<Claim> expected = subList(claims, 5, 1, 7, 3);
 		ClaimPage actuals = queryExecutor.claims(responseSpec, null, pageSort);
-		checkPage(actuals, CLAIMS.size(), 3, 4, 0, false, true, true, false, expected, true);
+		checkPage(actuals, claims.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(CLAIMS, 8, 4, 6, 2);
+		expected = subList(claims, 8, 4, 6, 2);
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
-		checkPage(actuals, CLAIMS.size(), 3, 4, 1, true, true, false, false, expected, true);
+		checkPage(actuals, claims.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(CLAIMS, 0);
+		expected = subList(claims, 0);
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
-		checkPage(actuals, CLAIMS.size(), 3, 4, 2, true, false, false, true, expected, true);
+		checkPage(actuals, claims.size(), 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(CLAIMS, 5, 1, 7, 3);
+		expected = subList(claims, 5, 1, 7, 3);
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
-		checkPage(actuals, CLAIMS.size(), 3, 4, 0, false, true, true, false, expected, true);
+		checkPage(actuals, claims.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(CLAIMS, 8, 4, 6, 2);
+		expected = subList(claims, 8, 4, 6, 2);
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
-		checkPage(actuals, CLAIMS.size(), 3, 4, 1, true, true, false, false, expected, true);
+		checkPage(actuals, claims.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(CLAIMS, 0);
+		expected = subList(claims, 0);
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
-		checkPage(actuals, CLAIMS.size(), 3, 4, 2, true, false, false, true, expected, true);
+		checkPage(actuals, claims.size(), 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(CLAIMS, 0, 2, 6, 4);
+		expected = subList(claims, 0, 2, 6, 4);
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
-		checkPage(actuals, CLAIMS.size(), 3, 4, 0, false, true, true, false, expected, true);
+		checkPage(actuals, claims.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(CLAIMS, 8, 3, 7, 1);
+		expected = subList(claims, 8, 3, 7, 1);
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
-		checkPage(actuals, CLAIMS.size(), 3, 4, 1, true, true, false, false, expected, true);
+		checkPage(actuals, claims.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(CLAIMS, 5);
+		expected = subList(claims, 5);
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
-		checkPage(actuals, CLAIMS.size(), 3, 4, 2, true, false, false, true, expected, true);
+		checkPage(actuals, claims.size(), 3, 4, 2, true, false, false, true, expected, true);
 	}
 
 	@Test
@@ -612,34 +635,34 @@ class ClaimTests extends TopicalEntityTests<Claim> {
 
 		// "CLAIM FIVE", "CLAIM SEVEN", "Claim eight"
 		// 5, 7, 8
-		List<Claim> expected = subList(CLAIMS, 5, 7);
+		List<Claim> expected = subList(claims, 5, 7);
 		ClaimPage actuals = queryExecutor.claims(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(CLAIMS, 8);
+		expected = subList(claims, 8);
 		actuals = queryExecutor.claims(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(CLAIMS, 5, 7);
+		expected = subList(claims, 5, 7);
 		actuals = queryExecutor.claims(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(CLAIMS, 8);
+		expected = subList(claims, 8);
 		actuals = queryExecutor.claims(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(CLAIMS, 8, 7);
+		expected = subList(claims, 8, 7);
 		actuals = queryExecutor.claims(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(CLAIMS, 5);
+		expected = subList(claims, 5);
 		actuals = queryExecutor.claims(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 	}

@@ -65,7 +65,7 @@ public enum CountryFormatKind {
 	 * @return the enum constant with the specified name
 	 * @throws IllegalArgumentException if this enum type has no constant with the specified GraphQL name
 	 */
-	static public CountryFormatKind fromGraphQlValue(String graphQlValue) {
+	public static CountryFormatKind fromGraphQlValue(String graphQlValue) {
 		if (graphQlValue == null) {
 			return null;
 		}

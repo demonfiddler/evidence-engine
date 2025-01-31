@@ -19,7 +19,6 @@
 
 package io.github.demonfiddler.ee.server.controller;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,8 +41,6 @@ import graphql.GraphQLContext;
 import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateTopicRef;
 import io.github.demonfiddler.ee.server.model.FormatKind;
-import io.github.demonfiddler.ee.server.model.ITopicalEntity;
-import io.github.demonfiddler.ee.server.model.Topic;
 import io.github.demonfiddler.ee.server.model.TopicRef;
 import reactor.core.publisher.Mono;
 
@@ -83,24 +80,6 @@ public class TopicRefController {
 	}
 
 	/**
-	 * This methods loads the data for ${dataFetcher.graphQLType}.topic. It is generated as the
-	 * <code>generateBatchMappingDataFetchers</code> plugin parameter is true. <br/>
-	 * @param batchLoaderEnvironment The environement for this batch loaded. You can extract the GraphQLContext from
-	 * this parameter.
-	 * @param graphQLContext
-	 * @param keys The objects for which the value for the topic field must be retrieved.
-	 * @return This method returns <code>${dataFetcher.batchMappingReturnType.value}</code>, as defined by the
-	 * <code>batchMappingDataFetcherReturnType</code> plugin parameter. <br/>
-	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
-	 */
-	@BatchMapping(field = "topic")
-	public Map<TopicRef, Topic> topic(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-		List<TopicRef> keys) {
-
-		return this.dataFetchersDelegateTopicRef.topic(batchLoaderEnvironment, graphQLContext, keys);
-	}
-
-	/**
 	 * This method loads the data for ${dataFetcher.graphQLType}.entityKind. It returns an Object: the data fetcher
 	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -129,24 +108,6 @@ public class TopicRefController {
 	}
 
 	/**
-	 * This methods loads the data for ${dataFetcher.graphQLType}.entity. It is generated as the
-	 * <code>generateBatchMappingDataFetchers</code> plugin parameter is true. <br/>
-	 * @param batchLoaderEnvironment The environement for this batch loaded. You can extract the GraphQLContext from
-	 * this parameter.
-	 * @param graphQLContext
-	 * @param keys The objects for which the value for the entity field must be retrieved.
-	 * @return This method returns <code>${dataFetcher.batchMappingReturnType.value}</code>, as defined by the
-	 * <code>batchMappingDataFetcherReturnType</code> plugin parameter. <br/>
-	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
-	 */
-	@BatchMapping(field = "entity")
-	public Map<TopicRef, ITopicalEntity> entity(BatchLoaderEnvironment batchLoaderEnvironment,
-		GraphQLContext graphQLContext, List<TopicRef> keys) {
-
-		return this.dataFetchersDelegateTopicRef.entity(batchLoaderEnvironment, graphQLContext, keys);
-	}
-
-	/**
 	 * This methods loads the data for ${dataFetcher.graphQLType}.locations. It is generated as the
 	 * <code>generateBatchMappingDataFetchers</code> plugin parameter is true. <br/>
 	 * @param batchLoaderEnvironment The environement for this batch loaded. You can extract the GraphQLContext from
@@ -158,7 +119,7 @@ public class TopicRefController {
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
 	@BatchMapping(field = "locations")
-	public Map<TopicRef, List<URI>> locations(BatchLoaderEnvironment batchLoaderEnvironment,
+	public Map<TopicRef, String> locations(BatchLoaderEnvironment batchLoaderEnvironment,
 		GraphQLContext graphQLContext, List<TopicRef> keys) {
 
 		return this.dataFetchersDelegateTopicRef.locations(batchLoaderEnvironment, graphQLContext, keys);

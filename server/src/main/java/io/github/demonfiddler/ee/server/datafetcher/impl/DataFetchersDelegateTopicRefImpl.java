@@ -19,7 +19,7 @@
 
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
-import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -31,8 +31,6 @@ import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateTopicRef;
 import io.github.demonfiddler.ee.server.model.EntityKind;
 import io.github.demonfiddler.ee.server.model.FormatKind;
-import io.github.demonfiddler.ee.server.model.ITopicalEntity;
-import io.github.demonfiddler.ee.server.model.Topic;
 import io.github.demonfiddler.ee.server.model.TopicRef;
 import io.github.demonfiddler.ee.server.repository.LinkRepository;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
@@ -51,35 +49,22 @@ public class DataFetchersDelegateTopicRefImpl implements DataFetchersDelegateTop
 
     @Override
     public List<TopicRef> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {
-        return linkRepository.findByIds(keys);
-    }
-
-    @Override
-    public Map<TopicRef, Topic> topic(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-        List<TopicRef> keys) {
-
-        return entityUtils.getValuesMap(keys, TopicRef::getTopic);
-    }
-
-    @Override
-    public Map<TopicRef, ITopicalEntity> entity(BatchLoaderEnvironment batchLoaderEnvironment,
-        GraphQLContext graphQLContext, List<TopicRef> keys) {
-
-        // FIXME: JPA cannot handle this property!
-        return entityUtils.getValuesMap(keys, TopicRef::getEntity);
-    }
-
-    @Override
-    public Map<TopicRef, List<URI>> locations(BatchLoaderEnvironment batchLoaderEnvironment,
-        GraphQLContext graphQLContext, List<TopicRef> keys) {
-
-        return entityUtils.getListValuesMap(keys, TopicRef::getLocations);
+        // FIXME: find TopicRefs by ID. Impossible unless you know the entity kind.
+        // return linkRepository.findByIds(keys);
+        return Collections.emptyList();
     }
 
     @Override
     public Object entityKind(DataFetchingEnvironment dataFetchingEnvironment, TopicRef origin, FormatKind format) {
         EntityKind kind = EntityKind.valueOf(origin.getEntityKind());
         return formatUtils.formatEntityKind(kind, format);
+    }
+
+    @Override
+    public Map<TopicRef, String> locations(BatchLoaderEnvironment batchLoaderEnvironment,
+        GraphQLContext graphQLContext, List<TopicRef> keys) {
+
+        return entityUtils.getValuesMap(keys, TopicRef::getLocations);
     }
 
 }

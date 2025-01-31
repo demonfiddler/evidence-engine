@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.graphql_java_generator.annotation.GraphQLIgnore;
 import com.graphql_java_generator.client.GraphQLObjectMapper;
 
-public abstract class AbstractPage<T> {
+public abstract class AbstractPage<T extends IBaseEntity> {
 
 	AbstractPage() {
 	}
@@ -548,7 +548,7 @@ public abstract class AbstractPage<T> {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	static abstract class AbstractBuilder<P extends AbstractPage<T>, T> {
+	static abstract class AbstractBuilder<P extends AbstractPage<T>, T extends IBaseEntity> {
 
 		private Long dummy;
 		private List<T> content;

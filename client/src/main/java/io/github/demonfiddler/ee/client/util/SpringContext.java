@@ -17,45 +17,29 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-package io.github.demonfiddler.ee.common.util;
+package io.github.demonfiddler.ee.client.util;
 
-import java.util.StringTokenizer;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-/**
- * Various string manipulation utilities.
- */
-public final class StringUtils {
+@Component
+@Scope(WebApplicationContext.SCOPE_APPLICATION)
+public class SpringContext implements ApplicationContextAware {
 
-    /**
-     * Uppercases the first character of a string and lowercases the rest.
-     * @param s The string.
-     * @return A copy of {@code s} with the first character uppercased and the remainder lowercased.
-     */
-    public static String firstToUpper(String s) {
-        if (s == null)
-            return s;
+    @Autowired
+    static ApplicationContext context;
 
-        char[] c = s.toCharArray();
-        c[0] = Character.toUpperCase(c[0]);
-        for (int i = 1; i < c.length; i++)
-            c[i] = Character.toLowerCase(c[i]);
-        return new String(c);
+    public static ApplicationContext getApplicationContext() {
+        return context;
     }
 
-    /**
-     * Counts the number of lines in a string.
-     * @param s The string.
-     * @return The number of lines in {@code s}.
-     */
-    public static int countLines(String s) {
-        if (s == null || s.isEmpty())
-            return 0;
-        StringTokenizer st = new StringTokenizer(s, "\n\r");
-        return st.countTokens();
-    }
-
-    /** Private ctor prevents instantiation. */
-    private StringUtils() {
-    }
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        context = applicationContext;
+    }    
 
 }

@@ -22,9 +22,9 @@ plugins {
 	id 'war'
 	id 'org.springframework.boot' version "${springBootVersion}"
 	id 'io.spring.dependency-management' version "${dependencyManagementPluginVersion}"
+	id 'org.asciidoctor.jvm.convert' version "${asciidoctorJvmConvertVersion}"
 	// id "com.graphql-java-generator.graphql-gradle-plugin3" version "${graphQLPluginVersion}"
 	// id "com.netflix.dgs.codegen" version "6.3.0"
-	id 'org.asciidoctor.jvm.convert' version "${asciidoctorJvmConvertVersion}"
 }
 
 group = 'io.github.demonfiddler.evidence-engine'
@@ -137,9 +137,14 @@ tasks.register('bootIntegrationTestServerBG') {
             .redirectOutput(new File(build, 'server.log'))
             .redirectError(new File(build, 'server-error.log'))
             .start()
-        println 'bootIntegrationTestServerInBackground task finished'
+        println 'bootIntegrationTestServerBG task finished'
     }
     finalizedBy 'waitForIntegrationTestServer'
+}
+bootIntegrationTestServerBG.configure {
+	onlyIf('Skip server launch') {
+		!providers.gradleProperty('skipLaunch').present
+	}
 }
 
 tasks.register('waitForIntegrationTestServer', Exec) {
@@ -170,6 +175,11 @@ tasks.register('terminateIntegrationTestServer', Exec) {
 	}
 	setIgnoreExitValue(true)
 }
+terminateIntegrationTestServer.configure {
+	onlyIf('Skip server launch') {
+		!providers.gradleProperty('skipLaunch').present
+	}
+}
 
 // Uncomment to enable GraphQL server code generation (NOTE: the generated code has been heavily modified).
-//evaluate(new File("codegen.gradle"))
+// apply from: 'codegen.gradle'

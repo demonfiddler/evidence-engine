@@ -52,6 +52,7 @@ import io.github.demonfiddler.ee.server.model.QuotationInput;
 import io.github.demonfiddler.ee.server.model.StatusKind;
 import io.github.demonfiddler.ee.server.model.Topic;
 import io.github.demonfiddler.ee.server.model.TopicInput;
+import io.github.demonfiddler.ee.server.model.TopicRef;
 import io.github.demonfiddler.ee.server.model.TopicRefInput;
 import io.github.demonfiddler.ee.server.model.TransactionKind;
 import io.github.demonfiddler.ee.server.model.User;
@@ -65,6 +66,7 @@ import io.github.demonfiddler.ee.server.repository.PersonRepository;
 import io.github.demonfiddler.ee.server.repository.PublicationRepository;
 import io.github.demonfiddler.ee.server.repository.PublisherRepository;
 import io.github.demonfiddler.ee.server.repository.QuotationRepository;
+import io.github.demonfiddler.ee.server.repository.TopicRefRepository;
 import io.github.demonfiddler.ee.server.repository.TopicRepository;
 import io.github.demonfiddler.ee.server.repository.UserRepository;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
@@ -74,31 +76,33 @@ import jakarta.annotation.Resource;
 public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMutation {
 
     @Resource
-    ClaimRepository claimRepository;
+    private ClaimRepository claimRepository;
     @Resource
-    DeclarationRepository declarationRepository;
+    private DeclarationRepository declarationRepository;
     @Resource
-    JournalRepository journalRepository;
+    private JournalRepository journalRepository;
     @Resource
-    LinkRepository linkRepository;
+    private LinkRepository linkRepository;
     @Resource
-    LogRepository logRepository;
+    private LogRepository logRepository;
     @Resource
-    PersonRepository personRepository;
+    private PersonRepository personRepository;
     @Resource
-    PublicationRepository publicationRepository;
+    private PublicationRepository publicationRepository;
     @Resource
-    PublisherRepository publisherRepository;
+    private PublisherRepository publisherRepository;
     @Resource
-    QuotationRepository quotationRepository;
+    private QuotationRepository quotationRepository;
     @Resource
-    TopicRepository topicRepository;
+    private TopicRepository topicRepository;
     @Resource
-    UserRepository userRepository;
+    private TopicRefRepository topicRefRepository;
     @Resource
-    EntityUtils util;
+    private UserRepository userRepository;
+    @Resource
+    private EntityUtils entityUtils;
 
-    User root;
+    private User root;
 
     private void setCreatedFields(ITrackedEntity entity) {
         entity.setCreated(OffsetDateTime.now());
@@ -120,13 +124,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     private void log(TransactionKind txnKind, IBaseEntity entity, OffsetDateTime timestamp) {
-        log(txnKind, entity.getId(), util.getEntityKind(entity.getClass()), null, null, timestamp);
-    }
-
-    private void log(TransactionKind txnKind, Long entityId, EntityKind entityKind, Long linkedEntityId,
-        EntityKind linkedEntityKind) {
-
-        log(txnKind, entityId, entityKind, linkedEntityId, linkedEntityKind, null);
+        log(txnKind, entity.getId(), entityUtils.getEntityKind(entity.getClass()), null, null, timestamp);
     }
 
     private void log(TransactionKind txnKind, Long entityId, EntityKind entityKind, Long linkedEntityId,
@@ -139,8 +137,8 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         log.setEntityId(entityId);
         log.setEntityKind(entityKind.name());
         if (linkedEntityId != null && linkedEntityKind != null) {
-            log.setEntityId(linkedEntityId);
-            log.setEntityKind(linkedEntityKind.name());
+            log.setLinkedEntityId(linkedEntityId);
+            log.setLinkedEntityKind(linkedEntityKind.name());
         }
         logRepository.save(log);
     }
@@ -158,11 +156,15 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     private void logLinked(Long entityId, EntityKind entityKind, Long linkedEntityId, EntityKind linkedEntityKind) {
-        log(TransactionKind.LNK, entityId, entityKind, linkedEntityId, linkedEntityKind);
+        OffsetDateTime timestamp = OffsetDateTime.now();
+        log(TransactionKind.LNK, entityId, entityKind, linkedEntityId, linkedEntityKind, timestamp);
+        log(TransactionKind.LNK, linkedEntityId, linkedEntityKind, entityId, entityKind, timestamp);
     }
 
     private void logUnlinked(Long entityId, EntityKind entityKind, Long linkedEntityId, EntityKind linkedEntityKind) {
-        log(TransactionKind.UNL, entityId, entityKind, linkedEntityId, linkedEntityKind);
+        OffsetDateTime timestamp = OffsetDateTime.now();
+        log(TransactionKind.UNL, entityId, entityKind, linkedEntityId, linkedEntityKind, timestamp);
+        log(TransactionKind.UNL, linkedEntityId, linkedEntityKind, entityId, entityKind, timestamp);
     }
 
     private <T extends IBaseEntity & ITrackedEntity, K> T delete(K id, CrudRepository<T, K> repository) {
@@ -653,20 +655,43 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
-    public Object addTopicRef(DataFetchingEnvironment dataFetchingEnvironment, TopicRefInput topicRef) {
-        int addCount = linkRepository.addTopicRef(topicRef);
-        if (addCount == 1) {
-            logLinked(topicRef.getTopicId(), EntityKind.TOP, topicRef.getEntityId(), topicRef.getEntityKind());
-            return true;
+    public Object addTopicRef(DataFetchingEnvironment dataFetchingEnvironment, TopicRefInput topicRefInput) {
+        return addOrUpdateTopicRef(topicRefInput);
+    }
+
+	/** Updates an existing topic reference. */
+	public Object updateTopicRef(DataFetchingEnvironment dataFetchingEnvironment, TopicRefInput topicRefInput) {
+        return addOrUpdateTopicRef(topicRefInput);
+    }
+
+    private Object addOrUpdateTopicRef(TopicRefInput topicRefInput) {
+        TopicRef topicRef = TopicRef.builder() //
+            .withId(topicRefInput.getId()) //
+            .withTopicId(topicRefInput.getTopicId()) //
+            .withEntityId(topicRefInput.getEntityId()) //
+            .withEntityKind(topicRefInput.getEntityKind().name()) //
+            .withLocations(topicRefInput.getLocations()) //
+            .build();
+        TopicRef result = topicRefRepository.save(topicRef);
+        if (result != null) {
+            EntityKind entityKind = EntityKind.valueOf(topicRef.getEntityKind());
+            logLinked(topicRef.getTopicId(), EntityKind.TOP, topicRef.getEntityId(), entityKind);
         }
-        return false;
+        return result;
     }
 
     @Override
-    public Object removeTopicRef(DataFetchingEnvironment dataFetchingEnvironment, TopicRefInput topicRef) {
-        int removeCount = linkRepository.removeTopicRef(topicRef);
+    public Object removeTopicRef(DataFetchingEnvironment dataFetchingEnvironment, TopicRefInput topicRefInput) {
+        TopicRef topicRef = TopicRef.builder() //
+            .withId(topicRefInput.getId()) //
+            .withTopicId(topicRefInput.getTopicId()) //
+            .withEntityId(topicRefInput.getEntityId()) //
+            .withEntityKind(topicRefInput.getEntityKind().name()) //
+            .withLocations(topicRefInput.getLocations()) //
+            .build();
+        int removeCount = topicRefRepository.removeTopicRef(topicRef);
         if (removeCount == 1) {
-            logUnlinked(topicRef.getTopicId(), EntityKind.TOP, topicRef.getEntityId(), topicRef.getEntityKind());
+            logUnlinked(topicRef.getTopicId(), EntityKind.TOP, topicRef.getEntityId(), topicRefInput.getEntityKind());
             return true;
         }
         return false;

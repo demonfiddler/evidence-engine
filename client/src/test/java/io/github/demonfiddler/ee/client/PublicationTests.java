@@ -39,14 +39,22 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.condition.EnabledIf;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.graphql_java_generator.exception.GraphQLRequestExecutionException;
 import com.graphql_java_generator.exception.GraphQLRequestPreparationException;
 
+import io.github.demonfiddler.ee.client.util.QueryExecutor;
+import io.github.demonfiddler.ee.client.util.SpringContext;
+
 @SpringBootTest(classes = GraphQLClientMain.class)
+@Order(5)
 @TestMethodOrder(OrderAnnotation.class)
-class PublicationTests extends TopicalEntityTests<Publication> {
+class PublicationTests extends AbstractTopicalEntityTests<Publication> {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(PublicationTests.class);
 
 	private static record IsbnPub4Range(short registrationGroup, short registrantMin, short registrantMax) {
 	}
@@ -142,11 +150,9 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 			notes
 		}
 		""";
-	private static final String PAGED_RESPONSE_SPEC = //
+	static final String PAGED_RESPONSE_SPEC = //
 		"""
 		{
-			hasContent
-			isEmpty
 			number
 			size
 			numberOfElements
@@ -156,6 +162,8 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 			isLast
 			hasNext
 			hasPrevious
+			isEmpty
+			hasContent
 			content {
 				id
 				status%s
@@ -166,15 +174,30 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 			}
 		}
 		""";
-	private static Publication EXPECTED;
-	private static List<Publication> PUBLICATIONS;
+
+	static Publication publication;
+	static List<Publication> publications;
 
 	static boolean hasExpectedPublication() {
-		return EXPECTED != null;
+		return publication != null;
 	}
 	
 	static boolean hasExpectedPublications() {
-		return PUBLICATIONS != null;
+		return publications != null;
+	}
+
+	static void ensureExpectedPublications() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+		if (publications == null) {
+			QueryExecutor queryExecutor = SpringContext.getApplicationContext().getBean(QueryExecutor.class);
+			String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+			List<Publication> content = queryExecutor.publications(responseSpec, null, null).getContent();
+			if (content.isEmpty()) {
+				LOGGER.error("Failed to initialise publications list from server");
+			} else {
+				publications = content;
+				LOGGER.debug("Initialised publications list from server");
+			}
+		}
 	}
 
 	@Test
@@ -182,7 +205,7 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 	void createPublication() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException, //
 		MalformedURLException {
 
-		EXPECTED = null;
+		publication = null;
 
 		LocalDate date = LocalDate.now();
 		PublicationInput input = PublicationInput.builder() //
@@ -203,29 +226,27 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 		OffsetDateTime earliestUpdated = OffsetDateTime.now();
 		Publication actual = mutationExecutor.createPublication(RESPONSE_SPEC, input);
 
-		// Check the returned Publication object for correctness.
 		LOG_DATES[0] = actual.getCreated();
-		checkPublication(actual, StatusKind.DRA.getLabel(), earliestUpdated, null, input.getTitle(),
-			input.getAuthorNames(), input.getJournalId(), input.getKind().getLabel(), input.getDate(), input.getYear(),
+		checkPublication(actual, StatusKind.DRA.label(), earliestUpdated, null, input.getTitle(),
+			input.getAuthorNames(), input.getJournalId(), input.getKind().label(), input.getDate(), input.getYear(),
 			input.getAbstract(), input.getNotes(), input.getPeerReviewed(), input.getDoi(), input.getIsbn(),
 			input.getUrl(), input.getCached(), input.getAccessed(), CRE);
 
-		// Test passed, so remember result for following tests.
-		EXPECTED = actual;
+		publication = actual;
 	}
 
 	@Test
 	@Order(2)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublication")
 	void readPublication() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		Publication expected = EXPECTED;
-		EXPECTED = null;
+		Publication expected = publication;
+		publication = null;
 
 		Publication actual = queryExecutor.publicationById(RESPONSE_SPEC, expected.getId());
 
-		// Check read publication against the one created by the preceding createPublication() test.
 		checkPublication(actual, expected, CRE);
-		EXPECTED = actual;
+
+		publication = actual;
 	}
 
 	@Test
@@ -234,8 +255,8 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 	void updatePublication() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException, //
 		MalformedURLException {
 
-		Publication expected = EXPECTED;
-		EXPECTED = null;
+		Publication expected = publication;
+		publication = null;
 
 		LocalDate date = LocalDate.now();
 		PublicationInput input = PublicationInput.builder() //
@@ -265,26 +286,26 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 			input.getAbstract(), input.getNotes(), input.getPeerReviewed(), input.getDoi(), input.getIsbn(),
 			input.getUrl(), input.getCached(), input.getAccessed(), CRE, UPD);
 
-		EXPECTED = actual;
+		publication = actual;
 	}
 
 	@Test
 	@Order(4)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublication")
 	void deletePublication() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		Publication expected = EXPECTED;
-		EXPECTED = null;
+		Publication expected = publication;
+		publication = null;
 
 		OffsetDateTime earliestUpdated = OffsetDateTime.now();
 		Publication actual = mutationExecutor.deletePublication(RESPONSE_SPEC, expected.getId());
 
 		LOG_DATES[2] = actual.getUpdated();
-		checkPublication(actual, StatusKind.DEL.getLabel(), expected.getCreated(), earliestUpdated, expected.getTitle(),
+		checkPublication(actual, StatusKind.DEL.label(), expected.getCreated(), earliestUpdated, expected.getTitle(),
 			expected.getAuthors(), getJournalId(actual), expected.getKind(), expected.getDate(), expected.getYear(),
 			expected.getAbstract(), expected.getNotes(), expected.getPeerReviewed(), expected.getDoi(),
 			expected.getIsbn(), expected.getUrl(), expected.getCached(), expected.getAccessed(), CRE, UPD, DEL);
 
-		EXPECTED = actual;
+		publication = actual;
 	}
 
 	@Test
@@ -296,13 +317,13 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 		final int publicationCount = 8;
 		List<Publication> publications = new ArrayList<>(publicationCount + 1);
 		Publication publication0 = new Publication();
-		publication0.setId(EXPECTED.getId());
-		publication0.setStatus(EXPECTED.getStatus());
-		publication0.setKind(EXPECTED.getKind());
-		publication0.setTitle(EXPECTED.getTitle());
-		publication0.setAbstract(EXPECTED.getAbstract());
-		publication0.setNotes(EXPECTED.getNotes());
-		publication0.set__typename(EXPECTED.get__typename());
+		publication0.setId(publication.getId());
+		publication0.setStatus(publication.getStatus());
+		publication0.setKind(publication.getKind());
+		publication0.setTitle(publication.getTitle());
+		publication0.setAbstract(publication.getAbstract());
+		publication0.setNotes(publication.getNotes());
+		publication0.set__typename(publication.get__typename());
 		publications.add(publication0);
 		String[] numbers = {null, "one", "two", "three", "four", "five", "six", "seven", "eight"};
 		for (int i = 1; i <= publicationCount; i++) {
@@ -325,7 +346,8 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 				.build();
 			publications.add(mutationExecutor.createPublication(responseSpec, input));
 		}
-		PUBLICATIONS = publications;
+
+		PublicationTests.publications = publications;
 	}
 
 	@Test
@@ -335,7 +357,7 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		PublicationPage actuals = queryExecutor.publications(responseSpec, null, null);
 
-		checkPage(actuals, PUBLICATIONS.size(), 1, PUBLICATIONS.size(), 0, false, false, true, true, PUBLICATIONS, true);
+		checkPage(actuals, publications.size(), 1, publications.size(), 0, false, false, true, true, publications, true);
 	}
 
 	@Test
@@ -347,7 +369,7 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 			.withText("filtered") //
 			.build();
 
-		List<Publication> expected = subList(PUBLICATIONS, 5, 7, 8);
+		List<Publication> expected = subList(publications, 5, 7, 8);
 		PublicationPage actuals = queryExecutor.publications(responseSpec, filter, null);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -357,7 +379,7 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 
 		filter.setStatus(List.of(StatusKind.DEL));
 		filter.setText(null);
-		expected = subList(PUBLICATIONS, 0);
+		expected = subList(publications, 0);
 		actuals = queryExecutor.publications(responseSpec, filter, null);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
@@ -375,9 +397,9 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 		PageableInput pageSort = PageableInput.builder().withSort(sort).build();
 
 		// "PUBLICATION FIVE", "PUBLICATION ONE", "PUBLICATION SEVEN", "PUBLICATION THREE", "Publication eight",
-		// "Publication four", "Publication six", "Publication two", "Updated Test publication"
+		// "Publication four", "Publication six", "Publication two", "Updated test publication"
 		// 5, 1, 7, 3, 8, 4, 6, 2, 0
-		List<Publication> expected = subList(PUBLICATIONS, 5, 1, 7, 3, 8, 4, 6, 2, 0);
+		List<Publication> expected = subList(publications, 5, 1, 7, 3, 8, 4, 6, 2, 0);
 
 		PublicationPage actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
@@ -406,9 +428,9 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 		PageableInput pageSort = PageableInput.builder().withSort(sort).build();
 
 		// "Publication eight", "PUBLICATION FIVE", "Publication four", "PUBLICATION ONE", "PUBLICATION SEVEN",
-		// "Publication six", "PUBLICATION THREE", "Publication two", "Updated Test publication"
+		// "Publication six", "PUBLICATION THREE", "Publication two", "Updated test publication"
 		// 8, 5, 4, 1, 7, 6, 3, 2, 0
-		List<Publication> expected = subList(PUBLICATIONS, 8, 5, 4, 1, 7, 6, 3, 2, 0);
+		List<Publication> expected = subList(publications, 8, 5, 4, 1, 7, 6, 3, 2, 0);
 
 		PublicationPage actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
@@ -441,9 +463,9 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 
 		// null/"PUBLICATION THREE", null/"Publication six", "Notes #1"/"PUBLICATION ONE", "Notes #2"/"Publication two",
 		// "Notes #4"/"Publication four", "Notes #5 (filtered)"/"PUBLICATION FIVE", "Notes #7 (filtered)"/"PUBLICATION SEVEN",
-		// "Notes #8 (filtered)"/"Publication eight", "Updated Test notes"/"Updated Test publication"
+		// "Notes #8 (filtered)"/"Publication eight", "Updated test notes"/"Updated test publication"
 		// 3, 6, 1, 2, 4, 5, 7, 8, 0
-		List<Publication> expected = subList(PUBLICATIONS, 3, 6, 1, 2, 4, 5, 7, 8, 0);
+		List<Publication> expected = subList(publications, 3, 6, 1, 2, 4, 5, 7, 8, 0);
 		PublicationPage actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -453,16 +475,16 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 
 		textOrder.setDirection(DirectionKind.DESC);
 		actuals = queryExecutor.publications(responseSpec, null, pageSort);
-		expected = subList(PUBLICATIONS, 6, 3, 1, 2, 4, 5, 7, 8, 0);
+		expected = subList(publications, 6, 3, 1, 2, 4, 5, 7, 8, 0);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		// "Notes #1"/"PUBLICATION ONE", "Notes #2"/"Publication two", "Notes #4"/"Publication four", "Notes #5 (filtered)"/"PUBLICATION FIVE",
 		// "Notes #7 (filtered)"/"PUBLICATION SEVEN", "Notes #8 (filtered)"/"Publication eight",
-		// "Updated Test notes"/"Updated Test publication", null/"PUBLICATION THREE", null/"Publication six",
+		// "Updated test notes"/"Updated test publication", null/"PUBLICATION THREE", null/"Publication six",
 		// 1, 2, 4, 5, 7, 8, 0, 3, 6
 		notesOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		textOrder.setDirection(null);
-		expected = subList(PUBLICATIONS, 1, 2, 4, 5, 7, 8, 0, 3, 6);
+		expected = subList(publications, 1, 2, 4, 5, 7, 8, 0, 3, 6);
 		actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -472,7 +494,7 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 
 		textOrder.setDirection(DirectionKind.DESC);
 		actuals = queryExecutor.publications(responseSpec, null, pageSort);
-		expected = subList(PUBLICATIONS, 1, 2, 4, 5, 7, 8, 0, 6, 3);
+		expected = subList(publications, 1, 2, 4, 5, 7, 8, 0, 6, 3);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
 
@@ -493,7 +515,7 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 
 		// "PUBLICATION FIVE", "PUBLICATION SEVEN", "Publication eight"
 		// 5, 7, 8
-		List<Publication> expected = subList(PUBLICATIONS, 5, 7, 8);
+		List<Publication> expected = subList(publications, 5, 7, 8);
 		PublicationPage actuals = queryExecutor.publications(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -530,7 +552,7 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 		// "Notes #4"/"Publication four", "Notes #5 (filtered)"/"PUBLICATION FIVE", "Notes #7 (filtered)"/"PUBLICATION SEVEN",
 		// "Notes #8 (filtered)"/"Publication eight"
 		// 3, 6, 1, 2, 4, 5, 7, 8
-		List<Publication> expected = subList(PUBLICATIONS, 3, 6, 1, 2, 4, 5, 7, 8);
+		List<Publication> expected = subList(publications, 3, 6, 1, 2, 4, 5, 7, 8);
 		PublicationPage actuals = queryExecutor.publications(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -539,7 +561,7 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		textOrder.setDirection(DirectionKind.DESC);
-		expected = subList(PUBLICATIONS, 6, 3, 1, 2, 4, 5, 7, 8);
+		expected = subList(publications, 6, 3, 1, 2, 4, 5, 7, 8);
 		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -549,12 +571,12 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 		// 1, 2, 4, 5, 7, 8, 3, 6
 		notesOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		textOrder.setDirection(DirectionKind.ASC);
-		expected = subList(PUBLICATIONS, 1, 2, 4, 5, 7, 8, 3, 6);
+		expected = subList(publications, 1, 2, 4, 5, 7, 8, 3, 6);
 		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		textOrder.setDirection(DirectionKind.DESC);
-		expected = subList(PUBLICATIONS, 1, 2, 4, 5, 7, 8, 6, 3);
+		expected = subList(publications, 1, 2, 4, 5, 7, 8, 6, 3);
 		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
@@ -570,18 +592,18 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 			.withPageSize(4) //
 			.build();
 		PublicationPage actuals = queryExecutor.publications(responseSpec, null, pageSort);
-		List<Publication> expected = PUBLICATIONS.subList(0, 4);
-		checkPage(actuals, PUBLICATIONS.size(), 3, 4, 0, false, true, true, false, expected, true);
+		List<Publication> expected = publications.subList(0, 4);
+		checkPage(actuals, publications.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = PUBLICATIONS.subList(4, 8);
+		expected = publications.subList(4, 8);
 		actuals = queryExecutor.publications(responseSpec, null, pageSort);
-		checkPage(actuals, PUBLICATIONS.size(), 3, 4, 1, true, true, false, false, expected, true);
+		checkPage(actuals, publications.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = PUBLICATIONS.subList(8, 9);
+		expected = publications.subList(8, 9);
 		actuals = queryExecutor.publications(responseSpec, null, pageSort);
-		checkPage(actuals, PUBLICATIONS.size(), 3, 4, 2, true, false, false, true, expected, true);
+		checkPage(actuals, publications.size(), 3, 4, 2, true, false, false, true, expected, true);
 	}	
 
 	@Test
@@ -597,12 +619,12 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 			.withPageSize(2) //
 			.build();
 
-		List<Publication> expected = subList(PUBLICATIONS, 5, 7);
+		List<Publication> expected = subList(publications, 5, 7);
 		PublicationPage actuals = queryExecutor.publications(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(PUBLICATIONS,8);
+		expected = subList(publications,8);
 		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 	}
@@ -624,51 +646,51 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 			.build();
 
 		// "PUBLICATION FIVE", "PUBLICATION ONE", "PUBLICATION SEVEN", "PUBLICATION THREE", "Publication eight", "Publication four", "Publication six",
-		// "Publication two", "Updated Test publication"
+		// "Publication two", "Updated test publication"
 		// 5, 1, 7, 3, 8, 4, 6, 2, 0
-		List<Publication> expected = subList(PUBLICATIONS, 5, 1, 7, 3);
+		List<Publication> expected = subList(publications, 5, 1, 7, 3);
 		PublicationPage actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(PUBLICATIONS, 8, 4, 6, 2);
+		expected = subList(publications, 8, 4, 6, 2);
 		actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(PUBLICATIONS, 0);
+		expected = subList(publications, 0);
 		actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(PUBLICATIONS, 5, 1, 7, 3);
+		expected = subList(publications, 5, 1, 7, 3);
 		actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(PUBLICATIONS, 8, 4, 6, 2);
+		expected = subList(publications, 8, 4, 6, 2);
 		actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(PUBLICATIONS, 0);
+		expected = subList(publications, 0);
 		actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(PUBLICATIONS, 0, 2, 6, 4);
+		expected = subList(publications, 0, 2, 6, 4);
 		actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(PUBLICATIONS, 8, 3, 7, 1);
+		expected = subList(publications, 8, 3, 7, 1);
 		actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(PUBLICATIONS, 5);
+		expected = subList(publications, 5);
 		actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 2, true, false, false, true, expected, true);
 	}
@@ -694,34 +716,34 @@ class PublicationTests extends TopicalEntityTests<Publication> {
 
 		// "PUBLICATION FIVE", "PUBLICATION SEVEN", "Publication eight"
 		// 5, 7, 8
-		List<Publication> expected = subList(PUBLICATIONS, 5, 7);
+		List<Publication> expected = subList(publications, 5, 7);
 		PublicationPage actuals = queryExecutor.publications(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(PUBLICATIONS, 8);
+		expected = subList(publications, 8);
 		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(PUBLICATIONS, 5, 7);
+		expected = subList(publications, 5, 7);
 		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(PUBLICATIONS, 8);
+		expected = subList(publications, 8);
 		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(PUBLICATIONS, 8, 7);
+		expected = subList(publications, 8, 7);
 		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(PUBLICATIONS, 5);
+		expected = subList(publications, 5);
 		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 	}

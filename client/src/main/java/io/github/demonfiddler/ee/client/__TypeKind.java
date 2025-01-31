@@ -66,7 +66,7 @@ public enum __TypeKind {
 	 * @return the enum constant with the specified name
 	 * @throws IllegalArgumentException if this enum type has no constant with the specified GraphQL name
 	 */
-	static public __TypeKind fromGraphQlValue(String graphQlValue) {
+	public static __TypeKind fromGraphQlValue(String graphQlValue) {
 		if (graphQlValue == null) {
 			return null;
 		}

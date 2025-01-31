@@ -77,7 +77,7 @@ public enum __DirectiveLocation {
 	 * @return the enum constant with the specified name
 	 * @throws IllegalArgumentException if this enum type has no constant with the specified GraphQL name
 	 */
-	static public __DirectiveLocation fromGraphQlValue(String graphQlValue) {
+	public static __DirectiveLocation fromGraphQlValue(String graphQlValue) {
 		if (graphQlValue == null) {
 			return null;
 		}

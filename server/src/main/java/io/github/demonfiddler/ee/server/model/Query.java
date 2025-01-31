@@ -159,6 +159,13 @@ public class Query {
 	TopicRef topicRefById;
 
 	/**
+	 * Returns a topic reference given its topic and entity identifiers.
+	 */
+	@GraphQLNonScalar(fieldName = "topicRefByEntityId", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class,
+		listDepth = 0)
+	TopicRef topicRefByEntityId;
+
+	/**
 	 * Returns a paged list of users.
 	 */
 	@GraphQLNonScalar(fieldName = "users", graphQLTypeSimpleName = "UserPage", javaClass = UserPage.class,

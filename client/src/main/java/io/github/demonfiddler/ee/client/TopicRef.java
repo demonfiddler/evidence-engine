@@ -20,7 +20,6 @@
 package io.github.demonfiddler.ee.client;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -30,7 +29,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.graphql_java_generator.annotation.GraphQLIgnore;
 import com.graphql_java_generator.annotation.GraphQLInputParameters;
-import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
 import com.graphql_java_generator.client.GraphQLObjectMapper;
@@ -68,11 +66,20 @@ public class TopicRef implements IBaseEntity {
 	Long id;
 
 	/**
-	 * The associated topic.
+	 * The unique identifier of the associated entity record.
 	 */
-	@JsonProperty("topic")
-	@GraphQLNonScalar(fieldName = "topic", graphQLTypeSimpleName = "Topic", javaClass = Topic.class, listDepth = 0)
-	Topic topic;
+	@JsonProperty("topicId")
+	@JsonDeserialize(using = CustomJacksonDeserializers.Long.class)
+	@GraphQLScalar(fieldName = "topicId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
+	Long topicId;
+
+	/**
+	 * The unique identifier of the associated entity record.
+	 */
+	@JsonProperty("entityId")
+	@JsonDeserialize(using = CustomJacksonDeserializers.Long.class)
+	@GraphQLScalar(fieldName = "entityId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
+	Long entityId;
 
 	/**
 	 * The associated entity kind.
@@ -84,30 +91,27 @@ public class TopicRef implements IBaseEntity {
 	String entityKind;
 
 	// TODO: consider whether to return the identifier or the entity record.
-	/**
-	 * The unique identifier of the associated record.
-	 */
-	@JsonProperty("entityId")
-	@JsonDeserialize(using = CustomJacksonDeserializers.Long.class)
-	@GraphQLScalar(fieldName = "entityId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
-	Long entityId;
+	// /**
+	//  * The associated topic.
+	//  */
+	// @JsonProperty("topic")
+	// @GraphQLNonScalar(fieldName = "topic", graphQLTypeSimpleName = "Topic", javaClass = Topic.class, listDepth = 0)
+	// Topic topic;
 
-	/**
-	 * The associated record.
-	 */
-	@JsonProperty("entity")
-	@GraphQLNonScalar(fieldName = "entity", graphQLTypeSimpleName = "ITopicalEntity", javaClass = ITopicalEntity.class,
-		listDepth = 0)
-	ITopicalEntity entity;
+	// /**
+	//  * The associated record.
+	//  */
+	// @JsonProperty("entity")
+	// @GraphQLNonScalar(fieldName = "entity", graphQLTypeSimpleName = "ITopicalEntity", javaClass = ITopicalEntity.class,
+	// 	listDepth = 0)
+	// ITopicalEntity entity;
 
 	/**
 	 * The locations within the associated record, one per line.
 	 */
 	@JsonProperty("locations")
-	@JsonDeserialize(using = CustomJacksonDeserializers.ListURI.class)
-	@GraphQLScalar(fieldName = "locations", graphQLTypeSimpleName = "URI", javaClass = java.net.URI.class,
-		listDepth = 1)
-	List<java.net.URI> locations;
+	@GraphQLScalar(fieldName = "locations", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String locations;
 
 	@JsonProperty("__typename")
 	@GraphQLScalar(fieldName = "__typename", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
@@ -135,24 +139,36 @@ public class TopicRef implements IBaseEntity {
 		return this.id;
 	}
 
-	// "The unique identifier of the associated topic."
-	// topicId: Long!
 	/**
-	 * The associated topic.
+	 * The unique identifier of the associated topic.
 	 */
-	@JsonProperty("topic")
-	public void setTopic(Topic topic) {
-		this.topic = topic;
+	@JsonProperty("topicId")
+	public void setTopicId(Long topicId) {
+		this.topicId = topicId;
 	}
 
-	// "The unique identifier of the associated topic."
-	// topicId: Long!
 	/**
-	 * The associated topic.
+	 * The unique identifier of the associated topic.
 	 */
-	@JsonProperty("topic")
-	public Topic getTopic() {
-		return this.topic;
+	@JsonProperty("topicId")
+	public Long getTopicId() {
+		return this.topicId;
+	}
+
+	/**
+	 * The unique identifier of the associated record.
+	 */
+	@JsonProperty("entityId")
+	public void setEntityId(Long entityId) {
+		this.entityId = entityId;
+	}
+
+	/**
+	 * The unique identifier of the associated record.
+	 */
+	@JsonProperty("entityId")
+	public Long getEntityId() {
+		return this.entityId;
 	}
 
 	/**
@@ -171,45 +187,43 @@ public class TopicRef implements IBaseEntity {
 		return this.entityKind;
 	}
 
-	// TODO: consider whether to return the identifier or the entity record.
-	/**
-	 * The unique identifier of the associated record.
-	 */
-	@JsonProperty("entityId")
-	public void setEntityId(Long entityId) {
-		this.entityId = entityId;
-	}
+	// /**
+	//  * The associated topic.
+	//  */
+	// @JsonProperty("topic")
+	// public void setTopic(Topic topic) {
+	// 	this.topic = topic;
+	// }
 
-	// TODO: consider whether to return the identifier or the entity record.
-	/**
-	 * The unique identifier of the associated record.
-	 */
-	@JsonProperty("entityId")
-	public Long getEntityId() {
-		return this.entityId;
-	}
+	// /**
+	//  * The associated topic.
+	//  */
+	// @JsonProperty("topic")
+	// public Topic getTopic() {
+	// 	return this.topic;
+	// }
 
-	/**
-	 * The associated record.
-	 */
-	@JsonProperty("entity")
-	public void setEntity(ITopicalEntity entity) {
-		this.entity = entity;
-	}
+	// /**
+	//  * The associated record.
+	//  */
+	// @JsonProperty("entity")
+	// public void setEntity(ITopicalEntity entity) {
+	// 	this.entity = entity;
+	// }
 
-	/**
-	 * The associated record.
-	 */
-	@JsonProperty("entity")
-	public ITopicalEntity getEntity() {
-		return this.entity;
-	}
+	// /**
+	//  * The associated record.
+	//  */
+	// @JsonProperty("entity")
+	// public ITopicalEntity getEntity() {
+	// 	return this.entity;
+	// }
 
 	/**
 	 * The locations within the associated record, one per line.
 	 */
 	@JsonProperty("locations")
-	public void setLocations(List<java.net.URI> locations) {
+	public void setLocations(String locations) {
 		this.locations = locations;
 	}
 
@@ -217,7 +231,7 @@ public class TopicRef implements IBaseEntity {
 	 * The locations within the associated record, one per line.
 	 */
 	@JsonProperty("locations")
-	public List<java.net.URI> getLocations() {
+	public String getLocations() {
 		return this.locations;
 	}
 
@@ -255,18 +269,94 @@ public class TopicRef implements IBaseEntity {
 		return this.aliasValues.get(alias);
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((aliasValues == null) ? 0 : aliasValues.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((topicId == null) ? 0 : topicId.hashCode());
+		result = prime * result + ((entityId == null) ? 0 : entityId.hashCode());
+		result = prime * result + ((entityKind == null) ? 0 : entityKind.hashCode());
+		// result = prime * result + ((topic == null) ? 0 : topic.hashCode());
+		// result = prime * result + ((entity == null) ? 0 : entity.hashCode());
+		result = prime * result + ((locations == null) ? 0 : locations.hashCode());
+		result = prime * result + ((__typename == null) ? 0 : __typename.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TopicRef other = (TopicRef)obj;
+		if (aliasValues == null) {
+			if (other.aliasValues != null)
+				return false;
+		} else if (!aliasValues.equals(other.aliasValues))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (topicId == null) {
+			if (other.topicId != null)
+				return false;
+		} else if (!topicId.equals(other.topicId))
+			return false;
+		if (entityId == null) {
+			if (other.entityId != null)
+				return false;
+		} else if (!entityId.equals(other.entityId))
+			return false;
+		if (entityKind == null) {
+			if (other.entityKind != null)
+				return false;
+		} else if (!entityKind.equals(other.entityKind))
+			return false;
+		// if (topic == null) {
+		// 	if (other.topic != null)
+		// 		return false;
+		// } else if (!topic.equals(other.topic))
+		// 	return false;
+		// if (entity == null) {
+		// 	if (other.entity != null)
+		// 		return false;
+		// } else if (!entity.equals(other.entity))
+		// 	return false;
+		if (locations == null) {
+			if (other.locations != null)
+				return false;
+		} else if (!locations.equals(other.locations))
+			return false;
+		if (__typename == null) {
+			if (other.__typename != null)
+				return false;
+		} else if (!__typename.equals(other.__typename))
+			return false;
+		return true;
+	}
+
+	@Override
 	public String toString() {
 		return "TopicRef {" //$NON-NLS-1$
 			+ "id: " + this.id //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
-			+ "topic: " + this.topic //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "entityKind: " + this.entityKind //$NON-NLS-1$
+			+ "topicId: " + this.topicId //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "entityId: " + this.entityId //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
-			+ "entity: " + this.entity //$NON-NLS-1$
+			+ "entityKind: " + this.entityKind //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
+			// + "topic: " + this.topic //$NON-NLS-1$
+			// + ", " //$NON-NLS-1$
+			// + "entity: " + this.entity //$NON-NLS-1$
+			// + ", " //$NON-NLS-1$
 			+ "locations: " + this.locations //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "__typename: " + this.__typename //$NON-NLS-1$
@@ -284,11 +374,12 @@ public class TopicRef implements IBaseEntity {
 	public static class Builder {
 
 		private Long id;
-		private Topic topic;
-		private String entityKind;
+		private Long topicId;
 		private Long entityId;
-		private ITopicalEntity entity;
-		private List<java.net.URI> locations;
+		private String entityKind;
+		// private Topic topic;
+		// private ITopicalEntity entity;
+		private String locations;
 
 		// NOTE: only necessary because graphql-java-generator emits code with errors (missing ctor) if there is no ID
 		// field.
@@ -303,8 +394,16 @@ public class TopicRef implements IBaseEntity {
 		/**
 		 * The associated topic.
 		 */
-		public Builder withTopic(Topic topicParam) {
-			this.topic = topicParam;
+		public Builder withTopicId(Long topicIdParam) {
+			this.topicId = topicIdParam;
+			return this;
+		}
+
+		/**
+		 * The unique identifier of the associated record.
+		 */
+		public Builder withEntityId(Long entityIdParam) {
+			this.entityId = entityIdParam;
 			return this;
 		}
 
@@ -316,27 +415,26 @@ public class TopicRef implements IBaseEntity {
 			return this;
 		}
 
-		// TODO: consider whether to return the identifier or the entity record.
-		/**
-		 * The unique identifier of the associated record.
-		 */
-		public Builder withEntityId(Long entityIdParam) {
-			this.entityId = entityIdParam;
-			return this;
-		}
+		// /**
+		//  * The associated topic.
+		//  */
+		// public Builder withTopic(Topic topicParam) {
+		// 	this.topic = topicParam;
+		// 	return this;
+		// }
 
-		/**
-		 * The associated record.
-		 */
-		public Builder withEntity(ITopicalEntity entityParam) {
-			this.entity = entityParam;
-			return this;
-		}
+		// /**
+		//  * The associated entity record.
+		//  */
+		// public Builder withEntity(ITopicalEntity entityParam) {
+		// 	this.entity = entityParam;
+		// 	return this;
+		// }
 
 		/**
 		 * The locations within the associated record, one per line.
 		 */
-		public Builder withLocations(List<java.net.URI> locationsParam) {
+		public Builder withLocations(String locationsParam) {
 			this.locations = locationsParam;
 			return this;
 		}
@@ -344,10 +442,11 @@ public class TopicRef implements IBaseEntity {
 		public TopicRef build() {
 			TopicRef _object = new TopicRef();
 			_object.setId(this.id);
-			_object.setTopic(this.topic);
-			_object.setEntityKind(this.entityKind);
+			_object.setTopicId(this.topicId);
 			_object.setEntityId(this.entityId);
-			_object.setEntity(this.entity);
+			_object.setEntityKind(this.entityKind);
+			// _object.setTopic(this.topic);
+			// _object.setEntity(this.entity);
 			_object.setLocations(this.locations);
 			_object.set__typename("TopicRef"); //$NON-NLS-1$
 			return _object;

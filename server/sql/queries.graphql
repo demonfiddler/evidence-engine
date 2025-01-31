@@ -96,6 +96,154 @@
 }
 
 {
+  persons {
+    size
+    content {
+      id
+      status
+      firstName
+      lastName
+      qualifications
+      notes
+    }
+  }
+}
+
+{
+  log(
+    filter: {
+      entityKind: JOU
+      # entityId: 45
+      userId: 0
+      transactionKinds: CRE
+      # from: 
+      # to: 
+    }
+    pageSort: {
+      pageNumber: 0
+      pageSize: 10
+      sort: {
+        orders: {
+          property: "timestamp"
+          direction: ASC
+        }
+      }
+    }
+  ){
+    hasContent
+    isEmpty
+    number
+    size
+    numberOfElements
+    totalPages
+    totalElements
+    isFirst
+    isLast
+    hasNext
+    hasPrevious
+    content {
+      id
+      timestamp
+      user {
+        login
+        firstName
+        lastName
+      }
+      transactionKind
+      entityKind
+      entityId
+      linkedEntityKind
+      linkedEntityId
+    }
+  }
+}
+
+{
+  topicById(id: 3) {
+    id
+    status
+    created
+    createdByUser {
+      id
+      login
+      firstName
+      lastName
+    }
+    updated
+    updatedByUser {
+      id
+      login
+      firstName
+      lastName
+    }
+    log {
+      hasContent
+      isEmpty
+      number
+      size
+      numberOfElements
+      totalPages
+      totalElements
+      isFirst
+      isLast
+      hasNext
+      hasPrevious
+      content {
+        timestamp
+        transactionKind
+        entityId
+        entityKind
+        user {
+          id
+          login
+          firstName
+          lastName
+        }
+      }
+    }
+    label
+    description
+    parent {
+      id
+      label
+    }
+    children {
+      id
+      label
+      parent {
+        id
+      }
+      children {
+        id
+        label
+        parent {
+          id
+        }
+      }
+    }
+  }
+}
+
+{
+  topics(filter: {
+  		status: [DRA]
+  	# text: "updated"
+  	})
+  	{
+    numberOfElements
+    content{
+      id
+      status
+      label
+      description
+      parent{
+        id
+      }
+    }
+  }
+}
+
+{
   topics(filter: {
 		parentId: 1
     status: [DRA, PUB]
@@ -184,116 +332,4 @@
 }
 
 {
-  log(
-    filter: {
-      entityKind: JOU
-      # entityId: 45
-      userId: 0
-      transactionKinds: CRE
-      # from: 
-      # to: 
-    }
-    pageSort: {
-      pageNumber: 0
-      pageSize: 10
-      sort: {
-        orders: {
-          property: "timestamp"
-          direction: ASC
-        }
-      }
-    }
-  ){
-    hasContent
-    isEmpty
-    number
-    size
-    numberOfElements
-    totalPages
-    totalElements
-    isFirst
-    isLast
-    hasNext
-    hasPrevious
-    content {
-      id
-      timestamp
-      user {
-        login
-        firstName
-        lastName
-      }
-      transactionKind
-      entityKind
-      entityId
-      linkedEntityKind
-      linkedEntityId
-    }
-  }
-}
-
-query {
-  topicById(id: 3) {
-    id
-    status
-    created
-    createdByUser {
-      id
-      login
-      firstName
-      lastName
-    }
-    updated
-    updatedByUser {
-      id
-      login
-      firstName
-      lastName
-    }
-    log {
-      hasContent
-      isEmpty
-      number
-      size
-      numberOfElements
-      totalPages
-      totalElements
-      isFirst
-      isLast
-      hasNext
-      hasPrevious
-      content {
-        timestamp
-        transactionKind
-        entityId
-        entityKind
-        user {
-          id
-          login
-          firstName
-          lastName
-        }
-      }
-    }
-    label
-    description
-    parent {
-      id
-      label
-    }
-    children {
-      id
-      label
-      parent {
-        id
-      }
-      children {
-        id
-        label
-        parent {
-          id
-        }
-      }
-    }
-  }
 }

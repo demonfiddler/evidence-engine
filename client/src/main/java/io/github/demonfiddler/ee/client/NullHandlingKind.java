@@ -63,7 +63,7 @@ public enum NullHandlingKind {
 	 * @return the enum constant with the specified name
 	 * @throws IllegalArgumentException if this enum type has no constant with the specified GraphQL name
 	 */
-	static public NullHandlingKind fromGraphQlValue(String graphQlValue) {
+	public static NullHandlingKind fromGraphQlValue(String graphQlValue) {
 		if (graphQlValue == null) {
 			return null;
 		}

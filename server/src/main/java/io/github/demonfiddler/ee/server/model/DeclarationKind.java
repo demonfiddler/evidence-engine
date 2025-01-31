@@ -30,16 +30,18 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
 @GraphQLEnumType("DeclarationKind")
 public enum DeclarationKind {
 
-		DECL("DECL"), //$NON-NLS-1$
-		OPLE("OPLE"), //$NON-NLS-1$
-		PETN("PETN"); //$NON-NLS-1$
+	DECL("DECL", "Declaration"), //$NON-NLS-1$
+	OPLE("OPLE", "Open Letter"), //$NON-NLS-1$
+	PETN("PETN", "Petition"); //$NON-NLS-1$
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different when the value in the GraphQL schema is a Java reserved keyword.
 	private final String graphQlValue;
+	private final String label;
 
-	private DeclarationKind(String graphQlValue) {
+	private DeclarationKind(String graphQlValue, String label) {
 		this.graphQlValue = graphQlValue;
+		this.label = label;
 	}
 
 	/**
@@ -53,6 +55,14 @@ public enum DeclarationKind {
 	}
 
 	/**
+	 * Returns the label for this constant.
+	 * @return the label
+	 */
+	public String label() {
+		return this.label;
+	}
+
+	/**
 	 * Returns the enum constant of this type with the specified name (as specified in the GraphQL schema). The string
 	 * must match exactly an identifier used to declare an enum constant in this type. (Extraneous whitespace characters
 	 * are not permitted.)
@@ -62,7 +72,7 @@ public enum DeclarationKind {
 	 * @return the enum constant with the specified name
 	 * @throws IllegalArgumentException if this enum type has no constant with the specified GraphQL name
 	 */
-	static public DeclarationKind fromGraphQlValue(String graphQlValue) {
+	public static DeclarationKind fromGraphQlValue(String graphQlValue) {
 		if (graphQlValue == null) {
 			return null;
 		}

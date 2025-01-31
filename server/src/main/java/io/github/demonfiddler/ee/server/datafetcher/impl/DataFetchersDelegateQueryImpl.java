@@ -19,6 +19,8 @@
 
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import graphql.schema.DataFetchingEnvironment;
@@ -27,6 +29,7 @@ import io.github.demonfiddler.ee.server.model.Claim;
 import io.github.demonfiddler.ee.server.model.ClaimPage;
 import io.github.demonfiddler.ee.server.model.Declaration;
 import io.github.demonfiddler.ee.server.model.DeclarationPage;
+import io.github.demonfiddler.ee.server.model.EntityKind;
 import io.github.demonfiddler.ee.server.model.JournalPage;
 import io.github.demonfiddler.ee.server.model.LogPage;
 import io.github.demonfiddler.ee.server.model.LogQueryFilter;
@@ -40,6 +43,7 @@ import io.github.demonfiddler.ee.server.model.Quotation;
 import io.github.demonfiddler.ee.server.model.QuotationPage;
 import io.github.demonfiddler.ee.server.model.TopicPage;
 import io.github.demonfiddler.ee.server.model.TopicQueryFilter;
+import io.github.demonfiddler.ee.server.model.TopicRef;
 import io.github.demonfiddler.ee.server.model.TopicRefPage;
 import io.github.demonfiddler.ee.server.model.TopicRefQueryFilter;
 import io.github.demonfiddler.ee.server.model.TopicalEntityQueryFilter;
@@ -48,6 +52,7 @@ import io.github.demonfiddler.ee.server.model.UserPage;
 import io.github.demonfiddler.ee.server.repository.ClaimRepository;
 import io.github.demonfiddler.ee.server.repository.DeclarationRepository;
 import io.github.demonfiddler.ee.server.repository.JournalRepository;
+import io.github.demonfiddler.ee.server.repository.LinkRepository;
 import io.github.demonfiddler.ee.server.repository.LogRepository;
 import io.github.demonfiddler.ee.server.repository.PersonRepository;
 import io.github.demonfiddler.ee.server.repository.PublicationRepository;
@@ -68,6 +73,8 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     private DeclarationRepository declarationRepository;
     @Resource
     private JournalRepository journalRepository;
+    @Resource
+    private LinkRepository linkRepository;
     @Resource
     private LogRepository logRepository;
     @Resource
@@ -189,15 +196,22 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     }
 
     @Override
-    public Object topicRefById(DataFetchingEnvironment dataFetchingEnvironment, Long id) {
-        return topicRefRepository.findById(id).get();
+    public Object topicRefById(DataFetchingEnvironment dataFetchingEnvironment, Long id, EntityKind entityKind) {
+        return topicRefRepository.findById(id, entityKind);
+    }
+
+    @Override
+	public Object topicRefByEntityId(DataFetchingEnvironment dataFetchingEnvironment, Long topicId, Long entityId, EntityKind entityKind) {
+        return topicRefRepository.findByEntityId(topicId, entityId, entityKind);
     }
 
     @Override
     public Object topicRefs(DataFetchingEnvironment dataFetchingEnvironment, TopicRefQueryFilter filter,
         PageableInput pageSort) {
 
-        return entityUtils.findByFilter(filter, pageSort, topicRefRepository, TopicRefPage::new);
+        Pageable pageable = entityUtils.toPageable(pageSort);
+        Page<TopicRef> page = topicRefRepository.findByFilter(filter, pageable);
+        return entityUtils.toEntityPage(page, TopicRefPage::new);
     }
 
     @Override

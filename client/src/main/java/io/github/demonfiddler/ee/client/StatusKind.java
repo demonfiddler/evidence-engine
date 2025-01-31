@@ -29,16 +29,16 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
  */
 @GraphQLEnumType("StatusKind")
 public enum StatusKind {
-		DRA("DRA", "Draft"), //$NON-NLS-1$
-		PUB("PUB", "Published"), //$NON-NLS-1$
-		SUS("SUS", "Suspended"), //$NON-NLS-1$
-		DEL("DEL", "Deleted"); //$NON-NLS-1$
 
-	private final String label;
+	DRA("DRA", "Draft"), //$NON-NLS-1$
+	PUB("PUB", "Published"), //$NON-NLS-1$
+	SUS("SUS", "Suspended"), //$NON-NLS-1$
+	DEL("DEL", "Deleted"); //$NON-NLS-1$
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different when the value in the GraphQL schema is a Java reserved keyword.
 	private final String graphQlValue;
+	private final String label;
 
 	private StatusKind(String graphQlValue, String label) {
 		this.graphQlValue = graphQlValue;
@@ -59,7 +59,7 @@ public enum StatusKind {
 	 * Returns the label for this constant.
 	 * @return the label
 	 */
-	public String getLabel() {
+	public String label() {
 		return this.label;
 	}
 

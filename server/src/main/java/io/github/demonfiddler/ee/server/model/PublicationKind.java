@@ -30,70 +30,72 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
 @GraphQLEnumType("PublicationKind")
 public enum PublicationKind {
 
-		ABST("ABST"), //$NON-NLS-1$
-		ADVS("ADVS"), //$NON-NLS-1$
-		AGGR("AGGR"), //$NON-NLS-1$
-		ANCIENT("ANCIENT"), //$NON-NLS-1$
-		ART("ART"), //$NON-NLS-1$
-		BILL("BILL"), //$NON-NLS-1$
-		BLOG("BLOG"), //$NON-NLS-1$
-		BOOK("BOOK"), //$NON-NLS-1$
-		CASE("CASE"), //$NON-NLS-1$
-		CHAP("CHAP"), //$NON-NLS-1$
-		CHART("CHART"), //$NON-NLS-1$
-		CLSWK("CLSWK"), //$NON-NLS-1$
-		COMP("COMP"), //$NON-NLS-1$
-		CONF("CONF"), //$NON-NLS-1$
-		CPAPER("CPAPER"), //$NON-NLS-1$
-		CTLG("CTLG"), //$NON-NLS-1$
-		DATA("DATA"), //$NON-NLS-1$
-		DBASE("DBASE"), //$NON-NLS-1$
-		DICT("DICT"), //$NON-NLS-1$
-		EBOOK("EBOOK"), //$NON-NLS-1$
-		ECHAP("ECHAP"), //$NON-NLS-1$
-		EDBOOK("EDBOOK"), //$NON-NLS-1$
-		EJOUR("EJOUR"), //$NON-NLS-1$
-		ELEC("ELEC"), //$NON-NLS-1$
-		ENCYC("ENCYC"), //$NON-NLS-1$
-		EQUA("EQUA"), //$NON-NLS-1$
-		FIGURE("FIGURE"), //$NON-NLS-1$
-		GEN("GEN"), //$NON-NLS-1$
-		GOVDOC("GOVDOC"), //$NON-NLS-1$
-		GRANT("GRANT"), //$NON-NLS-1$
-		HEAR("HEAR"), //$NON-NLS-1$
-		ICOMM("ICOMM"), //$NON-NLS-1$
-		INPR("INPR"), //$NON-NLS-1$
-		JFULL("JFULL"), //$NON-NLS-1$
-		JOUR("JOUR"), //$NON-NLS-1$
-		LEGAL("LEGAL"), //$NON-NLS-1$
-		MANSCPT("MANSCPT"), //$NON-NLS-1$
-		MAP("MAP"), //$NON-NLS-1$
-		MGZN("MGZN"), //$NON-NLS-1$
-		MPCT("MPCT"), //$NON-NLS-1$
-		MULTI("MULTI"), //$NON-NLS-1$
-		MUSIC("MUSIC"), //$NON-NLS-1$
-		NEWS("NEWS"), //$NON-NLS-1$
-		PAMP("PAMP"), //$NON-NLS-1$
-		PAT("PAT"), //$NON-NLS-1$
-		PCOMM("PCOMM"), //$NON-NLS-1$
-		RPRT("RPRT"), //$NON-NLS-1$
-		SER("SER"), //$NON-NLS-1$
-		SLIDE("SLIDE"), //$NON-NLS-1$
-		SOUND("SOUND"), //$NON-NLS-1$
-		STAND("STAND"), //$NON-NLS-1$
-		STAT("STAT"), //$NON-NLS-1$
-		THES("THES"), //$NON-NLS-1$
-		UNBILL("UNBILL"), //$NON-NLS-1$
-		UNPB("UNPB"), //$NON-NLS-1$
-		VIDEO("VIDEO"), //$NON-NLS-1$
-		WEB("WEB"); //$NON-NLS-1$
+	ABST("ABST", "Abstract"), //$NON-NLS-1$
+	ADVS("ADVS", "Audiovisual material"), //$NON-NLS-1$
+	AGGR("AGGR", "Aggregated database"), //$NON-NLS-1$
+	ANCIENT("ANCIENT", "Ancient text"), //$NON-NLS-1$
+	ART("ART", "Art work"), //$NON-NLS-1$
+	BILL("BILL", "Bill/resolution"), //$NON-NLS-1$
+	BLOG("BLOG", "Blog"), //$NON-NLS-1$
+	BOOK("BOOK", "Book, whole"), //$NON-NLS-1$
+	CASE("CASE", "Case"), //$NON-NLS-1$
+	CHAP("CHAP", "Book section"), //$NON-NLS-1$
+	CHART("CHART", "Chart"), //$NON-NLS-1$
+	CLSWK("CLSWK", "Classical work"), //$NON-NLS-1$
+	COMP("COMP", "Computer program"), //$NON-NLS-1$
+	CONF("CONF", "Conference proceeding"), //$NON-NLS-1$
+	CPAPER("CPAPER", "Conference paper"), //$NON-NLS-1$
+	CTLG("CTLG", "Catalogue"), //$NON-NLS-1$
+	DATA("DATA", "Dataset"), //$NON-NLS-1$
+	DBASE("DBASE", "Online dtaabase"), //$NON-NLS-1$
+	DICT("DICT", "Dictionary"), //$NON-NLS-1$
+	EBOOK("EBOOK", "Electronic book"), //$NON-NLS-1$
+	ECHAP("ECHAP", "Electronic book section"), //$NON-NLS-1$
+	EDBOOK("EDBOOK", "Edited book"), //$NON-NLS-1$
+	EJOUR("EJOUR", "Electronic article"), //$NON-NLS-1$
+	ELEC("ELEC", "Electronic citation"), //$NON-NLS-1$
+	ENCYC("ENCYC", "Encyclopaedia article"), //$NON-NLS-1$
+	EQUA("EQUA", "Equation"), //$NON-NLS-1$
+	FIGURE("FIGURE", "Figure"), //$NON-NLS-1$
+	GEN("GEN", "Generic"), //$NON-NLS-1$
+	GOVDOC("GOVDOC", "Government document"), //$NON-NLS-1$
+	GRANT("GRANT", "Grant"), //$NON-NLS-1$
+	HEAR("HEAR", "Hearing"), //$NON-NLS-1$
+	ICOMM("ICOMM", "Internet communication"), //$NON-NLS-1$
+	INPR("INPR", "In Press"), //$NON-NLS-1$
+	JFULL("JFULL", "Journal (full)"), //$NON-NLS-1$
+	JOUR("JOUR", "Journal"), //$NON-NLS-1$
+	LEGAL("LEGAL", "Legal rule or regulation"), //$NON-NLS-1$
+	MANSCPT("MANSCPT", "Manuscript"), //$NON-NLS-1$
+	MAP("MAP", "Map"), //$NON-NLS-1$
+	MGZN("MGZN", "Magazine article"), //$NON-NLS-1$
+	MPCT("MPCT", "Motion picture"), //$NON-NLS-1$
+	MULTI("MULTI", "Online multimedia"), //$NON-NLS-1$
+	MUSIC("MUSIC", "Music score"), //$NON-NLS-1$
+	NEWS("NEWS", "Newspaper"), //$NON-NLS-1$
+	PAMP("PAMP", "Pamphlet"), //$NON-NLS-1$
+	PAT("PAT", "Patent"), //$NON-NLS-1$
+	PCOMM("PCOMM", "Personal communication"), //$NON-NLS-1$
+	RPRT("RPRT", "Report"), //$NON-NLS-1$
+	SER("SER", "Serial publication"), //$NON-NLS-1$
+	SLIDE("SLIDE", "Slide presentation"), //$NON-NLS-1$
+	SOUND("SOUND", "Sound recording"), //$NON-NLS-1$
+	STAND("STAND", "Standard"), //$NON-NLS-1$
+	STAT("STAT", "Statute"), //$NON-NLS-1$
+	THES("THES", "Thesis/dissertation"), //$NON-NLS-1$
+	UNBILL("UNBILL", "Unenacted bill/resolution"), //$NON-NLS-1$
+	UNPB("UNPB", "Unpublished work"), //$NON-NLS-1$
+	VIDEO("VIDEO", "Video recording"), //$NON-NLS-1$
+	WEB("WEB", "Web page"); //$NON-NLS-1$
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different when the value in the GraphQL schema is a Java reserved keyword.
 	private final String graphQlValue;
+	private final String label;
 
-	private PublicationKind(String graphQlValue) {
+	private PublicationKind(String graphQlValue, String label) {
 		this.graphQlValue = graphQlValue;
+		this.label = label;
 	}
 
 	/**
@@ -104,6 +106,14 @@ public enum PublicationKind {
 	 */
 	public String graphQlValue() {
 		return this.graphQlValue;
+	}
+
+	/**
+	 * Returns the label for this constant.
+	 * @return the label
+	 */
+	public String label() {
+		return this.label;
 	}
 
 	/**

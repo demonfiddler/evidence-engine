@@ -17,36 +17,39 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-package io.github.demonfiddler.ee.server.util;
+package io.github.demonfiddler.ee.client.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Profile;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 /**
  * A bean to initialise the database for integration testing. It creates the database and tables then populates the lookup tables.
- */
+*/
 @Component
-@Profile("integration-test")
 public class StartupListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StartupListener.class);
 
+    /** Initialises access to the Spring ApplicationContext from static calling contexts. */
+    @Autowired
+    @SuppressWarnings("unused")
+    private SpringContext springContext;
     private boolean contextInitialised;
 
     @EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        LOGGER.info("Integration test context initialised");
+        LOGGER.info("Client context initialised");
         contextInitialised = true;
     }
 
     /**
      * Indicates whether the Spring context has been completely initialised.
-     * @return {@code true} if the context is initialised.
-     */
+    * @return {@code true} if the context is initialised.
+    */
     public boolean contextInitialised() {
         return contextInitialised;
     }

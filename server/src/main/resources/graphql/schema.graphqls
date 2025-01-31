@@ -1295,7 +1295,7 @@ input TopicInput {
 
 "Parameters to filter a topic query."
 input TopicQueryFilter {
-    "The parent topic identifier. Specify to get sub-topics, leave blank for top-level topics."
+    "The parent topic identifier. Specify to get sub-topics, use -1 for top-level topics."
     parentId: Long
     "Free text search string."
     text: String
@@ -1342,46 +1342,41 @@ type TopicRef implements IBaseEntity {
     # NOTE: only necessary because graphql-java-generator emits code with errors (missing ctor) if there is no ID field.
     "The unique topic ref identifier."
     id: ID!
-    # "The unique identifier of the associated topic."
-    # topicId: Long!
-    "The associated topic."
-    topic: Topic
+    "The unique identifier of the associated topic."
+    topicId: Long!
+    "The unique identifier of the associated entity record."
+    entityId: Long!
     "The associated entity kind."
     entityKind(
         "How to format the result. SHORT format is per ```EntityKind``` enum."
         format: FormatKind = LONG
     ): String
-    # TODO: consider whether to return the identifier or the entity record.
-    "The unique identifier of the associated record."
-    entityId: Long!
-    "The associated record."
-    entity: ITopicalEntity!
     "The locations within the associated record, one per line."
-    locations: [URI!]
+    locations: String
 }
 
 "An input for creating or updating an association between a topic and an entity record."
 input TopicRefInput {
     "The unique topic identifier. Only necessary because graphql-java-generator emits code with errors (missing ctor) if there is no ID field."
-    id: ID!
+    id: ID
     "The unique identifier of the associated topic."
     topicId: Long!
+    "The unique identifier of the associated entity record."
+    entityId: Long!
     "The associated entity kind."
     entityKind: EntityKind!
-    "The unique identifier of the associated entity."
-    entityId: Long!
     "The locations within the associated record, one per line."
-    locations: [URI!]
+    locations: String
 }
 
 "Parameters to filter a topic reference query."
 input TopicRefQueryFilter {
     "The unique identifier of the associated topic."
     topicId: Long
-    "The associated entity kind."
-    entityKind: EntityKind!
     "The unique identifier of the associated entity."
     entityId: Long
+    "The associated entity kind."
+    entityKind: EntityKind!
     "Free text search string."
     text: String
     "Whether to search ```text``` in advanced (boolean) mode."
@@ -1626,14 +1621,17 @@ type Query {
     "Returns a topic given its identifier."
     topicById(id: ID!): Topic
 
+    "Returns a paged list of topic references."
     topicRefs(
         "Filters results."
-        filter: TopicRefQueryFilter,
+        filter: TopicRefQueryFilter!,
         "Sorts and paginates results"
         pageSort: PageableInput
     ): TopicRefPage
     "Returns a topic reference given its identifier."
-    topicRefById(id: ID!): TopicRef
+    topicRefById(id: ID!, entityKind: EntityKind!): TopicRef
+    "Returns a topic reference given its topic and entity identifiers."
+    topicRefByEntityId(topicId: ID!, entityId: ID!, entityKind: EntityKind!): TopicRef
 
     "Returns a paged list of users."
     users(
@@ -1707,7 +1705,9 @@ type Mutation {
     deleteTopic(topicId: ID!): Topic
 
     "Adds a new topic reference."
-    addTopicRef(topicRef: TopicRefInput!): Boolean
+    addTopicRef(topicRef: TopicRefInput!): TopicRef
+    "Updates an existing topic reference."
+    updateTopicRef(topicRef: TopicRefInput!): TopicRef
     "Removes a topic reference."
     removeTopicRef(topicRef: TopicRefInput!): Boolean
 

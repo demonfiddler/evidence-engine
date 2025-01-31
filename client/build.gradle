@@ -45,8 +45,8 @@ dependencies {
 	testImplementation 'org.springframework.graphql:spring-graphql-test'
 	testImplementation 'org.junit.platform:junit-platform-suite'
 	testImplementation 'com.google.truth:truth:1.4.4'
-	testImplementation 'org.hamcrest:hamcrest:3.0'
-	testImplementation 'org.assertj:assertj-core:3.26.3'
+	// testImplementation 'org.hamcrest:hamcrest:3.0'
+	// testImplementation 'org.assertj:assertj-core:3.26.3'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -66,21 +66,24 @@ java {
 }
 
 compileJava {
-    options.compilerArgs.add("-g")
-    options.compilerArgs.add("-parameters")
+    options.compilerArgs.add('-g')
+    options.compilerArgs.add('-parameters')
 }
 
 ext {
-	set('snippetsDir', file("build/generated-snippets"))
-	// set('springBootAdminVersion', "3.3.4")
+	set('snippetsDir', file('build/generated-snippets'))
+	// set('springBootAdminVersion', '3.3.4')
 }
 
 tasks.named('test') {
 	dependsOn project(':server').tasks.named('bootIntegrationTestServerBG')
 	outputs.dir snippetsDir
 	useJUnitPlatform()
+	systemProperty('junit.jupiter.testclass.order.default', 'org.junit.jupiter.api.ClassOrderer$OrderAnnotation')
 	finalizedBy project(':server').tasks.named('terminateIntegrationTestServer')
 }
 
 // Uncomment to enable GraphQL client code generation (NOTE: the generated code has been heavily modified).
-//evaluate(new File("codegen.gradle"))
+// N.B. when enabling this line, also enable the com.graphql-java-generator.graphql-gradle-plugin3 plugin and disable
+// the 'test' task's dependsOn and finalizedBy settings.
+// apply from: 'codegen.gradle'

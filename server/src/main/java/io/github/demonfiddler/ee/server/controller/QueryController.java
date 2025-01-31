@@ -31,6 +31,7 @@ import com.graphql_java_generator.server.util.GraphqlServerUtils;
 
 import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateQuery;
+import io.github.demonfiddler.ee.server.model.EntityKind;
 import io.github.demonfiddler.ee.server.model.LogQueryFilter;
 import io.github.demonfiddler.ee.server.model.PageableInput;
 import io.github.demonfiddler.ee.server.model.TopicQueryFilter;
@@ -555,8 +556,18 @@ public class QueryController {
 	 * <code>@SchemaMapping</code> annotation
 	 */
 	@SchemaMapping(field = "topicRefById")
-	public Object topicRefById(DataFetchingEnvironment dataFetchingEnvironment, @Argument("id") Long id) {
-		return this.dataFetchersDelegateQuery.topicRefById(dataFetchingEnvironment, id);
+	public Object topicRefById(DataFetchingEnvironment dataFetchingEnvironment, @Argument("id") Long id,
+		@Argument("entityKind") EntityKind entityKind) {
+
+		return this.dataFetchersDelegateQuery.topicRefById(dataFetchingEnvironment, id, entityKind);
+	}
+
+	/** Returns a topic reference given its topic and entity identifiers. */
+	@SchemaMapping(field = "topicRefByEntityId")
+	public Object topicRefByEntityId(DataFetchingEnvironment dataFetchingEnvironment, @Argument("topicId") Long topicId,
+		@Argument("entityId") Long entityId, @Argument("entityKind") EntityKind entityKind) {
+
+		return this.dataFetchersDelegateQuery.topicRefByEntityId(dataFetchingEnvironment, topicId, entityId, entityKind);
 	}
 
 	/**

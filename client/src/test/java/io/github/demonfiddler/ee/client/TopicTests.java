@@ -35,17 +35,23 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.condition.EnabledIf;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.graphql_java_generator.exception.GraphQLRequestExecutionException;
 import com.graphql_java_generator.exception.GraphQLRequestPreparationException;
 
-@SpringBootTest(classes = GraphQLClientMain.class)
-@TestMethodOrder(OrderAnnotation.class)
-class TopicTests extends TrackedEntityTests<Topic> {
+import io.github.demonfiddler.ee.client.util.QueryExecutor;
+import io.github.demonfiddler.ee.client.util.SpringContext;
 
-	private static Topic EXPECTED_PARENT;
-	private static Topic EXPECTED_CHILD;
+@SpringBootTest(classes = GraphQLClientMain.class)
+@Order(8)
+@TestMethodOrder(OrderAnnotation.class)
+class TopicTests extends AbstractTrackedEntityTests<Topic> {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(TopicTests.class);
+
 	private static final OffsetDateTime[] LOG_DATES_PARENT = new OffsetDateTime[3];
 	private static final OffsetDateTime[] LOG_DATES_CHILD = new OffsetDateTime[3];
 	private static final String RESPONSE_SPEC = //
@@ -133,14 +139,31 @@ class TopicTests extends TrackedEntityTests<Topic> {
 			}
 		}
 		""";
-	private static List<Topic> TOPICS;
+
+	static Topic parentTopic;
+	static Topic childTopic;
+	static List<Topic> topics;
 
 	static boolean hasExpectedTopic() {
-		return EXPECTED_PARENT != null && EXPECTED_CHILD != null;
+		return parentTopic != null && childTopic != null;
 	}
 	
 	static boolean hasExpectedTopics() {
-		return TOPICS != null;
+		return topics != null;
+	}
+
+	static void ensureExpectedTopics() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+		if (topics == null) {
+			QueryExecutor queryExecutor = SpringContext.getApplicationContext().getBean(QueryExecutor.class);
+			String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+			List<Topic> content = queryExecutor.topics(responseSpec, null, null).getContent();
+			if (content.isEmpty()) {
+				LOGGER.error("Failed to initialise topics list from server");
+			} else {
+				topics = content;
+				LOGGER.debug("Initialised topics list from server");
+			}
+		}
 	}
 
 	@Test
@@ -148,8 +171,7 @@ class TopicTests extends TrackedEntityTests<Topic> {
 	void createTopic() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException, //
 		MalformedURLException {
 
-		EXPECTED_PARENT = null;
-		EXPECTED_CHILD = null;
+		parentTopic = childTopic = null;
 
 		TopicInput parentInput = TopicInput.builder() //
 			.withLabel("Parent label") //
@@ -159,46 +181,45 @@ class TopicTests extends TrackedEntityTests<Topic> {
 		Topic actualParent = mutationExecutor.createTopic(RESPONSE_SPEC, parentInput);
 
 		LOG_DATES[0] = LOG_DATES_PARENT[0] = actualParent.getCreated();
-		checkTopic(actualParent, StatusKind.DRA.getLabel(), earliestCreated, null, parentInput.getLabel(),
+		checkTopic(actualParent, StatusKind.DRA.label(), earliestCreated, null, parentInput.getLabel(),
 			parentInput.getDescription(), parentInput.getParentId(), Collections.emptyList(), CRE);
 
 		TopicInput childInput = TopicInput.builder() //
 			.withLabel("Child label") //
 			.withDescription("Child description") //
-			.withParentId(actualParent.getId()) //
+			.withParentId(null) // initially create child as a top-level topic
 			.build();
 		earliestCreated = OffsetDateTime.now();
 		Topic actualChild = mutationExecutor.createTopic(RESPONSE_SPEC, childInput);
 
 		LOG_DATES[0] = LOG_DATES_CHILD[0] = actualChild.getCreated();
-		checkTopic(actualChild, StatusKind.DRA.getLabel(), earliestCreated, null, childInput.getLabel(),
+		checkTopic(actualChild, StatusKind.DRA.label(), earliestCreated, null, childInput.getLabel(),
 			childInput.getDescription(), childInput.getParentId(), Collections.emptyList(), CRE);
 
-		EXPECTED_PARENT = actualParent;
-		EXPECTED_CHILD = actualChild;
+		parentTopic = actualParent;
+		childTopic = actualChild;
 	}
 
 	@Test
 	@Order(2)
 	@EnabledIf("io.github.demonfiddler.ee.client.TopicTests#hasExpectedTopic")
 	void readTopic() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		Topic expectedParent = EXPECTED_PARENT;
-		Topic expectedChild = EXPECTED_CHILD;
-		EXPECTED_PARENT = null;
-		EXPECTED_CHILD = null;
+		Topic expectedParent = parentTopic;
+		Topic expectedChild = childTopic;
+		parentTopic = childTopic = null;
 
 		Topic actualParent = queryExecutor.topicById(RESPONSE_SPEC, expectedParent.getId());
 		LOG_DATES[0] = LOG_DATES_PARENT[0];
 		checkTopic(actualParent, expectedParent.getStatus(), expectedParent.getCreated(), expectedParent.getUpdated(),
 			expectedParent.getLabel(), expectedParent.getDescription(), getParentId(expectedParent),
-			List.of(expectedChild.getId()), CRE);
+			Collections.emptyList(), CRE);
 
 		Topic actualChild = queryExecutor.topicById(RESPONSE_SPEC, expectedChild.getId());
 		LOG_DATES[0] = LOG_DATES_CHILD[0];
 		checkTopic(actualChild, expectedChild, CRE);
 
-		EXPECTED_PARENT = actualParent;
-		EXPECTED_CHILD = actualChild;
+		parentTopic = actualParent;
+		childTopic = actualChild;
 	}
 
 	@Test
@@ -207,16 +228,15 @@ class TopicTests extends TrackedEntityTests<Topic> {
 	void updateTopic() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException, //
 		MalformedURLException {
 
-		Topic expectedParent = EXPECTED_PARENT;
-		Topic expectedChild = EXPECTED_CHILD;
-		EXPECTED_PARENT = null;
-		EXPECTED_CHILD = null;
+		Topic expectedParent = parentTopic;
+		Topic expectedChild = childTopic;
+		parentTopic = childTopic = null;
 
 		TopicInput childInput = TopicInput.builder() //
 			.withId(expectedChild.getId()) //
 			.withLabel("Updated child label") //
 			.withDescription("Updated child description") //
-			.withParentId(null) // detach child from parent
+			.withParentId(expectedParent.getId()) // Make child a sub-topic of parent
 			.build();
 		OffsetDateTime earliestUpdated = OffsetDateTime.now();
 		Topic actualChild = mutationExecutor.updateTopic(RESPONSE_SPEC, childInput);
@@ -238,21 +258,20 @@ class TopicTests extends TrackedEntityTests<Topic> {
 		LOG_DATES[0] = LOG_DATES_PARENT[0];
 		LOG_DATES[1] = LOG_DATES_PARENT[1] = actualParent.getUpdated();
 		checkTopic(actualParent, expectedParent.getStatus(), expectedParent.getCreated(), earliestUpdated,
-			parentInput.getLabel(), parentInput.getDescription(), parentInput.getParentId(), Collections.emptyList(),
-			CRE, UPD);
+			parentInput.getLabel(), parentInput.getDescription(), parentInput.getParentId(),
+			List.of(expectedChild.getId()), CRE, UPD);
 
-		EXPECTED_PARENT = actualParent;
-		EXPECTED_CHILD = actualChild;
+		parentTopic = actualParent;
+		childTopic = actualChild;
 	}
 
 	@Test
 	@Order(4)
 	@EnabledIf("io.github.demonfiddler.ee.client.TopicTests#hasExpectedTopic")
 	void deleteTopic() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		Topic expectedParent = EXPECTED_PARENT;
-		Topic expectedChild = EXPECTED_CHILD;
-		EXPECTED_PARENT = null;
-		EXPECTED_CHILD = null;
+		Topic expectedParent = parentTopic;
+		Topic expectedChild = childTopic;
+		parentTopic = childTopic = null;
 
 		OffsetDateTime earliestUpdated = OffsetDateTime.now();
 		Topic actualParent = mutationExecutor.deleteTopic(RESPONSE_SPEC, expectedParent.getId());
@@ -260,7 +279,7 @@ class TopicTests extends TrackedEntityTests<Topic> {
 		LOG_DATES[0] = LOG_DATES_PARENT[0];
 		LOG_DATES[1] = LOG_DATES_PARENT[1];
 		LOG_DATES[2] = LOG_DATES_PARENT[2] = actualParent.getUpdated();
-		checkTopic(actualParent, StatusKind.DEL.getLabel(), expectedParent.getCreated(), earliestUpdated,
+		checkTopic(actualParent, StatusKind.DEL.label(), expectedParent.getCreated(), earliestUpdated,
 			expectedParent.getLabel(), expectedParent.getDescription(), getParentId(expectedParent),
 			getChildIds(expectedParent), CRE, UPD, DEL);
 
@@ -270,12 +289,12 @@ class TopicTests extends TrackedEntityTests<Topic> {
 		LOG_DATES[0] = LOG_DATES_CHILD[0];
 		LOG_DATES[1] = LOG_DATES_CHILD[1];
 		LOG_DATES[2] = LOG_DATES_CHILD[2] = actualChild.getUpdated();
-		checkTopic(actualChild, StatusKind.DEL.getLabel(), expectedChild.getCreated(), earliestUpdated,
+		checkTopic(actualChild, StatusKind.DEL.label(), expectedChild.getCreated(), earliestUpdated,
 			expectedChild.getLabel(), expectedChild.getDescription(), getParentId(expectedChild),
 			getChildIds(expectedChild), CRE, UPD, DEL);
 
-		EXPECTED_PARENT = actualParent;
-		EXPECTED_CHILD = actualChild;
+		parentTopic = actualParent;
+		childTopic = actualChild;
 	}
 
 	@Test
@@ -285,21 +304,32 @@ class TopicTests extends TrackedEntityTests<Topic> {
 		// Create another eight topics and store them all in an array together with the previously created one.
 		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted("");
 		final int topicCount = 8;
-		List<Topic> topics = new ArrayList<>(topicCount + 1);
+		List<Topic> topics = new ArrayList<>(topicCount + 2);
 		Topic topic0 = new Topic();
-		topic0.setId(EXPECTED_PARENT.getId());
-		topic0.setStatus(EXPECTED_PARENT.getStatus());
-		topic0.setLabel(EXPECTED_PARENT.getLabel());
-		topic0.setDescription(EXPECTED_PARENT.getDescription());
-		topic0.set__typename(EXPECTED_PARENT.get__typename());
+		topic0.setId(parentTopic.getId());
+		topic0.setStatus(parentTopic.getStatus());
+		topic0.setLabel(parentTopic.getLabel());
+		topic0.setDescription(parentTopic.getDescription());
+		topic0.set__typename(parentTopic.get__typename());
 		Topic topic1 = new Topic();
-		topic1.setId(EXPECTED_CHILD.getId());
-		topic1.setStatus(EXPECTED_CHILD.getStatus());
-		topic1.setLabel(EXPECTED_CHILD.getLabel());
-		topic1.setDescription(EXPECTED_CHILD.getDescription());
-		topic1.set__typename(EXPECTED_CHILD.get__typename());
+		topic1.setId(childTopic.getId());
+		topic1.setStatus(childTopic.getStatus());
+		topic1.setLabel(childTopic.getLabel());
+		topic1.setDescription(childTopic.getDescription());
+		topic1.set__typename(childTopic.get__typename());
 		topics.add(topic0);
 		topics.add(topic1);
+		int[] parentIndexes = {
+			0,
+			0, // TOPIC ONE
+			1, //   Topic two
+			2, //     TOPIC THREE
+			3, //       Topic four
+			0, // TOPIC FIVE
+			5, //   Topic six
+			5, //   TOPIC SEVEN
+			5, //   Topic eight
+		};
 		String[] numbers = {null, "one", "two", "three", "four", "five", "six", "seven", "eight"};
 		for (int i = 1; i <= topicCount; i++) {
 			String label = "Topic " + numbers[i];
@@ -312,10 +342,17 @@ class TopicTests extends TrackedEntityTests<Topic> {
 				.withLabel(label) //
 				.withDescription(description) //
 				.build();
+			if (parentIndexes[i] > 0) {
+				Long parentId = topics.get(parentIndexes[i] + 1).getId();
+				input.setParentId(parentId);
+			}
 			topics.add(mutationExecutor.createTopic(responseSpec, input));
 		}
-		TOPICS = topics;
+
+		TopicTests.topics = topics;
 	}
+
+	// TODO: recursive query
 
 	@Test
 	@Order(6)
@@ -324,7 +361,7 @@ class TopicTests extends TrackedEntityTests<Topic> {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		TopicPage actuals = queryExecutor.topics(responseSpec, null, null);
 
-		checkPage(actuals, TOPICS.size(), 1, TOPICS.size(), 0, false, false, true, true, TOPICS, true);
+		checkPage(actuals, topics.size(), 1, topics.size(), 0, false, false, true, true, topics, true);
 	}
 
 	@Test
@@ -336,7 +373,7 @@ class TopicTests extends TrackedEntityTests<Topic> {
 			.withText("filtered") //
 			.build();
 
-		List<Topic> expected = subList(TOPICS, 6, 8, 9);
+		List<Topic> expected = subList(topics, 6, 8, 9);
 		TopicPage actuals = queryExecutor.topics(responseSpec, filter, null);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -346,7 +383,14 @@ class TopicTests extends TrackedEntityTests<Topic> {
 
 		filter.setStatus(List.of(StatusKind.DEL));
 		filter.setText(null);
-		expected = subList(TOPICS, 0, 1);
+		expected = subList(topics, 0, 1);
+		actuals = queryExecutor.topics(responseSpec, filter, null);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		filter.setStatus(List.of(StatusKind.DEL));
+		filter.setParentId(-1L);
+		filter.setText(null);
+		expected = subList(topics, 0);
 		actuals = queryExecutor.topics(responseSpec, filter, null);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
@@ -366,7 +410,7 @@ class TopicTests extends TrackedEntityTests<Topic> {
 		// "TOPIC FIVE", "TOPIC ONE", "TOPIC SEVEN", "TOPIC THREE", "Topic eight", "Topic four", "Topic six",
 		// "Topic two", "Updated child label", "Updated parent label"
 		// 6, 2, 8, 4, 9, 5, 7, 3, 1, 0
-		List<Topic> expected = subList(TOPICS, 6, 2, 8, 4, 9, 5, 7, 3, 1, 0);
+		List<Topic> expected = subList(topics, 6, 2, 8, 4, 9, 5, 7, 3, 1, 0);
 		TopicPage actuals = queryExecutor.topics(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -396,7 +440,7 @@ class TopicTests extends TrackedEntityTests<Topic> {
 		// "Topic eight", "TOPIC FIVE", "Topic four", "TOPIC ONE", "TOPIC SEVEN", "Topic six", "TOPIC THREE",
 		// "Topic two", "Updated child label", "Updated parent label"
 		// 9, 6, 5, 2, 8, 7, 4, 3, 1, 0
-		List<Topic> expected = subList(TOPICS, 9, 6, 5, 2, 8, 7, 4, 3, 1, 0);
+		List<Topic> expected = subList(topics, 9, 6, 5, 2, 8, 7, 4, 3, 1, 0);
 		TopicPage actuals = queryExecutor.topics(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -431,7 +475,7 @@ class TopicTests extends TrackedEntityTests<Topic> {
 		// "Notes #8 (filtered)"/"Topic eight", "Updated child description"/"Updated child label",
 		// "Updated parent description"/"Updated parent label"
 		// 4, 7, 2, 3, 5, 6, 8, 9, 1, 0
-		List<Topic> expected = subList(TOPICS, 4, 7, 2, 3, 5, 6, 8, 9, 1, 0);
+		List<Topic> expected = subList(topics, 4, 7, 2, 3, 5, 6, 8, 9, 1, 0);
 		TopicPage actuals = queryExecutor.topics(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -440,7 +484,7 @@ class TopicTests extends TrackedEntityTests<Topic> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		labelOrder.setDirection(DirectionKind.DESC);
-		expected = subList(TOPICS, 7, 4, 2, 3, 5, 6, 8, 9, 1, 0);
+		expected = subList(topics, 7, 4, 2, 3, 5, 6, 8, 9, 1, 0);
 		actuals = queryExecutor.topics(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -451,7 +495,7 @@ class TopicTests extends TrackedEntityTests<Topic> {
 		// 2, 3, 5, 6, 8, 9, 1, 0, 4, 7
 		descriptionOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		labelOrder.setDirection(null);
-		expected = subList(TOPICS, 2, 3, 5, 6, 8, 9, 1, 0, 4, 7);
+		expected = subList(topics, 2, 3, 5, 6, 8, 9, 1, 0, 4, 7);
 		actuals = queryExecutor.topics(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -460,7 +504,7 @@ class TopicTests extends TrackedEntityTests<Topic> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		labelOrder.setDirection(DirectionKind.DESC);
-		expected = subList(TOPICS, 2, 3, 5, 6, 8, 9, 1, 0, 7, 4);
+		expected = subList(topics, 2, 3, 5, 6, 8, 9, 1, 0, 7, 4);
 		actuals = queryExecutor.topics(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
@@ -482,7 +526,7 @@ class TopicTests extends TrackedEntityTests<Topic> {
 
 		// "TOPIC FIVE", "TOPIC SEVEN", "Topic eight"
 		// 6, 8, 9
-		List<Topic> expected = subList(TOPICS, 6, 8, 9);
+		List<Topic> expected = subList(topics, 6, 8, 9);
 		TopicPage actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 1, 3, 0, false, false, true, true, expected, true);
 
@@ -519,7 +563,7 @@ class TopicTests extends TrackedEntityTests<Topic> {
 		// "Notes #4"/"Topic four", "Notes #5 (filtered)"/"TOPIC FIVE", "Notes #7 (filtered)"/"TOPIC SEVEN",
 		// "Notes #8 (filtered)"/"Topic eight"
 		// 4, 7, 2, 3, 5, 6, 8, 9
-		List<Topic> expected = subList(TOPICS, 4, 7, 2, 3, 5, 6, 8, 9);
+		List<Topic> expected = subList(topics, 4, 7, 2, 3, 5, 6, 8, 9);
 		TopicPage actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -528,7 +572,7 @@ class TopicTests extends TrackedEntityTests<Topic> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		labelOrder.setDirection(DirectionKind.DESC);
-		expected = subList(TOPICS, 7, 4, 2, 3, 5, 6, 8, 9);
+		expected = subList(topics, 7, 4, 2, 3, 5, 6, 8, 9);
 		actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -537,12 +581,12 @@ class TopicTests extends TrackedEntityTests<Topic> {
 		// 2, 3, 5, 6, 8, 9, 4, 7
 		descriptionOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		labelOrder.setDirection(DirectionKind.ASC);
-		expected = subList(TOPICS, 2, 3, 5, 6, 8, 9, 4, 7);
+		expected = subList(topics, 2, 3, 5, 6, 8, 9, 4, 7);
 		actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		labelOrder.setDirection(DirectionKind.DESC);
-		expected = subList(TOPICS, 2, 3, 5, 6, 8, 9, 7, 4);
+		expected = subList(topics, 2, 3, 5, 6, 8, 9, 7, 4);
 		actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
@@ -558,19 +602,19 @@ class TopicTests extends TrackedEntityTests<Topic> {
 			.withPageSize(4) //
 			.build();
 
-		List<Topic> expected = TOPICS.subList(0, 4);
+		List<Topic> expected = topics.subList(0, 4);
 		TopicPage actuals = queryExecutor.topics(responseSpec, null, pageSort);
-		checkPage(actuals, TOPICS.size(), 3, 4, 0, false, true, true, false, expected, true);
+		checkPage(actuals, topics.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = TOPICS.subList(4, 8);
+		expected = topics.subList(4, 8);
 		actuals = queryExecutor.topics(responseSpec, null, pageSort);
-		checkPage(actuals, TOPICS.size(), 3, 4, 1, true, true, false, false, expected, true);
+		checkPage(actuals, topics.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = TOPICS.subList(8, 10);
+		expected = topics.subList(8, 10);
 		actuals = queryExecutor.topics(responseSpec, null, pageSort);
-		checkPage(actuals, TOPICS.size(), 3, 4, 2, true, false, false, true, expected, true);
+		checkPage(actuals, topics.size(), 3, 4, 2, true, false, false, true, expected, true);
 	}	
 
 	@Test
@@ -586,12 +630,12 @@ class TopicTests extends TrackedEntityTests<Topic> {
 			.withPageSize(2) //
 			.build();
 
-		List<Topic> expected = subList(TOPICS, 6, 8);
+		List<Topic> expected = subList(topics, 6, 8);
 		TopicPage actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(TOPICS,9);
+		expected = subList(topics,9);
 		actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 	}
@@ -615,51 +659,51 @@ class TopicTests extends TrackedEntityTests<Topic> {
 		// "TOPIC FIVE", "TOPIC ONE", "TOPIC SEVEN", "TOPIC THREE", "Topic eight", "Topic four", "Topic six",
 		// "Topic two", "Updated child label", "Updated parent label"
 		// 6, 2, 8, 4, 9, 5, 7, 3, 1, 0
-		List<Topic> expected = subList(TOPICS, 6, 2, 8, 4);
+		List<Topic> expected = subList(topics, 6, 2, 8, 4);
 		TopicPage actuals = queryExecutor.topics(responseSpec, null, pageSort);
-		checkPage(actuals, TOPICS.size(), 3, 4, 0, false, true, true, false, expected, true);
+		checkPage(actuals, topics.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(TOPICS, 9, 5, 7, 3);
+		expected = subList(topics, 9, 5, 7, 3);
 		actuals = queryExecutor.topics(responseSpec, null, pageSort);
-		checkPage(actuals, TOPICS.size(), 3, 4, 1, true, true, false, false, expected, true);
+		checkPage(actuals, topics.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(TOPICS, 1, 0);
+		expected = subList(topics, 1, 0);
 		actuals = queryExecutor.topics(responseSpec, null, pageSort);
-		checkPage(actuals, TOPICS.size(), 3, 4, 2, true, false, false, true, expected, true);
+		checkPage(actuals, topics.size(), 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(TOPICS, 6, 2, 8, 4);
+		expected = subList(topics, 6, 2, 8, 4);
 		actuals = queryExecutor.topics(responseSpec, null, pageSort);
-		checkPage(actuals, TOPICS.size(), 3, 4, 0, false, true, true, false, expected, true);
+		checkPage(actuals, topics.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(TOPICS, 9, 5, 7, 3);
+		expected = subList(topics, 9, 5, 7, 3);
 		actuals = queryExecutor.topics(responseSpec, null, pageSort);
-		checkPage(actuals, TOPICS.size(), 3, 4, 1, true, true, false, false, expected, true);
+		checkPage(actuals, topics.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(TOPICS, 1, 0);
+		expected = subList(topics, 1, 0);
 		actuals = queryExecutor.topics(responseSpec, null, pageSort);
-		checkPage(actuals, TOPICS.size(), 3, 4, 2, true, false, false, true, expected, true);
+		checkPage(actuals, topics.size(), 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(TOPICS, 0, 1, 3, 7);
+		expected = subList(topics, 0, 1, 3, 7);
 		actuals = queryExecutor.topics(responseSpec, null, pageSort);
-		checkPage(actuals, TOPICS.size(), 3, 4, 0, false, true, true, false, expected, true);
+		checkPage(actuals, topics.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(TOPICS, 5, 9, 4, 8);
+		expected = subList(topics, 5, 9, 4, 8);
 		actuals = queryExecutor.topics(responseSpec, null, pageSort);
-		checkPage(actuals, TOPICS.size(), 3, 4, 1, true, true, false, false, expected, true);
+		checkPage(actuals, topics.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(TOPICS, 2, 6);
+		expected = subList(topics, 2, 6);
 		actuals = queryExecutor.topics(responseSpec, null, pageSort);
-		checkPage(actuals, TOPICS.size(), 3, 4, 2, true, false, false, true, expected, true);
+		checkPage(actuals, topics.size(), 3, 4, 2, true, false, false, true, expected, true);
 	}
 
 	@Test
@@ -683,34 +727,34 @@ class TopicTests extends TrackedEntityTests<Topic> {
 
 		// "TOPIC FIVE", "TOPIC SEVEN", "Topic eight"
 		// 6, 8, 9
-		List<Topic> expected = subList(TOPICS, 6, 8);
+		List<Topic> expected = subList(topics, 6, 8);
 		TopicPage actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(TOPICS, 9);
+		expected = subList(topics, 9);
 		actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(TOPICS, 6, 8);
+		expected = subList(topics, 6, 8);
 		actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(TOPICS, 9);
+		expected = subList(topics, 9);
 		actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(TOPICS, 9, 8);
+		expected = subList(topics, 9, 8);
 		actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(TOPICS, 6);
+		expected = subList(topics, 6);
 		actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 	}

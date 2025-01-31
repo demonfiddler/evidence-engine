@@ -912,6 +912,9 @@ public interface DataFetchersDelegateMutation {
 	 */
 	Object addTopicRef(DataFetchingEnvironment dataFetchingEnvironment, TopicRefInput topicRef);
 
+	/** Updates an existing topic reference. */
+	Object updateTopicRef(DataFetchingEnvironment dataFetchingEnvironment, TopicRefInput topicRef);
+
 	/**
 	 * Description for the removeTopicRef field: <br/>
 	 * Removes a topic reference. <br/>

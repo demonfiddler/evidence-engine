@@ -62,7 +62,7 @@ public enum DirectionKind {
 	 * @return the enum constant with the specified name
 	 * @throws IllegalArgumentException if this enum type has no constant with the specified GraphQL name
 	 */
-	static public DirectionKind fromGraphQlValue(String graphQlValue) {
+	public static DirectionKind fromGraphQlValue(String graphQlValue) {
 		if (graphQlValue == null) {
 			return null;
 		}

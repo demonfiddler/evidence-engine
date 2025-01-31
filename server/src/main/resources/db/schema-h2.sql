@@ -375,6 +375,7 @@ CREATE TABLE "topic_claim_ref" (
 CREATE UNIQUE INDEX "topic_claim_ref_topic_claim" ON "topic_claim_ref" ("topic_id","claim_id");
 CREATE INDEX "FK_topic_claim_ref_topic" ON "topic_claim_ref" ("topic_id");
 CREATE INDEX "FK_topic_claim_ref_claim" ON "topic_claim_ref" ("claim_id");
+CALL FT_CREATE_INDEX('PUBLIC', 'topic_claim_ref', 'locations');
 
 CREATE TABLE "topic_declaration_ref" (
   "id" BIGINT AUTO_INCREMENT NOT NULL COMMENT 'Unique identifier, needed because GraphQL doesn''t support compound primary keys',
@@ -387,6 +388,7 @@ CREATE TABLE "topic_declaration_ref" (
 CREATE UNIQUE INDEX "topic_declaration_ref_topic_declaration" ON "topic_declaration_ref" ("topic_id","declaration_id");
 CREATE INDEX "FK_topic_declaration_ref_topic" ON "topic_declaration_ref" ("topic_id");
 CREATE INDEX "FK_topic_declaration_ref_declaration" ON "topic_declaration_ref" ("declaration_id");
+CALL FT_CREATE_INDEX('PUBLIC', 'topic_declaration_ref', 'locations');
 
 CREATE TABLE "topic_person_ref" (
   "id" BIGINT AUTO_INCREMENT NOT NULL COMMENT 'Unique identifier, needed because GraphQL doesn''t support compound primary keys',
@@ -399,6 +401,7 @@ CREATE TABLE "topic_person_ref" (
 CREATE UNIQUE INDEX "topic_person_ref_topic_person" ON "topic_person_ref" ("topic_id","person_id");
 CREATE INDEX "FK_topic_person_ref_topic" ON "topic_person_ref" ("topic_id");
 CREATE INDEX "FK_topic_person_ref_person" ON "topic_person_ref" ("person_id");
+CALL FT_CREATE_INDEX('PUBLIC', 'topic_person_ref', 'locations');
 
 CREATE TABLE "topic_publication_ref" (
   "id" BIGINT AUTO_INCREMENT NOT NULL COMMENT 'Unique identifier, needed because GraphQL doesn''t support compound primary keys',
@@ -411,6 +414,7 @@ CREATE TABLE "topic_publication_ref" (
 CREATE UNIQUE INDEX "topic_publication_ref_topic_publication" ON "topic_publication_ref" ("topic_id","publication_id");
 CREATE INDEX "FK_topic_publication_ref_topic" ON "topic_publication_ref" ("topic_id");
 CREATE INDEX "FK_topic_publication_ref_publication" ON "topic_publication_ref" ("publication_id");
+CALL FT_CREATE_INDEX('PUBLIC', 'topic_publication_ref', 'locations');
 
 CREATE TABLE "topic_quotation_ref" (
   "id" BIGINT AUTO_INCREMENT NOT NULL COMMENT 'Unique identifier, needed because GraphQL doesn''t support compound primary keys',
@@ -423,6 +427,7 @@ CREATE TABLE "topic_quotation_ref" (
 CREATE UNIQUE INDEX "topic_quotation_ref_topic_quotation" ON "topic_quotation_ref" ("topic_id","quotation_id");
 CREATE INDEX "FK_topic_quotation_ref_topic" ON "topic_quotation_ref" ("topic_id");
 CREATE INDEX "FK_topic_quotation_ref_quotation" ON "topic_quotation_ref" ("quotation_id");
+CALL FT_CREATE_INDEX('PUBLIC', 'topic_quotation_ref', 'locations');
 
 CREATE TABLE "transaction_kind" (
   "code" CHAR(3) NOT NULL COMMENT 'The transaction code',

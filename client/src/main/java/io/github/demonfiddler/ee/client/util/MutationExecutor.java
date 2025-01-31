@@ -35,6 +35,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
 import com.graphql_java_generator.annotation.RequestType;
 import com.graphql_java_generator.client.GraphQLMutationExecutor;
 import com.graphql_java_generator.client.GraphqlClientUtils;
+import com.graphql_java_generator.client.request.Builder;
 import com.graphql_java_generator.client.request.InputParameter;
 import com.graphql_java_generator.client.request.InputParameter.InputParameterType;
 import com.graphql_java_generator.client.request.ObjectResponse;
@@ -65,6 +66,7 @@ import io.github.demonfiddler.ee.client.QuotationInput;
 import io.github.demonfiddler.ee.client.StatusKind;
 import io.github.demonfiddler.ee.client.Topic;
 import io.github.demonfiddler.ee.client.TopicInput;
+import io.github.demonfiddler.ee.client.TopicRef;
 import io.github.demonfiddler.ee.client.TopicRefInput;
 import io.github.demonfiddler.ee.client.User;
 import io.github.demonfiddler.ee.client.UserInput;
@@ -327,12 +329,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 	}
 
 	/**
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for a <B>full request</B>, as expected by the
+	 * Get the {@link Builder} for a <B>full request</B>, as expected by the
 	 * exec and execWithBindValues methods.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getResponseBuilder()
+	public Builder getResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getResponseBuilder();
 	}
@@ -554,12 +556,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Creates a new claim.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Claim, as expected by the createClaim
+	 * Get the {@link Builder} for the Claim, as expected by the createClaim
 	 * query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getCreateClaimResponseBuilder()
+	public Builder getCreateClaimResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getCreateClaimResponseBuilder();
 	}
@@ -783,12 +785,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Updates an existing claim.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Claim, as expected by the updateClaim
+	 * Get the {@link Builder} for the Claim, as expected by the updateClaim
 	 * query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getUpdateClaimResponseBuilder()
+	public Builder getUpdateClaimResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getUpdateClaimResponseBuilder();
 	}
@@ -1013,12 +1015,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Deletes an existing claim.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Claim, as expected by the deleteClaim
+	 * Get the {@link Builder} for the Claim, as expected by the deleteClaim
 	 * query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getDeleteClaimResponseBuilder()
+	public Builder getDeleteClaimResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getDeleteClaimResponseBuilder();
 	}
@@ -1253,12 +1255,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Creates a new declaration.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Declaration, as expected by the
+	 * Get the {@link Builder} for the Declaration, as expected by the
 	 * createDeclaration query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getCreateDeclarationResponseBuilder()
+	public Builder getCreateDeclarationResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getCreateDeclarationResponseBuilder();
 	}
@@ -1493,12 +1495,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Updates an existing declaration.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Declaration, as expected by the
+	 * Get the {@link Builder} for the Declaration, as expected by the
 	 * updateDeclaration query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getUpdateDeclarationResponseBuilder()
+	public Builder getUpdateDeclarationResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getUpdateDeclarationResponseBuilder();
 	}
@@ -1733,12 +1735,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Deletes an existing declaration.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Declaration, as expected by the
+	 * Get the {@link Builder} for the Declaration, as expected by the
 	 * deleteDeclaration query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getDeleteDeclarationResponseBuilder()
+	public Builder getDeleteDeclarationResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getDeleteDeclarationResponseBuilder();
 	}
@@ -1963,12 +1965,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Create a new journal.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Journal, as expected by the
+	 * Get the {@link Builder} for the Journal, as expected by the
 	 * createJournal query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getCreateJournalResponseBuilder()
+	public Builder getCreateJournalResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getCreateJournalResponseBuilder();
 	}
@@ -2193,12 +2195,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Updates an existing journal.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Journal, as expected by the
+	 * Get the {@link Builder} for the Journal, as expected by the
 	 * updateJournal query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getUpdateJournalResponseBuilder()
+	public Builder getUpdateJournalResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getUpdateJournalResponseBuilder();
 	}
@@ -2424,12 +2426,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Deletes an existing journal.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Journal, as expected by the
+	 * Get the {@link Builder} for the Journal, as expected by the
 	 * deleteJournal query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getDeleteJournalResponseBuilder()
+	public Builder getDeleteJournalResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getDeleteJournalResponseBuilder();
 	}
@@ -2654,12 +2656,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Creates a new person.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Person, as expected by the createPerson
+	 * Get the {@link Builder} for the Person, as expected by the createPerson
 	 * query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getCreatePersonResponseBuilder()
+	public Builder getCreatePersonResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getCreatePersonResponseBuilder();
 	}
@@ -2884,12 +2886,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Updates an existing person.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Person, as expected by the updatePerson
+	 * Get the {@link Builder} for the Person, as expected by the updatePerson
 	 * query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getUpdatePersonResponseBuilder()
+	public Builder getUpdatePersonResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getUpdatePersonResponseBuilder();
 	}
@@ -3114,12 +3116,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Deletes an existing person.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Person, as expected by the deletePerson
+	 * Get the {@link Builder} for the Person, as expected by the deletePerson
 	 * query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getDeletePersonResponseBuilder()
+	public Builder getDeletePersonResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getDeletePersonResponseBuilder();
 	}
@@ -3354,12 +3356,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Creates a new publication.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Publication, as expected by the
+	 * Get the {@link Builder} for the Publication, as expected by the
 	 * createPublication query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getCreatePublicationResponseBuilder()
+	public Builder getCreatePublicationResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getCreatePublicationResponseBuilder();
 	}
@@ -3594,12 +3596,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Updates an existing publication.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Publication, as expected by the
+	 * Get the {@link Builder} for the Publication, as expected by the
 	 * updatePublication query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getUpdatePublicationResponseBuilder()
+	public Builder getUpdatePublicationResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getUpdatePublicationResponseBuilder();
 	}
@@ -3834,12 +3836,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Deletes an existing publication.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Publication, as expected by the
+	 * Get the {@link Builder} for the Publication, as expected by the
 	 * deletePublication query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getDeletePublicationResponseBuilder()
+	public Builder getDeletePublicationResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getDeletePublicationResponseBuilder();
 	}
@@ -4068,12 +4070,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Creates a new publisher.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Publisher, as expected by the
+	 * Get the {@link Builder} for the Publisher, as expected by the
 	 * createPublisher query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getCreatePublisherResponseBuilder()
+	public Builder getCreatePublisherResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getCreatePublisherResponseBuilder();
 	}
@@ -4302,12 +4304,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Updates an existing publisher.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Publisher, as expected by the
+	 * Get the {@link Builder} for the Publisher, as expected by the
 	 * updatePublisher query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getUpdatePublisherResponseBuilder()
+	public Builder getUpdatePublisherResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getUpdatePublisherResponseBuilder();
 	}
@@ -4537,12 +4539,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Deletes an existing publisher.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Publisher, as expected by the
+	 * Get the {@link Builder} for the Publisher, as expected by the
 	 * deletePublisher query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getDeletePublisherResponseBuilder()
+	public Builder getDeletePublisherResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getDeletePublisherResponseBuilder();
 	}
@@ -4771,12 +4773,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Creates a new quotation.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Quotation, as expected by the
+	 * Get the {@link Builder} for the Quotation, as expected by the
 	 * createQuotation query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getCreateQuotationResponseBuilder()
+	public Builder getCreateQuotationResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getCreateQuotationResponseBuilder();
 	}
@@ -5005,12 +5007,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Updates an existing quotation.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Quotation, as expected by the
+	 * Get the {@link Builder} for the Quotation, as expected by the
 	 * updateQuotation query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getUpdateQuotationResponseBuilder()
+	public Builder getUpdateQuotationResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getUpdateQuotationResponseBuilder();
 	}
@@ -5240,12 +5242,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Deletes an existing quotation.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Quotation, as expected by the
+	 * Get the {@link Builder} for the Quotation, as expected by the
 	 * deleteQuotation query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getDeleteQuotationResponseBuilder()
+	public Builder getDeleteQuotationResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getDeleteQuotationResponseBuilder();
 	}
@@ -5469,12 +5471,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Creates a new topic.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Topic, as expected by the createTopic
+	 * Get the {@link Builder} for the Topic, as expected by the createTopic
 	 * query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getCreateTopicResponseBuilder()
+	public Builder getCreateTopicResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getCreateTopicResponseBuilder();
 	}
@@ -5698,12 +5700,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Updates an existing topic.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Topic, as expected by the updateTopic
+	 * Get the {@link Builder} for the Topic, as expected by the updateTopic
 	 * query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getUpdateTopicResponseBuilder()
+	public Builder getUpdateTopicResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getUpdateTopicResponseBuilder();
 	}
@@ -5928,12 +5930,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Deletes an existing topic.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Topic, as expected by the deleteTopic
+	 * Get the {@link Builder} for the Topic, as expected by the deleteTopic
 	 * query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getDeleteTopicResponseBuilder()
+	public Builder getDeleteTopicResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getDeleteTopicResponseBuilder();
 	}
@@ -5996,8 +5998,8 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLScalar(fieldName = "addTopicRef", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class)
-	public Boolean addTopicRefWithBindValues(String queryResponseDef, TopicRefInput topicRef,
+	@GraphQLNonScalar(fieldName = "addTopicRef", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
+	public TopicRef addTopicRefWithBindValues(String queryResponseDef, TopicRefInput topicRef,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.mutationReactiveExecutor.addTopicRefWithBindValues(queryResponseDef, topicRef, parameters));
@@ -6042,8 +6044,8 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLScalar(fieldName = "addTopicRef", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class)
-	public Boolean addTopicRef(String queryResponseDef, TopicRefInput topicRef, Object... paramsAndValues)
+	@GraphQLNonScalar(fieldName = "addTopicRef", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
+	public TopicRef addTopicRef(String queryResponseDef, TopicRefInput topicRef, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		return getValueFromMonoOptional(
 			this.mutationReactiveExecutor.addTopicRef(queryResponseDef, topicRef, paramsAndValues));
@@ -6094,8 +6096,8 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLScalar(fieldName = "addTopicRef", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class)
-	public Boolean addTopicRefWithBindValues(ObjectResponse objectResponse, TopicRefInput topicRef,
+	@GraphQLNonScalar(fieldName = "addTopicRef", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
+	public TopicRef addTopicRefWithBindValues(ObjectResponse objectResponse, TopicRefInput topicRef,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.mutationReactiveExecutor.addTopicRefWithBindValues(objectResponse, topicRef, parameters));
@@ -6149,8 +6151,8 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLScalar(fieldName = "addTopicRef", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class)
-	public Boolean addTopicRef(ObjectResponse objectResponse, TopicRefInput topicRef, Object... paramsAndValues)
+	@GraphQLNonScalar(fieldName = "addTopicRef", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
+	public TopicRef addTopicRef(ObjectResponse objectResponse, TopicRefInput topicRef, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
 		return getValueFromMonoOptional(
 			this.mutationReactiveExecutor.addTopicRef(objectResponse, topicRef, paramsAndValues));
@@ -6158,12 +6160,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Adds a new topic reference.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Boolean, as expected by the addTopicRef
+	 * Get the {@link Builder} for the TopicRef, as expected by the addTopicRef
 	 * query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getAddTopicRefResponseBuilder()
+	public Builder getAddTopicRefResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getAddTopicRefResponseBuilder();
 	}
@@ -6185,6 +6187,259 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 		);
 	}
 
+	/**
+	  * Updates an existing topic reference.<br/>
+	 *
+	 * This method executes a partial query on the updateTopicRef mutation against the GraphQL server. That 
+	 * is, the mutation is one of the field of the Mutation type defined in the GraphQL schema. The 
+	 * queryResponseDef contains the part of the query that follows the field name.<br/>
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the expected fields of the <code>updateTopicRef</code>
+	 * of the Mutation mutation type. It can be something like "{ id name }", or "" for a scalar. Please 
+	 * take a look at the StarWars, Forum and other samples for more complex queries.<br/>
+	 * Here is a sample on how to use it:
+	 * 
+	 * <PRE>
+	 * @Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 *     @Autowired
+	 *     MutationExecutor executor;
+	 * 
+	 *     void myMethod() {
+	 * 	        Map<String, Object> params = new HashMap<>();
+	 *          params.put("param", paramValue);   // param is optional, as it is marked by a "?" in the request
+	 *          params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
+	 *          
+	 *          TopicRef updateTopicRef = executor.updateTopicRefWithBindValues(
+	 *              "{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 *              topicRef, // A value for updateTopicRef's topicRef input parameter
+	 *              params);
+	 *     }
+	 * }
+	 * </PRE>
+	 * 
+	 * @param queryResponseDef
+	 *            The response definition of the query, in the native GraphQL format (see here above)
+	* @param topicRef Parameter for the updateTopicRef field of Mutation, as defined in the GraphQL schema
+	 * @param parameters
+	 *            The list of values, for the bind variables declared in the request you defined. If there is no bind variable in the
+	 *            defined Query, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException
+	 *             When an error occurs during the request preparation, typically when building the
+	 *             {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException
+	 *             When an error occurs during the request execution, typically a network error, an error from the
+	 *             GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "updateTopicRef", graphQLTypeSimpleName = "TopicRef", javaClass = io.github.demonfiddler.ee.client.TopicRef.class)
+	public io.github.demonfiddler.ee.client.TopicRef updateTopicRefWithBindValues(
+			String queryResponseDef,
+			io.github.demonfiddler.ee.client.TopicRefInput topicRef,
+			Map<String, Object> parameters)
+			throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		return getValueFromMonoOptional(this.mutationReactiveExecutor.updateTopicRefWithBindValues(queryResponseDef, topicRef, parameters));
+	}
+
+	/**
+	  * Updates an existing topic reference.<br/>
+	 *
+	 * This method executes a partial query on the updateTopicRef mutation against the GraphQL server. That 
+	 * is, the mutation is one of the field of the Mutation type defined in the GraphQL schema. The 
+	 * queryResponseDef contains the part of the query that follows the field name.<br/>
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the expected fields of the <code>updateTopicRef</code>
+	 * of the Mutation mutation type. It can be something like "{ id name }", or "" for a scalar. Please 
+	 * take a look at the StarWars, Forum and other samples for more complex queries.<br/>
+	 * Here is a sample on how to use it:
+	 * 
+	 * <PRE>
+	 * @Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 *     @Autowired
+	 *     MutationExecutor executor;
+	 * 
+	 *     void myMethod() {
+	 *          TopicRef updateTopicRef = executor.updateTopicRef(
+	 *              "{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 *              topicRef, // A value for updateTopicRef's topicRef input parameter
+	 *             "param", paramValue,   // param is optional, as it is marked by a "?" in the request
+	 *             "skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 *              );
+	 *     }
+	 * }
+	 * </PRE>
+	 * 
+	 * @param queryResponseDef
+	 *            The response definition of the query, in the native GraphQL format (see here above)
+	* @param topicRef Parameter for the updateTopicRef field of Mutation, as defined in the GraphQL schema
+	 * @param parameters
+	 *            The list of values, for the bind variables declared in the request you defined. If there is no bind variable in the
+	 *            defined Query, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException
+	 *             When an error occurs during the request preparation, typically when building the
+	 *             {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException
+	 *             When an error occurs during the request execution, typically a network error, an error from the
+	 *             GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "updateTopicRef", graphQLTypeSimpleName = "TopicRef", javaClass = io.github.demonfiddler.ee.client.TopicRef.class)
+	public io.github.demonfiddler.ee.client.TopicRef updateTopicRef(
+			String queryResponseDef,
+			io.github.demonfiddler.ee.client.TopicRefInput topicRef,
+			Object... paramsAndValues)
+			throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		return getValueFromMonoOptional(this.mutationReactiveExecutor.updateTopicRef(queryResponseDef, topicRef, paramsAndValues));
+	}
+
+	/**
+	 * Updates an existing topic reference.<br/>
+	 *
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<br/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * @Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 *     @Autowired
+	 *     MutationExecutor executor;
+	 *     
+	 *     GraphQLRequest preparedRequest;
+	 *     
+	 *     @PostConstruct
+	 *     public void setup() {
+	 *         // Preparation of the query, so that it is prepared once then executed several times
+	 *         preparedRequest = executor.
+	 *             getUpdateTopicRefGraphQLRequest("mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 *     }
+	 * 
+	 *     void myMethod() {
+	 *          TopicRef updateTopicRef = executor.updateTopicRefWithBindValues(
+	 *              preparedRequest,
+	 *              topicRef, // A value for updateTopicRef's topicRef input parameter
+	 *              params);
+	 *     }
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse
+	 *            The definition of the response format, that describes what the GraphQL server is expected to return<br/>
+	 *            Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new implementations,
+	 *            the expected type is the generated GraphQLRequest POJO, as returned by the
+	 *            {@link getUpdateTopicRefGraphQLRequest(String)} method. 
+	* @param topicRef Parameter for the updateTopicRef field of Mutation, as defined in the GraphQL schema
+	 * @param parameters
+	 *            The list of values, for the bind variables declared in the request you defined. If there is no bind variable in the
+	 *            defined Query, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestExecutionException
+	 *             When an error occurs during the request execution, typically a network error, an error from the
+	 *             GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "updateTopicRef", graphQLTypeSimpleName = "TopicRef", javaClass = io.github.demonfiddler.ee.client.TopicRef.class)
+	public io.github.demonfiddler.ee.client.TopicRef updateTopicRefWithBindValues(
+			ObjectResponse objectResponse,
+			io.github.demonfiddler.ee.client.TopicRefInput topicRef,
+			Map<String, Object> parameters)
+			throws GraphQLRequestExecutionException  {
+		return getValueFromMonoOptional(this.mutationReactiveExecutor.updateTopicRefWithBindValues(objectResponse, topicRef, parameters));
+	}
+
+	/**
+	 * Updates an existing topic reference.<br/>
+	 *
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<br/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * @Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 *     @Autowired
+	 *     MutationExecutor executor;
+	 *     
+	 *     GraphQLRequest preparedRequest;
+	 *     
+	 *     @PostConstruct
+	 *     public void setup() {
+	 *         // Preparation of the query, so that it is prepared once then executed several times
+	 *         preparedRequest = executor.
+	 *             getUpdateTopicRefGraphQLRequest("mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 *     }
+	 * 
+	 *     void myMethod() {
+	 *          TopicRef updateTopicRef = executor.updateTopicRef(
+	 *              preparedRequest,
+	 *              topicRef, // A value for updateTopicRef's topicRef input parameter
+	 *              "param", paramValue,   // param is optional, as it is marked by a "?" in the request
+	 *              "skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 *              );
+	 *     }
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse
+	 *            The definition of the response format, that describes what the GraphQL server is expected to return<br/>
+	 *            Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new implementations,
+	 *            the expected type is the generated GraphQLRequest POJO, as returned by the
+	 *            {@link getUpdateTopicRefGraphQLRequest(String)} method. 
+	* @param topicRef Parameter for the updateTopicRef field of Mutation, as defined in the GraphQL schema
+	 * @param paramsAndValues
+	 *            This parameter contains all the name and values for the Bind Variables defined in the objectResponse
+	 *            parameter, that must be sent to the server. Optional parameter may not have a value. They will be
+	 *            ignored and not sent to the server. Mandatory parameter must be provided in this argument.<br/>
+	 *            This parameter contains an even number of parameters: it must be a series of name and values :
+	 *            (paramName1, paramValue1, paramName2, paramValue2...)
+	 * @throws GraphQLRequestExecutionException
+	 *             When an error occurs during the request execution, typically a network error, an error from the
+	 *             GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "updateTopicRef", graphQLTypeSimpleName = "TopicRef", javaClass = io.github.demonfiddler.ee.client.TopicRef.class)
+	public io.github.demonfiddler.ee.client.TopicRef updateTopicRef(
+			ObjectResponse objectResponse,
+			io.github.demonfiddler.ee.client.TopicRefInput topicRef,
+			Object... paramsAndValues)
+			throws GraphQLRequestExecutionException  {
+		return getValueFromMonoOptional(this.mutationReactiveExecutor.updateTopicRef(objectResponse, topicRef ,paramsAndValues));
+	}
+
+	/**
+	 * Updates an existing topic reference.<br/>
+	 *
+	 * Get the {@link Builder} for the TopicRef, as expected by the updateTopicRef query.
+	 * 
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public Builder getUpdateTopicRefResponseBuilder() throws GraphQLRequestPreparationException {
+		return this.mutationReactiveExecutor.getUpdateTopicRefResponseBuilder();
+	}
+
+
+	/**
+	 * Updates an existing topic reference.<br/>
+	 * Get the {@link GraphQLRequest} for the updateTopicRef EXECUTOR, created with the given Partial request.
+	 * 
+	 * @param partialRequest
+	 * 				The Partial GraphQL request, as explained in the 
+	 * 				<A HREF="https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin client documentation</A> 
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public GraphQLRequest getUpdateTopicRefGraphQLRequest(String partialRequest) throws GraphQLRequestPreparationException {
+		return new GraphQLRequest(this.graphQlClient,partialRequest, RequestType.mutation, "updateTopicRef" //$NON-NLS-1$
+  		, InputParameter.newBindParameter("", "topicRef","mutationUpdateTopicRefTopicRef", InputParameterType.MANDATORY, "TopicRefInput", true, 0, false) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		);
+	}
 	/**
 	 * Removes a topic reference.<br/>
 	 * This method executes a partial query on the removeTopicRef mutation against the GraphQL server. That is, the
@@ -6390,12 +6645,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Removes a topic reference.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Boolean, as expected by the
+	 * Get the {@link Builder} for the Boolean, as expected by the
 	 * removeTopicRef query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getRemoveTopicRefResponseBuilder()
+	public Builder getRemoveTopicRefResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getRemoveTopicRefResponseBuilder();
 	}
@@ -6620,12 +6875,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Links two entities.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Boolean, as expected by the
+	 * Get the {@link Builder} for the Boolean, as expected by the
 	 * linkEntities query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getLinkEntitiesResponseBuilder()
+	public Builder getLinkEntitiesResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getLinkEntitiesResponseBuilder();
 	}
@@ -6850,12 +7105,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Unlinks two linked entities.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Boolean, as expected by the
+	 * Get the {@link Builder} for the Boolean, as expected by the
 	 * unlinkEntities query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getUnlinkEntitiesResponseBuilder()
+	public Builder getUnlinkEntitiesResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getUnlinkEntitiesResponseBuilder();
 	}
@@ -7101,12 +7356,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Sets entity status.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the Boolean, as expected by the
+	 * Get the {@link Builder} for the Boolean, as expected by the
 	 * setEntityStatus query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getSetEntityStatusResponseBuilder()
+	public Builder getSetEntityStatusResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getSetEntityStatusResponseBuilder();
 	}
@@ -7333,12 +7588,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Creates a new user.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the User, as expected by the createUser
+	 * Get the {@link Builder} for the User, as expected by the createUser
 	 * query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getCreateUserResponseBuilder()
+	public Builder getCreateUserResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getCreateUserResponseBuilder();
 	}
@@ -7560,12 +7815,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Updates an existing user.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the User, as expected by the updateUser
+	 * Get the {@link Builder} for the User, as expected by the updateUser
 	 * query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getUpdateUserResponseBuilder()
+	public Builder getUpdateUserResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getUpdateUserResponseBuilder();
 	}
@@ -7787,12 +8042,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Updates an existing user.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the User, as expected by the deleteUser
+	 * Get the {@link Builder} for the User, as expected by the deleteUser
 	 * query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getDeleteUserResponseBuilder()
+	public Builder getDeleteUserResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getDeleteUserResponseBuilder();
 	}
@@ -8030,12 +8285,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 
 	/**
 	 * Grants permissions to a user. The specified permissions are added to any existing ones.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the User, as expected by the
+	 * Get the {@link Builder} for the User, as expected by the
 	 * grantUserPermissions query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getGrantUserPermissionsResponseBuilder()
+	public Builder getGrantUserPermissionsResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getGrantUserPermissionsResponseBuilder();
 	}
@@ -8281,12 +8536,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 	/**
 	 * Revokes permissions from a user. The specified permissions are removed from the user; other permissions remain
 	 * intact.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the User, as expected by the
+	 * Get the {@link Builder} for the User, as expected by the
 	 * revokeUserPermissions query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder getRevokeUserPermissionsResponseBuilder()
+	public Builder getRevokeUserPermissionsResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.getRevokeUserPermissionsResponseBuilder();
 	}
@@ -8497,12 +8752,12 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 	}
 
 	/**
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the String, as expected by the __typename
+	 * Get the {@link Builder} for the String, as expected by the __typename
 	 * query.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public com.graphql_java_generator.client.request.Builder get__typenameResponseBuilder()
+	public Builder get__typenameResponseBuilder()
 		throws GraphQLRequestPreparationException {
 		return this.mutationReactiveExecutor.get__typenameResponseBuilder();
 	}

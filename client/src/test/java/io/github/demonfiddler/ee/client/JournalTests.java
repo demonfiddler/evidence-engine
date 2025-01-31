@@ -44,11 +44,11 @@ import com.graphql_java_generator.exception.GraphQLRequestExecutionException;
 import com.graphql_java_generator.exception.GraphQLRequestPreparationException;
 
 @SpringBootTest(classes = GraphQLClientMain.class)
+@Order(3)
 @TestMethodOrder(OrderAnnotation.class)
-class JournalTests extends TrackedEntityTests<Journal> {
+class JournalTests extends AbstractTrackedEntityTests<Journal> {
 
 	private static final Random RANDOM = new Random();
-	private static Journal EXPECTED;
 	private static final String RESPONSE_SPEC = //
 		"""
 		{
@@ -132,14 +132,16 @@ class JournalTests extends TrackedEntityTests<Journal> {
 			}
 		}
 		""";
-	private static List<Journal> JOURNALS;
+
+	static Journal journal;
+	static List<Journal> journals;
 
 	static boolean hasExpectedJournal() {
-		return EXPECTED != null;
+		return journal != null;
 	}
 
 	static boolean hasExpectedJournals() {
-		return JOURNALS != null;
+		return journals != null;
 	}
 
 	@Test
@@ -147,7 +149,7 @@ class JournalTests extends TrackedEntityTests<Journal> {
 	void createJournal() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException, //
 		MalformedURLException {
 
-		EXPECTED = null;
+		journal = null;
 
 		// Create the test fixture.
 		JournalInput input = JournalInput.builder() //
@@ -163,25 +165,25 @@ class JournalTests extends TrackedEntityTests<Journal> {
 
 		// Check the returned Journal object for correctness.
 		LOG_DATES[0] = actual.getCreated();
-		checkJournal(actual, StatusKind.DRA.getLabel(), earliestUpdated, null, input.getTitle(),
+		checkJournal(actual, StatusKind.DRA.label(), earliestUpdated, null, input.getTitle(),
 			input.getAbbreviation(), input.getUrl(), input.getIssn(), null, input.getNotes(), CRE);
 
 		// Test passed, so remember result for following tests.
-		EXPECTED = actual;
+		journal = actual;
 	}
 
 	@Test
 	@Order(2)
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournal")
 	void readJournal() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		Journal expected = EXPECTED;
-		EXPECTED = null;
+		Journal expected = journal;
+		journal = null;
 
 		Journal actual = queryExecutor.journalById(RESPONSE_SPEC, expected.getId());
 
 		// Check read journal against the one created by the preceding createJournal() test.
 		checkJournal(actual, expected, CRE);
-		EXPECTED = actual;
+		journal = actual;
 	}
 
 	@Test
@@ -190,17 +192,17 @@ class JournalTests extends TrackedEntityTests<Journal> {
 	void updateJournal() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException, //
 		MalformedURLException {
 
-		Journal expected = EXPECTED;
-		EXPECTED = null;
+		Journal expected = journal;
+		journal = null;
 
 		JournalInput input = JournalInput.builder() //
 			.withId(expected.getId()) //
-			.withTitle("Updated Test Title") //
+			.withTitle("Updated test Title") //
 			.withAbbreviation("Upd Tst Jour") //
 			.withUrl(URI.create("http://updated-domain.org").toURL()) //
 			.withIssn(generateRandomIssn()) // "^[0-9]{4}-[0-9]{3}[0-9X]$"
 			// .withPublisherId(0L) //
-			.withNotes("Updated Test notes") //
+			.withNotes("Updated test notes") //
 			.build();
 		OffsetDateTime earliestUpdated = OffsetDateTime.now();
 		Journal actual = mutationExecutor.updateJournal(RESPONSE_SPEC, input);
@@ -210,26 +212,26 @@ class JournalTests extends TrackedEntityTests<Journal> {
 		checkJournal(actual, expected.getStatus(), expected.getCreated(), earliestUpdated, input.getTitle(),
 			input.getAbbreviation(), input.getUrl(), input.getIssn(), null, input.getNotes(), CRE, UPD);
 
-		EXPECTED = actual;
+		journal = actual;
 	}
 
 	@Test
 	@Order(4)
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournal")
 	void deleteJournal() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		Journal expected = EXPECTED;
-		EXPECTED = null;
+		Journal expected = journal;
+		journal = null;
 
 		OffsetDateTime earliestUpdated = OffsetDateTime.now();
 		Journal actual = mutationExecutor.deleteJournal(RESPONSE_SPEC, expected.getId());
 
 		// Check read journal against the one updated by the preceding updateJournal() test.
 		LOG_DATES[2] = actual.getUpdated();
-		checkJournal(actual, StatusKind.DEL.getLabel(), expected.getCreated(), earliestUpdated, expected.getTitle(),
+		checkJournal(actual, StatusKind.DEL.label(), expected.getCreated(), earliestUpdated, expected.getTitle(),
 			expected.getAbbreviation(), expected.getUrl(), expected.getIssn(), getPublisherId(expected),
 			expected.getNotes(), CRE, UPD, DEL);
 
-		EXPECTED = actual;
+		journal = actual;
 	}
 
 	@Test
@@ -241,11 +243,11 @@ class JournalTests extends TrackedEntityTests<Journal> {
 		final int journalCount = 8;
 		List<Journal> journals = new ArrayList<>(journalCount + 1);
 		Journal journal0 = new Journal();
-		journal0.setId(EXPECTED.getId());
-		journal0.setStatus(EXPECTED.getStatus());
-		journal0.setTitle(EXPECTED.getTitle());
-		journal0.setNotes(EXPECTED.getNotes());
-		journal0.set__typename(EXPECTED.get__typename());
+		journal0.setId(journal.getId());
+		journal0.setStatus(journal.getStatus());
+		journal0.setTitle(journal.getTitle());
+		journal0.setNotes(journal.getNotes());
+		journal0.set__typename(journal.get__typename());
 		journals.add(journal0);
 		String[] numbers = {null, "one", "two", "three", "four", "five", "six", "seven", "eight"};
 		for (int i = 1; i <= journalCount; i++) {
@@ -263,7 +265,7 @@ class JournalTests extends TrackedEntityTests<Journal> {
 				.build();
 			journals.add(mutationExecutor.createJournal(responseSpec, input));
 		}
-		JOURNALS = journals;
+		JournalTests.journals = journals;
 	}
 
 	@Test
@@ -273,7 +275,7 @@ class JournalTests extends TrackedEntityTests<Journal> {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		JournalPage actuals = queryExecutor.journals(responseSpec, null, null);
 
-		checkPage(actuals, JOURNALS.size(), 1, JOURNALS.size(), 0, false, false, true, true, JOURNALS, true);
+		checkPage(actuals, journals.size(), 1, journals.size(), 0, false, false, true, true, journals, true);
 	}
 
 	@Test
@@ -286,7 +288,7 @@ class JournalTests extends TrackedEntityTests<Journal> {
 			.build();
 
 		JournalPage actuals = queryExecutor.journals(responseSpec, filter, null);
-		List<Journal> expected = subList(JOURNALS, 5, 7, 8);
+		List<Journal> expected = subList(journals, 5, 7, 8);
 		checkPage(actuals, expected.size(), 1, 3, 0, false, false, true, true, expected, true);
 
 		filter.setStatus(List.of(StatusKind.DRA));
@@ -296,7 +298,7 @@ class JournalTests extends TrackedEntityTests<Journal> {
 		filter.setStatus(List.of(StatusKind.DEL));
 		filter.setText(null);
 		actuals = queryExecutor.journals(responseSpec, filter, null);
-		expected = JOURNALS.subList(0, 1);
+		expected = journals.subList(0, 1);
 		checkPage(actuals, expected.size(), 1, 1, 0, false, false, true, true, expected, true);
 	}
 
@@ -313,9 +315,9 @@ class JournalTests extends TrackedEntityTests<Journal> {
 		PageableInput pageSort = PageableInput.builder().withSort(sort).build();
 
 		// "JOURNAL FIVE", "JOURNAL ONE", "JOURNAL SEVEN", "JOURNAL THREE", "Journal eight",
-		// "Journal four", "Journal six", "Journal two", "Updated Test journal"
+		// "Journal four", "Journal six", "Journal two", "Updated test journal"
 		// 5, 1, 7, 3, 8, 4, 6, 2, 0
-		List<Journal> expected = subList(JOURNALS, 5, 1, 7, 3, 8, 4, 6, 2, 0);
+		List<Journal> expected = subList(journals, 5, 1, 7, 3, 8, 4, 6, 2, 0);
 		JournalPage actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -343,9 +345,9 @@ class JournalTests extends TrackedEntityTests<Journal> {
 		PageableInput pageSort = PageableInput.builder().withSort(sort).build();
 
 		// "Journal eight", "JOURNAL FIVE", "Journal four", "JOURNAL ONE", "JOURNAL SEVEN",
-		// "Journal six", "JOURNAL THREE", "Journal two", "Updated Test journal"
+		// "Journal six", "JOURNAL THREE", "Journal two", "Updated test journal"
 		// 8, 5, 4, 1, 7, 6, 3, 2, 0
-		List<Journal> expected = subList(JOURNALS, 8, 5, 4, 1, 7, 6, 3, 2, 0);
+		List<Journal> expected = subList(journals, 8, 5, 4, 1, 7, 6, 3, 2, 0);
 		JournalPage actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -378,9 +380,9 @@ class JournalTests extends TrackedEntityTests<Journal> {
 		// null/"JOURNAL THREE", null/"Journal six", "Notes #1"/"JOURNAL ONE", "Notes #2"/"Journal two",
 		// "Notes #4"/"Journal four", "Notes #5 (filtered)"/"JOURNAL FIVE",
 		// "Notes #7 (filtered)"/"JOURNAL SEVEN", "Notes #8 (filtered)"/"Journal eight",
-		// "Updated Test notes"/"Updated Test journal"
+		// "Updated test notes"/"Updated test journal"
 		// 3, 6, 1, 2, 4, 5, 7, 8, 0
-		List<Journal> expected = subList(JOURNALS, 3, 6, 1, 2, 4, 5, 7, 8, 0);
+		List<Journal> expected = subList(journals, 3, 6, 1, 2, 4, 5, 7, 8, 0);
 		JournalPage actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -390,17 +392,17 @@ class JournalTests extends TrackedEntityTests<Journal> {
 
 		textOrder.setDirection(DirectionKind.DESC);
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
-		expected = subList(JOURNALS, 6, 3, 1, 2, 4, 5, 7, 8, 0);
+		expected = subList(journals, 6, 3, 1, 2, 4, 5, 7, 8, 0);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		// "Notes #1"/"JOURNAL ONE", "Notes #2"/"Journal two", "Notes #4"/"Journal four",
 		// "Notes #5 (filtered)"/"JOURNAL FIVE", "Notes #7 (filtered)"/"JOURNAL SEVEN",
-		// "Notes #8 (filtered)"/"Journal eight", "Updated Test notes"/"Updated Test journal",
+		// "Notes #8 (filtered)"/"Journal eight", "Updated test notes"/"Updated test journal",
 		// null/"JOURNAL THREE", null/"Journal six",
 		// 1, 2, 4, 5, 7, 8, 0, 3, 6
 		notesOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		textOrder.setDirection(null);
-		expected = subList(JOURNALS, 1, 2, 4, 5, 7, 8, 0, 3, 6);
+		expected = subList(journals, 1, 2, 4, 5, 7, 8, 0, 3, 6);
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -410,7 +412,7 @@ class JournalTests extends TrackedEntityTests<Journal> {
 
 		textOrder.setDirection(DirectionKind.DESC);
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
-		expected = subList(JOURNALS, 1, 2, 4, 5, 7, 8, 0, 6, 3);
+		expected = subList(journals, 1, 2, 4, 5, 7, 8, 0, 6, 3);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
 
@@ -431,7 +433,7 @@ class JournalTests extends TrackedEntityTests<Journal> {
 
 		// "JOURNAL FIVE", "JOURNAL SEVEN", "Journal eight"
 		// 5, 7, 8
-		List<Journal> expected = subList(JOURNALS, 5, 7, 8);
+		List<Journal> expected = subList(journals, 5, 7, 8);
 		JournalPage actuals = queryExecutor.journals(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -468,7 +470,7 @@ class JournalTests extends TrackedEntityTests<Journal> {
 		// "Notes #2"/"Journal two", "Notes #4"/"Journal four", "Notes #5 (filtered)"/"JOURNAL FIVE",
 		// "Notes #7 (filtered)"/"JOURNAL SEVEN", "Notes #8 (filtered)"/"Journal eight"
 		// 3, 6, 1, 2, 4, 5, 7, 8
-		List<Journal> expected = subList(JOURNALS, 3, 6, 1, 2, 4, 5, 7, 8);
+		List<Journal> expected = subList(journals, 3, 6, 1, 2, 4, 5, 7, 8);
 		JournalPage actuals = queryExecutor.journals(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -477,7 +479,7 @@ class JournalTests extends TrackedEntityTests<Journal> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		textOrder.setDirection(DirectionKind.DESC);
-		expected = subList(JOURNALS, 6, 3, 1, 2, 4, 5, 7, 8);
+		expected = subList(journals, 6, 3, 1, 2, 4, 5, 7, 8);
 		actuals = queryExecutor.journals(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -487,12 +489,12 @@ class JournalTests extends TrackedEntityTests<Journal> {
 		// 1, 2, 4, 5, 7, 8, 3, 6
 		notesOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		textOrder.setDirection(DirectionKind.ASC);
-		expected = subList(JOURNALS, 1, 2, 4, 5, 7, 8, 3, 6);
+		expected = subList(journals, 1, 2, 4, 5, 7, 8, 3, 6);
 		actuals = queryExecutor.journals(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		textOrder.setDirection(DirectionKind.DESC);
-		expected = subList(JOURNALS, 1, 2, 4, 5, 7, 8, 6, 3);
+		expected = subList(journals, 1, 2, 4, 5, 7, 8, 6, 3);
 		actuals = queryExecutor.journals(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
@@ -508,18 +510,18 @@ class JournalTests extends TrackedEntityTests<Journal> {
 			.withPageSize(4) //
 			.build();
 		JournalPage actuals = queryExecutor.journals(responseSpec, null, pageSort);
-		List<Journal> expected = JOURNALS.subList(0, 4);
-		checkPage(actuals, JOURNALS.size(), 3, 4, 0, false, true, true, false, expected, true);
+		List<Journal> expected = journals.subList(0, 4);
+		checkPage(actuals, journals.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
-		expected = JOURNALS.subList(4, 8);
-		checkPage(actuals, JOURNALS.size(), 3, 4, 1, true, true, false, false, expected, true);
+		expected = journals.subList(4, 8);
+		checkPage(actuals, journals.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
-		expected = JOURNALS.subList(8, 9);
-		checkPage(actuals, JOURNALS.size(), 3, 4, 2, true, false, false, true, expected, true);
+		expected = journals.subList(8, 9);
+		checkPage(actuals, journals.size(), 3, 4, 2, true, false, false, true, expected, true);
 	}	
 
 	@Test
@@ -536,12 +538,12 @@ class JournalTests extends TrackedEntityTests<Journal> {
 			.build();
 
 		JournalPage actuals = queryExecutor.journals(responseSpec, filter, pageSort);
-		List<Journal> expected = subList(JOURNALS, 5, 7);
+		List<Journal> expected = subList(journals, 5, 7);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
 		actuals = queryExecutor.journals(responseSpec, filter, pageSort);
-		expected = subList(JOURNALS,8);
+		expected = subList(journals,8);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 	}
 
@@ -562,51 +564,51 @@ class JournalTests extends TrackedEntityTests<Journal> {
 			.build();
 
 		// "JOURNAL FIVE", "JOURNAL ONE", "JOURNAL SEVEN", "JOURNAL THREE", "Journal eight",
-		// "Journal four", "Journal six", "Journal two", "Updated Test journal"
+		// "Journal four", "Journal six", "Journal two", "Updated test journal"
 		// 5, 1, 7, 3, 8, 4, 6, 2, 0
-		List<Journal> expected = subList(JOURNALS, 5, 1, 7, 3);
+		List<Journal> expected = subList(journals, 5, 1, 7, 3);
 		JournalPage actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(JOURNALS, 8, 4, 6, 2);
+		expected = subList(journals, 8, 4, 6, 2);
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(JOURNALS, 0);
+		expected = subList(journals, 0);
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(JOURNALS, 5, 1, 7, 3);
+		expected = subList(journals, 5, 1, 7, 3);
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(JOURNALS, 8, 4, 6, 2);
+		expected = subList(journals, 8, 4, 6, 2);
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(JOURNALS, 0);
+		expected = subList(journals, 0);
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(JOURNALS, 0, 2, 6, 4);
+		expected = subList(journals, 0, 2, 6, 4);
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(JOURNALS, 8, 3, 7, 1);
+		expected = subList(journals, 8, 3, 7, 1);
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(JOURNALS, 5);
+		expected = subList(journals, 5);
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 2, true, false, false, true, expected, true);
 	}
@@ -632,34 +634,34 @@ class JournalTests extends TrackedEntityTests<Journal> {
 
 		// "JOURNAL FIVE", "JOURNAL SEVEN", "Journal eight"
 		// 5, 7, 8
-		List<Journal> expected = subList(JOURNALS, 5, 7);
+		List<Journal> expected = subList(journals, 5, 7);
 		JournalPage actuals = queryExecutor.journals(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(JOURNALS, 8);
+		expected = subList(journals, 8);
 		actuals = queryExecutor.journals(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(JOURNALS, 5, 7);
+		expected = subList(journals, 5, 7);
 		actuals = queryExecutor.journals(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(JOURNALS, 8);
+		expected = subList(journals, 8);
 		actuals = queryExecutor.journals(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(JOURNALS, 8, 7);
+		expected = subList(journals, 8, 7);
 		actuals = queryExecutor.journals(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(JOURNALS, 5);
+		expected = subList(journals, 5);
 		actuals = queryExecutor.journals(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 	}

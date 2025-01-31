@@ -4,20 +4,21 @@ Complaints about graphql-java-generator
 Documentation
 -------------
 - The Gradle examples are confusing as they refer to Maven stuff.
+- generateClientCode does not support the javaTypeForIDType parameter, so client-side IDs are always String even if the schema and server-side has them are Long. Also the description for the jsonGraphqlSchemaFilename parameter is blank. Not sure why client code generation needs a useJakartaEE9 parameter.
 
 Code Generation
 ---------------
 - Generated code is messy and poorly formatted.
-- Class modifiers incorrectly ordered (e.g. static public).
-- Not possible to customise generated annotations (can add but not edit).
+- Class modifiers incorrectly ordered (e.g. public static).
+- Not possible to customise generated annotations (can add but no longer possible to edit).
 - Generated code is not designed to be edited.
 - Cannot inherit GraphQL-annotated members.
 - Empty constructors contain a pointless "// No action" comment.
 - Unnecessary fully-qualified inline references to java.lang.* classes, which are implicitly imported according to the JLS.
 - Generated interface members explicitly marked as public, but they are implicitly public according to the JLS.
 - Multiple unused imports, errors suppressed with @SuppressWarnings("unused") annotations, which causes other compiler warnings about suppressed warnings.
-- GraphQL interfaces that implement other interfaces: the generated Java sub-interfaces duplicate methods they already inherit.
-- Many instances of fully-qualified class names used in member signatures (even for classes generated to the same package!). Should use imports where necessary.
+- GraphQL interfaces that implement other interfaces: the generated Java sub-interfaces duplicate methods they already inherit!
+- Many instances of fully-qualified class names used in member signatures (even for classes generated to the same package!). Should always use imports where necessary.
 - Enum constructors placed at the end of the compilation unit.
 - Javadoc contains unresolved parameter references from Velocity templates.
 - Multiple violations of official Javadoc format guidelines.

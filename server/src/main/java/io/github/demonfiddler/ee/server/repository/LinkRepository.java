@@ -19,73 +19,42 @@
 
 package io.github.demonfiddler.ee.server.repository;
 
-import java.util.List;
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.HashSet;
+import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import io.github.demonfiddler.ee.common.util.StringUtils;
 import io.github.demonfiddler.ee.server.model.LinkEntitiesInput;
-import io.github.demonfiddler.ee.server.model.TopicRef;
-import io.github.demonfiddler.ee.server.model.TopicRefInput;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.ProfileUtils;
 import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
 
 /**
  * Provides database access for cross-entity references that don't have a corresponding JPA entity class. Such links
- * include topic:entity and entity:entity references, both implemented via association tables specific to the entity
- * type pairs involved.
+ * are entity:entity references, implemented via association tables specific to the entity type pairs involved.
  */
 @Repository
+@Transactional
 public class LinkRepository {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(LinkRepository.class);
+
     @Resource
-    EntityManager em;
+    private EntityManager em;
     @Resource
-    EntityUtils util;
-
-    public List<TopicRef> findByIds(List<Long> keys) {
-        // TODO: figure out how to model topic references in the GraphQL schema.
-        throw new UnsupportedOperationException("findByIds(List<Long>)");
-    }
-
-    /**
-     * Adds a new topic:entity reference.
-     * @param topicRef The topic reference to add.
-     * @return The count of reference records inserted.
-     */
-    public int addTopicRef(TopicRefInput topicRef) {
-        String template = """
-                        INSERT IGNORE INTO \"topic_%s_ref\"
-                            (\"topic_id\", \"%s_id\", \"locations\")
-                        VALUES
-                            (:topicId, :entityId, :locations);
-                        """;
-        String entityName = util.getEntityName(topicRef.getEntityKind());
-        String sql = String.format(template, entityName, entityName);
-        Query query = em.createNativeQuery(sql, getClass());
-        query.setParameter("topicId", topicRef.getTopicId()).setParameter("entityId", topicRef.getEntityId());
-        return query.executeUpdate();
-    }
-
-    /**
-     * Removes an existing topic:entity reference.
-     * @param topicRef The topic reference to remove.
-     * @return The count of reference records deleted.
-     */
-    public int removeTopicRef(TopicRefInput topicRef) {
-        String template = """
-                        DELETE FROM \"topic_%s_ref\"
-                        WHERE
-                            \"topic_id\" = :topicId
-                            AND \"%s_id\" = :entityId;
-                        """;
-        String entityName = util.getEntityName(topicRef.getEntityKind());
-        String sql = String.format(template, entityName, entityName);
-        Query query = em.createNativeQuery(sql, getClass());
-        query.setParameter("topicId", topicRef.getTopicId()).setParameter("entityId", topicRef.getEntityId());
-        return query.executeUpdate();
-    }
+    private EntityUtils entityUtils;
+    @Resource
+    private ProfileUtils profileUtils;
+    /** Keeps track of which named queries have been registered in JPA. */
+    private final Set<String> queryNames = new HashSet<>();
 
     /**
      * Creates an association between two entities. Note that the 'from' and 'to' entities must be chosen to reflect the
@@ -95,19 +64,41 @@ public class LinkRepository {
      * @return The number of association records inserted.
      */
     public int linkEntities(LinkEntitiesInput linkInput) {
-        String template = """
-                        INSERT IGNORE INTO \"%s_%s\"
-                            (\"%s_id\", \"%s_id\")
-                        VALUES
-                            (:fromEntityId, :toEntityId);
-                        """;
-        String fromEntityName = util.getEntityName(linkInput.getFromEntityKind());
-        String toEntityName = util.getEntityName(linkInput.getToEntityKind());
-        String sql = String.format(template, fromEntityName, toEntityName, fromEntityName, toEntityName);
-        Query query = em.createNativeQuery(sql);
-        query.setParameter("entityId", linkInput.getFromEntityId()).setParameter("toEntityId",
-            linkInput.getToEntityId());
-        return query.executeUpdate();
+        String fromEntityName = entityUtils.getEntityName(linkInput.getFromEntityKind());
+        String toEntityName = entityUtils.getEntityName(linkInput.getToEntityKind());
+        String queryName = "link." + fromEntityName + "To" + StringUtils.firstToUpper(toEntityName);
+
+        Query query = null;
+        synchronized (queryNames) {
+            if (!queryNames.contains(queryName)) {
+                String ignore = profileUtils.isIntegrationTesting() ? "" : " IGNORE";
+                String template = """
+                                INSERT%s INTO \"%s_%s\"
+                                    (\"%s_id\", \"%s_id\")
+                                VALUES
+                                    (:fromEntityId, :toEntityId);
+                                """;
+                String sql =
+                    String.format(template, ignore, fromEntityName, toEntityName, fromEntityName, toEntityName);
+                query = em.createNativeQuery(sql, Integer.class);
+                em.getEntityManagerFactory().addNamedQuery(queryName, query);
+                queryNames.add(queryName);
+                LOGGER.debug("Defined query '{}' as:\n{}", queryName, sql);
+            }
+        }
+        if (query == null)
+            query = em.createNamedQuery(queryName, Integer.class);
+        query.setParameter("fromEntityId", linkInput.getFromEntityId()) //
+            .setParameter("toEntityId", linkInput.getToEntityId());
+        try {
+            return query.executeUpdate();
+        } catch (PersistenceException e) {
+            // This doesn't achieve the desired effect, as the exception has already resulted in the transaction being
+            // marked rollback-only, which will ultimately result in a Spring UnexpectedRollbackException being thrown.
+            if (e.getCause() instanceof SQLIntegrityConstraintViolationException)
+                return 0;
+            throw e;
+        }
     }
 
     /**
@@ -118,18 +109,30 @@ public class LinkRepository {
      * @return The number of association records deleted.
      */
     public int unlinkEntities(LinkEntitiesInput linkInput) {
-        String template = """
-                        DELETE FROM \"%s_%s\"
-                        WHERE
-                            \"%s_id\" = :fromEntityId
-                            AND \"%s_id\" = :toEntityId;
-                        """;
-        String fromEntityName = util.getEntityName(linkInput.getFromEntityKind());
-        String toEntityName = util.getEntityName(linkInput.getToEntityKind());
-        String sql = String.format(template, fromEntityName, toEntityName, fromEntityName, toEntityName);
-        Query query = em.createNativeQuery(sql);
-        query.setParameter("fromEntityId", linkInput.getFromEntityId()).setParameter("toEntityId",
-            linkInput.getToEntityId());
+        String fromEntityName = entityUtils.getEntityName(linkInput.getFromEntityKind());
+        String toEntityName = entityUtils.getEntityName(linkInput.getToEntityKind());
+        String queryName = "unlink." + fromEntityName + "From" + StringUtils.firstToUpper(toEntityName);
+
+        Query query = null;
+        synchronized (queryNames) {
+            if (!queryNames.contains(queryName)) {
+                String template = """
+                    DELETE FROM \"%s_%s\"
+                    WHERE
+                    \"%s_id\" = :fromEntityId
+                    AND \"%s_id\" = :toEntityId;
+                    """;
+                String sql = String.format(template, fromEntityName, toEntityName, fromEntityName, toEntityName);
+                query = em.createNativeQuery(sql, Integer.class);
+                em.getEntityManagerFactory().addNamedQuery(queryName, query);
+                queryNames.add(queryName);
+                LOGGER.debug("Defined query '{}' as:\n{}", queryName, sql);
+            }
+        }
+        if (query == null)
+            query = em.createNamedQuery(queryName, Integer.class);
+        query.setParameter("fromEntityId", linkInput.getFromEntityId()) //
+            .setParameter("toEntityId", linkInput.getToEntityId());
         return query.executeUpdate();
     }
 

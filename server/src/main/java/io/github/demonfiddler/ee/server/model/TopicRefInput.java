@@ -19,9 +19,6 @@
 
 package io.github.demonfiddler.ee.server.model;
 
-import java.net.URI;
-import java.util.List;
-
 import com.graphql_java_generator.annotation.GraphQLInputType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
 
@@ -63,8 +60,8 @@ public class TopicRefInput {
 	/**
 	 * The locations within the associated record, one per line.
 	 */
-	@GraphQLScalar(fieldName = "locations", graphQLTypeSimpleName = "URI", javaClass = URI.class, listDepth = 1)
-	List<URI> locations;
+	@GraphQLScalar(fieldName = "locations", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String locations;
 
 	/**
 	 * The unique topic identifier. Only necessary because graphql-java-generator emits code with errors (missing ctor)
@@ -127,14 +124,14 @@ public class TopicRefInput {
 	/**
 	 * The locations within the associated record, one per line.
 	 */
-	public void setLocations(List<URI> locations) {
+	public void setLocations(String locations) {
 		this.locations = locations;
 	}
 
 	/**
 	 * The locations within the associated record, one per line.
 	 */
-	public List<URI> getLocations() {
+	public String getLocations() {
 		return this.locations;
 	}
 
@@ -166,7 +163,7 @@ public class TopicRefInput {
 		private Long topicId;
 		private EntityKind entityKind;
 		private Long entityId;
-		private List<URI> locations;
+		private String locations;
 
 		/**
 		 * The unique topic identifier. Only necessary because graphql-java-generator emits code with errors (missing
@@ -204,7 +201,7 @@ public class TopicRefInput {
 		/**
 		 * The locations within the associated record, one per line.
 		 */
-		public Builder withLocations(List<URI> locationsParam) {
+		public Builder withLocations(String locationsParam) {
 			this.locations = locationsParam;
 			return this;
 		}

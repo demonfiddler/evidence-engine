@@ -2,4 +2,21 @@ Publication[Input].date|.year: do we need both?
 PublicationInput.authorNames|.authorIds: do we need both?
 TopicRef.locations (topic_<ITopicalEntity>_ref.locations): does this have any meaning for Claim, Declaration, Person or Quotation?
 
-Whether to enforce topic link at entity creation?
+Whether to enforce a topic link at entity creation time?
+
+Interpretation of filter values
+- What does a null value mean? Note: this only applies to optional filter fields relating to nullable database columns.
+    TopicQueryFilter.parentId = null:
+        - 1.) select only top-level parents, or 2.) don't filter on parentId at all?
+        if 1.), leaves no way to select all topics
+        if 2.), leaves no way to select only top-level topics
+        Since we need to be able to do both 1.) and 2.), this means we need a way to distinguish between the two cases. Possible solutions:
+        A. Use an otherwise impossible magic ID value to signify a null match (e.g., -1 for IDs)
+        This would be a bit contrived and maybe counterintuitive but it would work.
+        B. Supply an additional mask (e.g., bitmask) in the filter to indicate which filter fields should be applied.
+        This would be an onerous and error-prone requirement, especially when multiple fields are involved.
+    TopicQueryFilter.text
+        Specify the empty string to signify a null match.
+    TrackedEntityQueryFilter.text
+        Specify the empty string to signify a null match.
+    TopicalEntityQueryFilter.topicId

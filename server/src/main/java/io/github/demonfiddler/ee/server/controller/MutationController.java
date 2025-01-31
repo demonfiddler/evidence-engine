@@ -737,6 +737,14 @@ public class MutationController {
 		return this.dataFetchersDelegateMutation.addTopicRef(dataFetchingEnvironment, topicRef);
 	}
 
+	/** Updates an existing topic reference. */
+	@SchemaMapping(field = "updateTopicRef")
+	public Object updateTopicRef(DataFetchingEnvironment dataFetchingEnvironment,
+		@Argument("topicRef") TopicRefInput topicRef) {
+
+		return this.dataFetchersDelegateMutation.updateTopicRef(dataFetchingEnvironment, topicRef);
+	}
+
 	/**
 	 * This method loads the data for ${dataFetcher.graphQLType}.removeTopicRef. It returns an Object: the data fetcher
 	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>

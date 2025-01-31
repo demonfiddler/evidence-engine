@@ -30,16 +30,18 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
 @GraphQLEnumType("SortKind")
 public enum SortKind {
 
-		ASC("ASC"), //$NON-NLS-1$
-		DESC("DESC"); //$NON-NLS-1$
+	ASC("ASC", "Ascending"), //$NON-NLS-1$
+	DESC("DESC", "Descending"); //$NON-NLS-1$
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different
 	// when the value in the GraphQL schema is a Java reserved keyword.
 	private final String graphQlValue;
+	private final String label;
 
-	private SortKind(String graphQlValue) {
+	private SortKind(String graphQlValue, String label) {
 		this.graphQlValue = graphQlValue;
+		this.label = label;
 	}
 
 	/**
@@ -53,6 +55,14 @@ public enum SortKind {
 	}
 
 	/**
+	 * Returns the label for this constant.
+	 * @return the label
+	 */
+	public String label() {
+		return this.label;
+	}
+
+	/**
 	 * Returns the enum constant of this type with the specified name (as specified in the GraphQL schema). The string
 	 * must match exactly an identifier used to declare an enum constant in this type. (Extraneous whitespace characters
 	 * are not permitted.)
@@ -62,7 +72,7 @@ public enum SortKind {
 	 * @return the enum constant with the specified name
 	 * @throws IllegalArgumentException if this enum type has no constant with the specified GraphQL name
 	 */
-	static public SortKind fromGraphQlValue(String graphQlValue) {
+	public static SortKind fromGraphQlValue(String graphQlValue) {
 		if (graphQlValue == null) {
 			return null;
 		}

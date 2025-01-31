@@ -65,6 +65,7 @@ import io.github.demonfiddler.ee.client.QuotationInput;
 import io.github.demonfiddler.ee.client.StatusKind;
 import io.github.demonfiddler.ee.client.Topic;
 import io.github.demonfiddler.ee.client.TopicInput;
+import io.github.demonfiddler.ee.client.TopicRef;
 import io.github.demonfiddler.ee.client.TopicRefInput;
 import io.github.demonfiddler.ee.client.User;
 import io.github.demonfiddler.ee.client.UserInput;
@@ -7221,8 +7222,8 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLScalar(fieldName = "addTopicRef", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class)
-	public Mono<Optional<Boolean>> addTopicRefWithBindValues(String queryResponseDef, TopicRefInput topicRef,
+	@GraphQLNonScalar(fieldName = "addTopicRef", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
+	public Mono<Optional<TopicRef>> addTopicRefWithBindValues(String queryResponseDef, TopicRefInput topicRef,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		logger.debug("Executing mutation 'addTopicRef': {} ", queryResponseDef); //$NON-NLS-1$
 		ObjectResponse objectResponse = getAddTopicRefResponseBuilder().withQueryResponseDef(queryResponseDef).build();
@@ -7272,8 +7273,8 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLScalar(fieldName = "addTopicRef", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class)
-	public Mono<Optional<Boolean>> addTopicRef(String queryResponseDef, TopicRefInput topicRef,
+	@GraphQLScalar(fieldName = "addTopicRef", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
+	public Mono<Optional<TopicRef>> addTopicRef(String queryResponseDef, TopicRefInput topicRef,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 		logger.debug("Executing mutation 'addTopicRef': {} ", queryResponseDef); //$NON-NLS-1$
 		ObjectResponse objectResponse = getAddTopicRefResponseBuilder().withQueryResponseDef(queryResponseDef).build();
@@ -7327,9 +7328,8 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLScalar(fieldName = "addTopicRef", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class)
-
-	public Mono<Optional<Boolean>> addTopicRefWithBindValues(ObjectResponse objectResponse, TopicRefInput topicRef,
+	@GraphQLScalar(fieldName = "addTopicRef", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
+	public Mono<Optional<TopicRef>> addTopicRefWithBindValues(ObjectResponse objectResponse, TopicRefInput topicRef,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 		if (logger.isTraceEnabled()) {
 			logger.trace("Executing mutation 'addTopicRef' with parameters: {} ", topicRef); //$NON-NLS-1$
@@ -7395,8 +7395,8 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLScalar(fieldName = "addTopicRef", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class)
-	public Mono<Optional<Boolean>> addTopicRef(ObjectResponse objectResponse, TopicRefInput topicRef,
+	@GraphQLNonScalar(fieldName = "addTopicRef", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
+	public Mono<Optional<TopicRef>> addTopicRef(ObjectResponse objectResponse, TopicRefInput topicRef,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
 		if (logger.isTraceEnabled()) {
 			StringBuilder sb = new StringBuilder();
@@ -7454,6 +7454,310 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 		return new GraphQLReactiveRequest(this.graphQlClient, partialRequest, RequestType.mutation, "addTopicRef" //$NON-NLS-1$
 			, InputParameter.newBindParameter("", "topicRef", "mutationAddTopicRefTopicRef", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				InputParameterType.MANDATORY, "TopicRefInput", true, 0, false) //$NON-NLS-1$
+		);
+	}
+
+	/**
+	  * Updates an existing topic reference.
+	 *
+	 * This method executes a partial query against the GraphQL server. That is, the query that is one of the queries
+	 * defined in the GraphQL query object. The queryResponseDef contains the part of the query that <B><U>is
+	 * after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL schema):
+	 * 
+	 * <PRE>
+	 * @Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 *     @Autowired
+	 *     MutationExecutor executor;
+	 * 
+	 *     void myMethod() {
+	 * 	        Map<String, Object> params = new HashMap<>();
+	 *          params.put("param", paramValue);   // param is optional, as it is marked by a "?" in the request
+	 *          params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
+	 *          
+	 *          Mono<TopicRef> mono = executor.updateTopicRefWithBindValues(
+	 *              "{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 *              topicRef, // A value for updateTopicRef's topicRef input parameter
+	 *              params);
+	 *          TopicRef field = mono.block();
+	 *     }
+	 * }
+	 * </PRE>
+	 * 
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the parameter(s) for the query/mutation. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the expected fields of the {@link Character}
+	 * GraphQL type. It can be something like "{ id name }", if you want these fields of this type. Please take a look
+	 * at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * 
+	 * @param queryResponseDef
+	 *            The response definition of the query, in the native GraphQL format (see here above)
+	* @param topicRef Parameter for the updateTopicRef field of Mutation, as defined in the GraphQL schema
+	 * @param parameters
+	 *            The list of values, for the bind variables defined in the query/mutation. If there is no bind variable in the
+	 *            defined query/mutation, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException
+	 *             When an error occurs during the request preparation, typically when building the
+	 *             {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException
+	 *             When an error occurs during the request execution, typically a network error, an error from the
+	 *             GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "updateTopicRef", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
+	public Mono<Optional<TopicRef>> updateTopicRefWithBindValues(
+			String queryResponseDef,
+			TopicRefInput topicRef,
+			Map<String, Object> parameters)
+			throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		logger.debug("Executing mutation 'updateTopicRef': {} ", queryResponseDef); //$NON-NLS-1$
+		ObjectResponse objectResponse = getUpdateTopicRefResponseBuilder().withQueryResponseDef(queryResponseDef).build();
+		return updateTopicRefWithBindValues(objectResponse, topicRef, parameters);
+	}
+
+	/**
+	 * Updates an existing topic reference.<br/>
+	 *
+	 * This method executes a partial query against the GraphQL server. That is, the query that is one of the queries
+	 * defined in the GraphQL query object. The queryResponseDef contains the part of the query that <B><U>is
+	 * after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL schema):
+	 * 
+	 * <PRE>
+	 * @Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 *     @Autowired
+	 *     MutationExecutor executor;
+	 * 
+	 *     void myMethod() {
+	 *          Mono<TopicRef> mono = executor.updateTopicRef(
+	 *              "{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 *              topicRef, // A value for updateTopicRef's topicRef input parameter
+	 *             "param", paramValue,   // param is optional, as it is marked by a "?" in the request
+	 *             "skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 *              );
+	 *          TopicRef field = mono.block();
+	 *     }
+	 * }
+	 * </PRE>
+	 * 
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the parameter(s) for the query/mutation	. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the expected fields of the {@link Character}
+	 * GraphQL type. It can be something like "{ id name }", if you want these fields of this type. Please take a look
+	 * at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * 
+	 * @param queryResponseDef
+	 *            The response definition of the query/mutation, in the native GraphQL format (see here above)
+	* @param topicRef Parameter for the updateTopicRef field of Mutation, as defined in the GraphQL schema
+	 * @param parameters
+	 *            The list of values, for the bind variables defined in the query/mutation. If there is no bind variable in the
+	 *            defined query/mutation, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException
+	 *             When an error occurs during the request preparation, typically when building the
+	 *             {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException
+	 *             When an error occurs during the request execution, typically a network error, an error from the
+	 *             GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "updateTopicRef", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
+	public Mono<Optional<TopicRef>> updateTopicRef(
+			String queryResponseDef,
+			TopicRefInput topicRef,
+			Object... paramsAndValues)
+			throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		logger.debug("Executing mutation 'updateTopicRef': {} ", queryResponseDef); //$NON-NLS-1$
+		ObjectResponse objectResponse = getUpdateTopicRefResponseBuilder().withQueryResponseDef(queryResponseDef).build();
+		return updateTopicRefWithBindValues(objectResponse, topicRef, this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues));
+	}
+
+	/**
+	 * Updates an existing topic reference.<br/>
+	 *
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * @Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 *     @Autowired
+	 *     MutationExecutor executor;
+	 *     
+	 *     GraphQLRequest preparedRequest;
+	 *     
+	 *     @PostConstruct
+	 *     public void setup() {
+	 *         // Preparation of the query, so that it is prepared once then executed several times
+	 *         preparedRequest = executor.
+	 *             getUpdateTopicRefGraphQLRequest("mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 *     }
+	 * 
+	 *     void myMethod() {
+	 *          Mono<TopicRef> mono = executor.updateTopicRefWithBindValues(
+	 *              preparedRequest,
+	 *              topicRef, // A value for updateTopicRef's topicRef input parameter
+	 *              params);
+	 *          TopicRef field = mono.block();
+	 *     }
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse
+	 *            The definition of the response format, that describes what the GraphQL server is expected to return<br/>
+	 *            Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new implementations,
+	 *            the expected type is the generated GraphQLRequest POJO, as returned by the
+	 *            {@link getUpdateTopicRefGraphQLRequest(String)} method.
+	* @param topicRef Parameter for the updateTopicRef field of Mutation, as defined in the GraphQL schema
+	 * @param parameters
+	 *            The list of values, for the bind variables defined in the query/mutation. If there is no bind variable in the
+	 *            defined query/mutation, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestExecutionException
+	 *             When an error occurs during the request execution, typically a network error, an error from the
+	 *             GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "updateTopicRef", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
+	public Mono<Optional<TopicRef>> updateTopicRefWithBindValues(
+			ObjectResponse objectResponse,
+			TopicRefInput topicRef,
+			Map<String, Object> parameters)
+			throws GraphQLRequestExecutionException  {
+		if (logger.isTraceEnabled()) {
+			logger.trace("Executing mutation 'updateTopicRef' with parameters: {} ", topicRef); //$NON-NLS-1$
+		} else if (logger.isDebugEnabled()) {
+			logger.debug("Executing mutation 'updateTopicRef'"); //$NON-NLS-1$
+		}
+	
+		// Given values for the BindVariables
+		Map<String, Object> parametersLocal = (parameters != null) ? parameters : new HashMap<>();
+		parametersLocal.put("mutationUpdateTopicRefTopicRef", topicRef); //$NON-NLS-1$
+
+		return objectResponse //
+			.execReactive(Mutation.class, parametersLocal) //
+			.map(t -> (t.getUpdateTopicRef() == null) ? Optional.empty() : Optional.of(t.getUpdateTopicRef()));
+	}
+
+	/**
+	 * Updates an existing topic reference.<br/>
+	 *
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * @Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 *     @Autowired
+	 *     MutationExecutor executor;
+	 *     
+	 *     GraphQLRequest preparedRequest;
+	 *     
+	 *     @PostConstruct
+	 *     public void setup() {
+	 *         // Preparation of the query, so that it is prepared once then executed several times
+	 *         preparedRequest = executor.
+	 *             getUpdateTopicRefGraphQLRequest("mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 *     }
+	 * 
+	 *     void myMethod() {
+	 *          Mono<TopicRef> mono = executor.updateTopicRef(
+	 *              preparedRequest,
+	 *              topicRef, // A value for updateTopicRef's topicRef input parameter
+	 *              "param", paramValue,   // param is optional, as it is marked by a "?" in the request
+	 *              "skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 *              );
+	 *          TopicRef field = mono.block();
+	 *     }
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse
+	 *            The definition of the response format, that describes what the GraphQL server is expected to return<br/>
+	 *            Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new implementations,
+	 *            the expected type is the generated GraphQLRequest POJO, as returned by the
+	 *            {@link getUpdateTopicRefGraphQLRequest(String)} method.
+	* @param topicRef Parameter for the updateTopicRef field of Mutation, as defined in the GraphQL schema
+	 * @param paramsAndValues
+	 *            This parameter contains all the name and values for the Bind Variables defined in the objectResponse
+	 *            parameter, that must be sent to the server. Optional parameter may not have a value. They will be
+	 *            ignored and not sent to the server. Mandatory parameter must be provided in this argument.<BR/>
+	 *            This parameter contains an even number of parameters: it must be a series of name and values :
+	 *            (paramName1, paramValue1, paramName2, paramValue2...)
+	 * @throws GraphQLRequestExecutionException
+	 *             When an error occurs during the request execution, typically a network error, an error from the
+	 *             GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "updateTopicRef", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
+	public Mono<Optional<TopicRef>> updateTopicRef(
+			ObjectResponse objectResponse,
+			TopicRefInput topicRef,
+			Object... paramsAndValues)
+			throws GraphQLRequestExecutionException  {
+		if (logger.isTraceEnabled()) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Executing mutation 'updateTopicRef' with bind variables: "); //$NON-NLS-1$
+			boolean addComma = false;
+			for (Object o : paramsAndValues) {
+				if (o != null) {
+					sb.append(o.toString());
+					if (addComma)
+						sb.append(", "); //$NON-NLS-1$
+					addComma = true;
+				}
+			}
+			logger.trace(sb.toString());
+		} else if (logger.isDebugEnabled()) {
+			logger.debug("Executing mutation 'updateTopicRef' (with bind variables)"); //$NON-NLS-1$ 
+		}
+
+		Map<String, Object> parameters = this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues);
+		parameters.put("mutationUpdateTopicRefTopicRef", topicRef); //$NON-NLS-1$
+		
+		return objectResponse //
+			.execReactive(Mutation.class, parameters) // 
+			.map(t -> (t.getUpdateTopicRef() == null) ? Optional.empty() : Optional.of(t.getUpdateTopicRef()));
+	}
+
+	/**
+	 * Updates an existing topic reference.<br/>
+	 *
+	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the TopicRef, as expected by the updateTopicRef query/mutation.
+	 * 
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public com.graphql_java_generator.client.request.Builder getUpdateTopicRefResponseBuilder() throws GraphQLRequestPreparationException {
+		return new com.graphql_java_generator.client.request.Builder(this.graphQlClient, GraphQLReactiveRequest.class, "updateTopicRef", RequestType.mutation //$NON-NLS-1$
+			, InputParameter.newBindParameter("", "topicRef","mutationUpdateTopicRefTopicRef", InputParameterType.MANDATORY, "TopicRefInput", true, 0, false) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			);
+	}
+
+
+	/**
+	 * Updates an existing topic reference.<br/>
+	 * Get the {@link GraphQLReactiveRequest} for the updateTopicRef REACTIVE_EXECUTOR, created with the given Partial request.
+	 * 
+	 * @param partialRequest
+	 * 				The Partial GraphQL request, as explained in the 
+	 * 				<A HREF="https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin client documentation</A> 
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public GraphQLReactiveRequest getUpdateTopicRefGraphQLRequest(String partialRequest) throws GraphQLRequestPreparationException {
+		return new GraphQLReactiveRequest(this.graphQlClient,partialRequest, RequestType.mutation, "updateTopicRef" //$NON-NLS-1$
+  		, InputParameter.newBindParameter("", "topicRef","mutationUpdateTopicRefTopicRef", InputParameterType.MANDATORY, "TopicRefInput", true, 0, false) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		);
 	}
 

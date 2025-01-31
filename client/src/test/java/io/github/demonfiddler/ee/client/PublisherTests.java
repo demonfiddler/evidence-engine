@@ -43,8 +43,9 @@ import com.graphql_java_generator.exception.GraphQLRequestExecutionException;
 import com.graphql_java_generator.exception.GraphQLRequestPreparationException;
 
 @SpringBootTest(classes = GraphQLClientMain.class)
+@Order(6)
 @TestMethodOrder(OrderAnnotation.class)
-class PublisherTests extends TrackedEntityTests<Publisher> {
+class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 
 	private static final String RESPONSE_SPEC = //
 		"""
@@ -130,15 +131,16 @@ class PublisherTests extends TrackedEntityTests<Publisher> {
 			}
 		}
 		""";
-	private static Publisher EXPECTED;
-	private static List<Publisher> PUBLISHERS;
+
+	static Publisher publisher;
+	static List<Publisher> publishers;
 
 	static boolean hasExpectedPublisher() {
-		return EXPECTED != null;
+		return publisher != null;
 	}
 
 	static boolean hasExpectedPublishers() {
-		return PUBLISHERS != null;
+		return publishers != null;
 	}	
 
 	@Test
@@ -146,7 +148,7 @@ class PublisherTests extends TrackedEntityTests<Publisher> {
 	void createPublisher() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException, //
 		MalformedURLException {
 
-		EXPECTED = null;
+		publisher = null;
 
 		PublisherInput input = PublisherInput.builder() //
 			.withName("Test name") //
@@ -158,23 +160,23 @@ class PublisherTests extends TrackedEntityTests<Publisher> {
 		Publisher actual = mutationExecutor.createPublisher(RESPONSE_SPEC, input);
 
 		LOG_DATES[0] = actual.getCreated();
-		checkPublisher(actual, StatusKind.DRA.getLabel(), earliestUpdated, null, input.getName(), input.getLocation(),
+		checkPublisher(actual, StatusKind.DRA.label(), earliestUpdated, null, input.getName(), input.getLocation(),
 			input.getUrl(), input.getJournalCount(), CRE);
 
-		EXPECTED = actual;
+		publisher = actual;
 	}
 
 	@Test
 	@Order(2)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublisherTests#hasExpectedPublisher")
 	void readPublisher() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		Publisher expected = EXPECTED;
-		EXPECTED = null;
+		Publisher expected = publisher;
+		publisher = null;
 
 		Publisher actual = queryExecutor.publisherById(RESPONSE_SPEC, expected.getId());
 
 		checkPublisher(actual, expected, CRE);
-		EXPECTED = actual;
+		publisher = actual;
 	}
 
 	@Test
@@ -183,8 +185,8 @@ class PublisherTests extends TrackedEntityTests<Publisher> {
 	void updatePublisher() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException, //
 		MalformedURLException {
 
-		Publisher expected = EXPECTED;
-		EXPECTED = null;
+		Publisher expected = publisher;
+		publisher = null;
 
 		PublisherInput input = PublisherInput.builder() //
 			.withId(expected.getId()) //
@@ -200,24 +202,24 @@ class PublisherTests extends TrackedEntityTests<Publisher> {
 		checkPublisher(actual, expected.getStatus(), expected.getCreated(), earliestUpdated, input.getName(),
 			input.getLocation(), input.getUrl(), input.getJournalCount(), CRE, UPD);
 
-		EXPECTED = actual;
+		publisher = actual;
 	}
 
 	@Test
 	@Order(4)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublisherTests#hasExpectedPublisher")
 	void deletePublisher() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		Publisher expected = EXPECTED;
-		EXPECTED = null;
+		Publisher expected = publisher;
+		publisher = null;
 
 		OffsetDateTime earliestUpdated = OffsetDateTime.now();
 		Publisher actual = mutationExecutor.deletePublisher(RESPONSE_SPEC, expected.getId());
 
 		LOG_DATES[2] = actual.getUpdated();
-		checkPublisher(actual, StatusKind.DEL.getLabel(), expected.getCreated(), earliestUpdated, expected.getName(),
+		checkPublisher(actual, StatusKind.DEL.label(), expected.getCreated(), earliestUpdated, expected.getName(),
 			expected.getLocation(), expected.getUrl(), expected.getJournalCount(), CRE, UPD, DEL);
 
-		EXPECTED = actual;
+		publisher = actual;
 	}
 
 	@Test
@@ -229,12 +231,12 @@ class PublisherTests extends TrackedEntityTests<Publisher> {
 		final int publisherCount = 8;
 		List<Publisher> publishers = new ArrayList<>(publisherCount + 1);
 		Publisher publisher0 = new Publisher();
-		publisher0.setId(EXPECTED.getId());
-		publisher0.setStatus(EXPECTED.getStatus());
-		publisher0.setName(EXPECTED.getName());
-		publisher0.setLocation(EXPECTED.getLocation());
-		publisher0.setUrl(EXPECTED.getUrl());
-		publisher0.set__typename(EXPECTED.get__typename());
+		publisher0.setId(publisher.getId());
+		publisher0.setStatus(publisher.getStatus());
+		publisher0.setName(publisher.getName());
+		publisher0.setLocation(publisher.getLocation());
+		publisher0.setUrl(publisher.getUrl());
+		publisher0.set__typename(publisher.get__typename());
 		publishers.add(publisher0);
 		String[] numbers = {null, "one", "two", "three", "four", "five", "six", "seven", "eight"};
 		for (int i = 1; i <= publisherCount; i++) {
@@ -250,7 +252,8 @@ class PublisherTests extends TrackedEntityTests<Publisher> {
 				.build();
 			publishers.add(mutationExecutor.createPublisher(responseSpec, input));
 		}
-		PUBLISHERS = publishers;
+
+		PublisherTests.publishers = publishers;
 	}
 
 	@Test
@@ -260,7 +263,7 @@ class PublisherTests extends TrackedEntityTests<Publisher> {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		PublisherPage actuals = queryExecutor.publishers(responseSpec, null, null);
 
-		checkPage(actuals, PUBLISHERS.size(), 1, PUBLISHERS.size(), 0, false, false, true, true, PUBLISHERS, true);
+		checkPage(actuals, publishers.size(), 1, publishers.size(), 0, false, false, true, true, publishers, true);
 	}
 
 	@Test
@@ -272,7 +275,7 @@ class PublisherTests extends TrackedEntityTests<Publisher> {
 			.withText("filtered") //
 			.build();
 
-		List<Publisher> expected = subList(PUBLISHERS, 5, 7, 8);
+		List<Publisher> expected = subList(publishers, 5, 7, 8);
 		PublisherPage actuals = queryExecutor.publishers(responseSpec, filter, null);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -282,7 +285,7 @@ class PublisherTests extends TrackedEntityTests<Publisher> {
 
 		filter.setStatus(List.of(StatusKind.DEL));
 		filter.setText(null);
-		expected = subList(PUBLISHERS, 0);
+		expected = subList(publishers, 0);
 		actuals = queryExecutor.publishers(responseSpec, filter, null);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
@@ -302,7 +305,7 @@ class PublisherTests extends TrackedEntityTests<Publisher> {
 		// "PUBLISHER FIVE", "PUBLISHER ONE", "PUBLISHER SEVEN", "PUBLISHER THREE", "Publisher eight", "Publisher four", "Publisher six",
 		// "Publisher two", "Updated test name"
 		// 5, 1, 7, 3, 8, 4, 6, 2, 0
-		List<Publisher> expected = subList(PUBLISHERS, 5, 1, 7, 3, 8, 4, 6, 2, 0);
+		List<Publisher> expected = subList(publishers, 5, 1, 7, 3, 8, 4, 6, 2, 0);
 		PublisherPage actuals = queryExecutor.publishers(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -332,7 +335,7 @@ class PublisherTests extends TrackedEntityTests<Publisher> {
 		// "Publisher eight", "PUBLISHER FIVE", "Publisher four", "PUBLISHER ONE", "PUBLISHER SEVEN", "Publisher six", "PUBLISHER THREE",
 		// "Publisher two", "Updated test name"
 		// 8, 5, 4, 1, 7, 6, 3, 2, 0
-		List<Publisher> expected = subList(PUBLISHERS, 8, 5, 4, 1, 7, 6, 3, 2, 0);
+		List<Publisher> expected = subList(publishers, 8, 5, 4, 1, 7, 6, 3, 2, 0);
 		PublisherPage actuals = queryExecutor.publishers(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -366,7 +369,7 @@ class PublisherTests extends TrackedEntityTests<Publisher> {
 		// "Location #4"/"Publisher four", "Location #5 (filtered)"/"PUBLISHER FIVE", "Location #7 (filtered)"/"PUBLISHER SEVEN",
 		// "Location #8 (filtered)"/"Publisher eight", "Updated test location"/"Updated test name"
 		// 3, 6, 1, 2, 4, 5, 7, 8, 0
-		List<Publisher> expected = subList(PUBLISHERS, 3, 6, 1, 2, 4, 5, 7, 8, 0);
+		List<Publisher> expected = subList(publishers, 3, 6, 1, 2, 4, 5, 7, 8, 0);
 		PublisherPage actuals = queryExecutor.publishers(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -375,7 +378,7 @@ class PublisherTests extends TrackedEntityTests<Publisher> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		nameOrder.setDirection(DirectionKind.DESC);
-		expected = subList(PUBLISHERS, 6, 3, 1, 2, 4, 5, 7, 8, 0);
+		expected = subList(publishers, 6, 3, 1, 2, 4, 5, 7, 8, 0);
 		actuals = queryExecutor.publishers(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -385,7 +388,7 @@ class PublisherTests extends TrackedEntityTests<Publisher> {
 		// 1, 2, 4, 5, 7, 8, 0, 3, 6
 		locationOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		nameOrder.setDirection(null);
-		expected = subList(PUBLISHERS, 1, 2, 4, 5, 7, 8, 0, 3, 6);
+		expected = subList(publishers, 1, 2, 4, 5, 7, 8, 0, 3, 6);
 		actuals = queryExecutor.publishers(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -394,7 +397,7 @@ class PublisherTests extends TrackedEntityTests<Publisher> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		nameOrder.setDirection(DirectionKind.DESC);
-		expected = subList(PUBLISHERS, 1, 2, 4, 5, 7, 8, 0, 6, 3);
+		expected = subList(publishers, 1, 2, 4, 5, 7, 8, 0, 6, 3);
 		actuals = queryExecutor.publishers(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
@@ -416,7 +419,7 @@ class PublisherTests extends TrackedEntityTests<Publisher> {
 
 		// "PUBLISHER FIVE", "PUBLISHER SEVEN", "Publisher eight"
 		// 5, 7, 8
-		List<Publisher> expected = subList(PUBLISHERS, 5, 7, 8);
+		List<Publisher> expected = subList(publishers, 5, 7, 8);
 		PublisherPage actuals = queryExecutor.publishers(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -453,7 +456,7 @@ class PublisherTests extends TrackedEntityTests<Publisher> {
 		// "Location #4"/"Publisher four", "Location #5 (filtered)"/"PUBLISHER FIVE", "Location #7 (filtered)"/"PUBLISHER SEVEN",
 		// "Location #8 (filtered)"/"Publisher eight", "Updated test location"/"Updated test name"
 		// 3, 6, 1, 2, 4, 5, 7, 8
-		List<Publisher> expected = subList(PUBLISHERS, 3, 6, 1, 2, 4, 5, 7, 8);
+		List<Publisher> expected = subList(publishers, 3, 6, 1, 2, 4, 5, 7, 8);
 		PublisherPage actuals = queryExecutor.publishers(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -462,7 +465,7 @@ class PublisherTests extends TrackedEntityTests<Publisher> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		nameOrder.setDirection(DirectionKind.DESC);
-		expected = subList(PUBLISHERS, 6, 3, 1, 2, 4, 5, 7, 8);
+		expected = subList(publishers, 6, 3, 1, 2, 4, 5, 7, 8);
 		actuals = queryExecutor.publishers(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -471,12 +474,12 @@ class PublisherTests extends TrackedEntityTests<Publisher> {
 		// 1, 2, 4, 5, 7, 8, 3, 6
 		locationOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		nameOrder.setDirection(DirectionKind.ASC);
-		expected = subList(PUBLISHERS, 1, 2, 4, 5, 7, 8, 3, 6);
+		expected = subList(publishers, 1, 2, 4, 5, 7, 8, 3, 6);
 		actuals = queryExecutor.publishers(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		nameOrder.setDirection(DirectionKind.DESC);
-		expected = subList(PUBLISHERS, 1, 2, 4, 5, 7, 8, 6, 3);
+		expected = subList(publishers, 1, 2, 4, 5, 7, 8, 6, 3);
 		actuals = queryExecutor.publishers(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
@@ -492,18 +495,18 @@ class PublisherTests extends TrackedEntityTests<Publisher> {
 			.withPageSize(4) //
 			.build();
 		PublisherPage actuals = queryExecutor.publishers(responseSpec, null, pageSort);
-		List<Publisher> expected = PUBLISHERS.subList(0, 4);
-		checkPage(actuals, PUBLISHERS.size(), 3, 4, 0, false, true, true, false, expected, true);
+		List<Publisher> expected = publishers.subList(0, 4);
+		checkPage(actuals, publishers.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
 		actuals = queryExecutor.publishers(responseSpec, null, pageSort);
-		expected = PUBLISHERS.subList(4, 8);
-		checkPage(actuals, PUBLISHERS.size(), 3, 4, 1, true, true, false, false, expected, true);
+		expected = publishers.subList(4, 8);
+		checkPage(actuals, publishers.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
 		actuals = queryExecutor.publishers(responseSpec, null, pageSort);
-		expected = PUBLISHERS.subList(8, 9);
-		checkPage(actuals, PUBLISHERS.size(), 3, 4, 2, true, false, false, true, expected, true);
+		expected = publishers.subList(8, 9);
+		checkPage(actuals, publishers.size(), 3, 4, 2, true, false, false, true, expected, true);
 	}	
 
 	@Test
@@ -519,12 +522,12 @@ class PublisherTests extends TrackedEntityTests<Publisher> {
 			.withPageSize(2) //
 			.build();
 
-		List<Publisher> expected = subList(PUBLISHERS, 5, 7);
+		List<Publisher> expected = subList(publishers, 5, 7);
 		PublisherPage actuals = queryExecutor.publishers(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(PUBLISHERS,8);
+		expected = subList(publishers,8);
 		actuals = queryExecutor.publishers(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 	}
@@ -548,51 +551,51 @@ class PublisherTests extends TrackedEntityTests<Publisher> {
 		// "PUBLISHER FIVE", "PUBLISHER ONE", "PUBLISHER SEVEN", "PUBLISHER THREE", "Publisher eight", "Publisher four", "Publisher six",
 		// "Publisher two", "Updated test name"
 		// 5, 1, 7, 3, 8, 4, 6, 2, 0
-		List<Publisher> expected = subList(PUBLISHERS, 5, 1, 7, 3);
+		List<Publisher> expected = subList(publishers, 5, 1, 7, 3);
 		PublisherPage actuals = queryExecutor.publishers(responseSpec, null, pageSort);
-		checkPage(actuals, PUBLISHERS.size(), 3, 4, 0, false, true, true, false, expected, true);
+		checkPage(actuals, publishers.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(PUBLISHERS, 8, 4, 6, 2);
+		expected = subList(publishers, 8, 4, 6, 2);
 		actuals = queryExecutor.publishers(responseSpec, null, pageSort);
-		checkPage(actuals, PUBLISHERS.size(), 3, 4, 1, true, true, false, false, expected, true);
+		checkPage(actuals, publishers.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(PUBLISHERS, 0);
+		expected = subList(publishers, 0);
 		actuals = queryExecutor.publishers(responseSpec, null, pageSort);
-		checkPage(actuals, PUBLISHERS.size(), 3, 4, 2, true, false, false, true, expected, true);
+		checkPage(actuals, publishers.size(), 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(PUBLISHERS, 5, 1, 7, 3);
+		expected = subList(publishers, 5, 1, 7, 3);
 		actuals = queryExecutor.publishers(responseSpec, null, pageSort);
-		checkPage(actuals, PUBLISHERS.size(), 3, 4, 0, false, true, true, false, expected, true);
+		checkPage(actuals, publishers.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(PUBLISHERS, 8, 4, 6, 2);
+		expected = subList(publishers, 8, 4, 6, 2);
 		actuals = queryExecutor.publishers(responseSpec, null, pageSort);
-		checkPage(actuals, PUBLISHERS.size(), 3, 4, 1, true, true, false, false, expected, true);
+		checkPage(actuals, publishers.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(PUBLISHERS, 0);
+		expected = subList(publishers, 0);
 		actuals = queryExecutor.publishers(responseSpec, null, pageSort);
-		checkPage(actuals, PUBLISHERS.size(), 3, 4, 2, true, false, false, true, expected, true);
+		checkPage(actuals, publishers.size(), 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(PUBLISHERS, 0, 2, 6, 4);
+		expected = subList(publishers, 0, 2, 6, 4);
 		actuals = queryExecutor.publishers(responseSpec, null, pageSort);
-		checkPage(actuals, PUBLISHERS.size(), 3, 4, 0, false, true, true, false, expected, true);
+		checkPage(actuals, publishers.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(PUBLISHERS, 8, 3, 7, 1);
+		expected = subList(publishers, 8, 3, 7, 1);
 		actuals = queryExecutor.publishers(responseSpec, null, pageSort);
-		checkPage(actuals, PUBLISHERS.size(), 3, 4, 1, true, true, false, false, expected, true);
+		checkPage(actuals, publishers.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(PUBLISHERS, 5);
+		expected = subList(publishers, 5);
 		actuals = queryExecutor.publishers(responseSpec, null, pageSort);
-		checkPage(actuals, PUBLISHERS.size(), 3, 4, 2, true, false, false, true, expected, true);
+		checkPage(actuals, publishers.size(), 3, 4, 2, true, false, false, true, expected, true);
 	}
 
 	@Test
@@ -616,34 +619,34 @@ class PublisherTests extends TrackedEntityTests<Publisher> {
 
 		// "PUBLISHER FIVE", "PUBLISHER SEVEN", "Publisher eight"
 		// 5, 7, 8
-		List<Publisher> expected = subList(PUBLISHERS, 5, 7);
+		List<Publisher> expected = subList(publishers, 5, 7);
 		PublisherPage actuals = queryExecutor.publishers(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(PUBLISHERS, 8);
+		expected = subList(publishers, 8);
 		actuals = queryExecutor.publishers(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(PUBLISHERS, 5, 7);
+		expected = subList(publishers, 5, 7);
 		actuals = queryExecutor.publishers(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(PUBLISHERS, 8);
+		expected = subList(publishers, 8);
 		actuals = queryExecutor.publishers(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(PUBLISHERS, 8, 7);
+		expected = subList(publishers, 8, 7);
 		actuals = queryExecutor.publishers(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(PUBLISHERS, 5);
+		expected = subList(publishers, 5);
 		actuals = queryExecutor.publishers(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 	}
