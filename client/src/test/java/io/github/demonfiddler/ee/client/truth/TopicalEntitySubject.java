@@ -23,19 +23,17 @@ import com.google.common.truth.FailureMetadata;
 import com.google.common.truth.Subject;
 import com.google.common.truth.Truth;
 
-import io.github.demonfiddler.ee.client.IBaseEntity;
 import io.github.demonfiddler.ee.client.ITopicalEntity;
-import io.github.demonfiddler.ee.client.ITrackedEntity;
 
-public class TopicalEntitySubject<T extends IBaseEntity & ITrackedEntity & ITopicalEntity>
+public class TopicalEntitySubject<T extends ITopicalEntity>
     extends TrackedEntitySubject<T> {
 
-    public static <T extends IBaseEntity & ITrackedEntity & ITopicalEntity> TopicalEntitySubject<T>
+    public static <T extends ITopicalEntity> TopicalEntitySubject<T>
         assertThatTopicalEntity(/*@Nullable*/ T entity) {
         return Truth.<TopicalEntitySubject<T>, T>assertAbout(topicalEntities()).that(entity);
     }
 
-    public static <T extends IBaseEntity & ITrackedEntity & ITopicalEntity> Subject.Factory<TopicalEntitySubject<T>, T>
+    public static <T extends ITopicalEntity> Subject.Factory<TopicalEntitySubject<T>, T>
         topicalEntities() {
         return TopicalEntitySubject::new;
     }

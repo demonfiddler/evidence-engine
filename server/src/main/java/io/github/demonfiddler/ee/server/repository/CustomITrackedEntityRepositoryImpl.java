@@ -36,7 +36,6 @@ import org.springframework.lang.NonNull;
 // import org.springframework.transaction.annotation.Transactional;
 import org.springframework.lang.Nullable;
 
-import io.github.demonfiddler.ee.server.model.IBaseEntity;
 import io.github.demonfiddler.ee.server.model.ITrackedEntity;
 import io.github.demonfiddler.ee.server.model.TrackedEntityQueryFilter;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
@@ -50,7 +49,7 @@ import jakarta.persistence.Query;
  * An abstract base implementation of the {@code CustomRepository} interface.
  * @param <T> The type handled by the implementation.
  */
-public abstract class CustomITrackedEntityRepositoryImpl<T extends IBaseEntity & ITrackedEntity>
+public abstract class CustomITrackedEntityRepositoryImpl<T extends ITrackedEntity>
     implements CustomRepository<T, TrackedEntityQueryFilter> {
 
     /** Describes the elements of a query. */
@@ -136,19 +135,6 @@ public abstract class CustomITrackedEntityRepositoryImpl<T extends IBaseEntity &
      * @return An executable query pair.
      */
     private QueryPair defineNamedQueries(QueryMetaData m) {
-        /*
-        -- This is a representation of the template showing the local variables and their value expressions, as substituted for %s parameter markers.
-        SELECT COUNT(*) | DISTINCT e.*
-        FROM "%s" e --${entityName}
-        %s --${innerJoinOpen} = "JOIN ("
-        %s --${ftJoinTable} = "    FT_SEARCH_DATA(:text, 0, 0) ft"
-        %s --${innerJoinClose} = ")\nON"
-        %s --${ftJoinCondition} = "    ft."TABLE" = '${entityName}'\n    AND ft."KEYS"[1] = "${entityName}"."id""
-        %s --${whereClause} = "WHERE\n    MATCH (${getFulltextColumns()}) AGAINST (:text)\n    AND e."status" IN (:status)"
-        %s --${orderByClause} = "ORDER BY e."${sortField}" ${sortOrder}"
-        ;
-        */
-
         StringBuilder selectBuf = new StringBuilder();
         selectBuf.append(NL) //
             .append("FROM \"").append(m.entityName).append("\" e");
@@ -156,10 +142,8 @@ public abstract class CustomITrackedEntityRepositoryImpl<T extends IBaseEntity &
         if (m.hasText || m.hasStatus) {
             if (m.hasTextH2) {
                 selectBuf.append(NL) //
-                    .append("JOIN (").append(NL) //
-                    .append("    FT_SEARCH_DATA(:text, 0, 0) ft").append(NL) //
-                    .append(") ON").append(NL) //
-                    .append("    ft.\"TABLE\" = '").append(m.entityName).append('\'').append(NL) //
+                    .append("JOIN FT_SEARCH_DATA(:text, 0, 0) ft").append(NL) //
+                    .append("ON ft.\"TABLE\" = '").append(m.entityName).append('\'').append(NL) //
                     .append("    AND ft.\"KEYS\"[1] = e.\"id\"");
             }
             if (m.hasTextMariaDB || m.hasStatus) {

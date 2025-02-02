@@ -23,8 +23,7 @@ import static io.github.demonfiddler.ee.client.truth.TopicalEntitySubject.assert
 
 import java.time.OffsetDateTime;
 
-abstract class AbstractTopicalEntityTests<T extends IBaseEntity & ITrackedEntity & ITopicalEntity>
-    extends AbstractTrackedEntityTests<T> {
+abstract class AbstractTopicalEntityTests<T extends ITopicalEntity> extends AbstractTrackedEntityTests<T> {
 
     void checkTopicalEntity(T entity, String status, OffsetDateTime earliestCreated, OffsetDateTime earliestUpdated,
         TransactionKind... txnKinds) {

@@ -41,7 +41,7 @@ import com.graphql_java_generator.client.GraphQLObjectMapper;
 	@Type(value = Person.class, name = "Person"), @Type(value = Publication.class, name = "Publication"),
 	@Type(value = Quotation.class, name = "Quotation") })
 @GraphQLInterfaceType("ITopicalEntity")
-public interface ITopicalEntity {
+public interface ITopicalEntity extends ITrackedEntity {
 
 	@JsonProperty("topicRefs")
 	@GraphQLInputParameters(names = { "filter", "pageSort" }, types = { "TopicRefQueryFilter", "PageableInput" },

@@ -143,15 +143,15 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         logRepository.save(log);
     }
 
-    private <T extends IBaseEntity & ITrackedEntity> void logCreated(T entity) {
+    private <T extends ITrackedEntity> void logCreated(T entity) {
         log(TransactionKind.CRE, entity, entity.getCreated());
     }
 
-    private <T extends IBaseEntity & ITrackedEntity> void logUpdated(T entity) {
+    private <T extends ITrackedEntity> void logUpdated(T entity) {
         log(TransactionKind.UPD, entity, entity.getUpdated());
     }
 
-    private <T extends IBaseEntity & ITrackedEntity> void logDeleted(T entity) {
+    private <T extends ITrackedEntity> void logDeleted(T entity) {
         log(TransactionKind.DEL, entity, entity.getUpdated());
     }
 
@@ -167,7 +167,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         log(TransactionKind.UNL, linkedEntityId, linkedEntityKind, entityId, entityKind, timestamp);
     }
 
-    private <T extends IBaseEntity & ITrackedEntity, K> T delete(K id, CrudRepository<T, K> repository) {
+    private <T extends ITrackedEntity, K> T delete(K id, CrudRepository<T, K> repository) {
         Optional<T> entityOpt = repository.findById(id);
         if (entityOpt.isEmpty())
             return null;
@@ -760,11 +760,38 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
             ITrackedEntity entity = entityOpt.get();
             entity.setStatus(status.name());
             setUpdatedFields(entity);
-            // FIXME: make setEntityStatus() work!
-            // Oh dear - can't invoke logUpdated() because ITrackedEntity does not extend IBaseEntity!
-            // logUpdated(/*(IBaseEntity)*/entity);
-            // Oh dear - there's no way to invoke save(), because the compiler doesn't know what ? represents!
-            // repository.save(entity);
+            logUpdated(entity);
+            switch (entityKind) {
+                case CLA:
+                    claimRepository.save((Claim)entity);
+                    break;
+                case DEC:
+                    declarationRepository.save((Declaration)entity);
+                    break;
+                case JOU:
+                    journalRepository.save((Journal)entity);
+                    break;
+                case PBR:
+                    publisherRepository.save((Publisher)entity);
+                    break;
+                case PER:
+                    personRepository.save((Person)entity);
+                    break;
+                case PUB:
+                    publicationRepository.save((Publication)entity);
+                    break;
+                case QUO:
+                    quotationRepository.save((Quotation)entity);
+                    break;
+                case TOP:
+                    topicRepository.save((Topic)entity);
+                    break;
+                case USR:
+                    userRepository.save((User)entity);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unsupported entity kind: " + entityKind);
+            }
             return true;
         } else {
             return false;

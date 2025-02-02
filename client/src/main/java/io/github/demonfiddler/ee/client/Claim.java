@@ -44,7 +44,7 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonDeserializers;
  */
 @GraphQLObjectType("Claim")
 @JsonInclude(Include.NON_NULL)
-public class Claim implements IBaseEntity, ITrackedEntity, ITopicalEntity {
+public class Claim implements ITopicalEntity {
 
 	/**
 	 * This map contains the deserialized values for the alias, as parsed from the JSON response from the GraphQL

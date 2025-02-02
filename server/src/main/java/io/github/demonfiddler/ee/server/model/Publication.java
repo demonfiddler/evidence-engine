@@ -45,7 +45,7 @@ import jakarta.persistence.Transient;
  */
 @Entity
 @GraphQLObjectType("Publication")
-public class Publication implements IBaseEntity, ITrackedEntity, ITopicalEntity {
+public class Publication implements ITopicalEntity {
 
 	/**
 	 * The unique publication identifier.

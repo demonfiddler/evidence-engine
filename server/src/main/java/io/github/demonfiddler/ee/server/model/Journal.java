@@ -43,7 +43,7 @@ import jakarta.persistence.Transient;
  */
 @Entity
 @GraphQLObjectType("Journal")
-public class Journal implements IBaseEntity, ITrackedEntity {
+public class Journal implements ITrackedEntity {
 
 	/**
 	 * The unique abreviation identifier.

@@ -45,7 +45,7 @@ import jakarta.persistence.Transient;
  */
 @Entity
 @GraphQLObjectType("Declaration")
-public class Declaration implements IBaseEntity, ITrackedEntity, ITopicalEntity {
+public class Declaration implements ITopicalEntity {
 
 	public Declaration() {
 	}

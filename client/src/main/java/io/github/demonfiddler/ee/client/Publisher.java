@@ -46,7 +46,7 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonDeserializers;
  */
 @GraphQLObjectType("Publisher")
 @JsonInclude(Include.NON_NULL)
-public class Publisher implements IBaseEntity, ITrackedEntity {
+public class Publisher implements ITrackedEntity {
 
 	/**
 	 * This map contains the deserialized values for the alias, as parsed from the JSON response from the GraphQL

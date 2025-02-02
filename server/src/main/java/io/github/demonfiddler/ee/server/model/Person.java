@@ -43,7 +43,7 @@ import jakarta.persistence.Transient;
  */
 @Entity
 @GraphQLObjectType("Person")
-public class Person implements IBaseEntity, ITrackedEntity, ITopicalEntity {
+public class Person implements ITopicalEntity {
 
 	/**
 	 * The unique person identifier.

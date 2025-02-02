@@ -45,7 +45,7 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonDeserializers;
  */
 @GraphQLObjectType("Person")
 @JsonInclude(Include.NON_NULL)
-public class Person implements IBaseEntity, ITrackedEntity, ITopicalEntity {
+public class Person implements ITopicalEntity {
 
 	/**
 	 * This map contains the deserialized values for the alias, as parsed from the JSON response from the GraphQL

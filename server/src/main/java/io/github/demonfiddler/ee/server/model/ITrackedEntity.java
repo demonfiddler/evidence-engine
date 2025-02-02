@@ -32,7 +32,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInterfaceType("ITrackedEntity")
-public interface ITrackedEntity {
+public interface ITrackedEntity extends IBaseEntity {
 
 	@GraphQLScalar(fieldName = "status", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
 	void setStatus(String status);

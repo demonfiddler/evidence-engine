@@ -36,7 +36,7 @@ import jakarta.annotation.Resource;
  * Base class containing implementations of common methods. It is necessary because the generated DataFetchersDelegate*
  * class hierachy does not reflect the inheritance expressed in the GraphQL schema.
  */
-abstract class DataFetchersDelegateITopicalEntityBaseImpl<T extends /*IBaseEntity & ITrackedEntity &*/ ITopicalEntity>
+abstract class DataFetchersDelegateITopicalEntityBaseImpl<T extends ITopicalEntity>
     extends DataFetchersDelegateITrackedEntityBaseImpl/*<T>*/ {
 
     @Resource

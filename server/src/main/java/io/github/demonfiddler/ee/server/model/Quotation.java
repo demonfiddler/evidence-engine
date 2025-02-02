@@ -44,7 +44,7 @@ import jakarta.persistence.Transient;
  */
 @Entity
 @GraphQLObjectType("Quotation")
-public class Quotation implements IBaseEntity, ITrackedEntity, ITopicalEntity {
+public class Quotation implements ITopicalEntity {
 
 	/**
 	 * The unique quotation identifier.

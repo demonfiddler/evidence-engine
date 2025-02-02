@@ -28,18 +28,17 @@ import com.google.common.truth.StringSubject;
 import com.google.common.truth.Subject;
 import com.google.common.truth.Truth;
 
-import io.github.demonfiddler.ee.client.IBaseEntity;
 import io.github.demonfiddler.ee.client.ITrackedEntity;
 
-public class TrackedEntitySubject<T extends IBaseEntity & ITrackedEntity> extends Subject {
+public class TrackedEntitySubject<T extends ITrackedEntity> extends Subject {
 
-    public static <T extends IBaseEntity & ITrackedEntity> TrackedEntitySubject<T>
+    public static <T extends ITrackedEntity> TrackedEntitySubject<T>
         assertThatTrackedEntity(/*@Nullable*/ T entity) {
 
         return Truth.<TrackedEntitySubject<T>, T>assertAbout(trackedEntities()).that(entity);
     }
 
-    public static <T extends IBaseEntity & ITrackedEntity> Subject.Factory<TrackedEntitySubject<T>, T>
+    public static <T extends ITrackedEntity> Subject.Factory<TrackedEntitySubject<T>, T>
         trackedEntities() {
         return TrackedEntitySubject::new;
     }

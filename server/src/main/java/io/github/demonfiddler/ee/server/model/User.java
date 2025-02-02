@@ -43,7 +43,7 @@ import jakarta.persistence.Transient;
  */
 @Entity
 @GraphQLObjectType("User")
-public class User implements IBaseEntity, ITrackedEntity {
+public class User implements ITrackedEntity {
 
 	/**
 	 * The immutable, unique user identifier (system-assigned).

@@ -45,7 +45,7 @@ import jakarta.persistence.Transient;
  */
 @Entity
 @GraphQLObjectType("Topic")
-public class Topic implements IBaseEntity, ITrackedEntity {
+public class Topic implements ITrackedEntity {
 
 	/**
 	 * The unique topic identifier.

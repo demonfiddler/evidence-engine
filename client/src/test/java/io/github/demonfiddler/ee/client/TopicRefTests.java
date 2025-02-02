@@ -547,7 +547,7 @@ class TopicRefTests extends AbstractGraphQLTests {
         }
     }
 
-    private <T extends IBaseEntity & ITrackedEntity & ITopicalEntity> TopicRef[][] createTopicRefs(List<T> entities)
+    private <T extends ITopicalEntity> TopicRef[][] createTopicRefs(List<T> entities)
         throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
         int topicCount = ENTITY_INDEXES.length;
@@ -575,13 +575,13 @@ class TopicRefTests extends AbstractGraphQLTests {
         return actualTopicRefs;
     }
 
-    private <T extends IBaseEntity & ITrackedEntity & ITopicalEntity> TopicRef addTopicRef(Topic topic, T entity,
+    private <T extends ITopicalEntity> TopicRef addTopicRef(Topic topic, T entity,
         String locations) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 
         return mutateTopicRef(null, topic, entity, locations);
     }
 
-    private <T extends IBaseEntity & ITrackedEntity & ITopicalEntity> TopicRef mutateTopicRef(Long id, Topic topic,
+    private <T extends ITopicalEntity> TopicRef mutateTopicRef(Long id, Topic topic,
         T entity, String locations) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 
         Long topicId = topic.getId();

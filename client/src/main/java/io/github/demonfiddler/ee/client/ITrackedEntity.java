@@ -48,7 +48,7 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonDeserializers;
 	@Type(value = Quotation.class, name = "Quotation"), @Type(value = Topic.class, name = "Topic"),
 	@Type(value = User.class, name = "User") })
 @GraphQLInterfaceType("ITrackedEntity")
-public interface ITrackedEntity {
+public interface ITrackedEntity extends IBaseEntity {
 
 	@JsonProperty("status")
 	@GraphQLInputParameters(names = { "format" }, types = { "FormatKind" }, mandatories = { false }, listDepths = { 0 },

@@ -43,7 +43,7 @@ import jakarta.persistence.Transient;
  */
 @Entity
 @GraphQLObjectType("Publisher")
-public class Publisher implements IBaseEntity, ITrackedEntity {
+public class Publisher implements ITrackedEntity {
 
 	/**
 	 * The unique publisher identifier.

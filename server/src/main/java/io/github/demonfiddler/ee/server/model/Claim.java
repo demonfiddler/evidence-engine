@@ -43,7 +43,7 @@ import jakarta.persistence.Transient;
  */
 @Entity
 @GraphQLObjectType("Claim")
-public class Claim implements IBaseEntity, ITrackedEntity, ITopicalEntity {
+public class Claim implements ITopicalEntity {
 
 	/**
 	 * The unique claim identifier.

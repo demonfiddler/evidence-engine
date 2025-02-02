@@ -29,7 +29,7 @@ import com.graphql_java_generator.annotation.GraphQLNonScalar;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInterfaceType("ITopicalEntity")
-public interface ITopicalEntity {
+public interface ITopicalEntity extends ITrackedEntity {
 
 	@GraphQLNonScalar(fieldName = "topicRefs", graphQLTypeSimpleName = "TopicRefPage", javaClass = TopicRefPage.class,
 		listDepth = 0)

@@ -35,9 +35,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
-import io.github.demonfiddler.ee.server.model.IBaseEntity;
 import io.github.demonfiddler.ee.server.model.ITopicalEntity;
-import io.github.demonfiddler.ee.server.model.ITrackedEntity;
 import io.github.demonfiddler.ee.server.model.TopicalEntityQueryFilter;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
 import io.github.demonfiddler.ee.server.util.ProfileUtils;
@@ -50,7 +48,7 @@ import jakarta.persistence.Query;
  * An abstract base implementation of the {@code CustomRepository} interface.
  * @param <T> The type handled by the implementation.
  */
-public abstract class CustomITopicalEntityRepositoryImpl<T extends IBaseEntity & ITrackedEntity & ITopicalEntity>
+public abstract class CustomITopicalEntityRepositoryImpl<T extends ITopicalEntity>
     implements CustomRepository<T, TopicalEntityQueryFilter> {
 
     /** Describes the elements of a query. */
@@ -220,8 +218,7 @@ public abstract class CustomITopicalEntityRepositoryImpl<T extends IBaseEntity &
         JOIN "${masterEntityName}_${entityName}" me
         ON me."${masterEntityName}_id" = :masterEntityId AND me."${entityName}_id" = e.id
         JOIN FT_SEARCH_DATA(:text, 0, 0) ft
-        ON
-            ft."TABLE" = '${entityName}'
+        ON ft."TABLE" = '${entityName}'
             AND ft."KEYS"[1] = e."id"
         WHERE
             MATCH (${fulltextEntityColumns}) AGAINST (:text IN BOOLEAN MODE)

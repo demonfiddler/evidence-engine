@@ -33,7 +33,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
 
-abstract class AbstractTrackedEntityTests<T extends IBaseEntity & ITrackedEntity> extends AbstractGraphQLTests {
+abstract class AbstractTrackedEntityTests<T extends ITrackedEntity> extends AbstractGraphQLTests {
 
 	static final OffsetDateTime[] LOG_DATES = new OffsetDateTime[3];
 
