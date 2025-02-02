@@ -19,6 +19,7 @@
 
 package io.github.demonfiddler.ee.client;
 
+import static io.github.demonfiddler.ee.client.StatusKind.DRA;
 import static io.github.demonfiddler.ee.client.TransactionKind.CRE;
 import static io.github.demonfiddler.ee.client.TransactionKind.DEL;
 import static io.github.demonfiddler.ee.client.TransactionKind.UPD;
@@ -351,8 +352,6 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 
 		TopicTests.topics = topics;
 	}
-
-	// TODO: recursive query
 
 	@Test
 	@Order(6)
@@ -757,6 +756,134 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 		expected = subList(topics, 6);
 		actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
+	}
+
+	@Test
+	@Order(17)
+	@EnabledIf("io.github.demonfiddler.ee.client.TopicTests#hasExpectedTopics")
+	void readTopicsRecursive() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		TopicQueryFilter filter = TopicQueryFilter.builder() //
+			.withParentId(-1L) //
+			.withRecursive(true) //
+			.build();
+		List<Topic> expected;
+		TopicPage actuals;
+
+		// expected = subList(topics, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+		// actuals = queryExecutor.topics(responseSpec, filter, null);
+		// checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		filter.setParentId(topics.get(2).getId());
+		expected = subList(topics, 3, 4, 5);
+		actuals = queryExecutor.topics(responseSpec, filter, null);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		filter.setParentId(topics.get(3).getId());
+		expected = subList(topics, 4, 5);
+		actuals = queryExecutor.topics(responseSpec, filter, null);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		filter.setParentId(topics.get(4).getId());
+		expected = subList(topics, 5);
+		actuals = queryExecutor.topics(responseSpec, filter, null);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		filter.setParentId(topics.get(6).getId());
+		expected = subList(topics, 7, 8, 9);
+		actuals = queryExecutor.topics(responseSpec, filter, null);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		filter.setParentId(topics.get(7).getId());
+		expected = Collections.emptyList();
+		actuals = queryExecutor.topics(responseSpec, filter, null);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+	}
+
+	@Test
+	@Order(18)
+	@EnabledIf("io.github.demonfiddler.ee.client.TopicTests#hasExpectedTopics")
+	void readTopicsRecursiveFilteredStatus() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		TopicQueryFilter filter = TopicQueryFilter.builder() //
+			.withParentId(topics.get(2).getId()) //
+			.withRecursive(true) //
+			.withStatus(Collections.singletonList(DRA)) //
+			.build();
+		List<Topic> expected = subList(topics, 3, 4, 5);
+		TopicPage actuals = queryExecutor.topics(responseSpec, filter, null);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		filter.setParentId(topics.get(3).getId());
+		expected = subList(topics, 4, 5);
+		actuals = queryExecutor.topics(responseSpec, filter, null);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		filter.setParentId(topics.get(4).getId());
+		expected = subList(topics, 5);
+		actuals = queryExecutor.topics(responseSpec, filter, null);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		filter.setParentId(topics.get(6).getId());
+		expected = subList(topics, 7, 8, 9);
+		actuals = queryExecutor.topics(responseSpec, filter, null);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		filter.setParentId(topics.get(7).getId());
+		expected = Collections.emptyList();
+		actuals = queryExecutor.topics(responseSpec, filter, null);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+	}
+
+	@Test
+	@Order(19)
+	@EnabledIf("io.github.demonfiddler.ee.client.TopicTests#hasExpectedTopics")
+	void readTopicsRecursiveFilteredText() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		TopicQueryFilter filter = TopicQueryFilter.builder() //
+			.withParentId(topics.get(2).getId()) //
+			.withRecursive(true) //
+			.withText("filtered") //
+			.build();
+		List<Topic> expected = Collections.emptyList();
+		TopicPage actuals = queryExecutor.topics(responseSpec, filter, null);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		filter.setParentId(topics.get(6).getId());
+		expected = subList(topics, 8, 9);
+		actuals = queryExecutor.topics(responseSpec, filter, null);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		filter.setParentId(topics.get(7).getId());
+		expected = Collections.emptyList();
+		actuals = queryExecutor.topics(responseSpec, filter, null);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+	}
+
+	@Test
+	@Order(20)
+	@EnabledIf("io.github.demonfiddler.ee.client.TopicTests#hasExpectedTopics")
+	void readTopicsRecursiveFilteredStatusText() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		TopicQueryFilter filter = TopicQueryFilter.builder() //
+			.withParentId(topics.get(2).getId()) //
+			.withRecursive(true) //
+			.withStatus(Collections.singletonList(DRA)) //
+			.withText("filtered") //
+			.build();
+		List<Topic> expected = Collections.emptyList();
+		TopicPage actuals = queryExecutor.topics(responseSpec, filter, null);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		filter.setParentId(topics.get(6).getId());
+		expected = subList(topics, 8, 9);
+		actuals = queryExecutor.topics(responseSpec, filter, null);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+
+		filter.setParentId(topics.get(7).getId());
+		expected = Collections.emptyList();
+		actuals = queryExecutor.topics(responseSpec, filter, null);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
 
 	private void checkTopic(Topic actual, Topic expected, TransactionKind... txnKinds) {

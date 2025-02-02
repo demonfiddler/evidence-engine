@@ -47,10 +47,9 @@ import jakarta.persistence.Query;
 public class CustomTopicRepositoryImpl implements CustomTopicRepository {
 
     /** Describes the elements of a query. */
-    static record QueryMetaData(@Nullable TopicQueryFilter filter, @NonNull Pageable pageable,
-        String countQueryName, String selectQueryName, boolean hasParentId, boolean hasText, boolean hasTextH2,
-        boolean hasTextMariaDB, boolean isAdvanced, boolean hasStatus, boolean isRecursive, boolean isPaged,
-        boolean isSorted) {
+    static record QueryMetaData(@Nullable TopicQueryFilter filter, @NonNull Pageable pageable, String countQueryName,
+        String selectQueryName, boolean hasParentId, boolean hasText, boolean hasTextH2, boolean hasTextMariaDB,
+        boolean isAdvanced, boolean hasStatus, boolean isRecursive, boolean isPaged, boolean isSorted) {
     }
 
     private static Logger logger = LoggerFactory.getLogger(CustomTopicRepositoryImpl.class);
@@ -117,8 +116,8 @@ public class CustomTopicRepositoryImpl implements CustomTopicRepository {
             entityUtils.appendOrderByToQueryName(selectQueryName, pageable);
         }
 
-        return new QueryMetaData(filter, pageable, countQueryName.toString(), selectQueryName.toString(), hasParentId, hasText,
-            hasTextH2, hasTextMariaDB, isAdvanced, hasStatus, isRecursive, isPaged, isSorted);
+        return new QueryMetaData(filter, pageable, countQueryName.toString(), selectQueryName.toString(), hasParentId,
+            hasText, hasTextH2, hasTextMariaDB, isAdvanced, hasStatus, isRecursive, isPaged, isSorted);
     }
 
     /**
@@ -128,113 +127,102 @@ public class CustomTopicRepositoryImpl implements CustomTopicRepository {
      */
     private QueryPair defineNamedQueries(QueryMetaData m) {
         String template;
-        String selectTarget;
-        StringBuilder recursiveWhereClause1 = new StringBuilder();
-        StringBuilder recursiveWhereClause2 = new StringBuilder();
-        StringBuilder ftJoinTable = new StringBuilder();
-        StringBuilder ftJoinCondition = new StringBuilder();
+        String selectFields;
+        StringBuilder recursiveParentIdClause = new StringBuilder();
+        StringBuilder recursiveStatusClause1 = new StringBuilder();
+        StringBuilder recursiveStatusClause2 = new StringBuilder();
+        StringBuilder ftJoinClause = new StringBuilder();
         StringBuilder whereClause = new StringBuilder();
         StringBuilder orderByClause = new StringBuilder();
 
-        // NOTE: status predicate needs to be applied to both topics and entities but parentId predicate is applied to
-        // the recursive predicate when recursive or the main select when non-recursive.
-        if (!m.isRecursive && m.hasParentId || m.hasText || m.hasStatus) {
+        // parentId/status predicates applied to recursive predicate when recursive or main select when non-recursive;
+        // text predicate is only ever applied to the main select.
+        if (m.isRecursive) {
+            if (m.filter.getParentId() == -1)
+                recursiveParentIdClause.append("IS NULL");
+            else
+                recursiveParentIdClause.append("= :parentId");
+            if (m.hasStatus) {
+                recursiveStatusClause1.append(NL) //
+                    .append("        AND t.\"status\" IN (:status)");
+                recursiveStatusClause2.append(NL) //
+                    .append("    WHERE t.\"status\" IN (:status)");
+            }
+            // At first sight one might think that it would be more efficient to select the topic records from the
+            // sub_topics temporary table, but this doesn't work because in MariaDB that table uses the MEMORY storage
+            // engine, which doesn't support full text indexes. Hence the need to select ids only and use them in the
+            // final join.
+            template = """
+                WITH RECURSIVE "sub_topic" ("id", "parent_id")
+                AS (
+                    SELECT t."id", t."parent_id"
+                    FROM "topic" t
+                    WHERE t."parent_id" %s%s
+                    UNION ALL
+                    SELECT t."id", t."parent_id"
+                    FROM "topic" t
+                    JOIN "sub_topic" st
+                    ON st."id" = t."parent_id"%s
+                )
+                SELECT %s
+                FROM "topic" t
+                JOIN "sub_topic" st
+                ON st."id" = t."id"%s%s%s;
+                """;
+            selectFields = "DISTINCT t.*";
+        } else {
+            template = """
+                %s%s%sSELECT %s
+                FROM "topic" t%s%s%s;
+                """;
+            selectFields = "t.*";
+        }
+        if ((m.hasParentId || m.hasStatus) && !m.isRecursive || m.hasText) {
             boolean needsAnd = false;
-            if (m.hasParentId || m.hasTextMariaDB || m.hasStatus) {
+            if ((m.hasParentId || m.hasStatus) && !m.isRecursive || m.hasTextMariaDB) {
                 whereClause.append(NL) //
                     .append("WHERE");
             }
-            if (m.hasParentId) {
+            if (m.hasParentId && !m.isRecursive) {
                 whereClause.append(NL) //
-                    .append("    ").append("\"parent_id\" ");
+                    .append("    ").append("t.\"parent_id\" ");
                 if (m.filter.getParentId() == -1)
                     whereClause.append("IS NULL");
                 else
                     whereClause.append("= :parentId");
                 needsAnd = true;
             }
-            if (m.hasText || m.hasStatus) {
-                if (m.hasText) {
-                    if (m.hasTextH2) {
-                        if (m.isRecursive) {
-                            ftJoinTable.append(',').append(NL) //
-                                .append("    FT_SEARCH_DATA(:text, 0, 0) ft");
-                            ftJoinCondition.append(NL) //
-                                .append("    AND ft.\"TABLE\" = 'topic'").append(NL) //
-                                .append("    AND ft.\"KEYS\"[1] = t.\"id\"");
-                        } else {
-                            ftJoinTable.append(NL) //
-                                .append("JOIN FT_SEARCH_DATA(:text, 0, 0) ft");
-                            ftJoinCondition.append(NL) //
-                                .append("ON").append(NL) //
-                                .append("    ft.\"TABLE\" = 'topic'").append(NL) //
-                                .append("    AND ft.\"KEYS\"[1] = t.\"id\"");
-                        }
-                    } else if (m.hasTextMariaDB) {
-                        whereClause.append(NL) //
-                            .append("    ");
-                        if (needsAnd)
-                            whereClause.append("AND ");
-                        whereClause.append("MATCH (\"label\", \"description\", \"status\") AGAINST (:text");
-                        if (m.isAdvanced)
-                            whereClause.append(" IN BOOLEAN MODE");
-                        whereClause.append(')');
-                        needsAnd = true;
-                    }
-                }
-                if (m.hasStatus) {
-                    whereClause.append(NL) //
-                        .append("    ");
-                    if (needsAnd)
-                        whereClause.append("AND ");
-                    whereClause.append("\"status\" IN (:status)");
-                }
+            if (m.hasStatus && !m.isRecursive) {
+                whereClause.append(NL) //
+                    .append("    ");
+                if (needsAnd)
+                    whereClause.append("AND ");
+                whereClause.append("\"status\" IN (:status)");
             }
-        }
-        if (m.isRecursive) {
-            if (m.hasStatus) {
-                recursiveWhereClause1.append(" AND t.\"status\" IN (:status)");
-                recursiveWhereClause2.append(NL) //
-                    .append("    WHERE t.\"status\" IN (:status)");
+            if (m.hasTextH2) {
+                ftJoinClause.append(NL) //
+                    .append("JOIN FT_SEARCH_DATA(:text, 0, 0) ft").append(NL) //
+                    .append("ON ft.\"TABLE\" = 'topic'").append(NL) //
+                    .append("    AND ft.\"KEYS\"[1] = t.\"id\"");
+            } else if (m.hasTextMariaDB) {
+                whereClause.append(NL) //
+                    .append("    ");
+                if (needsAnd)
+                    whereClause.append("AND ");
+                whereClause.append("MATCH (\"label\", \"description\", \"status\") AGAINST (:text");
+                if (m.isAdvanced)
+                    whereClause.append(" IN BOOLEAN MODE");
+                whereClause.append(')');
+                needsAnd = true;
             }
-            // At first sight one might think that it would be more efficient to select the topic records from the
-            // sub_topics temporary table, but this doesn't work because in MariabDB that table uses the MEMORY storage
-            // engine, which doesn't support full text indexes. Hence the need to select ids only and use them in the
-            // final join.
-            template = """
-                WITH RECURSIVE "sub_topic" ("id, "parent_id")
-                AS (
-                    SELECT t."id", t."parent_id"
-                    FROM "topic" t
-                    WHERE t."parent_id" = :parentId%s
-                    UNION ALL
-                    SELECT t."id", t."parent_id"
-                    FROM "topic" t
-                    JOIN "sub_topic" st
-                    ON t."parent_id" = st."id"%s
-                )
-                SELECT %s
-                FROM "topic" t
-                JOIN (
-                    "sub_topic" st%s
-                ) ON
-                    t."id" = st."id"%s%s%s;
-                """;
-            selectTarget = "DISTINCT t.*";
-        } else {
-            template = """
-                %s%sSELECT %s
-                FROM "topic" t%s%s%s%s;
-                """;
-            selectTarget = "t.*";
         }
         if (m.isSorted)
             entityUtils.appendOrderByClause(orderByClause, m.pageable, "", true);
 
-        String countSql = String.format(template, recursiveWhereClause1, recursiveWhereClause2, "COUNT(*)",
-            ftJoinTable, ftJoinCondition, whereClause, "");
-        String selectSql = String.format(template, recursiveWhereClause1, recursiveWhereClause2, selectTarget,
-            ftJoinTable, ftJoinCondition, whereClause, orderByClause);
+        String countSql = String.format(template, recursiveParentIdClause, recursiveStatusClause1,
+            recursiveStatusClause2, "COUNT(*)", ftJoinClause, whereClause, "");
+        String selectSql = String.format(template, recursiveParentIdClause, recursiveStatusClause1,
+            recursiveStatusClause2, selectFields, ftJoinClause, whereClause, orderByClause);
 
         // NOTE: since the COUNT query does not include an ORDER BY clause, multiple executions of the same SELECT query
         // with different ORDER BY clauses will result in the registration of multiple identical COUNT queries, each of
@@ -251,7 +239,6 @@ public class CustomTopicRepositoryImpl implements CustomTopicRepository {
     }
 
     @Override
-    // @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
     public Page<Topic> findByFilter(@NonNull TopicQueryFilter filter, @NonNull Pageable pageable) {
         QueryMetaData m = getQueryMetaData(filter, pageable);
