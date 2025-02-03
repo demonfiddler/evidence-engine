@@ -38,15 +38,22 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.condition.EnabledIf;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.graphql_java_generator.exception.GraphQLRequestExecutionException;
 import com.graphql_java_generator.exception.GraphQLRequestPreparationException;
 
+import io.github.demonfiddler.ee.client.util.QueryExecutor;
+import io.github.demonfiddler.ee.client.util.SpringContext;
+
 @SpringBootTest(classes = GraphQLClientMain.class)
 @Order(3)
 @TestMethodOrder(OrderAnnotation.class)
 class JournalTests extends AbstractTrackedEntityTests<Journal> {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(JournalTests.class);
 
 	private static final Random RANDOM = new Random();
 	private static final String RESPONSE_SPEC = //
@@ -142,6 +149,20 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 
 	static boolean hasExpectedJournals() {
 		return journals != null;
+	}
+
+	static void ensureExpectedJournals() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+		if (journals == null) {
+			QueryExecutor queryExecutor = SpringContext.getApplicationContext().getBean(QueryExecutor.class);
+			String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+			List<Journal> content = queryExecutor.journals(responseSpec, null, null).getContent();
+			if (content.isEmpty()) {
+				LOGGER.error("Failed to initialise journals list from server");
+			} else {
+				journals = content;
+				LOGGER.debug("Initialised journals list from server");
+			}
+		}
 	}
 
 	@Test

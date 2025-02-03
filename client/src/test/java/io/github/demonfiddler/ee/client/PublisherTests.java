@@ -37,15 +37,22 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.condition.EnabledIf;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.graphql_java_generator.exception.GraphQLRequestExecutionException;
 import com.graphql_java_generator.exception.GraphQLRequestPreparationException;
 
+import io.github.demonfiddler.ee.client.util.QueryExecutor;
+import io.github.demonfiddler.ee.client.util.SpringContext;
+
 @SpringBootTest(classes = GraphQLClientMain.class)
 @Order(6)
 @TestMethodOrder(OrderAnnotation.class)
 class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(PublisherTests.class);
 
 	private static final String RESPONSE_SPEC = //
 		"""
@@ -142,6 +149,20 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 	static boolean hasExpectedPublishers() {
 		return publishers != null;
 	}	
+
+	static void ensureExpectedPublishers() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+		if (publishers == null) {
+			QueryExecutor queryExecutor = SpringContext.getApplicationContext().getBean(QueryExecutor.class);
+			String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+			List<Publisher> content = queryExecutor.publishers(responseSpec, null, null).getContent();
+			if (content.isEmpty()) {
+				LOGGER.error("Failed to initialise publishers list from server");
+			} else {
+				publishers = content;
+				LOGGER.debug("Initialised publishers list from server");
+			}
+		}
+	}
 
 	@Test
 	@Order(1)

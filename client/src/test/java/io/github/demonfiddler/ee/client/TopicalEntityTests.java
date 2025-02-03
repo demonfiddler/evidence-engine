@@ -25,7 +25,6 @@ import static io.github.demonfiddler.ee.client.EntityKind.PER;
 import static io.github.demonfiddler.ee.client.EntityKind.PUB;
 import static io.github.demonfiddler.ee.client.EntityKind.QUO;
 import static io.github.demonfiddler.ee.client.EntityKind.TOP;
-import static io.github.demonfiddler.ee.client.StatusKind.DRA;
 import static java.lang.Boolean.TRUE;
 
 import java.util.List;
@@ -49,7 +48,7 @@ import com.graphql_java_generator.exception.GraphQLRequestPreparationException;
 import io.github.demonfiddler.ee.common.util.ArrayUtils;
 
 @SpringBootTest(classes = GraphQLClientMain.class)
-@Order(11)
+@Order(12)
 @TestMethodOrder(OrderAnnotation.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class TopicalEntityTests extends AbstractLinkTests {
@@ -61,7 +60,7 @@ class TopicalEntityTests extends AbstractLinkTests {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TopicalEntityTests.class);
 
-    private static final List<StatusKind> STATUS_FILTER = List.of(DRA);
+    private static final List<StatusKind> STATUS_FILTER = List.of(StatusKind.PUB);
     private static final String TEXT_FILTER = "filtered";
     private static final EntityKind[] TOPICAL_ENTITY_KINDS = { CLA, DEC, PER, PUB, QUO };
     private static final EntityKind[] MASTER_ENTITY_KINDS = { CLA, DEC, PUB, QUO };

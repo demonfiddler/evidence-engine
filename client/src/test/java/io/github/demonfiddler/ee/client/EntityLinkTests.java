@@ -49,17 +49,16 @@ class EntityLinkTests extends AbstractLinkTests {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityLinkTests.class);
 
-    private static final String MINIMAL_PAGED_RESPONSE = //
-        """
-                        {
-                            number
-                            size
-                            totalElements
-                            content {
-                                id
-                            }
-                        }
-                        """;
+    private static final String MINIMAL_PAGED_RESPONSE = """
+        {
+            number
+            size
+            totalElements
+            content {
+                id
+            }
+        }
+        """;
     // Possible master entity links are as follows:
     // claim_declaration
     // claim_person
@@ -119,7 +118,7 @@ class EntityLinkTests extends AbstractLinkTests {
                 try {
                     Boolean result = mutationExecutor.linkEntities("", input);
                     assertThat(result).isTrue();
-    
+
                     // Second call doesn't work, because the integrity constraint violation throws an exception.
                     // result = mutationExecutor.linkEntities("", input);
                     // assertWithMessage("Second link attempt").that(result).isFalse();

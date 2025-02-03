@@ -19,12 +19,35 @@
 
 package io.github.demonfiddler.ee.client;
 
+import java.util.List;
+
 /** Checks completeness of state built up by integration tests. */
 class TestState {
 
+    static List<ITopicalEntity> getExpectedTopicalEntity() {
+        return List.of(ClaimTests.claim, DeclarationTests.declaration, PersonTests.person, PublicationTests.publication,
+            QuotationTests.quotation);
+    }
+
+    static List<ITrackedEntity> getExpectedTrackedEntity() {
+        return List.of(ClaimTests.claim, DeclarationTests.declaration, JournalTests.journal, PersonTests.person,
+            PublicationTests.publication, PublisherTests.publisher, QuotationTests.quotation, TopicTests.parentTopic,
+            TopicTests.childTopic);
+    }
+
+    static List<List<? extends ITopicalEntity>> getExpectedTopicalEntities() {
+        return List.of(ClaimTests.claims, DeclarationTests.declarations, PersonTests.persons,
+            PublicationTests.publications, QuotationTests.quotations);
+    }
+
+    static List<List<? extends ITrackedEntity>> getExpectedTrackedEntities() {
+        return List.of(ClaimTests.claims, DeclarationTests.declarations, JournalTests.journals, PersonTests.persons,
+            PublicationTests.publications, PublisherTests.publishers, QuotationTests.quotations, TopicTests.topics);
+    }
+
     static boolean hasExpectedEntity() {
         return //
-            ClaimTests.hasExpectedClaim() && //
+        ClaimTests.hasExpectedClaim() && //
             DeclarationTests.hasExpectedDeclaration() && //
             PersonTests.hasExpectedPerson() && //
             PublicationTests.hasExpectedPublication() && //
@@ -33,7 +56,7 @@ class TestState {
 
     static boolean hasExpectedEntities() {
         return //
-            ClaimTests.hasExpectedClaims() && //
+        ClaimTests.hasExpectedClaims() && //
             DeclarationTests.hasExpectedDeclarations() && //
             PersonTests.hasExpectedPersons() && //
             PublicationTests.hasExpectedPublications() && //
