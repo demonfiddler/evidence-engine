@@ -367,16 +367,43 @@ INSERT INTO "transaction_kind" ("code", "label", "description") VALUES
 	('UNL', 'Unlink', 'Two linked records were unlinked'),
 	('UPD', 'Update', 'A record was updated');
 
-INSERT INTO "user" ("id", "login", "first_name", "last_name", "country_code", "password_hash")
-  VALUES (0, 'root', 'Root', 'User', 'GB', '');
--- The following update is necessary because the database ignores the specified id value.
-UPDATE "user" SET "id" = 0 WHERE "login" = 'root';
+INSERT INTO "user" ("username", "first_name", "last_name", "country_code", "password") VALUES
+	('root', 'Root', 'User', 'GB', '{bcrypt}$2a$10$xL02gfgl.dEJBRzsgics5.fglRXyl.iQBNjfyXhCU14UQf2MJUHFK');
+SET @root_id = (SELECT "id" FROM "user" WHERE "username" = 'root');
+-- The following update is necessary because an AUTO_INCREMENT column ignores an explicit value.
+-- UPDATE "user" SET "id" = 0 WHERE "username" = 'root';
+-- Create remaining users with id = 1, 2, 3, ...
+-- ALTER TABLE "user" ALTER COLUMN "id" RESTART WITH 1;
+INSERT INTO "user" ("username", "first_name", "last_name", "country_code", "password", "created_by_user_id") VALUES
+	('admin', 'Administrative', 'User', 'GB', '{bcrypt}$2a$10$y9JB/y3fdX7.PUsOEadAi.gErBWCd.8oGn8IEE0KWjURLZEJ20GQi', @root_id),
+	('editor', 'Editing', 'User', 'GB', '{bcrypt}$2a$10$Yjve/6JOwx4vbmpCv7GXO.VAqSWaO8jgxjUXYh6H/fqaKq9WOaMbm', @root_id),
+	('user', 'Ordinary', 'User', 'GB', '{bcrypt}$2a$10$Yjve/6JOwx4vbmpCv7GXO.VAqSWaO8jgxjUXYh6H/fqaKq9WOaMbm', @root_id);
 
-INSERT INTO "user_permission" ("user_id", "permission_code") VALUES
-  (0, 'ADM'),
-  (0, 'CRE'),
-  (0, 'DEL'),
-  (0, 'LNK'),
-  (0, 'REA'),
-  (0, 'UPD'),
-  (0, 'UPL');
+INSERT INTO "group" ("group_name") VALUES
+	('Administrators'),
+	('Editors'),
+	('Users');
+SET @administrators_id = (SELECT "id" FROM "group" WHERE "group_name" = 'Administrators');
+SET @editors_id = (SELECT "id" FROM "group" WHERE "group_name" = 'Editors');
+SET @users_id = (SELECT "id" FROM "group" WHERE "group_name" = 'Users');
+
+INSERT INTO "group_user" ("group_id", "username") VALUES
+	(@administrators_id,'root'),
+	(@administrators_id,'admin'),
+	(@editors_id,'editor'),
+	(@users_id,'user');
+
+INSERT INTO "group_authority" ("group_id","authority") VALUES
+	(@administrators_id,'ADM'),
+	(@administrators_id,'CRE'),
+	(@administrators_id,'DEL'),
+	(@administrators_id,'LNK'),
+	(@administrators_id,'REA'),
+	(@administrators_id,'UPD'),
+	(@administrators_id,'UPL'),
+	(@editors_id,'CRE'),
+	(@editors_id,'LNK'),
+	(@editors_id,'REA'),
+	(@editors_id,'UPD'),
+	(@editors_id,'UPL'),
+	(@users_id,'REA');

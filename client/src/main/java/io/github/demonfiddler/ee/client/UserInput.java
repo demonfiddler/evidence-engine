@@ -59,11 +59,11 @@ public class UserInput {
 	Long id;
 
 	/**
-	 * The (mutable?) unique login name (user-assigned).
+	 * The (mutable?) unique user name (user-assigned).
 	 */
-	@JsonProperty("login")
-	@GraphQLScalar(fieldName = "login", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	String login;
+	@JsonProperty("username")
+	@GraphQLScalar(fieldName = "username", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String username;
 
 	/**
 	 * The user's first name.
@@ -89,10 +89,10 @@ public class UserInput {
 	/**
 	 * A hash of the user's password.
 	 */
-	@JsonProperty("passwordHash")
-	@GraphQLScalar(fieldName = "passwordHash", graphQLTypeSimpleName = "String", javaClass = String.class,
+	@JsonProperty("password")
+	@GraphQLScalar(fieldName = "password", graphQLTypeSimpleName = "String", javaClass = String.class,
 		listDepth = 0)
-	String passwordHash;
+	String password;
 
 	/**
 	 * The immutable, unique user identifier (system-assigned).
@@ -111,19 +111,19 @@ public class UserInput {
 	}
 
 	/**
-	 * The (mutable?) unique login name (user-assigned).
+	 * The (mutable?) unique user name (user-assigned).
 	 */
-	@JsonProperty("login")
-	public void setLogin(String login) {
-		this.login = login;
+	@JsonProperty("username")
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	/**
-	 * The (mutable?) unique login name (user-assigned).
+	 * The (mutable?) unique user name (user-assigned).
 	 */
-	@JsonProperty("login")
-	public String getLogin() {
-		return this.login;
+	@JsonProperty("username")
+	public String getUsername() {
+		return this.username;
 	}
 
 	/**
@@ -177,17 +177,17 @@ public class UserInput {
 	/**
 	 * A hash of the user's password.
 	 */
-	@JsonProperty("passwordHash")
-	public void setPasswordHash(String passwordHash) {
-		this.passwordHash = passwordHash;
+	@JsonProperty("password")
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	/**
 	 * A hash of the user's password.
 	 */
-	@JsonProperty("passwordHash")
-	public String getPasswordHash() {
-		return this.passwordHash;
+	@JsonProperty("password")
+	public String getPassword() {
+		return this.password;
 	}
 
 	/**
@@ -216,7 +216,7 @@ public class UserInput {
 		return "UserInput {" //$NON-NLS-1$
 			+ "id: " + this.id //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
-			+ "login: " + this.login //$NON-NLS-1$
+			+ "username: " + this.username //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "firstName: " + this.firstName //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
@@ -224,7 +224,7 @@ public class UserInput {
 			+ ", " //$NON-NLS-1$
 			+ "email: " + this.email //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
-			+ "passwordHash: " + this.passwordHash //$NON-NLS-1$
+			+ "password: " + this.password //$NON-NLS-1$
 			+ "}"; //$NON-NLS-1$
 	}
 
@@ -239,11 +239,11 @@ public class UserInput {
 	public static class Builder {
 
 		private Long id;
-		private String login;
+		private String username;
 		private String firstName;
 		private String lastName;
 		private String email;
-		private String passwordHash;
+		private String password;
 
 		/**
 		 * The immutable, unique user identifier (system-assigned).
@@ -254,10 +254,10 @@ public class UserInput {
 		}
 
 		/**
-		 * The (mutable?) unique login name (user-assigned).
+		 * The (mutable?) unique user name (user-assigned).
 		 */
-		public Builder withLogin(String loginParam) {
-			this.login = loginParam;
+		public Builder withUsername(String usernameParam) {
+			this.username = usernameParam;
 			return this;
 		}
 
@@ -288,19 +288,19 @@ public class UserInput {
 		/**
 		 * A hash of the user's password.
 		 */
-		public Builder withPasswordHash(String passwordHashParam) {
-			this.passwordHash = passwordHashParam;
+		public Builder withPassword(String passwordParam) {
+			this.password = passwordParam;
 			return this;
 		}
 
 		public UserInput build() {
 			UserInput _object = new UserInput();
 			_object.setId(this.id);
-			_object.setLogin(this.login);
+			_object.setUsername(this.username);
 			_object.setFirstName(this.firstName);
 			_object.setLastName(this.lastName);
 			_object.setEmail(this.email);
-			_object.setPasswordHash(this.passwordHash);
+			_object.setPassword(this.password);
 			return _object;
 		}
 

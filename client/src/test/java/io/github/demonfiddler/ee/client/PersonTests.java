@@ -59,14 +59,14 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 			created
 			createdByUser {
 				id
-				login
+				username
 				firstName
 				lastName
 			}
 			updated
 			updatedByUser {
 				id
-				login
+				username
 				firstName
 				lastName
 			}
@@ -89,7 +89,7 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 					entityKind
 					user {
 						id
-						login
+						username
 						firstName
 						lastName
 					}

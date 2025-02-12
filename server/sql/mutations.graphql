@@ -75,14 +75,14 @@ mutation {
     created
     createdByUser {
       id
-      login
+      username
       firstName
       lastName
     }
     updated
     updatedByUser {
       id
-      login
+      username
       firstName
       lastName
     }
@@ -105,7 +105,7 @@ mutation {
         entityKind
         user {
           id
-          login
+          username
           firstName
           lastName
         }

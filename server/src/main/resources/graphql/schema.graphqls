@@ -20,7 +20,14 @@
 #==================================================
 # DIRECTIVES & CUSTOM SCALARS
 
+"Indicates where the target is defined online."
 directive @specifiedBy(url: String!) on SCALAR
+"""
+Indicates the permission(s) required to execute a query/operation or access a field.
+Multiple values are ORed, i.e., any of the listed permissions suffices to authorise.
+Default just means authentication is required but no specific permission is necessary.
+"""
+directive @ee_auth(permission: [PermissionKind!]) on OBJECT | FIELD_DEFINITION
 
 # Custom scalar types used in this schema
 scalar Country @specifiedBy(url: "https://www.iso.org/obp/ui/#search")
@@ -103,12 +110,12 @@ interface ITrackedEntity {
     "When the record was created."
     created: DateTime
     "The user who created the record."
-    createdByUser: User
+    createdByUser: User @ee_auth
     # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
-    updatedByUser: User
+    updatedByUser: User @ee_auth
     "Log of transactions involving the record."
     log(
         "Filters results."
@@ -129,34 +136,6 @@ interface ITopicalEntity {
     ): TopicRefPage!
 }
 
-# "Returns paginated query results."
-# interface IBaseEntityPage {
-#     "The requested pageful of records."
-#     content: [IBaseEntity!]!
-#     "Whether the page has content."
-#     hasContent: Boolean!
-#     "Whether the page is empty (no content)."
-#     isEmpty: Boolean!
-#     "The current page number."
-#     number: Int!
-#     "The page size."
-#     size: Int!
-#     "The number of elements on this page."
-#     numberOfElements: Int!
-#     "The total number of pages available."
-#     totalPages: Int!
-#     "The total number of records."
-#     totalElements: Long!
-#     "Whether this is the first page."
-#     isFirst: Boolean!
-#     "Whether this is the last page."
-#     isLast: Boolean!
-#     "Whether there is next page."
-#     hasNext: Boolean!
-#     "Whether there is previous page."
-#     hasPrevious: Boolean!
-# }
-
 #==================================================
 # DOMAIN TYPES
 
@@ -176,12 +155,12 @@ type Claim implements IBaseEntity & ITrackedEntity & ITopicalEntity {
     "When the record was created."
     created: DateTime
     "The user who created the record."
-    createdByUser: User
+    createdByUser: User @ee_auth
     # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
-    updatedByUser: User
+    updatedByUser: User @ee_auth
     "Log of transactions involving the record."
     log(
         "Filters results."
@@ -283,12 +262,12 @@ type Declaration implements IBaseEntity & ITrackedEntity & ITopicalEntity {
     "When the record was created."
     created: DateTime
     "The user who created the record."
-    createdByUser: User
+    createdByUser: User @ee_auth
     # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
-    updatedByUser: User
+    updatedByUser: User @ee_auth
     "Log of transactions involving the record."
     log(
         "Filters results."
@@ -427,7 +406,7 @@ Enumeration to specify whether to return the short (abbreviated) or long (full) 
 Applied, for example, to publication kind and journal title, both of which have short and long versions, (e.g., code and label).
 """
 enum FormatKind {
-    "Short form, abbreviated/coded"
+    "Short form, abbreviated/coded."
     SHORT
     "Long form, human readadble."
     LONG
@@ -446,12 +425,12 @@ type Journal implements IBaseEntity & ITrackedEntity {
     "When the record was created."
     created: DateTime
     "The user who created the record."
-    createdByUser: User
+    createdByUser: User @ee_auth
     # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
-    updatedByUser: User
+    updatedByUser: User @ee_auth
     "Log of transactions involving the record."
     log(
         "Filters results."
@@ -541,7 +520,7 @@ type Log implements IBaseEntity {
     "The date-time stamp."
     timestamp: DateTime
     "The user who made the change."
-    user: User
+    user: User @ee_auth
     "The kind of transaction."
     transactionKind(
         "How to format the result. SHORT format is per ```TransactionKind``` enum."
@@ -617,7 +596,7 @@ enum PermissionKind {
     CRE
     "Delete existing record."
     DEL
-    "Link existing records."
+    "Link/unlink existing records."
     LNK
     "Read existing record."
     REA
@@ -640,12 +619,12 @@ type Person implements IBaseEntity & ITrackedEntity & ITopicalEntity {
     "When the record was created."
     created: DateTime
     "The user who created the record."
-    createdByUser: User
+    createdByUser: User @ee_auth
     # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
-    updatedByUser: User
+    updatedByUser: User @ee_auth
     "Log of transactions involving the record."
     log(
         "Filters results."
@@ -766,12 +745,12 @@ type Publication implements IBaseEntity & ITrackedEntity & ITopicalEntity {
     "When the record was created."
     created: DateTime
     "The user who created the record."
-    createdByUser: User
+    createdByUser: User @ee_auth
     # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
-    updatedByUser: User
+    updatedByUser: User @ee_auth
     "Log of transactions involving the record."
     log(
         "Filters results."
@@ -1021,12 +1000,12 @@ type Publisher implements IBaseEntity & ITrackedEntity {
     "When the record was created."
     created: DateTime
     "The user who created the record."
-    createdByUser: User
+    createdByUser: User @ee_auth
     # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
-    updatedByUser: User
+    updatedByUser: User @ee_auth
     "Log of transactions involving the record."
     log(
         "Filters results."
@@ -1108,12 +1087,12 @@ type Quotation implements IBaseEntity & ITrackedEntity & ITopicalEntity {
     "When the record was created."
     created: DateTime
     "The user who created the record."
-    createdByUser: User
+    createdByUser: User @ee_auth
     # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
-    updatedByUser: User
+    updatedByUser: User @ee_auth
     "Log of transactions involving the record."
     log(
         "Filters results."
@@ -1231,12 +1210,12 @@ type Topic implements IBaseEntity & ITrackedEntity {
     "When the record was created."
     created: DateTime
     "The user who created the record."
-    createdByUser: User
+    createdByUser: User @ee_auth
     # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
-    updatedByUser: User
+    updatedByUser: User @ee_auth
     "Log of transactions involving the record."
     log(
         "Filters results."
@@ -1438,7 +1417,7 @@ enum TransactionKind {
 }
 
 "Describes a user of the system."
-type User implements IBaseEntity & ITrackedEntity {
+type User implements IBaseEntity & ITrackedEntity @ee_auth {
     "The immutable, unique user identifier (system-assigned)."
     id: ID!
     "The entity status."
@@ -1450,12 +1429,12 @@ type User implements IBaseEntity & ITrackedEntity {
     "When the record was created."
     created: DateTime
     "The user who created the record."
-    createdByUser: User
+    createdByUser: User @ee_auth(permission: [ADM])
     # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
-    updatedByUser: User
+    updatedByUser: User @ee_auth(permission: [ADM])
     "Log of transactions involving the record."
     log(
         "Filters results."
@@ -1463,30 +1442,30 @@ type User implements IBaseEntity & ITrackedEntity {
         "Sorts and/or paginates results."
         pageSort: PageableInput
     ): LogPage!
-    "The (mutable?) unique login name (user-assigned)."
-    login: String
+    "The (mutable?) unique user name (user-assigned)."
+    username: String
     "The user's first name."
     firstName: String
     "The user's last name."
     lastName: String
     "The user's email address."
-    email: String
+    email: String @ee_auth(permission: [ADM])
     # TODO: consider whether to reveal this through the GraphQL API.
     "A hash of the user's password."
-    passwordHash: String
+    password: String @ee_auth(permission: [ADM])
     "The permissions granted to the user."
     permissions(
         "How to format the results. SHORT format is per ```PermissionKind``` enum."
         format: FormatKind = LONG
-    ): [String!]!
+    ): [String!]! @ee_auth(permission: [ADM])
 }
 
 "Input for creating or updating a user of the system."
 input UserInput {
     "The immutable, unique user identifier (system-assigned)."
     id: ID!
-    "The (mutable?) unique login name (user-assigned)."
-    login: String!
+    "The (mutable?) unique user name (user-assigned)."
+    username: String!
     "The user's first name."
     firstName: String!
     "The user's last name."
@@ -1495,7 +1474,7 @@ input UserInput {
     email: String!
     # TODO: consider whether to reveal this through the GraphQL API.
     "A hash of the user's password."
-    passwordHash: String
+    password: String
 }
 
 "Returns paginated user query results."
@@ -1639,94 +1618,94 @@ type Query {
         filter: TrackedEntityQueryFilter,
         "Sorts and/or paginates results."
         pageSort: PageableInput
-    ): UserPage!
+    ): UserPage! @ee_auth(permission: [ADM])
     "Returns a user given its identifier."
-    userById(id: ID!): User
-    "Returns a user given its login."
-    userByLogin(login: String!): User
+    userById(id: ID!): User @ee_auth(permission: [ADM])
+    "Returns a user given its username."
+    userByUsername(username: String!): User @ee_auth(permission: [ADM])
 }
 
 "Available mutations."
 type Mutation {
     "Creates a new claim."
-    createClaim(claim: ClaimInput!): Claim
+    createClaim(claim: ClaimInput!): Claim @ee_auth(permission: [CRE])
     "Updates an existing claim."
-    updateClaim(claim: ClaimInput!): Claim
+    updateClaim(claim: ClaimInput!): Claim @ee_auth(permission: [UPD])
     "Deletes an existing claim."
-    deleteClaim(claimId: ID!): Claim
+    deleteClaim(claimId: ID!): Claim @ee_auth(permission: [DEL])
 
     "Creates a new declaration."
-    createDeclaration(declaration: DeclarationInput!): Declaration
+    createDeclaration(declaration: DeclarationInput!): Declaration @ee_auth(permission: [CRE])
     "Updates an existing declaration."
-    updateDeclaration(declaration: DeclarationInput!): Declaration
+    updateDeclaration(declaration: DeclarationInput!): Declaration @ee_auth(permission: [UPD])
     "Deletes an existing declaration."
-    deleteDeclaration(declarationId: ID!): Declaration
+    deleteDeclaration(declarationId: ID!): Declaration @ee_auth(permission: [DEL])
 
     "Create a new journal."
-    createJournal(journal: JournalInput!): Journal
+    createJournal(journal: JournalInput!): Journal @ee_auth(permission: [CRE])
     "Updates an existing journal."
-    updateJournal(journal: JournalInput!): Journal
+    updateJournal(journal: JournalInput!): Journal @ee_auth(permission: [UPD])
     "Deletes an existing journal."
-    deleteJournal(journalId: ID!): Journal
+    deleteJournal(journalId: ID!): Journal @ee_auth(permission: [DEL])
 
     "Creates a new person."
-    createPerson(person: PersonInput!): Person
+    createPerson(person: PersonInput!): Person @ee_auth(permission: [CRE])
     "Updates an existing person."
-    updatePerson(person: PersonInput!): Person
+    updatePerson(person: PersonInput!): Person @ee_auth(permission: [UPD])
     "Deletes an existing person."
-    deletePerson(personId: ID!): Person
+    deletePerson(personId: ID!): Person @ee_auth(permission: [DEL])
 
     "Creates a new publication."
-    createPublication(publication: PublicationInput!): Publication
+    createPublication(publication: PublicationInput!): Publication @ee_auth(permission: [CRE])
     "Updates an existing publication."
-    updatePublication(publication: PublicationInput!): Publication
+    updatePublication(publication: PublicationInput!): Publication @ee_auth(permission: [UPD])
     "Deletes an existing publication."
-    deletePublication(publicationId: ID!): Publication
+    deletePublication(publicationId: ID!): Publication @ee_auth(permission: [DEL])
 
     "Creates a new publisher."
-    createPublisher(publisher: PublisherInput!): Publisher
+    createPublisher(publisher: PublisherInput!): Publisher @ee_auth(permission: [CRE])
     "Updates an existing publisher."
-    updatePublisher(publisher: PublisherInput!): Publisher
+    updatePublisher(publisher: PublisherInput!): Publisher @ee_auth(permission: [UPD])
     "Deletes an existing publisher."
-    deletePublisher(publisherId: ID!): Publisher
+    deletePublisher(publisherId: ID!): Publisher @ee_auth(permission: [DEL])
 
     "Creates a new quotation."
-    createQuotation(quotation: QuotationInput!): Quotation
+    createQuotation(quotation: QuotationInput!): Quotation @ee_auth(permission: [CRE])
     "Updates an existing quotation."
-    updateQuotation(quotation: QuotationInput!): Quotation
+    updateQuotation(quotation: QuotationInput!): Quotation @ee_auth(permission: [UPD])
     "Deletes an existing quotation."
-    deleteQuotation(quotationId: ID!): Quotation
+    deleteQuotation(quotationId: ID!): Quotation @ee_auth(permission: [DEL])
 
     "Creates a new topic."
-    createTopic(topic: TopicInput!): Topic
+    createTopic(topic: TopicInput!): Topic @ee_auth(permission: [CRE])
     "Updates an existing topic."
-    updateTopic(topic: TopicInput!): Topic
+    updateTopic(topic: TopicInput!): Topic @ee_auth(permission: [UPD])
     "Deletes an existing topic."
-    deleteTopic(topicId: ID!): Topic
+    deleteTopic(topicId: ID!): Topic @ee_auth(permission: [DEL])
 
     "Adds a new topic reference."
-    addTopicRef(topicRef: TopicRefInput!): TopicRef
+    addTopicRef(topicRef: TopicRefInput!): TopicRef @ee_auth(permission: [LNK])
     "Updates an existing topic reference."
-    updateTopicRef(topicRef: TopicRefInput!): TopicRef
+    updateTopicRef(topicRef: TopicRefInput!): TopicRef @ee_auth(permission: [LNK])
     "Removes a topic reference."
-    removeTopicRef(topicRef: TopicRefInput!): Boolean
+    removeTopicRef(topicRef: TopicRefInput!): Boolean @ee_auth(permission: [LNK])
 
     "Links two entities."
-    linkEntities(link: LinkEntitiesInput!) : Boolean
+    linkEntities(link: LinkEntitiesInput!) : Boolean @ee_auth(permission: [LNK])
     "Unlinks two linked entities."
-    unlinkEntities(link: LinkEntitiesInput!) : Boolean
+    unlinkEntities(link: LinkEntitiesInput!) : Boolean @ee_auth(permission: [LNK])
 
     "Sets entity status."
-    setEntityStatus(entityKind: EntityKind!, entityId: Long!, status: StatusKind!) : Boolean
+    setEntityStatus(entityKind: EntityKind!, entityId: Long!, status: StatusKind!) : Boolean @ee_auth(permission: [UPD])
 
     "Creates a new user."
-    createUser(user: UserInput!): User
+    createUser(user: UserInput!): User @ee_auth(permission: [ADM])
     "Updates an existing user."
-    updateUser(user: UserInput!): User
-    "Updates an existing user."
-    deleteUser(userId: ID!): User
+    updateUser(user: UserInput!): User @ee_auth(permission: [ADM])
+    "Deletes an existing user."
+    deleteUser(userId: ID!): User @ee_auth(permission: [ADM])
     "Grants permissions to a user. The specified permissions are added to any existing ones."
-    grantUserPermissions(userId: ID!, permissions: [PermissionKind!]!): User
+    grantUserPermissions(userId: ID!, permissions: [PermissionKind!]!): User @ee_auth(permission: [ADM])
     "Revokes permissions from a user. The specified permissions are removed from the user; other permissions remain intact."
-    revokeUserPermissions(userId: ID!, permissions: [PermissionKind!]!): User
+    revokeUserPermissions(userId: ID!, permissions: [PermissionKind!]!): User @ee_auth(permission: [ADM])
 }

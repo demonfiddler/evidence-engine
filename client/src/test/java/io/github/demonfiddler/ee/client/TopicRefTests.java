@@ -65,8 +65,7 @@ class TopicRefTests extends AbstractGraphQLTests {
             quotationTopicRefs != null;
     }
 
-    private static final String RESPONSE_SPEC = //
-        """
+    private static final String RESPONSE_SPEC = """
         {
             id
             topicId
@@ -75,8 +74,7 @@ class TopicRefTests extends AbstractGraphQLTests {
             locations
         }
         """;
-    private static final String PAGED_RESPONSE_SPEC = //
-        """
+    private static final String PAGED_RESPONSE_SPEC = """
         {
             hasContent
             isEmpty
@@ -575,14 +573,14 @@ class TopicRefTests extends AbstractGraphQLTests {
         return actualTopicRefs;
     }
 
-    private <T extends ITopicalEntity> TopicRef addTopicRef(Topic topic, T entity,
-        String locations) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+    private <T extends ITopicalEntity> TopicRef addTopicRef(Topic topic, T entity, String locations)
+        throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 
         return mutateTopicRef(null, topic, entity, locations);
     }
 
-    private <T extends ITopicalEntity> TopicRef mutateTopicRef(Long id, Topic topic,
-        T entity, String locations) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+    private <T extends ITopicalEntity> TopicRef mutateTopicRef(Long id, Topic topic, T entity, String locations)
+        throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 
         Long topicId = topic.getId();
         Long entityId = entity.getId();
@@ -663,8 +661,9 @@ class TopicRefTests extends AbstractGraphQLTests {
         boolean isFirst = pageNumber == 0;
         boolean isLast = pageNumber + 1 == totalPages;
         List<TopicRef> expected = subList(topicRefs, topicRefIdxsByEntityIdxPage);
+        boolean sorted = pageSort != null && pageSort.getSort() != null && !pageSort.getSort().getOrders().isEmpty();
         readTopicRefs(filter, pageSort, totalElements, totalPages, hasPrevious, hasNext, isFirst, isLast, expected,
-            true);
+            sorted);
     }
 
     private List<TopicRef> subList(TopicRef[][] topicRefs, int[][] indexes) {

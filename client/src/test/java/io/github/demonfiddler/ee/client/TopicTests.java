@@ -63,14 +63,14 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 			created
 			createdByUser {
 				id
-				login
+				username
 				firstName
 				lastName
 			}
 			updated
 			updatedByUser {
 				id
-				login
+				username
 				firstName
 				lastName
 			}
@@ -93,7 +93,7 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 					entityKind
 					user {
 						id
-						login
+						username
 						firstName
 						lastName
 					}

@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS "claim" (
   "status" char(3) NOT NULL DEFAULT 'DRA' COMMENT 'The record status',
   "created" timestamp NOT NULL DEFAULT current_timestamp() COMMENT 'When the record was created',
   "created_by_user_id" int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'ID of the user who created the record',
-  "updated" timestamp NULL DEFAULT NULL COMMENT 'When the record was last updated',
+  "updated" timestamp DEFAULT NULL COMMENT 'When the record was last updated',
   "updated_by_user_id" int(10) unsigned DEFAULT NULL COMMENT 'ID of the user who last updated the record',
   PRIMARY KEY ("id"),
   KEY "FK_claim_created_user" ("created_by_user_id"),
@@ -143,7 +143,7 @@ CREATE TABLE IF NOT EXISTS "declaration" (
   "status" char(3) NOT NULL DEFAULT 'DRA' COMMENT 'The record status',
   "created" timestamp NOT NULL DEFAULT current_timestamp() COMMENT 'When the record was created',
   "created_by_user_id" int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'ID of the user who created the record',
-  "updated" timestamp NULL DEFAULT NULL COMMENT 'When the record was last updated',
+  "updated" timestamp DEFAULT NULL COMMENT 'When the record was last updated',
   "updated_by_user_id" int(10) unsigned DEFAULT NULL COMMENT 'ID of the user who last updated the record',
   PRIMARY KEY ("id"),
   KEY "FK_declaration_declaration_kind" ("kind"),
@@ -220,7 +220,7 @@ CREATE TABLE IF NOT EXISTS "journal" (
   "status" char(3) NOT NULL DEFAULT 'DRA' COMMENT 'The record status',
   "created" timestamp NOT NULL DEFAULT current_timestamp() COMMENT 'When the record was created',
   "created_by_user_id" int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'ID of the user who created the record',
-  "updated" timestamp NULL DEFAULT NULL COMMENT 'When the record was last updated',
+  "updated" timestamp DEFAULT NULL COMMENT 'When the record was last updated',
   "updated_by_user_id" int(10) unsigned DEFAULT NULL COMMENT 'ID of the user who last updated the record',
   PRIMARY KEY ("id") USING BTREE,
   UNIQUE KEY "journal_issn" ("issn") USING BTREE,
@@ -293,7 +293,7 @@ CREATE TABLE IF NOT EXISTS "person" (
   "status" char(3) NOT NULL DEFAULT 'DRA' COMMENT 'The record status',
   "created" timestamp NOT NULL DEFAULT current_timestamp() COMMENT 'When the record was created',
   "created_by_user_id" int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'ID of the user who created the record',
-  "updated" timestamp NULL DEFAULT NULL COMMENT 'When the record was last updated',
+  "updated" timestamp DEFAULT NULL COMMENT 'When the record was last updated',
   "updated_by_user_id" int(10) unsigned DEFAULT NULL COMMENT 'ID of the user who last updated the record',
   PRIMARY KEY ("id"),
   KEY "FK_person_status_kind" ("status") USING BTREE,
@@ -325,7 +325,7 @@ CREATE TABLE IF NOT EXISTS "publication" (
   "kind" varchar(6) NOT NULL COMMENT 'The kind of publication',
   "date" date DEFAULT NULL COMMENT 'Publication date',
   "year" year(4) DEFAULT NULL COMMENT 'Publication year',
-	"location" VARCHAR(50) NULL DEFAULT NULL COMMENT 'The location of the relevant section within the publication',
+	"location" VARCHAR(50) DEFAULT NULL COMMENT 'The location of the relevant section within the publication',
   "abstract" text DEFAULT NULL COMMENT 'Abstract from the article',
   "notes" text DEFAULT NULL COMMENT 'Added notes about the publication',
   "peer_reviewed" bit(1) DEFAULT NULL COMMENT 'Whether the article was peer-reviewed',
@@ -337,7 +337,7 @@ CREATE TABLE IF NOT EXISTS "publication" (
   "status" char(3) NOT NULL DEFAULT 'DRA' COMMENT 'The record status',
   "created" timestamp NOT NULL DEFAULT current_timestamp() COMMENT 'When the record was created',
   "created_by_user_id" int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'ID of the user who created the record',
-  "updated" timestamp NULL DEFAULT NULL COMMENT 'When the record was last updated',
+  "updated" timestamp DEFAULT NULL COMMENT 'When the record was last updated',
   "updated_by_user_id" int(10) unsigned DEFAULT NULL COMMENT 'ID of the user who last updated the record',
   PRIMARY KEY ("id") USING BTREE,
   UNIQUE KEY "publication_doi" ("doi") USING BTREE,
@@ -390,7 +390,7 @@ CREATE TABLE IF NOT EXISTS "publisher" (
   "status" char(3) NOT NULL DEFAULT 'DRA' COMMENT 'The record status',
   "created" timestamp NOT NULL DEFAULT current_timestamp() COMMENT 'When the record was created',
   "created_by_user_id" int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'ID of the user who created the record',
-  "updated" timestamp NULL DEFAULT NULL COMMENT 'When the record was last updated',
+  "updated" timestamp DEFAULT NULL COMMENT 'When the record was last updated',
   "updated_by_user_id" int(10) unsigned DEFAULT NULL COMMENT 'ID of the user who last updated the record',
   PRIMARY KEY ("id"),
   KEY "FK_publisher_country" ("country_code") USING BTREE,
@@ -419,7 +419,7 @@ CREATE TABLE IF NOT EXISTS "quotation" (
   "status" char(3) NOT NULL DEFAULT 'DRA' COMMENT 'The record status',
   "created" timestamp NOT NULL DEFAULT current_timestamp() COMMENT 'When the record was created',
   "created_by_user_id" int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'ID of the user who created the record',
-  "updated" timestamp NULL DEFAULT NULL COMMENT 'When the record was last updated',
+  "updated" timestamp DEFAULT NULL COMMENT 'When the record was last updated',
   "updated_by_user_id" int(10) unsigned DEFAULT NULL COMMENT 'ID of the user who last updated the record',
   PRIMARY KEY ("id"),
   KEY "FK_quotation_status" ("status") USING BTREE,
@@ -480,7 +480,7 @@ CREATE TABLE IF NOT EXISTS "topic" (
   "status" char(3) NOT NULL DEFAULT 'DRA' COMMENT 'The record status',
   "created" timestamp NOT NULL DEFAULT current_timestamp() COMMENT 'When the record was created',
   "created_by_user_id" int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'ID of the user who created the record',
-  "updated" timestamp NULL DEFAULT NULL COMMENT 'When the record was last updated',
+  "updated" timestamp DEFAULT NULL COMMENT 'When the record was last updated',
   "updated_by_user_id" int(10) unsigned DEFAULT NULL COMMENT 'ID of the user who last updated the record',
   PRIMARY KEY ("id"),
   KEY "FK_topic_topic" ("parent_id"),
@@ -594,24 +594,26 @@ CREATE TABLE IF NOT EXISTS "transaction_kind" (
 -- Dumping structure for table evidence_engine.user
 CREATE TABLE IF NOT EXISTS "user" (
   "id" int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'The unique system-assigned user identifier',
-  "login" varchar(20) NOT NULL COMMENT 'The unique user-assigned login name',
-  "first_name" varchar(50) NOT NULL COMMENT 'The user''s first name',
-  "last_name" varchar(50) NOT NULL COMMENT 'The user''s last name',
+  "username" varchar(50) NOT NULL COMMENT 'The unique user-assigned user name',
+  "password" varchar(500) NOT NULL COMMENT 'Hash of the user''s password',
+	"enabled" BIT(1) NOT NULL COMMENT 'Whether the user account is enabled',
+  "first_name" varchar(50) NULL COMMENT 'The user''s first name',
+  "last_name" varchar(50) NULL COMMENT 'The user''s last name',
   "email" varchar(100) DEFAULT NULL COMMENT 'The user''s email address, used for sign-in',
   "country_code" char(2) DEFAULT NULL COMMENT 'ISO-3166-1 alpha-2 code for user''s country of residence',
-  "password_hash" char(60) NOT NULL COMMENT 'Hash of the user''s password',
   "notes" text DEFAULT NULL COMMENT 'Added notes about the user',
   "status" char(3) NOT NULL DEFAULT 'DRA' COMMENT 'The record status',
   "created" timestamp NOT NULL DEFAULT current_timestamp() COMMENT 'When the record was created',
   "created_by_user_id" int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'ID of the user who created the record',
-  "updated" timestamp NULL DEFAULT NULL COMMENT 'When the record was last updated',
+  "updated" timestamp DEFAULT NULL COMMENT 'When the record was last updated',
   "updated_by_user_id" int(10) unsigned DEFAULT NULL COMMENT 'ID of the user who last updated the record',
   PRIMARY KEY ("id"),
+  UNIQUE KEY ("username"),
   KEY "FK_user_country" ("country_code"),
   KEY "FK_user_updated_user" ("updated_by_user_id"),
   KEY "FK_user_status" ("status"),
   KEY "FK_user_created_user" ("created_by_user_id"),
-  FULLTEXT KEY "user_fulltext" ("login","first_name","last_name","email","notes"),
+  FULLTEXT KEY "user_fulltext" ("username","first_name","last_name","email","notes"),
   CONSTRAINT "FK_user_country" FOREIGN KEY ("country_code") REFERENCES "country" ("alpha_2") ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT "FK_user_created_user" FOREIGN KEY ("created_by_user_id") REFERENCES "user" ("id") ON UPDATE CASCADE,
   CONSTRAINT "FK_user_status" FOREIGN KEY ("status") REFERENCES "status_kind" ("code") ON UPDATE CASCADE
@@ -619,17 +621,45 @@ CREATE TABLE IF NOT EXISTS "user" (
 
 -- Data exporting was unselected.
 
--- Dumping structure for table evidence_engine.user_permission
-CREATE TABLE IF NOT EXISTS "user_permission" (
-  "user_id" int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'The user id',
-  "permission_code" char(3) NOT NULL COMMENT 'The permission code',
-  PRIMARY KEY ("user_id","permission_code"),
-  KEY "FK_user_permission_permission" ("permission_code"),
-  CONSTRAINT "FK_user_permission_permission" FOREIGN KEY ("permission_code") REFERENCES "permission_kind" ("code") ON UPDATE CASCADE,
-  CONSTRAINT "FK_user_permission_user" FOREIGN KEY ("user_id") REFERENCES "user" ("id") ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Association table that grants access permissions to users';
+-- Additional tables required by Spring Security
+CREATE TABLE IF NOT EXISTS "user_authority" (
+	"username" VARCHAR(50) NOT NULL COMMENT 'The login user name',
+	"authority" CHAR(3) NOT NULL COMMENT 'The granted authority code',
+	UNIQUE KEY "user_authority" ("username", "authority"),
+	CONSTRAINT "FK_user_authority_user" FOREIGN KEY ("username") REFERENCES "user"("username") ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT "FK_user_authority_permission" FOREIGN KEY ("authority") REFERENCES "permission_kind" ("code") ON UPDATE CASCADE
+) COMMENT='Holds authorities granted to users';
 
--- Data exporting was unselected.
+CREATE TABLE IF NOT EXISTS "group" (
+	"id" int(10) unsigned AUTO_INCREMENT NOT NULL COMMENT 'The unique system-assigned group identifier',
+	"group_name" VARCHAR(50) NOT NULL COMMENT 'The group name',
+	PRIMARY KEY ("id")
+) COMMENT='Holds groups to which users can belong';
+
+CREATE TABLE IF NOT EXISTS "group_authority" (
+	"group_id" int(10) unsigned NOT NULL COMMENT 'ID of a group',
+	"authority" CHAR(3) NOT NULL COMMENT 'The granted authority code',
+	UNIQUE KEY "group_authority" ("group_id", "authority"),
+	CONSTRAINT "FK_group_authority_group" FOREIGN KEY ("group_id") REFERENCES "group"("id"),
+  CONSTRAINT "FK_group_authority_permission" FOREIGN KEY ("authority") REFERENCES "permission_kind" ("code") ON UPDATE CASCADE
+) COMMENT='Holds authorities granted to groups';
+
+CREATE TABLE IF NOT EXISTS "group_user" (
+	"id" int(10) unsigned AUTO_INCREMENT NOT NULL COMMENT 'The unique system-assigned identifier',
+	"username" VARCHAR(50) NOT NULL COMMENT 'The login user name',
+	"group_id" int(10) unsigned NOT NULL COMMENT 'ID of the group to which user belongs',
+	PRIMARY KEY ("id"),
+  UNIQUE KEY "group_user" ("username", "group_id"),
+	CONSTRAINT "FK_group_user_group" FOREIGN KEY ("group_id") REFERENCES "group"("id")
+) COMMENT='Defines group membership';
+
+CREATE TABLE "persistent_login" (
+    "series" VARCHAR(64) COMMENT 'Encoded random number used to detect cookie stealing',
+    "username" VARCHAR(64) NOT NULL COMMENT 'The authenticated username',
+    "token" VARCHAR(64) NOT NULL COMMENT 'The authentication token returned as a cookie',
+    "last_used" TIMESTAMP NOT NULL COMMENT 'The date/time at which the token was last used',
+    PRIMARY KEY ("series")
+);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

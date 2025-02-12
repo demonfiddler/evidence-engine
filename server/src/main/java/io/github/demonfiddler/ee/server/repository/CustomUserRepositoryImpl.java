@@ -34,11 +34,10 @@ public class CustomUserRepositoryImpl extends CustomITrackedEntityRepositoryImpl
 
     @Override
     protected String getFulltextColumns() {
-        return "\"login\", \"first_name\", \"last_name\", \"email\", \"notes\"";
+        return "\"username\", \"first_name\", \"last_name\", \"email\", \"notes\"";
     }
 
     @Override
-    // @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
     public List<PermissionKind> findUserPermissions(Long userId) {
         String sql = "SELECT permission_code FROM user_permission WHERE user_id = :userId";
@@ -48,7 +47,6 @@ public class CustomUserRepositoryImpl extends CustomITrackedEntityRepositoryImpl
     }
 
     @Override
-    // @Transactional
     public int addUserPermissions(Long userId, List<PermissionKind> permissions) {
         String sql = "REPLACE INTO user_permission (user_id, permission_code) VALUES (:userId, :permissionCode);";
         Query query = em.createNativeQuery(sql);
@@ -62,7 +60,6 @@ public class CustomUserRepositoryImpl extends CustomITrackedEntityRepositoryImpl
     }
 
     @Override
-    // @Transactional
     public int removeUserPermissions(Long userId, List<PermissionKind> permissions) {
         String sql = "DELETE FROM user_permission WHERE user_id = :userId AND permission_code IN (:permissions);";
         Query query = em.createNativeQuery(sql);

@@ -64,14 +64,14 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 			created
 			createdByUser {
 				id
-				login
+				username
 				firstName
 				lastName
 			}
 			updated
 			updatedByUser {
 				id
-				login
+				username
 				firstName
 				lastName
 			}
@@ -94,7 +94,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 					entityKind
 					user {
 						id
-						login
+						username
 						firstName
 						lastName
 					}
@@ -310,17 +310,17 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 
 		JournalPage actuals = queryExecutor.journals(responseSpec, filter, null);
 		List<Journal> expected = subList(journals, 5, 7, 8);
-		checkPage(actuals, expected.size(), 1, 3, 0, false, false, true, true, expected, true);
+		checkPage(actuals, expected.size(), 1, 3, 0, false, false, true, true, expected, false);
 
 		filter.setStatus(List.of(StatusKind.DRA));
 		actuals = queryExecutor.journals(responseSpec, filter, null);
-		checkPage(actuals, expected.size(), 1, 3, 0, false, false, true, true, expected, true);
+		checkPage(actuals, expected.size(), 1, 3, 0, false, false, true, true, expected, false);
 
 		filter.setStatus(List.of(StatusKind.DEL));
 		filter.setText(null);
 		actuals = queryExecutor.journals(responseSpec, filter, null);
 		expected = journals.subList(0, 1);
-		checkPage(actuals, expected.size(), 1, 1, 0, false, false, true, true, expected, true);
+		checkPage(actuals, expected.size(), 1, 1, 0, false, false, true, true, expected, false);
 	}
 
 	@Test

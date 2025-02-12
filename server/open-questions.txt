@@ -20,3 +20,21 @@ Interpretation of filter values
     TrackedEntityQueryFilter.text
         Specify the empty string to signify a null match.
     TopicalEntityQueryFilter.topicId
+
+Polymorphism & Inheritance
+--------------------------
+Implement a class hierarchy thus:
+    AbstractBaseEntity implements IBaseEntity
+        AbstractTrackedEntity implements ITrackedEntity (extends IBaseEntity)
+            Journal
+            Publisher
+            Topic
+            User
+            AbstractTopicalEntity implements ITopicalEntity (extends ITrackedEntity)
+                Claim
+                Declaration
+                Person
+                Publication
+                Quotation
+
+At present, this arrangement is prevented by the com.graphql_java_generator.client.GraphqlClientUtils.getFieldType() method, which does not recurse through the supertype hierarchy when searching for the field. We could subclass this class and modify the generated code to use our subclass instead.

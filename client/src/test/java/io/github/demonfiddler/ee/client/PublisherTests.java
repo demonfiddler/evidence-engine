@@ -62,14 +62,14 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 			created
 			createdByUser {
 				id
-				login
+				username
 				firstName
 				lastName
 			}
 			updated
 			updatedByUser {
 				id
-				login
+				username
 				firstName
 				lastName
 			}
@@ -92,7 +92,7 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 					entityKind
 					user {
 						id
-						login
+						username
 						firstName
 						lastName
 					}
@@ -298,17 +298,17 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 
 		List<Publisher> expected = subList(publishers, 5, 7, 8);
 		PublisherPage actuals = queryExecutor.publishers(responseSpec, filter, null);
-		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, false);
 
 		filter.setStatus(List.of(StatusKind.DRA));
 		actuals = queryExecutor.publishers(responseSpec, filter, null);
-		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, false);
 
 		filter.setStatus(List.of(StatusKind.DEL));
 		filter.setText(null);
 		expected = subList(publishers, 0);
 		actuals = queryExecutor.publishers(responseSpec, filter, null);
-		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
+		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, false);
 	}
 
 	@Test

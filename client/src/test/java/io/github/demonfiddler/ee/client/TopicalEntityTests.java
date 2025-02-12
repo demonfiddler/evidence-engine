@@ -987,7 +987,7 @@ class TopicalEntityTests extends AbstractLinkTests {
         EntityKind masterEntityKind, Long masterEntityId, EntityKind entityKind, Integer pageSizeOpt, int pageNumber,
         boolean sorted, boolean ignoreCase) {
 
-        LOGGER.debug(
+        LOGGER.trace(
             "checkPage(status: {}, text: {}, topicId: {}, recursive: {}, masterEntityKind: {}, masterEntityId: {}, "
                 + "entityKind: {}, pageSize: {}, pageNumber: {}, sorted: {}, ignoreCase: {})",
             status, text, topicId, recursive, masterEntityKind, masterEntityId, entityKind, pageSizeOpt, pageNumber,

@@ -1,6 +1,22 @@
 {
+  claimById(id: 4){
+    id
+    status
+    createdByUser{
+      id
+      username
+    }
+    updatedByUser{
+      id
+      username
+    }
+    text
+    date
+    notes
+  }
   declarationById(id: 3){
     id
+    status
     kind(format: LONG)
     title
     date
@@ -9,12 +25,12 @@
     signatoryCount
   }
   journalById(id: 24) {
-      id
-      status
-      created
-      title
-      abbreviation
-      issn
+    id
+    status
+    created
+    title
+    abbreviation
+    issn
   }
   publisherById(id: 23757) {
     id
@@ -28,9 +44,10 @@
     journalCount
   }
   userById(id: 0) {
+    id
     status
     created
-    login
+    username
     firstName
     lastName
     email
@@ -145,7 +162,7 @@
       id
       timestamp
       user {
-        login
+        username
         firstName
         lastName
       }
@@ -165,14 +182,14 @@
     created
     createdByUser {
       id
-      login
+      username
       firstName
       lastName
     }
     updated
     updatedByUser {
       id
-      login
+      username
       firstName
       lastName
     }
@@ -195,7 +212,7 @@
         entityKind
         user {
           id
-          login
+          username
           firstName
           lastName
         }

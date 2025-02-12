@@ -46,12 +46,12 @@ public class UserSubject extends TrackedEntitySubject<User> {
         super(failureMetadata, actual);
     }
 
-    public void hasLogin(String text) {
-        login().isEqualTo(text);
+    public void hasUsername(String text) {
+        username().isEqualTo(text);
     }
 
-    public StringSubject login() {
-        return check("login()").that(actual.getLogin());
+    public StringSubject username() {
+        return check("username()").that(actual.getUsername());
     }
 
     public void hasFirstName(String text) {
@@ -78,12 +78,12 @@ public class UserSubject extends TrackedEntitySubject<User> {
         return check("email()").that(actual.getEmail());
     }
 
-    public void hasPasswordHash(String text) {
-        passwordHash().isEqualTo(text);
+    public void hasPassword(String text) {
+        password().isEqualTo(text);
     }
 
-    public StringSubject passwordHash() {
-        return check("passwordHash()").that(actual.getPasswordHash());
+    public StringSubject password() {
+        return check("password()").that(actual.getPassword());
     }
 
     public void hasPermissions(PermissionKind... permissions) {

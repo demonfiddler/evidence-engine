@@ -17,23 +17,37 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-package io.github.demonfiddler.ee.server.repository;
+package io.github.demonfiddler.ee.server.util;
 
-import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
+import io.github.demonfiddler.ee.server.model.PermissionKind;
 import io.github.demonfiddler.ee.server.model.User;
+import io.github.demonfiddler.ee.server.repository.UserRepository;
+import jakarta.annotation.Resource;
 
-public interface UserRepository extends JpaRepository<User, Long>, CustomUserRepository {
+/**
+ * Security related utility methods.
+ */
+@Component
+public class SecurityUtils {
 
-	@Query(value = "select u from User u where u.id in (:ids)")
-	List<User> findByIds(@Param("ids") List<Long> ids);
+    @Resource
+    private UserRepository userRepository;
 
-	@Query(value = "select u from User u where u.username = :username")
-	Optional<User> findByUsername(@Param("username") String username);
+    public Optional<User> getCurrentUser() {
+        org.springframework.security.core.userdetails.User principal =
+            (org.springframework.security.core.userdetails.User)SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        return userRepository.findByUsername(principal.getUsername());
+    }
+
+    public boolean hasAuthority(PermissionKind permissionKind) {
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+            .anyMatch(a -> a.getAuthority().equals(permissionKind.name()));
+    }
 
 }

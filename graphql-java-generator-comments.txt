@@ -4,7 +4,7 @@ Complaints about graphql-java-generator
 Documentation
 -------------
 - The Gradle examples are confusing as they refer to Maven stuff.
-- generateClientCode does not support the javaTypeForIDType parameter, so client-side IDs are always String even if the schema and server-side has them are Long. Also the description for the jsonGraphqlSchemaFilename parameter is blank. Not sure why client code generation needs a useJakartaEE9 parameter.
+- generateClientCode does not support the javaTypeForIDType parameter, so client-side IDs are always String even if the schema and server-side has them as Long. Also the description for the jsonGraphqlSchemaFilename parameter is blank. Not sure why client code generation needs a useJakartaEE9 parameter.
 
 Code Generation
 ---------------
@@ -27,4 +27,4 @@ Code Generation
 
 Runtime
 -------
-- GraphQL annotations on inherited members are not detected, so it's impossible to optimise similar generated classes by extending abstract base class supplying the common functionality.
+- GraphQL annotations on inherited members are not detected, so it's impossible to optimise similar generated classes by extending an abstract base class supplying the common functionality.

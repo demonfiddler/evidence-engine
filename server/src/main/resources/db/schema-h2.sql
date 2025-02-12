@@ -440,32 +440,68 @@ CREATE UNIQUE INDEX "transaction_kind_label" ON "transaction_kind" ("label");
 
 CREATE TABLE "user" (
   "id" BIGINT AUTO_INCREMENT NOT NULL COMMENT 'The unique system-assigned user identifier',
-  "login" VARCHAR(20) NOT NULL COMMENT 'The unique user-assigned login name',
+  "username" VARCHAR(50) NOT NULL COMMENT 'The unique user-assigned user name',
+  "password" VARCHAR(500) NOT NULL COMMENT 'Hash of the user''s password',
+	"enabled" BOOLEAN NOT NULL DEFAULT TRUE COMMENT 'Whether the user account is enabled',
   "first_name" VARCHAR(50) NOT NULL COMMENT 'The user''s first name',
   "last_name" VARCHAR(50) NOT NULL COMMENT 'The user''s last name',
   "email" VARCHAR(100) DEFAULT NULL COMMENT 'The user''s email address, used for sign-in',
   "country_code" CHAR(2) DEFAULT NULL COMMENT 'ISO-3166-1 alpha-2 code for user''s country of residence',
-  "password_hash" CHAR(60) NOT NULL COMMENT 'Hash of the user''s password',
   "notes" VARCHAR(65535) DEFAULT NULL COMMENT 'Added notes about the user',
   "status" CHAR(3) DEFAULT 'DRA' NOT NULL COMMENT 'The record status',
   "created" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT 'When the record was created',
-  "created_by_user_id" BIGINT DEFAULT 0 NOT NULL COMMENT 'ID of the user who created the record',
+  "created_by_user_id" BIGINT DEFAULT 1 NOT NULL COMMENT 'ID of the user who created the record',
   "updated" TIMESTAMP COMMENT 'When the record was last updated',
   "updated_by_user_id" BIGINT DEFAULT NULL COMMENT 'ID of the user who last updated the record',
-  PRIMARY KEY ("id")
+  PRIMARY KEY ("id"),
+  UNIQUE ("username")
 );
+CREATE UNIQUE INDEX "username" ON "user" ("username");
 CREATE INDEX "FK_user_country" ON "user" ("country_code");
 CREATE INDEX "FK_user_updated_user" ON "user" ("updated_by_user_id");
 CREATE INDEX "FK_user_status" ON "user" ("status");
 CREATE INDEX "FK_user_created_user" ON "user" ("created_by_user_id");
-CALL FT_CREATE_INDEX('PUBLIC', 'user', 'login,first_name,last_name,email,notes');
+CALL FT_CREATE_INDEX('PUBLIC', 'user', 'username,first_name,last_name,email,notes');
 
-CREATE TABLE "user_permission" (
-  "user_id" BIGINT DEFAULT 0 NOT NULL COMMENT 'The user id',
-  "permission_code" CHAR(3) NOT NULL COMMENT 'The permission code',
-  PRIMARY KEY ("user_id","permission_code")
+-- Additional tables required by Spring Security
+CREATE TABLE "user_authority" (
+  "username" VARCHAR(50) NOT NULL COMMENT 'The login user name',
+  "authority" CHAR(3) NOT NULL COMMENT 'The granted authority code',
+  UNIQUE ("username", "authority")
 );
-CREATE INDEX "FK_user_permission_permission" ON "user_permission" ("permission_code");
+CREATE UNIQUE INDEX "user_authority" ON "user_authority" ("username", "authority");
+
+CREATE TABLE "group" (
+	"id" BIGINT AUTO_INCREMENT NOT NULL COMMENT 'The unique system-assigned group identifier',
+	"group_name" VARCHAR(50) NOT NULL COMMENT 'The group name',
+	PRIMARY KEY ("id"),
+  UNIQUE ("group_name")
+);
+CREATE UNIQUE INDEX "group_name" ON "group" ("group_name");
+
+CREATE TABLE "group_authority" (
+  "group_id" BIGINT NOT NULL COMMENT 'ID of a group',
+  "authority" CHAR(3) NOT NULL COMMENT 'The granted authority code',
+  UNIQUE ("group_id", "authority")
+);
+CREATE UNIQUE INDEX "group_authority" ON "group_authority" ("group_id", "authority");
+
+CREATE TABLE "group_user" (
+  "id" BIGINT AUTO_INCREMENT NOT NULL COMMENT 'The unique system-assigned identifier',
+  "group_id" BIGINT NOT NULL COMMENT 'ID of the group to which user belongs',
+  "username" VARCHAR(50) NOT NULL COMMENT 'The login user name',
+  PRIMARY KEY ("id"),
+  UNIQUE ("username", "group_id")
+);
+CREATE UNIQUE INDEX "group_user" ON "group_user" ("username", "group_id");
+
+CREATE TABLE "persistent_login" (
+    "series" VARCHAR(64) COMMENT 'Encoded random number used to detect cookie stealing',
+    "username" VARCHAR(64) NOT NULL COMMENT 'The authenticated username',
+    "token" VARCHAR(64) NOT NULL COMMENT 'The authentication token returned as a cookie',
+    "last_used" TIMESTAMP NOT NULL COMMENT 'The date/time at which the token was last used',
+    PRIMARY KEY ("series")
+);
 
 ALTER TABLE "claim"
   ADD FOREIGN KEY ("created_by_user_id") 
@@ -553,6 +589,25 @@ ALTER TABLE "declaration_quotation"
 ALTER TABLE "declaration_quotation"
   ADD FOREIGN KEY ("declaration_id") 
   REFERENCES "declaration" ("id");
+
+
+ALTER TABLE "group_authority"
+  ADD FOREIGN KEY ("group_id")
+  REFERENCES "group" ("id");
+
+ALTER TABLE "group_authority"
+  ADD FOREIGN KEY ("authority")
+  REFERENCES "permission_kind" ("code");
+
+
+ALTER TABLE "group_user"
+  ADD FOREIGN KEY ("group_id")
+  REFERENCES "group" ("id");
+
+ALTER TABLE "group_user"
+  ADD FOREIGN KEY ("username")
+  REFERENCES "user" ("username")
+  ON UPDATE CASCADE;
 
 
 ALTER TABLE "journal"
@@ -748,7 +803,8 @@ ALTER TABLE "topic_quotation_ref"
 
 ALTER TABLE "user"
   ADD FOREIGN KEY ("created_by_user_id") 
-  REFERENCES "user" ("id");
+  REFERENCES "user" ("id")
+  ON UPDATE CASCADE;
 
 ALTER TABLE "user"
   ADD FOREIGN KEY ("country_code") 
@@ -759,11 +815,11 @@ ALTER TABLE "user"
   REFERENCES "status_kind" ("code");
 
 
-ALTER TABLE "user_permission"
-  ADD FOREIGN KEY ("permission_code") 
+ALTER TABLE "user_authority"
+  ADD FOREIGN KEY ("username")
+  REFERENCES "user" ("username")
+  ON UPDATE CASCADE;
+
+ALTER TABLE "user_authority"
+  ADD FOREIGN KEY ("authority")
   REFERENCES "permission_kind" ("code");
-
-ALTER TABLE "user_permission"
-  ADD FOREIGN KEY ("user_id") 
-  REFERENCES "user" ("id");
-

@@ -277,13 +277,13 @@ public class Query implements GraphQLRequestObject {
 	User userById;
 
 	/**
-	 * Returns a user given its login.
+	 * Returns a user given its username.
 	 */
-	@JsonProperty("userByLogin")
-	@GraphQLInputParameters(names = { "login" }, types = { "String" }, mandatories = { true }, listDepths = { 0 },
+	@JsonProperty("userByUsername")
+	@GraphQLInputParameters(names = { "username" }, types = { "String" }, mandatories = { true }, listDepths = { 0 },
 		itemsMandatory = { false })
-	@GraphQLNonScalar(fieldName = "userByLogin", graphQLTypeSimpleName = "User", javaClass = User.class, listDepth = 0)
-	User userByLogin;
+	@GraphQLNonScalar(fieldName = "userByUsername", graphQLTypeSimpleName = "User", javaClass = User.class, listDepth = 0)
+	User userByUsername;
 
 	@JsonProperty("__schema")
 	@GraphQLNonScalar(fieldName = "__schema", graphQLTypeSimpleName = "__Schema", javaClass = __Schema.class,
@@ -647,19 +647,19 @@ public class Query implements GraphQLRequestObject {
 	}
 
 	/**
-	 * Returns a user given its login.
+	 * Returns a user given its username.
 	 */
-	@JsonProperty("userByLogin")
-	public void setUserByLogin(User userByLogin) {
-		this.userByLogin = userByLogin;
+	@JsonProperty("userByUsername")
+	public void setUserByUsername(User userByUsername) {
+		this.userByUsername = userByUsername;
 	}
 
 	/**
-	 * Returns a user given its login.
+	 * Returns a user given its username.
 	 */
-	@JsonProperty("userByLogin")
-	public User getUserByLogin() {
-		return this.userByLogin;
+	@JsonProperty("userByUsername")
+	public User getUserByUsername() {
+		return this.userByUsername;
 	}
 
 	@JsonProperty("__schema")
@@ -760,7 +760,7 @@ public class Query implements GraphQLRequestObject {
 			+ ", " //$NON-NLS-1$
 			+ "userById: " + this.userById //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
-			+ "userByLogin: " + this.userByLogin //$NON-NLS-1$
+			+ "userByUsername: " + this.userByUsername //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "__schema: " + this.__schema //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
@@ -802,7 +802,7 @@ public class Query implements GraphQLRequestObject {
 		private TopicRef topicRefByEntityId;
 		private UserPage users;
 		private User userById;
-		private User userByLogin;
+		private User userByUsername;
 		private __Schema __schema;
 		private __Type __type;
 
@@ -980,10 +980,10 @@ public class Query implements GraphQLRequestObject {
 		}
 
 		/**
-		 * Returns a user given its login.
+		 * Returns a user given its username.
 		 */
-		public Builder withUserByLogin(User userByLoginParam) {
-			this.userByLogin = userByLoginParam;
+		public Builder withUserByUsername(User userByUsernameParam) {
+			this.userByUsername = userByUsernameParam;
 			return this;
 		}
 
@@ -1021,7 +1021,7 @@ public class Query implements GraphQLRequestObject {
 			_object.setTopicRefByEntityId(this.topicRefByEntityId);
 			_object.setUsers(this.users);
 			_object.setUserById(this.userById);
-			_object.setUserByLogin(this.userByLogin);
+			_object.setUserByUsername(this.userByUsername);
 			_object.set__schema(this.__schema);
 			_object.set__type(this.__type);
 			_object.set__typename("Query"); //$NON-NLS-1$

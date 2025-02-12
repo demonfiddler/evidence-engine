@@ -151,7 +151,7 @@ tasks.register('waitForIntegrationTestServer', Exec) {
 	group = 'application'
 	description = 'Wait for the integration test server to be fully operational'
 	// TODO: test STDOUT for '{"status":"UP"}'
-	commandLine 'curl', '--retry', '10', '--retry-delay', '5', '--retry-connrefused', 'http://localhost:8080/actuator/health'
+	commandLine 'curl', '-s', '--retry', '10', '--retry-delay', '5', '--retry-connrefused', 'http://localhost:8080/actuator/health'
 	standardOutput = new ByteArrayOutputStream()
 	ext.output = {
 		return standardOutput.toString()
@@ -168,7 +168,7 @@ tasks.register('terminateIntegrationTestServer', Exec) {
 	group = 'application'
 	description = 'Terminate the integration test server'
 	// TODO: test STDOUT for '{"message":"Shutting down, bye..."}'
-	commandLine 'curl', '-X', 'POST', 'http://localhost:8080/actuator/shutdown'
+	commandLine 'curl', '-s', '-X', 'POST', 'http://localhost:8080/actuator/shutdown'
 	standardOutput = new ByteArrayOutputStream()
 	ext.output = {
 		return standardOutput.toString()

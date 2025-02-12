@@ -35,8 +35,6 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.condition.EnabledIf;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.graphql_java_generator.exception.GraphQLRequestExecutionException;
@@ -46,8 +44,6 @@ import com.graphql_java_generator.exception.GraphQLRequestPreparationException;
 @Order(10)
 @TestMethodOrder(OrderAnnotation.class)
 class EntityLinkTests extends AbstractLinkTests {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(EntityLinkTests.class);
 
     private static final String MINIMAL_PAGED_RESPONSE = """
         {
@@ -113,7 +109,7 @@ class EntityLinkTests extends AbstractLinkTests {
                 input.setToEntityKind(toEntityKind);
                 input.setToEntityId(((IBaseEntity)toEntity).getId());
 
-                LOGGER.debug("Link {} #0 to {} #0", fromEntityKind.label(), toEntityKind.label());
+                logger.trace("Link {} #0 to {} #0", fromEntityKind.label(), toEntityKind.label());
 
                 try {
                     Boolean result = mutationExecutor.linkEntities("", input);
@@ -175,7 +171,7 @@ class EntityLinkTests extends AbstractLinkTests {
                 input.setToEntityKind(toEntityKind);
                 input.setToEntityId(((IBaseEntity)toEntity).getId());
 
-                LOGGER.debug("Unlink {} #0 to {} #0", fromEntityKind.label(), toEntityKind.label());
+                logger.trace("Unlink {} #0 to {} #0", fromEntityKind.label(), toEntityKind.label());
 
                 try {
                     Boolean result = mutationExecutor.unlinkEntities("", input);
@@ -227,7 +223,7 @@ class EntityLinkTests extends AbstractLinkTests {
                         ITopicalEntity toEntity = toEntities.get(toEntityIndex);
                         input.setToEntityId(((IBaseEntity)toEntity).getId());
 
-                        LOGGER.debug("Link {} #{} to {} #{}", fromEntityKind.label(), i, toEntityKind.label(),
+                        logger.trace("Link {} #{} to {} #{}", fromEntityKind.label(), i, toEntityKind.label(),
                             toEntityIndex);
 
                         Boolean result = mutationExecutor.linkEntities("", input);

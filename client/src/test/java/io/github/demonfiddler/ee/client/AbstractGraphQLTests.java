@@ -35,56 +35,63 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import com.google.common.truth.Ordered;
 
+import io.github.demonfiddler.ee.client.util.Authenticator;
 import io.github.demonfiddler.ee.client.util.MutationExecutor;
 import io.github.demonfiddler.ee.client.util.QueryExecutor;
 
 abstract class AbstractGraphQLTests {
 
-    static final String NL = System.lineSeparator();
+	static final String NL = System.lineSeparator();
 
-    static record EntityMetaData(String name, EntityKind kind) {};
+	static record EntityMetaData(String name, EntityKind kind) {
+	};
 
-    private static final Map<Class<? extends ITrackedEntity>, EntityMetaData> ENTITY_META_DATA;
+	private static final Map<Class<? extends ITrackedEntity>, EntityMetaData> ENTITY_META_DATA;
 
-    static <T extends ITrackedEntity> EntityKind getEntityKind(T entity) {
-        return ENTITY_META_DATA.get(entity.getClass()).kind;
-    }
+	static <T extends ITrackedEntity> EntityKind getEntityKind(T entity) {
+		return ENTITY_META_DATA.get(entity.getClass()).kind;
+	}
 
-    static <T extends ITrackedEntity> String getEntityName(T entity) {
-        return ENTITY_META_DATA.get(entity.getClass()).name;
-    }
+	static <T extends ITrackedEntity> String getEntityName(T entity) {
+		return ENTITY_META_DATA.get(entity.getClass()).name;
+	}
 
-    static <T extends ITrackedEntity> EntityMetaData getEntityMetaData(T entity) {
-        return ENTITY_META_DATA.get(entity.getClass());
-    }
+	static <T extends ITrackedEntity> EntityMetaData getEntityMetaData(T entity) {
+		return ENTITY_META_DATA.get(entity.getClass());
+	}
 
-    static {
-        Map<Class<? extends ITrackedEntity>, EntityMetaData> map = new HashMap<>();
-        map.put(Claim.class, new EntityMetaData("claim", CLA));
-        map.put(Declaration.class, new EntityMetaData("declaration", DEC));
-        map.put(Journal.class, new EntityMetaData("journal", JOU));
-        map.put(Person.class, new EntityMetaData("person", PER));
-        map.put(Publication.class, new EntityMetaData("publication", PUB));
-        map.put(Publisher.class, new EntityMetaData("publisher", PBR));
-        map.put(Quotation.class, new EntityMetaData("quotation", QUO));
-        map.put(Topic.class, new EntityMetaData("topic", TOP));
-        ENTITY_META_DATA = Collections.unmodifiableMap(map);
-    }
+	static {
+		Map<Class<? extends ITrackedEntity>, EntityMetaData> map = new HashMap<>();
+		map.put(Claim.class, new EntityMetaData("claim", CLA));
+		map.put(Declaration.class, new EntityMetaData("declaration", DEC));
+		map.put(Journal.class, new EntityMetaData("journal", JOU));
+		map.put(Person.class, new EntityMetaData("person", PER));
+		map.put(Publication.class, new EntityMetaData("publication", PUB));
+		map.put(Publisher.class, new EntityMetaData("publisher", PBR));
+		map.put(Quotation.class, new EntityMetaData("quotation", QUO));
+		map.put(Topic.class, new EntityMetaData("topic", TOP));
+		ENTITY_META_DATA = Collections.unmodifiableMap(map);
+	}
 
+    final Logger logger = LoggerFactory.getLogger(getClass());
 	@Autowired
-    QueryExecutor queryExecutor;
-    @Autowired
-    MutationExecutor mutationExecutor;
+	QueryExecutor queryExecutor;
+	@Autowired
+	MutationExecutor mutationExecutor;
+	@Autowired
+	Authenticator authenticator;
 
-    protected AbstractGraphQLTests() {
-    }
+	AbstractGraphQLTests() {
+	}
 
-	/*<P extends AbstractPage<T>, T extends IBaseEntity>*/ void checkPage(AbstractPage<?> actual, int totalElements, int totalPages, int size, int pageNumber,
-		boolean hasPrevious, boolean hasNext, boolean isFirst, boolean isLast, List<?> expected, boolean checkOrder) {
+	/*<P extends AbstractPage<T>, T extends IBaseEntity>*/ void checkPage(AbstractPage<?> actual, int totalElements,
+		int totalPages, int size, int pageNumber, boolean hasPrevious, boolean hasNext, boolean isFirst, boolean isLast,
+		List<?> expected, boolean checkOrder) {
 
 		assertThat(actual).hasTotalElements(totalElements);
 		assertThat(actual).hasTotalPages(totalPages);

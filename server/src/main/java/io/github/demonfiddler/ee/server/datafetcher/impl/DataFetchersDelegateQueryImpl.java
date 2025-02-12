@@ -220,8 +220,8 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     }
 
     @Override
-    public Object userByLogin(DataFetchingEnvironment dataFetchingEnvironment, String login) {
-        return userRepository.findByLogin(login).get();
+    public Object userByUsername(DataFetchingEnvironment dataFetchingEnvironment, String username) {
+        return userRepository.findByUsername(username).get();
     }
 
     @Override

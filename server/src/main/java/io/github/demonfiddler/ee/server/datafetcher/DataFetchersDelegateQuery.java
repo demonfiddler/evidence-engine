@@ -792,9 +792,9 @@ public interface DataFetchersDelegateQuery {
 	Object userById(DataFetchingEnvironment dataFetchingEnvironment, Long id);
 
 	/**
-	 * Description for the userByLogin field: <br/>
-	 * Returns a user given its login. <br/>
-	 * This method loads the data for Query.userByLogin. It may return whatever is accepted by the Spring Controller,
+	 * Description for the userByUsername field: <br/>
+	 * Returns a user given its username. <br/>
+	 * This method loads the data for Query.userByUsername. It may return whatever is accepted by the Spring Controller,
 	 * that is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.User)</li>
@@ -817,12 +817,12 @@ public interface DataFetchersDelegateQuery {
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
-	 * @param login The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @param username The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
 	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
 	 * will take care of the {@link NoSuchElementException} exception.
 	 */
-	Object userByLogin(DataFetchingEnvironment dataFetchingEnvironment, String login);
+	Object userByUsername(DataFetchingEnvironment dataFetchingEnvironment, String username);
 
 }

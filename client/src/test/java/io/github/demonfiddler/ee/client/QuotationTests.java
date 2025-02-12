@@ -63,14 +63,14 @@ class QuotationTests extends AbstractTopicalEntityTests<Quotation> {
 			created
 			createdByUser {
 				id
-				login
+				username
 				firstName
 				lastName
 			}
 			updated
 			updatedByUser {
 				id
-				login
+				username
 				firstName
 				lastName
 			}
@@ -93,7 +93,7 @@ class QuotationTests extends AbstractTopicalEntityTests<Quotation> {
 					entityKind
 					user {
 						id
-						login
+						username
 						firstName
 						lastName
 					}

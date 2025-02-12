@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import graphql.schema.DataFetchingEnvironment;
@@ -70,6 +71,7 @@ import io.github.demonfiddler.ee.server.repository.TopicRefRepository;
 import io.github.demonfiddler.ee.server.repository.TopicRepository;
 import io.github.demonfiddler.ee.server.repository.UserRepository;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 import jakarta.annotation.Resource;
 
 @Component
@@ -101,26 +103,22 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     private UserRepository userRepository;
     @Resource
     private EntityUtils entityUtils;
-
-    private User root;
+    @Resource
+    protected SecurityUtils securityUtils;
 
     private void setCreatedFields(ITrackedEntity entity) {
-        entity.setCreated(OffsetDateTime.now());
-        entity.setCreatedByUser(getUser());
         entity.setStatus(StatusKind.DRA.name());
+        entity.setCreated(OffsetDateTime.now());
+        entity.setCreatedByUser(getUser().get());
     }
 
     private void setUpdatedFields(ITrackedEntity entity) {
         entity.setUpdated(OffsetDateTime.now());
-        entity.setUpdatedByUser(getUser());
+        entity.setUpdatedByUser(getUser().get());
     }
 
-    private User getUser() {
-        // TODO: return the authenticated user
-
-        if (root == null)
-            root = userRepository.findById(0L).get();
-        return root;
+    private Optional<User> getUser() {
+        return securityUtils.getCurrentUser();
     }
 
     private void log(TransactionKind txnKind, IBaseEntity entity, OffsetDateTime timestamp) {
@@ -133,7 +131,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         Log log = new Log();
         log.setTransactionKind(txnKind.name());
         log.setTimestamp(timestamp);
-        log.setUser(getUser());
+        log.setUser(getUser().get());
         log.setEntityId(entityId);
         log.setEntityKind(entityKind.name());
         if (linkedEntityId != null && linkedEntityKind != null) {
@@ -185,6 +183,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('CRE')")
     public Object createClaim(DataFetchingEnvironment dataFetchingEnvironment, ClaimInput input) {
         Claim claim = new Claim();
         claim.setDate(input.getDate());
@@ -200,6 +199,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('UPD')")
     public Object updateClaim(DataFetchingEnvironment dataFetchingEnvironment, ClaimInput input) {
         Optional<Claim> claimOpt = claimRepository.findById(input.getId());
         if (claimOpt.isEmpty())
@@ -219,11 +219,13 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('DEL')")
     public Object deleteClaim(DataFetchingEnvironment dataFetchingEnvironment, Long claimId) {
         return delete(claimId, claimRepository);
     }
 
     @Override
+    @PreAuthorize("hasAuthority('CRE')")
     public Object createDeclaration(DataFetchingEnvironment dataFetchingEnvironment, DeclarationInput input) {
         Declaration declaration = new Declaration();
         declaration.setCached(false);
@@ -246,6 +248,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('UPD')")
     public Object updateDeclaration(DataFetchingEnvironment dataFetchingEnvironment, DeclarationInput input) {
         Optional<Declaration> declarationOpt = declarationRepository.findById(input.getId());
         if (declarationOpt.isEmpty())
@@ -272,11 +275,13 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('DEL')")
     public Object deleteDeclaration(DataFetchingEnvironment dataFetchingEnvironment, Long declarationId) {
         return delete(declarationId, declarationRepository);
     }
 
     @Override
+    @PreAuthorize("hasAuthority('CRE')")
     public Object createJournal(DataFetchingEnvironment dataFetchingEnvironment, JournalInput input) {
         Journal journal = new Journal();
         journal.setAbbreviation(input.getAbbreviation());
@@ -302,6 +307,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('UPD')")
     public Object updateJournal(DataFetchingEnvironment dataFetchingEnvironment, JournalInput input) {
         Optional<Journal> journalOpt = journalRepository.findById(input.getId());
         if (journalOpt.isEmpty())
@@ -332,11 +338,13 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('DEL')")
     public Object deleteJournal(DataFetchingEnvironment dataFetchingEnvironment, Long journalId) {
         return delete(journalId, journalRepository);
     }
 
     @Override
+    @PreAuthorize("hasAuthority('CRE')")
     public Object createPerson(DataFetchingEnvironment dataFetchingEnvironment, PersonInput input) {
         Person person = new Person();
         person.setAlias(input.getAlias());
@@ -362,6 +370,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('UPD')")
     public Object updatePerson(DataFetchingEnvironment dataFetchingEnvironment, PersonInput input) {
         Optional<Person> personOpt = personRepository.findById(input.getId());
         if (personOpt.isEmpty())
@@ -391,11 +400,13 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('DEL')")
     public Object deletePerson(DataFetchingEnvironment dataFetchingEnvironment, Long personId) {
         return delete(personId, personRepository);
     }
 
     @Override
+    @PreAuthorize("hasAuthority('CRE')")
     public Object createPublication(DataFetchingEnvironment dataFetchingEnvironment, PublicationInput input) {
         Journal journal = null;
         if (input.getJournalId() != null)
@@ -425,6 +436,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('UPD')")
     public Object updatePublication(DataFetchingEnvironment dataFetchingEnvironment, PublicationInput input) {
         Optional<Publication> publicationOpt = publicationRepository.findById(input.getId());
         if (publicationOpt.isEmpty())
@@ -458,11 +470,13 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('DEL')")
     public Object deletePublication(DataFetchingEnvironment dataFetchingEnvironment, Long publicationId) {
         return delete(publicationId, publicationRepository);
     }
 
     @Override
+    @PreAuthorize("hasAuthority('CRE')")
     public Object createPublisher(DataFetchingEnvironment dataFetchingEnvironment, PublisherInput input) {
         Publisher publisher = new Publisher();
         publisher.setCountry(input.getCountry());
@@ -480,6 +494,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('UPD')")
     public Object updatePublisher(DataFetchingEnvironment dataFetchingEnvironment, PublisherInput input) {
         Optional<Publisher> publisherOpt = publisherRepository.findById(input.getId());
         if (publisherOpt.isEmpty())
@@ -501,11 +516,13 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('DEL')")
     public Object deletePublisher(DataFetchingEnvironment dataFetchingEnvironment, Long publisherId) {
         return delete(publisherId, publisherRepository);
     }
 
     @Override
+    @PreAuthorize("hasAuthority('CRE')")
     public Object createQuotation(DataFetchingEnvironment dataFetchingEnvironment, QuotationInput input) {
         Quotation quotation = new Quotation();
         quotation.setQuotee(input.getQuotee());
@@ -524,6 +541,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('UPD')")
     public Object updateQuotation(DataFetchingEnvironment dataFetchingEnvironment, QuotationInput input) {
         Optional<Quotation> quotationOpt = quotationRepository.findById(input.getId());
         if (quotationOpt.isEmpty())
@@ -546,11 +564,13 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('DEL')")
     public Object deleteQuotation(DataFetchingEnvironment dataFetchingEnvironment, Long quotationId) {
         return delete(quotationId, quotationRepository);
     }
 
     @Override
+    @PreAuthorize("hasAuthority('CRE')")
     public Object createTopic(DataFetchingEnvironment dataFetchingEnvironment, TopicInput input) {
         Topic topic = new Topic();
         topic.setLabel(input.getLabel());
@@ -570,6 +590,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('UPD')")
     public Object updateTopic(DataFetchingEnvironment dataFetchingEnvironment, TopicInput input) {
         Optional<Topic> quotationOpt = topicRepository.findById(input.getId());
         if (quotationOpt.isEmpty())
@@ -595,14 +616,16 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('DEL')")
     public Object deleteTopic(DataFetchingEnvironment dataFetchingEnvironment, Long topicId) {
         return delete(topicId, topicRepository);
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ADM')")
     public Object createUser(DataFetchingEnvironment dataFetchingEnvironment, UserInput input) {
         User user = new User();
-        user.setLogin(input.getLogin());
+        user.setUsername(input.getUsername());
         user.setFirstName(input.getFirstName());
         user.setLastName(input.getLastName());
         setCreatedFields(user);
@@ -615,13 +638,14 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ADM')")
     public Object updateUser(DataFetchingEnvironment dataFetchingEnvironment, UserInput input) {
         Optional<User> userOpt = userRepository.findById(input.getId());
         if (userOpt.isEmpty())
             return null;
 
         User user = userOpt.get();
-        user.setLogin(input.getLogin());
+        user.setUsername(input.getUsername());
         user.setFirstName(input.getFirstName());
         user.setLastName(input.getLastName());
         setUpdatedFields(user);
@@ -634,11 +658,13 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ADM')")
     public Object deleteUser(DataFetchingEnvironment dataFetchingEnvironment, Long userId) {
         return delete(userId, userRepository);
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ADM')")
     public Object grantUserPermissions(DataFetchingEnvironment dataFetchingEnvironment, Long userId,
         List<PermissionKind> permissions) {
 
@@ -647,6 +673,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ADM')")
     public Object revokeUserPermissions(DataFetchingEnvironment dataFetchingEnvironment, Long userId,
         List<PermissionKind> permissions) {
 
@@ -655,11 +682,13 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('LNK')")
     public Object addTopicRef(DataFetchingEnvironment dataFetchingEnvironment, TopicRefInput topicRefInput) {
         return addOrUpdateTopicRef(topicRefInput);
     }
 
 	/** Updates an existing topic reference. */
+    @PreAuthorize("hasAuthority('LNK')")
 	public Object updateTopicRef(DataFetchingEnvironment dataFetchingEnvironment, TopicRefInput topicRefInput) {
         return addOrUpdateTopicRef(topicRefInput);
     }
@@ -681,6 +710,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('LNK')")
     public Object removeTopicRef(DataFetchingEnvironment dataFetchingEnvironment, TopicRefInput topicRefInput) {
         TopicRef topicRef = TopicRef.builder() //
             .withId(topicRefInput.getId()) //
@@ -698,6 +728,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('LNK')")
     public Object linkEntities(DataFetchingEnvironment dataFetchingEnvironment, LinkEntitiesInput linkInput) {
         int linkCount = linkRepository.linkEntities(linkInput);
         if (linkCount == 1) {
@@ -709,6 +740,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('LNK')")
     public Object unlinkEntities(DataFetchingEnvironment dataFetchingEnvironment, LinkEntitiesInput linkInput) {
         int unlinkCount = linkRepository.unlinkEntities(linkInput);
         if (unlinkCount == 1) {
@@ -720,6 +752,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
+    @PreAuthorize("hasAuthority('UPD')")
     public Object setEntityStatus(DataFetchingEnvironment dataFetchingEnvironment, EntityKind entityKind, Long entityId,
         StatusKind status) {
 

@@ -179,10 +179,10 @@ public class Query {
 	User userById;
 
 	/**
-	 * Returns a user given its login.
+	 * Returns a user given its username.
 	 */
-	@GraphQLNonScalar(fieldName = "userByLogin", graphQLTypeSimpleName = "User", javaClass = User.class, listDepth = 0)
-	User userByLogin;
+	@GraphQLNonScalar(fieldName = "userByUsername", graphQLTypeSimpleName = "User", javaClass = User.class, listDepth = 0)
+	User userByUsername;
 
 	/**
 	 * Returns a paged list of claims.
@@ -473,17 +473,17 @@ public class Query {
 	}
 
 	/**
-	 * Returns a user given its login.
+	 * Returns a user given its username.
 	 */
-	public void setUserByLogin(User userByLogin) {
-		this.userByLogin = userByLogin;
+	public void setUserByUsername(User userByUsername) {
+		this.userByUsername = userByUsername;
 	}
 
 	/**
-	 * Returns a user given its login.
+	 * Returns a user given its username.
 	 */
-	public User getUserByLogin() {
-		return this.userByLogin;
+	public User getUserByUsername() {
+		return this.userByUsername;
 	}
 
 	public String toString() {
@@ -530,7 +530,7 @@ public class Query {
 			+ ", " //$NON-NLS-1$
 			+ "userById: " + this.userById //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
-			+ "userByLogin: " + this.userByLogin //$NON-NLS-1$
+			+ "userByUsername: " + this.userByUsername //$NON-NLS-1$
 			+ "}"; //$NON-NLS-1$
 	}
 
@@ -565,7 +565,7 @@ public class Query {
 		private TopicRef topicRefById;
 		private UserPage users;
 		private User userById;
-		private User userByLogin;
+		private User userByUsername;
 
 		/**
 		 * Returns a paged list of claims.
@@ -733,10 +733,10 @@ public class Query {
 		}
 
 		/**
-		 * Returns a user given its login.
+		 * Returns a user given its username.
 		 */
-		public Builder withUserByLogin(User userByLoginParam) {
-			this.userByLogin = userByLoginParam;
+		public Builder withUserByUsername(User userByUsernameParam) {
+			this.userByUsername = userByUsernameParam;
 			return this;
 		}
 
@@ -763,7 +763,7 @@ public class Query {
 			_object.setTopicRefById(this.topicRefById);
 			_object.setUsers(this.users);
 			_object.setUserById(this.userById);
-			_object.setUserByLogin(this.userByLogin);
+			_object.setUserByUsername(this.userByUsername);
 			return _object;
 		}
 

@@ -19,6 +19,7 @@
 
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -78,8 +79,12 @@ public class DataFetchersDelegateUserImpl extends DataFetchersDelegateITrackedEn
 
     @Override
     public Object permissions(DataFetchingEnvironment dataFetchingEnvironment, User origin, FormatKind format) {
-        List<PermissionKind> permissions =
-            origin.getPermissions().stream().map(s -> PermissionKind.valueOf(s)).toList();
+        // TODO: fetch permissions from user_authority and group_authority tables
+        List<String> permissionStrings = origin.getPermissions();
+        List<PermissionKind> permissions = //
+            permissionStrings == null //
+                ? Collections.emptyList() //
+                : permissionStrings.stream().map(s -> PermissionKind.valueOf(s)).toList();
         return formatUtils.formatPermissionKinds(permissions, format);
     }
 

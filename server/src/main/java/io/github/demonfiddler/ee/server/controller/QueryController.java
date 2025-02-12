@@ -624,7 +624,7 @@ public class QueryController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.userByLogin. It returns an Object: the data fetcher
+	 * This method loads the data for ${dataFetcher.graphQLType}.userByUsername. It returns an Object: the data fetcher
 	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
@@ -639,13 +639,13 @@ public class QueryController {
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
 	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
 	 * will take care of the {@link NoSuchElementException} exception.
-	 * @param login The parameter that will receive the field argument of the same name for the current data to fetch
+	 * @param username The parameter that will receive the field argument of the same name for the current data to fetch
 	 * @return It may return any value that is valid for a spring-graphql controller, annotated by the
 	 * <code>@SchemaMapping</code> annotation
 	 */
-	@SchemaMapping(field = "userByLogin")
-	public Object userByLogin(DataFetchingEnvironment dataFetchingEnvironment, @Argument("login") String login) {
-		return this.dataFetchersDelegateQuery.userByLogin(dataFetchingEnvironment, login);
+	@SchemaMapping(field = "userByUsername")
+	public Object userByUsername(DataFetchingEnvironment dataFetchingEnvironment, @Argument("username") String username) {
+		return this.dataFetchersDelegateQuery.userByUsername(dataFetchingEnvironment, username);
 	}
 
 }

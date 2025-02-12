@@ -17,23 +17,27 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-package io.github.demonfiddler.ee.server.repository;
+package io.github.demonfiddler.ee.client;
 
-import java.util.List;
-import java.util.Optional;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import static com.google.common.truth.Truth.assertThat;
 
-import io.github.demonfiddler.ee.server.model.User;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.boot.test.context.SpringBootTest;
 
-public interface UserRepository extends JpaRepository<User, Long>, CustomUserRepository {
+@SpringBootTest(classes = GraphQLClientMain.class)
+@Order(13)
+@TestMethodOrder(OrderAnnotation.class)
+class SecurityUnauthenticatedTests extends AbstractSecurityTests {
 
-	@Query(value = "select u from User u where u.id in (:ids)")
-	List<User> findByIds(@Param("ids") List<Long> ids);
-
-	@Query(value = "select u from User u where u.username = :username")
-	Optional<User> findByUsername(@Param("username") String username);
+    // These tests must be performed unauthenticated, so sign off.
+    @BeforeAll
+    void beforeAll() {
+        authenticator.logout();
+        assertThat(authenticator.isAuthenticated()).isFalse();
+    }
 
 }

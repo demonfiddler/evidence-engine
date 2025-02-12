@@ -119,11 +119,11 @@ public class User implements ITrackedEntity {
 	LogPage log;
 
 	/**
-	 * The (mutable?) unique login name (user-assigned).
+	 * The (mutable?) unique user name (user-assigned).
 	 */
-	@JsonProperty("login")
-	@GraphQLScalar(fieldName = "login", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	String login;
+	@JsonProperty("username")
+	@GraphQLScalar(fieldName = "username", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String username;
 
 	/**
 	 * The user's first name.
@@ -150,10 +150,10 @@ public class User implements ITrackedEntity {
 	/**
 	 * A hash of the user's password.
 	 */
-	@JsonProperty("passwordHash")
-	@GraphQLScalar(fieldName = "passwordHash", graphQLTypeSimpleName = "String", javaClass = String.class,
+	@JsonProperty("password")
+	@GraphQLScalar(fieldName = "password", graphQLTypeSimpleName = "String", javaClass = String.class,
 		listDepth = 0)
-	String passwordHash;
+	String password;
 
 	/**
 	 * The permissions granted to the user.
@@ -296,19 +296,19 @@ public class User implements ITrackedEntity {
 	}
 
 	/**
-	 * The (mutable?) unique login name (user-assigned).
+	 * The (mutable?) unique user name (user-assigned).
 	 */
-	@JsonProperty("login")
-	public void setLogin(String login) {
-		this.login = login;
+	@JsonProperty("username")
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	/**
-	 * The (mutable?) unique login name (user-assigned).
+	 * The (mutable?) unique user name (user-assigned).
 	 */
-	@JsonProperty("login")
-	public String getLogin() {
-		return this.login;
+	@JsonProperty("username")
+	public String getUsername() {
+		return this.username;
 	}
 
 	/**
@@ -363,18 +363,18 @@ public class User implements ITrackedEntity {
 	/**
 	 * A hash of the user's password.
 	 */
-	@JsonProperty("passwordHash")
-	public void setPasswordHash(String passwordHash) {
-		this.passwordHash = passwordHash;
+	@JsonProperty("password")
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	// TODO: consider whether to reveal this through the GraphQL API.
 	/**
 	 * A hash of the user's password.
 	 */
-	@JsonProperty("passwordHash")
-	public String getPasswordHash() {
-		return this.passwordHash;
+	@JsonProperty("password")
+	public String getPassword() {
+		return this.password;
 	}
 
 	/**
@@ -443,7 +443,7 @@ public class User implements ITrackedEntity {
 			+ ", " //$NON-NLS-1$
 			+ "log: " + this.log //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
-			+ "login: " + this.login //$NON-NLS-1$
+			+ "username: " + this.username //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "firstName: " + this.firstName //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
@@ -451,7 +451,7 @@ public class User implements ITrackedEntity {
 			+ ", " //$NON-NLS-1$
 			+ "email: " + this.email //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
-			+ "passwordHash: " + this.passwordHash //$NON-NLS-1$
+			+ "password: " + this.password //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "permissions: " + this.permissions //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
@@ -471,11 +471,11 @@ public class User implements ITrackedEntity {
 		result = prime * result + ((updated == null) ? 0 : updated.hashCode());
 		result = prime * result + ((updatedByUser == null) ? 0 : updatedByUser.hashCode());
 		result = prime * result + ((log == null) ? 0 : log.hashCode());
-		result = prime * result + ((login == null) ? 0 : login.hashCode());
+		result = prime * result + ((username == null) ? 0 : username.hashCode());
 		result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
 		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
-		result = prime * result + ((passwordHash == null) ? 0 : passwordHash.hashCode());
+		result = prime * result + ((password == null) ? 0 : password.hashCode());
 		result = prime * result + ((permissions == null) ? 0 : permissions.hashCode());
 		result = prime * result + ((__typename == null) ? 0 : __typename.hashCode());
 		return result;
@@ -530,10 +530,10 @@ public class User implements ITrackedEntity {
 				return false;
 		} else if (!log.equals(other.log))
 			return false;
-		if (login == null) {
-			if (other.login != null)
+		if (username == null) {
+			if (other.username != null)
 				return false;
-		} else if (!login.equals(other.login))
+		} else if (!username.equals(other.username))
 			return false;
 		if (firstName == null) {
 			if (other.firstName != null)
@@ -550,10 +550,10 @@ public class User implements ITrackedEntity {
 				return false;
 		} else if (!email.equals(other.email))
 			return false;
-		if (passwordHash == null) {
-			if (other.passwordHash != null)
+		if (password == null) {
+			if (other.password != null)
 				return false;
-		} else if (!passwordHash.equals(other.passwordHash))
+		} else if (!password.equals(other.password))
 			return false;
 		if (permissions == null) {
 			if (other.permissions != null)
@@ -585,11 +585,11 @@ public class User implements ITrackedEntity {
 		private OffsetDateTime updated;
 		private User updatedByUser;
 		private LogPage log;
-		private String login;
+		private String username;
 		private String firstName;
 		private String lastName;
 		private String email;
-		private String passwordHash;
+		private String password;
 		private List<String> permissions;
 
 		/**
@@ -649,10 +649,10 @@ public class User implements ITrackedEntity {
 		}
 
 		/**
-		 * The (mutable?) unique login name (user-assigned).
+		 * The (mutable?) unique user name (user-assigned).
 		 */
-		public Builder withLogin(String loginParam) {
-			this.login = loginParam;
+		public Builder withUsername(String usernameParam) {
+			this.username = usernameParam;
 			return this;
 		}
 
@@ -684,8 +684,8 @@ public class User implements ITrackedEntity {
 		/**
 		 * A hash of the user's password.
 		 */
-		public Builder withPasswordHash(String passwordHashParam) {
-			this.passwordHash = passwordHashParam;
+		public Builder withPassword(String passwordParam) {
+			this.password = passwordParam;
 			return this;
 		}
 
@@ -706,11 +706,11 @@ public class User implements ITrackedEntity {
 			_object.setUpdated(this.updated);
 			_object.setUpdatedByUser(this.updatedByUser);
 			_object.setLog(this.log);
-			_object.setLogin(this.login);
+			_object.setUsername(this.username);
 			_object.setFirstName(this.firstName);
 			_object.setLastName(this.lastName);
 			_object.setEmail(this.email);
-			_object.setPasswordHash(this.passwordHash);
+			_object.setPassword(this.password);
 			_object.setPermissions(this.permissions);
 			_object.set__typename("User"); //$NON-NLS-1$
 			return _object;

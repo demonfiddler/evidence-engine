@@ -78,9 +78,9 @@ public interface DataFetchersDelegateUser {
 	 * type:ID!, params:[]},Field{name:status, type:String, params:[format:FormatKind]},Field{name:created,
 	 * type:DateTime, params:[]},Field{name:createdByUser, type:User, params:[]},Field{name:updated, type:DateTime,
 	 * params:[]},Field{name:updatedByUser, type:User, params:[]},Field{name:log, type:LogPage!,
-	 * params:[filter:LogQueryFilter,pageSort:PageableInput]},Field{name:login, type:String,
+	 * params:[filter:LogQueryFilter,pageSort:PageableInput]},Field{name:username, type:String,
 	 * params:[]},Field{name:firstName, type:String, params:[]},Field{name:lastName, type:String,
-	 * params:[]},Field{name:email, type:String, params:[]},Field{name:passwordHash, type:String,
+	 * params:[]},Field{name:email, type:String, params:[]},Field{name:password, type:String,
 	 * params:[]},Field{name:permissions, type:[String!]!, params:[format:FormatKind]}}, implements
 	 * IBaseEntity,ITrackedEntity, comments ""}. It depends on your data modle, but it typically contains the id to use
 	 * in the query.
@@ -154,9 +154,9 @@ public interface DataFetchersDelegateUser {
 	 * type:ID!, params:[]},Field{name:status, type:String, params:[format:FormatKind]},Field{name:created,
 	 * type:DateTime, params:[]},Field{name:createdByUser, type:User, params:[]},Field{name:updated, type:DateTime,
 	 * params:[]},Field{name:updatedByUser, type:User, params:[]},Field{name:log, type:LogPage!,
-	 * params:[filter:LogQueryFilter,pageSort:PageableInput]},Field{name:login, type:String,
+	 * params:[filter:LogQueryFilter,pageSort:PageableInput]},Field{name:username, type:String,
 	 * params:[]},Field{name:firstName, type:String, params:[]},Field{name:lastName, type:String,
-	 * params:[]},Field{name:email, type:String, params:[]},Field{name:passwordHash, type:String,
+	 * params:[]},Field{name:email, type:String, params:[]},Field{name:password, type:String,
 	 * params:[]},Field{name:permissions, type:[String!]!, params:[format:FormatKind]}}, implements
 	 * IBaseEntity,ITrackedEntity, comments ""}. It depends on your data modle, but it typically contains the id to use
 	 * in the query.
@@ -202,9 +202,9 @@ public interface DataFetchersDelegateUser {
 	 * params:[format:FormatKind]},Field{name:created, type:DateTime, params:[]},Field{name:createdByUser, type:User,
 	 * params:[]},Field{name:updated, type:DateTime, params:[]},Field{name:updatedByUser, type:User,
 	 * params:[]},Field{name:log, type:LogPage!,
-	 * params:[filter:LogQueryFilter,pageSort:PageableInput]},Field{name:login, type:String,
+	 * params:[filter:LogQueryFilter,pageSort:PageableInput]},Field{name:username, type:String,
 	 * params:[]},Field{name:firstName, type:String, params:[]},Field{name:lastName, type:String,
-	 * params:[]},Field{name:email, type:String, params:[]},Field{name:passwordHash, type:String,
+	 * params:[]},Field{name:email, type:String, params:[]},Field{name:password, type:String,
 	 * params:[]},Field{name:permissions, type:[String!]!, params:[format:FormatKind]}}, implements
 	 * IBaseEntity,ITrackedEntity, comments ""}. It depends on your data modle, but it typically contains the id to use
 	 * in the query.

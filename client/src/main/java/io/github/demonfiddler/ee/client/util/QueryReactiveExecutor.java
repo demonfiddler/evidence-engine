@@ -6669,7 +6669,7 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	}
 
 	/**
-	 * Returns a user given its login. This method executes a partial query against the GraphQL server. That is, the
+	 * Returns a user given its username. This method executes a partial query against the GraphQL server. That is, the
 	 * query that is one of the queries defined in the GraphQL query object. The queryResponseDef contains the part of
 	 * the query that <B><U>is after</U></B> the query name.<BR/>
 	 * For instance, if the query hero has one parameter (as defined in the GraphQL schema):
@@ -6686,9 +6686,9 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
 	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
 	 * 
-	 * 		Mono<User> mono = executor.userByLoginWithBindValues(
+	 * 		Mono<User> mono = executor.userByUsernameWithBindValues(
 	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
-	 * 			login, // A value for userByLogin's login input parameter
+	 * 			username, // A value for userByUsername's username input parameter
 	 * 			params);
 	 * 		User field = mono.block();
 	 * 	}
@@ -6703,7 +6703,7 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
 	 * <I>parameters</I> argument to pass the list of values.<BR/>
 	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
-	 * @param login Parameter for the userByLogin field of Query, as defined in the GraphQL schema
+	 * @param username Parameter for the userByUsername field of Query, as defined in the GraphQL schema
 	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
 	 * variable in the defined query/mutation, this argument may be null or an empty {@link Map}
 	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
@@ -6711,16 +6711,16 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "userByLogin", graphQLTypeSimpleName = "User", javaClass = User.class)
-	public Mono<Optional<User>> userByLoginWithBindValues(String queryResponseDef, String login,
+	@GraphQLNonScalar(fieldName = "userByUsername", graphQLTypeSimpleName = "User", javaClass = User.class)
+	public Mono<Optional<User>> userByUsernameWithBindValues(String queryResponseDef, String username,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
-		logger.debug("Executing query 'userByLogin': {} ", queryResponseDef); //$NON-NLS-1$
-		ObjectResponse objectResponse = getUserByLoginResponseBuilder().withQueryResponseDef(queryResponseDef).build();
-		return userByLoginWithBindValues(objectResponse, login, parameters);
+		logger.debug("Executing query 'userByUsername': {} ", queryResponseDef); //$NON-NLS-1$
+		ObjectResponse objectResponse = getUserByUsernameResponseBuilder().withQueryResponseDef(queryResponseDef).build();
+		return userByUsernameWithBindValues(objectResponse, username, parameters);
 	}
 
 	/**
-	 * Returns a user given its login.<br/>
+	 * Returns a user given its username.<br/>
 	 * This method executes a partial query against the GraphQL server. That is, the query that is one of the queries
 	 * defined in the GraphQL query object. The queryResponseDef contains the part of the query that <B><U>is
 	 * after</U></B> the query name.<BR/>
@@ -6734,9 +6734,9 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * 	QueryExecutor executor;
 	 * 
 	 * 	void myMethod() {
-	 * 		Mono<User> mono = executor.userByLogin(
+	 * 		Mono<User> mono = executor.userByUsername(
 	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
-	 * 			login, // A value for userByLogin's login input parameter
+	 * 			username, // A value for userByUsername's username input parameter
 	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
@@ -6754,7 +6754,7 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * <I>parameters</I> argument to pass the list of values.<BR/>
 	 * @param queryResponseDef The response definition of the query/mutation, in the native GraphQL format (see here
 	 * above)
-	 * @param login Parameter for the userByLogin field of Query, as defined in the GraphQL schema
+	 * @param username Parameter for the userByUsername field of Query, as defined in the GraphQL schema
 	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
 	 * variable in the defined query/mutation, this argument may be null or an empty {@link Map}
 	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
@@ -6762,17 +6762,17 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "userByLogin", graphQLTypeSimpleName = "User", javaClass = User.class)
-	public Mono<Optional<User>> userByLogin(String queryResponseDef, String login, Object... paramsAndValues)
+	@GraphQLNonScalar(fieldName = "userByUsername", graphQLTypeSimpleName = "User", javaClass = User.class)
+	public Mono<Optional<User>> userByUsername(String queryResponseDef, String username, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
-		logger.debug("Executing query 'userByLogin': {} ", queryResponseDef); //$NON-NLS-1$
-		ObjectResponse objectResponse = getUserByLoginResponseBuilder().withQueryResponseDef(queryResponseDef).build();
-		return userByLoginWithBindValues(objectResponse, login,
+		logger.debug("Executing query 'userByUsername': {} ", queryResponseDef); //$NON-NLS-1$
+		ObjectResponse objectResponse = getUserByUsernameResponseBuilder().withQueryResponseDef(queryResponseDef).build();
+		return userByUsernameWithBindValues(objectResponse, username,
 			this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues));
 	}
 
 	/**
-	 * Returns a user given its login.<br/>
+	 * Returns a user given its username.<br/>
 	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
 	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
 	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
@@ -6791,13 +6791,13 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * 	@PostConstruct
 	 * 	public void setup() {
 	 * 		// Preparation of the query, so that it is prepared once then executed several times
-	 * 		preparedRequest = executor.getUserByLoginGraphQLRequest(
+	 * 		preparedRequest = executor.getUserByUsernameGraphQLRequest(
 	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
 	 * 	}
 	 * 
 	 * 	void myMethod() {
-	 * 		Mono<User> mono = executor.userByLoginWithBindValues(preparedRequest, login, // A value for userByLogin's
-	 * 																						// login input parameter
+	 * 		Mono<User> mono = executor.userByUsernameWithBindValues(preparedRequest, username, // A value for userByUsername's
+	 * 																						// username input parameter
 	 * 			params);
 	 * 		User field = mono.block();
 	 * 	}
@@ -6808,34 +6808,34 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * to return<br/>
 	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
 	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
-	 * {@link getUserByLoginGraphQLRequest(String)} method.
-	 * @param login Parameter for the userByLogin field of Query, as defined in the GraphQL schema
+	 * {@link getUserByUsernameGraphQLRequest(String)} method.
+	 * @param username Parameter for the userByUsername field of Query, as defined in the GraphQL schema
 	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
 	 * variable in the defined query/mutation, this argument may be null or an empty {@link Map}
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "userByLogin", graphQLTypeSimpleName = "User", javaClass = User.class)
+	@GraphQLNonScalar(fieldName = "userByUsername", graphQLTypeSimpleName = "User", javaClass = User.class)
 
-	public Mono<Optional<User>> userByLoginWithBindValues(ObjectResponse objectResponse, String login,
+	public Mono<Optional<User>> userByUsernameWithBindValues(ObjectResponse objectResponse, String username,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 		if (logger.isTraceEnabled()) {
-			logger.trace("Executing query 'userByLogin' with parameters: {} ", login); //$NON-NLS-1$
+			logger.trace("Executing query 'userByUsername' with parameters: {} ", username); //$NON-NLS-1$
 		} else if (logger.isDebugEnabled()) {
-			logger.debug("Executing query 'userByLogin'"); //$NON-NLS-1$
+			logger.debug("Executing query 'userByUsername'"); //$NON-NLS-1$
 		}
 
 		// Given values for the BindVariables
 		Map<String, Object> parametersLocal = (parameters != null) ? parameters : new HashMap<>();
-		parametersLocal.put("queryUserByLoginLogin", login); //$NON-NLS-1$
+		parametersLocal.put("queryUserByUsernameUsername", username); //$NON-NLS-1$
 
 		return objectResponse //
 			.execReactive(Query.class, parametersLocal) //
-			.map(t -> (t.getUserByLogin() == null) ? Optional.empty() : Optional.of(t.getUserByLogin()));
+			.map(t -> (t.getUserByUsername() == null) ? Optional.empty() : Optional.of(t.getUserByUsername()));
 	}
 
 	/**
-	 * Returns a user given its login.<br/>
+	 * Returns a user given its username.<br/>
 	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
 	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
 	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
@@ -6854,12 +6854,12 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * 	@PostConstruct
 	 * 	public void setup() {
 	 * 		// Preparation of the query, so that it is prepared once then executed several times
-	 * 		preparedRequest = executor.getUserByLoginGraphQLRequest(
+	 * 		preparedRequest = executor.getUserByUsernameGraphQLRequest(
 	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
 	 * 	}
 	 * 
 	 * 	void myMethod() {
-	 * 		Mono<User> mono = executor.userByLogin(preparedRequest, login, // A value for userByLogin's login input
+	 * 		Mono<User> mono = executor.userByUsername(preparedRequest, username, // A value for userByUsername's username input
 	 * 																		// parameter
 	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
@@ -6873,8 +6873,8 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * to return<br/>
 	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
 	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
-	 * {@link getUserByLoginGraphQLRequest(String)} method.
-	 * @param login Parameter for the userByLogin field of Query, as defined in the GraphQL schema
+	 * {@link getUserByUsernameGraphQLRequest(String)} method.
+	 * @param username Parameter for the userByUsername field of Query, as defined in the GraphQL schema
 	 * @param paramsAndValues This parameter contains all the name and values for the Bind Variables defined in the
 	 * objectResponse parameter, that must be sent to the server. Optional parameter may not have a value. They will be
 	 * ignored and not sent to the server. Mandatory parameter must be provided in this argument.<BR/>
@@ -6883,12 +6883,12 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "userByLogin", graphQLTypeSimpleName = "User", javaClass = User.class)
-	public Mono<Optional<User>> userByLogin(ObjectResponse objectResponse, String login, Object... paramsAndValues)
+	@GraphQLNonScalar(fieldName = "userByUsername", graphQLTypeSimpleName = "User", javaClass = User.class)
+	public Mono<Optional<User>> userByUsername(ObjectResponse objectResponse, String username, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
 		if (logger.isTraceEnabled()) {
 			StringBuilder sb = new StringBuilder();
-			sb.append("Executing query 'userByLogin' with bind variables: "); //$NON-NLS-1$
+			sb.append("Executing query 'userByUsername' with bind variables: "); //$NON-NLS-1$
 			boolean addComma = false;
 			for (Object o : paramsAndValues) {
 				if (o != null) {
@@ -6900,33 +6900,33 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 			}
 			logger.trace(sb.toString());
 		} else if (logger.isDebugEnabled()) {
-			logger.debug("Executing query 'userByLogin' (with bind variables)"); //$NON-NLS-1$
+			logger.debug("Executing query 'userByUsername' (with bind variables)"); //$NON-NLS-1$
 		}
 
 		Map<String, Object> parameters = this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues);
-		parameters.put("queryUserByLoginLogin", login); //$NON-NLS-1$
+		parameters.put("queryUserByUsernameUsername", username); //$NON-NLS-1$
 
 		return objectResponse //
 			.execReactive(Query.class, parameters) //
-			.map(t -> (t.getUserByLogin() == null) ? Optional.empty() : Optional.of(t.getUserByLogin()));
+			.map(t -> (t.getUserByUsername() == null) ? Optional.empty() : Optional.of(t.getUserByUsername()));
 	}
 
 	/**
-	 * Returns a user given its login.<br/>
-	 * Get the {@link Builder} for the User, as expected by the userByLogin query/mutation.
+	 * Returns a user given its username.<br/>
+	 * Get the {@link Builder} for the User, as expected by the userByUsername query/mutation.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public Builder getUserByLoginResponseBuilder() throws GraphQLRequestPreparationException {
-		return new Builder(this.graphQlClient, GraphQLReactiveRequest.class, "userByLogin", RequestType.query //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "login", "queryUserByLoginLogin", InputParameterType.MANDATORY, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	public Builder getUserByUsernameResponseBuilder() throws GraphQLRequestPreparationException {
+		return new Builder(this.graphQlClient, GraphQLReactiveRequest.class, "userByUsername", RequestType.query //$NON-NLS-1$
+			, InputParameter.newBindParameter("", "username", "queryUserByUsernameUsername", InputParameterType.MANDATORY, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				"String", true, 0, false) //$NON-NLS-1$
 		);
 	}
 
 	/**
-	 * Returns a user given its login.<br/>
-	 * Get the {@link GraphQLReactiveRequest} for the userByLogin REACTIVE_EXECUTOR, created with the given Partial
+	 * Returns a user given its username.<br/>
+	 * Get the {@link GraphQLReactiveRequest} for the userByUsername REACTIVE_EXECUTOR, created with the given Partial
 	 * request.
 	 * @param partialRequest The Partial GraphQL request, as explained in the
 	 * <A HREF="https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin client
@@ -6934,10 +6934,10 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public GraphQLReactiveRequest getUserByLoginGraphQLRequest(String partialRequest)
+	public GraphQLReactiveRequest getUserByUsernameGraphQLRequest(String partialRequest)
 		throws GraphQLRequestPreparationException {
-		return new GraphQLReactiveRequest(this.graphQlClient, partialRequest, RequestType.query, "userByLogin" //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "login", "queryUserByLoginLogin", InputParameterType.MANDATORY, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		return new GraphQLReactiveRequest(this.graphQlClient, partialRequest, RequestType.query, "userByUsername" //$NON-NLS-1$
+			, InputParameter.newBindParameter("", "username", "queryUserByUsernameUsername", InputParameterType.MANDATORY, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				"String", true, 0, false) //$NON-NLS-1$
 		);
 	}

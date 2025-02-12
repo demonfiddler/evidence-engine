@@ -22,9 +22,9 @@ package io.github.demonfiddler.ee.client;
 import static com.google.common.truth.Truth.assertThat;
 import static io.github.demonfiddler.ee.client.truth.LogPageSubject.assertThat;
 import static io.github.demonfiddler.ee.client.truth.LogSubject.assertThat;
-import static io.github.demonfiddler.ee.client.truth.PageSubject.assertThat;
 import static io.github.demonfiddler.ee.client.truth.TrackedEntitySubject.assertThatTrackedEntity;
 import static io.github.demonfiddler.ee.client.truth.UserSubject.assertThat;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 import java.time.OffsetDateTime;
 import java.util.Arrays;
@@ -32,14 +32,17 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.TestInstance;
 
+@TestInstance(PER_CLASS)
 abstract class AbstractTrackedEntityTests<T extends ITrackedEntity> extends AbstractGraphQLTests {
 
 	static final OffsetDateTime[] LOG_DATES = new OffsetDateTime[3];
 
 	@BeforeAll
-	static void resetTestState() {
+	void beforeAll() throws Exception {
 		Arrays.fill(LOG_DATES, null);
+		assertThat(authenticator.login()).isTrue();
 	}
 
 	abstract EntityKind getEntityKind();
@@ -87,11 +90,13 @@ abstract class AbstractTrackedEntityTests<T extends ITrackedEntity> extends Abst
 	}
 
 	void checkUser(User user) {
+		User authUser = authenticator.getUser();
+		assertThat(authUser).isNotNull();
 		assertThat(user).isNotNull();
-		assertThat(user).hasId(0L);
-		assertThat(user).hasLogin("root");
-		assertThat(user).hasFirstName("Root");
-		assertThat(user).hasLastName("User");
+		assertThat(user).hasId(authUser.getId());
+		assertThat(user).hasUsername(authUser.getUsername());
+		assertThat(user).hasFirstName(authUser.getFirstName());
+		assertThat(user).hasLastName(authUser.getLastName());
 	}
 
 	Long getEntityId(IBaseEntity entity) {

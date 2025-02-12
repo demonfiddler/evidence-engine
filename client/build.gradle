@@ -37,6 +37,7 @@ dependencies {
 	implementation 'org.springframework.session:spring-session-core'
 	implementation "com.graphql-java-generator:graphql-java-client-runtime:${graphQLPluginVersion}"
 	implementation 'com.graphql-java:graphql-java-extended-scalars:22.0'
+	implementation 'org.jsoup:jsoup:1.18.3'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-webtestclient'
@@ -45,8 +46,6 @@ dependencies {
 	testImplementation 'org.springframework.graphql:spring-graphql-test'
 	testImplementation 'org.junit.platform:junit-platform-suite'
 	testImplementation 'com.google.truth:truth:1.4.4'
-	// testImplementation 'org.hamcrest:hamcrest:3.0'
-	// testImplementation 'org.assertj:assertj-core:3.26.3'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

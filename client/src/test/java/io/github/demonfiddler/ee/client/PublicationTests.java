@@ -85,14 +85,14 @@ class PublicationTests extends AbstractTopicalEntityTests<Publication> {
 			created
 			createdByUser {
 				id
-				login
+				username
 				firstName
 				lastName
 			}
 			updated
 			updatedByUser {
 				id
-				login
+				username
 				firstName
 				lastName
 			}
@@ -115,7 +115,7 @@ class PublicationTests extends AbstractTopicalEntityTests<Publication> {
 					entityKind
 					user {
 						id
-						login
+						username
 						firstName
 						lastName
 					}

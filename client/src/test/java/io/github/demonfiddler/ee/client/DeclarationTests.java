@@ -64,14 +64,14 @@ class DeclarationTests extends AbstractTopicalEntityTests<Declaration> {
 			created
 			createdByUser {
 				id
-				login
+				username
 				firstName
 				lastName
 			}
 			updated
 			updatedByUser {
 				id
-				login
+				username
 				firstName
 				lastName
 			}
@@ -94,7 +94,7 @@ class DeclarationTests extends AbstractTopicalEntityTests<Declaration> {
 					entityKind
 					user {
 						id
-						login
+						username
 						firstName
 						lastName
 					}

@@ -19,6 +19,7 @@
 
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -34,11 +35,13 @@ import io.github.demonfiddler.ee.server.model.ITrackedEntity;
 import io.github.demonfiddler.ee.server.model.LogPage;
 import io.github.demonfiddler.ee.server.model.LogQueryFilter;
 import io.github.demonfiddler.ee.server.model.PageableInput;
+import io.github.demonfiddler.ee.server.model.PermissionKind;
 import io.github.demonfiddler.ee.server.model.StatusKind;
 import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.repository.LogRepository;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
 import io.github.demonfiddler.ee.server.util.FormatUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -55,11 +58,14 @@ abstract class DataFetchersDelegateITrackedEntityBaseImpl {
     protected EntityUtils entityUtils;
     @Resource
     protected FormatUtils formatUtils;
+    @Resource
+    protected SecurityUtils securityUtils;
     @PersistenceContext
     EntityManager em;
 
     protected Object _status(DataFetchingEnvironment dataFetchingEnvironment, ITrackedEntity origin,
         FormatKind format) {
+
         StatusKind status = StatusKind.valueOf(origin.getStatus());
         return formatUtils.formatStatusKind(status, format);
     }
@@ -73,7 +79,9 @@ abstract class DataFetchersDelegateITrackedEntityBaseImpl {
     protected <T extends ITrackedEntity> Map<T, User> _createdByUserMap(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<T> keys) {
 
-        return entityUtils.getValuesMap(keys, ITrackedEntity::getCreatedByUser);
+        return securityUtils.hasAuthority(PermissionKind.ADM) //
+            ? entityUtils.getValuesMap(keys, ITrackedEntity::getCreatedByUser) //
+            : Collections.emptyMap();
     }
 
     // protected Flux<User> _updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
@@ -85,11 +93,14 @@ abstract class DataFetchersDelegateITrackedEntityBaseImpl {
     protected <T extends ITrackedEntity> Map<T, User> _updatedByUserMap(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<T> keys) {
 
-        return entityUtils.getValuesMap(keys, ITrackedEntity::getUpdatedByUser);
+        return securityUtils.hasAuthority(PermissionKind.ADM) //
+            ? entityUtils.getValuesMap(keys, ITrackedEntity::getUpdatedByUser)
+            : Collections.emptyMap();
     }
 
     protected LogPage _log(DataFetchingEnvironment dataFetchingEnvironment, IBaseEntity origin, LogQueryFilter filter,
         PageableInput pageSort) {
+
         filter = fixFilter(origin, filter);
         Pageable pageable = entityUtils.toPageable(pageSort);
         return entityUtils.toEntityPage(logRepository.findByFilter(filter, pageable), LogPage::new);

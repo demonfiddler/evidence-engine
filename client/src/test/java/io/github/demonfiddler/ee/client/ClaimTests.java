@@ -19,6 +19,7 @@
 
 package io.github.demonfiddler.ee.client;
 
+import static com.google.common.truth.Truth.assertThat;
 import static io.github.demonfiddler.ee.client.TransactionKind.CRE;
 import static io.github.demonfiddler.ee.client.TransactionKind.DEL;
 import static io.github.demonfiddler.ee.client.TransactionKind.UPD;
@@ -60,14 +61,14 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 			created
 			createdByUser {
 				id
-				login
+				username
 				firstName
 				lastName
 			}
 			updated
 			updatedByUser {
 				id
-				login
+				username
 				firstName
 				lastName
 			}
@@ -90,7 +91,7 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 					entityKind
 					user {
 						id
-						login
+						username
 						firstName
 						lastName
 					}
@@ -168,7 +169,7 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 		LocalDate claimDate = LocalDate.now();
 		ClaimInput input = ClaimInput.builder() //
 			.withDate(claimDate) //
-			.withText("Test title") //
+			.withText("Test text") //
 			.withNotes("Test notes") //
 			.build();
 		OffsetDateTime earliestUpdated = OffsetDateTime.now();
