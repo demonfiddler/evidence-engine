@@ -19,16 +19,9 @@
 
 package io.github.demonfiddler.ee.server.repository;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import io.github.demonfiddler.ee.server.model.Quotation;
 
 public interface QuotationRepository extends JpaRepository<Quotation, Long>, CustomQuotationRepository {
-
-	@Query(value = "select q from Quotation q where q.id in ?1")
-	List<Quotation> findByIds(List<Long> ids);
-
 }

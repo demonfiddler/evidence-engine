@@ -19,17 +19,14 @@
 
 package io.github.demonfiddler.ee.client;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.graphql_java_generator.annotation.GraphQLIgnore;
 import com.graphql_java_generator.annotation.GraphQLInputType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
-import com.graphql_java_generator.client.GraphQLObjectMapper;
 
 import io.github.demonfiddler.ee.client.util.CustomJacksonSerializers;
 
@@ -41,22 +38,15 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonSerializers;
  */
 @GraphQLInputType("ClaimInput")
 @JsonInclude(Include.NON_NULL)
-public class ClaimInput {
-
-	/**
-	 * This map contains the deserialized values for the alias, as parsed from the JSON response from the GraphQL
-	 * server. The key is the alias name, the value is the deserialiazed value (taking into account custom scalars,
-	 * lists, ...)
-	 */
-	@GraphQLIgnore
-	Map<String, Object> aliasValues = new HashMap<>();
+public class ClaimInput extends AbstractBaseEntityInput {
 
 	public ClaimInput() {
 	}
 
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
-	 * The claim identifier, required if updating an existing record.
-	 */
+	* The claim identifier, required if updating an existing record.
+	*/
 	@JsonProperty("id")
 	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
 	Long id;
@@ -73,9 +63,8 @@ public class ClaimInput {
 	 */
 	@JsonProperty("date")
 	@JsonSerialize(using = CustomJacksonSerializers.Date.class)
-	@GraphQLScalar(fieldName = "date", graphQLTypeSimpleName = "Date", javaClass = java.time.LocalDate.class,
-		listDepth = 0)
-	java.time.LocalDate date;
+	@GraphQLScalar(fieldName = "date", graphQLTypeSimpleName = "Date", javaClass = LocalDate.class, listDepth = 0)
+	LocalDate date;
 
 	/**
 	 * Added notes about the claim.
@@ -84,17 +73,21 @@ public class ClaimInput {
 	@GraphQLScalar(fieldName = "notes", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
 	String notes;
 
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
 	 * The claim identifier, required if updating an existing record.
 	 */
+	@Override
 	@JsonProperty("id")
 	public void setId(Long id) {
 		this.id = id;
 	}
 
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
 	 * The claim identifier, required if updating an existing record.
 	 */
+	@Override
 	@JsonProperty("id")
 	public Long getId() {
 		return this.id;
@@ -120,7 +113,7 @@ public class ClaimInput {
 	 * The date the claim was made.
 	 */
 	@JsonProperty("date")
-	public void setDate(java.time.LocalDate date) {
+	public void setDate(LocalDate date) {
 		this.date = date;
 	}
 
@@ -128,7 +121,7 @@ public class ClaimInput {
 	 * The date the claim was made.
 	 */
 	@JsonProperty("date")
-	public java.time.LocalDate getDate() {
+	public LocalDate getDate() {
 		return this.date;
 	}
 
@@ -148,38 +141,16 @@ public class ClaimInput {
 		return this.notes;
 	}
 
-	/**
-	 * This method is called during the json deserialization process, by the {@link GraphQLObjectMapper}, each time an
-	 * alias value is read from the json.
-	 * @param aliasName
-	 * @param aliasDeserializedValue
-	 */
-	public void setAliasValue(String aliasName, Object aliasDeserializedValue) {
-		this.aliasValues.put(aliasName, aliasDeserializedValue);
-	}
-
-	/**
-	 * Retrieves the value for the given alias, as it has been received for this object in the GraphQL response. <BR/>
-	 * This method <B>should not be used for Custom Scalars</B>, as the parser doesn't know if this alias is a custom
-	 * scalar, and which custom scalar to use at deserialization time. In most case, a value will then be provided by
-	 * this method with a basis json deserialization, but this value won't be the proper custom scalar value.
-	 * @param alias
-	 * @return
-	 */
-	public Object getAliasValue(String alias) {
-		return this.aliasValues.get(alias);
-	}
-
 	public String toString() {
-		return "ClaimInput {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "text: " + this.text //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "date: " + this.date //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "notes: " + this.notes //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "ClaimInput {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "text: " + this.text //
+			+ ", " //
+			+ "date: " + this.date //
+			+ ", " //
+			+ "notes: " + this.notes //
+			+ "}";
 	}
 
 	public static Builder builder() {
@@ -190,19 +161,11 @@ public class ClaimInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
-		private Long id;
-		private String text;
-		private java.time.LocalDate date;
-		private String notes;
+	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, ClaimInput> {
 
-		/**
-		 * The claim identifier, required if updating an existing record.
-		 */
-		public Builder withId(Long idParam) {
-			this.id = idParam;
-			return this;
-		}
+		private String text;
+		private LocalDate date;
+		private String notes;
 
 		/**
 		 * The text of the claim.
@@ -228,13 +191,15 @@ public class ClaimInput {
 			return this;
 		}
 
+		@Override
 		public ClaimInput build() {
-			ClaimInput _object = new ClaimInput();
-			_object.setId(this.id);
+			ClaimInput _object = build(new ClaimInput());
 			_object.setText(this.text);
 			_object.setDate(this.date);
 			_object.setNotes(this.notes);
 			return _object;
 		}
+
 	}
+
 }

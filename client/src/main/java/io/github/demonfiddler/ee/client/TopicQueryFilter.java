@@ -19,18 +19,14 @@
 
 package io.github.demonfiddler.ee.client;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.graphql_java_generator.annotation.GraphQLIgnore;
 import com.graphql_java_generator.annotation.GraphQLInputType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
-import com.graphql_java_generator.client.GraphQLObjectMapper;
 
 import io.github.demonfiddler.ee.client.util.CustomJacksonSerializers;
 
@@ -42,15 +38,7 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonSerializers;
  */
 @GraphQLInputType("TopicQueryFilter")
 @JsonInclude(Include.NON_NULL)
-public class TopicQueryFilter {
-
-	/**
-	 * This map contains the deserialized values for the alias, as parsed from the JSON response from the GraphQL
-	 * server. The key is the alias name, the value is the deserialiazed value (taking into account custom scalars,
-	 * lists, ...)
-	 */
-	@GraphQLIgnore
-	Map<String, Object> aliasValues = new HashMap<>();
+public class TopicQueryFilter extends /*TrackedEntityQueryFilter*/AbstractGraphQLObject {
 
 	public TopicQueryFilter() {
 	}
@@ -64,20 +52,13 @@ public class TopicQueryFilter {
 	Long parentId;
 
 	/**
-	 * Free text search string.
+	 * Whether to return all sub-topics, recursively.
 	 */
-	@JsonProperty("text")
-	@GraphQLScalar(fieldName = "text", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	String text;
+	@JsonProperty("recursive")
+	@GraphQLScalar(fieldName = "recursive", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class, listDepth = 0)
+	Boolean recursive;
 
-	/**
-	 * Whether to search ```text``` in advanced (boolean) mode.
-	 */
-	@JsonProperty("advancedSearch")
-	@GraphQLScalar(fieldName = "advancedSearch", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class,
-		listDepth = 0)
-	Boolean advancedSearch;
-
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
 	 * Return only topics with these status codes (default: ALL).
 	 */
@@ -86,12 +67,22 @@ public class TopicQueryFilter {
 		listDepth = 1)
 	List<StatusKind> status;
 
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
-	 * Whether to return all sub-topics, recursively.
+	 * Free text search string.
 	 */
-	@JsonProperty("recursive")
-	@GraphQLScalar(fieldName = "recursive", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class, listDepth = 0)
-	Boolean recursive;
+	@JsonProperty("text")
+	@GraphQLScalar(fieldName = "text", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String text;
+
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
+	/**
+	 * Whether to search ```text``` in advanced (boolean) mode.
+	 */
+	@JsonProperty("advancedSearch")
+	@GraphQLScalar(fieldName = "advancedSearch", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class,
+		listDepth = 0)
+	Boolean advancedSearch;
 
 	/**
 	 * The parent topic identifier. Specify to get sub-topics, leave blank for top-level topics.
@@ -110,54 +101,6 @@ public class TopicQueryFilter {
 	}
 
 	/**
-	 * Free text search string.
-	 */
-	@JsonProperty("text")
-	public void setText(String text) {
-		this.text = text;
-	}
-
-	/**
-	 * Free text search string.
-	 */
-	@JsonProperty("text")
-	public String getText() {
-		return this.text;
-	}
-
-	/**
-	 * Whether to search ```text``` in advanced (boolean) mode.
-	 */
-	@JsonProperty("advancedSearch")
-	public void setAdvancedSearch(Boolean advancedSearch) {
-		this.advancedSearch = advancedSearch;
-	}
-
-	/**
-	 * Whether to search ```text``` in advanced (boolean) mode.
-	 */
-	@JsonProperty("advancedSearch")
-	public Boolean getAdvancedSearch() {
-		return this.advancedSearch;
-	}
-
-	/**
-	 * Return only topics with these status codes (default: ALL).
-	 */
-	@JsonProperty("status")
-	public void setStatus(List<StatusKind> status) {
-		this.status = status;
-	}
-
-	/**
-	 * Return only topics with these status codes (default: ALL).
-	 */
-	@JsonProperty("status")
-	public List<StatusKind> getStatus() {
-		return this.status;
-	}
-
-	/**
 	 * Whether to return all sub-topics, recursively.
 	 */
 	@JsonProperty("recursive")
@@ -173,87 +116,205 @@ public class TopicQueryFilter {
 		return this.recursive;
 	}
 
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
-	 * This method is called during the json deserialization process, by the {@link GraphQLObjectMapper}, each time an
-	 * alias value is read from the json.
-	 * @param aliasName
-	 * @param aliasDeserializedValue
+	 * Return only topics with these status codes (default: ALL).
 	 */
-	public void setAliasValue(String aliasName, Object aliasDeserializedValue) {
-		this.aliasValues.put(aliasName, aliasDeserializedValue);
+	@JsonProperty("status")
+	public void setStatus(List<StatusKind> status) {
+		this.status = status;
 	}
 
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
-	 * Retrieves the value for the given alias, as it has been received for this object in the GraphQL response. <BR/>
-	 * This method <B>should not be used for Custom Scalars</B>, as the parser doesn't know if this alias is a custom
-	 * scalar, and which custom scalar to use at deserialization time. In most case, a value will then be provided by
-	 * this method with a basis json deserialization, but this value won't be the proper custom scalar value.
-	 * @param alias
-	 * @return
+	 * Return only topics with these status codes (default: ALL).
 	 */
-	public Object getAliasValue(String alias) {
-		return this.aliasValues.get(alias);
+	@JsonProperty("status")
+	public List<StatusKind> getStatus() {
+		return this.status;
+	}
+
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
+	/**
+	 * Free text search string.
+	 */
+	@JsonProperty("text")
+	public void setText(String text) {
+		this.text = text;
+	}
+
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
+	/**
+	 * Free text search string.
+	 */
+	@JsonProperty("text")
+	public String getText() {
+		return this.text;
+	}
+
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
+	/**
+	 * Whether to search ```text``` in advanced (boolean) mode.
+	 */
+	@JsonProperty("advancedSearch")
+	public void setAdvancedSearch(Boolean advancedSearch) {
+		this.advancedSearch = advancedSearch;
+	}
+
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
+	/**
+	 * Whether to search ```text``` in advanced (boolean) mode.
+	 */
+	@JsonProperty("advancedSearch")
+	public Boolean getAdvancedSearch() {
+		return this.advancedSearch;
 	}
 
 	public String toString() {
-		return "TopicQueryFilter {" //$NON-NLS-1$
-			+ "parentId: " + this.parentId //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "text: " + this.text //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "advancedSearch: " + this.advancedSearch //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "status: " + this.status //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "recursive: " + this.recursive //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "TopicQueryFilter {" //
+			+ "parentId: " + this.parentId //
+			+ ", " //
+			+ "recursive: " + this.recursive //
+			+ ", " //
+			+ "status: " + this.status //
+			+ ", " //
+			+ "text: " + this.text //
+			+ ", " //
+			+ "advancedSearch: " + this.advancedSearch //
+			+ "}";
 	}
 
 	public static Builder builder() {
 		return new Builder();
 	}
 
+	// Commented out, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
+	// /**
+	//  * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
+	//  * {@link #builderForTopicQueryFilter()}
+	//  */
+	// public static class Builder {
+
+	// 	private Long parentId;
+	// 	private Boolean recursive;
+	// 	private List<StatusKind> status;
+	// 	private String text;
+	// 	private Boolean advancedSearch;
+
+	// 	/**
+	// 	 * The parent topic identifier. Specify to get sub-topics, leave blank for top-level topics.
+	// 	 */
+	// 	public Builder withParentId(Long parentIdParam) {
+	// 		this.parentId = parentIdParam;
+	// 		return this;
+	// 	}
+
+	// 	/**
+	// 	 * Whether to return all sub-topics, recursively.
+	// 	 */
+	// 	public Builder withRecursive(Boolean recursiveParam) {
+	// 		this.recursive = recursiveParam;
+	// 		return this;
+	// 	}
+
+	// 	/**
+	// 	 * Return only topics with these status codes (default: ALL).
+	// 	 */
+	// 	public Builder withStatus(List<StatusKind> statusParam) {
+	// 		this.status = statusParam;
+	// 		return this;
+	// 	}
+
+	// 	/**
+	// 	 * Free text search string.
+	// 	 */
+	// 	public Builder withText(String textParam) {
+	// 		this.text = textParam;
+	// 		return this;
+	// 	}
+
+	// 	/**
+	// 	 * Whether to search ```text``` in advanced (boolean) mode.
+	// 	 */
+	// 	public Builder withAdvancedSearch(Boolean advancedSearchParam) {
+	// 		this.advancedSearch = advancedSearchParam;
+	// 		return this;
+	// 	}
+
+	// 	public TopicQueryFilter build() {
+	// 		TopicQueryFilter _object = new TopicQueryFilter();
+	// 		_object.setParentId(this.parentId);
+	// 		_object.setRecursive(this.recursive);
+	// 		_object.setStatus(this.status);
+	// 		_object.setText(this.text);
+	// 		_object.setAdvancedSearch(this.advancedSearch);
+	// 		return _object;
+	// 	}
+
+	// }
+
+	// @SuppressWarnings("unchecked")
+	// abstract static class AbstractBuilder<B extends AbstractBuilder<B, T>, T extends TopicQueryFilter>
+	// 	extends TrackedEntityQueryFilter.AbstractBuilder<B, T> {
+
+	// 	private Long parentId;
+	// 	private Boolean recursive;
+
+	// 	/**
+	// 	 * The parent topic identifier. Specify to get sub-topics, pass {@code -1} for top-level topics.
+	// 	 */
+	// 	public B withParentId(Long parentIdParam) {
+	// 		this.parentId = parentIdParam;
+	// 		return (B)this;
+	// 	}
+
+	// 	/**
+	// 	 * Whether to return all sub-topics, recursively.
+	// 	 */
+	// 	public B withRecursive(Boolean recursiveParam) {
+	// 		this.recursive = recursiveParam;
+	// 		return (B)this;
+	// 	}
+
+	// 	T build(T _object) {
+	// 		_object.setParentId(this.parentId);
+	// 		_object.setRecursive(this.recursive);
+	// 		return _object;
+	// 	}
+
+	// }
+
+	// /**
+	//  * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
+	//  * {@link #topicQFBuilder()}
+	//  */
+	// public static class Builder extends AbstractBuilder<Builder, TopicQueryFilter> {
+
+	// 	@Override
+	// 	public TopicQueryFilter build() {
+	// 		return build(new TopicQueryFilter());
+	// 	}
+
+	// }
+
 	/**
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
-	 * {@link #builder()}
+	 * {@link #topicQFBuilder()}
 	 */
 	public static class Builder {
 
 		private Long parentId;
+		private Boolean recursive;
+		private List<StatusKind> status;
 		private String text;
 		private Boolean advancedSearch;
-		private List<StatusKind> status;
-		private Boolean recursive;
+
 
 		/**
-		 * The parent topic identifier. Specify to get sub-topics, leave blank for top-level topics.
+		 * The parent topic identifier. Specify to get sub-topics, pass {@code -1} for top-level topics.
 		 */
 		public Builder withParentId(Long parentIdParam) {
 			this.parentId = parentIdParam;
-			return this;
-		}
-
-		/**
-		 * Free text search string.
-		 */
-		public Builder withText(String textParam) {
-			this.text = textParam;
-			return this;
-		}
-
-		/**
-		 * Whether to search ```text``` in advanced (boolean) mode.
-		 */
-		public Builder withAdvancedSearch(Boolean advancedSearchParam) {
-			this.advancedSearch = advancedSearchParam;
-			return this;
-		}
-
-		/**
-		 * Return only topics with these status codes (default: ALL).
-		 */
-		public Builder withStatus(List<StatusKind> statusParam) {
-			this.status = statusParam;
 			return this;
 		}
 
@@ -265,16 +326,39 @@ public class TopicQueryFilter {
 			return this;
 		}
 
+		/**
+		 * Return only records with these status codes (default: ALL).
+		 */
+		public final Builder withStatus(List<StatusKind> statusParam) {
+			this.status = statusParam;
+			return this;
+		}
+
+		/**
+		 * Free text search string.
+		 */
+		public final Builder withText(String textParam) {
+			this.text = textParam;
+			return this;
+		}
+
+		/**
+		 * Whether to search ```text``` in advanced (boolean) mode.
+		 */
+		public final Builder withAdvancedSearch(Boolean advancedSearchParam) {
+			this.advancedSearch = advancedSearchParam;
+			return this;
+		}
+
 		public TopicQueryFilter build() {
 			TopicQueryFilter _object = new TopicQueryFilter();
 			_object.setParentId(this.parentId);
+			_object.setRecursive(this.recursive);
+			_object.setStatus(this.status);
 			_object.setText(this.text);
 			_object.setAdvancedSearch(this.advancedSearch);
-			_object.setStatus(this.status);
-			_object.setRecursive(this.recursive);
 			return _object;
 		}
 
 	}
-
 }

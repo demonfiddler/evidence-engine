@@ -32,14 +32,12 @@ import io.github.demonfiddler.ee.client.ITrackedEntity;
 
 public class TrackedEntitySubject<T extends ITrackedEntity> extends Subject {
 
-    public static <T extends ITrackedEntity> TrackedEntitySubject<T>
-        assertThatTrackedEntity(/*@Nullable*/ T entity) {
+    public static <T extends ITrackedEntity> TrackedEntitySubject<T> assertThatTrackedEntity(/*@Nullable*/ T entity) {
 
         return Truth.<TrackedEntitySubject<T>, T>assertAbout(trackedEntities()).that(entity);
     }
 
-    public static <T extends ITrackedEntity> Subject.Factory<TrackedEntitySubject<T>, T>
-        trackedEntities() {
+    public static <T extends ITrackedEntity> Subject.Factory<TrackedEntitySubject<T>, T> trackedEntities() {
         return TrackedEntitySubject::new;
     }
 
@@ -48,6 +46,14 @@ public class TrackedEntitySubject<T extends ITrackedEntity> extends Subject {
     TrackedEntitySubject(FailureMetadata failureMetadata, /*@Nullable*/ T actual) {
         super(failureMetadata, actual);
         this.actual = actual;
+    }
+
+    public void hasEntityKind(String entityKind) {
+        entityKind().isEqualTo(entityKind);
+    }
+
+    public StringSubject entityKind() {
+        return check("entityKind").that(actual.getEntityKind());
     }
 
     public void hasId(Long id) {

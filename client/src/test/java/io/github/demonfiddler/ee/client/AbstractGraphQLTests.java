@@ -21,6 +21,7 @@ package io.github.demonfiddler.ee.client;
 
 import static io.github.demonfiddler.ee.client.EntityKind.CLA;
 import static io.github.demonfiddler.ee.client.EntityKind.DEC;
+import static io.github.demonfiddler.ee.client.EntityKind.LNK;
 import static io.github.demonfiddler.ee.client.EntityKind.JOU;
 import static io.github.demonfiddler.ee.client.EntityKind.PBR;
 import static io.github.demonfiddler.ee.client.EntityKind.PER;
@@ -29,6 +30,10 @@ import static io.github.demonfiddler.ee.client.EntityKind.QUO;
 import static io.github.demonfiddler.ee.client.EntityKind.TOP;
 import static io.github.demonfiddler.ee.client.truth.PageSubject.assertThat;
 
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,6 +43,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.collect.Range;
 import com.google.common.truth.Ordered;
 
 import io.github.demonfiddler.ee.client.util.Authenticator;
@@ -46,29 +53,19 @@ import io.github.demonfiddler.ee.client.util.QueryExecutor;
 
 abstract class AbstractGraphQLTests {
 
-	static final String NL = System.lineSeparator();
-
 	static record EntityMetaData(String name, EntityKind kind) {
 	};
 
+	static final String NL = System.lineSeparator();
+	static final boolean CASE_INSENSITIVE = Boolean.getBoolean("ee.test.case-insensitive");
+
 	private static final Map<Class<? extends ITrackedEntity>, EntityMetaData> ENTITY_META_DATA;
-
-	static <T extends ITrackedEntity> EntityKind getEntityKind(T entity) {
-		return ENTITY_META_DATA.get(entity.getClass()).kind;
-	}
-
-	static <T extends ITrackedEntity> String getEntityName(T entity) {
-		return ENTITY_META_DATA.get(entity.getClass()).name;
-	}
-
-	static <T extends ITrackedEntity> EntityMetaData getEntityMetaData(T entity) {
-		return ENTITY_META_DATA.get(entity.getClass());
-	}
 
 	static {
 		Map<Class<? extends ITrackedEntity>, EntityMetaData> map = new HashMap<>();
 		map.put(Claim.class, new EntityMetaData("claim", CLA));
 		map.put(Declaration.class, new EntityMetaData("declaration", DEC));
+		map.put(EntityLink.class, new EntityMetaData("entity_link", LNK));
 		map.put(Journal.class, new EntityMetaData("journal", JOU));
 		map.put(Person.class, new EntityMetaData("person", PER));
 		map.put(Publication.class, new EntityMetaData("publication", PUB));
@@ -78,20 +75,54 @@ abstract class AbstractGraphQLTests {
 		ENTITY_META_DATA = Collections.unmodifiableMap(map);
 	}
 
-    final Logger logger = LoggerFactory.getLogger(getClass());
-	@Autowired
-	QueryExecutor queryExecutor;
-	@Autowired
-	MutationExecutor mutationExecutor;
-	@Autowired
-	Authenticator authenticator;
-
-	AbstractGraphQLTests() {
+	static EntityKind getEntityKind(ITrackedEntity entity) {
+		return ENTITY_META_DATA.get(entity.getClass()).kind;
 	}
 
-	/*<P extends AbstractPage<T>, T extends IBaseEntity>*/ void checkPage(AbstractPage<?> actual, int totalElements,
-		int totalPages, int size, int pageNumber, boolean hasPrevious, boolean hasNext, boolean isFirst, boolean isLast,
-		List<?> expected, boolean checkOrder) {
+	static String getEntityName(ITrackedEntity entity) {
+		return ENTITY_META_DATA.get(entity.getClass()).name;
+	}
+
+	static EntityMetaData getEntityMetaData(ITrackedEntity entity) {
+		return ENTITY_META_DATA.get(entity.getClass());
+	}
+
+	/**
+	 * Returns a timestamp for the current instant, rounded down to the nearest second. This is necessary because
+	 * MariaDB timestamps only have second precision.
+	 * @return The current timestamp rounded down to the nearest second.
+	 */
+	static OffsetDateTime getCurrentTimestamp() {
+		OffsetDateTime now = OffsetDateTime.now();
+		long nanos = now.get(ChronoField.NANO_OF_SECOND);
+		return now.minus(nanos, ChronoUnit.NANOS);
+	}
+
+	/**
+	 * Creates a temporal range with &#177; one second either way of a given date-time value.
+	 * @param dt The date-time value.
+	 * @return A range spanning {@code dt} minus one second to {@code dt} plus one second.
+	 */
+	static Range<OffsetDateTime> createRange(OffsetDateTime dt) {
+		return createRange(dt, 1, ChronoUnit.SECONDS);
+	}
+
+	/**
+	 * Creates a temporal range centred around a given date-time value.
+	 * @param dt The date-time value.
+	 * @param tolerance The tolerance to apply.
+	 * @param unit The tolerance unit to use.
+	 * @return A range spanning {@code dt} minus {@code tolerance} {@code unit}s to {@code dt} plus {@code tolerance}
+	 * {@code unit}s.
+	 */
+	static Range<OffsetDateTime> createRange(OffsetDateTime dt, long tolerance, TemporalUnit unit) {
+		OffsetDateTime dtMin = dt.minus(tolerance, unit);
+		OffsetDateTime dtMax = dt.plus(tolerance, unit);
+		return Range.open(dtMin, dtMax);
+	}
+
+	static void checkPage(AbstractPage<?> actual, int totalElements, int totalPages, int size, int pageNumber,
+		boolean hasPrevious, boolean hasNext, boolean isFirst, boolean isLast, List<?> expected, boolean checkOrder) {
 
 		assertThat(actual).hasTotalElements(totalElements);
 		assertThat(actual).hasTotalPages(totalPages);
@@ -119,11 +150,22 @@ abstract class AbstractGraphQLTests {
 	 * @param indexes The indexes of {@code src} to extract.
 	 * @return A sub-list containing the specified elements from {@code src}.
 	 */
-	<T> List<T> subList(List<T> src, int... indexes) {
+	static <T> List<T> subList(List<T> src, int... indexes) {
 		List<T> subList = new ArrayList<>(indexes.length);
 		for (int i = 0; i < indexes.length; i++)
 			subList.add(src.get(indexes[i]));
 		return subList;
+	}
+
+	final Logger logger = LoggerFactory.getLogger(getClass());
+	@Autowired
+	QueryExecutor queryExecutor;
+	@Autowired
+	MutationExecutor mutationExecutor;
+	@Autowired
+	Authenticator authenticator;
+
+	AbstractGraphQLTests() {
 	}
 
 }

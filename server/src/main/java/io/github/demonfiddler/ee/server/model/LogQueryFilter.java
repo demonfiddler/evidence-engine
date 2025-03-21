@@ -183,6 +183,7 @@ public class LogQueryFilter {
 	 * {@link #builder()}
 	 */
 	public static class Builder {
+
 		private EntityKind entityKind;
 		private Long entityId;
 		private Long userId;
@@ -248,6 +249,7 @@ public class LogQueryFilter {
 			_object.setTo(this.to);
 			return _object;
 		}
+
 	}
 
 }

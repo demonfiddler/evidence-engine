@@ -162,6 +162,8 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 				LOGGER.error("Failed to initialise topics list from server");
 			} else {
 				topics = content;
+				parentTopic = topics.get(0);
+				childTopic = topics.get(1);
 				LOGGER.debug("Initialised topics list from server");
 			}
 		}
@@ -301,7 +303,7 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 	@Test
 	@Order(5)
 	@EnabledIf("io.github.demonfiddler.ee.client.TopicTests#hasExpectedTopic")
-	void createTopics() throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	void createTopics() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		// Create another eight topics and store them all in an array together with the previously created one.
 		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted("");
 		final int topicCount = 8;
@@ -408,8 +410,12 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 
 		// "TOPIC FIVE", "TOPIC ONE", "TOPIC SEVEN", "TOPIC THREE", "Topic eight", "Topic four", "Topic six",
 		// "Topic two", "Updated child label", "Updated parent label"
-		// 6, 2, 8, 4, 9, 5, 7, 3, 1, 0
-		List<Topic> expected = subList(topics, 6, 2, 8, 4, 9, 5, 7, 3, 1, 0);
+		// CI: 9, 6, 5, 2, 8, 7, 4, 3, 1, 0
+		// CS: 6, 2, 8, 4, 9, 5, 7, 3, 1, 0
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 9, 6, 5, 2, 8, 7, 4, 3, 1, 0 } //
+			: new int[] { 6, 2, 8, 4, 9, 5, 7, 3, 1, 0 };
+		List<Topic> expected = subList(topics, indexes);
 		TopicPage actuals = queryExecutor.topics(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -473,8 +479,12 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 		// "Notes #4"/"Topic four", "Notes #5 (filtered)"/"TOPIC FIVE", "Notes #7 (filtered)"/"TOPIC SEVEN",
 		// "Notes #8 (filtered)"/"Topic eight", "Updated child description"/"Updated child label",
 		// "Updated parent description"/"Updated parent label"
-		// 4, 7, 2, 3, 5, 6, 8, 9, 1, 0
-		List<Topic> expected = subList(topics, 4, 7, 2, 3, 5, 6, 8, 9, 1, 0);
+		// CI: 6, 3, 1, 2, 4, 5, 7, 8, 0
+		// CS: 3, 6, 1, 2, 4, 5, 7, 8, 0
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 4, 2, 3, 5, 6, 8, 9, 1, 0 } //
+			: new int[] { 4, 7, 2, 3, 5, 6, 8, 9, 1, 0 };
+		List<Topic> expected = subList(topics, indexes);
 		TopicPage actuals = queryExecutor.topics(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -483,7 +493,10 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		labelOrder.setDirection(DirectionKind.DESC);
-		expected = subList(topics, 7, 4, 2, 3, 5, 6, 8, 9, 1, 0);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 4, 7, 2, 3, 5, 6, 8, 9, 1, 0 } //
+			: new int[] { 7, 4, 2, 3, 5, 6, 8, 9, 1, 0 };
+		expected = subList(topics, indexes);
 		actuals = queryExecutor.topics(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -491,10 +504,14 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 		// "Notes #7 (filtered)"/"TOPIC SEVEN", "Notes #8 (filtered)"/"Topic eight",
 		// "Updated child description"/"Updated child label", "Updated parent description"/"Updated parent label",
 		// null/"TOPIC THREE", null/"Topic six",
-		// 2, 3, 5, 6, 8, 9, 1, 0, 4, 7
+		// CI: 2, 3, 5, 6, 8, 9, 1, 0, 7, 4
+		// CS: 2, 3, 5, 6, 8, 9, 1, 0, 4, 7
 		descriptionOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		labelOrder.setDirection(null);
-		expected = subList(topics, 2, 3, 5, 6, 8, 9, 1, 0, 4, 7);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 2, 3, 5, 6, 8, 9, 1, 0, 7, 4 } //
+			: new int[] { 2, 3, 5, 6, 8, 9, 1, 0, 4, 7 };
+		expected = subList(topics, indexes);
 		actuals = queryExecutor.topics(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -503,7 +520,10 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		labelOrder.setDirection(DirectionKind.DESC);
-		expected = subList(topics, 2, 3, 5, 6, 8, 9, 1, 0, 7, 4);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 2, 3, 5, 6, 8, 9, 1, 0, 4, 7 } //
+			: new int[] { 2, 3, 5, 6, 8, 9, 1, 0, 7, 4 };
+		expected = subList(topics, indexes);
 		actuals = queryExecutor.topics(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
@@ -524,8 +544,12 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 		PageableInput pageSort = PageableInput.builder().withSort(sort).build();
 
 		// "TOPIC FIVE", "TOPIC SEVEN", "Topic eight"
-		// 6, 8, 9
-		List<Topic> expected = subList(topics, 6, 8, 9);
+		// CI: 9, 6, 8
+		// CS: 6, 8, 9
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 9, 6, 8 } //
+			: new int[] { 6, 8, 9 };
+		List<Topic> expected = subList(topics, indexes);
 		TopicPage actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 1, 3, 0, false, false, true, true, expected, true);
 
@@ -561,8 +585,12 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 		// null/"TOPIC THREE", null/"Topic six", "Notes #1"/"TOPIC ONE", "Notes #2"/"Topic two",
 		// "Notes #4"/"Topic four", "Notes #5 (filtered)"/"TOPIC FIVE", "Notes #7 (filtered)"/"TOPIC SEVEN",
 		// "Notes #8 (filtered)"/"Topic eight"
-		// 4, 7, 2, 3, 5, 6, 8, 9
-		List<Topic> expected = subList(topics, 4, 7, 2, 3, 5, 6, 8, 9);
+		// CI: 7, 4, 2, 3, 5, 6, 8, 9
+		// CS: 4, 7, 2, 3, 5, 6, 8, 9
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 4, 2, 3, 5, 6, 8, 9 } //
+			: new int[] { 4, 7, 2, 3, 5, 6, 8, 9 };
+		List<Topic> expected = subList(topics, indexes);
 		TopicPage actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -571,21 +599,31 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		labelOrder.setDirection(DirectionKind.DESC);
-		expected = subList(topics, 7, 4, 2, 3, 5, 6, 8, 9);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 4, 7, 2, 3, 5, 6, 8, 9 } //
+			: new int[] { 7, 4, 2, 3, 5, 6, 8, 9 };
+		expected = subList(topics, indexes);
 		actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		// "Notes #1"/"TOPIC ONE", "Notes #2"/"Topic two", "Notes #4"/"Topic four", "Notes #5 (filtered)"/"TOPIC FIVE",
 		// "Notes #7 (filtered)"/"TOPIC SEVEN", "Notes #8 (filtered)"/"Topic eight", null/"TOPIC THREE", null/"Topic six"
-		// 2, 3, 5, 6, 8, 9, 4, 7
+		// CI: 2, 3, 5, 6, 8, 9, 7, 4
+		// CS: 2, 3, 5, 6, 8, 9, 4, 7
 		descriptionOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		labelOrder.setDirection(DirectionKind.ASC);
-		expected = subList(topics, 2, 3, 5, 6, 8, 9, 4, 7);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 2, 3, 5, 6, 8, 9, 7, 4 } //
+			: new int[] { 2, 3, 5, 6, 8, 9, 4, 7 };
+		expected = subList(topics, indexes);
 		actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		labelOrder.setDirection(DirectionKind.DESC);
-		expected = subList(topics, 2, 3, 5, 6, 8, 9, 7, 4);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 2, 3, 5, 6, 8, 9, 4, 7 } //
+			: new int[] { 2, 3, 5, 6, 8, 9, 7, 4 };
+		expected = subList(topics, indexes);
 		actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
@@ -657,50 +695,78 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 
 		// "TOPIC FIVE", "TOPIC ONE", "TOPIC SEVEN", "TOPIC THREE", "Topic eight", "Topic four", "Topic six",
 		// "Topic two", "Updated child label", "Updated parent label"
-		// 6, 2, 8, 4, 9, 5, 7, 3, 1, 0
-		List<Topic> expected = subList(topics, 6, 2, 8, 4);
+		// CI: 9, 6, 5, 2, 8, 7, 4, 3, 1, 0
+		// CS: 6, 2, 8, 4, 9, 5, 7, 3, 1, 0
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 9, 6, 5, 2 } //
+			: new int[] { 6, 2, 8, 4 };
+		List<Topic> expected = subList(topics, indexes);
 		TopicPage actuals = queryExecutor.topics(responseSpec, null, pageSort);
 		checkPage(actuals, topics.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(topics, 9, 5, 7, 3);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 7, 4, 3 } //
+			: new int[] { 9, 5, 7, 3 };
+		expected = subList(topics, indexes);
 		actuals = queryExecutor.topics(responseSpec, null, pageSort);
 		checkPage(actuals, topics.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(topics, 1, 0);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 0 } //
+			: new int[] { 1, 0 };
+		expected = subList(topics, indexes);
 		actuals = queryExecutor.topics(responseSpec, null, pageSort);
 		checkPage(actuals, topics.size(), 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(topics, 6, 2, 8, 4);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 9, 6, 5, 2 } //
+			: new int[] { 6, 2, 8, 4 };
+		expected = subList(topics, indexes);
 		actuals = queryExecutor.topics(responseSpec, null, pageSort);
 		checkPage(actuals, topics.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(topics, 9, 5, 7, 3);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 7, 4, 3 } //
+			: new int[] { 9, 5, 7, 3 };
+		expected = subList(topics, indexes);
 		actuals = queryExecutor.topics(responseSpec, null, pageSort);
 		checkPage(actuals, topics.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(topics, 1, 0);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 0 } //
+			: new int[] { 1, 0 };
+		expected = subList(topics, indexes);
 		actuals = queryExecutor.topics(responseSpec, null, pageSort);
 		checkPage(actuals, topics.size(), 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(topics, 0, 1, 3, 7);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 0, 1, 3, 4 } //
+			: new int[] { 0, 1, 3, 7 };
+		expected = subList(topics, indexes);
 		actuals = queryExecutor.topics(responseSpec, null, pageSort);
 		checkPage(actuals, topics.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(topics, 5, 9, 4, 8);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 8, 2, 5 } //
+			: new int[] { 5, 9, 4, 8 };
+		expected = subList(topics, indexes);
 		actuals = queryExecutor.topics(responseSpec, null, pageSort);
 		checkPage(actuals, topics.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(topics, 2, 6);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 6, 9 } //
+			: new int[] { 2, 6 };
+		expected = subList(topics, indexes);
 		actuals = queryExecutor.topics(responseSpec, null, pageSort);
 		checkPage(actuals, topics.size(), 3, 4, 2, true, false, false, true, expected, true);
 	}
@@ -725,35 +791,54 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 			.build();
 
 		// "TOPIC FIVE", "TOPIC SEVEN", "Topic eight"
-		// 6, 8, 9
-		List<Topic> expected = subList(topics, 6, 8);
+		// CI: 9, 6, 8
+		// CS: 6, 8, 9
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 9, 6 } //
+			: new int[] { 6, 8 };
+		List<Topic> expected = subList(topics, indexes);
 		TopicPage actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(topics, 9);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8 } //
+			: new int[] { 9 };
+		expected = subList(topics, indexes);
 		actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(topics, 6, 8);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 9, 6 } //
+			: new int[] { 6, 8 };
+		expected = subList(topics, indexes);
 		actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(topics, 9);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8 } //
+			: new int[] { 9 };
+		expected = subList(topics, indexes);
 		actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(topics, 9, 8);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 6 } //
+			: new int[] { 9, 8 };
+		expected = subList(topics, indexes);
 		actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(topics, 6);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 9 } //
+			: new int[] { 6 };
+		expected = subList(topics, indexes);
 		actuals = queryExecutor.topics(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 	}

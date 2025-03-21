@@ -1,172 +1,218 @@
-{
+# These mutations use fragments defined in fragments.graphql
+
+query {
   claimById(id: 4){
     id
-    status
-    createdByUser{
-      id
-      username
-    }
-    updatedByUser{
-      id
-      username
-    }
-    text
-    date
-    notes
+    ... trackedEntityFields
+    # ... linkableEntityFields
+    ... claimFields
   }
   declarationById(id: 3){
     id
-    status
-    kind(format: LONG)
-    title
-    date
-    country(format: COMMON_NAME)
-    url
-    signatoryCount
+    ... trackedEntityFields
+    # ... linkableEntityFields
+    ... declarationFields
+  }
+  entityLinkById(id: 1) {
+    id
+    ... trackedEntityFields
+    ... entityLinkFields
   }
   journalById(id: 24) {
     id
-    status
-    created
-    title
-    abbreviation
-    issn
+    ... trackedEntityFields
+    ... journalFields
+  }
+  personById() {
+    id
+    ... trackedEntityFields
+    # ... linkableEntityFields
+    ... personFields
+  }
+  publicationById() {
+    id
+    ... trackedEntityFields
+    # ... linkableEntityFields
+    ... publicationFields
   }
   publisherById(id: 23757) {
     id
-    status
-    created
-    updated
-    name
-    location
-    country
-    url
-    journalCount
+    ... trackedEntityFields
+    ... publisherFields
+  }
+  quotationById(id: 1) {
+    id
+    ... trackedEntityFields
+    # ... linkableEntityFields
+    ... quotationFields
+  }
+  topicById(id: 1) {
+    id
+    ... trackedEntityFields
+    # ... linkableEntityFields
+    ... topicFields
   }
   userById(id: 0) {
     id
-    status
-    created
-    username
-    firstName
-    lastName
-    email
+    ... trackedEntityFields
+    ... userFields
   }
 }
 
 {
-  declarations(
-    filter: {
-      status: PUB
-      text: "clim*,lett*"
-      advancedSearch: true
-    }
-    pageSort: {
-      pageNumber: 1
-      pageSize: 3
-      sort: {
-        orders: {
-          property: "date"
-          direction: DESC
-          # nullHandling: NULLS_LAST
-          # ignoreCase: false
-        }
-      }
-    }
-  ){
-    hasContent
-    isEmpty
-    number
-    size
-    numberOfElements
-    totalPages
-    totalElements
-    isFirst
-    isLast
-    hasNext
-    hasPrevious
-    content {
-      status
-      created
-      createdByUser {
-        firstName
-        lastName
-      }
-      kind
-      title
-      date
-      country
-      url
-      signatoryCount
-      notes
-      log {
-        content {
-          timestamp
-          transactionKind
-          user {
-            id
-          }
-        }
-      }
-    }
-  }
-}
-
-{
-  persons {
-    size
+  claims
+  # (
+  #   filter: {
+  #     status: DRA
+  #     text: "test"
+  #     advancedSearch: false
+  #     topicId: 0
+  #     recursive: false
+  #     fromEntityKind: XXX
+  #     fromEntityId: 0
+  #     toEntityKind: CLA
+  #     toEntityId: 0
+  #   }
+  #   pageSort: {
+  #     pageNumber: 1
+  #     pageSize: 3
+  #     sort: {
+  #       orders: {
+  #         property: "date"
+  #         direction: DESC
+  #         nullHandling: NULLS_LAST
+  #         ignoreCase: false
+  #       }
+  #     }
+  #   }
+  # )
+  {
+    ... pageFields
     content {
       id
-      status
-      firstName
-      lastName
-      qualifications
-      notes
+      ... trackedEntityFields
+      # ... linkableEntityFields
+      ... claimFields
     }
   }
 }
 
 {
-  log(
-    filter: {
-      entityKind: JOU
-      # entityId: 45
-      userId: 0
-      transactionKinds: CRE
-      # from: 
-      # to: 
-    }
-    pageSort: {
-      pageNumber: 0
-      pageSize: 10
-      sort: {
-        orders: {
-          property: "timestamp"
-          direction: ASC
-        }
-      }
-    }
-  ){
-    hasContent
-    isEmpty
-    number
-    size
-    numberOfElements
-    totalPages
-    totalElements
-    isFirst
-    isLast
-    hasNext
-    hasPrevious
+  declarations
+  # (
+  #   filter: {
+  #     status: DRA
+  #     text: "test"
+  #     advancedSearch: false
+  #     topicId: 0
+  #     recursive: false
+  #     fromEntityKind: XXX
+  #     fromEntityId: 0
+  #     toEntityKind: CLA
+  #     toEntityId: 0
+  #   }
+  #   pageSort: {
+  #     pageNumber: 1
+  #     pageSize: 3
+  #     sort: {
+  #       orders: {
+  #         property: "date"
+  #         direction: DESC
+  #         # nullHandling: NULLS_LAST
+  #         # ignoreCase: false
+  #       }
+  #     }
+  #   }
+  # )
+  {
+    ... pageFields
     content {
       id
-      timestamp
-      user {
-        username
-        firstName
-        lastName
-      }
-      transactionKind
+      ... trackedEntityFields
+      # ... linkableEntityFields
+      ... declarationFields
+    }
+  }
+}
+
+{
+  entityLinks
+  # (
+  #   filter: {
+  #     fromEntityKind: FFF
+  #     fromEntityId: 0
+  #     toEntityKind: TTT
+  #     toEntityId: 0
+  #     status: SSS
+  #     text: "test"
+  #     advancedSearch: false
+  #   }
+  # )
+  {
+    id
+    ... trackedEntityFields
+    ... entityLinkFields
+  }
+}
+
+{
+  journals
+  # (
+  #   filter: {
+  #     status: DRA
+  #     text: "test"
+  #     advancedSearch: false
+  #   }
+  #   pageSort: {
+  #     pageNumber: 1
+  #     pageSize: 3
+  #     sort: {
+  #       orders: {
+  #         property: "date"
+  #         direction: DESC
+  #         # nullHandling: NULLS_LAST
+  #         # ignoreCase: false
+  #       }
+  #     }
+  #   }
+  # )
+  {
+    ... pageFields
+    content {
+      id
+      ... trackedEntityFields
+      # ... linkableEntityFields
+      ... journalFields
+    }
+  }
+}
+
+{
+  log
+  # (
+  #   filter: {
+  #     entityKind: XXX
+  #     entityId: 0
+  #     userId: 0
+  #     transactionKinds: TTT
+  #     from: 
+  #     to: 
+  #   }
+  #   pageSort: {
+  #     pageNumber: 0
+  #     pageSize: 10
+  #     sort: {
+  #       orders: {
+  #         property: "timestamp"
+  #         direction: ASC
+  #       }
+  #     }
+  #   }
+  # )
+  {
+    ... pageFields
+    content {
+      ... logFields
       entityKind
       entityId
       linkedEntityKind
@@ -176,177 +222,303 @@
 }
 
 {
-  topicById(id: 3) {
-    id
-    status
-    created
-    createdByUser {
-      id
-      username
-      firstName
-      lastName
-    }
-    updated
-    updatedByUser {
-      id
-      username
-      firstName
-      lastName
-    }
-    log {
-      hasContent
-      isEmpty
-      number
-      size
-      numberOfElements
-      totalPages
-      totalElements
-      isFirst
-      isLast
-      hasNext
-      hasPrevious
-      content {
-        timestamp
-        transactionKind
-        entityId
-        entityKind
-        user {
-          id
-          username
-          firstName
-          lastName
-        }
-      }
-    }
-    label
-    description
-    parent {
-      id
-      label
-    }
-    children {
-      id
-      label
-      parent {
-        id
-      }
-      children {
-        id
-        label
-        parent {
-          id
-        }
-      }
-    }
-  }
-}
-
-{
-  topics(filter: {
-  		status: [DRA]
-  	# text: "updated"
-  	})
-  	{
-    numberOfElements
-    content{
-      id
-      status
-      label
-      description
-      parent{
-        id
-      }
-    }
-  }
-}
-
-{
-  topics(filter: {
-		parentId: 1
-    status: [DRA, PUB]
-    text: "extreme*"
-    advancedSearch: true
-    recursive: true
-  }
-  pageSort: {
-    pageNumber: 1
-    pageSize: 3
-    sort: {
-      orders: [{
-        property: "label"
-        direction: DESC
-      }]
-    }
-  }) {
-    number
-    size
-    numberOfElements
-    totalPages
-    totalElements
-    hasContent
-    isFirst
-    isLast
-    hasNext
-    hasPrevious
+  persons
+  # (
+  #   filter: {
+  #     fromEntityKind: FFF
+  #     fromEntityId: 0
+  #     toEntityKind: TTT
+  #     toEntityId: 0
+  #     status: SSS
+  #     text: "test"
+  #     advancedSearch: false
+  #   }
+  #   pageSort: {
+  #     pageNumber: 1
+  #     pageSize: 3
+  #     sort: {
+  #       orders: {
+  #         property: "date"
+  #         direction: DESC
+  #         # nullHandling: NULLS_LAST
+  #         # ignoreCase: false
+  #       }
+  #     }
+  #   }
+  # )
+  {
+    ... pageFields
     content {
       id
-      # parent {
-      #   id
-      #   label
-      # }
-      status
-      created
-      # createdByUser {
-      #   firstName
-      #   lastName
-      # }
-      label
-      description
-  	}
+      ... trackedEntityFields
+      # ... linkableEntityFields
+      ... personFields
+    }
   }
 }
 
 {
-  topicRefs(
-    filter: {
-      #topicId: 1
-      entityKind: DEC
-      #entityId: 1
-      #text: "aba*"
-      #advancedSearch: true
-    }
-    pageSort: {
-      pageNumber: 0
-      pageSize: 4
-      sort: {
-        orders: {
-          property: "entity_id"
-          direction: DESC
-        }
-      }
-    }
-  ){
-    number
-    size
-    numberOfElements
-    totalPages
-    totalElements
-    hasContent
-    isFirst
-    isLast
-    hasNext
-    hasPrevious
+  publications
+  # (
+  #   filter: {
+  #     fromEntityKind: FFF
+  #     fromEntityId: 0
+  #     toEntityKind: TTT
+  #     toEntityId: 0
+  #     status: SSS
+  #     text: "test"
+  #     advancedSearch: false
+  #   }
+  #   pageSort: {
+  #     pageNumber: 1
+  #     pageSize: 3
+  #     sort: {
+  #       orders: {
+  #         property: "date"
+  #         direction: DESC
+  #         # nullHandling: NULLS_LAST
+  #         # ignoreCase: false
+  #       }
+  #     }
+  #   }
+  # )
+  {
+    ... pageFields
     content {
       id
-      topic {
-        id
-        label
-      }
-      entityKind
-      entityId
+      ... trackedEntityFields
+      # ... linkableEntityFields
+      ... publicationFields
     }
   }
 }
 
 {
+  publishers
+  # (
+  #   filter: {
+  #     status: DRA
+  #     text: "test"
+  #     advancedSearch: true
+  #   }
+  #   pageSort: {
+  #     pageNumber: 1
+  #     pageSize: 3
+  #     sort: {
+  #       orders: {
+  #         property: "date"
+  #         direction: DESC
+  #         # nullHandling: NULLS_LAST
+  #         # ignoreCase: false
+  #       }
+  #     }
+  #   }
+  # )
+  {
+    ... pageFields
+    content {
+      id
+      ... trackedEntityFields
+      ... publisherFields
+    }
+  }
+}
+
+{
+  quotations
+  # (
+  #   filter: {
+  #     fromEntityKind: FFF
+  #     fromEntityId: 0
+  #     toEntityKind: TTT
+  #     toEntityId: 0
+  #     status: SSS
+  #     text: "test"
+  #     advancedSearch: false
+  #   }
+  #   pageSort: {
+  #     pageNumber: 1
+  #     pageSize: 3
+  #     sort: {
+  #       orders: {
+  #         property: "date"
+  #         direction: DESC
+  #         # nullHandling: NULLS_LAST
+  #         # ignoreCase: false
+  #       }
+  #     }
+  #   }
+  # )
+  {
+    ... pageFields
+    content {
+      id
+      ... trackedEntityFields
+      # ... linkableEntityFields
+      ... quotationFields
+    }
+  }
+}
+
+{
+  topics
+  # (
+  #   filter: {
+  #     parentId: 0
+  #     recursive: false
+  #     status: SSS
+  #     text: "test"
+  #     advancedSearch: false
+  #   }
+  #   pageSort: {
+  #     pageNumber: 1
+  #     pageSize: 3
+  #     sort: {
+  #       orders: {
+  #         property: "date"
+  #         direction: DESC
+  #         # nullHandling: NULLS_LAST
+  #         # ignoreCase: false
+  #       }
+  #     }
+  #   }
+  # )
+  {
+    ... pageFields
+    content {
+      id
+      ... trackedEntityFields
+      # ... linkableEntityFields
+      ... topicFields
+    }
+  }
+}
+
+{
+	users
+  # (
+  #   filter: {
+  #     status: DRA
+  #     text: "test"
+  #     advancedSearch: false
+  #   }
+  #   pageSort: {
+  #     pageNumber: 1
+  #     pageSize: 3
+  #     sort: {
+  #       orders: {
+  #         property: "date"
+  #         direction: DESC
+  #         # nullHandling: NULLS_LAST
+  #         # ignoreCase: false
+  #       }
+  #     }
+  #   }
+  # )
+  {
+    content {
+      id
+      ... trackedEntityFields
+      ... userFields
+    }
+  }
+}
+
+# TO SELECT ALL ENTITIES:
+{
+  claims
+  {
+    content {
+      id
+      ... trackedEntityFields
+      # ... linkableEntityFields
+      ... claimFields
+    }
+  }
+
+  declarations
+  {
+    content {
+      id
+      ... trackedEntityFields
+      # ... linkableEntityFields
+      ... declarationFields
+    }
+  }
+
+  entityLinks
+  {
+    content {
+      id
+      ... trackedEntityFields
+      ... entityLinkFields
+    }
+  }
+
+  journals
+  {
+    content {
+      id
+      ... trackedEntityFields
+      ... journalFields
+    }
+  }
+
+  persons
+  {
+    content {
+      id
+      ... trackedEntityFields
+      # ... linkableEntityFields
+      ... personFields
+    }
+  }
+
+  publications
+  {
+    content {
+      id
+      ... trackedEntityFields
+      # ... linkableEntityFields
+      ... publicationFields
+    }
+  }
+
+  publishers
+  {
+    content {
+      id
+      ... trackedEntityFields
+      ... publisherFields
+    }
+  }
+
+  quotations
+  {
+    content {
+      id
+      ... trackedEntityFields
+      # ... linkableEntityFields
+      ... quotationFields
+    }
+  }
+
+  topics
+  {
+    content {
+      id
+      ... trackedEntityFields
+      # ... linkableEntityFields
+      ... topicFields
+    }
+  }
+
+  users
+  {
+    content {
+      id
+      ... trackedEntityFields
+      ... userFields
+    }
+  }
 }

@@ -23,24 +23,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
-import org.dataloader.DataLoader;
 import org.springframework.stereotype.Component;
 
 import graphql.GraphQLContext;
-import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateJournal;
-import io.github.demonfiddler.ee.server.model.FormatKind;
 import io.github.demonfiddler.ee.server.model.Journal;
-import io.github.demonfiddler.ee.server.model.LogPage;
-import io.github.demonfiddler.ee.server.model.LogQueryFilter;
-import io.github.demonfiddler.ee.server.model.PageableInput;
 import io.github.demonfiddler.ee.server.model.Publisher;
-import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.repository.JournalRepository;
 import jakarta.annotation.Resource;
 
 @Component
-public class DataFetchersDelegateJournalImpl extends DataFetchersDelegateITrackedEntityBaseImpl
+public class DataFetchersDelegateJournalImpl extends DataFetchersDelegateITrackedEntityBaseImpl<Journal>
     implements DataFetchersDelegateJournal {
 
     @Resource
@@ -48,33 +41,7 @@ public class DataFetchersDelegateJournalImpl extends DataFetchersDelegateITracke
 
     @Override
     public List<Journal> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {
-        return journalRepository.findByIds(keys);
-    }
-
-    @Override
-    public Object status(DataFetchingEnvironment dataFetchingEnvironment, Journal origin, FormatKind format) {
-        return _status(dataFetchingEnvironment, origin, format);
-    }
-
-    @Override
-    public Map<Journal, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment,
-        GraphQLContext graphQLContext, List<Journal> keys) {
-
-        return _createdByUserMap(batchLoaderEnvironment, graphQLContext, keys);
-    }
-
-    @Override
-    public Map<Journal, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment,
-        GraphQLContext graphQLContext, List<Journal> keys) {
-
-        return _updatedByUserMap(batchLoaderEnvironment, graphQLContext, keys);
-    }
-
-    @Override
-    public Object log(DataFetchingEnvironment dataFetchingEnvironment, DataLoader<Long, LogPage> dataLoader,
-        Journal origin, LogQueryFilter filter, PageableInput pageSort) {
-
-        return _log(dataFetchingEnvironment, origin, filter, pageSort);
+        return journalRepository.findAllById(keys);
     }
 
     @Override

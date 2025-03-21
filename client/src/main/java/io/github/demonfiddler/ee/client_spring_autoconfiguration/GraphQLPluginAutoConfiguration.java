@@ -40,9 +40,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
 import org.springframework.web.reactive.socket.client.WebSocketClient;
 
-import com.graphql_java_generator.client.GraphqlClientUtils;
 import com.graphql_java_generator.client.SpringContextBean;
 import com.graphql_java_generator.util.GraphqlUtils;
+
+import io.github.demonfiddler.ee.client.util.GraphqlClientUtilsEx;
 
 /**
  * This Spring {@link AutoConfiguration} class defines the default Spring Beans for this GraphQL schema.
@@ -120,8 +121,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "graphqlClientUtils")
-	GraphqlClientUtils graphqlClientUtils() {
-		return GraphqlClientUtils.graphqlClientUtils;
+	GraphqlClientUtilsEx graphqlClientUtils() {
+		return GraphqlClientUtilsEx.graphqlClientUtils;
 	}
 
 	@Bean

@@ -41,7 +41,7 @@ public class TopicQueryFilter extends TrackedEntityQueryFilter {
 	 * Whether to return all sub-topics, recursively.
 	 */
 	@GraphQLScalar(fieldName = "recursive", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class, listDepth = 0)
-	Boolean recursive = false;
+	Boolean recursive;
 
 	/**
 	 * The parent topic identifier. Specify to get sub-topics, leave blank for top-level topics.
@@ -55,13 +55,6 @@ public class TopicQueryFilter extends TrackedEntityQueryFilter {
 	 */
 	public Long getParentId() {
 		return this.parentId;
-	}
-
-	/**
-	 * Free text search string.
-	 */
-	public void setText(String text) {
-		this.text = text;
 	}
 
 	/**
@@ -82,53 +75,61 @@ public class TopicQueryFilter extends TrackedEntityQueryFilter {
 		return "TopicQueryFilter {" //$NON-NLS-1$
 			+ "parentId: " + this.parentId //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
-			+ "text: " + this.text //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "advancedSearch: " + this.advancedSearch //$NON-NLS-1$
+			+ "recursive: " + this.recursive //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "status: " + this.status //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
-			+ "recursive: " + this.recursive //$NON-NLS-1$
+			+ "text: " + this.text //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
+			+ "advancedSearch: " + this.advancedSearch //$NON-NLS-1$
 			+ "}"; //$NON-NLS-1$
 	}
 
-	public static Builder builder() {
+	public static Builder builderForTopicQueryFilter() {
 		return new Builder();
 	}
 
-	/**
-	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
-	 * {@link #builder()}
-	 */
-	public static class Builder extends TrackedEntityQueryFilter.Builder {
+	@SuppressWarnings("unchecked")
+	abstract static class AbstractBuilder<B extends AbstractBuilder<B, T>, T extends TopicQueryFilter>
+		extends TrackedEntityQueryFilter.AbstractBuilder<B, T> {
 
 		private Long parentId;
-		private Boolean recursive = false;
+		private Boolean recursive;
 
 		/**
-		 * The parent topic identifier. Specify to get sub-topics, leave blank for top-level topics.
+		 * The parent topic identifier. Specify to get sub-topics, pass {@code -1} for top-level topics.
 		 */
-		public Builder withParentId(Long parentIdParam) {
+		public B withParentId(Long parentIdParam) {
 			this.parentId = parentIdParam;
-			return this;
+			return (B)this;
 		}
 
 		/**
 		 * Whether to return all sub-topics, recursively.
 		 */
-		public Builder withRecursive(Boolean recursiveParam) {
+		public B withRecursive(Boolean recursiveParam) {
 			this.recursive = recursiveParam;
-			return this;
+			return (B)this;
 		}
 
-		public TopicQueryFilter build() {
-			TopicQueryFilter _object = new TopicQueryFilter();
+		T build(T _object) {
+			super.build(_object);
 			_object.setParentId(this.parentId);
-			_object.setText(this.text);
-			_object.setAdvancedSearch(this.advancedSearch);
-			_object.setStatus(this.status);
 			_object.setRecursive(this.recursive);
 			return _object;
+		}
+
+	}
+
+	/**
+	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
+	 * {@link #builderForTopicQueryFilter()}
+	 */
+	public static class Builder extends AbstractBuilder<Builder, TopicQueryFilter> {
+
+		@Override
+		public TopicQueryFilter build() {
+			return build(new TopicQueryFilter());
 		}
 
 	}

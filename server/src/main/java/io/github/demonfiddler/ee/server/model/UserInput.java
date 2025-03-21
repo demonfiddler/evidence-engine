@@ -29,13 +29,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("UserInput")
-public class UserInput {
-
-	/**
-	 * The immutable, unique user identifier (system-assigned).
-	 */
-	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
-	Long id;
+public class UserInput extends AbstractBaseEntityInput {
 
 	/**
 	 * The (mutable?) unique user name (user-assigned).
@@ -67,20 +61,6 @@ public class UserInput {
 	@GraphQLScalar(fieldName = "password", graphQLTypeSimpleName = "String", javaClass = String.class,
 		listDepth = 0)
 	String password;
-
-	/**
-	 * The immutable, unique user identifier (system-assigned).
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	/**
-	 * The immutable, unique user identifier (system-assigned).
-	 */
-	public Long getId() {
-		return this.id;
-	}
 
 	/**
 	 * The (mutable?) unique user name (user-assigned).
@@ -176,22 +156,13 @@ public class UserInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
+	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, UserInput> {
 
-		private Long id;
 		private String username;
 		private String firstName;
 		private String lastName;
 		private String email;
 		private String password;
-
-		/**
-		 * The immutable, unique user identifier (system-assigned).
-		 */
-		public Builder withId(Long idParam) {
-			this.id = idParam;
-			return this;
-		}
 
 		/**
 		 * The (mutable?) unique user name (user-assigned).
@@ -233,9 +204,9 @@ public class UserInput {
 			return this;
 		}
 
+		@Override
 		public UserInput build() {
-			UserInput _object = new UserInput();
-			_object.setId(this.id);
+			UserInput _object = build(new UserInput());
 			_object.setUsername(this.username);
 			_object.setFirstName(this.firstName);
 			_object.setLastName(this.lastName);

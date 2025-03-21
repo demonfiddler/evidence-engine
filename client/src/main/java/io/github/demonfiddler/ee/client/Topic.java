@@ -19,22 +19,15 @@
 
 package io.github.demonfiddler.ee.client;
 
-import java.time.OffsetDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.graphql_java_generator.annotation.GraphQLIgnore;
-import com.graphql_java_generator.annotation.GraphQLInputParameters;
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
-import com.graphql_java_generator.client.GraphQLObjectMapper;
 
 import io.github.demonfiddler.ee.client.util.CustomJacksonDeserializers;
 
@@ -46,77 +39,10 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonDeserializers;
  */
 @GraphQLObjectType("Topic")
 @JsonInclude(Include.NON_NULL)
-public class Topic implements ITrackedEntity {
-
-	/**
-	 * This map contains the deserialized values for the alias, as parsed from the JSON response from the GraphQL
-	 * server. The key is the alias name, the value is the deserialiazed value (taking into account custom scalars,
-	 * lists, ...)
-	 */
-	@GraphQLIgnore
-	Map<String, Object> aliasValues = new HashMap<>();
+public class Topic extends AbstractLinkableEntity {
 
 	public Topic() {
 	}
-
-	/**
-	 * The unique topic identifier.
-	 */
-	@JsonProperty("id")
-	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
-	Long id;
-
-	/**
-	 * The entity status.
-	 */
-	@JsonProperty("status")
-	@GraphQLInputParameters(names = { "format" }, types = { "FormatKind" }, mandatories = { false }, listDepths = { 0 },
-		itemsMandatory = { false })
-	@GraphQLScalar(fieldName = "status", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	String status;
-
-	/**
-	 * When the record was created.
-	 */
-	@JsonProperty("created")
-	@JsonDeserialize(using = CustomJacksonDeserializers.DateTime.class)
-	@GraphQLScalar(fieldName = "created", graphQLTypeSimpleName = "DateTime", javaClass = OffsetDateTime.class,
-		listDepth = 0)
-	OffsetDateTime created;
-
-	/**
-	 * The user who created the record.
-	 */
-	@JsonProperty("createdByUser")
-	@GraphQLNonScalar(fieldName = "createdByUser", graphQLTypeSimpleName = "User", javaClass = User.class,
-		listDepth = 0)
-	User createdByUser;
-
-	/**
-	 * When the record was last updated.
-	 */
-	@JsonProperty("updated")
-	@JsonDeserialize(using = CustomJacksonDeserializers.DateTime.class)
-	@GraphQLScalar(fieldName = "updated", graphQLTypeSimpleName = "DateTime", javaClass = OffsetDateTime.class,
-		listDepth = 0)
-	OffsetDateTime updated;
-
-	/**
-	 * The user who last updated the record.
-	 */
-	@JsonProperty("updatedByUser")
-	@GraphQLNonScalar(fieldName = "updatedByUser", graphQLTypeSimpleName = "User", javaClass = User.class,
-		listDepth = 0)
-	User updatedByUser;
-
-	/**
-	 * Log of transactions involving the record.
-	 */
-	@JsonProperty("log")
-	@GraphQLInputParameters(names = { "filter", "pageSort" }, types = { "LogQueryFilter", "PageableInput" },
-		mandatories = { false, false }, listDepths = { 0, 0 }, itemsMandatory = { false, false })
-	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage", javaClass = LogPage.class, listDepth = 0)
-	LogPage log;
 
 	/**
 	 * The topic label for display in the user interface.
@@ -146,148 +72,6 @@ public class Topic implements ITrackedEntity {
 	@JsonDeserialize(using = CustomJacksonDeserializers.ListTopic.class)
 	@GraphQLNonScalar(fieldName = "children", graphQLTypeSimpleName = "Topic", javaClass = Topic.class, listDepth = 1)
 	List<Topic> children;
-
-	/**
-	 * Referenced entities.
-	 */
-	@JsonProperty("entities")
-	@JsonDeserialize(using = CustomJacksonDeserializers.ListITopicalEntity.class)
-	@GraphQLInputParameters(names = { "entityKind", "filter", "pageSort" },
-		types = { "EntityKind", "TopicalEntityQueryFilter", "PageableInput" }, mandatories = { true, false, false },
-		listDepths = { 0, 0, 0 }, itemsMandatory = { false, false, false })
-	@GraphQLNonScalar(fieldName = "entities", graphQLTypeSimpleName = "ITopicalEntity",
-		javaClass = ITopicalEntity.class, listDepth = 1)
-	List<ITopicalEntity> entities;
-
-	@JsonProperty("__typename")
-	@GraphQLScalar(fieldName = "__typename", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	String __typename;
-
-	/**
-	 * The unique topic identifier.
-	 */
-	@Override
-	@JsonIgnore
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	/**
-	 * The unique topic identifier.
-	 */
-	@Override
-	@JsonIgnore
-	public Long getId() {
-		return this.id;
-	}
-
-	/**
-	 * The entity status.
-	 */
-	@Override
-	@JsonIgnore
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	/**
-	 * The entity status.
-	 */
-	@Override
-	@JsonIgnore
-	public String getStatus() {
-		return this.status;
-	}
-
-	/**
-	 * When the record was created.
-	 */
-	@Override
-	@JsonIgnore
-	public void setCreated(OffsetDateTime created) {
-		this.created = created;
-	}
-
-	/**
-	 * When the record was created.
-	 */
-	@Override
-	@JsonIgnore
-	public OffsetDateTime getCreated() {
-		return this.created;
-	}
-
-	/**
-	 * The user who created the record.
-	 */
-	@Override
-	@JsonIgnore
-	public void setCreatedByUser(User createdByUser) {
-		this.createdByUser = createdByUser;
-	}
-
-	/**
-	 * The user who created the record.
-	 */
-	@Override
-	@JsonIgnore
-	public User getCreatedByUser() {
-		return this.createdByUser;
-	}
-
-	/**
-	 * When the record was last updated.
-	 */
-	@Override
-	@JsonIgnore
-	public void setUpdated(OffsetDateTime updated) {
-		this.updated = updated;
-	}
-
-	/**
-	 * When the record was last updated.
-	 */
-	@Override
-	@JsonIgnore
-	public OffsetDateTime getUpdated() {
-		return this.updated;
-	}
-
-	/**
-	 * The user who last updated the record.
-	 */
-	@Override
-	@JsonIgnore
-	public void setUpdatedByUser(User updatedByUser) {
-		this.updatedByUser = updatedByUser;
-	}
-
-	/**
-	 * The user who last updated the record.
-	 */
-	@Override
-	@JsonIgnore
-	public User getUpdatedByUser() {
-		return this.updatedByUser;
-	}
-
-	/**
-	 * Log of transactions involving the record.
-	 */
-	@Override
-	@JsonIgnore
-	public void setLog(LogPage log) {
-		this.log = log;
-	}
-
-	/**
-	 * Log of transactions involving the record.
-	 */
-	@Override
-	@JsonIgnore
-	public LogPage getLog() {
-		return this.log;
-	}
 
 	/**
 	 * The topic label for display in the user interface.
@@ -353,157 +137,57 @@ public class Topic implements ITrackedEntity {
 		return this.children;
 	}
 
-	/**
-	 * Referenced entities.
-	 */
-	@JsonProperty("entities")
-	public void setEntities(List<ITopicalEntity> entities) {
-		this.entities = entities;
-	}
-
-	/**
-	 * Referenced entities.
-	 */
-	@JsonProperty("entities")
-	public List<ITopicalEntity> getEntities() {
-		return this.entities;
-	}
-
-	@Override
-	@JsonIgnore
-	public void set__typename(String __typename) {
-		this.__typename = __typename;
-	}
-
-	@Override
-	@JsonIgnore
-	public String get__typename() {
-		return this.__typename;
-	}
-
-	/**
-	 * This method is called during the json deserialization process, by the {@link GraphQLObjectMapper}, each time an
-	 * alias value is read from the json.
-	 * @param aliasName
-	 * @param aliasDeserializedValue
-	 */
-	public void setAliasValue(String aliasName, Object aliasDeserializedValue) {
-		this.aliasValues.put(aliasName, aliasDeserializedValue);
-	}
-
-	/**
-	 * Retrieves the value for the given alias, as it has been received for this object in the GraphQL response. <BR/>
-	 * This method <B>should not be used for Custom Scalars</B>, as the parser doesn't know if this alias is a custom
-	 * scalar, and which custom scalar to use at deserialization time. In most case, a value will then be provided by
-	 * this method with a basis json deserialization, but this value won't be the proper custom scalar value.
-	 * @param alias
-	 * @return
-	 */
-	public Object getAliasValue(String alias) {
-		return this.aliasValues.get(alias);
-	}
-
 	@Override
 	public String toString() {
-		return "Topic {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "status: " + this.status //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "created: " + this.created //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createdByUser: " + this.createdByUser //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updated: " + this.updated //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updatedByUser: " + this.updatedByUser //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "log: " + this.log //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "label: " + this.label //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "description: " + this.description //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "parent: " + this.parent //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "children: " + this.children //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "entities: " + this.entities //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "__typename: " + this.__typename //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "Topic {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "entityKind: " + this.entityKind //
+			+ ", " //
+			+ "status: " + this.status //
+			+ ", " //
+			+ "created: " + this.created //
+			+ ", " //
+			+ "createdByUser.id: " + (this.createdByUser == null ? null : this.createdByUser.getId()) //
+			+ ", " //
+			+ "updated: " + this.updated //
+			+ ", " //
+			+ "updatedByUser.id: " + (this.updatedByUser == null ? null : this.updatedByUser.getId()) //
+			+ ", " //
+			+ "log: " + this.log //
+			+ ", " //
+			+ "fromEntityLinks: " + this.fromEntityLinks //
+			+ ", " //
+			+ "toEntityLinks: " + this.toEntityLinks //
+			+ ", " //
+			+ "label: " + this.label //
+			+ ", " //
+			+ "description: " + this.description //
+			+ ", " //
+			+ "parent.id: " + (this.parent == null ? null : this.parent.getId()) //
+			+ ", " //
+			+ "children: " + this.children //
+			+ ", " //
+			+ "__typename: " + this.__typename //
+			+ "}";
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((aliasValues == null) ? 0 : aliasValues.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((status == null) ? 0 : status.hashCode());
-		result = prime * result + ((created == null) ? 0 : created.hashCode());
-		result = prime * result + ((createdByUser == null) ? 0 : createdByUser.hashCode());
-		result = prime * result + ((updated == null) ? 0 : updated.hashCode());
-		result = prime * result + ((updatedByUser == null) ? 0 : updatedByUser.hashCode());
-		result = prime * result + ((log == null) ? 0 : log.hashCode());
+		int result = super.hashCode();
 		result = prime * result + ((label == null) ? 0 : label.hashCode());
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
-		result = prime * result + ((parent == null) ? 0 : parent.hashCode());
+		result = prime * result + ((parent == null || parent.getId() == null) ? 0 : parent.getId().hashCode());
 		result = prime * result + ((children == null) ? 0 : children.hashCode());
-		result = prime * result + ((entities == null) ? 0 : entities.hashCode());
-		result = prime * result + ((__typename == null) ? 0 : __typename.hashCode());
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+        if (!super.equals(obj))
+            return false;
 		Topic other = (Topic)obj;
-		if (aliasValues == null) {
-			if (other.aliasValues != null)
-				return false;
-		} else if (!aliasValues.equals(other.aliasValues))
-			return false;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		if (status == null) {
-			if (other.status != null)
-				return false;
-		} else if (!status.equals(other.status))
-			return false;
-		if (created == null) {
-			if (other.created != null)
-				return false;
-		} else if (!created.equals(other.created))
-			return false;
-		if (createdByUser == null) {
-			if (other.createdByUser != null)
-				return false;
-		} else if (!createdByUser.equals(other.createdByUser))
-			return false;
-		if (updated == null) {
-			if (other.updated != null)
-				return false;
-		} else if (!updated.equals(other.updated))
-			return false;
-		if (updatedByUser == null) {
-			if (other.updatedByUser != null)
-				return false;
-		} else if (!updatedByUser.equals(other.updatedByUser))
-			return false;
-		if (log == null) {
-			if (other.log != null)
-				return false;
-		} else if (!log.equals(other.log))
-			return false;
 		if (label == null) {
 			if (other.label != null)
 				return false;
@@ -524,16 +208,6 @@ public class Topic implements ITrackedEntity {
 				return false;
 		} else if (!children.equals(other.children))
 			return false;
-		if (entities == null) {
-			if (other.entities != null)
-				return false;
-		} else if (!entities.equals(other.entities))
-			return false;
-		if (__typename == null) {
-			if (other.__typename != null)
-				return false;
-		} else if (!__typename.equals(other.__typename))
-			return false;
 		return true;
 	}
 
@@ -545,76 +219,12 @@ public class Topic implements ITrackedEntity {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
+	public static class Builder extends AbstractLinkableEntity.Builder<Builder, Topic> {
 
-		private Long id;
-		private String status;
-		private OffsetDateTime created;
-		private User createdByUser;
-		private OffsetDateTime updated;
-		private User updatedByUser;
-		private LogPage log;
 		private String label;
 		private String description;
 		private Topic parent;
 		private List<Topic> children;
-		private List<ITopicalEntity> entities;
-
-		/**
-		 * The unique topic identifier.
-		 */
-		public Builder withId(Long idParam) {
-			this.id = idParam;
-			return this;
-		}
-
-		/**
-		 * The entity status.
-		 */
-		public Builder withStatus(String statusParam) {
-			this.status = statusParam;
-			return this;
-		}
-
-		/**
-		 * When the record was created.
-		 */
-		public Builder withCreated(OffsetDateTime createdParam) {
-			this.created = createdParam;
-			return this;
-		}
-
-		/**
-		 * The user who created the record.
-		 */
-		public Builder withCreatedByUser(User createdByUserParam) {
-			this.createdByUser = createdByUserParam;
-			return this;
-		}
-
-		/**
-		 * When the record was last updated.
-		 */
-		public Builder withUpdated(OffsetDateTime updatedParam) {
-			this.updated = updatedParam;
-			return this;
-		}
-
-		/**
-		 * The user who last updated the record.
-		 */
-		public Builder withUpdatedByUser(User updatedByUserParam) {
-			this.updatedByUser = updatedByUserParam;
-			return this;
-		}
-
-		/**
-		 * Log of transactions involving the record.
-		 */
-		public Builder withLog(LogPage logParam) {
-			this.log = logParam;
-			return this;
-		}
 
 		/**
 		 * The topic label for display in the user interface.
@@ -648,30 +258,19 @@ public class Topic implements ITrackedEntity {
 			return this;
 		}
 
-		/**
-		 * Referenced entities.
-		 */
-		public Builder withEntities(List<ITopicalEntity> entitiesParam) {
-			this.entities = entitiesParam;
-			return this;
-		}
-
+		@Override
 		public Topic build() {
-			Topic _object = new Topic();
-			_object.setId(this.id);
-			_object.setStatus(this.status);
-			_object.setCreated(this.created);
-			_object.setCreatedByUser(this.createdByUser);
-			_object.setUpdated(this.updated);
-			_object.setUpdatedByUser(this.updatedByUser);
-			_object.setLog(this.log);
+			Topic _object = build(new Topic());
 			_object.setLabel(this.label);
 			_object.setDescription(this.description);
 			_object.setParent(this.parent);
 			_object.setChildren(this.children);
-			_object.setEntities(this.entities);
-			_object.set__typename("Topic"); //$NON-NLS-1$
 			return _object;
+		}
+
+		@Override
+		String getTypeName() {
+			return "Topic";
 		}
 
 	}

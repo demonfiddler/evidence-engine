@@ -25,14 +25,20 @@ import static io.github.demonfiddler.ee.client.EntityKind.DEC;
 import static io.github.demonfiddler.ee.client.EntityKind.PER;
 import static io.github.demonfiddler.ee.client.EntityKind.PUB;
 import static io.github.demonfiddler.ee.client.EntityKind.QUO;
+import static io.github.demonfiddler.ee.client.truth.EntityLinkSubject.assertThat;
 import static io.github.demonfiddler.ee.client.truth.PageSubject.assertThat;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,10 +47,29 @@ import com.graphql_java_generator.exception.GraphQLRequestExecutionException;
 import com.graphql_java_generator.exception.GraphQLRequestPreparationException;
 
 @SpringBootTest(classes = GraphQLClientMain.class)
+@TestInstance(Lifecycle.PER_CLASS)
 @Order(10)
 @TestMethodOrder(OrderAnnotation.class)
 class EntityLinkTests extends AbstractLinkTests {
 
+    private static final String MINIMAL_RESPONSE = """
+        {
+            id
+            status(format: SHORT)
+            fromEntity {
+                ... on IBaseEntity {
+                    id
+                }
+            }
+            fromEntityLocations
+            toEntity {
+                ... on IBaseEntity {
+                    id
+                }
+            }
+            toEntityLocations
+        }
+        """;
     private static final String MINIMAL_PAGED_RESPONSE = """
         {
             number
@@ -56,15 +81,15 @@ class EntityLinkTests extends AbstractLinkTests {
         }
         """;
     // Possible master entity links are as follows:
-    // claim_declaration
-    // claim_person
-    // claim_publication
-    // claim_quotation
-    // declaration_person
-    // declaration_quotation
-    // publication_person
-    // quotation_person
-    // quotation_publication
+    // claim_declaration (m:n)
+    // claim_person (m:n)
+    // claim_publication (m:n)
+    // claim_quotation (m:n)
+    // declaration_person (m:n)
+    // declaration_quotation (1:n)
+    // publication_person (m:n)
+    // quotation_person (n:1)
+    // quotation_publication (n:1)
     private static final EntityKind[][] LINKED_ENTITY_KIND = { //
         { CLA, DEC, PER, PUB, QUO }, //
         { DEC, PER, QUO }, //
@@ -72,52 +97,67 @@ class EntityLinkTests extends AbstractLinkTests {
         { PUB, PER }, //
         { QUO, PER, PUB }, //
     };
+    static final Map<EntityKind, List<EntityLink>> ENTITY_LINK_MAP = new LinkedHashMap<>();
     private static Boolean hasExpectedLink;
     private static Boolean hasExpectedLinks;
 
     static boolean hasExpectedLink() {
-        return hasExpectedLink;
+        return hasExpectedLink != null && hasExpectedLink;
     }
 
     static boolean hasExpectedLinks() {
-        return hasExpectedLinks;
+        return hasExpectedLinks != null && hasExpectedLinks;
     }
 
-    /** Sets the {@code hasExpectedLink(s)} flags. Only called when {@code TopicalEntityTests) executes on its own. */
+    /** Sets the {@code hasExpectedLink(s)} flags. Only called when {@code LinkableEntityTests) executes on its own. */
     static void forceInit() {
         if (hasExpectedLink == null && hasExpectedLinks == null)
             hasExpectedLink = hasExpectedLinks = true;
     }
 
     @BeforeAll
-    static void beforeAll() {
+    void beforeAll() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+        assertThat(authenticator.login()).isTrue();
+        
+        // Need to ensure in-memory presence of the entity instances required by these tests. This is to enable test
+        // execution against an already-populated database without having to run the entire integration test suite.
+        ClaimTests.ensureExpectedClaims();
+        DeclarationTests.ensureExpectedDeclarations();
+        PersonTests.ensureExpectedPersons();
+        PublicationTests.ensureExpectedPublications();
+        QuotationTests.ensureExpectedQuotations();
+        TopicTests.ensureExpectedTopics();
         AbstractLinkTests.init();
+        init();
     }
 
     @Test
     @Order(1)
     @EnabledIf("io.github.demonfiddler.ee.client.TestState#hasExpectedEntity")
-    void linkEntity() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-        LinkEntitiesInput input = new LinkEntitiesInput();
+    void createEntityLink() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+        EntityLinkInput input = new EntityLinkInput();
         for (int i = 0; i < LINKED_ENTITY_KIND.length; i++) {
             EntityKind fromEntityKind = LINKED_ENTITY_KIND[i][0];
-            input.setFromEntityKind(fromEntityKind);
-            input.setFromEntityId(((IBaseEntity)ENTITY[i]).getId());
+            input.setFromEntityId(ENTITY[i].getId());
+            input.setFromEntityLocations(fromEntityKind.label() + "-locations");
+            List<EntityLink> entityLinks = ENTITY_LINK_MAP.computeIfAbsent(fromEntityKind, _ -> new ArrayList<>());
             for (int j = 1; j < LINKED_ENTITY_KIND[i].length; j++) {
                 EntityKind toEntityKind = LINKED_ENTITY_KIND[i][j];
-                ITopicalEntity toEntity = ENTITY_MAP.get(toEntityKind);
-                input.setToEntityKind(toEntityKind);
-                input.setToEntityId(((IBaseEntity)toEntity).getId());
+                ILinkableEntity toEntity = ENTITY_MAP.get(toEntityKind);
+                input.setToEntityId(toEntity.getId());
+                input.setToEntityLocations(toEntityKind.label() + "-locations");
 
                 logger.trace("Link {} #0 to {} #0", fromEntityKind.label(), toEntityKind.label());
 
                 try {
-                    Boolean result = mutationExecutor.linkEntities("", input);
-                    assertThat(result).isTrue();
+                    EntityLink result = mutationExecutor.createEntityLink(MINIMAL_RESPONSE, input);
+                    assertThat(result).hasStatus(StatusKind.DRA.name());
+                    assertThat(result).fromEntity().hasId(input.getFromEntityId());
+                    assertThat(result).hasFromEntityLocations(input.getFromEntityLocations());
+                    assertThat(result).toEntity().hasId(input.getToEntityId());
+                    assertThat(result).hasToEntityLocations(input.getToEntityLocations());
 
-                    // Second call doesn't work, because the integrity constraint violation throws an exception.
-                    // result = mutationExecutor.linkEntities("", input);
-                    // assertWithMessage("Second link attempt").that(result).isFalse();
+                    entityLinks.add(result);
                 } catch (Exception e) {
                     hasExpectedLink = false;
                     throw e;
@@ -132,57 +172,58 @@ class EntityLinkTests extends AbstractLinkTests {
     @Order(2)
     @EnabledIf("io.github.demonfiddler.ee.client.EntityLinkTests#hasExpectedLink")
     void readLinkedEntity() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-        TopicalEntityQueryFilter filter = new TopicalEntityQueryFilter();
+        LinkableEntityQueryFilter filter = new LinkableEntityQueryFilter();
         for (int i = 0; i < LINKED_ENTITY_KIND.length; i++) {
-            filter.setMasterEntityKind(LINKED_ENTITY_KIND[i][0]);
-            filter.setMasterEntityId(((IBaseEntity)ENTITY[i]).getId());
+            filter.setFromEntityKind(LINKED_ENTITY_KIND[i][0]);
+            filter.setFromEntityId(ENTITY[i].getId());
             for (int j = 1; j < LINKED_ENTITY_KIND[i].length; j++) {
                 EntityKind toEntityKind = LINKED_ENTITY_KIND[i][j];
-                ITopicalEntity toEntity = ENTITY_MAP.get(toEntityKind);
+                ILinkableEntity toEntity = ENTITY_MAP.get(toEntityKind);
 
                 try {
-                    AbstractPage<?> actual = queryEntities(toEntityKind, MINIMAL_PAGED_RESPONSE, filter, null);
+                    AbstractPage<? extends IBaseEntity> actual = queryEntities(toEntityKind, MINIMAL_PAGED_RESPONSE, filter, null);
                     assertThat(actual).hasNumber(0);
                     assertThat(actual).hasSize(1);
                     assertThat(actual).hasTotalElements(1);
                     assertThat(actual.getContent()).hasSize(1);
-                    assertThat(actual.getContent().get(0).getId()).isEqualTo(((IBaseEntity)toEntity).getId());
+                    assertThat(actual.getContent().get(0).getId()).isEqualTo(toEntity.getId());
                 } catch (Exception e) {
                     hasExpectedLink = false;
                     throw e;
                 }
             }
         }
+        // TODO: find entities by their ID.
     }
 
     @Test
     @Order(3)
     @EnabledIf("io.github.demonfiddler.ee.client.EntityLinkTests#hasExpectedLink")
-    void unlinkEntity() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-        LinkEntitiesInput input = new LinkEntitiesInput();
+    void deleteEntityLink() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
         for (int i = 0; i < LINKED_ENTITY_KIND.length; i++) {
             EntityKind fromEntityKind = LINKED_ENTITY_KIND[i][0];
-            Long fromEntityId = ((IBaseEntity)ENTITY[i]).getId();
-            input.setFromEntityKind(fromEntityKind);
-            input.setFromEntityId(fromEntityId);
+            Long fromEntityId = ENTITY[i].getId();
+            List<EntityLink> entityLinks = ENTITY_LINK_MAP.get(fromEntityKind);
             for (int j = 1; j < LINKED_ENTITY_KIND[i].length; j++) {
                 EntityKind toEntityKind = LINKED_ENTITY_KIND[i][j];
-                ITopicalEntity toEntity = ENTITY_MAP.get(toEntityKind);
-                input.setToEntityKind(toEntityKind);
-                input.setToEntityId(((IBaseEntity)toEntity).getId());
+                ILinkableEntity toEntity = ENTITY_MAP.get(toEntityKind);
+                Long toEntityId = toEntity.getId();
 
-                logger.trace("Unlink {} #0 to {} #0", fromEntityKind.label(), toEntityKind.label());
+                logger.trace("Unlink {} #0 from {} #0", toEntityKind.label(), fromEntityKind.label());
 
                 try {
-                    Boolean result = mutationExecutor.unlinkEntities("", input);
-                    assertThat(result).isTrue();
+                    EntityLink entityLink = entityLinks.get(j - 1);
+                    EntityLink result = mutationExecutor.deleteEntityLink(MINIMAL_RESPONSE, entityLink.getId());
+                    assertThat(result).hasStatus(StatusKind.DEL.name());
+                    assertThat(result).fromEntity().hasId(fromEntityId);
+                    assertThat(result).hasFromEntityLocations(entityLink.getFromEntityLocations());
+                    assertThat(result).toEntity().hasId(toEntityId);
+                    assertThat(result).hasToEntityLocations(entityLink.getToEntityLocations());
 
-                    result = mutationExecutor.unlinkEntities("", input);
-                    assertThat(result).isFalse();
-
-                    TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
-                        .withMasterEntityKind(fromEntityKind) //
-                        .withMasterEntityId(fromEntityId) //
+                    LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
+                        .withFromEntityKind(fromEntityKind) //
+                        .withFromEntityId(fromEntityId) //
+                        .withStatus(List.of(StatusKind.DRA, StatusKind.PUB, StatusKind.SUS)) //
                         .build();
                     AbstractPage<?> actual = queryEntities(toEntityKind, MINIMAL_PAGED_RESPONSE, filter, null);
                     assertThat(actual).hasNumber(0);
@@ -200,39 +241,38 @@ class EntityLinkTests extends AbstractLinkTests {
     @Test
     @Order(4)
     @EnabledIf("io.github.demonfiddler.ee.client.TestState#hasExpectedEntities")
-    void linkEntities() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-        LinkEntitiesInput input = new LinkEntitiesInput();
+    void createEntityLinks() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+        EntityLinkInput input = new EntityLinkInput();
         for (int h = 0; h < LINKED_ENTITY_KIND.length; h++) {
             EntityKind[] entityLinkKinds = LINKED_ENTITY_KIND[h];
             EntityKind fromEntityKind = entityLinkKinds[0];
-            input.setFromEntityKind(fromEntityKind);
+            // input.setFromEntityKind(fromEntityKind);
 
-            List<? extends ITopicalEntity> fromEntities = ENTITIES.get(h);
+            List<? extends ILinkableEntity> fromEntities = ENTITIES.get(h);
             for (int i = 1; i < fromEntities.size(); i++) {
-                ITopicalEntity fromEntity = fromEntities.get(i);
+                ILinkableEntity fromEntity = fromEntities.get(i);
                 input.setFromEntityId(((IBaseEntity)fromEntity).getId());
 
                 for (int j = 1; j < entityLinkKinds.length; j++) {
                     EntityKind toEntityKind = entityLinkKinds[j];
-                    input.setToEntityKind(toEntityKind);
+                    // input.setToEntityKind(toEntityKind);
 
-                    List<? extends ITopicalEntity> toEntities = getEntities(toEntityKind);
+                    List<? extends ILinkableEntity> toEntities = getEntities(toEntityKind);
                     int[] entityLinkIndexes = ENTITY_LINK_INDEXES[i];
                     for (int k = 0; k < entityLinkIndexes.length; k++) {
                         int toEntityIndex = entityLinkIndexes[k];
-                        ITopicalEntity toEntity = toEntities.get(toEntityIndex);
+                        ILinkableEntity toEntity = toEntities.get(toEntityIndex);
                         input.setToEntityId(((IBaseEntity)toEntity).getId());
 
                         logger.trace("Link {} #{} to {} #{}", fromEntityKind.label(), i, toEntityKind.label(),
                             toEntityIndex);
 
-                        Boolean result = mutationExecutor.linkEntities("", input);
-                        try {
-                            assertThat(result).isTrue();
-                        } catch (Exception e) {
-                            hasExpectedLinks = false;
-                            throw e;
-                        }
+                        EntityLink result = mutationExecutor.createEntityLink(MINIMAL_RESPONSE, input);
+                        assertThat(result).hasStatus(StatusKind.DRA.name());
+                        assertThat(result).fromEntity().hasId(input.getFromEntityId());
+                        assertThat(result).hasFromEntityLocations(input.getFromEntityLocations());
+                        assertThat(result).toEntity().hasId(input.getToEntityId());
+                        assertThat(result).hasToEntityLocations(input.getToEntityLocations());
                     }
                 }
             }

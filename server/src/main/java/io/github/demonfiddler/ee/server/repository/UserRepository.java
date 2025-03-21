@@ -19,7 +19,6 @@
 
 package io.github.demonfiddler.ee.server.repository;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,9 +28,6 @@ import org.springframework.data.repository.query.Param;
 import io.github.demonfiddler.ee.server.model.User;
 
 public interface UserRepository extends JpaRepository<User, Long>, CustomUserRepository {
-
-	@Query(value = "select u from User u where u.id in (:ids)")
-	List<User> findByIds(@Param("ids") List<Long> ids);
 
 	@Query(value = "select u from User u where u.username = :username")
 	Optional<User> findByUsername(@Param("username") String username);

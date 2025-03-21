@@ -31,13 +31,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("JournalInput")
-public class JournalInput {
-
-	/**
-	 * The abreviation identifier, required if updating an existing record.
-	 */
-	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
-	Long id;
+public class JournalInput extends AbstractBaseEntityInput {
 
 	/**
 	 * The full journal title.
@@ -72,20 +66,6 @@ public class JournalInput {
 	 */
 	@GraphQLScalar(fieldName = "notes", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
 	String notes;
-
-	/**
-	 * The abreviation identifier, required if updating an existing record.
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	/**
-	 * The abreviation identifier, required if updating an existing record.
-	 */
-	public Long getId() {
-		return this.id;
-	}
 
 	/**
 	 * The full journal title.
@@ -191,22 +171,14 @@ public class JournalInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
-		private Long id;
+	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, JournalInput> {
+
 		private String title;
 		private String abbreviation;
 		private URL url;
 		private String issn;
 		private Long publisherId;
 		private String notes;
-
-		/**
-		 * The abreviation identifier, required if updating an existing record.
-		 */
-		public Builder withId(Long idParam) {
-			this.id = idParam;
-			return this;
-		}
 
 		/**
 		 * The full journal title.
@@ -253,9 +225,9 @@ public class JournalInput {
 			return this;
 		}
 
+		@Override
 		public JournalInput build() {
-			JournalInput _object = new JournalInput();
-			_object.setId(this.id);
+			JournalInput _object = build(new JournalInput());
 			_object.setTitle(this.title);
 			_object.setAbbreviation(this.abbreviation);
 			_object.setUrl(this.url);
@@ -264,6 +236,7 @@ public class JournalInput {
 			_object.setNotes(this.notes);
 			return _object;
 		}
+
 	}
 
 }

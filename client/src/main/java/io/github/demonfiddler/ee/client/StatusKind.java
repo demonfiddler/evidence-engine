@@ -30,10 +30,10 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
 @GraphQLEnumType("StatusKind")
 public enum StatusKind {
 
-	DRA("DRA", "Draft"), //$NON-NLS-1$
-	PUB("PUB", "Published"), //$NON-NLS-1$
-	SUS("SUS", "Suspended"), //$NON-NLS-1$
-	DEL("DEL", "Deleted"); //$NON-NLS-1$
+	DRA("DRA", "Draft"), //
+	PUB("PUB", "Published"), //
+	SUS("SUS", "Suspended"), //
+	DEL("DEL", "Deleted"); //
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different when the value in the GraphQL schema is a Java reserved keyword.
@@ -82,7 +82,7 @@ public enum StatusKind {
 				return e;
 			}
 		}
-		throw new IllegalArgumentException("No StatusKind exists with '" + graphQlValue + "' as a GraphQL value"); //$NON-NLS-1$ //$NON-NLS-2$
+		throw new IllegalArgumentException("No StatusKind exists with '" + graphQlValue + "' as a GraphQL value");
 	}
 
 }

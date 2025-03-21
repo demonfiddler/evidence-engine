@@ -21,7 +21,7 @@ package io.github.demonfiddler.ee.server.repository;
 
 import io.github.demonfiddler.ee.server.model.Quotation;
 
-public class CustomQuotationRepositoryImpl extends CustomITopicalEntityRepositoryImpl<Quotation>
+public class CustomQuotationRepositoryImpl extends CustomLinkableEntityRepositoryImpl<Quotation>
     implements CustomQuotationRepository {
 
     @Override
@@ -31,7 +31,7 @@ public class CustomQuotationRepositoryImpl extends CustomITopicalEntityRepositor
 
     @Override
     protected String getFulltextColumns() {
-        return "\"author\", \"text\", \"source\", \"url\", \"notes\"";
+        return "\"quotee\", \"text\", \"source\", \"url\", \"notes\"";
     }
 
 }

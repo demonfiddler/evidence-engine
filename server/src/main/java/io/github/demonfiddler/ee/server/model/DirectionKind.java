@@ -19,6 +19,7 @@
 
 package io.github.demonfiddler.ee.server.model;
 
+import com.graphql_java_generator.annotation.GraphQLDirective;
 import com.graphql_java_generator.annotation.GraphQLEnumType;
 
 /**
@@ -30,8 +31,12 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
 @GraphQLEnumType("DirectionKind")
 public enum DirectionKind {
 
-		ASC("ASC"), //$NON-NLS-1$
-		DESC("DESC"); //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Ascending" })
+	ASC("ASC"), //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Descending" })
+	DESC("DESC"); //$NON-NLS-1$
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different when the value in the GraphQL schema is a Java reserved keyword.
@@ -42,8 +47,8 @@ public enum DirectionKind {
 	}
 
 	/**
-	 * Returns the value of this constant, as specified in the GraphQL schema. This is usually the same as the enum
-	 * item's name. But it will differ if this name is a Java reserved keyword (in which case the name is prefixed by an
+	 * Returns the value of this constant, as specified in the GraphQL schema. This is usually the same as the enum item's
+	 * name. But it will differ if this name is a Java reserved keyword (in which case the name is prefixed by an
 	 * underscore)
 	 * @return the enum constant with the specified name, as defined in the GraphQL schema
 	 */
@@ -52,12 +57,11 @@ public enum DirectionKind {
 	}
 
 	/**
-	 * Returns the enum constant of this type with the specified name (as specified in the GraphQL schema). The string
-	 * must match exactly an identifier used to declare an enum constant in this type. (Extraneous whitespace characters
-	 * are not permitted.)
-	 * @param graphQlValue The value, as defined in the GraphQL schema. This is usually the same as the enum item's
-	 * name. But it will differ if this name is a Java reserved keyword (in which case the name is prefixed by an
-	 * underscore)
+	 * Returns the enum constant of this type with the specified name (as specified in the GraphQL schema). The string must
+	 * match exactly an identifier used to declare an enum constant in this type. (Extraneous whitespace characters are not
+	 * permitted.)
+	 * @param graphQlValue The value, as defined in the GraphQL schema. This is usually the same as the enum item's name.
+	 * But it will differ if this name is a Java reserved keyword (in which case the name is prefixed by an underscore)
 	 * @return the enum constant with the specified name
 	 * @throws IllegalArgumentException if this enum type has no constant with the specified GraphQL name
 	 */
@@ -70,7 +74,7 @@ public enum DirectionKind {
 				return e;
 			}
 		}
-		throw new IllegalArgumentException("No DirectionKind exists with '" + graphQlValue + "' as a GraphQL value"); //$NON-NLS-1$ //$NON-NLS-2$
+		throw new IllegalArgumentException("No DirectionKind exists with '" + graphQlValue + "' as a GraphQL value");
 	}
 
 }

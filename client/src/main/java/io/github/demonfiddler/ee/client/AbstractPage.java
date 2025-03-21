@@ -19,149 +19,122 @@
 
 package io.github.demonfiddler.ee.client;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.graphql_java_generator.annotation.GraphQLIgnore;
-import com.graphql_java_generator.client.GraphQLObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.graphql_java_generator.annotation.GraphQLScalar;
 
-public abstract class AbstractPage<T extends IBaseEntity> {
+import io.github.demonfiddler.ee.client.util.CustomJacksonDeserializers;
+
+public abstract class AbstractPage<T extends IGraphQLObject> extends AbstractGraphQLEntity implements IPage {
 
 	AbstractPage() {
 	}
 
-	/*
-	 * This is REALLY annoying! GraphqlClientUtils doesn't check superclasses for inherited fields, so we can't define
-	 * the shared fields in this class and rely on Java inheritance. So instead, we'll make all the getters and setters
-	 * abstract, so that AbstractPageSubject can still invoke them via this base class.
+	/**
+	 * Dummy ID required for @Entity classes
 	 */
+	@JsonProperty("dummy")
+	@GraphQLScalar(fieldName = "dummy", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
+	Long dummy;
 
 	/**
-	 * This map contains the deserialized values for the alias, as parsed from the JSON response from the GraphQL
-	 * server. The key is the alias name, the value is the deserialiazed value (taking into account custom scalars,
-	 * lists, ...)
+	 * Whether the page has content.
 	 */
-	@GraphQLIgnore
-	Map<String, Object> aliasValues = new HashMap<>();
+	@JsonProperty("hasContent")
+	@GraphQLScalar(fieldName = "hasContent", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class,
+		listDepth = 0)
+	Boolean hasContent;
 
-	// /**
-	// * Dummy ID required for @Entity classes
-	// */
-	// @JsonProperty("dummy")
-	// @GraphQLScalar( fieldName = "dummy", graphQLTypeSimpleName = "ID", javaClass = String.class, listDepth = 0)
-	// String dummy;
+	/**
+	 * Whether the page is empty (no content).
+	 */
+	@JsonProperty("isEmpty")
+	@GraphQLScalar(fieldName = "isEmpty", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class, listDepth = 0)
+	Boolean isEmpty;
 
-	// /**
-	// * Whether the page has content.
-	// */
-	// @JsonProperty("hasContent")
-	// @GraphQLScalar( fieldName = "hasContent", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class, listDepth
-	// = 0)
-	// Boolean hasContent;
+	/**
+	 * The current page number.
+	 */
+	@JsonProperty("number")
+	@GraphQLScalar(fieldName = "number", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
+	Integer number;
 
-	// /**
-	// * Whether the page is empty (no content).
-	// */
-	// @JsonProperty("isEmpty")
-	// @GraphQLScalar( fieldName = "isEmpty", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class, listDepth =
-	// 0)
-	// Boolean isEmpty;
+	/**
+	 * The page size.
+	 */
+	@JsonProperty("size")
+	@GraphQLScalar(fieldName = "size", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
+	Integer size;
 
-	// /**
-	// * The current page number.
-	// */
-	// @JsonProperty("number")
-	// @GraphQLScalar( fieldName = "number", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
-	// Integer number;
+	/**
+	 * The number of elements on this page.
+	 */
+	@JsonProperty("numberOfElements")
+	@GraphQLScalar(fieldName = "numberOfElements", graphQLTypeSimpleName = "Int", javaClass = Integer.class,
+		listDepth = 0)
+	Integer numberOfElements;
 
-	// /**
-	// * The page size.
-	// */
-	// @JsonProperty("size")
-	// @GraphQLScalar( fieldName = "size", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
-	// Integer size;
+	/**
+	 * The total number of pages available.
+	 */
+	@JsonProperty("totalPages")
+	@GraphQLScalar(fieldName = "totalPages", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
+	Integer totalPages;
 
-	// /**
-	// * The number of elements on this page.
-	// */
-	// @JsonProperty("numberOfElements")
-	// @GraphQLScalar( fieldName = "numberOfElements", graphQLTypeSimpleName = "Int", javaClass = Integer.class,
-	// listDepth = 0)
-	// Integer numberOfElements;
+	/**
+	 * The total number of records.
+	 */
+	@JsonProperty("totalElements")
+	@JsonDeserialize(using = CustomJacksonDeserializers.Long.class)
+	@GraphQLScalar(fieldName = "totalElements", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
+	Long totalElements;
 
-	// /**
-	// * The total number of pages available.
-	// */
-	// @JsonProperty("totalPages")
-	// @GraphQLScalar( fieldName = "totalPages", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth =
-	// 0)
-	// Integer totalPages;
+	/**
+	 * Whether this is the first page.
+	 */
+	@JsonProperty("isFirst")
+	@GraphQLScalar(fieldName = "isFirst", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class, listDepth = 0)
+	Boolean isFirst;
 
-	// /**
-	// * The total number of records.
-	// */
-	// @JsonProperty("totalElements")
-	// @JsonDeserialize(using = CustomJacksonDeserializers.Long.class)
-	// @GraphQLScalar( fieldName = "totalElements", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth =
-	// 0)
-	// Long totalElements;
+	/**
+	 * Whether this is the last page.
+	 */
+	@JsonProperty("isLast")
+	@GraphQLScalar(fieldName = "isLast", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class, listDepth = 0)
+	Boolean isLast;
 
-	// /**
-	// * Whether this is the first page.
-	// */
-	// @JsonProperty("isFirst")
-	// @GraphQLScalar( fieldName = "isFirst", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class, listDepth =
-	// 0)
-	// Boolean isFirst;
+	/**
+	 * Whether there is next page.
+	 */
+	@JsonProperty("hasNext")
+	@GraphQLScalar(fieldName = "hasNext", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class, listDepth = 0)
+	Boolean hasNext;
 
-	// /**
-	// * Whether this is the last page.
-	// */
-	// @JsonProperty("isLast")
-	// @GraphQLScalar( fieldName = "isLast", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class, listDepth =
-	// 0)
-	// Boolean isLast;
-
-	// /**
-	// * Whether there is next page.
-	// */
-	// @JsonProperty("hasNext")
-	// @GraphQLScalar( fieldName = "hasNext", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class, listDepth =
-	// 0)
-	// Boolean hasNext;
-
-	// /**
-	// * Whether there is previous page.
-	// */
-	// @JsonProperty("hasPrevious")
-	// @GraphQLScalar( fieldName = "hasPrevious", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class,
-	// listDepth = 0)
-	// Boolean hasPrevious;
-
-	// @JsonProperty("__typename")
-	// @GraphQLScalar( fieldName = "__typename", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth =
-	// 0)
-	// String __typename;
+	/**
+	 * Whether there is previous page.
+	 */
+	@JsonProperty("hasPrevious")
+	@GraphQLScalar(fieldName = "hasPrevious", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class,
+		listDepth = 0)
+	Boolean hasPrevious;
 
 	/**
 	 * Dummy ID required for @Entity classes
 	 */
 	@JsonProperty("dummy")
-	public abstract void setDummy(Long dummy);
-	// public final void setDummy(String dummy) {
-	// this.dummy = dummy;
-	// }
+	public final void setDummy(Long dummy) {
+		this.dummy = dummy;
+	}
 
 	/**
 	 * Dummy ID required for @Entity classes
 	 */
 	@JsonProperty("dummy")
-	public abstract Long getDummy();
-	// public final String getDummy() {
-	// return this.dummy;
-	// }
+	public final Long getDummy() {
+		return this.dummy;
+	}
 
 	/**
 	 * The requested pageful of records.
@@ -179,271 +152,215 @@ public abstract class AbstractPage<T extends IBaseEntity> {
 	 * Whether the page has content.
 	 */
 	@JsonProperty("hasContent")
-	public abstract void setHasContent(Boolean hasContent);
-	// public final void setHasContent(Boolean hasContent) {
-	// this.hasContent = hasContent;
-	// }
+	public final void setHasContent(Boolean hasContent) {
+		this.hasContent = hasContent;
+	}
 
 	/**
 	 * Whether the page has content.
 	 */
 	@JsonProperty("hasContent")
-	public abstract Boolean getHasContent();
-	// public final Boolean getHasContent() {
-	// return this.hasContent;
-	// }
-
-	/**
-	 * Whether the page is empty (no content).
-	 */
-	@JsonProperty("isEmpty")
-	public abstract void setIsEmpty(Boolean isEmpty);
-	// public final void setIsEmpty(Boolean isEmpty) {
-	// this.isEmpty = isEmpty;
-	// }
-
-	/**
-	 * Whether the page is empty (no content).
-	 */
-	@JsonProperty("isEmpty")
-	public abstract Boolean getIsEmpty();
-	// public final Boolean getIsEmpty() {
-	// return this.isEmpty;
-	// }
-
-	/**
-	 * The current page number.
-	 */
-	@JsonProperty("number")
-	public abstract void setNumber(Integer number);
-	// public final void setNumber(Integer number) {
-	// this.number = number;
-	// }
-
-	/**
-	 * The current page number.
-	 */
-	@JsonProperty("number")
-	public abstract Integer getNumber();
-	// public final Integer getNumber() {
-	// return this.number;
-	// }
-
-	/**
-	 * The page size.
-	 */
-	@JsonProperty("size")
-	public abstract void setSize(Integer size);
-	// public final void setSize(Integer size) {
-	// this.size = size;
-	// }
-
-	/**
-	 * The page size.
-	 */
-	@JsonProperty("size")
-	public abstract Integer getSize();
-	// public final Integer getSize() {
-	// return this.size;
-	// }
-
-	/**
-	 * The number of elements on this page.
-	 */
-	@JsonProperty("numberOfElements")
-	public abstract void setNumberOfElements(Integer numberOfElements);
-	// public final void setNumberOfElements(Integer numberOfElements) {
-	// this.numberOfElements = numberOfElements;
-	// }
-
-	/**
-	 * The number of elements on this page.
-	 */
-	@JsonProperty("numberOfElements")
-	public abstract Integer getNumberOfElements();
-	// public final Integer getNumberOfElements() {
-	// return this.numberOfElements;
-	// }
-
-	/**
-	 * The total number of pages available.
-	 */
-	@JsonProperty("totalPages")
-	public abstract void setTotalPages(Integer totalPages);
-	// public final void setTotalPages(Integer totalPages) {
-	// this.totalPages = totalPages;
-	// }
-
-	/**
-	 * The total number of pages available.
-	 */
-	@JsonProperty("totalPages")
-	public abstract Integer getTotalPages();
-	// public final Integer getTotalPages() {
-	// return this.totalPages;
-	// }
-
-	/**
-	 * The total number of records.
-	 */
-	@JsonProperty("totalElements")
-	public abstract void setTotalElements(Long totalElements);
-	// public final void setTotalElements(Long totalElements) {
-	// this.totalElements = totalElements;
-	// }
-
-	/**
-	 * The total number of records.
-	 */
-	@JsonProperty("totalElements")
-	public abstract Long getTotalElements();
-	// public final Long getTotalElements() {
-	// return this.totalElements;
-	// }
-
-	/**
-	 * Whether this is the first page.
-	 */
-	@JsonProperty("isFirst")
-	public abstract void setIsFirst(Boolean isFirst);
-	// public final void setIsFirst(Boolean isFirst) {
-	// this.isFirst = isFirst;
-	// }
-
-	/**
-	 * Whether this is the first page.
-	 */
-	@JsonProperty("isFirst")
-	public abstract Boolean getIsFirst();
-	// public final Boolean getIsFirst() {
-	// return this.isFirst;
-	// }
-
-	/**
-	 * Whether this is the last page.
-	 */
-	@JsonProperty("isLast")
-	public abstract void setIsLast(Boolean isLast);
-	// public final void setIsLast(Boolean isLast) {
-	// this.isLast = isLast;
-	// }
-
-	/**
-	 * Whether this is the last page.
-	 */
-	@JsonProperty("isLast")
-	public abstract Boolean getIsLast();
-	// public final Boolean getIsLast() {
-	// return this.isLast;
-	// }
-
-	/**
-	 * Whether there is next page.
-	 */
-	@JsonProperty("hasNext")
-	public abstract void setHasNext(Boolean hasNext);
-	// public final void setHasNext(Boolean hasNext) {
-	// this.hasNext = hasNext;
-	// }
-
-	/**
-	 * Whether there is next page.
-	 */
-	@JsonProperty("hasNext")
-	public abstract Boolean getHasNext();
-	// public final Boolean getHasNext() {
-	// return this.hasNext;
-	// }
-
-	/**
-	 * Whether there is previous page.
-	 */
-	@JsonProperty("hasPrevious")
-	public abstract void setHasPrevious(Boolean hasPrevious);
-	// public final void setHasPrevious(Boolean hasPrevious) {
-	// this.hasPrevious = hasPrevious;
-	// }
-
-	/**
-	 * Whether there is previous page.
-	 */
-	@JsonProperty("hasPrevious")
-	public abstract Boolean getHasPrevious();
-	// public final Boolean getHasPrevious() {
-	// return this.hasPrevious;
-	// }
-
-	@JsonProperty("__typename")
-	public abstract void set__typename(String __typename);
-	// public final void set__typename(String __typename) {
-	// this.__typename = __typename;
-	// }
-
-	@JsonProperty("__typename")
-	public abstract String get__typename();
-	// public final String get__typename() {
-	// return this.__typename;
-	// }
-
-	/**
-	 * This method is called during the json deserialization process, by the {@link GraphQLObjectMapper}, each time an
-	 * alias value is read from the json.
-	 * @param aliasName
-	 * @param aliasDeserializedValue
-	 */
-	public final void setAliasValue(String aliasName, Object aliasDeserializedValue) {
-		this.aliasValues.put(aliasName, aliasDeserializedValue);
+	public final Boolean getHasContent() {
+		return this.hasContent;
 	}
 
 	/**
-	 * Retrieves the value for the given alias, as it has been received for this object in the GraphQL response. <BR/>
-	 * This method <B>should not be used for Custom Scalars</B>, as the parser doesn't know if this alias is a custom
-	 * scalar, and which custom scalar to use at deserialization time. In most case, a value will then be provided by
-	 * this method with a basis json deserialization, but this value won't be the proper custom scalar value.
-	 * @param alias
-	 * @return
+	 * Whether the page is empty (no content).
 	 */
-	public final Object getAliasValue(String alias) {
-		return this.aliasValues.get(alias);
+	@JsonProperty("isEmpty")
+	public final void setIsEmpty(Boolean isEmpty) {
+		this.isEmpty = isEmpty;
+	}
+
+	/**
+	 * Whether the page is empty (no content).
+	 */
+	@JsonProperty("isEmpty")
+	public final Boolean getIsEmpty() {
+		return this.isEmpty;
+	}
+
+	/**
+	 * The current page number.
+	 */
+	@JsonProperty("number")
+	public final void setNumber(Integer number) {
+		this.number = number;
+	}
+
+	/**
+	 * The current page number.
+	 */
+	@JsonProperty("number")
+	public final Integer getNumber() {
+		return this.number;
+	}
+
+	/**
+	 * The page size.
+	 */
+	@JsonProperty("size")
+	public final void setSize(Integer size) {
+		this.size = size;
+	}
+
+	/**
+	 * The page size.
+	 */
+	@JsonProperty("size")
+	public final Integer getSize() {
+		return this.size;
+	}
+
+	/**
+	 * The number of elements on this page.
+	 */
+	@JsonProperty("numberOfElements")
+	public final void setNumberOfElements(Integer numberOfElements) {
+		this.numberOfElements = numberOfElements;
+	}
+
+	/**
+	 * The number of elements on this page.
+	 */
+	@JsonProperty("numberOfElements")
+	public final Integer getNumberOfElements() {
+		return this.numberOfElements;
+	}
+
+	/**
+	 * The total number of pages available.
+	 */
+	@JsonProperty("totalPages")
+	public final void setTotalPages(Integer totalPages) {
+		this.totalPages = totalPages;
+	}
+
+	/**
+	 * The total number of pages available.
+	 */
+	@JsonProperty("totalPages")
+	public final Integer getTotalPages() {
+		return this.totalPages;
+	}
+
+	/**
+	 * The total number of records.
+	 */
+	@JsonProperty("totalElements")
+	public final void setTotalElements(Long totalElements) {
+		this.totalElements = totalElements;
+	}
+
+	/**
+	 * The total number of records.
+	 */
+	@JsonProperty("totalElements")
+	public final Long getTotalElements() {
+		return this.totalElements;
+	}
+
+	/**
+	 * Whether this is the first page.
+	 */
+	@JsonProperty("isFirst")
+	public final void setIsFirst(Boolean isFirst) {
+		this.isFirst = isFirst;
+	}
+
+	/**
+	 * Whether this is the first page.
+	 */
+	@JsonProperty("isFirst")
+	public final Boolean getIsFirst() {
+		return this.isFirst;
+	}
+
+	/**
+	 * Whether this is the last page.
+	 */
+	@JsonProperty("isLast")
+	public final void setIsLast(Boolean isLast) {
+		this.isLast = isLast;
+	}
+
+	/**
+	 * Whether this is the last page.
+	 */
+	@JsonProperty("isLast")
+	public final Boolean getIsLast() {
+		return this.isLast;
+	}
+
+	/**
+	 * Whether there is next page.
+	 */
+	@JsonProperty("hasNext")
+	public final void setHasNext(Boolean hasNext) {
+		this.hasNext = hasNext;
+	}
+
+	/**
+	 * Whether there is next page.
+	 */
+	@JsonProperty("hasNext")
+	public final Boolean getHasNext() {
+		return this.hasNext;
+	}
+
+	/**
+	 * Whether there is previous page.
+	 */
+	@JsonProperty("hasPrevious")
+	public final void setHasPrevious(Boolean hasPrevious) {
+		this.hasPrevious = hasPrevious;
+	}
+
+	/**
+	 * Whether there is previous page.
+	 */
+	@JsonProperty("hasPrevious")
+	public final Boolean getHasPrevious() {
+		return this.hasPrevious;
 	}
 
 	public final String toString() {
 		return getClass().getSimpleName() // $NON-NLS-1$
-			+ " {" //$NON-NLS-1$
-			+ "dummy: " + this.getDummy() //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "content: " + this.getContent() //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "hasContent: " + this.getHasContent() //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "isEmpty: " + this.getIsEmpty() //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "number: " + this.getNumber() //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "size: " + this.getSize() //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "numberOfElements: " + this.getNumberOfElements() //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "totalPages: " + this.getTotalPages() //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "totalElements: " + this.getTotalElements() //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "isFirst: " + this.getIsFirst() //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "isLast: " + this.getIsLast() //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "hasNext: " + this.getHasNext() //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "hasPrevious: " + this.getHasPrevious() //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "__typename: " + this.get__typename() //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+			+ " {" //
+			+ "dummy: " + this.getDummy() //
+			+ ", " //
+			+ "content: " + this.getContent() //
+			+ ", " //
+			+ "hasContent: " + this.getHasContent() //
+			+ ", " //
+			+ "isEmpty: " + this.getIsEmpty() //
+			+ ", " //
+			+ "number: " + this.getNumber() //
+			+ ", " //
+			+ "size: " + this.getSize() //
+			+ ", " //
+			+ "numberOfElements: " + this.getNumberOfElements() //
+			+ ", " //
+			+ "totalPages: " + this.getTotalPages() //
+			+ ", " //
+			+ "totalElements: " + this.getTotalElements() //
+			+ ", " //
+			+ "isFirst: " + this.getIsFirst() //
+			+ ", " //
+			+ "isLast: " + this.getIsLast() //
+			+ ", " //
+			+ "hasNext: " + this.getHasNext() //
+			+ ", " //
+			+ "hasPrevious: " + this.getHasPrevious() //
+			+ ", " //
+			+ "__typename: " + this.get__typename() //
+			+ "}";
 	}
 
 	@Override
 	public final int hashCode() {
 		final int prime = 31;
-		int result = 1;
+		int result = super.hashCode();
 		result = prime * result + ((getDummy() == null) ? 0 : getDummy().hashCode());
 		result = prime * result + ((getContent() == null) ? 0 : getContent().hashCode());
 		result = prime * result + ((getHasContent() == null) ? 0 : getHasContent().hashCode());
@@ -457,19 +374,14 @@ public abstract class AbstractPage<T extends IBaseEntity> {
 		result = prime * result + ((getIsLast() == null) ? 0 : getIsLast().hashCode());
 		result = prime * result + ((getHasNext() == null) ? 0 : getHasNext().hashCode());
 		result = prime * result + ((getHasPrevious() == null) ? 0 : getHasPrevious().hashCode());
-		result = prime * result + ((get__typename() == null) ? 0 : get__typename().hashCode());
 		return result;
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public final boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
+		if (!super.equals(obj))
 			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		@SuppressWarnings("unchecked")
 		AbstractPage<T> other = (AbstractPage<T>)obj;
 		if (getDummy() == null) {
 			if (other.getDummy() != null)
@@ -536,11 +448,6 @@ public abstract class AbstractPage<T extends IBaseEntity> {
 				return false;
 		} else if (!getHasPrevious().equals(other.getHasPrevious()))
 			return false;
-		if (get__typename() == null) {
-			if (other.get__typename() != null)
-				return false;
-		} else if (!get__typename().equals(other.get__typename()))
-			return false;
 		return true;
 	}
 
@@ -548,7 +455,9 @@ public abstract class AbstractPage<T extends IBaseEntity> {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	static abstract class AbstractBuilder<P extends AbstractPage<T>, T extends IBaseEntity> {
+	@SuppressWarnings("unchecked")
+	static abstract class Builder<B extends Builder<B, P, T>, P extends AbstractPage<T>, T extends IBaseEntity>
+		extends AbstractGraphQLEntity.Builder<B, P> {
 
 		private Long dummy;
 		private List<T> content;
@@ -564,115 +473,115 @@ public abstract class AbstractPage<T extends IBaseEntity> {
 		private Boolean hasNext;
 		private Boolean hasPrevious;
 
-		AbstractBuilder() {
+		Builder() {
 		}
 
 		/**
 		 * Dummy ID required for @Entity classes
 		 */
-		public final AbstractBuilder<P, T> withDummy(Long dummyParam) {
+		public final B withDummy(Long dummyParam) {
 			this.dummy = dummyParam;
-			return this;
+			return (B)this;
 		}
 
 		/**
 		 * The requested pageful of records.
 		 */
-		public final AbstractBuilder<P, T> withContent(List<T> contentParam) {
+		public final B withContent(List<T> contentParam) {
 			this.content = contentParam;
-			return this;
+			return (B)this;
 		}
 
 		/**
 		 * Whether the page has content.
 		 */
-		public final AbstractBuilder<P, T> withHasContent(Boolean hasContentParam) {
+		public final B withHasContent(Boolean hasContentParam) {
 			this.hasContent = hasContentParam;
-			return this;
+			return (B)this;
 		}
 
 		/**
 		 * Whether the page is empty (no content).
 		 */
-		public final AbstractBuilder<P, T> withIsEmpty(Boolean isEmptyParam) {
+		public final B withIsEmpty(Boolean isEmptyParam) {
 			this.isEmpty = isEmptyParam;
-			return this;
+			return (B)this;
 		}
 
 		/**
 		 * The current page number.
 		 */
-		public final AbstractBuilder<P, T> withNumber(Integer numberParam) {
+		public final B withNumber(Integer numberParam) {
 			this.number = numberParam;
-			return this;
+			return (B)this;
 		}
 
 		/**
 		 * The page size.
 		 */
-		public final AbstractBuilder<P, T> withSize(Integer sizeParam) {
+		public final B withSize(Integer sizeParam) {
 			this.size = sizeParam;
-			return this;
+			return (B)this;
 		}
 
 		/**
 		 * The number of elements on this page.
 		 */
-		public final AbstractBuilder<P, T> withNumberOfElements(Integer numberOfElementsParam) {
+		public final B withNumberOfElements(Integer numberOfElementsParam) {
 			this.numberOfElements = numberOfElementsParam;
-			return this;
+			return (B)this;
 		}
 
 		/**
 		 * The total number of pages available.
 		 */
-		public final AbstractBuilder<P, T> withTotalPages(Integer totalPagesParam) {
+		public final B withTotalPages(Integer totalPagesParam) {
 			this.totalPages = totalPagesParam;
-			return this;
+			return (B)this;
 		}
 
 		/**
 		 * The total number of records.
 		 */
-		public final AbstractBuilder<P, T> withTotalElements(Long totalElementsParam) {
+		public final B withTotalElements(Long totalElementsParam) {
 			this.totalElements = totalElementsParam;
-			return this;
+			return (B)this;
 		}
 
 		/**
 		 * Whether this is the first page.
 		 */
-		public final AbstractBuilder<P, T> withIsFirst(Boolean isFirstParam) {
+		public final B withIsFirst(Boolean isFirstParam) {
 			this.isFirst = isFirstParam;
-			return this;
+			return (B)this;
 		}
 
 		/**
 		 * Whether this is the last page.
 		 */
-		public final AbstractBuilder<P, T> withIsLast(Boolean isLastParam) {
+		public final B withIsLast(Boolean isLastParam) {
 			this.isLast = isLastParam;
-			return this;
+			return (B)this;
 		}
 
 		/**
 		 * Whether there is next page.
 		 */
-		public final AbstractBuilder<P, T> withHasNext(Boolean hasNextParam) {
+		public final B withHasNext(Boolean hasNextParam) {
 			this.hasNext = hasNextParam;
-			return this;
+			return (B)this;
 		}
 
 		/**
 		 * Whether there is previous page.
 		 */
-		public final AbstractBuilder<P, T> withHasPrevious(Boolean hasPreviousParam) {
+		public final B withHasPrevious(Boolean hasPreviousParam) {
 			this.hasPrevious = hasPreviousParam;
-			return this;
+			return (B)this;
 		}
 
 		public final P build() {
-			P _object = createPage();
+			P _object = build(createPage());
 			_object.setDummy(this.dummy);
 			_object.setContent(this.content);
 			_object.setHasContent(this.hasContent);
@@ -686,13 +595,10 @@ public abstract class AbstractPage<T extends IBaseEntity> {
 			_object.setIsLast(this.isLast);
 			_object.setHasNext(this.hasNext);
 			_object.setHasPrevious(this.hasPrevious);
-			_object.set__typename(getTypeName()); // -NLS-1$
 			return _object;
 		}
 
 		abstract P createPage();
-
-		abstract String getTypeName();
 
 	}
 

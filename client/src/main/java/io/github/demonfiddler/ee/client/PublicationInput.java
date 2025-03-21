@@ -21,18 +21,14 @@ package io.github.demonfiddler.ee.client;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.graphql_java_generator.annotation.GraphQLIgnore;
 import com.graphql_java_generator.annotation.GraphQLInputType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
-import com.graphql_java_generator.client.GraphQLObjectMapper;
 
 import io.github.demonfiddler.ee.client.util.CustomJacksonSerializers;
 
@@ -44,19 +40,12 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonSerializers;
  */
 @GraphQLInputType("PublicationInput")
 @JsonInclude(Include.NON_NULL)
-public class PublicationInput {
-
-	/**
-	 * This map contains the deserialized values for the alias, as parsed from the JSON response from the GraphQL
-	 * server. The key is the alias name, the value is the deserialiazed value (taking into account custom scalars,
-	 * lists, ...)
-	 */
-	@GraphQLIgnore
-	Map<String, Object> aliasValues = new HashMap<>();
+public class PublicationInput extends AbstractBaseEntityInput {
 
 	public PublicationInput() {
 	}
 
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
 	 * The publication identifier, required if updating an existing record.
 	 */
@@ -174,17 +163,21 @@ public class PublicationInput {
 	@GraphQLScalar(fieldName = "accessed", graphQLTypeSimpleName = "Date", javaClass = LocalDate.class, listDepth = 0)
 	LocalDate accessed;
 
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
 	 * The publication identifier, required if updating an existing record.
 	 */
+	@Override
 	@JsonProperty("id")
 	public void setId(Long id) {
 		this.id = id;
 	}
 
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
 	 * The publication identifier, required if updating an existing record.
 	 */
+	@Override
 	@JsonProperty("id")
 	public Long getId() {
 		return this.id;
@@ -430,62 +423,40 @@ public class PublicationInput {
 		return this.accessed;
 	}
 
-	/**
-	 * This method is called during the json deserialization process, by the {@link GraphQLObjectMapper}, each time an
-	 * alias value is read from the json.
-	 * @param aliasName
-	 * @param aliasDeserializedValue
-	 */
-	public void setAliasValue(String aliasName, Object aliasDeserializedValue) {
-		this.aliasValues.put(aliasName, aliasDeserializedValue);
-	}
-
-	/**
-	 * Retrieves the value for the given alias, as it has been received for this object in the GraphQL response. <BR/>
-	 * This method <B>should not be used for Custom Scalars</B>, as the parser doesn't know if this alias is a custom
-	 * scalar, and which custom scalar to use at deserialization time. In most case, a value will then be provided by
-	 * this method with a basis json deserialization, but this value won't be the proper custom scalar value.
-	 * @param alias
-	 * @return
-	 */
-	public Object getAliasValue(String alias) {
-		return this.aliasValues.get(alias);
-	}
-
 	public String toString() {
-		return "PublicationInput {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "authorNames: " + this.authorNames //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "authorIds: " + this.authorIds //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "title: " + this.title //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "journalId: " + this.journalId //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "kind: " + this.kind //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "date: " + this.date //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "year: " + this.year //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "_abstract: " + this._abstract //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "notes: " + this.notes //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "peerReviewed: " + this.peerReviewed //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "doi: " + this.doi //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "isbn: " + this.isbn //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "url: " + this.url //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "cached: " + this.cached //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "accessed: " + this.accessed //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "PublicationInput {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "authorNames: " + this.authorNames //
+			+ ", " //
+			+ "authorIds: " + this.authorIds //
+			+ ", " //
+			+ "title: " + this.title //
+			+ ", " //
+			+ "journalId: " + this.journalId //
+			+ ", " //
+			+ "kind: " + this.kind //
+			+ ", " //
+			+ "date: " + this.date //
+			+ ", " //
+			+ "year: " + this.year //
+			+ ", " //
+			+ "_abstract: " + this._abstract //
+			+ ", " //
+			+ "notes: " + this.notes //
+			+ ", " //
+			+ "peerReviewed: " + this.peerReviewed //
+			+ ", " //
+			+ "doi: " + this.doi //
+			+ ", " //
+			+ "isbn: " + this.isbn //
+			+ ", " //
+			+ "url: " + this.url //
+			+ ", " //
+			+ "cached: " + this.cached //
+			+ ", " //
+			+ "accessed: " + this.accessed //
+			+ "}";
 	}
 
 	public static Builder builder() {
@@ -496,9 +467,8 @@ public class PublicationInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
+	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, PublicationInput> {
 
-		private Long id;
 		private String authorNames;
 		private List<Long> authorIds;
 		private String title;
@@ -514,14 +484,6 @@ public class PublicationInput {
 		private URL url;
 		private Boolean cached;
 		private LocalDate accessed;
-
-		/**
-		 * The publication identifier, required if updating an existing record.
-		 */
-		public Builder withId(Long idParam) {
-			this.id = idParam;
-			return this;
-		}
 
 		/**
 		 * The names of the author, one per line.
@@ -643,9 +605,9 @@ public class PublicationInput {
 			return this;
 		}
 
+		@Override
 		public PublicationInput build() {
-			PublicationInput _object = new PublicationInput();
-			_object.setId(this.id);
+			PublicationInput _object = build(new PublicationInput());
 			_object.setAuthorNames(this.authorNames);
 			_object.setAuthorIds(this.authorIds);
 			_object.setTitle(this.title);

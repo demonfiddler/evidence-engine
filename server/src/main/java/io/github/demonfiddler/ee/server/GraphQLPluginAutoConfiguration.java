@@ -29,7 +29,8 @@ import io.github.demonfiddler.ee.server.controller.ClaimPageController;
 import io.github.demonfiddler.ee.server.controller.DeclarationController;
 import io.github.demonfiddler.ee.server.controller.DeclarationPageController;
 import io.github.demonfiddler.ee.server.controller.IBaseEntityController;
-import io.github.demonfiddler.ee.server.controller.ITopicalEntityController;
+import io.github.demonfiddler.ee.server.controller.ILinkableEntityController;
+import io.github.demonfiddler.ee.server.controller.IPageController;
 import io.github.demonfiddler.ee.server.controller.ITrackedEntityController;
 import io.github.demonfiddler.ee.server.controller.JournalController;
 import io.github.demonfiddler.ee.server.controller.JournalPageController;
@@ -47,8 +48,8 @@ import io.github.demonfiddler.ee.server.controller.QuotationController;
 import io.github.demonfiddler.ee.server.controller.QuotationPageController;
 import io.github.demonfiddler.ee.server.controller.TopicController;
 import io.github.demonfiddler.ee.server.controller.TopicPageController;
-import io.github.demonfiddler.ee.server.controller.TopicRefController;
-import io.github.demonfiddler.ee.server.controller.TopicRefPageController;
+import io.github.demonfiddler.ee.server.controller.EntityLinkController;
+import io.github.demonfiddler.ee.server.controller.EntityLinkPageController;
 import io.github.demonfiddler.ee.server.controller.UserController;
 import io.github.demonfiddler.ee.server.controller.UserPageController;
 
@@ -61,11 +62,11 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>Claim</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.ClaimController</code> bean must be a valid bean that can be
-	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>ClaimController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "claimController")
@@ -75,11 +76,11 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>ClaimPage</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.ClaimPageController</code> bean must be a valid bean that can be
-	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>ClaimPageController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "claimPageController")
@@ -89,11 +90,11 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>Declaration</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.DeclarationController</code> bean must be a valid bean that can
-	 * be discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work.
-	 * But it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>DeclarationController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "declarationController")
@@ -103,11 +104,11 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>Declaration</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.DeclarationPageController</code> bean must be a valid bean that
-	 * can be discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to
-	 * work. But it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>DeclarationPageController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "declarationPageController")
@@ -117,11 +118,39 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>EntityLink</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.JournalController</code> bean must be a valid bean that can be
-	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>EntityLinkController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 */
+	@Bean
+	@ConditionalOnMissingBean(name = "entityLinkController")
+	EntityLinkController entityLinkController(BatchLoaderRegistry registry) {
+		return new EntityLinkController(registry);
+	}
+
+	/**
+	 * Default declaration of the spring controller for the entity
+	 * <code>EntityLinkPage</code>. This default spring can be overridden by declaring a
+	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
+	 * The <code>EntityLinkPageController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 */
+	@Bean
+	@ConditionalOnMissingBean(name = "entityLinkPageController")
+	EntityLinkPageController entityLinkPageController(BatchLoaderRegistry registry) {
+		return new EntityLinkPageController(registry);
+	}
+
+	/**
+	 * Default declaration of the spring controller for the entity
+	 * <code>Journal</code>. This default spring can be overridden by declaring a
+	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
+	 * The <code>JournalController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "journalController")
@@ -131,11 +160,11 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>JournalPage</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.JournalPageController</code> bean must be a valid bean that can
-	 * be discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work.
-	 * But it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>JournalPageController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "journalPageController")
@@ -145,11 +174,11 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>Log</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.LogController</code> bean must be a valid bean that can be
-	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>LogController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "logController")
@@ -159,11 +188,11 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>LogPage</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.LogPageController</code> bean must be a valid bean that can be
-	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>LogPageController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "logPageController")
@@ -173,11 +202,11 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>Person</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.PersonController</code> bean must be a valid bean that can be
-	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>PersonController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "personController")
@@ -187,11 +216,11 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>PersonPage</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.PersonPageController</code> bean must be a valid bean that can be
-	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>PersonPageController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "personPageController")
@@ -201,11 +230,11 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>Publication</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.PublicationController</code> bean must be a valid bean that can
-	 * be discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work.
-	 * But it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>PublicationController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "publicationController")
@@ -215,11 +244,11 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>PublicationPage</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.PublicationPageController</code> bean must be a valid bean that
-	 * can be discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to
-	 * work. But it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>PublicationPageController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "publicationPageController")
@@ -229,11 +258,11 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>Publisher</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.PublisherController</code> bean must be a valid bean that can be
-	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>PublisherController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "publisherController")
@@ -243,11 +272,11 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>PublisherPage</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.PublisherPageController</code> bean must be a valid bean that can
-	 * be discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work.
-	 * But it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>PublisherPageController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "publisherPageController")
@@ -257,11 +286,11 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>Quotation</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.QuotationController</code> bean must be a valid bean that can be
-	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>QuotationController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "quotationController")
@@ -271,11 +300,11 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>QuotationPage</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.QuotationPageController</code> bean must be a valid bean that can
-	 * be discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work.
-	 * But it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>QuotationPageController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "quotationPageController")
@@ -285,11 +314,11 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>Topic</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.TopicController</code> bean must be a valid bean that can be
-	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>TopicController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "topicController")
@@ -299,11 +328,11 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>TopicPage</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.TopicPageController</code> bean must be a valid bean that can be
-	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>TopicPageController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "topicPageController")
@@ -313,39 +342,11 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>User</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.TopicRefController</code> bean must be a valid bean that can be
-	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
-	 */
-	@Bean
-	@ConditionalOnMissingBean(name = "topicRefController")
-	TopicRefController topicRefController(BatchLoaderRegistry registry) {
-		return new TopicRefController(registry);
-	}
-
-	/**
-	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
-	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.TopicRefPageController</code> bean must be a valid bean that can
-	 * be discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work.
-	 * But it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
-	 */
-	@Bean
-	@ConditionalOnMissingBean(name = "topicRefPageController")
-	TopicRefPageController topicRefPageController(BatchLoaderRegistry registry) {
-		return new TopicRefPageController(registry);
-	}
-
-	/**
-	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
-	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.UserController</code> bean must be a valid bean that can be
-	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>UserController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "userController")
@@ -355,11 +356,11 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>UserPage</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.UserPageController</code> bean must be a valid bean that can be
-	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>UserPageController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "userPageController")
@@ -369,11 +370,11 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>Query</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.QueryController</code> bean must be a valid bean that can be
-	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>QueryController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "queryController")
@@ -383,11 +384,11 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>Mutation</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.MutationController</code> bean must be a valid bean that can be
-	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>MutationController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "mutationController")
@@ -397,11 +398,25 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>IBaseEntity</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.ITrackedEntityController</code> bean must be a valid bean that
-	 * can be discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to
-	 * work. But it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>IBaseEntityController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 */
+	@Bean
+	@ConditionalOnMissingBean(name = "iBaseEntityController")
+	IBaseEntityController iBaseEntityController(BatchLoaderRegistry registry) {
+		return new IBaseEntityController(registry);
+	}
+
+	/**
+	 * Default declaration of the spring controller for the entity
+	 * <code>ITrackedEntity</code>. This default spring can be overridden by declaring a
+	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
+	 * The <code>ITrackedEntityController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "iTrackedEntityController")
@@ -411,30 +426,30 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>ILinkableEntity</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.ITopicalEntityController</code> bean must be a valid bean that
-	 * can be discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to
-	 * work. But it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>ILinkableEntityController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
 	 */
 	@Bean
-	@ConditionalOnMissingBean(name = "iTopicalEntityController")
-	ITopicalEntityController iTopicalEntityController(BatchLoaderRegistry registry) {
-		return new ITopicalEntityController();
+	@ConditionalOnMissingBean(name = "iLinkableEntityController")
+	ILinkableEntityController iLinkableEntityController(BatchLoaderRegistry registry) {
+		return new ILinkableEntityController();
 	}
 
 	/**
 	 * Default declaration of the spring controller for the entity
-	 * <code>${dataFetcherDelegate.type.classSimpleName}</code>. This default spring can be overridden by declaring a
+	 * <code>IPage</code>. This default spring can be overridden by declaring a
 	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.IBaseEntityController</code> bean must be a valid bean that can
-	 * be discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work.
-	 * But it must not be discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 * The <code>io.github.demonfiddler.ee.server.util.IPageController</code> bean must be a valid bean that can be
+	 * discovered by the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But
+	 * it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
 	 */
 	@Bean
-	@ConditionalOnMissingBean(name = "iBaseEntityController")
-	IBaseEntityController iBaseEntityController(BatchLoaderRegistry registry) {
-		return new IBaseEntityController(registry);
+	@ConditionalOnMissingBean(name = "iPageController")
+	IPageController iPageController(BatchLoaderRegistry registry) {
+		return new IPageController(registry);
 	}
 
 }

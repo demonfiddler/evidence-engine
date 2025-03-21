@@ -19,7 +19,6 @@
 
 package io.github.demonfiddler.ee.client;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -29,14 +28,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.graphql_java_generator.annotation.GraphQLIgnore;
 import com.graphql_java_generator.annotation.GraphQLInputParameters;
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 import com.graphql_java_generator.annotation.GraphQLQuery;
 import com.graphql_java_generator.annotation.GraphQLScalar;
 import com.graphql_java_generator.annotation.RequestType;
-import com.graphql_java_generator.client.GraphQLObjectMapper;
 import com.graphql_java_generator.client.GraphQLRequestObject;
 
 /**
@@ -48,19 +45,11 @@ import com.graphql_java_generator.client.GraphQLRequestObject;
 @GraphQLQuery(name = "Query", type = RequestType.query)
 @GraphQLObjectType("Query")
 @JsonInclude(Include.NON_NULL)
-public class Query implements GraphQLRequestObject {
+public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject {
 
 	private ObjectMapper mapper = null;
 	private JsonNode extensions;
 	private Map<String, JsonNode> extensionsAsMap = null;
-
-	/**
-	 * This map contains the deserialized values for the alias, as parsed from the JSON response from the GraphQL
-	 * server. The key is the alias name, the value is the deserialiazed value (taking into account custom scalars,
-	 * lists, ...)
-	 */
-	@GraphQLIgnore
-	Map<String, Object> aliasValues = new HashMap<>();
 
 	public Query() {
 	}
@@ -69,7 +58,7 @@ public class Query implements GraphQLRequestObject {
 	 * Returns a paged list of claims.
 	 */
 	@JsonProperty("claims")
-	@GraphQLInputParameters(names = { "filter", "pageSort" }, types = { "TopicalEntityQueryFilter", "PageableInput" },
+	@GraphQLInputParameters(names = { "filter", "pageSort" }, types = { "LinkableEntityQueryFilter", "PageableInput" },
 		mandatories = { false, false }, listDepths = { 0, 0 }, itemsMandatory = { false, false })
 	@GraphQLNonScalar(fieldName = "claims", graphQLTypeSimpleName = "ClaimPage", javaClass = ClaimPage.class,
 		listDepth = 0)
@@ -88,7 +77,7 @@ public class Query implements GraphQLRequestObject {
 	 * Returns a paged list of declarations.
 	 */
 	@JsonProperty("declarations")
-	@GraphQLInputParameters(names = { "filter", "pageSort" }, types = { "TopicalEntityQueryFilter", "PageableInput" },
+	@GraphQLInputParameters(names = { "filter", "pageSort" }, types = { "LinkableEntityQueryFilter", "PageableInput" },
 		mandatories = { false, false }, listDepths = { 0, 0 }, itemsMandatory = { false, false })
 	@GraphQLNonScalar(fieldName = "declarations", graphQLTypeSimpleName = "DeclarationPage",
 		javaClass = DeclarationPage.class, listDepth = 0)
@@ -103,6 +92,36 @@ public class Query implements GraphQLRequestObject {
 	@GraphQLNonScalar(fieldName = "declarationById", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class, listDepth = 0)
 	Declaration declarationById;
+
+	/**
+	 * Returns a paged list of entity links.
+	 */
+	@JsonProperty("entityLinks")
+	@GraphQLInputParameters(names = { "filter", "pageSort" }, types = { "EntityLinkQueryFilter", "PageableInput" },
+		mandatories = { true, false }, listDepths = { 0, 0 }, itemsMandatory = { false, false })
+	@GraphQLNonScalar(fieldName = "entityLinks", graphQLTypeSimpleName = "EntityLinkPage",
+		javaClass = EntityLinkPage.class, listDepth = 0)
+	EntityLinkPage entityLinks;
+
+	/**
+	 * Returns an entity link given its identifier.
+	 */
+	@JsonProperty("entityLinkById")
+	@GraphQLInputParameters(names = { "id" }, types = { "ID" }, mandatories = { true }, listDepths = { 0 },
+		itemsMandatory = { false })
+	@GraphQLNonScalar(fieldName = "entityLinkById", graphQLTypeSimpleName = "EntityLink", javaClass = EntityLink.class,
+		listDepth = 0)
+	EntityLink entityLinkById;
+
+	/**
+	 * Returns an entity link given its from- and to-entity identifiers.
+	 */
+	@JsonProperty("entityLinkByEntityIds")
+	@GraphQLInputParameters(names = { "fromEntityId", "toEntityId" }, types = { "ID", "ID" },
+		mandatories = { true, true }, listDepths = { 0, 0 }, itemsMandatory = { false, false })
+	@GraphQLNonScalar(fieldName = "entityLinkByEntityIds", graphQLTypeSimpleName = "EntityLink",
+		javaClass = EntityLink.class, listDepth = 0)
+	EntityLink entityLinkByEntityIds;
 
 	/**
 	 * Returns a paged list of journals.
@@ -137,7 +156,7 @@ public class Query implements GraphQLRequestObject {
 	 * Returns a paged list of persons.
 	 */
 	@JsonProperty("persons")
-	@GraphQLInputParameters(names = { "filter", "pageSort" }, types = { "TopicalEntityQueryFilter", "PageableInput" },
+	@GraphQLInputParameters(names = { "filter", "pageSort" }, types = { "LinkableEntityQueryFilter", "PageableInput" },
 		mandatories = { false, false }, listDepths = { 0, 0 }, itemsMandatory = { false, false })
 	@GraphQLNonScalar(fieldName = "persons", graphQLTypeSimpleName = "PersonPage", javaClass = PersonPage.class,
 		listDepth = 0)
@@ -157,7 +176,7 @@ public class Query implements GraphQLRequestObject {
 	 * Returns a paged list of publications.
 	 */
 	@JsonProperty("publications")
-	@GraphQLInputParameters(names = { "filter", "pageSort" }, types = { "TopicalEntityQueryFilter", "PageableInput" },
+	@GraphQLInputParameters(names = { "filter", "pageSort" }, types = { "LinkableEntityQueryFilter", "PageableInput" },
 		mandatories = { false, false }, listDepths = { 0, 0 }, itemsMandatory = { false, false })
 	@GraphQLNonScalar(fieldName = "publications", graphQLTypeSimpleName = "PublicationPage",
 		javaClass = PublicationPage.class, listDepth = 0)
@@ -197,7 +216,7 @@ public class Query implements GraphQLRequestObject {
 	 * Returns a paged list of quotations.
 	 */
 	@JsonProperty("quotations")
-	@GraphQLInputParameters(names = { "filter", "pageSort" }, types = { "TopicalEntityQueryFilter", "PageableInput" },
+	@GraphQLInputParameters(names = { "filter", "pageSort" }, types = { "LinkableEntityQueryFilter", "PageableInput" },
 		mandatories = { false, false }, listDepths = { 0, 0 }, itemsMandatory = { false, false })
 	@GraphQLNonScalar(fieldName = "quotations", graphQLTypeSimpleName = "QuotationPage",
 		javaClass = QuotationPage.class, listDepth = 0)
@@ -232,31 +251,6 @@ public class Query implements GraphQLRequestObject {
 	@GraphQLNonScalar(fieldName = "topicById", graphQLTypeSimpleName = "Topic", javaClass = Topic.class, listDepth = 0)
 	Topic topicById;
 
-	@JsonProperty("topicRefs")
-	@GraphQLInputParameters(names = { "filter", "pageSort" }, types = { "TopicRefQueryFilter", "PageableInput" },
-		mandatories = { false, false }, listDepths = { 0, 0 }, itemsMandatory = { false, false })
-	@GraphQLNonScalar(fieldName = "topicRefs", graphQLTypeSimpleName = "TopicRefPage", javaClass = TopicRefPage.class,
-		listDepth = 0)
-	TopicRefPage topicRefs;
-
-	/**
-	 * Returns a topic reference given its identifier.
-	 */
-	@JsonProperty("topicRefById")
-	@GraphQLInputParameters(names = { "id", "entityKind" }, types = { "ID", "EntityKind" }, mandatories = { true, true }, listDepths = { 0 },
-		itemsMandatory = { false, false })
-	@GraphQLNonScalar(fieldName = "topicRefById", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class,
-		listDepth = 0)
-	TopicRef topicRefById;
-
-	/**
-	 * Returns a topic reference given its topic and entity identifiers.
-	 */
-	@JsonProperty("topicRefByEntityId")
-	@GraphQLInputParameters(names = {"topicId", "entityId", "entityKind"}, types = {"ID", "ID", "EntityKind"}, mandatories = {true, true, true}, listDepths = {0, 0, 0}, itemsMandatory = {false, false, false})
-	@GraphQLNonScalar( fieldName = "topicRefByEntityId", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class, listDepth = 0)
-	TopicRef topicRefByEntityId;
-
 	/**
 	 * Returns a paged list of users.
 	 */
@@ -282,7 +276,8 @@ public class Query implements GraphQLRequestObject {
 	@JsonProperty("userByUsername")
 	@GraphQLInputParameters(names = { "username" }, types = { "String" }, mandatories = { true }, listDepths = { 0 },
 		itemsMandatory = { false })
-	@GraphQLNonScalar(fieldName = "userByUsername", graphQLTypeSimpleName = "User", javaClass = User.class, listDepth = 0)
+	@GraphQLNonScalar(fieldName = "userByUsername", graphQLTypeSimpleName = "User", javaClass = User.class,
+		listDepth = 0)
 	User userByUsername;
 
 	@JsonProperty("__schema")
@@ -362,6 +357,54 @@ public class Query implements GraphQLRequestObject {
 	@JsonProperty("declarationById")
 	public Declaration getDeclarationById() {
 		return this.declarationById;
+	}
+
+	/**
+	 * Returns a paged list of entity links.
+	 */
+	@JsonProperty("entityLinks")
+	public void setEntityLinks(EntityLinkPage entityLinks) {
+		this.entityLinks = entityLinks;
+	}
+
+	/**
+	 * Returns a paged list of entity links.
+	 */
+	@JsonProperty("entityLinks")
+	public EntityLinkPage getEntityLinks() {
+		return this.entityLinks;
+	}
+
+	/**
+	 * Returns an entity link given its identifier.
+	 */
+	@JsonProperty("entityLinkById")
+	public void setEntityLinkById(EntityLink entityLinkById) {
+		this.entityLinkById = entityLinkById;
+	}
+
+	/**
+	 * Returns an entity link given its identifier.
+	 */
+	@JsonProperty("entityLinkById")
+	public EntityLink getEntityLinkById() {
+		return this.entityLinkById;
+	}
+
+	/**
+	 * Returns an entity link given its from- and to-entity identifiers.
+	 */
+	@JsonProperty("entityLinkByEntityIds")
+	public void setEntityLinkByEntityIds(EntityLink entityLinkByEntityIds) {
+		this.entityLinkByEntityIds = entityLinkByEntityIds;
+	}
+
+	/**
+	 * Returns an entity link given its from- and to-entity identifiers.
+	 */
+	@JsonProperty("entityLinkByEntityIds")
+	public EntityLink getEntityLinkByEntityIds() {
+		return this.entityLinkByEntityIds;
 	}
 
 	/**
@@ -572,49 +615,7 @@ public class Query implements GraphQLRequestObject {
 		return this.topicById;
 	}
 
-	@JsonProperty("topicRefs")
-	public void setTopicRefs(TopicRefPage topicRefs) {
-		this.topicRefs = topicRefs;
-	}
-
-	@JsonProperty("topicRefs")
-	public TopicRefPage getTopicRefs() {
-		return this.topicRefs;
-	}
-
 	/**
-	 * Returns a topic reference given its identifier.
-	 */
-	@JsonProperty("topicRefById")
-	public void setTopicRefById(TopicRef topicRefById) {
-		this.topicRefById = topicRefById;
-	}
-
-	/**
-	 * Returns a topic reference given its identifier.
-	 */
-	@JsonProperty("topicRefById")
-	public TopicRef getTopicRefById() {
-		return this.topicRefById;
-	}
-
-	/**
-	  * Returns a topic reference given its topic and entity identifiers.
-  	 */
-	@JsonProperty("topicRefByEntityId")
-	public void setTopicRefByEntityId(TopicRef topicRefByEntityId) {
-		this.topicRefByEntityId = topicRefByEntityId;
-	}
-
-	/**
-	 * Returns a topic reference given its topic and entity identifiers.
-	 */
-	@JsonProperty("topicRefByEntityId")
-	public TopicRef getTopicRefByEntityId() {
-		return this.topicRefByEntityId;
-	}
-		  
-	  /**
 	 * Returns a paged list of users.
 	 */
 	@JsonProperty("users")
@@ -682,92 +683,60 @@ public class Query implements GraphQLRequestObject {
 		return this.__type;
 	}
 
-	@JsonProperty("__typename")
-	public void set__typename(String __typename) {
-		this.__typename = __typename;
-	}
-
-	@JsonProperty("__typename")
-	public String get__typename() {
-		return this.__typename;
-	}
-
-	/**
-	 * This method is called during the json deserialization process, by the {@link GraphQLObjectMapper}, each time an
-	 * alias value is read from the json.
-	 * @param aliasName
-	 * @param aliasDeserializedValue
-	 */
-	public void setAliasValue(String aliasName, Object aliasDeserializedValue) {
-		this.aliasValues.put(aliasName, aliasDeserializedValue);
-	}
-
-	/**
-	 * Retrieves the value for the given alias, as it has been received for this object in the GraphQL response. <BR/>
-	 * This method <B>should not be used for Custom Scalars</B>, as the parser doesn't know if this alias is a custom
-	 * scalar, and which custom scalar to use at deserialization time. In most case, a value will then be provided by
-	 * this method with a basis json deserialization, but this value won't be the proper custom scalar value.
-	 * @param alias
-	 * @return
-	 */
-	public Object getAliasValue(String alias) {
-		return this.aliasValues.get(alias);
-	}
-
 	public String toString() {
-		return "Query {" //$NON-NLS-1$
-			+ "claims: " + this.claims //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "claimById: " + this.claimById //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "declarations: " + this.declarations //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "declarationById: " + this.declarationById //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "journals: " + this.journals //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "journalById: " + this.journalById //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "log: " + this.log //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "persons: " + this.persons //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "personById: " + this.personById //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "publications: " + this.publications //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "publicationById: " + this.publicationById //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "publishers: " + this.publishers //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "publisherById: " + this.publisherById //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "quotations: " + this.quotations //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "quotationById: " + this.quotationById //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "topics: " + this.topics //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "topicById: " + this.topicById //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "topicRefs: " + this.topicRefs //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "topicRefById: " + this.topicRefById //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "topicRefByEntityId: " + this.topicRefByEntityId //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "users: " + this.users //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "userById: " + this.userById //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "userByUsername: " + this.userByUsername //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "__schema: " + this.__schema //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "__type: " + this.__type //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "__typename: " + this.__typename //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "Query {" //
+			+ "claims: " + this.claims //
+			+ ", " //
+			+ "claimById: " + this.claimById //
+			+ ", " //
+			+ "declarations: " + this.declarations //
+			+ ", " //
+			+ "declarationById: " + this.declarationById //
+			+ ", " //
+			+ "entityLinks: " + this.entityLinks //
+			+ ", " //
+			+ "entityLinkById: " + this.entityLinkById //
+			+ ", " //
+			+ "entityLinkByEntityIds: " + this.entityLinkByEntityIds //
+			+ ", " //
+			+ "journals: " + this.journals //
+			+ ", " //
+			+ "journalById: " + this.journalById //
+			+ ", " //
+			+ "log: " + this.log //
+			+ ", " //
+			+ "persons: " + this.persons //
+			+ ", " //
+			+ "personById: " + this.personById //
+			+ ", " //
+			+ "publications: " + this.publications //
+			+ ", " //
+			+ "publicationById: " + this.publicationById //
+			+ ", " //
+			+ "publishers: " + this.publishers //
+			+ ", " //
+			+ "publisherById: " + this.publisherById //
+			+ ", " //
+			+ "quotations: " + this.quotations //
+			+ ", " //
+			+ "quotationById: " + this.quotationById //
+			+ ", " //
+			+ "topics: " + this.topics //
+			+ ", " //
+			+ "topicById: " + this.topicById //
+			+ ", " //
+			+ "users: " + this.users //
+			+ ", " //
+			+ "userById: " + this.userById //
+			+ ", " //
+			+ "userByUsername: " + this.userByUsername //
+			+ ", " //
+			+ "__schema: " + this.__schema //
+			+ ", " //
+			+ "__type: " + this.__type //
+			+ ", " //
+			+ "__typename: " + this.__typename //
+			+ "}";
 	}
 
 	public static Builder builder() {
@@ -778,12 +747,15 @@ public class Query implements GraphQLRequestObject {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
+	public static class Builder extends AbstractGraphQLEntity.Builder<Builder, Query> {
 
 		private ClaimPage claims;
 		private Claim claimById;
 		private DeclarationPage declarations;
 		private Declaration declarationById;
+		private EntityLinkPage entityLinks;
+		private EntityLink entityLinkById;
+		private EntityLink entityLinkByEntityIds;
 		private JournalPage journals;
 		private Journal journalById;
 		private LogPage log;
@@ -797,9 +769,6 @@ public class Query implements GraphQLRequestObject {
 		private Quotation quotationById;
 		private TopicPage topics;
 		private Topic topicById;
-		private TopicRefPage topicRefs;
-		private TopicRef topicRefById;
-		private TopicRef topicRefByEntityId;
 		private UserPage users;
 		private User userById;
 		private User userByUsername;
@@ -835,6 +804,30 @@ public class Query implements GraphQLRequestObject {
 		 */
 		public Builder withDeclarationById(Declaration declarationByIdParam) {
 			this.declarationById = declarationByIdParam;
+			return this;
+		}
+
+		/**
+		 * Returns a paged list of entity links.
+		 */
+		public Builder withEntityLinks(EntityLinkPage entityLinksParam) {
+			this.entityLinks = entityLinksParam;
+			return this;
+		}
+
+		/**
+		 * Returns an entity link given its identifier.
+		 */
+		public Builder withEntityLinkById(EntityLink entityLinkByIdParam) {
+			this.entityLinkById = entityLinkByIdParam;
+			return this;
+		}
+
+		/**
+		 * Returns an entity link given its from- and to-entity identifiers.
+		 */
+		public Builder withEntityLinkByEntityIds(EntityLink entityLinkByEntityIdsParam) {
+			this.entityLinkByEntityIds = entityLinkByEntityIdsParam;
 			return this;
 		}
 
@@ -942,27 +935,6 @@ public class Query implements GraphQLRequestObject {
 			return this;
 		}
 
-		public Builder withTopicRefs(TopicRefPage topicRefsParam) {
-			this.topicRefs = topicRefsParam;
-			return this;
-		}
-
-		/**
-		 * Returns a topic reference given its identifier.
-		 */
-		public Builder withTopicRefById(TopicRef topicRefByIdParam) {
-			this.topicRefById = topicRefByIdParam;
-			return this;
-		}
-
-		/**
-		 * Returns a topic reference given its topic and entity identifiers.
-		 */
-		public Builder withTopicRefByEntityId(TopicRef topicRefByEntityIdParam) {
-			this.topicRefByEntityId = topicRefByEntityIdParam;
-			return this;
-		}
-
 		/**
 		 * Returns a paged list of users.
 		 */
@@ -998,11 +970,14 @@ public class Query implements GraphQLRequestObject {
 		}
 
 		public Query build() {
-			Query _object = new Query();
+			Query _object = build(new Query());
 			_object.setClaims(this.claims);
 			_object.setClaimById(this.claimById);
 			_object.setDeclarations(this.declarations);
 			_object.setDeclarationById(this.declarationById);
+			_object.setEntityLinks(this.entityLinks);
+			_object.setEntityLinkById(this.entityLinkById);
+			_object.setEntityLinkByEntityIds(this.entityLinkByEntityIds);
 			_object.setJournals(this.journals);
 			_object.setJournalById(this.journalById);
 			_object.setLog(this.log);
@@ -1016,17 +991,19 @@ public class Query implements GraphQLRequestObject {
 			_object.setQuotationById(this.quotationById);
 			_object.setTopics(this.topics);
 			_object.setTopicById(this.topicById);
-			_object.setTopicRefs(this.topicRefs);
-			_object.setTopicRefById(this.topicRefById);
-			_object.setTopicRefByEntityId(this.topicRefByEntityId);
 			_object.setUsers(this.users);
 			_object.setUserById(this.userById);
 			_object.setUserByUsername(this.userByUsername);
 			_object.set__schema(this.__schema);
 			_object.set__type(this.__type);
-			_object.set__typename("Query"); //$NON-NLS-1$
 			return _object;
 		}
+
+		@Override
+		String getTypeName() {
+			return "Query";
+		}
+
 	}
 
 	private ObjectMapper getMapper() {

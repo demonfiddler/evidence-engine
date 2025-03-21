@@ -29,7 +29,7 @@ import com.google.common.truth.Subject;
 
 import io.github.demonfiddler.ee.client.Person;
 
-public class PersonSubject extends TopicalEntitySubject<Person> {
+public class PersonSubject extends LinkableEntitySubject<Person> {
 
     public static PersonSubject assertThat(/*@Nullable*/ Person person) {
         return assertAbout(persons()).that(person);

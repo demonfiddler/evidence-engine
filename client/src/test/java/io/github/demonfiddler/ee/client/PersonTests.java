@@ -47,32 +47,84 @@ import io.github.demonfiddler.ee.client.util.SpringContext;
 @SpringBootTest(classes = GraphQLClientMain.class)
 @Order(4)
 @TestMethodOrder(OrderAnnotation.class)
-class PersonTests extends AbstractTopicalEntityTests<Person> {
+class PersonTests extends AbstractLinkableEntityTests<Person> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PersonTests.class);
 
 	private static final String RESPONSE_SPEC = //
 		"""
-		{
-			id
-			status
-			created
-			createdByUser {
+			{
 				id
-				username
+				status
+				created
+				createdByUser {
+					id
+					username
+					firstName
+					lastName
+				}
+				updated
+				updatedByUser {
+					id
+					username
+					firstName
+					lastName
+				}
+				log {
+					hasContent
+					isEmpty
+					number
+					size
+					numberOfElements
+					totalPages
+					totalElements
+					isFirst
+					isLast
+					hasNext
+					hasPrevious
+					content {
+						timestamp
+						transactionKind
+						entityId
+						entityKind
+						user {
+							id
+							username
+							firstName
+							lastName
+						}
+					}
+				}
+				title
+				firstName
+				nickname
+				prefix
+				lastName
+				suffix
+				alias
+				notes
+				qualifications
+				country
+				rating
+				checked
+				published
+			}
+			""";
+	private static final String MINIMAL_RESPONSE_SPEC = //
+		"""
+			{
+				id
+				status%s
 				firstName
 				lastName
+				alias
+				qualifications
+				notes
 			}
-			updated
-			updatedByUser {
-				id
-				username
-				firstName
-				lastName
-			}
-			log {
-				hasContent
-				isEmpty
+			""";
+	static final String PAGED_RESPONSE_SPEC = //
+		"""
+			{
 				number
 				size
 				numberOfElements
@@ -82,71 +134,19 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 				isLast
 				hasNext
 				hasPrevious
+				isEmpty
+				hasContent
 				content {
-					timestamp
-					transactionKind
-					entityId
-					entityKind
-					user {
-						id
-						username
-						firstName
-						lastName
-					}
+					id
+					status%s
+					firstName
+					lastName
+					alias
+					qualifications
+					notes
 				}
 			}
-			title
-			firstName
-			nickname
-			prefix
-			lastName
-			suffix
-			alias
-			notes
-			qualifications
-			country
-			rating
-			checked
-			published
-		}
-		""";
-	private static final String MINIMAL_RESPONSE_SPEC = //
-		"""
-		{
-			id
-			status%s
-			firstName
-			lastName
-			alias
-			qualifications
-			notes
-		}
-		""";
-	static final String PAGED_RESPONSE_SPEC = //
-		"""
-		{
-			number
-			size
-			numberOfElements
-			totalPages
-			totalElements
-			isFirst
-			isLast
-			hasNext
-			hasPrevious
-			isEmpty
-			hasContent
-			content {
-				id
-				status%s
-				firstName
-				lastName
-				alias
-				qualifications
-				notes
-			}
-		}
-		""";
+			""";
 
 	static Person person;
 	static List<Person> persons;
@@ -157,7 +157,7 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 
 	static boolean hasExpectedPersons() {
 		return persons != null;
-	}	
+	}
 
 	static void ensureExpectedPersons() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		if (persons == null) {
@@ -168,6 +168,7 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 				LOGGER.error("Failed to initialise persons list from server");
 			} else {
 				persons = content;
+				person = persons.get(0);
 				LOGGER.debug("Initialised persons list from server");
 			}
 		}
@@ -278,7 +279,7 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 	@Test
 	@Order(5)
 	@EnabledIf("io.github.demonfiddler.ee.client.PersonTests#hasExpectedPerson")
-	void createPersons() throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	void createPersons() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		// Create another eight persons and store them all in an array together with the previously created one.
 		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted("");
 		final int personCount = 8;
@@ -293,10 +294,10 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 		person0.setNotes(person.getNotes());
 		person0.set__typename(person.get__typename());
 		persons.add(person0);
-		String[] firstNames = {"Heidi", "Gary", "Fiona", "Eric", "Desmond", "Charles", "Beth", "Alison"};
-		String[] lastNames = {"Andrews", "Bosworth", "Charlton", "Douglas", "Edwards", "Farquhar", "Gibson", "Heath"};
-		String[] aliases = {"Z", null, "X", null, "v", null, "t", null};
-		String[] numbers = {null, "one", "two", "three", "four", "five", "six", "seven", "eight"};
+		String[] firstNames = { "Heidi", "Gary", "Fiona", "Eric", "Desmond", "Charles", "Beth", "Alison" };
+		String[] lastNames = { "Andrews", "Bosworth", "Charlton", "Douglas", "Edwards", "Farquhar", "Gibson", "Heath" };
+		String[] aliases = { "Z", null, "X", null, "v", null, "t", null };
+		String[] numbers = { null, "one", "two", "three", "four", "five", "six", "seven", "eight" };
 		for (int i = 1; i <= personCount; i++) {
 			String qualifications = "Person " + numbers[i];
 			String notes = "Notes #" + i + (i > 4 ? " (filtered)" : "");
@@ -305,9 +306,9 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 			if (i % 3 == 0)
 				notes = null;
 			PersonInput input = PersonInput.builder() //
-				.withFirstName(firstNames[i-1]) //
-				.withLastName(lastNames[i-1]) //
-				.withAlias(aliases[i-1]) //
+				.withFirstName(firstNames[i - 1]) //
+				.withLastName(lastNames[i - 1]) //
+				.withAlias(aliases[i - 1]) //
 				.withQualifications(qualifications) //
 				.withNotes(notes) //
 				.withRating(1) //
@@ -323,7 +324,7 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 	@Test
 	@Order(6)
 	@EnabledIf("io.github.demonfiddler.ee.client.PersonTests#hasExpectedPersons")
-	void readPersons() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readPersons() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		PersonPage actuals = queryExecutor.persons(responseSpec, null, null);
 
@@ -333,9 +334,9 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 	@Test
 	@Order(7)
 	@EnabledIf("io.github.demonfiddler.ee.client.PersonTests#hasExpectedPersons")
-	void readPersonsFiltered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readPersonsFiltered() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
-		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
 
@@ -357,7 +358,7 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 	@Test
 	@Order(8)
 	@EnabledIf("io.github.demonfiddler.ee.client.PersonTests#hasExpectedPersons")
-	void readPersonsSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readPersonsSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		OrderInput order = OrderInput.builder() //
 			.withProperty("qualifications") //
@@ -368,8 +369,12 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 
 		// "PERSON FIVE", "PERSON ONE", "PERSON SEVEN", "PERSON THREE", "Person eight", "Person four", "Person six",
 		// "Person two", "Updated test qualification"
-		// 5, 1, 7, 3, 8, 4, 6, 2, 0
-		List<Person> expected = subList(persons, 5, 1, 7, 3, 8, 4, 6, 2, 0);
+		// CI: 8, 5, 4, 1, 7, 6, 3, 2, 0
+		// CS: 5, 1, 7, 3, 8, 4, 6, 2, 0
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5, 4, 1, 7, 6, 3, 2, 0 } //
+			: new int[] { 5, 1, 7, 3, 8, 4, 6, 2, 0 };
+		List<Person> expected = subList(persons, indexes);
 		PersonPage actuals = queryExecutor.persons(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -386,7 +391,7 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 	@Test
 	@Order(9)
 	@EnabledIf("io.github.demonfiddler.ee.client.PersonTests#hasExpectedPersons")
-	void readPersonsSortedIgnoreCase() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readPersonsSortedIgnoreCase() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		OrderInput order = OrderInput.builder() //
 			.withProperty("qualifications") //
@@ -418,7 +423,7 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 	@Test
 	@Order(10)
 	@EnabledIf("io.github.demonfiddler.ee.client.PersonTests#hasExpectedPersons")
-	void readPersonsSortedNullOrdered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readPersonsSortedNullHandling() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		OrderInput notesOrder = OrderInput.builder() //
 			.withProperty("notes") //
@@ -434,8 +439,12 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 		// null/"PERSON THREE", null/"Person six", "Notes #1"/"PERSON ONE", "Notes #2"/"Person two",
 		// "Notes #4"/"Person four", "Notes #5 (filtered)"/"PERSON FIVE", "Notes #7 (filtered)"/"PERSON SEVEN",
 		// "Notes #8 (filtered)"/"Person eight", "Updated test notes"/"Updated test qualifications"
-		// 3, 6, 1, 2, 4, 5, 7, 8, 0
-		List<Person> expected = subList(persons, 3, 6, 1, 2, 4, 5, 7, 8, 0);
+		// CI: 6, 3, 1, 2, 4, 5, 7, 8, 0
+		// CS: 3, 6, 1, 2, 4, 5, 7, 8, 0
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 6, 3, 1, 2, 4, 5, 7, 8, 0 } //
+			: new int[] { 3, 6, 1, 2, 4, 5, 7, 8, 0 };
+		List<Person> expected = subList(persons, indexes);
 		PersonPage actuals = queryExecutor.persons(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -444,17 +453,25 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		qualificationsOrder.setDirection(DirectionKind.DESC);
-		expected = subList(persons, 6, 3, 1, 2, 4, 5, 7, 8, 0);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 3, 6, 1, 2, 4, 5, 7, 8, 0 } //
+			: new int[] { 6, 3, 1, 2, 4, 5, 7, 8, 0 };
+		expected = subList(persons, indexes);
 		actuals = queryExecutor.persons(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
-		// "Notes #1"/"PERSON ONE", "Notes #2"/"Person two", "Notes #4"/"Person four", "Notes #5 (filtered)"/"PERSON FIVE",
+		// "Notes #1"/"PERSON ONE", "Notes #2"/"Person two", "Notes #4"/"Person four", "Notes #5 (filtered)"/"PERSON
+		// FIVE",
 		// "Notes #7 (filtered)"/"PERSON SEVEN", "Notes #8 (filtered)"/"Person eight",
 		// "Updated test notes"/"Updated test title", null/"PERSON THREE", null/"Person six",
-		// 1, 2, 4, 5, 7, 8, 0, 3, 6
+		// CI: 1, 2, 4, 5, 7, 8, 0, 6, 3
+		// CS: 1, 2, 4, 5, 7, 8, 0, 3, 6
 		notesOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		qualificationsOrder.setDirection(null);
-		expected = subList(persons, 1, 2, 4, 5, 7, 8, 0, 3, 6);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 2, 4, 5, 7, 8, 0, 6, 3 } //
+			: new int[] { 1, 2, 4, 5, 7, 8, 0, 3, 6 };
+		expected = subList(persons, indexes);
 		actuals = queryExecutor.persons(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -463,7 +480,10 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		qualificationsOrder.setDirection(DirectionKind.DESC);
-		expected = subList(persons, 1, 2, 4, 5, 7, 8, 0, 6, 3);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 2, 4, 5, 7, 8, 0, 3, 6 } //
+			: new int[] { 1, 2, 4, 5, 7, 8, 0, 6, 3 };
+		expected = subList(persons, indexes);
 		actuals = queryExecutor.persons(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
@@ -471,9 +491,9 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 	@Test
 	@Order(11)
 	@EnabledIf("io.github.demonfiddler.ee.client.PersonTests#hasExpectedPersons")
-	void readPersonsFilteredSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readPersonsFilteredSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
-		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
 		OrderInput order = OrderInput.builder() //
@@ -484,8 +504,12 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 		PageableInput pageSort = PageableInput.builder().withSort(sort).build();
 
 		// "PERSON FIVE", "PERSON SEVEN", "Person eight"
-		// 5, 7, 8
-		List<Person> expected = subList(persons, 5, 7, 8);
+		// CI: 8, 5, 7
+		// CS: 5, 7, 8
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5, 7 } //
+			: new int[] { 5, 7, 8 };
+		List<Person> expected = subList(persons, indexes);
 		PersonPage actuals = queryExecutor.persons(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -502,9 +526,10 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 	@Test
 	@Order(12)
 	@EnabledIf("io.github.demonfiddler.ee.client.PersonTests#hasExpectedPersons")
-	void readPersonsFilteredSortedNullHandling() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readPersonsFilteredSortedNullHandling()
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
-		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("person") //
 			.build();
 		OrderInput notesOrder = OrderInput.builder() //
@@ -520,9 +545,13 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 
 		// null/"PERSON THREE", null/"Person six", "Notes #1"/"PERSON ONE", "Notes #2"/"Person two",
 		// "Notes #4"/"Person four", "Notes #5 (filtered)"/"PERSON FIVE", "Notes #7 (filtered)"/"PERSON SEVEN",
-		// "Notes #8 (filtered)"/"Person eight", "Updated test notes"/"Updated test title"
-		// 3, 6, 1, 2, 4, 5, 7, 8
-		List<Person> expected = subList(persons, 3, 6, 1, 2, 4, 5, 7, 8);
+		// "Notes #8 (filtered)"/"Person eight"
+		// CI: 6, 3, 1, 2, 4, 5, 7, 8
+		// CS: 3, 6, 1, 2, 4, 5, 7, 8
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 6, 3, 1, 2, 4, 5, 7, 8 } //
+			: new int[] { 3, 6, 1, 2, 4, 5, 7, 8 };
+		List<Person> expected = subList(persons, indexes);
 		PersonPage actuals = queryExecutor.persons(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -531,21 +560,33 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		qualificationsOrder.setDirection(DirectionKind.DESC);
-		expected = subList(persons, 6, 3, 1, 2, 4, 5, 7, 8);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 3, 6, 1, 2, 4, 5, 7, 8 } //
+			: new int[] { 6, 3, 1, 2, 4, 5, 7, 8 };
+		expected = subList(persons, indexes);
 		actuals = queryExecutor.persons(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
-		// "Notes #1"/"PERSON ONE", "Notes #2"/"Person two", "Notes #4"/"Person four", "Notes #5 (filtered)"/"PERSON FIVE",
-		// "Notes #7 (filtered)"/"PERSON SEVEN", "Notes #8 (filtered)"/"Person eight", null/"PERSON THREE", null/"Person six"
-		// 1, 2, 4, 5, 7, 8, 3, 6
+		// "Notes #1"/"PERSON ONE", "Notes #2"/"Person two", "Notes #4"/"Person four", "Notes #5 (filtered)"/"PERSON
+		// FIVE",
+		// "Notes #7 (filtered)"/"PERSON SEVEN", "Notes #8 (filtered)"/"Person eight", null/"PERSON THREE", null/"Person
+		// six"
+		// CI: 1, 2, 4, 5, 7, 8, 6, 3
+		// CS: 1, 2, 4, 5, 7, 8, 3, 6
 		notesOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		qualificationsOrder.setDirection(DirectionKind.ASC);
-		expected = subList(persons, 1, 2, 4, 5, 7, 8, 3, 6);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 2, 4, 5, 7, 8, 6, 3 } //
+			: new int[] { 1, 2, 4, 5, 7, 8, 3, 6 };
+		expected = subList(persons, indexes);
 		actuals = queryExecutor.persons(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		qualificationsOrder.setDirection(DirectionKind.DESC);
-		expected = subList(persons, 1, 2, 4, 5, 7, 8, 6, 3);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 2, 4, 5, 7, 8, 3, 6 } //
+			: new int[] { 1, 2, 4, 5, 7, 8, 6, 3 };
+		expected = subList(persons, indexes);
 		actuals = queryExecutor.persons(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
@@ -553,7 +594,7 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 	@Test
 	@Order(13)
 	@EnabledIf("io.github.demonfiddler.ee.client.PersonTests#hasExpectedPersons")
-	void readPersonsPaged() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readPersonsPaged() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		// NOTE: assume that records are returned in database primary key order.
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		PageableInput pageSort = PageableInput.builder() //
@@ -573,14 +614,14 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 		actuals = queryExecutor.persons(responseSpec, null, pageSort);
 		expected = persons.subList(8, 9);
 		checkPage(actuals, persons.size(), 3, 4, 2, true, false, false, true, expected, true);
-	}	
+	}
 
 	@Test
 	@Order(14)
 	@EnabledIf("io.github.demonfiddler.ee.client.PersonTests#hasExpectedPersons")
-	void readPersonsPagedFiltered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readPersonsPagedFiltered() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
-		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
 		PageableInput pageSort = PageableInput.builder() //
@@ -595,7 +636,7 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 		List<Person> expected = subList(persons, 5, 7);
 		PersonPage actual = queryExecutor.persons(responseSpec, filter, pageSort);
 		checkPage(actual, 3, 2, 2, 0, false, true, true, false, expected, false);
-		
+
 		pageSort.setPageNumber(1);
 		expected = subList(persons, 8);
 		actual = queryExecutor.persons(responseSpec, filter, pageSort);
@@ -605,7 +646,7 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 	@Test
 	@Order(15)
 	@EnabledIf("io.github.demonfiddler.ee.client.PersonTests#hasExpectedPersons")
-	void readPersonsPagedSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readPersonsPagedSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		OrderInput order = OrderInput.builder() //
 			.withProperty("qualifications") //
@@ -620,50 +661,78 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 
 		// "PERSON FIVE", "PERSON ONE", "PERSON SEVEN", "PERSON THREE", "Person eight", "Person four", "Person six",
 		// "Person two", "Updated test title"
-		// 5, 1, 7, 3, 8, 4, 6, 2, 0
-		List<Person> expected = subList(persons, 5, 1, 7, 3);
+		// CI: 8, 5, 4, 1, 7, 6, 3, 2, 0
+		// CS: 5, 1, 7, 3, 8, 4, 6, 2, 0
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5, 4, 1 } //
+			: new int[] { 5, 1, 7, 3 };
+		List<Person> expected = subList(persons, indexes);
 		PersonPage actuals = queryExecutor.persons(responseSpec, null, pageSort);
 		checkPage(actuals, persons.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(persons, 8, 4, 6, 2);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 6, 3, 2 } //
+			: new int[] { 8, 4, 6, 2 };
+		expected = subList(persons, indexes);
 		actuals = queryExecutor.persons(responseSpec, null, pageSort);
 		checkPage(actuals, persons.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(persons, 0);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 0 } //
+			: new int[] { 0 };
+		expected = subList(persons, indexes);
 		actuals = queryExecutor.persons(responseSpec, null, pageSort);
 		checkPage(actuals, persons.size(), 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(persons, 5, 1, 7, 3);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5, 4, 1 } //
+			: new int[] { 5, 1, 7, 3 };
+		expected = subList(persons, indexes);
 		actuals = queryExecutor.persons(responseSpec, null, pageSort);
 		checkPage(actuals, persons.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(persons, 8, 4, 6, 2);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 6, 3, 2 } //
+			: new int[] { 8, 4, 6, 2 };
+		expected = subList(persons, indexes);
 		actuals = queryExecutor.persons(responseSpec, null, pageSort);
 		checkPage(actuals, persons.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(persons, 0);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 0 } //
+			: new int[] { 0 };
+		expected = subList(persons, indexes);
 		actuals = queryExecutor.persons(responseSpec, null, pageSort);
 		checkPage(actuals, persons.size(), 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(persons, 0, 2, 6, 4);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 0, 2, 3, 6 } //
+			: new int[] { 0, 2, 6, 4 };
+		expected = subList(persons, indexes);
 		actuals = queryExecutor.persons(responseSpec, null, pageSort);
 		checkPage(actuals, persons.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(persons, 8, 3, 7, 1);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 1, 4, 5 } //
+			: new int[] { 8, 3, 7, 1 };
+		expected = subList(persons, indexes);
 		actuals = queryExecutor.persons(responseSpec, null, pageSort);
 		checkPage(actuals, persons.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(persons, 5);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8 } //
+			: new int[] { 5 };
+		expected = subList(persons, indexes);
 		actuals = queryExecutor.persons(responseSpec, null, pageSort);
 		checkPage(actuals, persons.size(), 3, 4, 2, true, false, false, true, expected, true);
 	}
@@ -671,9 +740,9 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 	@Test
 	@Order(16)
 	@EnabledIf("io.github.demonfiddler.ee.client.PersonTests#hasExpectedPersons")
-	void readPersonsPagedFilteredSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readPersonsPagedFilteredSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
-		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
 		OrderInput order = OrderInput.builder() //
@@ -688,35 +757,54 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 			.build();
 
 		// "PERSON FIVE", "PERSON SEVEN", "Person eight"
-		// 5, 7, 8
-		List<Person> expected = subList(persons, 5, 7);
+		// CI: 8, 5, 7
+		// CS: 5, 7, 8
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5 } //
+			: new int[] { 5, 7 };
+		List<Person> expected = subList(persons, indexes);
 		PersonPage actuals = queryExecutor.persons(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(persons, 8);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7 } //
+			: new int[] { 8 };
+		expected = subList(persons, indexes);
 		actuals = queryExecutor.persons(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(persons, 5, 7);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5 } //
+			: new int[] { 5, 7 };
+		expected = subList(persons, indexes);
 		actuals = queryExecutor.persons(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(persons, 8);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7 } //
+			: new int[] { 8 };
+		expected = subList(persons, indexes);
 		actuals = queryExecutor.persons(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(persons, 8, 7);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 5 } //
+			: new int[] { 8, 7 };
+		expected = subList(persons, indexes);
 		actuals = queryExecutor.persons(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(persons, 5);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8 } //
+			: new int[] { 5 };
+		expected = subList(persons, indexes);
 		actuals = queryExecutor.persons(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 	}
@@ -733,7 +821,7 @@ class PersonTests extends AbstractTopicalEntityTests<Person> {
 		String suffix, String alias, String notes, String qualifications, String country, Integer rating,
 		Boolean checked, Boolean published, TransactionKind... txnKinds) {
 
-		checkTopicalEntity(person, status, earliestCreated, earliestUpdated, txnKinds);
+		checkLinkableEntity(person, status, earliestCreated, earliestUpdated, txnKinds);
 		assertThat(person).hasTitle(title);
 		assertThat(person).hasFirstName(firstName);
 		assertThat(person).hasNickname(nickname);

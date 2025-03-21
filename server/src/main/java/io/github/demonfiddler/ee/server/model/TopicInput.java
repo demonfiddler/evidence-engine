@@ -29,13 +29,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("TopicInput")
-public class TopicInput {
-
-	/**
-	 * The unique topic identifier.
-	 */
-	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
-	Long id;
+public class TopicInput extends AbstractBaseEntityInput {
 
 	/**
 	 * The topic label for display in the user interface.
@@ -54,20 +48,6 @@ public class TopicInput {
 	 */
 	@GraphQLScalar(fieldName = "parentId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
 	Long parentId;
-
-	/**
-	 * The unique topic identifier.
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	/**
-	 * The unique topic identifier.
-	 */
-	public Long getId() {
-		return this.id;
-	}
 
 	/**
 	 * The topic label for display in the user interface.
@@ -131,20 +111,11 @@ public class TopicInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
+	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, TopicInput> {
 
-		private Long id;
 		private String label;
 		private String description;
 		private Long parentId;
-
-		/**
-		 * The unique topic identifier.
-		 */
-		public Builder withId(Long idParam) {
-			this.id = idParam;
-			return this;
-		}
 
 		/**
 		 * The topic label for display in the user interface.
@@ -170,9 +141,9 @@ public class TopicInput {
 			return this;
 		}
 
+		@Override
 		public TopicInput build() {
-			TopicInput _object = new TopicInput();
-			_object.setId(this.id);
+			TopicInput _object = build(new TopicInput());
 			_object.setLabel(this.label);
 			_object.setDescription(this.description);
 			_object.setParentId(this.parentId);

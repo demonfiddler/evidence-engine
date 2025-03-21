@@ -19,17 +19,12 @@
 
 package io.github.demonfiddler.ee.client;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.graphql_java_generator.annotation.GraphQLIgnore;
 import com.graphql_java_generator.annotation.GraphQLInputType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
-import com.graphql_java_generator.client.GraphQLObjectMapper;
 
 import io.github.demonfiddler.ee.client.util.CustomJacksonSerializers;
 
@@ -41,19 +36,12 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonSerializers;
  */
 @GraphQLInputType("TopicInput")
 @JsonInclude(Include.NON_NULL)
-public class TopicInput {
-
-	/**
-	 * This map contains the deserialized values for the alias, as parsed from the JSON response from the GraphQL
-	 * server. The key is the alias name, the value is the deserialiazed value (taking into account custom scalars,
-	 * lists, ...)
-	 */
-	@GraphQLIgnore
-	Map<String, Object> aliasValues = new HashMap<>();
+public class TopicInput extends AbstractBaseEntityInput {
 
 	public TopicInput() {
 	}
 
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
 	 * The unique topic identifier.
 	 */
@@ -83,17 +71,21 @@ public class TopicInput {
 	@GraphQLScalar(fieldName = "parentId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
 	Long parentId;
 
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
 	 * The unique topic identifier.
 	 */
+	@Override
 	@JsonProperty("id")
 	public void setId(Long id) {
 		this.id = id;
 	}
 
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
 	 * The unique topic identifier.
 	 */
+	@Override
 	@JsonProperty("id")
 	public Long getId() {
 		return this.id;
@@ -147,38 +139,16 @@ public class TopicInput {
 		return this.parentId;
 	}
 
-	/**
-	 * This method is called during the json deserialization process, by the {@link GraphQLObjectMapper}, each time an
-	 * alias value is read from the json.
-	 * @param aliasName
-	 * @param aliasDeserializedValue
-	 */
-	public void setAliasValue(String aliasName, Object aliasDeserializedValue) {
-		this.aliasValues.put(aliasName, aliasDeserializedValue);
-	}
-
-	/**
-	 * Retrieves the value for the given alias, as it has been received for this object in the GraphQL response. <BR/>
-	 * This method <B>should not be used for Custom Scalars</B>, as the parser doesn't know if this alias is a custom
-	 * scalar, and which custom scalar to use at deserialization time. In most case, a value will then be provided by
-	 * this method with a basis json deserialization, but this value won't be the proper custom scalar value.
-	 * @param alias
-	 * @return
-	 */
-	public Object getAliasValue(String alias) {
-		return this.aliasValues.get(alias);
-	}
-
 	public String toString() {
-		return "TopicInput {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "label: " + this.label //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "description: " + this.description //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "parentId: " + this.parentId //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "TopicInput {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "label: " + this.label //
+			+ ", " //
+			+ "description: " + this.description //
+			+ ", " //
+			+ "parentId: " + this.parentId //
+			+ "}";
 	}
 
 	public static Builder builder() {
@@ -189,20 +159,11 @@ public class TopicInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
+	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, TopicInput> {
 
-		private Long id;
 		private String label;
 		private String description;
 		private Long parentId;
-
-		/**
-		 * The unique topic identifier.
-		 */
-		public Builder withId(Long idParam) {
-			this.id = idParam;
-			return this;
-		}
 
 		/**
 		 * The topic label for display in the user interface.
@@ -228,9 +189,9 @@ public class TopicInput {
 			return this;
 		}
 
+		@Override
 		public TopicInput build() {
-			TopicInput _object = new TopicInput();
-			_object.setId(this.id);
+			TopicInput _object = build(new TopicInput());
 			_object.setLabel(this.label);
 			_object.setDescription(this.description);
 			_object.setParentId(this.parentId);

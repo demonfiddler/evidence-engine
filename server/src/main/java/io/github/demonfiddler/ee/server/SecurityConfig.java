@@ -54,7 +54,7 @@ import io.github.demonfiddler.ee.server.util.ProfileUtils;
 // @EnableReactiveMethodSecurity
 public class SecurityConfig {
 
-    private static final String REMEMBER_ME_KEY = "ee_auth";
+    private static final String REMEMBER_ME_KEY = "auth";
 
     @Autowired
     private ProfileUtils profileUtils;

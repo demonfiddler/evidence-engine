@@ -31,7 +31,6 @@ import com.graphql_java_generator.annotation.GraphQLInputParameters;
 import com.graphql_java_generator.annotation.GraphQLInterfaceType;
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLScalar;
-import com.graphql_java_generator.client.GraphQLObjectMapper;
 
 import io.github.demonfiddler.ee.client.util.CustomJacksonDeserializers;
 
@@ -42,13 +41,31 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonDeserializers;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @JsonTypeInfo(use = Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "__typename", visible = true)
-@JsonSubTypes({ @Type(value = Claim.class, name = "Claim"), @Type(value = Declaration.class, name = "Declaration"),
-	@Type(value = Journal.class, name = "Journal"), @Type(value = Person.class, name = "Person"),
-	@Type(value = Publication.class, name = "Publication"), @Type(value = Publisher.class, name = "Publisher"),
-	@Type(value = Quotation.class, name = "Quotation"), @Type(value = Topic.class, name = "Topic"),
+@JsonSubTypes({ //
+	@Type(value = Claim.class, name = "Claim"), //
+	@Type(value = Declaration.class, name = "Declaration"), //
+	@Type(value = EntityLink.class, name = "EntityLink"), //
+	@Type(value = Journal.class, name = "Journal"), //
+	@Type(value = Person.class, name = "Person"), //
+	@Type(value = Publication.class, name = "Publication"),
+	@Type(value = Publisher.class, name = "Publisher"), //
+	@Type(value = Quotation.class, name = "Quotation"), //
+	@Type(value = Topic.class, name = "Topic"), //
 	@Type(value = User.class, name = "User") })
 @GraphQLInterfaceType("ITrackedEntity")
 public interface ITrackedEntity extends IBaseEntity {
+
+	@JsonProperty("entityKind")
+	@GraphQLInputParameters(names = { "format" }, types = { "FormatKind" }, mandatories = { false }, listDepths = { 0 },
+		itemsMandatory = { false })
+	@GraphQLScalar(fieldName = "entityKind", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	public void setEntityKind(String entityKind);
+
+	@JsonProperty("entityKind")
+	@GraphQLInputParameters(names = { "format" }, types = { "FormatKind" }, mandatories = { false }, listDepths = { 0 },
+		itemsMandatory = { false })
+	@GraphQLScalar(fieldName = "entityKind", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	public String getEntityKind();
 
 	@JsonProperty("status")
 	@GraphQLInputParameters(names = { "format" }, types = { "FormatKind" }, mandatories = { false }, listDepths = { 0 },
@@ -64,86 +81,58 @@ public interface ITrackedEntity extends IBaseEntity {
 
 	@JsonProperty("created")
 	@JsonDeserialize(using = CustomJacksonDeserializers.DateTime.class)
-	@GraphQLScalar(fieldName = "created", graphQLTypeSimpleName = "DateTime",
-		javaClass = OffsetDateTime.class, listDepth = 0)
+	@GraphQLScalar(fieldName = "created", graphQLTypeSimpleName = "DateTime", javaClass = OffsetDateTime.class,
+		listDepth = 0)
 	public void setCreated(OffsetDateTime created);
 
 	@JsonProperty("created")
 	@JsonDeserialize(using = CustomJacksonDeserializers.DateTime.class)
-	@GraphQLScalar(fieldName = "created", graphQLTypeSimpleName = "DateTime",
-		javaClass = OffsetDateTime.class, listDepth = 0)
+	@GraphQLScalar(fieldName = "created", graphQLTypeSimpleName = "DateTime", javaClass = OffsetDateTime.class,
+		listDepth = 0)
 	public OffsetDateTime getCreated();
 
 	@JsonProperty("createdByUser")
-	@GraphQLNonScalar(fieldName = "createdByUser", graphQLTypeSimpleName = "User",
-		javaClass = User.class, listDepth = 0)
+	@GraphQLNonScalar(fieldName = "createdByUser", graphQLTypeSimpleName = "User", javaClass = User.class,
+		listDepth = 0)
 	public void setCreatedByUser(User createdByUser);
 
 	@JsonProperty("createdByUser")
-	@GraphQLNonScalar(fieldName = "createdByUser", graphQLTypeSimpleName = "User",
-		javaClass = User.class, listDepth = 0)
+	@GraphQLNonScalar(fieldName = "createdByUser", graphQLTypeSimpleName = "User", javaClass = User.class,
+		listDepth = 0)
 	public User getCreatedByUser();
 
 	@JsonProperty("updated")
 	@JsonDeserialize(using = CustomJacksonDeserializers.DateTime.class)
-	@GraphQLScalar(fieldName = "updated", graphQLTypeSimpleName = "DateTime",
-		javaClass = OffsetDateTime.class, listDepth = 0)
+	@GraphQLScalar(fieldName = "updated", graphQLTypeSimpleName = "DateTime", javaClass = OffsetDateTime.class,
+		listDepth = 0)
 	public void setUpdated(OffsetDateTime updated);
 
 	@JsonProperty("updated")
 	@JsonDeserialize(using = CustomJacksonDeserializers.DateTime.class)
-	@GraphQLScalar(fieldName = "updated", graphQLTypeSimpleName = "DateTime",
-		javaClass = OffsetDateTime.class, listDepth = 0)
+	@GraphQLScalar(fieldName = "updated", graphQLTypeSimpleName = "DateTime", javaClass = OffsetDateTime.class,
+		listDepth = 0)
 	public OffsetDateTime getUpdated();
 
 	@JsonProperty("updatedByUser")
-	@GraphQLNonScalar(fieldName = "updatedByUser", graphQLTypeSimpleName = "User",
-		javaClass = User.class, listDepth = 0)
+	@GraphQLNonScalar(fieldName = "updatedByUser", graphQLTypeSimpleName = "User", javaClass = User.class,
+		listDepth = 0)
 	public void setUpdatedByUser(User updatedByUser);
 
 	@JsonProperty("updatedByUser")
-	@GraphQLNonScalar(fieldName = "updatedByUser", graphQLTypeSimpleName = "User",
-		javaClass = User.class, listDepth = 0)
+	@GraphQLNonScalar(fieldName = "updatedByUser", graphQLTypeSimpleName = "User", javaClass = User.class,
+		listDepth = 0)
 	public User getUpdatedByUser();
 
 	@JsonProperty("log")
 	@GraphQLInputParameters(names = { "filter", "pageSort" }, types = { "LogQueryFilter", "PageableInput" },
 		mandatories = { false, false }, listDepths = { 0, 0 }, itemsMandatory = { false, false })
-	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage",
-		javaClass = LogPage.class, listDepth = 0)
+	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage", javaClass = LogPage.class, listDepth = 0)
 	public void setLog(LogPage log);
 
 	@JsonProperty("log")
 	@GraphQLInputParameters(names = { "filter", "pageSort" }, types = { "LogQueryFilter", "PageableInput" },
 		mandatories = { false, false }, listDepths = { 0, 0 }, itemsMandatory = { false, false })
-	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage",
-		javaClass = LogPage.class, listDepth = 0)
+	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage", javaClass = LogPage.class, listDepth = 0)
 	public LogPage getLog();
-
-	@JsonProperty("__typename")
-	@GraphQLScalar(fieldName = "__typename", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	public void set__typename(String __typename);
-
-	@JsonProperty("__typename")
-	@GraphQLScalar(fieldName = "__typename", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	public String get__typename();
-
-	/**
-	 * This method is called during the json deserialization process, by the {@link GraphQLObjectMapper}, each time an
-	 * alias value is read from the json.
-	 * @param aliasName
-	 * @param aliasDeserializedValue
-	 */
-	public void setAliasValue(String aliasName, Object aliasDeserializedValue);
-
-	/**
-	 * Retrieves the value for the given alias, as it has been received for this object in the GraphQL response. <BR/>
-	 * This method <B>should not be used for Custom Scalars</B>, as the parser doesn't know if this alias is a custom
-	 * scalar, and which custom scalar to use at deserialization time. In most case, a value will then be provided by
-	 * this method with a basis json deserialization, but this value won't be the proper custom scalar value.
-	 * @param alias
-	 * @return
-	 */
-	public Object getAliasValue(String alias);
 
 }

@@ -21,7 +21,7 @@ package io.github.demonfiddler.ee.server.repository;
 
 import io.github.demonfiddler.ee.server.model.Journal;
 
-public class CustomJournalRepositoryImpl extends CustomITrackedEntityRepositoryImpl<Journal>
+public class CustomJournalRepositoryImpl extends CustomTrackedEntityRepositoryImpl<Journal>
     implements CustomJournalRepository {
 
     @Override

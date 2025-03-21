@@ -19,6 +19,7 @@
 
 package io.github.demonfiddler.ee.server.model;
 
+import com.graphql_java_generator.annotation.GraphQLDirective;
 import com.graphql_java_generator.annotation.GraphQLEnumType;
 
 /**
@@ -31,8 +32,12 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
 @GraphQLEnumType("FormatKind")
 public enum FormatKind {
 
-		SHORT("SHORT"), //$NON-NLS-1$
-		LONG("LONG"); //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Short" })
+	SHORT("SHORT"), //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Long" })
+	LONG("LONG"); //$NON-NLS-1$
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different when the value in the GraphQL schema is a Java reserved keyword.

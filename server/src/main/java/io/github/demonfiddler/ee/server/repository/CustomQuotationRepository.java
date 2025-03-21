@@ -20,7 +20,7 @@
 package io.github.demonfiddler.ee.server.repository;
 
 import io.github.demonfiddler.ee.server.model.Quotation;
-import io.github.demonfiddler.ee.server.model.TopicalEntityQueryFilter;
+import io.github.demonfiddler.ee.server.model.LinkableEntityQueryFilter;
 
-public interface CustomQuotationRepository extends CustomRepository<Quotation, TopicalEntityQueryFilter> {
+public interface CustomQuotationRepository extends CustomRepository<Quotation, LinkableEntityQueryFilter> {
 }

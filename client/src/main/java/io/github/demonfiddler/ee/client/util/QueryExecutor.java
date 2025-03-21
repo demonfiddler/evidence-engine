@@ -19,6 +19,9 @@
 
 package io.github.demonfiddler.ee.client.util;
 
+import static com.graphql_java_generator.client.request.InputParameter.InputParameterType.MANDATORY;
+import static com.graphql_java_generator.client.request.InputParameter.InputParameterType.OPTIONAL;
+
 import java.util.Map;
 import java.util.Optional;
 
@@ -33,10 +36,8 @@ import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLScalar;
 import com.graphql_java_generator.annotation.RequestType;
 import com.graphql_java_generator.client.GraphQLQueryExecutor;
-import com.graphql_java_generator.client.GraphqlClientUtils;
 import com.graphql_java_generator.client.request.Builder;
 import com.graphql_java_generator.client.request.InputParameter;
-import com.graphql_java_generator.client.request.InputParameter.InputParameterType;
 import com.graphql_java_generator.client.request.ObjectResponse;
 import com.graphql_java_generator.customscalars.GraphQLScalarTypeDate;
 import com.graphql_java_generator.exception.GraphQLRequestExecutionException;
@@ -48,9 +49,12 @@ import io.github.demonfiddler.ee.client.Claim;
 import io.github.demonfiddler.ee.client.ClaimPage;
 import io.github.demonfiddler.ee.client.Declaration;
 import io.github.demonfiddler.ee.client.DeclarationPage;
-import io.github.demonfiddler.ee.client.EntityKind;
+import io.github.demonfiddler.ee.client.EntityLink;
+import io.github.demonfiddler.ee.client.EntityLinkPage;
+import io.github.demonfiddler.ee.client.EntityLinkQueryFilter;
 import io.github.demonfiddler.ee.client.Journal;
 import io.github.demonfiddler.ee.client.JournalPage;
+import io.github.demonfiddler.ee.client.LinkableEntityQueryFilter;
 import io.github.demonfiddler.ee.client.LogPage;
 import io.github.demonfiddler.ee.client.LogQueryFilter;
 import io.github.demonfiddler.ee.client.PageableInput;
@@ -66,10 +70,6 @@ import io.github.demonfiddler.ee.client.QuotationPage;
 import io.github.demonfiddler.ee.client.Topic;
 import io.github.demonfiddler.ee.client.TopicPage;
 import io.github.demonfiddler.ee.client.TopicQueryFilter;
-import io.github.demonfiddler.ee.client.TopicRef;
-import io.github.demonfiddler.ee.client.TopicRefPage;
-import io.github.demonfiddler.ee.client.TopicRefQueryFilter;
-import io.github.demonfiddler.ee.client.TopicalEntityQueryFilter;
 import io.github.demonfiddler.ee.client.TrackedEntityQueryFilter;
 import io.github.demonfiddler.ee.client.User;
 import io.github.demonfiddler.ee.client.UserPage;
@@ -100,26 +100,25 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 
 	/** Logger for this class */
 	@SuppressWarnings("unused")
-	private static Logger logger = LoggerFactory.getLogger(QueryExecutor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(QueryExecutor.class);
 
 	@Autowired
 	@Qualifier("httpGraphQlClient")
 	GraphQlClient graphQlClient;
 
 	@Autowired
+	GraphqlClientUtilsEx graphqlClientUtils;
+
+	@Autowired
 	@Qualifier("queryReactiveExecutor")
 	QueryReactiveExecutor queryReactiveExecutor;
 
 	GraphqlUtils graphqlUtils = GraphqlUtils.graphqlUtils; // must be set that way, to be used in the constructor
-
-	@Autowired
-	GraphqlClientUtils graphqlClientUtils;
-
 	public QueryExecutor() {
-		if (!"2.8".equals(this.graphqlUtils.getRuntimeVersion())) { //$NON-NLS-1$
+		if (!"2.8".equals(this.graphqlUtils.getRuntimeVersion())) {
 			throw new RuntimeException(
-				"The GraphQL runtime version doesn't match the GraphQL plugin version. The runtime's version is '" //$NON-NLS-1$
-					+ this.graphqlUtils.getRuntimeVersion() + "' whereas the GraphQL plugin version is '2.8'"); //$NON-NLS-1$
+				"The GraphQL runtime version doesn't match the GraphQL plugin version. The runtime's version is '"
+					+ this.graphqlUtils.getRuntimeVersion() + "' whereas the GraphQL plugin version is '2.8'");
 		}
 		CustomScalarRegistryInitializer.initCustomScalarRegistry();
 		DirectiveRegistryInitializer.initDirectiveRegistry();
@@ -165,7 +164,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @param parameters The map of values, for the bind variables declared in the request you defined. If there is no
 	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}. The key is the parameter
 	 * name, as declared in the request you defined (in the above sample: param is an optional parameter and skip is a
-	 * mandatory one). The value is the parameter value in its Java type (for instance a {@link Date} for the
+	 * mandatory one). The value is the parameter value in its Java type (for instance a {@link java.util.Date} for the
 	 * {@link GraphQLScalarTypeDate}). The parameters which value is missing in this map will be ignored.
 	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
 	 * building the {@link ObjectResponse}
@@ -173,7 +172,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	public Query execWithBindValues(String queryResponseDef, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMono(this.queryReactiveExecutor.execWithBindValues(queryResponseDef, parameters));
 	}
 
@@ -218,7 +218,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	public Query exec(String queryResponseDef, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMono(this.queryReactiveExecutor.exec(queryResponseDef, paramsAndValues));
 	}
 
@@ -274,6 +275,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	public Query execWithBindValues(ObjectResponse objectResponse, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException {
+
 		return getValueFromMono(this.queryReactiveExecutor.execWithBindValues(objectResponse, parameters));
 	}
 
@@ -330,6 +332,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	public Query exec(ObjectResponse objectResponse, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
+
 		return getValueFromMono(this.queryReactiveExecutor.exec(objectResponse, paramsAndValues));
 	}
 
@@ -346,6 +349,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * Get the {@link GraphQLRequest} for <B>full request</B>. For instance:
 	 * 
 	 * <PRE>
+	 * 
 	 * GraphQLRequest request = new GraphQLRequest(fullRequest);
 	 * </PRE>
 	 * 
@@ -387,6 +391,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			pageSort, // A value for claims's pageSort input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -401,9 +406,10 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "claims", graphQLTypeSimpleName = "ClaimPage", javaClass = ClaimPage.class)
-	public ClaimPage claimsWithBindValues(String queryResponseDef, TopicalEntityQueryFilter filter,
+	public ClaimPage claimsWithBindValues(String queryResponseDef, LinkableEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.claimsWithBindValues(queryResponseDef, filter, pageSort, parameters));
 	}
@@ -436,6 +442,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -450,8 +457,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "claims", graphQLTypeSimpleName = "ClaimPage", javaClass = ClaimPage.class)
-	public ClaimPage claims(String queryResponseDef, TopicalEntityQueryFilter filter, PageableInput pageSort,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	public ClaimPage claims(String queryResponseDef, LinkableEntityQueryFilter filter, PageableInput pageSort,
+		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.claims(queryResponseDef, filter, pageSort, paramsAndValues));
 	}
@@ -486,6 +494,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			pageSort, // A value for claims's pageSort input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -502,8 +511,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "claims", graphQLTypeSimpleName = "ClaimPage", javaClass = ClaimPage.class)
-	public ClaimPage claimsWithBindValues(ObjectResponse objectResponse, TopicalEntityQueryFilter filter,
+	public ClaimPage claimsWithBindValues(ObjectResponse objectResponse, LinkableEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.claimsWithBindValues(objectResponse, filter, pageSort, parameters));
 	}
@@ -540,6 +550,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -559,8 +570,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "claims", graphQLTypeSimpleName = "ClaimPage", javaClass = ClaimPage.class)
-	public ClaimPage claims(ObjectResponse objectResponse, TopicalEntityQueryFilter filter, PageableInput pageSort,
+	public ClaimPage claims(ObjectResponse objectResponse, LinkableEntityQueryFilter filter, PageableInput pageSort,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.claims(objectResponse, filter, pageSort, paramsAndValues));
 	}
@@ -585,12 +597,11 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestPreparationException
 	 */
 	public GraphQLRequest getClaimsGraphQLRequest(String partialRequest) throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "claims" //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "filter", "queryClaimsFilter", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"TopicalEntityQueryFilter", false, 0, false) //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "pageSort", "queryClaimsPageSort", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"PageableInput", false, 0, false) //$NON-NLS-1$
-		);
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "claims",
+			InputParameter.newBindParameter("", "filter", "queryClaimsFilter", OPTIONAL, "LinkableEntityQueryFilter",
+				false, 0, false),
+			InputParameter.newBindParameter("", "pageSort", "queryClaimsPageSort", OPTIONAL, "PageableInput", false, 0,
+				false));
 	}
 
 	/**
@@ -622,6 +633,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			id, // A value for claimById's id input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -636,7 +648,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "claimById", graphQLTypeSimpleName = "Claim", javaClass = Claim.class)
 	public Claim claimByIdWithBindValues(String queryResponseDef, Long id, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.claimByIdWithBindValues(queryResponseDef, id, parameters));
 	}
@@ -668,6 +681,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -682,7 +696,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "claimById", graphQLTypeSimpleName = "Claim", javaClass = Claim.class)
 	public Claim claimById(String queryResponseDef, Long id, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(this.queryReactiveExecutor.claimById(queryResponseDef, id, paramsAndValues));
 	}
 
@@ -715,6 +730,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 																				// input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -732,6 +748,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "claimById", graphQLTypeSimpleName = "Claim", javaClass = Claim.class)
 	public Claim claimByIdWithBindValues(ObjectResponse objectResponse, Long id, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.claimByIdWithBindValues(objectResponse, id, parameters));
 	}
@@ -766,6 +783,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -786,6 +804,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "claimById", graphQLTypeSimpleName = "Claim", javaClass = Claim.class)
 	public Claim claimById(ObjectResponse objectResponse, Long id, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(this.queryReactiveExecutor.claimById(objectResponse, id, paramsAndValues));
 	}
 
@@ -809,9 +828,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestPreparationException
 	 */
 	public GraphQLRequest getClaimByIdGraphQLRequest(String partialRequest) throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "claimById" //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "id", "queryClaimByIdId", InputParameterType.MANDATORY, "ID", true, 0, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-				false));
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "claimById",
+			InputParameter.newBindParameter("", "id", "queryClaimByIdId", MANDATORY, "ID", true, 0, false));
 	}
 
 	/**
@@ -844,6 +862,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			pageSort, // A value for declarations's pageSort input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -859,9 +878,10 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "declarations", graphQLTypeSimpleName = "DeclarationPage",
 		javaClass = DeclarationPage.class)
-	public DeclarationPage declarationsWithBindValues(String queryResponseDef, TopicalEntityQueryFilter filter,
+	public DeclarationPage declarationsWithBindValues(String queryResponseDef, LinkableEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.declarationsWithBindValues(queryResponseDef, filter, pageSort, parameters));
 	}
@@ -894,6 +914,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -909,9 +930,10 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "declarations", graphQLTypeSimpleName = "DeclarationPage",
 		javaClass = DeclarationPage.class)
-	public DeclarationPage declarations(String queryResponseDef, TopicalEntityQueryFilter filter,
+	public DeclarationPage declarations(String queryResponseDef, LinkableEntityQueryFilter filter,
 		PageableInput pageSort, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.declarations(queryResponseDef, filter, pageSort, paramsAndValues));
 	}
@@ -950,6 +972,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			pageSort, // A value for declarations's pageSort input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -967,8 +990,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "declarations", graphQLTypeSimpleName = "DeclarationPage",
 		javaClass = DeclarationPage.class)
-	public DeclarationPage declarationsWithBindValues(ObjectResponse objectResponse, TopicalEntityQueryFilter filter,
+	public DeclarationPage declarationsWithBindValues(ObjectResponse objectResponse, LinkableEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.declarationsWithBindValues(objectResponse, filter, pageSort, parameters));
 	}
@@ -1006,6 +1030,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -1026,8 +1051,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "declarations", graphQLTypeSimpleName = "DeclarationPage",
 		javaClass = DeclarationPage.class)
-	public DeclarationPage declarations(ObjectResponse objectResponse, TopicalEntityQueryFilter filter,
+	public DeclarationPage declarations(ObjectResponse objectResponse, LinkableEntityQueryFilter filter,
 		PageableInput pageSort, Object... paramsAndValues) throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.declarations(objectResponse, filter, pageSort, paramsAndValues));
 	}
@@ -1053,12 +1079,12 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	public GraphQLRequest getDeclarationsGraphQLRequest(String partialRequest)
 		throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "declarations" //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "filter", "queryDeclarationsFilter", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"TopicalEntityQueryFilter", false, 0, false) //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "pageSort", "queryDeclarationsPageSort", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"PageableInput", false, 0, false) //$NON-NLS-1$
-		);
+
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "declarations",
+			InputParameter.newBindParameter("", "filter", "queryDeclarationsFilter", OPTIONAL,
+				"LinkableEntityQueryFilter", false, 0, false),
+			InputParameter.newBindParameter("", "pageSort", "queryDeclarationsPageSort", OPTIONAL, "PageableInput",
+				false, 0, false));
 	}
 
 	/**
@@ -1090,6 +1116,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			id, // A value for declarationById's id input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -1105,7 +1132,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "declarationById", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class)
 	public Declaration declarationByIdWithBindValues(String queryResponseDef, Long id, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.declarationByIdWithBindValues(queryResponseDef, id, parameters));
 	}
@@ -1137,6 +1165,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -1152,7 +1181,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "declarationById", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class)
 	public Declaration declarationById(String queryResponseDef, Long id, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.declarationById(queryResponseDef, id, paramsAndValues));
 	}
@@ -1188,6 +1218,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 																									// parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -1206,6 +1237,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 		javaClass = Declaration.class)
 	public Declaration declarationByIdWithBindValues(ObjectResponse objectResponse, Long id,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.declarationByIdWithBindValues(objectResponse, id, parameters));
 	}
@@ -1242,6 +1274,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -1263,6 +1296,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 		javaClass = Declaration.class)
 	public Declaration declarationById(ObjectResponse objectResponse, Long id, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.declarationById(objectResponse, id, paramsAndValues));
 	}
@@ -1288,8 +1322,750 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	public GraphQLRequest getDeclarationByIdGraphQLRequest(String partialRequest)
 		throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "declarationById" //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "id", "queryDeclarationByIdId", InputParameterType.MANDATORY, "ID", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "declarationById",
+			InputParameter.newBindParameter("", "id", "queryDeclarationByIdId", MANDATORY, "ID", true, 0, false));
+	}
+
+	/**
+	 * Returns a paged list of entity links.<br/>
+	 * This method executes a partial query on the entityLinks query against the GraphQL server. That is, the query is
+	 * one of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part of the
+	 * query that follows the field name.<br/>
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the expected fields of the
+	 * <code>entityLinks</code> of the Query query type. It can be something like "{ id name }", or "" for a scalar.
+	 * Please take a look at the StarWars, Forum and other samples for more complex queries.<br/>
+	 * Here is a sample on how to use it:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Map<String, Object> params = new HashMap<>();
+	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
+	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
+	 * 
+	 * 		EntityLinkPage entityLinks = executor.entityLinksWithBindValues(
+	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 			filter, // A value for entityLinks's filter input parameter
+	 * 			pageSort, // A value for entityLinks's pageSort input parameter
+	 * 			params);
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
+	 * @param filter Filters results.
+	 * @param pageSort Sorts and paginates results
+	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
+	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
+	 * building the {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "entityLinks", graphQLTypeSimpleName = "EntityLinkPage",
+		javaClass = EntityLinkPage.class)
+	public EntityLinkPage entityLinksWithBindValues(String queryResponseDef, EntityLinkQueryFilter filter,
+		PageableInput pageSort, Map<String, Object> parameters)
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
+		return getValueFromMonoOptional(
+			this.queryReactiveExecutor.entityLinksWithBindValues(queryResponseDef, filter, pageSort, parameters));
+	}
+
+	/**
+	 * Returns a paged list of entity links.<br/>
+	 * This method executes a partial query on the entityLinks query against the GraphQL server. That is, the query is
+	 * one of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part of the
+	 * query that follows the field name.<br/>
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the expected fields of the
+	 * <code>entityLinks</code> of the Query query type. It can be something like "{ id name }", or "" for a scalar.
+	 * Please take a look at the StarWars, Forum and other samples for more complex queries.<br/>
+	 * Here is a sample on how to use it:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		EntityLinkPage entityLinks = executor.entityLinks(
+	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 			filter, // A value for entityLinks's filter input parameter
+	 * 			pageSort, // A value for entityLinks's pageSort input parameter
+	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
+	 * @param filter Filters results.
+	 * @param pageSort Sorts and paginates results
+	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
+	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
+	 * building the {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "entityLinks", graphQLTypeSimpleName = "EntityLinkPage",
+		javaClass = EntityLinkPage.class)
+	public EntityLinkPage entityLinks(String queryResponseDef, EntityLinkQueryFilter filter, PageableInput pageSort,
+		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
+		return getValueFromMonoOptional(
+			this.queryReactiveExecutor.entityLinks(queryResponseDef, filter, pageSort, paramsAndValues));
+	}
+
+	/**
+	 * Returns a paged list of entity links.<br/>
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<br/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed several times
+	 * 		preparedRequest = executor.getEntityLinksGraphQLRequest(
+	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		EntityLinkPage entityLinks = executor.entityLinksWithBindValues(preparedRequest, filter, // A value for
+	 * 																									// entityLinks's
+	 * 																									// filter
+	 * 																									// input
+	 * 																									// parameter
+	 * 			pageSort, // A value for entityLinks's pageSort input parameter
+	 * 			params);
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
+	 * to return<br/>
+	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
+	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
+	 * {@link getEntityLinksGraphQLRequest(String)} method.
+	 * @param filter Filters results.
+	 * @param pageSort Sorts and paginates results
+	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
+	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "entityLinks", graphQLTypeSimpleName = "EntityLinkPage",
+		javaClass = EntityLinkPage.class)
+	public EntityLinkPage entityLinksWithBindValues(ObjectResponse objectResponse, EntityLinkQueryFilter filter,
+		PageableInput pageSort, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
+		return getValueFromMonoOptional(
+			this.queryReactiveExecutor.entityLinksWithBindValues(objectResponse, filter, pageSort, parameters));
+	}
+
+	/**
+	 * Returns a paged list of entity links.<br/>
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<br/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed several times
+	 * 		preparedRequest = executor.getEntityLinksGraphQLRequest(
+	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		EntityLinkPage entityLinks = executor.entityLinks(preparedRequest, filter, // A value for entityLinks's
+	 * 																					// filter input parameter
+	 * 			pageSort, // A value for entityLinks's pageSort input parameter
+	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
+	 * to return<br/>
+	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
+	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
+	 * {@link getEntityLinksGraphQLRequest(String)} method.
+	 * @param filter Filters results.
+	 * @param pageSort Sorts and paginates results
+	 * @param paramsAndValues This parameter contains all the name and values for the Bind Variables defined in the
+	 * objectResponse parameter, that must be sent to the server. Optional parameter may not have a value. They will be
+	 * ignored and not sent to the server. Mandatory parameter must be provided in this argument.<br/>
+	 * This parameter contains an even number of parameters: it must be a series of name and values : (paramName1,
+	 * paramValue1, paramName2, paramValue2...)
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "entityLinks", graphQLTypeSimpleName = "EntityLinkPage",
+		javaClass = EntityLinkPage.class)
+	public EntityLinkPage entityLinks(ObjectResponse objectResponse, EntityLinkQueryFilter filter,
+		PageableInput pageSort, Object... paramsAndValues) throws GraphQLRequestExecutionException {
+
+		return getValueFromMonoOptional(
+			this.queryReactiveExecutor.entityLinks(objectResponse, filter, pageSort, paramsAndValues));
+	}
+
+	/**
+	 * Returns a paged list of entity links.<br/>
+	 * Get the {@link Builder} for the EntityLinkPage, as expected by the entityLinks query.
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public Builder getEntityLinksResponseBuilder() throws GraphQLRequestPreparationException {
+		return this.queryReactiveExecutor.getEntityLinksResponseBuilder();
+	}
+
+	/**
+	 * Returns a paged list of entity links.<br/>
+	 * Get the {@link GraphQLRequest} for the entityLinks EXECUTOR, created with the given Partial request.
+	 * @param partialRequest The Partial GraphQL request, as explained in the
+	 * <A HREF="https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin client
+	 * documentation</A>
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public GraphQLRequest getEntityLinksGraphQLRequest(String partialRequest)
+		throws GraphQLRequestPreparationException {
+
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "entityLinks",
+			InputParameter.newBindParameter("", "filter", "queryEntityLinksFilter", MANDATORY, "EntityLinkQueryFilter",
+				true, 0, false),
+			InputParameter.newBindParameter("", "pageSort", "queryEntityLinksPageSort", OPTIONAL, "PageableInput",
+				false, 0, false));
+	}
+
+	/**
+	 * Returns an entity link given its identifier.<br/>
+	 * This method executes a partial query on the entityLinkById query against the GraphQL server. That is, the query
+	 * is one of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part of
+	 * the query that follows the field name.<br/>
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the expected fields of the
+	 * <code>entityLinkById</code> of the Query query type. It can be something like "{ id name }", or "" for a scalar.
+	 * Please take a look at the StarWars, Forum and other samples for more complex queries.<br/>
+	 * Here is a sample on how to use it:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Map<String, Object> params = new HashMap<>();
+	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
+	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
+	 * 
+	 * 		EntityLink entityLinkById = executor.entityLinkByIdWithBindValues(
+	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 			id, // A value for entityLinkById's id input parameter
+	 * 			params);
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
+	 * @param id Parameter for the entityLinkById field of Query, as defined in the GraphQL schema
+	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
+	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
+	 * building the {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "entityLinkById", graphQLTypeSimpleName = "EntityLink", javaClass = EntityLink.class)
+	public EntityLink entityLinkByIdWithBindValues(String queryResponseDef, Long id, Map<String, Object> parameters)
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
+		return getValueFromMonoOptional(
+			this.queryReactiveExecutor.entityLinkByIdWithBindValues(queryResponseDef, id, parameters));
+	}
+
+	/**
+	 * Returns an entity link given its identifier.<br/>
+	 * This method executes a partial query on the entityLinkById query against the GraphQL server. That is, the query
+	 * is one of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part of
+	 * the query that follows the field name.<br/>
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the expected fields of the
+	 * <code>entityLinkById</code> of the Query query type. It can be something like "{ id name }", or "" for a scalar.
+	 * Please take a look at the StarWars, Forum and other samples for more complex queries.<br/>
+	 * Here is a sample on how to use it:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		EntityLink entityLinkById = executor.entityLinkById(
+	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 			id, // A value for entityLinkById's id input parameter
+	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
+	 * @param id Parameter for the entityLinkById field of Query, as defined in the GraphQL schema
+	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
+	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
+	 * building the {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "entityLinkById", graphQLTypeSimpleName = "EntityLink", javaClass = EntityLink.class)
+	public EntityLink entityLinkById(String queryResponseDef, Long id, Object... paramsAndValues)
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
+		return getValueFromMonoOptional(
+			this.queryReactiveExecutor.entityLinkById(queryResponseDef, id, paramsAndValues));
+	}
+
+	/**
+	 * Returns an entity link given its identifier.<br/>
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<br/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed several times
+	 * 		preparedRequest = executor.getEntityLinkByIdGraphQLRequest(
+	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		EntityLink entityLinkById = executor.entityLinkByIdWithBindValues(preparedRequest, id, // A value for
+	 * 																								// entityLinkById's
+	 * 																								// id input
+	 * 																								// parameter
+	 * 			params);
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
+	 * to return<br/>
+	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
+	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
+	 * {@link getEntityLinkByIdGraphQLRequest(String)} method.
+	 * @param id Parameter for the entityLinkById field of Query, as defined in the GraphQL schema
+	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
+	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "entityLinkById", graphQLTypeSimpleName = "EntityLink", javaClass = EntityLink.class)
+	public EntityLink entityLinkByIdWithBindValues(ObjectResponse objectResponse, Long id,
+		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
+		return getValueFromMonoOptional(
+			this.queryReactiveExecutor.entityLinkByIdWithBindValues(objectResponse, id, parameters));
+	}
+
+	/**
+	 * Returns an entity link given its identifier.<br/>
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<br/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed several times
+	 * 		preparedRequest = executor.getEntityLinkByIdGraphQLRequest(
+	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		EntityLink entityLinkById = executor.entityLinkById(preparedRequest, id, // A value for entityLinkById's
+	 * 																					// id input parameter
+	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
+	 * to return<br/>
+	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
+	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
+	 * {@link getEntityLinkByIdGraphQLRequest(String)} method.
+	 * @param id Parameter for the entityLinkById field of Query, as defined in the GraphQL schema
+	 * @param paramsAndValues This parameter contains all the name and values for the Bind Variables defined in the
+	 * objectResponse parameter, that must be sent to the server. Optional parameter may not have a value. They will be
+	 * ignored and not sent to the server. Mandatory parameter must be provided in this argument.<br/>
+	 * This parameter contains an even number of parameters: it must be a series of name and values : (paramName1,
+	 * paramValue1, paramName2, paramValue2...)
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "entityLinkById", graphQLTypeSimpleName = "EntityLink", javaClass = EntityLink.class)
+	public EntityLink entityLinkById(ObjectResponse objectResponse, Long id, Object... paramsAndValues)
+		throws GraphQLRequestExecutionException {
+
+		return getValueFromMonoOptional(this.queryReactiveExecutor.entityLinkById(objectResponse, id, paramsAndValues));
+	}
+
+	/**
+	 * Returns an entity link given its identifier.<br/>
+	 * Get the {@link Builder} for the EntityLink, as expected by the entityLinkById query.
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public Builder getEntityLinkByIdResponseBuilder() throws GraphQLRequestPreparationException {
+		return this.queryReactiveExecutor.getEntityLinkByIdResponseBuilder();
+	}
+
+	/**
+	 * Returns an entity link given its identifier.<br/>
+	 * Get the {@link GraphQLRequest} for the entityLinkById EXECUTOR, created with the given Partial request.
+	 * @param partialRequest The Partial GraphQL request, as explained in the
+	 * <A HREF="https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin client
+	 * documentation</A>
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public GraphQLRequest getEntityLinkByIdGraphQLRequest(String partialRequest)
+		throws GraphQLRequestPreparationException {
+
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "entityLinkById",
+			InputParameter.newBindParameter("", "id", "queryEntityLinkByIdId", MANDATORY, "ID", true, 0, false));
+	}
+
+	/**
+	 * Returns an entity link given its from- and to-entity identifiers.<br/>
+	 * This method executes a partial query on the entityLinkByEntityIds query against the GraphQL server. That is, the
+	 * query is one of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part
+	 * of the query that follows the field name.<br/>
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the expected fields of the
+	 * <code>entityLinkByEntityIds</code> of the Query query type. It can be something like "{ id name }", or "" for a
+	 * scalar. Please take a look at the StarWars, Forum and other samples for more complex queries.<br/>
+	 * Here is a sample on how to use it:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Map<String, Object> params = new HashMap<>();
+	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
+	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
+	 * 
+	 * 		EntityLink entityLinkByEntityIds = executor.entityLinkByEntityIdsWithBindValues(
+	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 			fromEntityId, // A value for entityLinkByEntityIds's fromEntityId input parameter
+	 * 			toEntityId, // A value for entityLinkByEntityIds's toEntityId input parameter
+	 * 			params);
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
+	 * @param fromEntityId Parameter for the entityLinkByEntityIds field of Query, as defined in the GraphQL schema
+	 * @param toEntityId Parameter for the entityLinkByEntityIds field of Query, as defined in the GraphQL schema
+	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
+	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
+	 * building the {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "entityLinkByEntityIds", graphQLTypeSimpleName = "EntityLink",
+		javaClass = EntityLink.class)
+	public EntityLink entityLinkByEntityIdsWithBindValues(String queryResponseDef, Long fromEntityId, Long toEntityId,
+		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
+		return getValueFromMonoOptional(this.queryReactiveExecutor.entityLinkByEntityIdsWithBindValues(queryResponseDef,
+			fromEntityId, toEntityId, parameters));
+	}
+
+	/**
+	 * Returns an entity link given its from- and to-entity identifiers.<br/>
+	 * This method executes a partial query on the entityLinkByEntityIds query against the GraphQL server. That is, the
+	 * query is one of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part
+	 * of the query that follows the field name.<br/>
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the expected fields of the
+	 * <code>entityLinkByEntityIds</code> of the Query query type. It can be something like "{ id name }", or "" for a
+	 * scalar. Please take a look at the StarWars, Forum and other samples for more complex queries.<br/>
+	 * Here is a sample on how to use it:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		EntityLink entityLinkByEntityIds = executor.entityLinkByEntityIds(
+	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 			fromEntityId, // A value for entityLinkByEntityIds's fromEntityId input parameter
+	 * 			toEntityId, // A value for entityLinkByEntityIds's toEntityId input parameter
+	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
+	 * @param fromEntityId Parameter for the entityLinkByEntityIds field of Query, as defined in the GraphQL schema
+	 * @param toEntityId Parameter for the entityLinkByEntityIds field of Query, as defined in the GraphQL schema
+	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
+	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
+	 * building the {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "entityLinkByEntityIds", graphQLTypeSimpleName = "EntityLink",
+		javaClass = EntityLink.class)
+	public EntityLink entityLinkByEntityIds(String queryResponseDef, Long fromEntityId, long toEntityId,
+		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
+		return getValueFromMonoOptional(this.queryReactiveExecutor.entityLinkByEntityIds(queryResponseDef, fromEntityId,
+			toEntityId, paramsAndValues));
+	}
+
+	/**
+	 * Returns an entity link given its from- and to-entity identifiers.<br/>
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<br/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed several times
+	 * 		preparedRequest = executor.getEntityLinkByEntityIdsGraphQLRequest(
+	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		EntityLink entityLinkByEntityIds =
+	 * 			executor.entityLinkByEntityIdsWithBindValues(preparedRequest, fromEntityId, // A value for
+	 * 																						// entityLinkByEntityIds's
+	 * 																						// fromEntityId input
+	 * 																						// parameter
+	 * 				toEntityId, // A value for entityLinkByEntityIds's toEntityId input parameter
+	 * 				params);
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
+	 * to return<br/>
+	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
+	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
+	 * {@link getEntityLinkByEntityIdsGraphQLRequest(String)} method.
+	 * @param fromEntityId Parameter for the entityLinkByEntityIds field of Query, as defined in the GraphQL schema
+	 * @param toEntityId Parameter for the entityLinkByEntityIds field of Query, as defined in the GraphQL schema
+	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
+	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "entityLinkByEntityIds", graphQLTypeSimpleName = "EntityLink",
+		javaClass = EntityLink.class)
+	public EntityLink entityLinkByEntityIdsWithBindValues(ObjectResponse objectResponse, Long fromEntityId,
+		Long toEntityId, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
+		return getValueFromMonoOptional(this.queryReactiveExecutor.entityLinkByEntityIdsWithBindValues(objectResponse,
+			fromEntityId, toEntityId, parameters));
+	}
+
+	/**
+	 * Returns an entity link given its from- and to-entity identifiers.<br/>
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<br/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed several times
+	 * 		preparedRequest = executor.getEntityLinkByEntityIdsGraphQLRequest(
+	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		EntityLink entityLinkByEntityIds = executor.entityLinkByEntityIds(preparedRequest, fromEntityId, // A
+	 * 																											// value
+	 * 																											// for
+	 * 																											// entityLinkByEntityIds's
+	 * 																											// fromEntityId
+	 * 																											// input
+	 * 																											// parameter
+	 * 			toEntityId, // A value for entityLinkByEntityIds's toEntityId input parameter
+	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
+	 * to return<br/>
+	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
+	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
+	 * {@link getEntityLinkByEntityIdsGraphQLRequest(String)} method.
+	 * @param fromEntityId Parameter for the entityLinkByEntityIds field of Query, as defined in the GraphQL schema
+	 * @param toEntityId Parameter for the entityLinkByEntityIds field of Query, as defined in the GraphQL schema
+	 * @param paramsAndValues This parameter contains all the name and values for the Bind Variables defined in the
+	 * objectResponse parameter, that must be sent to the server. Optional parameter may not have a value. They will be
+	 * ignored and not sent to the server. Mandatory parameter must be provided in this argument.<br/>
+	 * This parameter contains an even number of parameters: it must be a series of name and values : (paramName1,
+	 * paramValue1, paramName2, paramValue2...)
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "entityLinkByEntityIds", graphQLTypeSimpleName = "EntityLink",
+		javaClass = EntityLink.class)
+	public EntityLink entityLinkByEntityIds(ObjectResponse objectResponse, Long fromEntityId, Long toEntityId,
+		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+
+		return getValueFromMonoOptional(this.queryReactiveExecutor.entityLinkByEntityIds(objectResponse, fromEntityId,
+			toEntityId, paramsAndValues));
+	}
+
+	/**
+	 * Returns an entity link given its from- and to-entity identifiers.<br/>
+	 * Get the {@link Builder} for the EntityLink, as expected by the entityLinkByEntityIds query.
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public Builder getEntityLinkByEntityIdsResponseBuilder() throws GraphQLRequestPreparationException {
+		return this.queryReactiveExecutor.getEntityLinkByEntityIdsResponseBuilder();
+	}
+
+	/**
+	 * Returns an entity link given its from- and to-entity identifiers.<br/>
+	 * Get the {@link GraphQLRequest} for the entityLinkByEntityIds EXECUTOR, created with the given Partial request.
+	 * @param partialRequest The Partial GraphQL request, as explained in the
+	 * <A HREF="https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin client
+	 * documentation</A>
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public GraphQLRequest getEntityLinkByEntityIdsGraphQLRequest(String partialRequest)
+		throws GraphQLRequestPreparationException {
+
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "entityLinkByEntityIds",
+			InputParameter.newBindParameter("", "fromEntityId", "queryEntityLinkByEntityIdsFromEntityId", MANDATORY,
+				"ID", true, 0, false),
+			InputParameter.newBindParameter("", "toEntityId", "queryEntityLinkByEntityIdsToEntityId", MANDATORY, "ID",
 				true, 0, false));
 	}
 
@@ -1323,6 +2099,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			pageSort, // A value for journals's pageSort input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -1339,7 +2116,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "journals", graphQLTypeSimpleName = "JournalPage", javaClass = JournalPage.class)
 	public JournalPage journalsWithBindValues(String queryResponseDef, TrackedEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.journalsWithBindValues(queryResponseDef, filter, pageSort, parameters));
 	}
@@ -1372,6 +2150,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -1387,7 +2166,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "journals", graphQLTypeSimpleName = "JournalPage", javaClass = JournalPage.class)
 	public JournalPage journals(String queryResponseDef, TrackedEntityQueryFilter filter, PageableInput pageSort,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.journals(queryResponseDef, filter, pageSort, paramsAndValues));
 	}
@@ -1422,6 +2202,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			pageSort, // A value for journals's pageSort input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -1440,6 +2221,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "journals", graphQLTypeSimpleName = "JournalPage", javaClass = JournalPage.class)
 	public JournalPage journalsWithBindValues(ObjectResponse objectResponse, TrackedEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.journalsWithBindValues(objectResponse, filter, pageSort, parameters));
 	}
@@ -1476,6 +2258,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -1497,6 +2280,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "journals", graphQLTypeSimpleName = "JournalPage", javaClass = JournalPage.class)
 	public JournalPage journals(ObjectResponse objectResponse, TrackedEntityQueryFilter filter, PageableInput pageSort,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.journals(objectResponse, filter, pageSort, paramsAndValues));
 	}
@@ -1521,12 +2305,11 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestPreparationException
 	 */
 	public GraphQLRequest getJournalsGraphQLRequest(String partialRequest) throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "journals" //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "filter", "queryJournalsFilter", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"TrackedEntityQueryFilter", false, 0, false) //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "pageSort", "queryJournalsPageSort", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"PageableInput", false, 0, false) //$NON-NLS-1$
-		);
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "journals",
+			InputParameter.newBindParameter("", "filter", "queryJournalsFilter", OPTIONAL, "TrackedEntityQueryFilter",
+				false, 0, false),
+			InputParameter.newBindParameter("", "pageSort", "queryJournalsPageSort", OPTIONAL, "PageableInput", false,
+				0, false));
 	}
 
 	/**
@@ -1558,6 +2341,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			id, // A value for journalById's id input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -1572,7 +2356,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "journalById", graphQLTypeSimpleName = "Journal", javaClass = Journal.class)
 	public Journal journalByIdWithBindValues(String queryResponseDef, Long id, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.journalByIdWithBindValues(queryResponseDef, id, parameters));
 	}
@@ -1604,6 +2389,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -1618,7 +2404,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "journalById", graphQLTypeSimpleName = "Journal", javaClass = Journal.class)
 	public Journal journalById(String queryResponseDef, Long id, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(this.queryReactiveExecutor.journalById(queryResponseDef, id, paramsAndValues));
 	}
 
@@ -1652,6 +2439,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 																						// parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -1669,6 +2457,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "journalById", graphQLTypeSimpleName = "Journal", javaClass = Journal.class)
 	public Journal journalByIdWithBindValues(ObjectResponse objectResponse, Long id, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.journalByIdWithBindValues(objectResponse, id, parameters));
 	}
@@ -1704,6 +2493,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -1724,6 +2514,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "journalById", graphQLTypeSimpleName = "Journal", javaClass = Journal.class)
 	public Journal journalById(ObjectResponse objectResponse, Long id, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(this.queryReactiveExecutor.journalById(objectResponse, id, paramsAndValues));
 	}
 
@@ -1748,9 +2539,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	public GraphQLRequest getJournalByIdGraphQLRequest(String partialRequest)
 		throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "journalById" //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "id", "queryJournalByIdId", InputParameterType.MANDATORY, "ID", true, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-				0, false));
+
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "journalById",
+			InputParameter.newBindParameter("", "id", "queryJournalByIdId", MANDATORY, "ID", true, 0, false));
 	}
 
 	/**
@@ -1783,6 +2574,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			pageSort, // A value for log's pageSort input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -1798,7 +2590,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage", javaClass = LogPage.class)
 	public LogPage logWithBindValues(String queryResponseDef, LogQueryFilter filter, PageableInput pageSort,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.logWithBindValues(queryResponseDef, filter, pageSort, parameters));
 	}
@@ -1831,6 +2624,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -1846,7 +2640,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage", javaClass = LogPage.class)
 	public LogPage log(String queryResponseDef, LogQueryFilter filter, PageableInput pageSort,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.log(queryResponseDef, filter, pageSort, paramsAndValues));
 	}
@@ -1881,6 +2676,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			pageSort, // A value for log's pageSort input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -1899,6 +2695,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage", javaClass = LogPage.class)
 	public LogPage logWithBindValues(ObjectResponse objectResponse, LogQueryFilter filter, PageableInput pageSort,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.logWithBindValues(objectResponse, filter, pageSort, parameters));
 	}
@@ -1934,6 +2731,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -1955,6 +2753,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage", javaClass = LogPage.class)
 	public LogPage log(ObjectResponse objectResponse, LogQueryFilter filter, PageableInput pageSort,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.log(objectResponse, filter, pageSort, paramsAndValues));
 	}
@@ -1979,12 +2778,11 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestPreparationException
 	 */
 	public GraphQLRequest getLogGraphQLRequest(String partialRequest) throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "log" //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "filter", "queryLogFilter", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"LogQueryFilter", false, 0, false) //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "pageSort", "queryLogPageSort", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"PageableInput", false, 0, false) //$NON-NLS-1$
-		);
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "log",
+			InputParameter.newBindParameter("", "filter", "queryLogFilter", OPTIONAL, "LogQueryFilter", false, 0,
+				false),
+			InputParameter.newBindParameter("", "pageSort", "queryLogPageSort", OPTIONAL, "PageableInput", false, 0,
+				false));
 	}
 
 	/**
@@ -2017,6 +2815,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			pageSort, // A value for persons's pageSort input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -2031,9 +2830,10 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "persons", graphQLTypeSimpleName = "PersonPage", javaClass = PersonPage.class)
-	public PersonPage personsWithBindValues(String queryResponseDef, TopicalEntityQueryFilter filter,
+	public PersonPage personsWithBindValues(String queryResponseDef, LinkableEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.personsWithBindValues(queryResponseDef, filter, pageSort, parameters));
 	}
@@ -2066,6 +2866,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -2080,8 +2881,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "persons", graphQLTypeSimpleName = "PersonPage", javaClass = PersonPage.class)
-	public PersonPage persons(String queryResponseDef, TopicalEntityQueryFilter filter, PageableInput pageSort,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	public PersonPage persons(String queryResponseDef, LinkableEntityQueryFilter filter, PageableInput pageSort,
+		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.persons(queryResponseDef, filter, pageSort, paramsAndValues));
 	}
@@ -2116,6 +2918,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			pageSort, // A value for persons's pageSort input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -2132,8 +2935,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "persons", graphQLTypeSimpleName = "PersonPage", javaClass = PersonPage.class)
-	public PersonPage personsWithBindValues(ObjectResponse objectResponse, TopicalEntityQueryFilter filter,
+	public PersonPage personsWithBindValues(ObjectResponse objectResponse, LinkableEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.personsWithBindValues(objectResponse, filter, pageSort, parameters));
 	}
@@ -2170,6 +2974,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -2189,8 +2994,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "persons", graphQLTypeSimpleName = "PersonPage", javaClass = PersonPage.class)
-	public PersonPage persons(ObjectResponse objectResponse, TopicalEntityQueryFilter filter, PageableInput pageSort,
+	public PersonPage persons(ObjectResponse objectResponse, LinkableEntityQueryFilter filter, PageableInput pageSort,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.persons(objectResponse, filter, pageSort, paramsAndValues));
 	}
@@ -2215,12 +3021,11 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestPreparationException
 	 */
 	public GraphQLRequest getPersonsGraphQLRequest(String partialRequest) throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "persons" //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "filter", "queryPersonsFilter", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"TopicalEntityQueryFilter", false, 0, false) //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "pageSort", "queryPersonsPageSort", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"PageableInput", false, 0, false) //$NON-NLS-1$
-		);
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "persons",
+			InputParameter.newBindParameter("", "filter", "queryPersonsFilter", OPTIONAL, "LinkableEntityQueryFilter",
+				false, 0, false),
+			InputParameter.newBindParameter("", "pageSort", "queryPersonsPageSort", OPTIONAL, "PageableInput", false, 0,
+				false));
 	}
 
 	/**
@@ -2252,6 +3057,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			id, // A value for personById's id input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -2266,7 +3072,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "personById", graphQLTypeSimpleName = "Person", javaClass = Person.class)
 	public Person personByIdWithBindValues(String queryResponseDef, Long id, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.personByIdWithBindValues(queryResponseDef, id, parameters));
 	}
@@ -2298,6 +3105,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -2312,7 +3120,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "personById", graphQLTypeSimpleName = "Person", javaClass = Person.class)
 	public Person personById(String queryResponseDef, Long id, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(this.queryReactiveExecutor.personById(queryResponseDef, id, paramsAndValues));
 	}
 
@@ -2345,6 +3154,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 																					// input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -2362,6 +3172,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "personById", graphQLTypeSimpleName = "Person", javaClass = Person.class)
 	public Person personByIdWithBindValues(ObjectResponse objectResponse, Long id, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.personByIdWithBindValues(objectResponse, id, parameters));
 	}
@@ -2397,6 +3208,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -2417,6 +3229,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "personById", graphQLTypeSimpleName = "Person", javaClass = Person.class)
 	public Person personById(ObjectResponse objectResponse, Long id, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(this.queryReactiveExecutor.personById(objectResponse, id, paramsAndValues));
 	}
 
@@ -2440,9 +3253,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestPreparationException
 	 */
 	public GraphQLRequest getPersonByIdGraphQLRequest(String partialRequest) throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "personById" //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "id", "queryPersonByIdId", InputParameterType.MANDATORY, "ID", true, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-				0, false));
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "personById",
+			InputParameter.newBindParameter("", "id", "queryPersonByIdId", MANDATORY, "ID", true, 0, false));
 	}
 
 	/**
@@ -2475,6 +3287,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			pageSort, // A value for publications's pageSort input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -2490,9 +3303,10 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "publications", graphQLTypeSimpleName = "PublicationPage",
 		javaClass = PublicationPage.class)
-	public PublicationPage publicationsWithBindValues(String queryResponseDef, TopicalEntityQueryFilter filter,
+	public PublicationPage publicationsWithBindValues(String queryResponseDef, LinkableEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publicationsWithBindValues(queryResponseDef, filter, pageSort, parameters));
 	}
@@ -2525,6 +3339,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -2540,9 +3355,10 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "publications", graphQLTypeSimpleName = "PublicationPage",
 		javaClass = PublicationPage.class)
-	public PublicationPage publications(String queryResponseDef, TopicalEntityQueryFilter filter,
+	public PublicationPage publications(String queryResponseDef, LinkableEntityQueryFilter filter,
 		PageableInput pageSort, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publications(queryResponseDef, filter, pageSort, paramsAndValues));
 	}
@@ -2581,6 +3397,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			pageSort, // A value for publications's pageSort input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -2598,8 +3415,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "publications", graphQLTypeSimpleName = "PublicationPage",
 		javaClass = PublicationPage.class)
-	public PublicationPage publicationsWithBindValues(ObjectResponse objectResponse, TopicalEntityQueryFilter filter,
+	public PublicationPage publicationsWithBindValues(ObjectResponse objectResponse, LinkableEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publicationsWithBindValues(objectResponse, filter, pageSort, parameters));
 	}
@@ -2637,6 +3455,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -2657,8 +3476,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "publications", graphQLTypeSimpleName = "PublicationPage",
 		javaClass = PublicationPage.class)
-	public PublicationPage publications(ObjectResponse objectResponse, TopicalEntityQueryFilter filter,
+	public PublicationPage publications(ObjectResponse objectResponse, LinkableEntityQueryFilter filter,
 		PageableInput pageSort, Object... paramsAndValues) throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publications(objectResponse, filter, pageSort, paramsAndValues));
 	}
@@ -2684,12 +3504,11 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	public GraphQLRequest getPublicationsGraphQLRequest(String partialRequest)
 		throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "publications" //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "filter", "queryPublicationsFilter", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"TopicalEntityQueryFilter", false, 0, false) //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "pageSort", "queryPublicationsPageSort", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"PageableInput", false, 0, false) //$NON-NLS-1$
-		);
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "publications",
+			InputParameter.newBindParameter("", "filter", "queryPublicationsFilter", OPTIONAL,
+				"LinkableEntityQueryFilter", false, 0, false),
+			InputParameter.newBindParameter("", "pageSort", "queryPublicationsPageSort", OPTIONAL, "PageableInput",
+				false, 0, false));
 	}
 
 	/**
@@ -2721,6 +3540,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			id, // A value for publicationById's id input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -2736,7 +3556,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "publicationById", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class)
 	public Publication publicationByIdWithBindValues(String queryResponseDef, Long id, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publicationByIdWithBindValues(queryResponseDef, id, parameters));
 	}
@@ -2768,6 +3589,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -2783,7 +3605,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "publicationById", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class)
 	public Publication publicationById(String queryResponseDef, Long id, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publicationById(queryResponseDef, id, paramsAndValues));
 	}
@@ -2819,6 +3642,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 																									// parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -2837,6 +3661,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 		javaClass = Publication.class)
 	public Publication publicationByIdWithBindValues(ObjectResponse objectResponse, Long id,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publicationByIdWithBindValues(objectResponse, id, parameters));
 	}
@@ -2873,6 +3698,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -2894,6 +3720,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 		javaClass = Publication.class)
 	public Publication publicationById(ObjectResponse objectResponse, Long id, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publicationById(objectResponse, id, paramsAndValues));
 	}
@@ -2919,9 +3746,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	public GraphQLRequest getPublicationByIdGraphQLRequest(String partialRequest)
 		throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "publicationById" //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "id", "queryPublicationByIdId", InputParameterType.MANDATORY, "ID", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-				true, 0, false));
+
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "publicationById",
+			InputParameter.newBindParameter("", "id", "queryPublicationByIdId", MANDATORY, "ID", true, 0, false));
 	}
 
 	/**
@@ -2954,6 +3781,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			pageSort, // A value for publishers's pageSort input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -2971,7 +3799,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 		javaClass = PublisherPage.class)
 	public PublisherPage publishersWithBindValues(String queryResponseDef, TrackedEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publishersWithBindValues(queryResponseDef, filter, pageSort, parameters));
 	}
@@ -3004,6 +3833,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -3020,7 +3850,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "publishers", graphQLTypeSimpleName = "PublisherPage",
 		javaClass = PublisherPage.class)
 	public PublisherPage publishers(String queryResponseDef, TrackedEntityQueryFilter filter, PageableInput pageSort,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publishers(queryResponseDef, filter, pageSort, paramsAndValues));
 	}
@@ -3057,6 +3888,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			pageSort, // A value for publishers's pageSort input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -3076,6 +3908,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 		javaClass = PublisherPage.class)
 	public PublisherPage publishersWithBindValues(ObjectResponse objectResponse, TrackedEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publishersWithBindValues(objectResponse, filter, pageSort, parameters));
 	}
@@ -3112,6 +3945,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -3134,6 +3968,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 		javaClass = PublisherPage.class)
 	public PublisherPage publishers(ObjectResponse objectResponse, TrackedEntityQueryFilter filter,
 		PageableInput pageSort, Object... paramsAndValues) throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publishers(objectResponse, filter, pageSort, paramsAndValues));
 	}
@@ -3158,12 +3993,11 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestPreparationException
 	 */
 	public GraphQLRequest getPublishersGraphQLRequest(String partialRequest) throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "publishers" //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "filter", "queryPublishersFilter", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"TrackedEntityQueryFilter", false, 0, false) //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "pageSort", "queryPublishersPageSort", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"PageableInput", false, 0, false) //$NON-NLS-1$
-		);
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "publishers",
+			InputParameter.newBindParameter("", "filter", "queryPublishersFilter", OPTIONAL, "TrackedEntityQueryFilter",
+				false, 0, false),
+			InputParameter.newBindParameter("", "pageSort", "queryPublishersPageSort", OPTIONAL, "PageableInput", false,
+				0, false));
 	}
 
 	/**
@@ -3195,6 +4029,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			id, // A value for publisherById's id input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -3209,7 +4044,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "publisherById", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class)
 	public Publisher publisherByIdWithBindValues(String queryResponseDef, Long id, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publisherByIdWithBindValues(queryResponseDef, id, parameters));
 	}
@@ -3241,6 +4077,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -3255,7 +4092,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "publisherById", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class)
 	public Publisher publisherById(String queryResponseDef, Long id, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publisherById(queryResponseDef, id, paramsAndValues));
 	}
@@ -3290,6 +4128,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 																							// input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -3307,6 +4146,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "publisherById", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class)
 	public Publisher publisherByIdWithBindValues(ObjectResponse objectResponse, Long id, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.publisherByIdWithBindValues(objectResponse, id, parameters));
 	}
@@ -3342,6 +4182,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -3362,6 +4203,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "publisherById", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class)
 	public Publisher publisherById(ObjectResponse objectResponse, Long id, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(this.queryReactiveExecutor.publisherById(objectResponse, id, paramsAndValues));
 	}
 
@@ -3386,9 +4228,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	public GraphQLRequest getPublisherByIdGraphQLRequest(String partialRequest)
 		throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "publisherById" //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "id", "queryPublisherByIdId", InputParameterType.MANDATORY, "ID", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-				true, 0, false));
+
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "publisherById",
+			InputParameter.newBindParameter("", "id", "queryPublisherByIdId", MANDATORY, "ID", true, 0, false));
 	}
 
 	/**
@@ -3421,6 +4263,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			pageSort, // A value for quotations's pageSort input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -3436,9 +4279,10 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "quotations", graphQLTypeSimpleName = "QuotationPage",
 		javaClass = QuotationPage.class)
-	public QuotationPage quotationsWithBindValues(String queryResponseDef, TopicalEntityQueryFilter filter,
+	public QuotationPage quotationsWithBindValues(String queryResponseDef, LinkableEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.quotationsWithBindValues(queryResponseDef, filter, pageSort, parameters));
 	}
@@ -3471,6 +4315,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -3486,8 +4331,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "quotations", graphQLTypeSimpleName = "QuotationPage",
 		javaClass = QuotationPage.class)
-	public QuotationPage quotations(String queryResponseDef, TopicalEntityQueryFilter filter, PageableInput pageSort,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	public QuotationPage quotations(String queryResponseDef, LinkableEntityQueryFilter filter, PageableInput pageSort,
+		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.quotations(queryResponseDef, filter, pageSort, paramsAndValues));
 	}
@@ -3524,6 +4370,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			pageSort, // A value for quotations's pageSort input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -3541,8 +4388,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "quotations", graphQLTypeSimpleName = "QuotationPage",
 		javaClass = QuotationPage.class)
-	public QuotationPage quotationsWithBindValues(ObjectResponse objectResponse, TopicalEntityQueryFilter filter,
+	public QuotationPage quotationsWithBindValues(ObjectResponse objectResponse, LinkableEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.quotationsWithBindValues(objectResponse, filter, pageSort, parameters));
 	}
@@ -3579,6 +4427,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -3599,8 +4448,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "quotations", graphQLTypeSimpleName = "QuotationPage",
 		javaClass = QuotationPage.class)
-	public QuotationPage quotations(ObjectResponse objectResponse, TopicalEntityQueryFilter filter,
+	public QuotationPage quotations(ObjectResponse objectResponse, LinkableEntityQueryFilter filter,
 		PageableInput pageSort, Object... paramsAndValues) throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.quotations(objectResponse, filter, pageSort, paramsAndValues));
 	}
@@ -3625,12 +4475,11 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestPreparationException
 	 */
 	public GraphQLRequest getQuotationsGraphQLRequest(String partialRequest) throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "quotations" //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "filter", "queryQuotationsFilter", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"TopicalEntityQueryFilter", false, 0, false) //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "pageSort", "queryQuotationsPageSort", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"PageableInput", false, 0, false) //$NON-NLS-1$
-		);
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "quotations",
+			InputParameter.newBindParameter("", "filter", "queryQuotationsFilter", OPTIONAL,
+				"LinkableEntityQueryFilter", false, 0, false),
+			InputParameter.newBindParameter("", "pageSort", "queryQuotationsPageSort", OPTIONAL, "PageableInput", false,
+				0, false));
 	}
 
 	/**
@@ -3662,6 +4511,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			id, // A value for quotationById's id input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -3676,7 +4526,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "quotationById", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class)
 	public Quotation quotationByIdWithBindValues(String queryResponseDef, Long id, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.quotationByIdWithBindValues(queryResponseDef, id, parameters));
 	}
@@ -3708,6 +4559,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -3722,7 +4574,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "quotationById", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class)
 	public Quotation quotationById(String queryResponseDef, Long id, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.quotationById(queryResponseDef, id, paramsAndValues));
 	}
@@ -3757,6 +4610,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 																							// input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -3774,6 +4628,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "quotationById", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class)
 	public Quotation quotationByIdWithBindValues(ObjectResponse objectResponse, Long id, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.quotationByIdWithBindValues(objectResponse, id, parameters));
 	}
@@ -3809,6 +4664,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -3829,6 +4685,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "quotationById", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class)
 	public Quotation quotationById(ObjectResponse objectResponse, Long id, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(this.queryReactiveExecutor.quotationById(objectResponse, id, paramsAndValues));
 	}
 
@@ -3853,9 +4710,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	public GraphQLRequest getQuotationByIdGraphQLRequest(String partialRequest)
 		throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "quotationById" //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "id", "queryQuotationByIdId", InputParameterType.MANDATORY, "ID", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-				true, 0, false));
+
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "quotationById",
+			InputParameter.newBindParameter("", "id", "queryQuotationByIdId", MANDATORY, "ID", true, 0, false));
 	}
 
 	/**
@@ -3888,6 +4745,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			pageSort, // A value for topics's pageSort input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -3903,7 +4761,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "topics", graphQLTypeSimpleName = "TopicPage", javaClass = TopicPage.class)
 	public TopicPage topicsWithBindValues(String queryResponseDef, TopicQueryFilter filter, PageableInput pageSort,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.topicsWithBindValues(queryResponseDef, filter, pageSort, parameters));
 	}
@@ -3936,6 +4795,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -3951,7 +4811,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "topics", graphQLTypeSimpleName = "TopicPage", javaClass = TopicPage.class)
 	public TopicPage topics(String queryResponseDef, TopicQueryFilter filter, PageableInput pageSort,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.topics(queryResponseDef, filter, pageSort, paramsAndValues));
 	}
@@ -3986,6 +4847,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			pageSort, // A value for topics's pageSort input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -4004,6 +4866,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "topics", graphQLTypeSimpleName = "TopicPage", javaClass = TopicPage.class)
 	public TopicPage topicsWithBindValues(ObjectResponse objectResponse, TopicQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.topicsWithBindValues(objectResponse, filter, pageSort, parameters));
 	}
@@ -4040,6 +4903,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -4061,6 +4925,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "topics", graphQLTypeSimpleName = "TopicPage", javaClass = TopicPage.class)
 	public TopicPage topics(ObjectResponse objectResponse, TopicQueryFilter filter, PageableInput pageSort,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.topics(objectResponse, filter, pageSort, paramsAndValues));
 	}
@@ -4085,12 +4950,11 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestPreparationException
 	 */
 	public GraphQLRequest getTopicsGraphQLRequest(String partialRequest) throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "topics" //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "filter", "queryTopicsFilter", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"TopicQueryFilter", false, 0, false) //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "pageSort", "queryTopicsPageSort", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"PageableInput", false, 0, false) //$NON-NLS-1$
-		);
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "topics",
+			InputParameter.newBindParameter("", "filter", "queryTopicsFilter", OPTIONAL, "TopicQueryFilter", false, 0,
+				false),
+			InputParameter.newBindParameter("", "pageSort", "queryTopicsPageSort", OPTIONAL, "PageableInput", false, 0,
+				false));
 	}
 
 	/**
@@ -4122,6 +4986,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			id, // A value for topicById's id input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -4136,7 +5001,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "topicById", graphQLTypeSimpleName = "Topic", javaClass = Topic.class)
 	public Topic topicByIdWithBindValues(String queryResponseDef, Long id, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.topicByIdWithBindValues(queryResponseDef, id, parameters));
 	}
@@ -4168,6 +5034,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -4182,7 +5049,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "topicById", graphQLTypeSimpleName = "Topic", javaClass = Topic.class)
 	public Topic topicById(String queryResponseDef, Long id, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(this.queryReactiveExecutor.topicById(queryResponseDef, id, paramsAndValues));
 	}
 
@@ -4215,6 +5083,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 																				// input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -4232,6 +5101,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "topicById", graphQLTypeSimpleName = "Topic", javaClass = Topic.class)
 	public Topic topicByIdWithBindValues(ObjectResponse objectResponse, Long id, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.topicByIdWithBindValues(objectResponse, id, parameters));
 	}
@@ -4266,6 +5136,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -4286,6 +5157,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "topicById", graphQLTypeSimpleName = "Topic", javaClass = Topic.class)
 	public Topic topicById(ObjectResponse objectResponse, Long id, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(this.queryReactiveExecutor.topicById(objectResponse, id, paramsAndValues));
 	}
 
@@ -4309,725 +5181,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestPreparationException
 	 */
 	public GraphQLRequest getTopicByIdGraphQLRequest(String partialRequest) throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "topicById" //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "id", "queryTopicByIdId", InputParameterType.MANDATORY, "ID", true, 0, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-				false));
-	}
-
-	/**
-	 * This method executes a partial query on the topicRefs query against the GraphQL server. That is, the query is one
-	 * of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part of the query
-	 * that follows the field name.<br/>
-	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
-	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
-	 * describes the format of the response of the server response, that is the expected fields of the
-	 * <code>topicRefs</code> of the Query query type. It can be something like "{ id name }", or "" for a scalar.
-	 * Please take a look at the StarWars, Forum and other samples for more complex queries.<br/>
-	 * Here is a sample on how to use it:
-	 * 
-	 * <PRE>
-	 * &#64;Component // This class must be a spring component
-	 * public class MyClass {
-	 * 
-	 * 	@Autowired
-	 * 	QueryExecutor executor;
-	 * 
-	 * 	void myMethod() {
-	 * 		Map<String, Object> params = new HashMap<>();
-	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
-	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
-	 * 
-	 * 		TopicRefPage topicRefs = executor.topicRefsWithBindValues(
-	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
-	 * 			filter, // A value for topicRefs's filter input parameter
-	 * 			pageSort, // A value for topicRefs's pageSort input parameter
-	 * 			params);
-	 * 	}
-	 * }
-	 * </PRE>
-	 * 
-	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
-	 * @param filter Filters results.
-	 * @param pageSort Sorts and paginates results
-	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
-	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
-	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
-	 * building the {@link ObjectResponse}
-	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
-	 * error, an error from the GraphQL server or if the server response can't be parsed
-	 */
-	@GraphQLNonScalar(fieldName = "topicRefs", graphQLTypeSimpleName = "TopicRefPage", javaClass = TopicRefPage.class)
-	public TopicRefPage topicRefsWithBindValues(String queryResponseDef, TopicRefQueryFilter filter,
-		PageableInput pageSort, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
-		return getValueFromMonoOptional(
-			this.queryReactiveExecutor.topicRefsWithBindValues(queryResponseDef, filter, pageSort, parameters));
-	}
-
-	/**
-	 * This method executes a partial query on the topicRefs query against the GraphQL server. That is, the query is one
-	 * of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part of the query
-	 * that follows the field name.<br/>
-	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
-	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
-	 * describes the format of the response of the server response, that is the expected fields of the
-	 * <code>topicRefs</code> of the Query query type. It can be something like "{ id name }", or "" for a scalar.
-	 * Please take a look at the StarWars, Forum and other samples for more complex queries.<br/>
-	 * Here is a sample on how to use it:
-	 * 
-	 * <PRE>
-	 * &#64;Component // This class must be a spring component
-	 * public class MyClass {
-	 * 
-	 * 	@Autowired
-	 * 	QueryExecutor executor;
-	 * 
-	 * 	void myMethod() {
-	 * 		TopicRefPage topicRefs = executor.topicRefs(
-	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
-	 * 			filter, // A value for topicRefs's filter input parameter
-	 * 			pageSort, // A value for topicRefs's pageSort input parameter
-	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
-	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
-	 * 		);
-	 * 	}
-	 * }
-	 * </PRE>
-	 * 
-	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
-	 * @param filter Filters results.
-	 * @param pageSort Sorts and paginates results
-	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
-	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
-	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
-	 * building the {@link ObjectResponse}
-	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
-	 * error, an error from the GraphQL server or if the server response can't be parsed
-	 */
-	@GraphQLNonScalar(fieldName = "topicRefs", graphQLTypeSimpleName = "TopicRefPage", javaClass = TopicRefPage.class)
-	public TopicRefPage topicRefs(String queryResponseDef, TopicRefQueryFilter filter, PageableInput pageSort,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
-		return getValueFromMonoOptional(
-			this.queryReactiveExecutor.topicRefs(queryResponseDef, filter, pageSort, paramsAndValues));
-	}
-
-	/**
-	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
-	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
-	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
-	 * <I>parameters</I> argument to pass the list of values.<br/>
-	 * Here is a sample:
-	 * 
-	 * <PRE>
-	 * &#64;Component // This class must be a spring component
-	 * public class MyClass {
-	 * 
-	 * 	&#64;Autowired
-	 * 	QueryExecutor executor;
-	 * 
-	 * 	GraphQLRequest preparedRequest;
-	 * 
-	 * 	@PostConstruct
-	 * 	public void setup() {
-	 * 		// Preparation of the query, so that it is prepared once then executed several times
-	 * 		preparedRequest = executor.getTopicRefsGraphQLRequest(
-	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
-	 * 	}
-	 * 
-	 * 	void myMethod() {
-	 * 		TopicRefPage topicRefs = executor.topicRefsWithBindValues(preparedRequest, filter, // A value for
-	 * 																							// topicRefs's filter
-	 * 																							// input parameter
-	 * 			pageSort, // A value for topicRefs's pageSort input parameter
-	 * 			params);
-	 * 	}
-	 * }
-	 * </PRE>
-	 * 
-	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
-	 * to return<br/>
-	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
-	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
-	 * {@link getTopicRefsGraphQLRequest(String)} method.
-	 * @param filter Filters results.
-	 * @param pageSort Sorts and paginates results
-	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
-	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
-	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
-	 * error, an error from the GraphQL server or if the server response can't be parsed
-	 */
-	@GraphQLNonScalar(fieldName = "topicRefs", graphQLTypeSimpleName = "TopicRefPage", javaClass = TopicRefPage.class)
-	public TopicRefPage topicRefsWithBindValues(ObjectResponse objectResponse, TopicRefQueryFilter filter,
-		PageableInput pageSort, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
-		return getValueFromMonoOptional(
-			this.queryReactiveExecutor.topicRefsWithBindValues(objectResponse, filter, pageSort, parameters));
-	}
-
-	/**
-	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
-	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
-	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
-	 * <I>parameters</I> argument to pass the list of values.<br/>
-	 * Here is a sample:
-	 * 
-	 * <PRE>
-	 * &#64;Component // This class must be a spring component
-	 * public class MyClass {
-	 * 
-	 * 	&#64;Autowired
-	 * 	QueryExecutor executor;
-	 * 
-	 * 	GraphQLRequest preparedRequest;
-	 * 
-	 * 	@PostConstruct
-	 * 	public void setup() {
-	 * 		// Preparation of the query, so that it is prepared once then executed several times
-	 * 		preparedRequest = executor.getTopicRefsGraphQLRequest(
-	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
-	 * 	}
-	 * 
-	 * 	void myMethod() {
-	 * 		TopicRefPage topicRefs = executor.topicRefs(preparedRequest, filter, // A value for topicRefs's filter
-	 * 																				// input parameter
-	 * 			pageSort, // A value for topicRefs's pageSort input parameter
-	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
-	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
-	 * 		);
-	 * 	}
-	 * }
-	 * </PRE>
-	 * 
-	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
-	 * to return<br/>
-	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
-	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
-	 * {@link getTopicRefsGraphQLRequest(String)} method.
-	 * @param filter Filters results.
-	 * @param pageSort Sorts and paginates results
-	 * @param paramsAndValues This parameter contains all the name and values for the Bind Variables defined in the
-	 * objectResponse parameter, that must be sent to the server. Optional parameter may not have a value. They will be
-	 * ignored and not sent to the server. Mandatory parameter must be provided in this argument.<br/>
-	 * This parameter contains an even number of parameters: it must be a series of name and values : (paramName1,
-	 * paramValue1, paramName2, paramValue2...)
-	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
-	 * error, an error from the GraphQL server or if the server response can't be parsed
-	 */
-	@GraphQLNonScalar(fieldName = "topicRefs", graphQLTypeSimpleName = "TopicRefPage", javaClass = TopicRefPage.class)
-	public TopicRefPage topicRefs(ObjectResponse objectResponse, TopicRefQueryFilter filter, PageableInput pageSort,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException {
-		return getValueFromMonoOptional(
-			this.queryReactiveExecutor.topicRefs(objectResponse, filter, pageSort, paramsAndValues));
-	}
-
-	/**
-	 * Get the {@link Builder} for the TopicRefPage, as expected by the topicRefs query.
-	 * @return
-	 * @throws GraphQLRequestPreparationException
-	 */
-	public Builder getTopicRefsResponseBuilder() throws GraphQLRequestPreparationException {
-		return this.queryReactiveExecutor.getTopicRefsResponseBuilder();
-	}
-
-	/**
-	 * Get the {@link GraphQLRequest} for the topicRefs EXECUTOR, created with the given Partial request.
-	 * @param partialRequest The Partial GraphQL request, as explained in the
-	 * <A HREF="https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin client
-	 * documentation</A>
-	 * @return
-	 * @throws GraphQLRequestPreparationException
-	 */
-	public GraphQLRequest getTopicRefsGraphQLRequest(String partialRequest) throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "topicRefs" //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "filter", "queryTopicRefsFilter", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"TopicRefQueryFilter", false, 0, false) //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "pageSort", "queryTopicRefsPageSort", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"PageableInput", false, 0, false) //$NON-NLS-1$
-		);
-	}
-
-	/**
-	 * Returns a topic reference given its identifier.<br/>
-	 * This method executes a partial query on the topicRefById query against the GraphQL server. That is, the query is
-	 * one of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part of the
-	 * query that follows the field name.<br/>
-	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
-	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
-	 * describes the format of the response of the server response, that is the expected fields of the
-	 * <code>topicRefById</code> of the Query query type. It can be something like "{ id name }", or "" for a scalar.
-	 * Please take a look at the StarWars, Forum and other samples for more complex queries.<br/>
-	 * Here is a sample on how to use it:
-	 * 
-	 * <PRE>
-	 * &#64;Component // This class must be a spring component
-	 * public class MyClass {
-	 * 
-	 * 	@Autowired
-	 * 	QueryExecutor executor;
-	 * 
-	 * 	void myMethod() {
-	 * 		Map<String, Object> params = new HashMap<>();
-	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
-	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
-	 * 
-	 * 		TopicRef topicRefById = executor.topicRefByIdWithBindValues(
-	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
-	 * 			id, // A value for topicRefById's id input parameter
-	 * 			params);
-	 * 	}
-	 * }
-	 * </PRE>
-	 * 
-	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
-	 * @param id Parameter for the topicRefById field of Query, as defined in the GraphQL schema
-	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
-	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
-	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
-	 * building the {@link ObjectResponse}
-	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
-	 * error, an error from the GraphQL server or if the server response can't be parsed
-	 */
-	@GraphQLNonScalar(fieldName = "topicRefById", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
-	public TopicRef topicRefByIdWithBindValues(String queryResponseDef, Long id, EntityKind entityKind,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
-		return getValueFromMonoOptional(
-			this.queryReactiveExecutor.topicRefByIdWithBindValues(queryResponseDef, id, entityKind, parameters));
-	}
-
-	/**
-	 * Returns a topic reference given its identifier.<br/>
-	 * This method executes a partial query on the topicRefById query against the GraphQL server. That is, the query is
-	 * one of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part of the
-	 * query that follows the field name.<br/>
-	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
-	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
-	 * describes the format of the response of the server response, that is the expected fields of the
-	 * <code>topicRefById</code> of the Query query type. It can be something like "{ id name }", or "" for a scalar.
-	 * Please take a look at the StarWars, Forum and other samples for more complex queries.<br/>
-	 * Here is a sample on how to use it:
-	 * 
-	 * <PRE>
-	 * &#64;Component // This class must be a spring component
-	 * public class MyClass {
-	 * 
-	 * 	@Autowired
-	 * 	QueryExecutor executor;
-	 * 
-	 * 	void myMethod() {
-	 * 		TopicRef topicRefById = executor.topicRefById(
-	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
-	 * 			id, // A value for topicRefById's id input parameter
-	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
-	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
-	 * 		);
-	 * 	}
-	 * }
-	 * </PRE>
-	 * 
-	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
-	 * @param id Parameter for the topicRefById field of Query, as defined in the GraphQL schema
-	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
-	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
-	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
-	 * building the {@link ObjectResponse}
-	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
-	 * error, an error from the GraphQL server or if the server response can't be parsed
-	 */
-	@GraphQLNonScalar(fieldName = "topicRefById", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
-	public TopicRef topicRefById(String queryResponseDef, Long id, EntityKind entityKind, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
-		return getValueFromMonoOptional(
-			this.queryReactiveExecutor.topicRefById(queryResponseDef, id, entityKind, paramsAndValues));
-	}
-
-	/**
-	 * Returns a topic reference given its identifier.<br/>
-	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
-	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
-	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
-	 * <I>parameters</I> argument to pass the list of values.<br/>
-	 * Here is a sample:
-	 * 
-	 * <PRE>
-	 * &#64;Component // This class must be a spring component
-	 * public class MyClass {
-	 * 
-	 * 	&#64;Autowired
-	 * 	QueryExecutor executor;
-	 * 
-	 * 	GraphQLRequest preparedRequest;
-	 * 
-	 * 	@PostConstruct
-	 * 	public void setup() {
-	 * 		// Preparation of the query, so that it is prepared once then executed several times
-	 * 		preparedRequest = executor.getTopicRefByIdGraphQLRequest(
-	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
-	 * 	}
-	 * 
-	 * 	void myMethod() {
-	 * 		TopicRef topicRefById = executor.topicRefByIdWithBindValues(preparedRequest, id, // A value for
-	 * 																							// topicRefById's id
-	 * 																							// input parameter
-	 * 			params);
-	 * 	}
-	 * }
-	 * </PRE>
-	 * 
-	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
-	 * to return<br/>
-	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
-	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
-	 * {@link getTopicRefByIdGraphQLRequest(String)} method.
-	 * @param id Parameter for the topicRefById field of Query, as defined in the GraphQL schema
-	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
-	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
-	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
-	 * error, an error from the GraphQL server or if the server response can't be parsed
-	 */
-	@GraphQLNonScalar(fieldName = "topicRefById", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
-	public TopicRef topicRefByIdWithBindValues(ObjectResponse objectResponse, Long id, EntityKind entityKind,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
-		return getValueFromMonoOptional(
-			this.queryReactiveExecutor.topicRefByIdWithBindValues(objectResponse, id, entityKind, parameters));
-	}
-
-	/**
-	 * Returns a topic reference given its identifier.<br/>
-	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
-	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
-	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
-	 * <I>parameters</I> argument to pass the list of values.<br/>
-	 * Here is a sample:
-	 * 
-	 * <PRE>
-	 * &#64;Component // This class must be a spring component
-	 * public class MyClass {
-	 * 
-	 * 	&#64;Autowired
-	 * 	QueryExecutor executor;
-	 * 
-	 * 	GraphQLRequest preparedRequest;
-	 * 
-	 * 	@PostConstruct
-	 * 	public void setup() {
-	 * 		// Preparation of the query, so that it is prepared once then executed several times
-	 * 		preparedRequest = executor.getTopicRefByIdGraphQLRequest(
-	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
-	 * 	}
-	 * 
-	 * 	void myMethod() {
-	 * 		TopicRef topicRefById = executor.topicRefById(preparedRequest, id, // A value for topicRefById's id input
-	 * 																			// parameter
-	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
-	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
-	 * 		);
-	 * 	}
-	 * }
-	 * </PRE>
-	 * 
-	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
-	 * to return<br/>
-	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
-	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
-	 * {@link getTopicRefByIdGraphQLRequest(String)} method.
-	 * @param id Parameter for the topicRefById field of Query, as defined in the GraphQL schema
-	 * @param paramsAndValues This parameter contains all the name and values for the Bind Variables defined in the
-	 * objectResponse parameter, that must be sent to the server. Optional parameter may not have a value. They will be
-	 * ignored and not sent to the server. Mandatory parameter must be provided in this argument.<br/>
-	 * This parameter contains an even number of parameters: it must be a series of name and values : (paramName1,
-	 * paramValue1, paramName2, paramValue2...)
-	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
-	 * error, an error from the GraphQL server or if the server response can't be parsed
-	 */
-	@GraphQLNonScalar(fieldName = "topicRefById", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
-	public TopicRef topicRefById(ObjectResponse objectResponse, Long id, EntityKind entityKind,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException {
-		return getValueFromMonoOptional(
-			this.queryReactiveExecutor.topicRefById(objectResponse, id, entityKind, paramsAndValues));
-	}
-
-	/**
-	 * Returns a topic reference given its identifier.<br/>
-	 * Get the {@link Builder} for the TopicRef, as expected by the topicRefById query.
-	 * @return
-	 * @throws GraphQLRequestPreparationException
-	 */
-	public Builder getTopicRefByIdResponseBuilder() throws GraphQLRequestPreparationException {
-		return this.queryReactiveExecutor.getTopicRefByIdResponseBuilder();
-	}
-
-	/**
-	 * Returns a topic reference given its identifier.<br/>
-	 * Get the {@link GraphQLRequest} for the topicRefById EXECUTOR, created with the given Partial request.
-	 * @param partialRequest The Partial GraphQL request, as explained in the
-	 * <A HREF="https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin client
-	 * documentation</A>
-	 * @return
-	 * @throws GraphQLRequestPreparationException
-	 */
-	public GraphQLRequest getTopicRefByIdGraphQLRequest(String partialRequest)
-		throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "topicRefById", //$NON-NLS-1$
-			InputParameter.newBindParameter("", "id", "queryTopicRefByIdId", InputParameterType.MANDATORY, "ID", true, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-				0, false),
-			InputParameter.newBindParameter("", "entityKind", "queryTopicRefByIdEntityKind", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				InputParameterType.MANDATORY, "EntityKind", true, 0, false) //$NON-NLS-1$
-		);
-	}
-
-	/**
-	 * Returns a topic reference given its topic and entity identifiers.<br/>
-	 * This method executes a partial query on the topicRefByEntityId query against the GraphQL server. That is, the
-	 * query is one of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part
-	 * of the query that follows the field name.<br/>
-	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
-	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
-	 * describes the format of the response of the server response, that is the expected fields of the
-	 * <code>topicRefByEntityId</code> of the Query query type. It can be something like "{ id name }", or "" for a
-	 * scalar. Please take a look at the StarWars, Forum and other samples for more complex queries.<br/>
-	 * Here is a sample on how to use it:
-	 * 
-	 * <PRE>
-	 * &#64;Component // This class must be a spring component
-	 * public class MyClass {
-	 * 
-	 * 	@Autowired
-	 * 	QueryExecutor executor;
-	 * 
-	 * 	void myMethod() {
-	 * 		Map<String, Object> params = new HashMap<>();
-	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
-	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
-	 * 
-	 * 		TopicRef topicRefByEntityId = executor.topicRefByEntityIdWithBindValues(
-	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
-	 * 			topicId, // A value for topicRefByEntityId's topicId input parameter
-	 * 			entityId, // A value for topicRefByEntityId's entityId input parameter
-	 * 			entityKind, // A value for topicRefByEntityId's entityKind input parameter
-	 * 			params);
-	 * 	}
-	 * }
-	 * </PRE>
-	 * 
-	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
-	 * @param topicId Parameter for the topicRefByEntityId field of Query, as defined in the GraphQL schema
-	 * @param entityId Parameter for the topicRefByEntityId field of Query, as defined in the GraphQL schema
-	 * @param entityKind Parameter for the topicRefByEntityId field of Query, as defined in the GraphQL schema
-	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
-	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
-	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
-	 * building the {@link ObjectResponse}
-	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
-	 * error, an error from the GraphQL server or if the server response can't be parsed
-	 */
-	@GraphQLNonScalar(fieldName = "topicRefByEntityId", graphQLTypeSimpleName = "TopicRef",
-		javaClass = io.github.demonfiddler.ee.client.TopicRef.class)
-	public TopicRef topicRefByEntityIdWithBindValues(String queryResponseDef, Long topicId, Long entityId,
-		EntityKind entityKind, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
-		return getValueFromMonoOptional(this.queryReactiveExecutor.topicRefByEntityIdWithBindValues(queryResponseDef,
-			topicId, entityId, entityKind, parameters));
-	}
-
-	/**
-	 * Returns a topic reference given its topic and entity identifiers.<br/>
-	 * This method executes a partial query on the topicRefByEntityId query against the GraphQL server. That is, the
-	 * query is one of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part
-	 * of the query that follows the field name.<br/>
-	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
-	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
-	 * describes the format of the response of the server response, that is the expected fields of the
-	 * <code>topicRefByEntityId</code> of the Query query type. It can be something like "{ id name }", or "" for a
-	 * scalar. Please take a look at the StarWars, Forum and other samples for more complex queries.<br/>
-	 * Here is a sample on how to use it:
-	 * 
-	 * <PRE>
-	 * &#64;Component // This class must be a spring component
-	 * public class MyClass {
-	 * 
-	 * 	@Autowired
-	 * 	QueryExecutor executor;
-	 * 
-	 * 	void myMethod() {
-	 * 		TopicRef topicRefByEntityId = executor.topicRefByEntityId(
-	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
-	 * 			topicId, // A value for topicRefByEntityId's topicId input parameter
-	 * 			entityId, // A value for topicRefByEntityId's entityId input parameter
-	 * 			entityKind, // A value for topicRefByEntityId's entityKind input parameter
-	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
-	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
-	 * 		);
-	 * 	}
-	 * }
-	 * </PRE>
-	 * 
-	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
-	 * @param topicId Parameter for the topicRefByEntityId field of Query, as defined in the GraphQL schema
-	 * @param entityId Parameter for the topicRefByEntityId field of Query, as defined in the GraphQL schema
-	 * @param entityKind Parameter for the topicRefByEntityId field of Query, as defined in the GraphQL schema
-	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
-	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
-	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
-	 * building the {@link ObjectResponse}
-	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
-	 * error, an error from the GraphQL server or if the server response can't be parsed
-	 */
-	@GraphQLNonScalar(fieldName = "topicRefByEntityId", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
-	public TopicRef topicRefByEntityId(String queryResponseDef, Long topicId, Long entityId, EntityKind entityKind,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
-		return getValueFromMonoOptional(this.queryReactiveExecutor.topicRefByEntityId(queryResponseDef, topicId,
-			entityId, entityKind, paramsAndValues));
-	}
-
-	/**
-	 * Returns a topic reference given its topic and entity identifiers.<br/>
-	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
-	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
-	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
-	 * <I>parameters</I> argument to pass the list of values.<br/>
-	 * Here is a sample:
-	 * 
-	 * <PRE>
-	 * &#64;Component // This class must be a spring component
-	 * public class MyClass {
-	 * 
-	 * 	&#64;Autowired
-	 * 	QueryExecutor executor;
-	 * 
-	 * 	GraphQLRequest preparedRequest;
-	 * 
-	 * 	@PostConstruct
-	 * 	public void setup() {
-	 * 		// Preparation of the query, so that it is prepared once then executed several times
-	 * 		preparedRequest = executor.getTopicRefByEntityIdGraphQLRequest(
-	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
-	 * 	}
-	 * 
-	 * 	void myMethod() {
-	 * 		TopicRef topicRefByEntityId = executor.topicRefByEntityIdWithBindValues(preparedRequest, topicId, // A
-	 * 																											// value
-	 * 																											// for
-	 * 																											// topicRefByEntityId's
-	 * 																											// topicId
-	 * 																											// input
-	 * 																											// parameter
-	 * 			entityId, // A value for topicRefByEntityId's entityId input parameter
-	 * 			entityKind, // A value for topicRefByEntityId's entityKind input parameter
-	 * 			params);
-	 * 	}
-	 * }
-	 * </PRE>
-	 * 
-	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
-	 * to return<br/>
-	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
-	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
-	 * {@link getTopicRefByEntityIdGraphQLRequest(String)} method.
-	 * @param topicId Parameter for the topicRefByEntityId field of Query, as defined in the GraphQL schema
-	 * @param entityId Parameter for the topicRefByEntityId field of Query, as defined in the GraphQL schema
-	 * @param entityKind Parameter for the topicRefByEntityId field of Query, as defined in the GraphQL schema
-	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
-	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
-	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
-	 * error, an error from the GraphQL server or if the server response can't be parsed
-	 */
-	@GraphQLNonScalar(fieldName = "topicRefByEntityId", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
-	public TopicRef topicRefByEntityIdWithBindValues(ObjectResponse objectResponse, Long topicId, Long entityId,
-		EntityKind entityKind, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
-		return getValueFromMonoOptional(this.queryReactiveExecutor.topicRefByEntityIdWithBindValues(objectResponse,
-			topicId, entityId, entityKind, parameters));
-	}
-
-	/**
-	 * Returns a topic reference given its topic and entity identifiers.<br/>
-	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
-	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
-	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
-	 * <I>parameters</I> argument to pass the list of values.<br/>
-	 * Here is a sample:
-	 * 
-	 * <PRE>
-	 * &#64;Component // This class must be a spring component
-	 * public class MyClass {
-	 * 
-	 * 	&#64;Autowired
-	 * 	QueryExecutor executor;
-	 * 
-	 * 	GraphQLRequest preparedRequest;
-	 * 
-	 * 	@PostConstruct
-	 * 	public void setup() {
-	 * 		// Preparation of the query, so that it is prepared once then executed several times
-	 * 		preparedRequest = executor.getTopicRefByEntityIdGraphQLRequest(
-	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
-	 * 	}
-	 * 
-	 * 	void myMethod() {
-	 * 		TopicRef topicRefByEntityId = executor.topicRefByEntityId(preparedRequest, topicId, // A value for
-	 * 																							// topicRefByEntityId's
-	 * 																							// topicId input
-	 * 																							// parameter
-	 * 			entityId, // A value for topicRefByEntityId's entityId input parameter
-	 * 			entityKind, // A value for topicRefByEntityId's entityKind input parameter
-	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
-	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
-	 * 		);
-	 * 	}
-	 * }
-	 * </PRE>
-	 * 
-	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
-	 * to return<br/>
-	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
-	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
-	 * {@link getTopicRefByEntityIdGraphQLRequest(String)} method.
-	 * @param topicId Parameter for the topicRefByEntityId field of Query, as defined in the GraphQL schema
-	 * @param entityId Parameter for the topicRefByEntityId field of Query, as defined in the GraphQL schema
-	 * @param entityKind Parameter for the topicRefByEntityId field of Query, as defined in the GraphQL schema
-	 * @param paramsAndValues This parameter contains all the name and values for the Bind Variables defined in the
-	 * objectResponse parameter, that must be sent to the server. Optional parameter may not have a value. They will be
-	 * ignored and not sent to the server. Mandatory parameter must be provided in this argument.<br/>
-	 * This parameter contains an even number of parameters: it must be a series of name and values : (paramName1,
-	 * paramValue1, paramName2, paramValue2...)
-	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
-	 * error, an error from the GraphQL server or if the server response can't be parsed
-	 */
-	@GraphQLNonScalar(fieldName = "topicRefByEntityId", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class)
-	public TopicRef topicRefByEntityId(ObjectResponse objectResponse, Long topicId, Long entityId,
-		EntityKind entityKind, Object... paramsAndValues) throws GraphQLRequestExecutionException {
-		return getValueFromMonoOptional(this.queryReactiveExecutor.topicRefByEntityId(objectResponse, topicId, entityId,
-			entityKind, paramsAndValues));
-	}
-
-	/**
-	 * Returns a topic reference given its topic and entity identifiers.<br/>
-	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the TopicRef, as expected by the
-	 * topicRefByEntityId query.
-	 * @return
-	 * @throws GraphQLRequestPreparationException
-	 */
-	public Builder getTopicRefByEntityIdResponseBuilder() throws GraphQLRequestPreparationException {
-		return this.queryReactiveExecutor.getTopicRefByEntityIdResponseBuilder();
-	}
-
-	/**
-	 * Returns a topic reference given its topic and entity identifiers.<br/>
-	 * Get the {@link GraphQLRequest} for the topicRefByEntityId EXECUTOR, created with the given Partial request.
-	 * @param partialRequest The Partial GraphQL request, as explained in the
-	 * <A HREF="https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin client
-	 * documentation</A>
-	 * @return
-	 * @throws GraphQLRequestPreparationException
-	 */
-	public GraphQLRequest getTopicRefByEntityIdGraphQLRequest(String partialRequest)
-		throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "topicRefByEntityId", //$NON-NLS-1$
-			InputParameter.newBindParameter("", "topicId", "queryTopicRefByEntityIdTopicId", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				InputParameterType.MANDATORY, "ID", true, 0, false), //$NON-NLS-1$
-			InputParameter.newBindParameter("", "entityId", "queryTopicRefByEntityIdEntityId", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				InputParameterType.MANDATORY, "ID", true, 0, false), //$NON-NLS-1$
-			InputParameter.newBindParameter("", "entityKind", "queryTopicRefByEntityIdEntityKind", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				InputParameterType.MANDATORY, "EntityKind", true, 0, false) //$NON-NLS-1$
-		);
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "topicById",
+			InputParameter.newBindParameter("", "id", "queryTopicByIdId", MANDATORY, "ID", true, 0, false));
 	}
 
 	/**
@@ -5060,6 +5215,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			pageSort, // A value for users's pageSort input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -5076,7 +5232,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "users", graphQLTypeSimpleName = "UserPage", javaClass = UserPage.class)
 	public UserPage usersWithBindValues(String queryResponseDef, TrackedEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.usersWithBindValues(queryResponseDef, filter, pageSort, parameters));
 	}
@@ -5109,6 +5266,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -5124,7 +5282,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "users", graphQLTypeSimpleName = "UserPage", javaClass = UserPage.class)
 	public UserPage users(String queryResponseDef, TrackedEntityQueryFilter filter, PageableInput pageSort,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.users(queryResponseDef, filter, pageSort, paramsAndValues));
 	}
@@ -5159,6 +5318,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			pageSort, // A value for users's pageSort input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -5177,6 +5337,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "users", graphQLTypeSimpleName = "UserPage", javaClass = UserPage.class)
 	public UserPage usersWithBindValues(ObjectResponse objectResponse, TrackedEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.usersWithBindValues(objectResponse, filter, pageSort, parameters));
 	}
@@ -5212,6 +5373,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -5233,6 +5395,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "users", graphQLTypeSimpleName = "UserPage", javaClass = UserPage.class)
 	public UserPage users(ObjectResponse objectResponse, TrackedEntityQueryFilter filter, PageableInput pageSort,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.users(objectResponse, filter, pageSort, paramsAndValues));
 	}
@@ -5257,12 +5420,11 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestPreparationException
 	 */
 	public GraphQLRequest getUsersGraphQLRequest(String partialRequest) throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "users", //$NON-NLS-1$
-			InputParameter.newBindParameter("", "filter", "queryUsersFilter", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"TrackedEntityQueryFilter", false, 0, false), //$NON-NLS-1$
-			InputParameter.newBindParameter("", "pageSort", "queryUsersPageSort", InputParameterType.OPTIONAL, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"PageableInput", false, 0, false) //$NON-NLS-1$
-		);
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "users",
+			InputParameter.newBindParameter("", "filter", "queryUsersFilter", OPTIONAL, "TrackedEntityQueryFilter",
+				false, 0, false),
+			InputParameter.newBindParameter("", "pageSort", "queryUsersPageSort", OPTIONAL, "PageableInput", false, 0,
+				false));
 	}
 
 	/**
@@ -5294,6 +5456,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			id, // A value for userById's id input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -5308,7 +5471,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "userById", graphQLTypeSimpleName = "User", javaClass = User.class)
 	public User userByIdWithBindValues(String queryResponseDef, Long id, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.userByIdWithBindValues(queryResponseDef, id, parameters));
 	}
@@ -5340,6 +5504,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -5354,7 +5519,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "userById", graphQLTypeSimpleName = "User", javaClass = User.class)
 	public User userById(String queryResponseDef, Long id, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(this.queryReactiveExecutor.userById(queryResponseDef, id, paramsAndValues));
 	}
 
@@ -5387,6 +5553,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 																				// parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -5404,6 +5571,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "userById", graphQLTypeSimpleName = "User", javaClass = User.class)
 	public User userByIdWithBindValues(ObjectResponse objectResponse, Long id, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.userByIdWithBindValues(objectResponse, id, parameters));
 	}
@@ -5438,6 +5606,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -5458,6 +5627,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "userById", graphQLTypeSimpleName = "User", javaClass = User.class)
 	public User userById(ObjectResponse objectResponse, Long id, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(this.queryReactiveExecutor.userById(objectResponse, id, paramsAndValues));
 	}
 
@@ -5481,16 +5651,15 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestPreparationException
 	 */
 	public GraphQLRequest getUserByIdGraphQLRequest(String partialRequest) throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "userById" //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "id", "queryUserByIdId", InputParameterType.MANDATORY, "ID", true, 0, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-				false));
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "userById",
+			InputParameter.newBindParameter("", "id", "queryUserByIdId", MANDATORY, "ID", true, 0, false));
 	}
 
 	/**
 	 * Returns a user given its username.<br/>
-	 * This method executes a partial query on the userByUsername query against the GraphQL server. That is, the query is
-	 * one of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part of the
-	 * query that follows the field name.<br/>
+	 * This method executes a partial query on the userByUsername query against the GraphQL server. That is, the query
+	 * is one of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part of
+	 * the query that follows the field name.<br/>
 	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
 	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
 	 * describes the format of the response of the server response, that is the expected fields of the
@@ -5515,6 +5684,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			username, // A value for userByUsername's username input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -5529,16 +5699,17 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "userByUsername", graphQLTypeSimpleName = "User", javaClass = User.class)
 	public User userByUsernameWithBindValues(String queryResponseDef, String username, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.userByUsernameWithBindValues(queryResponseDef, username, parameters));
 	}
 
 	/**
 	 * Returns a user given its username.<br/>
-	 * This method executes a partial query on the userByUsername query against the GraphQL server. That is, the query is
-	 * one of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part of the
-	 * query that follows the field name.<br/>
+	 * This method executes a partial query on the userByUsername query against the GraphQL server. That is, the query
+	 * is one of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part of
+	 * the query that follows the field name.<br/>
 	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
 	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
 	 * describes the format of the response of the server response, that is the expected fields of the
@@ -5561,6 +5732,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -5575,7 +5747,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "userByUsername", graphQLTypeSimpleName = "User", javaClass = User.class)
 	public User userByUsername(String queryResponseDef, String username, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.userByUsername(queryResponseDef, username, paramsAndValues));
 	}
@@ -5606,10 +5779,11 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 
 	 * 	void myMethod() {
 	 * 		User userByUsername = executor.userByUsernameWithBindValues(preparedRequest, username, // A value for
-	 * 																						// userByUsername's username
-	 * 																						// input parameter
+	 * 			// userByUsername's username
+	 * 			// input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -5625,8 +5799,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "userByUsername", graphQLTypeSimpleName = "User", javaClass = User.class)
-	public User userByUsernameWithBindValues(ObjectResponse objectResponse, String username, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException {
+	public User userByUsernameWithBindValues(ObjectResponse objectResponse, String username,
+		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.userByUsernameWithBindValues(objectResponse, username, parameters));
 	}
@@ -5656,12 +5831,14 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 	}
 	 * 
 	 * 	void myMethod() {
-	 * 		User userByUsername = executor.userByUsername(preparedRequest, username, // A value for userByUsername's username input
-	 * 																		// parameter
+	 * 		User userByUsername = executor.userByUsername(preparedRequest, username, // A value for userByUsername's
+	 * 																					// username input
+	 * 			// parameter
 	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -5682,7 +5859,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "userByUsername", graphQLTypeSimpleName = "User", javaClass = User.class)
 	public User userByUsername(ObjectResponse objectResponse, String username, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
-		return getValueFromMonoOptional(this.queryReactiveExecutor.userByUsername(objectResponse, username, paramsAndValues));
+
+		return getValueFromMonoOptional(
+			this.queryReactiveExecutor.userByUsername(objectResponse, username, paramsAndValues));
 	}
 
 	/**
@@ -5706,10 +5885,10 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	public GraphQLRequest getUserByUsernameGraphQLRequest(String partialRequest)
 		throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "userByUsername" //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "username", "queryUserByUsernameUsername", InputParameterType.MANDATORY, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"String", true, 0, false) //$NON-NLS-1$
-		);
+
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "userByUsername",
+			InputParameter.newBindParameter("", "username", "queryUserByUsernameUsername", MANDATORY, "String", true, 0,
+				false));
 	}
 
 	/**
@@ -5739,6 +5918,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -5752,7 +5932,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "__schema", graphQLTypeSimpleName = "__Schema", javaClass = __Schema.class)
 	public __Schema __schemaWithBindValues(String queryResponseDef, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.__schemaWithBindValues(queryResponseDef, parameters));
 	}
@@ -5782,6 +5963,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -5795,7 +5977,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "__schema", graphQLTypeSimpleName = "__Schema", javaClass = __Schema.class)
 	public __Schema __schema(String queryResponseDef, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(this.queryReactiveExecutor.__schema(queryResponseDef, paramsAndValues));
 	}
 
@@ -5825,6 +6008,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 	void myMethod() {
 	 * 		__Schema __schema = executor.__schemaWithBindValues(preparedRequest, params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -5841,6 +6025,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "__schema", graphQLTypeSimpleName = "__Schema", javaClass = __Schema.class)
 	public __Schema __schemaWithBindValues(ObjectResponse objectResponse, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(this.queryReactiveExecutor.__schemaWithBindValues(objectResponse, parameters));
 	}
 
@@ -5874,6 +6059,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -5893,6 +6079,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "__schema", graphQLTypeSimpleName = "__Schema", javaClass = __Schema.class)
 	public __Schema __schema(ObjectResponse objectResponse, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(this.queryReactiveExecutor.__schema(objectResponse, paramsAndValues));
 	}
 
@@ -5914,8 +6101,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestPreparationException
 	 */
 	public GraphQLRequest get__schemaGraphQLRequest(String partialRequest) throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "__schema" //$NON-NLS-1$
-		);
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "__schema");
 	}
 
 	/**
@@ -5946,6 +6132,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			name, // A value for __type's name input parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -5960,7 +6147,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "__type", graphQLTypeSimpleName = "__Type", javaClass = __Type.class)
 	public __Type __typeWithBindValues(String queryResponseDef, String name, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.__typeWithBindValues(queryResponseDef, name, parameters));
 	}
@@ -5991,6 +6179,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -6005,7 +6194,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLNonScalar(fieldName = "__type", graphQLTypeSimpleName = "__Type", javaClass = __Type.class)
 	public __Type __type(String queryResponseDef, String name, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(this.queryReactiveExecutor.__type(queryResponseDef, name, paramsAndValues));
 	}
 
@@ -6037,6 +6227,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 																				// parameter
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -6054,6 +6245,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "__type", graphQLTypeSimpleName = "__Type", javaClass = __Type.class)
 	public __Type __typeWithBindValues(ObjectResponse objectResponse, String name, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.__typeWithBindValues(objectResponse, name, parameters));
 	}
@@ -6087,6 +6279,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -6107,6 +6300,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLNonScalar(fieldName = "__type", graphQLTypeSimpleName = "__Type", javaClass = __Type.class)
 	public __Type __type(ObjectResponse objectResponse, String name, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(this.queryReactiveExecutor.__type(objectResponse, name, paramsAndValues));
 	}
 
@@ -6128,9 +6322,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestPreparationException
 	 */
 	public GraphQLRequest get__typeGraphQLRequest(String partialRequest) throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "__type" //$NON-NLS-1$
-			, InputParameter.newBindParameter("", "name", "query__typeName", InputParameterType.MANDATORY, "String", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-				true, 0, false));
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "__type",
+			InputParameter.newBindParameter("", "name", "query__typeName", MANDATORY, "String", true, 0, false));
 	}
 
 	/**
@@ -6160,6 +6353,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
 	 * 			params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -6173,7 +6367,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLScalar(fieldName = "__typename", graphQLTypeSimpleName = "String", javaClass = String.class)
 	public String __typenameWithBindValues(String queryResponseDef, Map<String, Object> parameters)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.__typenameWithBindValues(queryResponseDef, parameters));
 	}
@@ -6203,6 +6398,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -6216,7 +6412,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 */
 	@GraphQLScalar(fieldName = "__typename", graphQLTypeSimpleName = "String", javaClass = String.class)
 	public String __typename(String queryResponseDef, Object... paramsAndValues)
-		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(this.queryReactiveExecutor.__typename(queryResponseDef, paramsAndValues));
 	}
 
@@ -6246,6 +6443,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 	void myMethod() {
 	 * 		String __typename = executor.__typenameWithBindValues(preparedRequest, params);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -6262,6 +6460,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLScalar(fieldName = "__typename", graphQLTypeSimpleName = "String", javaClass = String.class)
 	public String __typenameWithBindValues(ObjectResponse objectResponse, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.__typenameWithBindValues(objectResponse, parameters));
 	}
@@ -6296,6 +6495,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 	}
+	 * 
 	 * }
 	 * </PRE>
 	 * 
@@ -6315,6 +6515,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@GraphQLScalar(fieldName = "__typename", graphQLTypeSimpleName = "String", javaClass = String.class)
 	public String __typename(ObjectResponse objectResponse, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
+
 		return getValueFromMonoOptional(this.queryReactiveExecutor.__typename(objectResponse, paramsAndValues));
 	}
 
@@ -6336,8 +6537,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * @throws GraphQLRequestPreparationException
 	 */
 	public GraphQLRequest get__typenameGraphQLRequest(String partialRequest) throws GraphQLRequestPreparationException {
-		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "__typename" //$NON-NLS-1$
-		);
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "__typename");
 	}
 
 	/**
@@ -6375,4 +6575,5 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 			throw e.getGraphQLRequestExecutionException();
 		}
 	}
+
 }

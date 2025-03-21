@@ -19,16 +19,11 @@
 
 package io.github.demonfiddler.ee.client;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.graphql_java_generator.annotation.GraphQLIgnore;
 import com.graphql_java_generator.annotation.GraphQLInputType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
-import com.graphql_java_generator.client.GraphQLObjectMapper;
 
 /**
  * Input for creating or updating a user of the system.
@@ -38,19 +33,12 @@ import com.graphql_java_generator.client.GraphQLObjectMapper;
  */
 @GraphQLInputType("UserInput")
 @JsonInclude(Include.NON_NULL)
-public class UserInput {
-
-	/**
-	 * This map contains the deserialized values for the alias, as parsed from the JSON response from the GraphQL
-	 * server. The key is the alias name, the value is the deserialiazed value (taking into account custom scalars,
-	 * lists, ...)
-	 */
-	@GraphQLIgnore
-	Map<String, Object> aliasValues = new HashMap<>();
+public class UserInput extends AbstractBaseEntityInput {
 
 	public UserInput() {
 	}
 
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
 	 * The immutable, unique user identifier (system-assigned).
 	 */
@@ -94,17 +82,21 @@ public class UserInput {
 		listDepth = 0)
 	String password;
 
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
 	 * The immutable, unique user identifier (system-assigned).
 	 */
+	@Override
 	@JsonProperty("id")
 	public void setId(Long id) {
 		this.id = id;
 	}
 
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
 	 * The immutable, unique user identifier (system-assigned).
 	 */
+	@Override
 	@JsonProperty("id")
 	public Long getId() {
 		return this.id;
@@ -190,42 +182,20 @@ public class UserInput {
 		return this.password;
 	}
 
-	/**
-	 * This method is called during the json deserialization process, by the {@link GraphQLObjectMapper}, each time an
-	 * alias value is read from the json.
-	 * @param aliasName
-	 * @param aliasDeserializedValue
-	 */
-	public void setAliasValue(String aliasName, Object aliasDeserializedValue) {
-		this.aliasValues.put(aliasName, aliasDeserializedValue);
-	}
-
-	/**
-	 * Retrieves the value for the given alias, as it has been received for this object in the GraphQL response. <BR/>
-	 * This method <B>should not be used for Custom Scalars</B>, as the parser doesn't know if this alias is a custom
-	 * scalar, and which custom scalar to use at deserialization time. In most case, a value will then be provided by
-	 * this method with a basis json deserialization, but this value won't be the proper custom scalar value.
-	 * @param alias
-	 * @return
-	 */
-	public Object getAliasValue(String alias) {
-		return this.aliasValues.get(alias);
-	}
-
 	public String toString() {
-		return "UserInput {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "username: " + this.username //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "firstName: " + this.firstName //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "lastName: " + this.lastName //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "email: " + this.email //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "password: " + this.password //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "UserInput {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "username: " + this.username //
+			+ ", " //
+			+ "firstName: " + this.firstName //
+			+ ", " //
+			+ "lastName: " + this.lastName //
+			+ ", " //
+			+ "email: " + this.email //
+			+ ", " //
+			+ "password: " + this.password //
+			+ "}";
 	}
 
 	public static Builder builder() {
@@ -236,22 +206,13 @@ public class UserInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
+	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, UserInput> {
 
-		private Long id;
 		private String username;
 		private String firstName;
 		private String lastName;
 		private String email;
 		private String password;
-
-		/**
-		 * The immutable, unique user identifier (system-assigned).
-		 */
-		public Builder withId(Long idParam) {
-			this.id = idParam;
-			return this;
-		}
 
 		/**
 		 * The (mutable?) unique user name (user-assigned).
@@ -293,9 +254,9 @@ public class UserInput {
 			return this;
 		}
 
+		@Override
 		public UserInput build() {
-			UserInput _object = new UserInput();
-			_object.setId(this.id);
+			UserInput _object = build(new UserInput());
 			_object.setUsername(this.username);
 			_object.setFirstName(this.firstName);
 			_object.setLastName(this.lastName);

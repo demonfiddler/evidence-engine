@@ -1,6 +1,7 @@
 Publication[Input].date|.year: do we need both?
 PublicationInput.authorNames|.authorIds: do we need both?
-TopicRef.locations (topic_<ITopicalEntity>_ref.locations): does this have any meaning for Claim, Declaration, Person or Quotation?
+EntityLink.from|toLocations (entity_link.from_|to_locations): does this have any meaning for Claim, Declaration, Person or Quotation?
+    - Could be a URI fragment, or a page number, or a range.
 
 Whether to enforce a topic link at entity creation time?
 
@@ -16,25 +17,172 @@ Interpretation of filter values
         B. Supply an additional mask (e.g., bitmask) in the filter to indicate which filter fields should be applied.
         This would be an onerous and error-prone requirement, especially when multiple fields are involved.
     TopicQueryFilter.text
-        Specify the empty string to signify a null match.
+        Specify the empty string to signify a null match?
     TrackedEntityQueryFilter.text
-        Specify the empty string to signify a null match.
-    TopicalEntityQueryFilter.topicId
+        Specify the empty string to signify a null match?
+    LinkableEntityQueryFilter.topicId
 
 Polymorphism & Inheritance
 --------------------------
-Implement a class hierarchy thus:
-    AbstractBaseEntity implements IBaseEntity
-        AbstractTrackedEntity implements ITrackedEntity (extends IBaseEntity)
-            Journal
-            Publisher
-            Topic
-            User
-            AbstractTopicalEntity implements ITopicalEntity (extends ITrackedEntity)
-                Claim
-                Declaration
-                Person
-                Publication
-                Quotation
+Implement a client-side interface hierarchy thus [DONE]:
+    IGraphQLObject
+        IGraphQLEntity
+            IPage
+            IBaseEntity
+                ITrackedEntity
+                    ILinkableEntity
 
-At present, this arrangement is prevented by the com.graphql_java_generator.client.GraphqlClientUtils.getFieldType() method, which does not recurse through the supertype hierarchy when searching for the field. We could subclass this class and modify the generated code to use our subclass instead.
+Implement a client-side class hierarchy thus [DONE]:
+    AbstractGraphQLObject implements IGraphQLObject
+    - aliasValues : Map<String, Object>
+        LogQueryFilter
+        // Turns out these QueryFilters cannot form a hierarchy extending TrackedEntityQueryFilter :-(
+        TrackedEntityQueryFilter
+        TopicQueryFilter
+        EntityLinkQueryFilter
+        LinkableEntityQueryFilter
+        ???Input
+        SortInput
+        AbstractBaseEntityInput
+        [- id : Long]
+            // Turns out that id cannot be inherited :-(
+            ClaimInput
+            DeclarationInput
+            EntityLinkInput
+            JournalInput
+            PublisherInput
+            PersonInput
+            PublicationInput
+            QuotationInput
+            TopicInput
+            UserInput
+        AbstractGraphQLEntity implements IGraphQLEntity
+        - __typename : String
+            __Directive
+            __EnumValue
+            __Field
+            __InputValue
+            __Schema
+            __Type
+            Mutation
+            Query
+            AbstractPage implements IPage
+                ClaimPage
+                DeclarationPage
+                EntityLinkPage
+                JournalPage
+                LogPage
+                PersonPage
+                PublicationPage
+                PublisherPage
+                QuotationPage
+                TopicPage
+                UserPage
+            AbstractBaseEntity implements IBaseEntity
+            - id : Long
+                Log
+                AbstractTrackedEntity implements ITrackedEntity
+                    EntityLink
+                    Journal
+                    Publisher
+                    User
+                    AbstractLinkableEntity implements ILinkableEntity
+                        Claim
+                        Declaration
+                        Person
+                        Publication
+                        Quotation
+                        Topic
+
+Implement a server-side interface hierarchy thus [DONE]:
+    IBaseEntity
+        ITrackedEntity
+            ILinkableEntity
+    IPage
+        IBaseEntityPage<T extends IBaseEntity>
+
+Implement a server-side class hierarchy thus:
+    Log
+    AbstractTrackedEntity implements ITrackedEntity
+        EntityLink
+        Journal
+        Publisher
+        User
+        AbstractLinkableEntity implements ILinkableEntity
+            Claim
+            Declaration
+            Person
+            Publication
+            Quotation
+            Topic
+    AbstractPage
+        ClaimPage
+        DeclarationPage
+        EntityLinkPage
+        JournalPage
+        LogPage
+        PersonPage
+        PublicationPage
+        PublisherPage
+        QuotationPage
+        TopicPage
+        UserPage
+AbstractBaseEntityInput
+- id: String
+    ClaimInput
+    DeclarationInput
+    EntityLinkInput
+    JournalInput
+    PublisherInput
+    PersonInput
+    PublicationInput
+    QuotationInput
+    TopicInput
+    UserInput
+LogQueryFilter
+TrackedEntityQueryFilter
+    TopicQueryFilter
+    EntityLinkQueryFilter
+        LinkableEntityQueryFilter
+
+
+Ditto for XxxController [TODO], XxxPageController [TODO], DataFetchersDelegateXxx [DONE], DataFetchersDelegateXxxPage, Xxx [DONE as above],
+all of which contain much duplicated boilerplate code.
+
+Consider using @CreatedBy, @LastModifiedBy, @CreatedDate, @LastModifiedDate annotations on AbstractTrackedEntity fields.
+Consider using @Modifying annotation on repository update query methods instead of loading, updating then saving the entire entity (e.g., for setEntityStatus).
+Consider using @Enumerated annotation on fields with enum values.
+Consider using @Version annotation on a new entity column 'version', to support optimistic locking.
+
+Extraneous classes: PageWrapper
+
+At present, this arrangement is prevented in the client code by the com.graphql_java_generator.client.GraphqlClientUtils.getFieldType()
+method, which does not recurse through the supertype hierarchy when searching for the field.
+We could subclass this class and modify the generated code to use our subclass instead [DONE].
+
+Builders
+--------
+
+Builders for abstract base classes with only one level of derived class should be abstract and generic, and implement
+all the common fields, accessor methods, etc.
+
+Think about inheritance for:
+- TrackedEntityQueryFilter < EntityLinkQueryFilter < LinkableEntityQueryFilter (server versions still use broken inheritance)
+
+User Management
+---------------
+Need to re-implement the GraphQL user management API, to use the Spring Security permission model.
+
+Crashes/Hangs
+-------------
+toString() methods in classes with circular references cause infinite recursion / stack overflow [DONE].
+
+Nullability Annotations
+-----------------------
+Need to annotate the entire codebase with nullability annotations. Similar concerns apply to equals() and hashcode().
+
+Spelling errors
+---------------
+fata fetcher, environement for this batch loaded, overriden, ${dataFetcher.graphQLType}, consider as null, is fetch, modle, is one of the field
+
+Use @AutoWired instead of @Resource

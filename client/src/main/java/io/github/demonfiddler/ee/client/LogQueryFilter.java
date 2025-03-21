@@ -20,18 +20,14 @@
 package io.github.demonfiddler.ee.client;
 
 import java.time.OffsetDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.graphql_java_generator.annotation.GraphQLIgnore;
 import com.graphql_java_generator.annotation.GraphQLInputType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
-import com.graphql_java_generator.client.GraphQLObjectMapper;
 
 import io.github.demonfiddler.ee.client.util.CustomJacksonSerializers;
 
@@ -43,15 +39,7 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonSerializers;
  */
 @GraphQLInputType("LogQueryFilter")
 @JsonInclude(Include.NON_NULL)
-public class LogQueryFilter {
-
-	/**
-	 * This map contains the deserialized values for the alias, as parsed from the JSON response from the GraphQL
-	 * server. The key is the alias name, the value is the deserialiazed value (taking into account custom scalars,
-	 * lists, ...)
-	 */
-	@GraphQLIgnore
-	Map<String, Object> aliasValues = new HashMap<>();
+public class LogQueryFilter extends AbstractGraphQLObject {
 
 	public LogQueryFilter() {
 	}
@@ -202,42 +190,20 @@ public class LogQueryFilter {
 		return this.to;
 	}
 
-	/**
-	 * This method is called during the json deserialization process, by the {@link GraphQLObjectMapper}, each time an
-	 * alias value is read from the json.
-	 * @param aliasName
-	 * @param aliasDeserializedValue
-	 */
-	public void setAliasValue(String aliasName, Object aliasDeserializedValue) {
-		this.aliasValues.put(aliasName, aliasDeserializedValue);
-	}
-
-	/**
-	 * Retrieves the value for the given alias, as it has been received for this object in the GraphQL response. <BR/>
-	 * This method <B>should not be used for Custom Scalars</B>, as the parser doesn't know if this alias is a custom
-	 * scalar, and which custom scalar to use at deserialization time. In most case, a value will then be provided by
-	 * this method with a basis json deserialization, but this value won't be the proper custom scalar value.
-	 * @param alias
-	 * @return
-	 */
-	public Object getAliasValue(String alias) {
-		return this.aliasValues.get(alias);
-	}
-
 	public String toString() {
-		return "LogQueryFilter {" //$NON-NLS-1$
-			+ "entityKind: " + this.entityKind //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "entityId: " + this.entityId //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "userId: " + this.userId //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "transactionKinds: " + this.transactionKinds //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "from: " + this.from //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "to: " + this.to //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "LogQueryFilter {" //
+			+ "entityKind: " + this.entityKind //
+			+ ", " //
+			+ "entityId: " + this.entityId //
+			+ ", " //
+			+ "userId: " + this.userId //
+			+ ", " //
+			+ "transactionKinds: " + this.transactionKinds //
+			+ ", " //
+			+ "from: " + this.from //
+			+ ", " //
+			+ "to: " + this.to //
+			+ "}";
 	}
 
 	public static Builder builder() {

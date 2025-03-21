@@ -20,28 +20,20 @@
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
 import java.util.List;
-import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
-import org.dataloader.DataLoader;
 import org.springframework.stereotype.Component;
 
-import graphql.GraphQLContext;
 import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegatePublisher;
 import io.github.demonfiddler.ee.server.model.CountryFormatKind;
-import io.github.demonfiddler.ee.server.model.FormatKind;
-import io.github.demonfiddler.ee.server.model.LogPage;
-import io.github.demonfiddler.ee.server.model.LogQueryFilter;
-import io.github.demonfiddler.ee.server.model.PageableInput;
 import io.github.demonfiddler.ee.server.model.Publisher;
-import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.repository.PublisherRepository;
 import io.github.demonfiddler.ee.server.util.CountryUtils;
 import jakarta.annotation.Resource;
 
 @Component
-public class DataFetchersDelegatePublisherImpl extends DataFetchersDelegateITrackedEntityBaseImpl
+public class DataFetchersDelegatePublisherImpl extends DataFetchersDelegateITrackedEntityBaseImpl<Publisher>
     implements DataFetchersDelegatePublisher {
 
     @Resource
@@ -51,33 +43,7 @@ public class DataFetchersDelegatePublisherImpl extends DataFetchersDelegateITrac
 
     @Override
     public List<Publisher> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {
-        return publisherRepository.findByIds(keys);
-    }
-
-    @Override
-    public Object status(DataFetchingEnvironment dataFetchingEnvironment, Publisher origin, FormatKind format) {
-        return _status(dataFetchingEnvironment, origin, format);
-    }
-
-    @Override
-    public Map<Publisher, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment,
-        GraphQLContext graphQLContext, List<Publisher> keys) {
-
-        return _createdByUserMap(batchLoaderEnvironment, graphQLContext, keys);
-    }
-
-    @Override
-    public Map<Publisher, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment,
-        GraphQLContext graphQLContext, List<Publisher> keys) {
-
-        return _updatedByUserMap(batchLoaderEnvironment, graphQLContext, keys);
-    }
-
-    @Override
-    public Object log(DataFetchingEnvironment dataFetchingEnvironment, DataLoader<Long, LogPage> dataLoader,
-        Publisher origin, LogQueryFilter filter, PageableInput pageSort) {
-
-        return _log(dataFetchingEnvironment, origin, filter, pageSort);
+        return publisherRepository.findAllById(keys);
     }
 
     @Override

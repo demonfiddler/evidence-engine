@@ -58,24 +58,68 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 	private static final Random RANDOM = new Random();
 	private static final String RESPONSE_SPEC = //
 		"""
-		{
-			id
-			status
-			created
-			createdByUser {
+			{
 				id
-				username
-				firstName
-				lastName
+				status
+				created
+				createdByUser {
+					id
+					username
+					firstName
+					lastName
+				}
+				updated
+				updatedByUser {
+					id
+					username
+					firstName
+					lastName
+				}
+				log {
+					hasContent
+					isEmpty
+					number
+					size
+					numberOfElements
+					totalPages
+					totalElements
+					isFirst
+					isLast
+					hasNext
+					hasPrevious
+					content {
+						timestamp
+						transactionKind
+						entityId
+						entityKind
+						user {
+							id
+							username
+							firstName
+							lastName
+						}
+					}
+				}
+				title
+				abbreviation
+				url
+				issn
+				publisher
+				notes
 			}
-			updated
-			updatedByUser {
+			""";
+	private static final String MINIMAL_RESPONSE_SPEC = //
+		"""
+			{
 				id
-				username
-				firstName
-				lastName
+				status%s
+				title
+				notes
 			}
-			log {
+			""";
+	private static final String PAGED_RESPONSE_SPEC = //
+		"""
+			{
 				hasContent
 				isEmpty
 				number
@@ -88,57 +132,13 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 				hasNext
 				hasPrevious
 				content {
-					timestamp
-					transactionKind
-					entityId
-					entityKind
-					user {
-						id
-						username
-						firstName
-						lastName
-					}
+					id
+					status%s
+					title
+					notes
 				}
 			}
-			title
-			abbreviation
-			url
-			issn
-			publisher
-			notes
-		}
-		""";
-	private static final String MINIMAL_RESPONSE_SPEC = //
-		"""
-		{
-			id
-			status%s
-			title
-			notes
-		}
-		""";
-	private static final String PAGED_RESPONSE_SPEC = //
-		"""
-		{
-			hasContent
-			isEmpty
-			number
-			size
-			numberOfElements
-			totalPages
-			totalElements
-			isFirst
-			isLast
-			hasNext
-			hasPrevious
-			content {
-				id
-				status%s
-				title
-				notes
-			}
-		}
-		""";
+			""";
 
 	static Journal journal;
 	static List<Journal> journals;
@@ -186,8 +186,8 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 
 		// Check the returned Journal object for correctness.
 		LOG_DATES[0] = actual.getCreated();
-		checkJournal(actual, StatusKind.DRA.label(), earliestUpdated, null, input.getTitle(),
-			input.getAbbreviation(), input.getUrl(), input.getIssn(), null, input.getNotes(), CRE);
+		checkJournal(actual, StatusKind.DRA.label(), earliestUpdated, null, input.getTitle(), input.getAbbreviation(),
+			input.getUrl(), input.getIssn(), null, input.getNotes(), CRE);
 
 		// Test passed, so remember result for following tests.
 		journal = actual;
@@ -258,7 +258,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 	@Test
 	@Order(5)
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournal")
-	void createJournals() throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	void createJournals() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		// Create another eight journals and store them all in an array together with the previously created one.
 		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted("");
 		final int journalCount = 8;
@@ -270,7 +270,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 		journal0.setNotes(journal.getNotes());
 		journal0.set__typename(journal.get__typename());
 		journals.add(journal0);
-		String[] numbers = {null, "one", "two", "three", "four", "five", "six", "seven", "eight"};
+		String[] numbers = { null, "one", "two", "three", "four", "five", "six", "seven", "eight" };
 		for (int i = 1; i <= journalCount; i++) {
 			String title = "Journal " + numbers[i];
 			String abbreviation = "Jnl " + numbers[i];
@@ -292,7 +292,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 	@Test
 	@Order(6)
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournals")
-	void readJournals() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readJournals() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		JournalPage actuals = queryExecutor.journals(responseSpec, null, null);
 
@@ -302,7 +302,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 	@Test
 	@Order(7)
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournals")
-	void readJournalsFiltered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readJournalsFiltered() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		TrackedEntityQueryFilter filter = TrackedEntityQueryFilter.builder() //
 			.withText("filtered") //
@@ -326,7 +326,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 	@Test
 	@Order(8)
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournals")
-	void readJournalsSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readJournalsSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		OrderInput order = OrderInput.builder() //
 			.withProperty("title") //
@@ -337,8 +337,12 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 
 		// "JOURNAL FIVE", "JOURNAL ONE", "JOURNAL SEVEN", "JOURNAL THREE", "Journal eight",
 		// "Journal four", "Journal six", "Journal two", "Updated test journal"
-		// 5, 1, 7, 3, 8, 4, 6, 2, 0
-		List<Journal> expected = subList(journals, 5, 1, 7, 3, 8, 4, 6, 2, 0);
+		// CI: 8, 5, 4, 1, 7, 6, 3, 2, 0
+		// CS: 5, 1, 7, 3, 8, 4, 6, 2, 0
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5, 4, 1, 7, 6, 3, 2, 0 } //
+			: new int[] { 5, 1, 7, 3, 8, 4, 6, 2, 0 };
+		List<Journal> expected = subList(journals, indexes);
 		JournalPage actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -355,7 +359,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 	@Test
 	@Order(9)
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournals")
-	void readJournalsSortedIgnoreCase() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readJournalsSortedIgnoreCase() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		OrderInput order = OrderInput.builder() //
 			.withProperty("title") //
@@ -385,7 +389,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 	@Test
 	@Order(10)
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournals")
-	void readJournalsSortedNullOrdered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readJournalsSortedNullOrdered() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		OrderInput notesOrder = OrderInput.builder() //
 			.withProperty("notes") //
@@ -402,8 +406,12 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 		// "Notes #4"/"Journal four", "Notes #5 (filtered)"/"JOURNAL FIVE",
 		// "Notes #7 (filtered)"/"JOURNAL SEVEN", "Notes #8 (filtered)"/"Journal eight",
 		// "Updated test notes"/"Updated test journal"
-		// 3, 6, 1, 2, 4, 5, 7, 8, 0
-		List<Journal> expected = subList(journals, 3, 6, 1, 2, 4, 5, 7, 8, 0);
+		// CI: 6, 3, 1, 2, 4, 5, 7, 8, 0
+		// CS: 3, 6, 1, 2, 4, 5, 7, 8, 0
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 6, 3, 1, 2, 4, 5, 7, 8, 0 } //
+			: new int[] { 3, 6, 1, 2, 4, 5, 7, 8, 0 };
+		List<Journal> expected = subList(journals, indexes);
 		JournalPage actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -412,18 +420,25 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		textOrder.setDirection(DirectionKind.DESC);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 3, 6, 1, 2, 4, 5, 7, 8, 0 } //
+			: new int[] { 6, 3, 1, 2, 4, 5, 7, 8, 0 };
+		expected = subList(journals, indexes);
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
-		expected = subList(journals, 6, 3, 1, 2, 4, 5, 7, 8, 0);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		// "Notes #1"/"JOURNAL ONE", "Notes #2"/"Journal two", "Notes #4"/"Journal four",
 		// "Notes #5 (filtered)"/"JOURNAL FIVE", "Notes #7 (filtered)"/"JOURNAL SEVEN",
 		// "Notes #8 (filtered)"/"Journal eight", "Updated test notes"/"Updated test journal",
 		// null/"JOURNAL THREE", null/"Journal six",
-		// 1, 2, 4, 5, 7, 8, 0, 3, 6
+		// CI: 1, 2, 4, 5, 7, 8, 0, 6, 3
+		// CS: 1, 2, 4, 5, 7, 8, 0, 3, 6
 		notesOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		textOrder.setDirection(null);
-		expected = subList(journals, 1, 2, 4, 5, 7, 8, 0, 3, 6);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 2, 4, 5, 7, 8, 0, 6, 3 } //
+			: new int[] { 1, 2, 4, 5, 7, 8, 0, 3, 6 };
+		expected = subList(journals, indexes);
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -432,20 +447,23 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		textOrder.setDirection(DirectionKind.DESC);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 2, 4, 5, 7, 8, 0, 3, 6 } //
+			: new int[] { 1, 2, 4, 5, 7, 8, 0, 6, 3 };
+		expected = subList(journals, indexes);
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
-		expected = subList(journals, 1, 2, 4, 5, 7, 8, 0, 6, 3);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
 
 	@Test
 	@Order(11)
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournals")
-	void readJournalsFilteredSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readJournalsFilteredSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		TrackedEntityQueryFilter filter = TrackedEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
-			OrderInput order = OrderInput.builder() //
+		OrderInput order = OrderInput.builder() //
 			.withProperty("title") //
 			.build();
 		List<OrderInput> orders = Collections.singletonList(order);
@@ -453,8 +471,12 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 		PageableInput pageSort = PageableInput.builder().withSort(sort).build();
 
 		// "JOURNAL FIVE", "JOURNAL SEVEN", "Journal eight"
-		// 5, 7, 8
-		List<Journal> expected = subList(journals, 5, 7, 8);
+		// CI: 8, 5, 7
+		// CS: 5, 7, 8
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5, 7 } //
+			: new int[] { 5, 7, 8 };
+		List<Journal> expected = subList(journals, indexes);
 		JournalPage actuals = queryExecutor.journals(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -463,15 +485,16 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
-		actuals = queryExecutor.journals(responseSpec, filter, pageSort);
 		Collections.reverse(expected);
+		actuals = queryExecutor.journals(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
 
 	@Test
 	@Order(12)
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournals")
-	void readJournalsFilteredSortedNullHandling() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readJournalsFilteredSortedNullHandling()
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		TrackedEntityQueryFilter filter = TrackedEntityQueryFilter.builder() //
 			.withText("journal") //
@@ -490,8 +513,12 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 		// null/"JOURNAL THREE", null/"Journal six", "Notes #1"/"JOURNAL ONE",
 		// "Notes #2"/"Journal two", "Notes #4"/"Journal four", "Notes #5 (filtered)"/"JOURNAL FIVE",
 		// "Notes #7 (filtered)"/"JOURNAL SEVEN", "Notes #8 (filtered)"/"Journal eight"
-		// 3, 6, 1, 2, 4, 5, 7, 8
-		List<Journal> expected = subList(journals, 3, 6, 1, 2, 4, 5, 7, 8);
+		// CI: 6, 3, 1, 2, 4, 5, 7, 8
+		// CS: 3, 6, 1, 2, 4, 5, 7, 8
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 6, 3, 1, 2, 4, 5, 7, 8 } //
+			: new int[] { 3, 6, 1, 2, 4, 5, 7, 8 };
+		List<Journal> expected = subList(journals, indexes);
 		JournalPage actuals = queryExecutor.journals(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -500,22 +527,32 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		textOrder.setDirection(DirectionKind.DESC);
-		expected = subList(journals, 6, 3, 1, 2, 4, 5, 7, 8);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 3, 6, 1, 2, 4, 5, 7, 8 } //
+			: new int[] { 6, 3, 1, 2, 4, 5, 7, 8 };
+		expected = subList(journals, indexes);
 		actuals = queryExecutor.journals(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		// "Notes #1"/"JOURNAL ONE", "Notes #2"/"Journal two", "Notes #4"/"Journal four",
 		// "Notes #5 (filtered)"/"JOURNAL FIVE", "Notes #7 (filtered)"/"JOURNAL SEVEN",
 		// "Notes #8 (filtered)"/"Journal eight", null/"JOURNAL THREE", null/"Journal six",
-		// 1, 2, 4, 5, 7, 8, 3, 6
+		// CI: 1, 2, 4, 5, 7, 8, 6, 3
+		// CS: 1, 2, 4, 5, 7, 8, 3, 6
 		notesOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		textOrder.setDirection(DirectionKind.ASC);
-		expected = subList(journals, 1, 2, 4, 5, 7, 8, 3, 6);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 2, 4, 5, 7, 8, 6, 3 } //
+			: new int[] { 1, 2, 4, 5, 7, 8, 3, 6 };
+		expected = subList(journals, indexes);
 		actuals = queryExecutor.journals(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		textOrder.setDirection(DirectionKind.DESC);
-		expected = subList(journals, 1, 2, 4, 5, 7, 8, 6, 3);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 2, 4, 5, 7, 8, 3, 6 } //
+			: new int[] { 1, 2, 4, 5, 7, 8, 6, 3 };
+		expected = subList(journals, indexes);
 		actuals = queryExecutor.journals(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
@@ -523,7 +560,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 	@Test
 	@Order(13)
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournals")
-	void readJournalsPaged() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readJournalsPaged() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		// NOTE: assume that records are returned in the same order as the unpaged query.
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		PageableInput pageSort = PageableInput.builder() //
@@ -543,12 +580,12 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		expected = journals.subList(8, 9);
 		checkPage(actuals, journals.size(), 3, 4, 2, true, false, false, true, expected, true);
-	}	
+	}
 
 	@Test
 	@Order(14)
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournals")
-	void readJournalsPagedFiltered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readJournalsPagedFiltered() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		TrackedEntityQueryFilter filter = TrackedEntityQueryFilter.builder() //
 			.withText("filtered") //
@@ -564,14 +601,14 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 
 		pageSort.setPageNumber(1);
 		actuals = queryExecutor.journals(responseSpec, filter, pageSort);
-		expected = subList(journals,8);
+		expected = subList(journals, 8);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 	}
 
 	@Test
 	@Order(15)
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournals")
-	void readJournalsPagedSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readJournalsPagedSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		OrderInput order = OrderInput.builder() //
 			.withProperty("title") //
@@ -586,50 +623,78 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 
 		// "JOURNAL FIVE", "JOURNAL ONE", "JOURNAL SEVEN", "JOURNAL THREE", "Journal eight",
 		// "Journal four", "Journal six", "Journal two", "Updated test journal"
-		// 5, 1, 7, 3, 8, 4, 6, 2, 0
-		List<Journal> expected = subList(journals, 5, 1, 7, 3);
+		// CI: 8, 5, 4, 1, 7, 6, 3, 2, 0
+		// CS: 5, 1, 7, 3, 8, 4, 6, 2, 0
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5, 4, 1 } //
+			: new int[] { 5, 1, 7, 3 };
+		List<Journal> expected = subList(journals, indexes);
 		JournalPage actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(journals, 8, 4, 6, 2);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 6, 3, 2 } //
+			: new int[] { 8, 4, 6, 2 };
+		expected = subList(journals, indexes);
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(journals, 0);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 0 } //
+			: new int[] { 0 };
+		expected = subList(journals, indexes);
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(journals, 5, 1, 7, 3);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5, 4, 1 } //
+			: new int[] { 5, 1, 7, 3 };
+		expected = subList(journals, indexes);
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(journals, 8, 4, 6, 2);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 6, 3, 2 } //
+			: new int[] { 8, 4, 6, 2 };
+		expected = subList(journals, indexes);
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(journals, 0);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 0 } //
+			: new int[] { 0 };
+		expected = subList(journals, indexes);
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(journals, 0, 2, 6, 4);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 0, 2, 3, 6 } //
+			: new int[] { 0, 2, 6, 4 };
+		expected = subList(journals, indexes);
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(journals, 8, 3, 7, 1);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 1, 4, 5 } //
+			: new int[] { 8, 3, 7, 1 };
+		expected = subList(journals, indexes);
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(journals, 5);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8 } //
+			: new int[] { 5 };
+		expected = subList(journals, indexes);
 		actuals = queryExecutor.journals(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 2, true, false, false, true, expected, true);
 	}
@@ -637,7 +702,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 	@Test
 	@Order(16)
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournals")
-	void readJournalsPagedFilteredSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readJournalsPagedFilteredSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		TrackedEntityQueryFilter filter = TrackedEntityQueryFilter.builder() //
 			.withText("filtered") //
@@ -654,35 +719,54 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 			.build();
 
 		// "JOURNAL FIVE", "JOURNAL SEVEN", "Journal eight"
-		// 5, 7, 8
-		List<Journal> expected = subList(journals, 5, 7);
+		// CI: 8, 5, 7
+		// CS: 5, 7, 8
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5 } //
+			: new int[] { 5, 7 };
+		List<Journal> expected = subList(journals, indexes);
 		JournalPage actuals = queryExecutor.journals(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(journals, 8);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7 } //
+			: new int[] { 8 };
+		expected = subList(journals, indexes);
 		actuals = queryExecutor.journals(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(journals, 5, 7);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5 } //
+			: new int[] { 5, 7 };
+		expected = subList(journals, indexes);
 		actuals = queryExecutor.journals(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(journals, 8);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7 } //
+			: new int[] { 8 };
+		expected = subList(journals, indexes);
 		actuals = queryExecutor.journals(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(journals, 8, 7);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 5 } //
+			: new int[] { 8, 7 };
+		expected = subList(journals, indexes);
 		actuals = queryExecutor.journals(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(journals, 5);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8 } //
+			: new int[] { 5 };
+		expected = subList(journals, indexes);
 		actuals = queryExecutor.journals(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 	}

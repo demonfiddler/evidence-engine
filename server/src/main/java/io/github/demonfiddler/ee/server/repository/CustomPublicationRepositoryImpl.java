@@ -21,7 +21,7 @@ package io.github.demonfiddler.ee.server.repository;
 
 import io.github.demonfiddler.ee.server.model.Publication;
 
-public class CustomPublicationRepositoryImpl extends CustomITopicalEntityRepositoryImpl<Publication>
+public class CustomPublicationRepositoryImpl extends CustomLinkableEntityRepositoryImpl<Publication>
     implements CustomPublicationRepository {
 
     @Override

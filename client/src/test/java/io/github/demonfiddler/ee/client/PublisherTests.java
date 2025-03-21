@@ -246,7 +246,7 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 	@Test
 	@Order(5)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublisherTests#hasExpectedPublisher")
-	void createPublishers() throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	void createPublishers() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		// Create another eight publishers and store them all in an array together with the previously created one.
 		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted("");
 		final int publisherCount = 8;
@@ -325,8 +325,12 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 
 		// "PUBLISHER FIVE", "PUBLISHER ONE", "PUBLISHER SEVEN", "PUBLISHER THREE", "Publisher eight", "Publisher four", "Publisher six",
 		// "Publisher two", "Updated test name"
-		// 5, 1, 7, 3, 8, 4, 6, 2, 0
-		List<Publisher> expected = subList(publishers, 5, 1, 7, 3, 8, 4, 6, 2, 0);
+		// CI: 8, 5, 4, 1, 7, 6, 3, 2, 0
+		// CS: 5, 1, 7, 3, 8, 4, 6, 2, 0
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5, 4, 1, 7, 6, 3, 2, 0 } //
+			: new int[] { 5, 1, 7, 3, 8, 4, 6, 2, 0 };
+		List<Publisher> expected = subList(publishers, indexes);
 		PublisherPage actuals = queryExecutor.publishers(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -389,8 +393,12 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 		// null/"PUBLISHER THREE", null/"Publisher six", "Location #1"/"PUBLISHER ONE", "Location #2"/"Publisher two",
 		// "Location #4"/"Publisher four", "Location #5 (filtered)"/"PUBLISHER FIVE", "Location #7 (filtered)"/"PUBLISHER SEVEN",
 		// "Location #8 (filtered)"/"Publisher eight", "Updated test location"/"Updated test name"
-		// 3, 6, 1, 2, 4, 5, 7, 8, 0
-		List<Publisher> expected = subList(publishers, 3, 6, 1, 2, 4, 5, 7, 8, 0);
+		// CI: 6, 3, 1, 2, 4, 5, 7, 8, 0
+		// CS: 3, 6, 1, 2, 4, 5, 7, 8, 0
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 6, 3, 1, 2, 4, 5, 7, 8, 0 } //
+			: new int[] { 3, 6, 1, 2, 4, 5, 7, 8, 0 };
+		List<Publisher> expected = subList(publishers, indexes);
 		PublisherPage actuals = queryExecutor.publishers(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -399,17 +407,24 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		nameOrder.setDirection(DirectionKind.DESC);
-		expected = subList(publishers, 6, 3, 1, 2, 4, 5, 7, 8, 0);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 3, 6, 1, 2, 4, 5, 7, 8, 0 } //
+			: new int[] { 6, 3, 1, 2, 4, 5, 7, 8, 0 };
+		expected = subList(publishers, indexes);
 		actuals = queryExecutor.publishers(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		// "Location #1"/"PUBLISHER ONE", "Location #2"/"Publisher two", "Location #4"/"Publisher four", "Location #5 (filtered)"/"PUBLISHER FIVE",
 		// "Location #7 (filtered)"/"PUBLISHER SEVEN", "Location #8 (filtered)"/"Publisher eight",
 		// "Updated test location"/"Updated test name", null/"PUBLISHER THREE", null/"Publisher six",
-		// 1, 2, 4, 5, 7, 8, 0, 3, 6
+		// CI: 1, 2, 4, 5, 7, 8, 0, 6, 3
+		// CS: 1, 2, 4, 5, 7, 8, 0, 3, 6
 		locationOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		nameOrder.setDirection(null);
-		expected = subList(publishers, 1, 2, 4, 5, 7, 8, 0, 3, 6);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 2, 4, 5, 7, 8, 0, 6, 3 } //
+			: new int[] { 1, 2, 4, 5, 7, 8, 0, 3, 6 };
+		expected = subList(publishers, indexes);
 		actuals = queryExecutor.publishers(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -418,7 +433,10 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		nameOrder.setDirection(DirectionKind.DESC);
-		expected = subList(publishers, 1, 2, 4, 5, 7, 8, 0, 6, 3);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 2, 4, 5, 7, 8, 0, 3, 6 } //
+			: new int[] { 1, 2, 4, 5, 7, 8, 0, 6, 3 };
+		expected = subList(publishers, indexes);
 		actuals = queryExecutor.publishers(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
@@ -439,8 +457,12 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 		PageableInput pageSort = PageableInput.builder().withSort(sort).build();
 
 		// "PUBLISHER FIVE", "PUBLISHER SEVEN", "Publisher eight"
-		// 5, 7, 8
-		List<Publisher> expected = subList(publishers, 5, 7, 8);
+		// CI: 8, 5, 7
+		// CS: 5, 7, 8
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5, 7 } //
+			: new int[] { 5, 7, 8 };
+		List<Publisher> expected = subList(publishers, indexes);
 		PublisherPage actuals = queryExecutor.publishers(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -475,9 +497,13 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 
 		// null/"PUBLISHER THREE", null/"Publisher six", "Location #1"/"PUBLISHER ONE", "Location #2"/"Publisher two",
 		// "Location #4"/"Publisher four", "Location #5 (filtered)"/"PUBLISHER FIVE", "Location #7 (filtered)"/"PUBLISHER SEVEN",
-		// "Location #8 (filtered)"/"Publisher eight", "Updated test location"/"Updated test name"
-		// 3, 6, 1, 2, 4, 5, 7, 8
-		List<Publisher> expected = subList(publishers, 3, 6, 1, 2, 4, 5, 7, 8);
+		// "Location #8 (filtered)"/"Publisher eight"
+		// CI: 6, 3, 1, 2, 4, 5, 7, 8
+		// CS: 3, 6, 1, 2, 4, 5, 7, 8
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 6, 3, 1, 2, 4, 5, 7, 8 } //
+			: new int[] { 3, 6, 1, 2, 4, 5, 7, 8 };
+		List<Publisher> expected = subList(publishers, indexes);
 		PublisherPage actuals = queryExecutor.publishers(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -486,21 +512,31 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		nameOrder.setDirection(DirectionKind.DESC);
-		expected = subList(publishers, 6, 3, 1, 2, 4, 5, 7, 8);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 3, 6, 1, 2, 4, 5, 7, 8 } //
+			: new int[] { 6, 3, 1, 2, 4, 5, 7, 8 };
+		expected = subList(publishers, indexes);
 		actuals = queryExecutor.publishers(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		// "Location #1"/"PUBLISHER ONE", "Location #2"/"Publisher two", "Location #4"/"Publisher four", "Location #5 (filtered)"/"PUBLISHER FIVE",
 		// "Location #7 (filtered)"/"PUBLISHER SEVEN", "Location #8 (filtered)"/"Publisher eight", null/"PUBLISHER THREE", null/"Publisher six"
-		// 1, 2, 4, 5, 7, 8, 3, 6
+		// CI: 1, 2, 4, 5, 7, 8, 6, 3
+		// CS: 1, 2, 4, 5, 7, 8, 3, 6
 		locationOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		nameOrder.setDirection(DirectionKind.ASC);
-		expected = subList(publishers, 1, 2, 4, 5, 7, 8, 3, 6);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 2, 4, 5, 7, 8, 6, 3 } //
+			: new int[] { 1, 2, 4, 5, 7, 8, 3, 6 };
+		expected = subList(publishers, indexes);
 		actuals = queryExecutor.publishers(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		nameOrder.setDirection(DirectionKind.DESC);
-		expected = subList(publishers, 1, 2, 4, 5, 7, 8, 6, 3);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 2, 4, 5, 7, 8, 3, 6 } //
+			: new int[] { 1, 2, 4, 5, 7, 8, 6, 3 };
+		expected = subList(publishers, indexes);
 		actuals = queryExecutor.publishers(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
@@ -571,50 +607,78 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 
 		// "PUBLISHER FIVE", "PUBLISHER ONE", "PUBLISHER SEVEN", "PUBLISHER THREE", "Publisher eight", "Publisher four", "Publisher six",
 		// "Publisher two", "Updated test name"
-		// 5, 1, 7, 3, 8, 4, 6, 2, 0
-		List<Publisher> expected = subList(publishers, 5, 1, 7, 3);
+		// CI: 8, 5, 4, 1, 7, 6, 3, 2, 0
+		// CS: 5, 1, 7, 3, 8, 4, 6, 2, 0
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5, 4, 1 } //
+			: new int[] { 5, 1, 7, 3 };
+		List<Publisher> expected = subList(publishers, indexes);
 		PublisherPage actuals = queryExecutor.publishers(responseSpec, null, pageSort);
 		checkPage(actuals, publishers.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(publishers, 8, 4, 6, 2);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 6, 3, 2 } //
+			: new int[] { 8, 4, 6, 2 };
+		expected = subList(publishers, indexes);
 		actuals = queryExecutor.publishers(responseSpec, null, pageSort);
 		checkPage(actuals, publishers.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(publishers, 0);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 0 } //
+			: new int[] { 0 };
+		expected = subList(publishers, indexes);
 		actuals = queryExecutor.publishers(responseSpec, null, pageSort);
 		checkPage(actuals, publishers.size(), 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(publishers, 5, 1, 7, 3);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5, 4, 1 } //
+			: new int[] { 5, 1, 7, 3 };
+		expected = subList(publishers, indexes);
 		actuals = queryExecutor.publishers(responseSpec, null, pageSort);
 		checkPage(actuals, publishers.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(publishers, 8, 4, 6, 2);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 6, 3, 2 } //
+			: new int[] { 8, 4, 6, 2 };
+		expected = subList(publishers, indexes);
 		actuals = queryExecutor.publishers(responseSpec, null, pageSort);
 		checkPage(actuals, publishers.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(publishers, 0);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 0 } //
+			: new int[] { 0 };
+		expected = subList(publishers, indexes);
 		actuals = queryExecutor.publishers(responseSpec, null, pageSort);
 		checkPage(actuals, publishers.size(), 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(publishers, 0, 2, 6, 4);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 0, 2, 3, 6 } //
+			: new int[] { 0, 2, 6, 4 };
+		expected = subList(publishers, indexes);
 		actuals = queryExecutor.publishers(responseSpec, null, pageSort);
 		checkPage(actuals, publishers.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(publishers, 8, 3, 7, 1);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 1, 4, 5 } //
+			: new int[] { 8, 3, 7, 1 };
+		expected = subList(publishers, indexes);
 		actuals = queryExecutor.publishers(responseSpec, null, pageSort);
 		checkPage(actuals, publishers.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(publishers, 5);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8 } //
+			: new int[] { 5 };
+		expected = subList(publishers, indexes);
 		actuals = queryExecutor.publishers(responseSpec, null, pageSort);
 		checkPage(actuals, publishers.size(), 3, 4, 2, true, false, false, true, expected, true);
 	}
@@ -639,35 +703,54 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 			.build();
 
 		// "PUBLISHER FIVE", "PUBLISHER SEVEN", "Publisher eight"
-		// 5, 7, 8
-		List<Publisher> expected = subList(publishers, 5, 7);
+		// CI: 8, 5, 7
+		// CS: 5, 7, 8
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5 } //
+			: new int[] { 5, 7 };
+		List<Publisher> expected = subList(publishers, indexes);
 		PublisherPage actuals = queryExecutor.publishers(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(publishers, 8);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7 } //
+			: new int[] { 8 };
+		expected = subList(publishers, indexes);
 		actuals = queryExecutor.publishers(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(publishers, 5, 7);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5 } //
+			: new int[] { 5, 7 };
+		expected = subList(publishers, indexes);
 		actuals = queryExecutor.publishers(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(publishers, 8);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7 } //
+			: new int[] { 8 };
+		expected = subList(publishers, indexes);
 		actuals = queryExecutor.publishers(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(publishers, 8, 7);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 5 } //
+			: new int[] { 8, 7 };
+		expected = subList(publishers, indexes);
 		actuals = queryExecutor.publishers(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(publishers, 5);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8 } //
+			: new int[] { 5 };
+		expected = subList(publishers, indexes);
 		actuals = queryExecutor.publishers(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 	}

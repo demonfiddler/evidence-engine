@@ -19,20 +19,16 @@
 
 package io.github.demonfiddler.ee.client;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.graphql_java_generator.annotation.GraphQLIgnore;
 import com.graphql_java_generator.annotation.GraphQLInputParameters;
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
-import com.graphql_java_generator.client.GraphQLObjectMapper;
 
 import io.github.demonfiddler.ee.client.util.CustomJacksonDeserializers;
 
@@ -43,15 +39,7 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonDeserializers;
  */
 @GraphQLObjectType("__Field")
 @JsonInclude(Include.NON_NULL)
-public class __Field {
-
-	/**
-	 * This map contains the deserialized values for the alias, as parsed from the JSON response from the GraphQL
-	 * server. The key is the alias name, the value is the deserialiazed value (taking into account custom scalars,
-	 * lists, ...)
-	 */
-	@GraphQLIgnore
-	Map<String, Object> aliasValues = new HashMap<>();
+public class __Field extends AbstractGraphQLEntity {
 
 	public __Field() {
 	}
@@ -85,10 +73,6 @@ public class __Field {
 	@GraphQLScalar(fieldName = "deprecationReason", graphQLTypeSimpleName = "String", javaClass = String.class,
 		listDepth = 0)
 	String deprecationReason;
-
-	@JsonProperty("__typename")
-	@GraphQLScalar(fieldName = "__typename", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	String __typename;
 
 	@JsonProperty("name")
 	public void setName(String name) {
@@ -150,54 +134,22 @@ public class __Field {
 		return this.deprecationReason;
 	}
 
-	@JsonProperty("__typename")
-	public void set__typename(String __typename) {
-		this.__typename = __typename;
-	}
-
-	@JsonProperty("__typename")
-	public String get__typename() {
-		return this.__typename;
-	}
-
-	/**
-	 * This method is called during the json deserialization process, by the {@link GraphQLObjectMapper}, each time an
-	 * alias value is read from the json.
-	 * @param aliasName
-	 * @param aliasDeserializedValue
-	 */
-	public void setAliasValue(String aliasName, Object aliasDeserializedValue) {
-		this.aliasValues.put(aliasName, aliasDeserializedValue);
-	}
-
-	/**
-	 * Retrieves the value for the given alias, as it has been received for this object in the GraphQL response. <BR/>
-	 * This method <B>should not be used for Custom Scalars</B>, as the parser doesn't know if this alias is a custom
-	 * scalar, and which custom scalar to use at deserialization time. In most case, a value will then be provided by
-	 * this method with a basis json deserialization, but this value won't be the proper custom scalar value.
-	 * @param alias
-	 * @return
-	 */
-	public Object getAliasValue(String alias) {
-		return this.aliasValues.get(alias);
-	}
-
 	public String toString() {
-		return "__Field {" //$NON-NLS-1$
-			+ "name: " + this.name //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "description: " + this.description //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "args: " + this.args //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "type: " + this.type //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "isDeprecated: " + this.isDeprecated //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "deprecationReason: " + this.deprecationReason //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "__typename: " + this.__typename //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "__Field {" //
+			+ "name: " + this.name //
+			+ ", " //
+			+ "description: " + this.description //
+			+ ", " //
+			+ "args: " + this.args //
+			+ ", " //
+			+ "type: " + this.type //
+			+ ", " //
+			+ "isDeprecated: " + this.isDeprecated //
+			+ ", " //
+			+ "deprecationReason: " + this.deprecationReason //
+			+ ", " //
+			+ "__typename: " + this.__typename //
+			+ "}";
 	}
 
 	public static Builder builder() {
@@ -208,7 +160,8 @@ public class __Field {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
+	public static class Builder extends AbstractGraphQLEntity.Builder<Builder, __Field> {
+
 		private String name;
 		private String description;
 		private List<__InputValue> args;
@@ -247,15 +200,21 @@ public class __Field {
 		}
 
 		public __Field build() {
-			__Field _object = new __Field();
+			__Field _object = build(new __Field());
 			_object.setName(this.name);
 			_object.setDescription(this.description);
 			_object.setArgs(this.args);
 			_object.setType(this.type);
 			_object.setIsDeprecated(this.isDeprecated);
 			_object.setDeprecationReason(this.deprecationReason);
-			_object.set__typename("__Field"); //$NON-NLS-1$
 			return _object;
 		}
+
+		@Override
+		String getTypeName() {
+			return "__Field";
+		}
+
 	}
+
 }

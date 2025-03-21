@@ -19,16 +19,9 @@
 
 package io.github.demonfiddler.ee.server.repository;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import io.github.demonfiddler.ee.server.model.Publisher;
 
 public interface PublisherRepository extends JpaRepository<Publisher, Long>, CustomPublisherRepository {
-
-	@Query(value = "select p from Publisher p where p.id in ?1")
-	List<Publisher> findByIds(List<Long> ids);
-
 }

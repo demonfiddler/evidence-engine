@@ -56,8 +56,8 @@ public class PublisherPageController {
 	protected GraphqlServerUtils graphqlServerUtils;
 
 	public PublisherPageController(BatchLoaderRegistry registry) {
-		// Registering the data loaders is useless if the @BatchMapping is used. But we need it here, for backward
-		// compatibility with code developed against the previous plugin versions.
+		// Registering the data loaders is useless if @BatchMapping is used. But we need it here, for backward
+		// compatibility with code developed against previous plugin versions.
 		registry.forTypePair(Long.class, PublisherPage.class).registerMappedBatchLoader((keysSet, env) -> {
 			List<Long> keys = new ArrayList<>(keysSet.size());
 			keys.addAll(keysSet);
@@ -74,15 +74,15 @@ public class PublisherPageController {
 	}
 
 	/**
-	 * This methods loads the data for ${dataFetcher.graphQLType}.content. It is generated as the
+	 * Loads the data for PublisherPage.content. It is generated as the
 	 * <code>generateBatchMappingDataFetchers</code> plugin parameter is true. <br/>
-	 * @param batchLoaderEnvironment The environement for this batch loaded. You can extract the GraphQLContext from
+	 * @param batchLoaderEnvironment The environment for this batch loader. You can extract the GraphQLContext from
 	 * this parameter.
 	 * @param graphQLContext
 	 * @param keys The objects for which the value for the content field must be retrieved.
-	 * @return This method returns <code>${dataFetcher.batchMappingReturnType.value}</code>, as defined by the
+	 * @return This method returns <code>Map&lt;PublisherPage, List&lt;Publisher&gt;&gt;</code>, as defined by the
 	 * <code>batchMappingDataFetcherReturnType</code> plugin parameter. <br/>
-	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
+	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values.
 	 */
 	@BatchMapping(field = "content")
 	public Map<PublisherPage, List<Publisher>> content(BatchLoaderEnvironment batchLoaderEnvironment,

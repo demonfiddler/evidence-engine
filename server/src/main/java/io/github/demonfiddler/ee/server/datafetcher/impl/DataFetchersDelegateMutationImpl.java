@@ -19,6 +19,8 @@
 
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
+import static io.github.demonfiddler.ee.common.util.StringUtils.countLines;
+
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -28,18 +30,19 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import graphql.schema.DataFetchingEnvironment;
-import io.github.demonfiddler.ee.common.util.StringUtils;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateMutation;
+import io.github.demonfiddler.ee.server.model.AbstractLinkableEntity;
+import io.github.demonfiddler.ee.server.model.AbstractTrackedEntity;
 import io.github.demonfiddler.ee.server.model.Claim;
 import io.github.demonfiddler.ee.server.model.ClaimInput;
 import io.github.demonfiddler.ee.server.model.Declaration;
 import io.github.demonfiddler.ee.server.model.DeclarationInput;
 import io.github.demonfiddler.ee.server.model.EntityKind;
-import io.github.demonfiddler.ee.server.model.IBaseEntity;
+import io.github.demonfiddler.ee.server.model.ILinkableEntity;
 import io.github.demonfiddler.ee.server.model.ITrackedEntity;
 import io.github.demonfiddler.ee.server.model.Journal;
 import io.github.demonfiddler.ee.server.model.JournalInput;
-import io.github.demonfiddler.ee.server.model.LinkEntitiesInput;
+import io.github.demonfiddler.ee.server.model.EntityLinkInput;
 import io.github.demonfiddler.ee.server.model.Log;
 import io.github.demonfiddler.ee.server.model.PermissionKind;
 import io.github.demonfiddler.ee.server.model.Person;
@@ -53,22 +56,22 @@ import io.github.demonfiddler.ee.server.model.QuotationInput;
 import io.github.demonfiddler.ee.server.model.StatusKind;
 import io.github.demonfiddler.ee.server.model.Topic;
 import io.github.demonfiddler.ee.server.model.TopicInput;
-import io.github.demonfiddler.ee.server.model.TopicRef;
-import io.github.demonfiddler.ee.server.model.TopicRefInput;
+import io.github.demonfiddler.ee.server.model.EntityLink;
 import io.github.demonfiddler.ee.server.model.TransactionKind;
 import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.model.UserInput;
 import io.github.demonfiddler.ee.server.repository.ClaimRepository;
 import io.github.demonfiddler.ee.server.repository.DeclarationRepository;
+import io.github.demonfiddler.ee.server.repository.EntityLinkRepository;
 import io.github.demonfiddler.ee.server.repository.JournalRepository;
-import io.github.demonfiddler.ee.server.repository.LinkRepository;
+import io.github.demonfiddler.ee.server.repository.LinkableEntityRepository;
 import io.github.demonfiddler.ee.server.repository.LogRepository;
 import io.github.demonfiddler.ee.server.repository.PersonRepository;
 import io.github.demonfiddler.ee.server.repository.PublicationRepository;
 import io.github.demonfiddler.ee.server.repository.PublisherRepository;
 import io.github.demonfiddler.ee.server.repository.QuotationRepository;
-import io.github.demonfiddler.ee.server.repository.TopicRefRepository;
 import io.github.demonfiddler.ee.server.repository.TopicRepository;
+import io.github.demonfiddler.ee.server.repository.TrackedEntityRepository;
 import io.github.demonfiddler.ee.server.repository.UserRepository;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
 import io.github.demonfiddler.ee.server.util.SecurityUtils;
@@ -84,7 +87,9 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @Resource
     private JournalRepository journalRepository;
     @Resource
-    private LinkRepository linkRepository;
+    private EntityLinkRepository entityLinkRepository;
+    @Resource
+    LinkableEntityRepository linkableEntityRepository;
     @Resource
     private LogRepository logRepository;
     @Resource
@@ -98,7 +103,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @Resource
     private TopicRepository topicRepository;
     @Resource
-    private TopicRefRepository topicRefRepository;
+    TrackedEntityRepository trackedEntityRepository;
     @Resource
     private UserRepository userRepository;
     @Resource
@@ -121,8 +126,8 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         return securityUtils.getCurrentUser();
     }
 
-    private void log(TransactionKind txnKind, IBaseEntity entity, OffsetDateTime timestamp) {
-        log(txnKind, entity.getId(), entityUtils.getEntityKind(entity.getClass()), null, null, timestamp);
+    private void log(TransactionKind txnKind, ITrackedEntity entity, OffsetDateTime timestamp) {
+        log(txnKind, entity.getId(), entityUtils.getEntityKind(entity), null, null, timestamp);
     }
 
     private void log(TransactionKind txnKind, Long entityId, EntityKind entityKind, Long linkedEntityId,
@@ -153,16 +158,26 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         log(TransactionKind.DEL, entity, entity.getUpdated());
     }
 
-    private void logLinked(Long entityId, EntityKind entityKind, Long linkedEntityId, EntityKind linkedEntityKind) {
-        OffsetDateTime timestamp = OffsetDateTime.now();
+    private void logLinked(EntityLink entityLink, Long entityId, EntityKind entityKind, Long linkedEntityId,
+        EntityKind linkedEntityKind) {
+
+        OffsetDateTime timestamp = getLatestDate(entityLink);
         log(TransactionKind.LNK, entityId, entityKind, linkedEntityId, linkedEntityKind, timestamp);
         log(TransactionKind.LNK, linkedEntityId, linkedEntityKind, entityId, entityKind, timestamp);
     }
 
-    private void logUnlinked(Long entityId, EntityKind entityKind, Long linkedEntityId, EntityKind linkedEntityKind) {
-        OffsetDateTime timestamp = OffsetDateTime.now();
+    private void logUnlinked(EntityLink entityLink, Long entityId, EntityKind entityKind, Long linkedEntityId,
+        EntityKind linkedEntityKind) {
+
+        OffsetDateTime timestamp = getLatestDate(entityLink);
         log(TransactionKind.UNL, entityId, entityKind, linkedEntityId, linkedEntityKind, timestamp);
         log(TransactionKind.UNL, linkedEntityId, linkedEntityKind, entityId, entityKind, timestamp);
+    }
+
+    private OffsetDateTime getLatestDate(EntityLink entityLink) {
+        return entityLink.getUpdated() == null //
+            ? entityLink.getCreated() //
+            : entityLink.getUpdated();
     }
 
     private <T extends ITrackedEntity, K> T delete(K id, CrudRepository<T, K> repository) {
@@ -233,9 +248,8 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         declaration.setDate(input.getDate());
         declaration.setKind(input.getKind() == null ? null : input.getKind().name());
         declaration.setNotes(input.getNotes());
-        String signatories = input.getSignatories();
-        declaration.setSignatories(signatories);
-        declaration.setSignatoryCount(StringUtils.countLines(signatories));
+        declaration.setSignatories(input.getSignatories());
+        declaration.setSignatoryCount(countLines(input.getSignatories()));
         declaration.setTitle(input.getTitle());
         declaration.setUrl(input.getUrl());
         setCreatedFields(declaration);
@@ -259,10 +273,8 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         declaration.setDate(input.getDate());
         declaration.setKind(input.getKind() == null ? null : input.getKind().name());
         declaration.setNotes(input.getNotes());
-        // declaration.setStatus(input.getStatus());
-        String signatories = input.getSignatories();
-        declaration.setSignatories(signatories);
-        declaration.setSignatoryCount(StringUtils.countLines(signatories));
+        declaration.setSignatories(input.getSignatories());
+        declaration.setSignatoryCount(countLines(input.getSignatories()));
         declaration.setTitle(input.getTitle());
         declaration.setUrl(input.getUrl());
         setUpdatedFields(declaration);
@@ -278,6 +290,79 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @PreAuthorize("hasAuthority('DEL')")
     public Object deleteDeclaration(DataFetchingEnvironment dataFetchingEnvironment, Long declarationId) {
         return delete(declarationId, declarationRepository);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('LNK')")
+    public Object createEntityLink(DataFetchingEnvironment dataFetchingEnvironment, EntityLinkInput input) {
+        AbstractLinkableEntity fromEntity = linkableEntityRepository.getReferenceById(input.getFromEntityId());
+        AbstractLinkableEntity toEntity = linkableEntityRepository.getReferenceById(input.getToEntityId());
+        EntityLink entityLink = EntityLink.builder() //
+            .withFromEntity(fromEntity) //
+            .withFromEntityLocations(input.getFromEntityLocations()) //
+            .withToEntity(toEntity) //
+            .withToEntityLocations(input.getToEntityLocations()) //
+            .build();
+        setCreatedFields(entityLink);
+        entityLink = entityLinkRepository.save(entityLink);
+        logCreated(entityLink);
+        EntityKind fromEntityKind = EntityKind.valueOf(fromEntity.getEntityKind());
+        EntityKind toEntityKind = EntityKind.valueOf(toEntity.getEntityKind());
+        logLinked(entityLink, input.getFromEntityId(), fromEntityKind, input.getToEntityId(), toEntityKind);
+        return entityLink;
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('LNK')")
+    public Object updateEntityLink(DataFetchingEnvironment dataFetchingEnvironment, EntityLinkInput input) {
+        Optional<EntityLink> entityLinkOpt = entityLinkRepository.findById(input.getId());
+        if (entityLinkOpt.isEmpty())
+            return null;
+
+        EntityLink entityLink = entityLinkOpt.get();
+        AbstractLinkableEntity oldFromEntity = entityLink.getFromEntity();
+        AbstractLinkableEntity oldToEntity = entityLink.getToEntity();
+
+        setUpdatedFields(entityLink);
+        boolean fromEntityChanged = !oldFromEntity.getId().equals(input.getFromEntityId());
+        boolean toEntityChanged = !oldToEntity.getId().equals(input.getToEntityId());
+        if (fromEntityChanged || toEntityChanged) {
+            AbstractLinkableEntity newFromEntity = fromEntityChanged //
+                ? linkableEntityRepository.getReferenceById(input.getFromEntityId()) //
+                : oldFromEntity;
+            AbstractLinkableEntity newToEntity = toEntityChanged //
+                ? linkableEntityRepository.getReferenceById(input.getToEntityId()) //
+                : oldToEntity;
+            if (fromEntityChanged)
+                entityLink.setFromEntity(newFromEntity);
+            if (toEntityChanged)
+                entityLink.setToEntity(newToEntity);
+            logUnlinked(entityLink, oldFromEntity.getId(), entityUtils.getEntityKind(oldFromEntity),
+                oldToEntity.getId(), entityUtils.getEntityKind(oldToEntity));
+            logLinked(entityLink, input.getFromEntityId(), entityUtils.getEntityKind(newFromEntity),
+                input.getToEntityId(), entityUtils.getEntityKind(newToEntity));
+        }
+        entityLink.setFromEntityLocations(input.getFromEntityLocations());
+        entityLink.setToEntityLocations(input.getToEntityLocations());
+        logUpdated(entityLink);
+
+        return entityLinkRepository.save(entityLink);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('LNK')")
+    public Object deleteEntityLink(DataFetchingEnvironment dataFetchingEnvironment, Long entityLinkId) {
+        EntityLink entityLink = entityLinkRepository.getReferenceById(entityLinkId);
+        entityLink.setStatus(StatusKind.DEL.name());
+        setUpdatedFields(entityLink);
+        logDeleted(entityLink);
+
+        ILinkableEntity fromEntity = entityLink.getFromEntity();
+        ILinkableEntity toEntity = entityLink.getToEntity();
+        logUnlinked(entityLink, fromEntity.getId(), entityUtils.getEntityKind(fromEntity), toEntity.getId(),
+            entityUtils.getEntityKind(toEntity));
+
+        return entityLinkRepository.save(entityLink);
     }
 
     @Override
@@ -325,7 +410,6 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
                 journal.setPublisher(publisher);
             }
         }
-        // journal.setStatus(input.getStatus());
         journal.setTitle(input.getTitle());
         journal.setUrl(input.getUrl());
         setUpdatedFields(journal);
@@ -682,149 +766,16 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
-    @PreAuthorize("hasAuthority('LNK')")
-    public Object addTopicRef(DataFetchingEnvironment dataFetchingEnvironment, TopicRefInput topicRefInput) {
-        return addOrUpdateTopicRef(topicRefInput);
-    }
-
-	/** Updates an existing topic reference. */
-    @PreAuthorize("hasAuthority('LNK')")
-	public Object updateTopicRef(DataFetchingEnvironment dataFetchingEnvironment, TopicRefInput topicRefInput) {
-        return addOrUpdateTopicRef(topicRefInput);
-    }
-
-    private Object addOrUpdateTopicRef(TopicRefInput topicRefInput) {
-        TopicRef topicRef = TopicRef.builder() //
-            .withId(topicRefInput.getId()) //
-            .withTopicId(topicRefInput.getTopicId()) //
-            .withEntityId(topicRefInput.getEntityId()) //
-            .withEntityKind(topicRefInput.getEntityKind().name()) //
-            .withLocations(topicRefInput.getLocations()) //
-            .build();
-        TopicRef result = topicRefRepository.save(topicRef);
-        if (result != null) {
-            EntityKind entityKind = EntityKind.valueOf(topicRef.getEntityKind());
-            logLinked(topicRef.getTopicId(), EntityKind.TOP, topicRef.getEntityId(), entityKind);
-        }
-        return result;
-    }
-
-    @Override
-    @PreAuthorize("hasAuthority('LNK')")
-    public Object removeTopicRef(DataFetchingEnvironment dataFetchingEnvironment, TopicRefInput topicRefInput) {
-        TopicRef topicRef = TopicRef.builder() //
-            .withId(topicRefInput.getId()) //
-            .withTopicId(topicRefInput.getTopicId()) //
-            .withEntityId(topicRefInput.getEntityId()) //
-            .withEntityKind(topicRefInput.getEntityKind().name()) //
-            .withLocations(topicRefInput.getLocations()) //
-            .build();
-        int removeCount = topicRefRepository.removeTopicRef(topicRef);
-        if (removeCount == 1) {
-            logUnlinked(topicRef.getTopicId(), EntityKind.TOP, topicRef.getEntityId(), topicRefInput.getEntityKind());
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    @PreAuthorize("hasAuthority('LNK')")
-    public Object linkEntities(DataFetchingEnvironment dataFetchingEnvironment, LinkEntitiesInput linkInput) {
-        int linkCount = linkRepository.linkEntities(linkInput);
-        if (linkCount == 1) {
-            logLinked(linkInput.getFromEntityId(), linkInput.getFromEntityKind(), linkInput.getToEntityId(),
-                linkInput.getToEntityKind());
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    @PreAuthorize("hasAuthority('LNK')")
-    public Object unlinkEntities(DataFetchingEnvironment dataFetchingEnvironment, LinkEntitiesInput linkInput) {
-        int unlinkCount = linkRepository.unlinkEntities(linkInput);
-        if (unlinkCount == 1) {
-            logUnlinked(linkInput.getFromEntityId(), linkInput.getFromEntityKind(), linkInput.getToEntityId(),
-                linkInput.getToEntityKind());
-            return true;
-        }
-        return false;
-    }
-
-    @Override
     @PreAuthorize("hasAuthority('UPD')")
-    public Object setEntityStatus(DataFetchingEnvironment dataFetchingEnvironment, EntityKind entityKind, Long entityId,
-        StatusKind status) {
+    public Object setEntityStatus(DataFetchingEnvironment dataFetchingEnvironment, Long entityId, StatusKind status) {
 
-        CrudRepository<? extends ITrackedEntity, Long> repository;
-        switch (entityKind) {
-            case CLA:
-                repository = claimRepository;
-                break;
-            case DEC:
-                repository = declarationRepository;
-                break;
-            case JOU:
-                repository = journalRepository;
-                break;
-            case PBR:
-                repository = publisherRepository;
-                break;
-            case PER:
-                repository = personRepository;
-                break;
-            case PUB:
-                repository = publicationRepository;
-                break;
-            case QUO:
-                repository = quotationRepository;
-                break;
-            case TOP:
-                repository = topicRepository;
-                break;
-            case USR:
-                repository = userRepository;
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported entity kind: " + entityKind);
-        }
-        Optional<? extends ITrackedEntity> entityOpt = repository.findById(entityId);
+        Optional<AbstractTrackedEntity> entityOpt = trackedEntityRepository.findById(entityId);
         if (entityOpt.isPresent()) {
-            ITrackedEntity entity = entityOpt.get();
+            AbstractTrackedEntity entity = entityOpt.get();
             entity.setStatus(status.name());
             setUpdatedFields(entity);
             logUpdated(entity);
-            switch (entityKind) {
-                case CLA:
-                    claimRepository.save((Claim)entity);
-                    break;
-                case DEC:
-                    declarationRepository.save((Declaration)entity);
-                    break;
-                case JOU:
-                    journalRepository.save((Journal)entity);
-                    break;
-                case PBR:
-                    publisherRepository.save((Publisher)entity);
-                    break;
-                case PER:
-                    personRepository.save((Person)entity);
-                    break;
-                case PUB:
-                    publicationRepository.save((Publication)entity);
-                    break;
-                case QUO:
-                    quotationRepository.save((Quotation)entity);
-                    break;
-                case TOP:
-                    topicRepository.save((Topic)entity);
-                    break;
-                case USR:
-                    userRepository.save((User)entity);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unsupported entity kind: " + entityKind);
-            }
+            trackedEntityRepository.save(entity);
             return true;
         } else {
             return false;

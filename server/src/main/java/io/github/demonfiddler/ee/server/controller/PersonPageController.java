@@ -55,9 +55,8 @@ public class PersonPageController {
 	protected GraphqlServerUtils graphqlServerUtils;
 
 	public PersonPageController(BatchLoaderRegistry registry) {
-		// Registering the data loaders is useless if the @BatchMapping is used. But we
-		// need it here, for backward
-		// compatibility with code developed against the previous plugin versions
+		// Registering the data loaders is useless if @BatchMapping is used. But we need it here, for backward
+		// compatibility with code developed against previous plugin versions.
 		registry.forTypePair(Long.class, PersonPage.class).registerMappedBatchLoader((keysSet, env) -> {
 			List<Long> keys = new ArrayList<>(keysSet.size());
 			keys.addAll(keysSet);
@@ -74,9 +73,9 @@ public class PersonPageController {
 	}
 
 	/**
-	 * This methods loads the data for ${dataFetcher.graphQLType}.content. It is generated as the
+	 * Loads the data for PersonPage.content. It is generated as the
 	 * <code>generateBatchMappingDataFetchers</code> plugin parameter is true. <br/>
-	 * @param batchLoaderEnvironment The environement for this batch loaded. You can extract the GraphQLContext from
+	 * @param batchLoaderEnvironment The environment for this batch loader. You can extract the GraphQLContext from
 	 * this parameter.
 	 * @param graphQLContext
 	 * @param keys The objects for which the value for the content field must be retrieved.

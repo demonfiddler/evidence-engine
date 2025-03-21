@@ -55,7 +55,7 @@ public class EntityStatusTests extends AbstractGraphQLTests {
         """;
 
     @BeforeAll
-    static void beforeAll() throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+    static void beforeAll() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
         // Need to ensure in-memory presence of the entity instances required by these tests. This is to enable test
         // execution against an already-populated database without having to run the entire integration test suite.
         ClaimTests.ensureExpectedClaims();
@@ -75,9 +75,8 @@ public class EntityStatusTests extends AbstractGraphQLTests {
         for (List<? extends ITrackedEntity> list : TestState.getExpectedTrackedEntities()) {
             for (int i = list == TopicTests.topics ? 2 : 1; i < list.size(); i++) {
                 ITrackedEntity entity = list.get(i);
-                EntityKind entityKind = getEntityKind(entity);
                 Long entityId = entity.getId();
-                Boolean result = mutationExecutor.setEntityStatus("", entityKind, entityId, PUB);
+                Boolean result = mutationExecutor.setEntityStatus("", entityId, PUB);
                 if (result)
                     entity.setStatus(StatusKind.PUB.label());
                 assertThat(result).isTrue();
@@ -90,7 +89,7 @@ public class EntityStatusTests extends AbstractGraphQLTests {
     @EnabledIf("io.github.demonfiddler.ee.client.TestState#hasExpectedEntities")
     void readPublishedEntities() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
         TrackedEntityQueryFilter trackedEntityFilter = TrackedEntityQueryFilter.builder().withStatus(List.of(PUB)).build();
-        TopicalEntityQueryFilter topicalEntityFilter = TopicalEntityQueryFilter.builder().withStatus(List.of(PUB)).build();
+        LinkableEntityQueryFilter topicalEntityFilter = LinkableEntityQueryFilter.builder().withStatus(List.of(PUB)).build();
         TopicQueryFilter topicQueryFilter = TopicQueryFilter.builder().withStatus(List.of(PUB)).build();
 
         ClaimPage claimPage = queryExecutor.claims(MINIMAL_PAGED_RESPONSE, topicalEntityFilter, null);

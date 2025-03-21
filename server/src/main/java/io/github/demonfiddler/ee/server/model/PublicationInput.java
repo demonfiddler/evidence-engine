@@ -33,13 +33,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("PublicationInput")
-public class PublicationInput {
-
-	/**
-	 * The publication identifier, required if updating an existing record.
-	 */
-	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
-	Long id;
+public class PublicationInput extends AbstractBaseEntityInput {
 
 	/**
 	 * The names of the author, one per line.
@@ -118,8 +112,8 @@ public class PublicationInput {
 	/**
 	 * The URL for the publication online.
 	 */
-	@GraphQLScalar(fieldName = "url", graphQLTypeSimpleName = "URL", javaClass = java.net.URL.class, listDepth = 0)
-	java.net.URL url;
+	@GraphQLScalar(fieldName = "url", graphQLTypeSimpleName = "URL", javaClass = URL.class, listDepth = 0)
+	URL url;
 
 	/**
 	 * Flag to indicate that url content is cached on this application server.
@@ -132,20 +126,6 @@ public class PublicationInput {
 	 */
 	@GraphQLScalar(fieldName = "accessed", graphQLTypeSimpleName = "Date", javaClass = LocalDate.class, listDepth = 0)
 	LocalDate accessed;
-
-	/**
-	 * The publication identifier, required if updating an existing record.
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	/**
-	 * The publication identifier, required if updating an existing record.
-	 */
-	public Long getId() {
-		return this.id;
-	}
 
 	/**
 	 * The names of the author, one per line.
@@ -346,14 +326,14 @@ public class PublicationInput {
 	/**
 	 * The date the publication was accessed when compiling the database.
 	 */
-	public void setAccessed(java.time.LocalDate accessed) {
+	public void setAccessed(LocalDate accessed) {
 		this.accessed = accessed;
 	}
 
 	/**
 	 * The date the publication was accessed when compiling the database.
 	 */
-	public java.time.LocalDate getAccessed() {
+	public LocalDate getAccessed() {
 		return this.accessed;
 	}
 
@@ -401,31 +381,23 @@ public class PublicationInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
-		private Long id;
+	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, PublicationInput> {
+
 		private String authorNames;
 		private List<Long> authorIds;
 		private String title;
 		private Long journalId;
 		private PublicationKind kind;
-		private java.time.LocalDate date;
+		private LocalDate date;
 		private Integer year;
 		private String _abstract;
 		private String notes;
 		private Boolean peerReviewed;
 		private String doi;
 		private String isbn;
-		private java.net.URL url;
+		private URL url;
 		private Boolean cached;
-		private java.time.LocalDate accessed;
-
-		/**
-		 * The publication identifier, required if updating an existing record.
-		 */
-		public Builder withId(Long idParam) {
-			this.id = idParam;
-			return this;
-		}
+		private LocalDate accessed;
 
 		/**
 		 * The names of the author, one per line.
@@ -547,9 +519,9 @@ public class PublicationInput {
 			return this;
 		}
 
+		@Override
 		public PublicationInput build() {
-			PublicationInput _object = new PublicationInput();
-			_object.setId(this.id);
+			PublicationInput _object = build(new PublicationInput());
 			_object.setAuthorNames(this.authorNames);
 			_object.setAuthorIds(this.authorIds);
 			_object.setTitle(this.title);
@@ -567,6 +539,7 @@ public class PublicationInput {
 			_object.setAccessed(this.accessed);
 			return _object;
 		}
+
 	}
 
 }

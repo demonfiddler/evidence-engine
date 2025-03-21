@@ -19,6 +19,7 @@
 
 package io.github.demonfiddler.ee.server.model;
 
+import com.graphql_java_generator.annotation.GraphQLDirective;
 import com.graphql_java_generator.annotation.GraphQLEnumType;
 
 /**
@@ -30,11 +31,21 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
 @GraphQLEnumType("CountryFormatKind")
 public enum CountryFormatKind {
 
-		ALPHA_2("ALPHA_2"), //$NON-NLS-1$
-		ALPHA_3("ALPHA_3"), //$NON-NLS-1$
-		NUMERIC("NUMERIC"), //$NON-NLS-1$
-		ISO_NAME("ISO_NAME"), //$NON-NLS-1$
-		COMMON_NAME("COMMON_NAME"); //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Alpha-2 code" })
+	ALPHA_2("ALPHA_2"), //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Alpha-3 code" })
+	ALPHA_3("ALPHA_3"), //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Numeric code" })
+	NUMERIC("NUMERIC"), //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "ISO name" })
+	ISO_NAME("ISO_NAME"), //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Common name" })
+	COMMON_NAME("COMMON_NAME"); //$NON-NLS-1$
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different when the value in the GraphQL schema is a Java reserved keyword.
@@ -45,8 +56,8 @@ public enum CountryFormatKind {
 	}
 
 	/**
-	 * Returns the value of this constant, as specified in the GraphQL schema. This is usually the same as the enum
-	 * item's name. But it will differ if this name is a Java reserved keyword (in which case the name is prefixed by an
+	 * Returns the value of this constant, as specified in the GraphQL schema. This is usually the same as the enum item's
+	 * name. But it will differ if this name is a Java reserved keyword (in which case the name is prefixed by an
 	 * underscore)
 	 * @return the enum constant with the specified name, as defined in the GraphQL schema
 	 */
@@ -55,12 +66,11 @@ public enum CountryFormatKind {
 	}
 
 	/**
-	 * Returns the enum constant of this type with the specified name (as specified in the GraphQL schema). The string
-	 * must match exactly an identifier used to declare an enum constant in this type. (Extraneous whitespace characters
-	 * are not permitted.)
-	 * @param graphQlValue The value, as defined in the GraphQL schema. This is usually the same as the enum item's
-	 * name. But it will differ if this name is a Java reserved keyword (in which case the name is prefixed by an
-	 * underscore)
+	 * Returns the enum constant of this type with the specified name (as specified in the GraphQL schema). The string must
+	 * match exactly an identifier used to declare an enum constant in this type. (Extraneous whitespace characters are not
+	 * permitted.)
+	 * @param graphQlValue The value, as defined in the GraphQL schema. This is usually the same as the enum item's name.
+	 * But it will differ if this name is a Java reserved keyword (in which case the name is prefixed by an underscore)
 	 * @return the enum constant with the specified name
 	 * @throws IllegalArgumentException if this enum type has no constant with the specified GraphQL name
 	 */
@@ -73,8 +83,7 @@ public enum CountryFormatKind {
 				return e;
 			}
 		}
-		throw new IllegalArgumentException(
-			"No CountryFormatKind exists with '" + graphQlValue + "' as a GraphQL value"); //$NON-NLS-1$ //$NON-NLS-2$
+		throw new IllegalArgumentException("No CountryFormatKind exists with '" + graphQlValue + "' as a GraphQL value");
 	}
 
 }

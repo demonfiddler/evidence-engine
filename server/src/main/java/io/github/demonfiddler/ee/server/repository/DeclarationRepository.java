@@ -19,16 +19,8 @@
 
 package io.github.demonfiddler.ee.server.repository;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-
 import io.github.demonfiddler.ee.server.model.Declaration;
 
 public interface DeclarationRepository extends JpaRepository<Declaration, Long>, CustomDeclarationRepository {
-
-	@Query(value = "select d from Declaration d where d.id in ?1")
-	List<Declaration> findByIds(List<Long> ids);
-
 }

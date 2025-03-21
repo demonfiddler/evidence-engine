@@ -43,6 +43,15 @@
 			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.Declaration>"
 		},
 		{
+			"name": "EntityLink",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional"
+		},
+		{
+			"name": "EntityLinkPage",
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
+			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.EntityLink>"
+		},
+		{
 			"name": "Journal",
 			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
 			"fieldPersonalizations": [
@@ -188,15 +197,6 @@
 			"name": "TopicPage",
 			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
 			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.Topic>"
-		},
-		{
-			"name": "TopicRef",
-			"addAnnotation": "@org.springframework.transaction.annotation.Transactional"
-		},
-		{
-			"name": "TopicRefPage",
-			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
-			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.TopicRef>"
 		},
 		{
 			"name": "User",

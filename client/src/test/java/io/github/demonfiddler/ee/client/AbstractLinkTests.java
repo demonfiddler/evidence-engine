@@ -56,10 +56,10 @@ abstract class AbstractLinkTests extends AbstractGraphQLTests {
         { 1, 2, 7, 8 }, //
         { 1, 2, 7, 8 }, //
     };
-    static final ITopicalEntity[] ENTITY = new ITopicalEntity[5];
-    static final Map<EntityKind, ITopicalEntity> ENTITY_MAP = new LinkedHashMap<>();
-    static final List<List<? extends ITopicalEntity>> ENTITIES = new ArrayList<>(5);
-    static Map<EntityKind, List<? extends IBaseEntity>> ENTITIES_MAP = new LinkedHashMap<>();
+    static final ILinkableEntity[] ENTITY = new ILinkableEntity[5];
+    static final Map<EntityKind, ILinkableEntity> ENTITY_MAP = new LinkedHashMap<>();
+    static final List<List<? extends ILinkableEntity>> ENTITIES = new ArrayList<>(5);
+    static final Map<EntityKind, List<? extends IBaseEntity>> ENTITIES_MAP = new LinkedHashMap<>();
     /** Maps entityID to entity index, mapped by entity kind. */
     private static final Map<EntityKind, Map<Long, Integer>> ENTITY_ID_TO_INDEX = new HashMap<>();
     private static volatile boolean initialised;
@@ -120,7 +120,7 @@ abstract class AbstractLinkTests extends AbstractGraphQLTests {
 
     @SuppressWarnings("unchecked")
     <P extends AbstractPage<T>, T extends IBaseEntity> P queryEntities(EntityKind entityKind, String queryResponseDef,
-        TopicalEntityQueryFilter filter, PageableInput pageSort)
+        LinkableEntityQueryFilter filter, PageableInput pageSort)
         throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
             switch (entityKind) {

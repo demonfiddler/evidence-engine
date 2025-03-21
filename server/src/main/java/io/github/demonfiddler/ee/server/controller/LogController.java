@@ -57,9 +57,8 @@ public class LogController {
 	protected GraphqlServerUtils graphqlServerUtils;
 
 	public LogController(BatchLoaderRegistry registry) {
-		// Registering the data loaders is useless if the @BatchMapping is used. But we
-		// need it here, for backward
-		// compatibility with code developed against the previous plugin versions
+		// Registering the data loaders is useless if @BatchMapping is used. But we need it here, for backward
+		// compatibility with code developed against previous plugin versions
 		registry.forTypePair(Long.class, Log.class).registerMappedBatchLoader((keysSet, env) -> {
 			List<Long> keys = new ArrayList<>(keysSet.size());
 			keys.addAll(keysSet);
@@ -76,7 +75,7 @@ public class LogController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.transactionKind. It returns an Object: the data fetcher
+	 * Loads the data for Log.transactionKind. It returns an Object: the data fetcher
 	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
@@ -85,7 +84,7 @@ public class LogController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -104,7 +103,7 @@ public class LogController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.entityKind. It returns an Object: the data fetcher
+	 * Loads the data for Log.entityKind. It returns an Object: the data fetcher
 	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
@@ -113,7 +112,7 @@ public class LogController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -132,7 +131,7 @@ public class LogController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.linkedEntityKind. It returns an Object: the data
+	 * Loads the data for Log.linkedEntityKind. It returns an Object: the data
 	 * fetcher implementation may return any type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
@@ -141,7 +140,7 @@ public class LogController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the

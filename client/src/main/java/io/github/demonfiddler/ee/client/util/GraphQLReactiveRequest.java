@@ -27,7 +27,6 @@ import org.springframework.graphql.client.GraphQlClient;
 
 import com.graphql_java_generator.annotation.RequestType;
 import com.graphql_java_generator.client.GraphQLRequestObject;
-import com.graphql_java_generator.client.GraphqlClientUtils;
 import com.graphql_java_generator.client.request.InputParameter;
 import com.graphql_java_generator.client.request.ObjectResponse;
 import com.graphql_java_generator.client.request.QueryField;
@@ -52,10 +51,10 @@ public class GraphQLReactiveRequest extends ObjectResponse {
 	private static Logger logger = LoggerFactory.getLogger(GraphQLRequest.class);
 
 	final GraphqlUtils graphqlUtils = new GraphqlUtils();
-	final GraphqlClientUtils graphqlClientUtils = new GraphqlClientUtils();
+	final GraphqlClientUtilsEx graphqlClientUtils = new GraphqlClientUtilsEx();
 
 	// This initialization must occur before the execution of the constructors, in order to properly parse the GraphQL
-	// request
+	// request.
 	static {
 		CustomScalarRegistryInitializer.initCustomScalarRegistry();
 		DirectiveRegistryInitializer.initDirectiveRegistry();
@@ -84,7 +83,7 @@ public class GraphQLReactiveRequest extends ObjectResponse {
 	 * @throws GraphQLRequestPreparationException
 	 */
 	public GraphQLReactiveRequest(String graphQLRequest) throws GraphQLRequestPreparationException {
-		super(null, "", graphQLRequest); //$NON-NLS-1$
+		super(null, "", graphQLRequest);
 	}
 
 	/**
@@ -109,7 +108,8 @@ public class GraphQLReactiveRequest extends ObjectResponse {
 	 */
 	public GraphQLReactiveRequest(GraphQlClient graphQlClient, String graphQLRequest, RequestType requestType,
 		String fieldName, InputParameter... inputParams) throws GraphQLRequestPreparationException {
-		super(graphQlClient, "", graphQLRequest, requestType, fieldName, inputParams); //$NON-NLS-1$
+
+		super(graphQlClient, "", graphQLRequest, requestType, fieldName, inputParams);
 	}
 
 	/**
@@ -271,17 +271,17 @@ public class GraphQLReactiveRequest extends ObjectResponse {
 	 */
 	@Override
 	protected String getGraphQLClassesPackageName() {
-		return "io.github.demonfiddler.ee.client"; //$NON-NLS-1$
+		return "io.github.demonfiddler.ee.client";
 	}
 
 	@Override
 	public QueryField getQueryContext() throws GraphQLRequestPreparationException {
-		return new QueryField(QueryRootResponse.class, "query"); //$NON-NLS-1$
+		return new QueryField(QueryRootResponse.class, "query");
 	}
 
 	@Override
 	public QueryField getMutationContext() throws GraphQLRequestPreparationException {
-		return new QueryField(MutationRootResponse.class, "mutation"); //$NON-NLS-1$
+		return new QueryField(MutationRootResponse.class, "mutation");
 	}
 
 	@Override

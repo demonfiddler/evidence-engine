@@ -19,8 +19,6 @@
 
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import graphql.schema.DataFetchingEnvironment;
@@ -30,7 +28,10 @@ import io.github.demonfiddler.ee.server.model.ClaimPage;
 import io.github.demonfiddler.ee.server.model.Declaration;
 import io.github.demonfiddler.ee.server.model.DeclarationPage;
 import io.github.demonfiddler.ee.server.model.EntityKind;
+import io.github.demonfiddler.ee.server.model.EntityLinkPage;
+import io.github.demonfiddler.ee.server.model.EntityLinkQueryFilter;
 import io.github.demonfiddler.ee.server.model.JournalPage;
+import io.github.demonfiddler.ee.server.model.LinkableEntityQueryFilter;
 import io.github.demonfiddler.ee.server.model.LogPage;
 import io.github.demonfiddler.ee.server.model.LogQueryFilter;
 import io.github.demonfiddler.ee.server.model.PageableInput;
@@ -43,22 +44,17 @@ import io.github.demonfiddler.ee.server.model.Quotation;
 import io.github.demonfiddler.ee.server.model.QuotationPage;
 import io.github.demonfiddler.ee.server.model.TopicPage;
 import io.github.demonfiddler.ee.server.model.TopicQueryFilter;
-import io.github.demonfiddler.ee.server.model.TopicRef;
-import io.github.demonfiddler.ee.server.model.TopicRefPage;
-import io.github.demonfiddler.ee.server.model.TopicRefQueryFilter;
-import io.github.demonfiddler.ee.server.model.TopicalEntityQueryFilter;
 import io.github.demonfiddler.ee.server.model.TrackedEntityQueryFilter;
 import io.github.demonfiddler.ee.server.model.UserPage;
 import io.github.demonfiddler.ee.server.repository.ClaimRepository;
 import io.github.demonfiddler.ee.server.repository.DeclarationRepository;
+import io.github.demonfiddler.ee.server.repository.EntityLinkRepository;
 import io.github.demonfiddler.ee.server.repository.JournalRepository;
-import io.github.demonfiddler.ee.server.repository.LinkRepository;
 import io.github.demonfiddler.ee.server.repository.LogRepository;
 import io.github.demonfiddler.ee.server.repository.PersonRepository;
 import io.github.demonfiddler.ee.server.repository.PublicationRepository;
 import io.github.demonfiddler.ee.server.repository.PublisherRepository;
 import io.github.demonfiddler.ee.server.repository.QuotationRepository;
-import io.github.demonfiddler.ee.server.repository.TopicRefRepository;
 import io.github.demonfiddler.ee.server.repository.TopicRepository;
 import io.github.demonfiddler.ee.server.repository.UserRepository;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
@@ -72,9 +68,9 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     @Resource
     private DeclarationRepository declarationRepository;
     @Resource
-    private JournalRepository journalRepository;
+    private EntityLinkRepository entityLinkRepository;
     @Resource
-    private LinkRepository linkRepository;
+    private JournalRepository journalRepository;
     @Resource
     private LogRepository logRepository;
     @Resource
@@ -88,8 +84,6 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     @Resource
     private TopicRepository topicRepository;
     @Resource
-    private TopicRefRepository topicRefRepository;
-    @Resource
     private UserRepository userRepository;
     @Resource
     private EntityUtils entityUtils;
@@ -100,9 +94,10 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     }
 
     @Override
-    public Object claims(DataFetchingEnvironment dataFetchingEnvironment, TopicalEntityQueryFilter filter,
+    public Object claims(DataFetchingEnvironment dataFetchingEnvironment, LinkableEntityQueryFilter filter,
         PageableInput pageSort) {
 
+        filter = fixFilter(filter, EntityKind.CLA);
         return entityUtils.findByFilter(filter, pageSort, claimRepository, ClaimPage::new);
     }
 
@@ -112,10 +107,30 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     }
 
     @Override
-    public Object declarations(DataFetchingEnvironment dataFetchingEnvironment, TopicalEntityQueryFilter filter,
+    public Object declarations(DataFetchingEnvironment dataFetchingEnvironment, LinkableEntityQueryFilter filter,
         PageableInput pageSort) {
 
+        filter = fixFilter(filter, EntityKind.DEC);
         return entityUtils.findByFilter(filter, pageSort, declarationRepository, DeclarationPage::new);
+    }
+
+    @Override
+    public Object entityLinks(DataFetchingEnvironment dataFetchingEnvironment, EntityLinkQueryFilter filter,
+        PageableInput pageSort) {
+
+        return entityUtils.findByFilter(filter, pageSort, entityLinkRepository, EntityLinkPage::new);
+    }
+
+    @Override
+    public Object entityLinkById(DataFetchingEnvironment dataFetchingEnvironment, Long id) {
+        return entityLinkRepository.findById(id);
+    }
+
+    @Override
+    public Object entityLinkByEntityIds(DataFetchingEnvironment dataFetchingEnvironment, Long fromEntityId,
+        Long toEntityId) {
+
+        return entityLinkRepository.findByEntityIds(fromEntityId, toEntityId);
     }
 
     @Override
@@ -141,9 +156,10 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     }
 
     @Override
-    public Object persons(DataFetchingEnvironment dataFetchingEnvironment, TopicalEntityQueryFilter filter,
+    public Object persons(DataFetchingEnvironment dataFetchingEnvironment, LinkableEntityQueryFilter filter,
         PageableInput pageSort) {
 
+        filter = fixFilter(filter, EntityKind.PER);
         return entityUtils.findByFilter(filter, pageSort, personRepository, PersonPage::new);
     }
 
@@ -153,9 +169,10 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     }
 
     @Override
-    public Object publications(DataFetchingEnvironment dataFetchingEnvironment, TopicalEntityQueryFilter filter,
+    public Object publications(DataFetchingEnvironment dataFetchingEnvironment, LinkableEntityQueryFilter filter,
         PageableInput pageSort) {
 
+        filter = fixFilter(filter, EntityKind.PUB);
         return entityUtils.findByFilter(filter, pageSort, publicationRepository, PublicationPage::new);
     }
 
@@ -177,9 +194,10 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     }
 
     @Override
-    public Object quotations(DataFetchingEnvironment dataFetchingEnvironment, TopicalEntityQueryFilter filter,
+    public Object quotations(DataFetchingEnvironment dataFetchingEnvironment, LinkableEntityQueryFilter filter,
         PageableInput pageSort) {
 
+        filter = fixFilter(filter, EntityKind.QUO);
         return entityUtils.findByFilter(filter, pageSort, quotationRepository, QuotationPage::new);
     }
 
@@ -193,25 +211,6 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
         PageableInput pageSort) {
 
         return entityUtils.findByFilter(filter, pageSort, topicRepository, TopicPage::new);
-    }
-
-    @Override
-    public Object topicRefById(DataFetchingEnvironment dataFetchingEnvironment, Long id, EntityKind entityKind) {
-        return topicRefRepository.findById(id, entityKind);
-    }
-
-    @Override
-	public Object topicRefByEntityId(DataFetchingEnvironment dataFetchingEnvironment, Long topicId, Long entityId, EntityKind entityKind) {
-        return topicRefRepository.findByEntityId(topicId, entityId, entityKind);
-    }
-
-    @Override
-    public Object topicRefs(DataFetchingEnvironment dataFetchingEnvironment, TopicRefQueryFilter filter,
-        PageableInput pageSort) {
-
-        Pageable pageable = entityUtils.toPageable(pageSort);
-        Page<TopicRef> page = topicRefRepository.findByFilter(filter, pageable);
-        return entityUtils.toEntityPage(page, TopicRefPage::new);
     }
 
     @Override
@@ -229,6 +228,13 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
         PageableInput pageSort) {
 
         return entityUtils.findByFilter(filter, pageSort, userRepository, UserPage::new);
+    }
+
+    private LinkableEntityQueryFilter fixFilter(LinkableEntityQueryFilter filter, EntityKind entityKind) {
+        if (filter == null)
+            filter = new LinkableEntityQueryFilter();
+        filter.setToEntityKind(entityKind);
+        return filter;
     }
 
 }

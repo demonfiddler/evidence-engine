@@ -33,7 +33,7 @@ import com.google.common.truth.Subject;
 
 import io.github.demonfiddler.ee.client.Declaration;
 
-public class DeclarationSubject extends TopicalEntitySubject<Declaration> {
+public class DeclarationSubject extends LinkableEntitySubject<Declaration> {
 
     public static DeclarationSubject assertThat(/*@Nullable*/ Declaration declaration) {
         return assertAbout(declarations()).that(declaration);

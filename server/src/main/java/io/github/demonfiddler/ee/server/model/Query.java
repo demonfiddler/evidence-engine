@@ -19,6 +19,7 @@
 
 package io.github.demonfiddler.ee.server.model;
 
+import com.graphql_java_generator.annotation.GraphQLDirective;
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 
@@ -57,6 +58,27 @@ public class Query {
 	@GraphQLNonScalar(fieldName = "declarationById", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class, listDepth = 0)
 	Declaration declarationById;
+
+	/**
+	 * Returns a paged list of entity links.
+	 */
+	@GraphQLNonScalar(fieldName = "entityLinks", graphQLTypeSimpleName = "EntityLinkPage",
+		javaClass = EntityLinkPage.class, listDepth = 0)
+	EntityLinkPage entityLinks;
+
+	/**
+	 * Returns an entity link given its identifier.
+	 */
+	@GraphQLNonScalar(fieldName = "entityLinkById", graphQLTypeSimpleName = "EntityLink", javaClass = EntityLink.class,
+		listDepth = 0)
+	EntityLink entityLinkById;
+
+	/**
+	 * Returns an entity link given its from- and to-entity identifiers.
+	 */
+	@GraphQLNonScalar(fieldName = "entityLinkByEntityIds", graphQLTypeSimpleName = "EntityLink",
+		javaClass = EntityLink.class, listDepth = 0)
+	EntityLink entityLinkByEntityIds;
 
 	/**
 	 * Returns a paged list of journals.
@@ -147,41 +169,30 @@ public class Query {
 	@GraphQLNonScalar(fieldName = "topicById", graphQLTypeSimpleName = "Topic", javaClass = Topic.class, listDepth = 0)
 	Topic topicById;
 
-	@GraphQLNonScalar(fieldName = "topicRefs", graphQLTypeSimpleName = "TopicRefPage", javaClass = TopicRefPage.class,
-		listDepth = 0)
-	TopicRefPage topicRefs;
-
-	/**
-	 * Returns a topic reference given its identifier.
-	 */
-	@GraphQLNonScalar(fieldName = "topicRefById", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class,
-		listDepth = 0)
-	TopicRef topicRefById;
-
-	/**
-	 * Returns a topic reference given its topic and entity identifiers.
-	 */
-	@GraphQLNonScalar(fieldName = "topicRefByEntityId", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class,
-		listDepth = 0)
-	TopicRef topicRefByEntityId;
-
 	/**
 	 * Returns a paged list of users.
 	 */
 	@GraphQLNonScalar(fieldName = "users", graphQLTypeSimpleName = "UserPage", javaClass = UserPage.class,
 		listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[ADM]" })
 	UserPage users;
 
 	/**
 	 * Returns a user given its identifier.
 	 */
 	@GraphQLNonScalar(fieldName = "userById", graphQLTypeSimpleName = "User", javaClass = User.class, listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[ADM]" })
 	User userById;
 
 	/**
 	 * Returns a user given its username.
 	 */
-	@GraphQLNonScalar(fieldName = "userByUsername", graphQLTypeSimpleName = "User", javaClass = User.class, listDepth = 0)
+	@GraphQLNonScalar(fieldName = "userByUsername", graphQLTypeSimpleName = "User", javaClass = User.class,
+		listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[ADM]" })
 	User userByUsername;
 
 	/**
@@ -238,6 +249,48 @@ public class Query {
 	 */
 	public Declaration getDeclarationById() {
 		return this.declarationById;
+	}
+
+	/**
+	 * Returns a paged list of entity links.
+	 */
+	public void setEntityLinks(EntityLinkPage entityLinks) {
+		this.entityLinks = entityLinks;
+	}
+
+	/**
+	 * Returns a paged list of entity links.
+	 */
+	public EntityLinkPage getEntityLinks() {
+		return this.entityLinks;
+	}
+
+	/**
+	 * Returns an entity link given its identifier.
+	 */
+	public void setEntityLinkById(EntityLink entityLinkById) {
+		this.entityLinkById = entityLinkById;
+	}
+
+	/**
+	 * Returns an entity link given its identifier.
+	 */
+	public EntityLink getEntityLinkById() {
+		return this.entityLinkById;
+	}
+
+	/**
+	 * Returns an entity link given its from- and to-entity identifiers.
+	 */
+	public void setEntityLinkByEntityIds(EntityLink entityLinkByEntityIds) {
+		this.entityLinkByEntityIds = entityLinkByEntityIds;
+	}
+
+	/**
+	 * Returns an entity link given its from- and to-entity identifiers.
+	 */
+	public EntityLink getEntityLinkByEntityIds() {
+		return this.entityLinkByEntityIds;
 	}
 
 	/**
@@ -422,31 +475,11 @@ public class Query {
 		return this.topicById;
 	}
 
-	public void setTopicRefs(TopicRefPage topicRefs) {
-		this.topicRefs = topicRefs;
-	}
-
-	public TopicRefPage getTopicRefs() {
-		return this.topicRefs;
-	}
-
-	/**
-	 * Returns a topic reference given its identifier.
-	 */
-	public void setTopicRefById(TopicRef topicRefById) {
-		this.topicRefById = topicRefById;
-	}
-
-	/**
-	 * Returns a topic reference given its identifier.
-	 */
-	public TopicRef getTopicRefById() {
-		return this.topicRefById;
-	}
-
 	/**
 	 * Returns a paged list of users.
 	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[ADM]" })
 	public void setUsers(UserPage users) {
 		this.users = users;
 	}
@@ -454,6 +487,8 @@ public class Query {
 	/**
 	 * Returns a paged list of users.
 	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[ADM]" })
 	public UserPage getUsers() {
 		return this.users;
 	}
@@ -461,6 +496,8 @@ public class Query {
 	/**
 	 * Returns a user given its identifier.
 	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[ADM]" })
 	public void setUserById(User userById) {
 		this.userById = userById;
 	}
@@ -468,6 +505,8 @@ public class Query {
 	/**
 	 * Returns a user given its identifier.
 	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[ADM]" })
 	public User getUserById() {
 		return this.userById;
 	}
@@ -475,6 +514,8 @@ public class Query {
 	/**
 	 * Returns a user given its username.
 	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[ADM]" })
 	public void setUserByUsername(User userByUsername) {
 		this.userByUsername = userByUsername;
 	}
@@ -482,6 +523,8 @@ public class Query {
 	/**
 	 * Returns a user given its username.
 	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[ADM]" })
 	public User getUserByUsername() {
 		return this.userByUsername;
 	}
@@ -495,6 +538,12 @@ public class Query {
 			+ "declarations: " + this.declarations //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "declarationById: " + this.declarationById //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
+			+ "entityLinks: " + this.entityLinks //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
+			+ "entityLinkById: " + this.entityLinkById //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
+			+ "entityLinkByEntityIds: " + this.entityLinkByEntityIds //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "journals: " + this.journals //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
@@ -522,10 +571,6 @@ public class Query {
 			+ ", " //$NON-NLS-1$
 			+ "topicById: " + this.topicById //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
-			+ "topicRefs: " + this.topicRefs //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "topicRefById: " + this.topicRefById //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
 			+ "users: " + this.users //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "userById: " + this.userById //$NON-NLS-1$
@@ -548,6 +593,9 @@ public class Query {
 		private Claim claimById;
 		private DeclarationPage declarations;
 		private Declaration declarationById;
+		private EntityLinkPage entityLinks;
+		private EntityLink entityLinkById;
+		private EntityLink entityLinkByEntityIds;
 		private JournalPage journals;
 		private Journal journalById;
 		private LogPage log;
@@ -561,8 +609,6 @@ public class Query {
 		private Quotation quotationById;
 		private TopicPage topics;
 		private Topic topicById;
-		private TopicRefPage topicRefs;
-		private TopicRef topicRefById;
 		private UserPage users;
 		private User userById;
 		private User userByUsername;
@@ -596,6 +642,31 @@ public class Query {
 		 */
 		public Builder withDeclarationById(Declaration declarationByIdParam) {
 			this.declarationById = declarationByIdParam;
+			return this;
+		}
+
+		/**
+		 * Returns a paged list of entity links.
+		 */
+		public Builder withEntityLinks(EntityLinkPage entityLinksParam) {
+			this.entityLinks = entityLinksParam;
+			return this;
+		}
+
+		/**
+		 * Returns an entity link given its identifier.
+		 */
+		public Builder withEntityLinkById(EntityLink entityLinkByIdParam) {
+			this.entityLinkById = entityLinkByIdParam;
+			return this;
+		}
+
+		/**
+		 * Returns an entity link given its from- and to-entity identifiers.
+		 */
+		public Builder
+			withEntityLinkByEntityIds(EntityLink entityLinkByEntityIdsParam) {
+			this.entityLinkByEntityIds = entityLinkByEntityIdsParam;
 			return this;
 		}
 
@@ -703,19 +774,6 @@ public class Query {
 			return this;
 		}
 
-		public Builder withTopicRefs(TopicRefPage topicRefsParam) {
-			this.topicRefs = topicRefsParam;
-			return this;
-		}
-
-		/**
-		 * Returns a topic reference given its identifier.
-		 */
-		public Builder withTopicRefById(TopicRef topicRefByIdParam) {
-			this.topicRefById = topicRefByIdParam;
-			return this;
-		}
-
 		/**
 		 * Returns a paged list of users.
 		 */
@@ -746,6 +804,9 @@ public class Query {
 			_object.setClaimById(this.claimById);
 			_object.setDeclarations(this.declarations);
 			_object.setDeclarationById(this.declarationById);
+			_object.setEntityLinks(this.entityLinks);
+			_object.setEntityLinkById(this.entityLinkById);
+			_object.setEntityLinkByEntityIds(this.entityLinkByEntityIds);
 			_object.setJournals(this.journals);
 			_object.setJournalById(this.journalById);
 			_object.setLog(this.log);
@@ -759,8 +820,6 @@ public class Query {
 			_object.setQuotationById(this.quotationById);
 			_object.setTopics(this.topics);
 			_object.setTopicById(this.topicById);
-			_object.setTopicRefs(this.topicRefs);
-			_object.setTopicRefById(this.topicRefById);
 			_object.setUsers(this.users);
 			_object.setUserById(this.userById);
 			_object.setUserByUsername(this.userByUsername);

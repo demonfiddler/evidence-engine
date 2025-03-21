@@ -30,9 +30,9 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
 @GraphQLEnumType("DeclarationKind")
 public enum DeclarationKind {
 
-	DECL("DECL", "Declaration"), //$NON-NLS-1$
-	OPLE("OPLE", "Open Letter"), //$NON-NLS-1$
-	PETN("PETN", "Petition"); //$NON-NLS-1$
+	DECL("DECL", "Declaration"), //
+	OPLE("OPLE", "Open Letter"), //
+	PETN("PETN", "Petition"); //
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different when the value in the GraphQL schema is a Java reserved keyword.
@@ -81,7 +81,7 @@ public enum DeclarationKind {
 				return e;
 			}
 		}
-		throw new IllegalArgumentException("No DeclarationKind exists with '" + graphQlValue + "' as a GraphQL value"); //$NON-NLS-1$ //$NON-NLS-2$
+		throw new IllegalArgumentException("No DeclarationKind exists with '" + graphQlValue + "' as a GraphQL value");
 	}
 
 }

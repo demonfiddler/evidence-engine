@@ -19,16 +19,8 @@
 
 package io.github.demonfiddler.ee.server.repository;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-
 import io.github.demonfiddler.ee.server.model.Log;
 
 public interface LogRepository extends JpaRepository<Log, Long>, CustomLogRepository {
-
-	@Query(value = "select l from Log l where l.id in ?1")
-	List<Log> findByIds(List<Long> ids);
-
 }

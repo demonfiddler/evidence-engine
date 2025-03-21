@@ -19,6 +19,7 @@
 
 package io.github.demonfiddler.ee.server.model;
 
+import com.graphql_java_generator.annotation.GraphQLDirective;
 import com.graphql_java_generator.annotation.GraphQLEnumType;
 
 /**
@@ -30,15 +31,38 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
 @GraphQLEnumType("EntityKind")
 public enum EntityKind {
 
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Claim" })
 	CLA("CLA", "Claim"), //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Country" })
 	COU("COU", "Country"), //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Declaration" })
 	DEC("DEC", "Declaration"), //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Journal" })
 	JOU("JOU", "Journal"), //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Link" })
+	LNK("LNK", "EntityLink"), //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Person" })
 	PER("PER", "Person"), //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Publication" })
 	PUB("PUB", "Publication"), //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Publisher" })
 	PBR("PBR", "Publisher"), //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Quotation" })
 	QUO("QUO", "Quotation"), //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Topic" })
 	TOP("TOP", "Topic"), //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "User" })
 	USR("USR", "User"); //$NON-NLS-1$
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
@@ -88,7 +112,7 @@ public enum EntityKind {
 				return e;
 			}
 		}
-		throw new IllegalArgumentException("No EntityKind exists with '" + graphQlValue + "' as a GraphQL value"); //$NON-NLS-1$ //$NON-NLS-2$
+		throw new IllegalArgumentException("No EntityKind exists with '" + graphQlValue + "' as a GraphQL value");
 	}
 
 }

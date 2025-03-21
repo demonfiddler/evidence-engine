@@ -19,17 +19,13 @@
 
 package io.github.demonfiddler.ee.client;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.graphql_java_generator.annotation.GraphQLIgnore;
 import com.graphql_java_generator.annotation.GraphQLInputType;
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
-import com.graphql_java_generator.client.GraphQLObjectMapper;
 
 /**
  * An input to specify output sort order.
@@ -39,15 +35,7 @@ import com.graphql_java_generator.client.GraphQLObjectMapper;
  */
 @GraphQLInputType("SortInput")
 @JsonInclude(Include.NON_NULL)
-public class SortInput {
-
-	/**
-	 * This map contains the deserialized values for the alias, as parsed from the JSON response from the GraphQL
-	 * server. The key is the alias name, the value is the deserialiazed value (taking into account custom scalars,
-	 * lists, ...)
-	 */
-	@GraphQLIgnore
-	Map<String, Object> aliasValues = new HashMap<>();
+public class SortInput extends AbstractGraphQLObject {
 
 	public SortInput() {
 	}
@@ -76,32 +64,10 @@ public class SortInput {
 		return this.orders;
 	}
 
-	/**
-	 * This method is called during the json deserialization process, by the {@link GraphQLObjectMapper}, each time an
-	 * alias value is read from the json.
-	 * @param aliasName
-	 * @param aliasDeserializedValue
-	 */
-	public void setAliasValue(String aliasName, Object aliasDeserializedValue) {
-		this.aliasValues.put(aliasName, aliasDeserializedValue);
-	}
-
-	/**
-	 * Retrieves the value for the given alias, as it has been received for this object in the GraphQL response. <BR/>
-	 * This method <B>should not be used for Custom Scalars</B>, as the parser doesn't know if this alias is a custom
-	 * scalar, and which custom scalar to use at deserialization time. In most case, a value will then be provided by
-	 * this method with a basis json deserialization, but this value won't be the proper custom scalar value.
-	 * @param alias
-	 * @return
-	 */
-	public Object getAliasValue(String alias) {
-		return this.aliasValues.get(alias);
-	}
-
 	public String toString() {
-		return "SortInput {" //$NON-NLS-1$
-			+ "orders: " + this.orders //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "SortInput {" //
+			+ "orders: " + this.orders //
+			+ "}";
 	}
 
 	public static Builder builder() {

@@ -31,7 +31,7 @@ import com.google.common.truth.Subject;
 
 import io.github.demonfiddler.ee.client.Quotation;
 
-public class QuotationSubject extends TopicalEntitySubject<Quotation> {
+public class QuotationSubject extends LinkableEntitySubject<Quotation> {
 
     public static QuotationSubject assertThat(/*@Nullable*/ Quotation quotation) {
         return assertAbout(quotations()).that(quotation);

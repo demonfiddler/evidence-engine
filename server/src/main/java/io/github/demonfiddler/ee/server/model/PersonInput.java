@@ -29,13 +29,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("PersonInput")
-public class PersonInput {
-
-	/**
-	 * The person identifier, required if updating an existing record.
-	 */
-	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
-	Long id;
+public class PersonInput extends AbstractBaseEntityInput {
 
 	/**
 	 * The person's title(s).
@@ -115,20 +109,6 @@ public class PersonInput {
 	 */
 	@GraphQLScalar(fieldName = "published", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class, listDepth = 0)
 	Boolean published;
-
-	/**
-	 * The person identifier, required if updating an existing record.
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	/**
-	 * The person identifier, required if updating an existing record.
-	 */
-	public Long getId() {
-		return this.id;
-	}
 
 	/**
 	 * The person's title(s).
@@ -352,8 +332,8 @@ public class PersonInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
-		private Long id;
+	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, PersonInput> {
+
 		private String title;
 		private String firstName;
 		private String nickname;
@@ -367,14 +347,6 @@ public class PersonInput {
 		private Integer rating;
 		private Boolean checked;
 		private Boolean published;
-
-		/**
-		 * The person identifier, required if updating an existing record.
-		 */
-		public Builder withId(Long idParam) {
-			this.id = idParam;
-			return this;
-		}
 
 		/**
 		 * The person's title(s).
@@ -480,9 +452,9 @@ public class PersonInput {
 			return this;
 		}
 
+		@Override
 		public PersonInput build() {
-			PersonInput _object = new PersonInput();
-			_object.setId(this.id);
+			PersonInput _object = build(new PersonInput());
 			_object.setTitle(this.title);
 			_object.setFirstName(this.firstName);
 			_object.setNickname(this.nickname);
@@ -498,6 +470,7 @@ public class PersonInput {
 			_object.setPublished(this.published);
 			return _object;
 		}
+
 	}
 
 }

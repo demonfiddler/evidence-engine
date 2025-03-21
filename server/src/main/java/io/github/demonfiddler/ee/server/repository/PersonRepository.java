@@ -19,16 +19,8 @@
 
 package io.github.demonfiddler.ee.server.repository;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-
 import io.github.demonfiddler.ee.server.model.Person;
 
 public interface PersonRepository extends JpaRepository<Person, Long>, CustomPersonRepository {
-
-	@Query(value = "select p from Person p where p.id in ?1")
-	List<Person> findByIds(List<Long> ids);
-
 }

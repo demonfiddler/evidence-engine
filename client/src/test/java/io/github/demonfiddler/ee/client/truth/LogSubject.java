@@ -48,7 +48,7 @@ public class LogSubject extends Subject {
         this.actual = actual;
     }
 
-    public void hasId(String id) {
+    public void hasId(Long id) {
         id().isEqualTo(id);
     }
 

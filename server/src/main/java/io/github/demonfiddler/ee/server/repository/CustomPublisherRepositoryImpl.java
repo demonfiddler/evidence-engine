@@ -21,7 +21,7 @@ package io.github.demonfiddler.ee.server.repository;
 
 import io.github.demonfiddler.ee.server.model.Publisher;
 
-public class CustomPublisherRepositoryImpl extends CustomITrackedEntityRepositoryImpl<Publisher>
+public class CustomPublisherRepositoryImpl extends CustomTrackedEntityRepositoryImpl<Publisher>
     implements CustomPublisherRepository {
 
     @Override

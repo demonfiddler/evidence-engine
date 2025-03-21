@@ -19,11 +19,7 @@
 
 package io.github.demonfiddler.ee.server.repository;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-
 import io.github.demonfiddler.ee.server.model.Claim;
 
 /**
@@ -31,8 +27,4 @@ import io.github.demonfiddler.ee.server.model.Claim;
  * @author demonfiddler
  */
 public interface ClaimRepository extends JpaRepository<Claim, Long>, CustomClaimRepository {
-
-	@Query(value = "select c from Claim c where c.id in ?1")
-	List<Claim> findByIds(List<Long> ids);
-
 }

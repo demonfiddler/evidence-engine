@@ -53,7 +53,6 @@ public class GraphQLWiring implements RuntimeWiringConfigurer {
 			.scalar(GraphQLScalarType.newScalar(CustomScalars.ISSN).name("ISSN").build())
 			.scalar(GraphQLScalarType.newScalar(ExtendedScalars.GraphQLLong).name("Long").build())
 			.scalar(GraphQLScalarType.newScalar(CustomScalars.URI).name("URI").build())
-			// .scalar(GraphQLScalarType.newScalar(ExtendedScalars.Url).name("URL").build())
 			.scalar(GraphQLScalarType.newScalar(CustomScalars.URL).name("URL").build())
 			.scalar(GraphQLScalarType.newScalar(CustomScalars.VOID).name("Void").build());
 	}

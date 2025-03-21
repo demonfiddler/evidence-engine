@@ -24,13 +24,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
+import org.dataloader.DataLoader;
 import org.springframework.data.domain.Pageable;
 
 import graphql.GraphQLContext;
 import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.model.EntityKind;
 import io.github.demonfiddler.ee.server.model.FormatKind;
-import io.github.demonfiddler.ee.server.model.IBaseEntity;
 import io.github.demonfiddler.ee.server.model.ITrackedEntity;
 import io.github.demonfiddler.ee.server.model.LogPage;
 import io.github.demonfiddler.ee.server.model.LogQueryFilter;
@@ -50,7 +50,7 @@ import jakarta.persistence.PersistenceContext;
  * Base class containing implementations of common methods. It is necessary because the generated DataFetchersDelegate*
  * class hierachy does not reflect the inheritance expressed in the GraphQL schema.
  */
-abstract class DataFetchersDelegateITrackedEntityBaseImpl {
+abstract class DataFetchersDelegateITrackedEntityBaseImpl<T extends ITrackedEntity> {
 
     @Resource
     protected LogRepository logRepository;
@@ -63,20 +63,19 @@ abstract class DataFetchersDelegateITrackedEntityBaseImpl {
     @PersistenceContext
     EntityManager em;
 
-    protected Object _status(DataFetchingEnvironment dataFetchingEnvironment, ITrackedEntity origin,
+    public final Object entityKind(DataFetchingEnvironment dataFetchingEnvironment, T origin,
         FormatKind format) {
 
+        EntityKind entityKind = EntityKind.valueOf(origin.getEntityKind());
+        return formatUtils.formatEntityKind(entityKind, format);
+    }
+
+    public final Object status(DataFetchingEnvironment dataFetchingEnvironment, T origin, FormatKind format) {
         StatusKind status = StatusKind.valueOf(origin.getStatus());
         return formatUtils.formatStatusKind(status, format);
     }
 
-    // protected Flux<User> _createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-    // List<? extends ITrackedEntity> keys) {
-
-    // return entityUtils.getValues(keys, ITrackedEntity::getUpdatedByUser);
-    // }
-
-    protected <T extends ITrackedEntity> Map<T, User> _createdByUserMap(BatchLoaderEnvironment batchLoaderEnvironment,
+    public final Map<T, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<T> keys) {
 
         return securityUtils.hasAuthority(PermissionKind.ADM) //
@@ -84,22 +83,15 @@ abstract class DataFetchersDelegateITrackedEntityBaseImpl {
             : Collections.emptyMap();
     }
 
-    // protected Flux<User> _updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-    // List<? extends ITrackedEntity> keys) {
-
-    // return entityUtils.getValues(keys, ITrackedEntity::getUpdatedByUser);
-    // }
-
-    protected <T extends ITrackedEntity> Map<T, User> _updatedByUserMap(BatchLoaderEnvironment batchLoaderEnvironment,
+    public final Map<T, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<T> keys) {
 
         return securityUtils.hasAuthority(PermissionKind.ADM) //
-            ? entityUtils.getValuesMap(keys, ITrackedEntity::getUpdatedByUser)
-            : Collections.emptyMap();
+            ? entityUtils.getValuesMap(keys, ITrackedEntity::getUpdatedByUser) : Collections.emptyMap();
     }
 
-    protected LogPage _log(DataFetchingEnvironment dataFetchingEnvironment, IBaseEntity origin, LogQueryFilter filter,
-        PageableInput pageSort) {
+    public final LogPage log(DataFetchingEnvironment dataFetchingEnvironment, DataLoader<Long, LogPage> dataLoader,
+        T origin, LogQueryFilter filter, PageableInput pageSort) {
 
         filter = fixFilter(origin, filter);
         Pageable pageable = entityUtils.toPageable(pageSort);
@@ -112,10 +104,10 @@ abstract class DataFetchersDelegateITrackedEntityBaseImpl {
      * @param filter The query filter (can be null).
      * @return A new or updated log params.
      */
-    protected LogQueryFilter fixFilter(IBaseEntity entity, LogQueryFilter filter) {
+    protected LogQueryFilter fixFilter(ITrackedEntity entity, LogQueryFilter filter) {
         if (filter == null)
             filter = new LogQueryFilter();
-        EntityKind entityKind = entityUtils.getEntityKind(entity.getClass());
+        EntityKind entityKind = entityUtils.getEntityKind(entity);
         filter.setEntityId(entity.getId());
         filter.setEntityKind(entityKind);
         return filter;

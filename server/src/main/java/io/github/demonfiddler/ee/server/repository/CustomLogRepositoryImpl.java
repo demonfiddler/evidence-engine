@@ -29,21 +29,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
-// import org.springframework.transaction.annotation.Transactional;
 import org.springframework.lang.Nullable;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.github.demonfiddler.ee.server.model.Log;
 import io.github.demonfiddler.ee.server.model.LogQueryFilter;
-import io.github.demonfiddler.ee.server.util.EntityUtils;
-import jakarta.annotation.Resource;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 
 /**
  * A custom Log repository implementation that supports arbitrary filtering.
  */
-public class CustomLogRepositoryImpl implements CustomLogRepository {
+@Transactional
+public class CustomLogRepositoryImpl extends AbstractCustomRepositoryImpl implements CustomLogRepository {
 
     /** Describes the elements of a query. */
     static record QueryMetaData(@Nullable LogQueryFilter filter, @NonNull Pageable pageable, String countQueryName,
@@ -51,12 +48,11 @@ public class CustomLogRepositoryImpl implements CustomLogRepository {
         boolean hasTransactionKinds, boolean hasFrom, boolean hasTo, boolean isPaged, boolean isSorted) {
     }
 
-    private static Logger logger = LoggerFactory.getLogger(CustomLogRepositoryImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CustomLogRepositoryImpl.class);
 
-    @PersistenceContext
-    private EntityManager em;
-    @Resource
-    private EntityUtils entityUtils;
+    Logger getLogger() {
+        return LOGGER;
+    }
 
     /**
      * Returns metadata about a query and paging/sorting specification.
@@ -76,32 +72,25 @@ public class CustomLogRepositoryImpl implements CustomLogRepository {
 
         StringBuilder countQueryName = new StringBuilder();
         StringBuilder selectQueryName = new StringBuilder();
-        countQueryName.append("log.countBy");
-        selectQueryName.append("log.findBy");
-        if (hasEntityId) {
-            countQueryName.append("EntityId");
-            selectQueryName.append("EntityId");
+        StringBuilder[] queryNames = { countQueryName, selectQueryName };
+        append("log.", queryNames);
+        countQueryName.append("countBy");
+        selectQueryName.append("findBy");
+        if (hasEntityKind || hasEntityId) {
+            append("Entity", queryNames);
+            if (hasEntityKind)
+                append("Kind", queryNames);
+            if (hasEntityId)
+                append("Id", queryNames);
         }
-        if (hasEntityKind) {
-            countQueryName.append("EntityKind");
-            selectQueryName.append("EntityKind");
-        }
-        if (hasUserId) {
-            countQueryName.append("User");
-            selectQueryName.append("User");
-        }
-        if (hasTransactionKinds) {
-            countQueryName.append("TxnKind");
-            selectQueryName.append("TxnKind");
-        }
-        if (hasFrom) {
-            countQueryName.append("From");
-            selectQueryName.append("From");
-        }
-        if (hasTo) {
-            countQueryName.append("To");
-            selectQueryName.append("To");
-        }
+        if (hasUserId)
+            append("User", queryNames);
+        if (hasTransactionKinds)
+            append("TxnKind", queryNames);
+        if (hasFrom)
+            append("From", queryNames);
+        if (hasTo)
+            append("To", queryNames);
         if (isSorted) {
             entityUtils.appendOrderByToQueryName(selectQueryName, pageable);
         }
@@ -118,9 +107,6 @@ public class CustomLogRepositoryImpl implements CustomLogRepository {
      * @return An executable query pair.
      */
     private QueryPair defineNamedQueries(QueryMetaData m) {
-        if (m.hasEntityId && !m.hasEntityKind)
-            throw new IllegalArgumentException("entityKind must be specifed for entityId");
-
         StringBuilder selectBuf = new StringBuilder();
         selectBuf.append(" FROM \"log\"");
         boolean needsAnd = false;
@@ -172,31 +158,28 @@ public class CustomLogRepositoryImpl implements CustomLogRepository {
         // with different ORDER BY clauses will result in the registration of multiple identical COUNT queries, each of
         // which will simply overwrite the previous definition. This is not a problem, but it is somewhat inefficient.
         String countSql = countBuf.toString();
-        Query countQuery = em.createNativeQuery(countSql, Long.class);
-        em.getEntityManagerFactory().addNamedQuery(m.countQueryName, countQuery);
-        logger.debug("Defined query '{}' as:\n{}", m.countQueryName, countSql);
+        Query countQuery = defineNamedQuery(m.countQueryName, countSql, Long.class);
 
         String selectSql = selectBuf.toString();
-        Query selectQuery = em.createNativeQuery(selectSql, Log.class);
-        em.getEntityManagerFactory().addNamedQuery(m.selectQueryName, selectQuery);
-        logger.debug("Defined query '{}' as:\n{}", m.selectQueryName, selectSql);
+        Query selectQuery = defineNamedQuery(m.selectQueryName, selectSql, Log.class);
 
         return new QueryPair(countQuery, selectQuery);
     }
 
     @Override
-    // @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
     public Page<Log> findByFilter(@Nullable LogQueryFilter filter, @NonNull Pageable pageable) {
         QueryMetaData m = getQueryMetaData(filter, pageable);
 
-        QueryPair queries;
-        try {
+        QueryPair queries = null;
+        synchronized (queryNames) {
+            if (!queryNames.contains(m.countQueryName) || !queryNames.contains(m.selectQueryName))
+                queries = defineNamedQueries(m);
+        }
+        if (queries == null) {
             Query countQuery = em.createNamedQuery(m.countQueryName, Long.class);
             Query selectQuery = em.createNamedQuery(m.selectQueryName, Log.class);
             queries = new QueryPair(countQuery, selectQuery);
-        } catch (IllegalArgumentException e) {
-            queries = defineNamedQueries(m);
         }
 
         Map<String, Object> params = new HashMap<>();

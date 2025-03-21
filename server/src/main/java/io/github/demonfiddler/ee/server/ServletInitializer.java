@@ -26,7 +26,7 @@ public class ServletInitializer extends SpringBootServletInitializer {
 
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(/*EvidenceEngineServerApplication*/EvidenceEngineServer.class);
+		return application.sources(EvidenceEngineServer.class);
 	}
 
 }

@@ -21,17 +21,13 @@ package io.github.demonfiddler.ee.client;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.graphql_java_generator.annotation.GraphQLIgnore;
 import com.graphql_java_generator.annotation.GraphQLInputType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
-import com.graphql_java_generator.client.GraphQLObjectMapper;
 
 import io.github.demonfiddler.ee.client.util.CustomJacksonSerializers;
 
@@ -43,19 +39,12 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonSerializers;
  */
 @GraphQLInputType("DeclarationInput")
 @JsonInclude(Include.NON_NULL)
-public class DeclarationInput {
-
-	/**
-	 * This map contains the deserialized values for the alias, as parsed from the JSON response from the GraphQL
-	 * server. The key is the alias name, the value is the deserialiazed value (taking into account custom scalars,
-	 * lists, ...)
-	 */
-	@GraphQLIgnore
-	Map<String, Object> aliasValues = new HashMap<>();
+public class DeclarationInput extends AbstractBaseEntityInput {
 
 	public DeclarationInput() {
 	}
 
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
 	 * The declaration identifier, required if updating an existing record.
 	 */
@@ -116,17 +105,21 @@ public class DeclarationInput {
 	@GraphQLScalar(fieldName = "notes", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
 	String notes;
 
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
 	 * The declaration identifier, required if updating an existing record.
 	 */
+	@Override
 	@JsonProperty("id")
 	public void setId(Long id) {
 		this.id = id;
 	}
 
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
 	 * The declaration identifier, required if updating an existing record.
 	 */
+	@Override
 	@JsonProperty("id")
 	public Long getId() {
 		return this.id;
@@ -244,46 +237,24 @@ public class DeclarationInput {
 		return this.notes;
 	}
 
-	/**
-	 * This method is called during the json deserialization process, by the {@link GraphQLObjectMapper}, each time an
-	 * alias value is read from the json.
-	 * @param aliasName
-	 * @param aliasDeserializedValue
-	 */
-	public void setAliasValue(String aliasName, Object aliasDeserializedValue) {
-		this.aliasValues.put(aliasName, aliasDeserializedValue);
-	}
-
-	/**
-	 * Retrieves the value for the given alias, as it has been received for this object in the GraphQL response. <BR/>
-	 * This method <B>should not be used for Custom Scalars</B>, as the parser doesn't know if this alias is a custom
-	 * scalar, and which custom scalar to use at deserialization time. In most case, a value will then be provided by
-	 * this method with a basis json deserialization, but this value won't be the proper custom scalar value.
-	 * @param alias
-	 * @return
-	 */
-	public Object getAliasValue(String alias) {
-		return this.aliasValues.get(alias);
-	}
-
 	public String toString() {
-		return "DeclarationInput {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "kind: " + this.kind //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "title: " + this.title //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "date: " + this.date //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "country: " + this.country //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "url: " + this.url //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "signatories: " + this.signatories //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "notes: " + this.notes //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "DeclarationInput {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "kind: " + this.kind //
+			+ ", " //
+			+ "title: " + this.title //
+			+ ", " //
+			+ "date: " + this.date //
+			+ ", " //
+			+ "country: " + this.country //
+			+ ", " //
+			+ "url: " + this.url //
+			+ ", " //
+			+ "signatories: " + this.signatories //
+			+ ", " //
+			+ "notes: " + this.notes //
+			+ "}";
 	}
 
 	public static Builder builder() {
@@ -294,9 +265,8 @@ public class DeclarationInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
+	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, DeclarationInput> {
 
-		private Long id;
 		private DeclarationKind kind;
 		private String title;
 		private LocalDate date;
@@ -304,14 +274,6 @@ public class DeclarationInput {
 		private URL url;
 		private String signatories;
 		private String notes;
-
-		/**
-		 * The declaration identifier, required if updating an existing record.
-		 */
-		public Builder withId(Long idParam) {
-			this.id = idParam;
-			return this;
-		}
 
 		/**
 		 * The kind of declaration.
@@ -369,9 +331,9 @@ public class DeclarationInput {
 			return this;
 		}
 
+		@Override
 		public DeclarationInput build() {
-			DeclarationInput _object = new DeclarationInput();
-			_object.setId(this.id);
+			DeclarationInput _object = build(new DeclarationInput());
 			_object.setKind(this.kind);
 			_object.setTitle(this.title);
 			_object.setDate(this.date);

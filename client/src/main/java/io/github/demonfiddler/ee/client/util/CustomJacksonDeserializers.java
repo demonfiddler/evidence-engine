@@ -19,11 +19,32 @@
 
 package io.github.demonfiddler.ee.client.util;
 
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import com.graphql_java_generator.client.response.AbstractCustomJacksonDeserializer;
 
+import graphql.scalars.ExtendedScalars;
 import graphql.schema.GraphQLScalarType;
+import io.github.demonfiddler.ee.client.Claim;
+import io.github.demonfiddler.ee.client.Declaration;
+import io.github.demonfiddler.ee.client.EntityLink;
+import io.github.demonfiddler.ee.client.Journal;
+import io.github.demonfiddler.ee.client.Log;
+import io.github.demonfiddler.ee.client.Person;
+import io.github.demonfiddler.ee.client.Publication;
+import io.github.demonfiddler.ee.client.Publisher;
+import io.github.demonfiddler.ee.client.Quotation;
+import io.github.demonfiddler.ee.client.Topic;
+import io.github.demonfiddler.ee.client.User;
+import io.github.demonfiddler.ee.client.__Directive;
+import io.github.demonfiddler.ee.client.__DirectiveLocation;
+import io.github.demonfiddler.ee.client.__EnumValue;
+import io.github.demonfiddler.ee.client.__Field;
+import io.github.demonfiddler.ee.client.__InputValue;
+import io.github.demonfiddler.ee.client.__Type;
+import io.github.demonfiddler.ee.common.graphql.CustomScalars;
 
 /**
  * This class is a standard Deserializer for Jackson. It uses the {@link GraphQLScalarType} that is implemented by the
@@ -31,217 +52,211 @@ import graphql.schema.GraphQLScalarType;
  */
 public class CustomJacksonDeserializers {
 
-	public static class ListClaim
-		extends AbstractCustomJacksonDeserializer<List<io.github.demonfiddler.ee.client.Claim>> {
-		private static final long serialVersionUID = 1L;
-		public ListClaim() {
-			super(null, true, io.github.demonfiddler.ee.client.Claim.class, null);
-		}
-	}
+	public static class List__InputValue extends AbstractCustomJacksonDeserializer<List<__InputValue>> {
 
-	public static class ListPublication
-		extends AbstractCustomJacksonDeserializer<List<io.github.demonfiddler.ee.client.Publication>> {
-		private static final long serialVersionUID = 1L;
-		public ListPublication() {
-			super(null, true, io.github.demonfiddler.ee.client.Publication.class, null);
-		}
-	}
-
-	public static class List__DirectiveLocation
-		extends AbstractCustomJacksonDeserializer<List<io.github.demonfiddler.ee.client.__DirectiveLocation>> {
-		private static final long serialVersionUID = 1L;
-		public List__DirectiveLocation() {
-			super(null, true, io.github.demonfiddler.ee.client.__DirectiveLocation.class, null);
-		}
-	}
-
-	public static class List__Type
-		extends AbstractCustomJacksonDeserializer<List<io.github.demonfiddler.ee.client.__Type>> {
-		private static final long serialVersionUID = 1L;
-		public List__Type() {
-			super(null, true, io.github.demonfiddler.ee.client.__Type.class, null);
-		}
-	}
-
-	public static class ListQuotation
-		extends AbstractCustomJacksonDeserializer<List<io.github.demonfiddler.ee.client.Quotation>> {
-		private static final long serialVersionUID = 1L;
-		public ListQuotation() {
-			super(null, true, io.github.demonfiddler.ee.client.Quotation.class, null);
-		}
-	}
-
-	public static class URL extends AbstractCustomJacksonDeserializer<java.net.URL> {
-		private static final long serialVersionUID = 1L;
-		public URL() {
-			super(null, false, java.net.URL.class, io.github.demonfiddler.ee.common.graphql.CustomScalars.URL);
-		}
-	}
-
-	public static class ListDeclaration
-		extends AbstractCustomJacksonDeserializer<List<io.github.demonfiddler.ee.client.Declaration>> {
-		private static final long serialVersionUID = 1L;
-		public ListDeclaration() {
-			super(null, true, io.github.demonfiddler.ee.client.Declaration.class, null);
-		}
-	}
-
-	public static class Country extends AbstractCustomJacksonDeserializer<String> {
-		private static final long serialVersionUID = 1L;
-		public Country() {
-			super(null, false, String.class, io.github.demonfiddler.ee.common.graphql.CustomScalars.COUNTRY);
-		}
-	}
-
-	public static class DateTime extends AbstractCustomJacksonDeserializer<java.time.OffsetDateTime> {
-		private static final long serialVersionUID = 1L;
-		public DateTime() {
-			super(null, false, java.time.OffsetDateTime.class, graphql.scalars.ExtendedScalars.DateTime);
-		}
-	}
-
-	public static class URI extends AbstractCustomJacksonDeserializer<java.net.URI> {
-		private static final long serialVersionUID = 1L;
-		public URI() {
-			super(null, false, java.net.URI.class, io.github.demonfiddler.ee.common.graphql.CustomScalars.URI);
-		}
-	}
-
-	public static class ListURI extends AbstractCustomJacksonDeserializer<List<java.net.URI>> {
-		private static final long serialVersionUID = 1L;
-		public ListURI() {
-			super(new URI(), true, java.net.URI.class, null);
-		}
-	}
-
-	public static class List__EnumValue
-		extends AbstractCustomJacksonDeserializer<List<io.github.demonfiddler.ee.client.__EnumValue>> {
-		private static final long serialVersionUID = 1L;
-		public List__EnumValue() {
-			super(null, true, io.github.demonfiddler.ee.client.__EnumValue.class, null);
-		}
-	}
-
-	public static class Date extends AbstractCustomJacksonDeserializer<java.time.LocalDate> {
-		private static final long serialVersionUID = 1L;
-		public Date() {
-			super(null, false, java.time.LocalDate.class, graphql.scalars.ExtendedScalars.Date);
-		}
-	}
-
-	public static class ListUser
-		extends AbstractCustomJacksonDeserializer<List<io.github.demonfiddler.ee.client.User>> {
-		private static final long serialVersionUID = 1L;
-		public ListUser() {
-			super(null, true, io.github.demonfiddler.ee.client.User.class, null);
-		}
-	}
-
-	public static class ListITopicalEntity
-		extends AbstractCustomJacksonDeserializer<List<io.github.demonfiddler.ee.client.ITopicalEntity>> {
-		private static final long serialVersionUID = 1L;
-		public ListITopicalEntity() {
-			super(null, true, io.github.demonfiddler.ee.client.ITopicalEntity.class, null);
-		}
-	}
-
-	public static class List__Field
-		extends AbstractCustomJacksonDeserializer<List<io.github.demonfiddler.ee.client.__Field>> {
-		private static final long serialVersionUID = 1L;
-		public List__Field() {
-			super(null, true, io.github.demonfiddler.ee.client.__Field.class, null);
-		}
-	}
-
-	public static class Long extends AbstractCustomJacksonDeserializer<Long> {
-		private static final long serialVersionUID = 1L;
-		public Long() {
-			super(null, false, Long.class, graphql.scalars.ExtendedScalars.GraphQLLong);
-		}
-	}
-
-	public static class Void extends AbstractCustomJacksonDeserializer<Void> {
-		private static final long serialVersionUID = 1L;
-		public Void() {
-			super(null, false, Void.class, io.github.demonfiddler.ee.common.graphql.CustomScalars.VOID);
-		}
-	}
-
-	public static class List__Directive
-		extends AbstractCustomJacksonDeserializer<List<io.github.demonfiddler.ee.client.__Directive>> {
-		private static final long serialVersionUID = 1L;
-		public List__Directive() {
-			super(null, true, io.github.demonfiddler.ee.client.__Directive.class, null);
-		}
-	}
-
-	public static class List__InputValue
-		extends AbstractCustomJacksonDeserializer<List<io.github.demonfiddler.ee.client.__InputValue>> {
 		private static final long serialVersionUID = 1L;
 		public List__InputValue() {
-			super(null, true, io.github.demonfiddler.ee.client.__InputValue.class, null);
+			super(null, true, __InputValue.class, null);
 		}
+
 	}
 
-	public static class ISSN extends AbstractCustomJacksonDeserializer<String> {
+	public static class List__Directive extends AbstractCustomJacksonDeserializer<List<__Directive>> {
+
 		private static final long serialVersionUID = 1L;
-		public ISSN() {
-			super(null, false, String.class, io.github.demonfiddler.ee.common.graphql.CustomScalars.ISSN);
+		public List__Directive() {
+			super(null, true, __Directive.class, null);
 		}
+
 	}
 
-	public static class ListTopic
-		extends AbstractCustomJacksonDeserializer<List<io.github.demonfiddler.ee.client.Topic>> {
+	public static class ListJournal extends AbstractCustomJacksonDeserializer<List<Journal>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListJournal() {
+			super(null, true, Journal.class, null);
+		}
+
+	}
+
+	public static class ListTopic extends AbstractCustomJacksonDeserializer<List<Topic>> {
+
 		private static final long serialVersionUID = 1L;
 		public ListTopic() {
-			super(null, true, io.github.demonfiddler.ee.client.Topic.class, null);
+			super(null, true, Topic.class, null);
 		}
+
 	}
 
-	public static class ListTopicRef
-		extends AbstractCustomJacksonDeserializer<List<io.github.demonfiddler.ee.client.TopicRef>> {
-		private static final long serialVersionUID = 1L;
-		public ListTopicRef() {
-			super(null, true, io.github.demonfiddler.ee.client.TopicRef.class, null);
-		}
-	}
+	public static class ListLog extends AbstractCustomJacksonDeserializer<List<Log>> {
 
-	public static class ListLog extends AbstractCustomJacksonDeserializer<List<io.github.demonfiddler.ee.client.Log>> {
 		private static final long serialVersionUID = 1L;
 		public ListLog() {
-			super(null, true, io.github.demonfiddler.ee.client.Log.class, null);
+			super(null, true, Log.class, null);
 		}
+
+	}
+
+	public static class List__EnumValue extends AbstractCustomJacksonDeserializer<List<__EnumValue>> {
+
+		private static final long serialVersionUID = 1L;
+		public List__EnumValue() {
+			super(null, true, __EnumValue.class, null);
+		}
+
+	}
+
+	public static class List__Field extends AbstractCustomJacksonDeserializer<List<__Field>> {
+
+		private static final long serialVersionUID = 1L;
+		public List__Field() {
+			super(null, true, __Field.class, null);
+		}
+
+	}
+
+	public static class ListClaim extends AbstractCustomJacksonDeserializer<List<Claim>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListClaim() {
+			super(null, true, Claim.class, null);
+		}
+
+	}
+
+	public static class ListDeclaration extends AbstractCustomJacksonDeserializer<List<Declaration>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListDeclaration() {
+			super(null, true, Declaration.class, null);
+		}
+
+	}
+
+	public static class List__Type extends AbstractCustomJacksonDeserializer<List<__Type>> {
+
+		private static final long serialVersionUID = 1L;
+		public List__Type() {
+			super(null, true, __Type.class, null);
+		}
+
+	}
+
+	public static class List__DirectiveLocation extends AbstractCustomJacksonDeserializer<List<__DirectiveLocation>> {
+
+		private static final long serialVersionUID = 1L;
+		public List__DirectiveLocation() {
+			super(null, true, __DirectiveLocation.class, null);
+		}
+
+	}
+
+	public static class ListPerson extends AbstractCustomJacksonDeserializer<List<Person>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListPerson() {
+			super(null, true, Person.class, null);
+		}
+
+	}
+
+	public static class ListEntityLink extends AbstractCustomJacksonDeserializer<List<EntityLink>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListEntityLink() {
+			super(null, true, EntityLink.class, null);
+		}
+
+	}
+
+	public static class URL extends AbstractCustomJacksonDeserializer<URL> {
+
+		private static final long serialVersionUID = 1L;
+		public URL() {
+			super(null, false, URL.class, CustomScalars.URL);
+		}
+
+	}
+
+	public static class ListPublication extends AbstractCustomJacksonDeserializer<List<Publication>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListPublication() {
+			super(null, true, Publication.class, null);
+		}
+
 	}
 
 	public static class ListString extends AbstractCustomJacksonDeserializer<List<String>> {
+
 		private static final long serialVersionUID = 1L;
 		public ListString() {
 			super(null, true, String.class, null);
 		}
+
 	}
 
-	public static class ListPerson
-		extends AbstractCustomJacksonDeserializer<List<io.github.demonfiddler.ee.client.Person>> {
+	public static class ISSN extends AbstractCustomJacksonDeserializer<String> {
+
 		private static final long serialVersionUID = 1L;
-		public ListPerson() {
-			super(null, true, io.github.demonfiddler.ee.client.Person.class, null);
+		public ISSN() {
+			super(null, false, String.class, CustomScalars.ISSN);
 		}
+
 	}
 
-	public static class ListJournal
-		extends AbstractCustomJacksonDeserializer<List<io.github.demonfiddler.ee.client.Journal>> {
+	public static class DateTime extends AbstractCustomJacksonDeserializer<OffsetDateTime> {
+
 		private static final long serialVersionUID = 1L;
-		public ListJournal() {
-			super(null, true, io.github.demonfiddler.ee.client.Journal.class, null);
+		public DateTime() {
+			super(null, false, OffsetDateTime.class, ExtendedScalars.DateTime);
 		}
+
 	}
 
-	public static class ListPublisher
-		extends AbstractCustomJacksonDeserializer<List<io.github.demonfiddler.ee.client.Publisher>> {
+	public static class Long extends AbstractCustomJacksonDeserializer<Long> {
+
+		private static final long serialVersionUID = 1L;
+		public Long() {
+			super(null, false, Long.class, ExtendedScalars.GraphQLLong);
+		}
+
+	}
+
+	public static class ListQuotation extends AbstractCustomJacksonDeserializer<List<Quotation>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListQuotation() {
+			super(null, true, Quotation.class, null);
+		}
+
+	}
+
+	public static class Date extends AbstractCustomJacksonDeserializer<LocalDate> {
+
+		private static final long serialVersionUID = 1L;
+		public Date() {
+			super(null, false, LocalDate.class, ExtendedScalars.Date);
+		}
+
+	}
+
+	public static class ListPublisher extends AbstractCustomJacksonDeserializer<List<Publisher>> {
+
 		private static final long serialVersionUID = 1L;
 		public ListPublisher() {
-			super(null, true, io.github.demonfiddler.ee.client.Publisher.class, null);
+			super(null, true, Publisher.class, null);
 		}
+
+	}
+
+	public static class ListUser extends AbstractCustomJacksonDeserializer<List<User>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListUser() {
+			super(null, true, User.class, null);
+		}
+
 	}
 
 }

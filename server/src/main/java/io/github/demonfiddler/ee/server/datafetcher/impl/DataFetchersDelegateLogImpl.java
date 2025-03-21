@@ -49,7 +49,7 @@ public class DataFetchersDelegateLogImpl implements DataFetchersDelegateLog {
     private FormatUtils formatUtils;
 
     public List<Log> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {
-        return logRepository.findByIds(keys);
+        return logRepository.findAllById(keys);
     }
 
     @Override

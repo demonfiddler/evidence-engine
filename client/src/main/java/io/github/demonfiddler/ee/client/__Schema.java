@@ -19,19 +19,15 @@
 
 package io.github.demonfiddler.ee.client;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.graphql_java_generator.annotation.GraphQLIgnore;
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
-import com.graphql_java_generator.client.GraphQLObjectMapper;
 
 import io.github.demonfiddler.ee.client.util.CustomJacksonDeserializers;
 
@@ -42,15 +38,7 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonDeserializers;
  */
 @GraphQLObjectType("__Schema")
 @JsonInclude(Include.NON_NULL)
-public class __Schema {
-
-	/**
-	 * This map contains the deserialized values for the alias, as parsed from the JSON response from the GraphQL
-	 * server. The key is the alias name, the value is the deserialiazed value (taking into account custom scalars,
-	 * lists, ...)
-	 */
-	@GraphQLIgnore
-	Map<String, Object> aliasValues = new HashMap<>();
+public class __Schema extends AbstractGraphQLEntity {
 
 	public __Schema() {
 	}
@@ -84,10 +72,6 @@ public class __Schema {
 	@GraphQLNonScalar(fieldName = "directives", graphQLTypeSimpleName = "__Directive", javaClass = __Directive.class,
 		listDepth = 1)
 	List<__Directive> directives;
-
-	@JsonProperty("__typename")
-	@GraphQLScalar(fieldName = "__typename", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	String __typename;
 
 	@JsonProperty("description")
 	public void setDescription(String description) {
@@ -149,54 +133,22 @@ public class __Schema {
 		return this.directives;
 	}
 
-	@JsonProperty("__typename")
-	public void set__typename(String __typename) {
-		this.__typename = __typename;
-	}
-
-	@JsonProperty("__typename")
-	public String get__typename() {
-		return this.__typename;
-	}
-
-	/**
-	 * This method is called during the json deserialization process, by the {@link GraphQLObjectMapper}, each time an
-	 * alias value is read from the json.
-	 * @param aliasName
-	 * @param aliasDeserializedValue
-	 */
-	public void setAliasValue(String aliasName, Object aliasDeserializedValue) {
-		this.aliasValues.put(aliasName, aliasDeserializedValue);
-	}
-
-	/**
-	 * Retrieves the value for the given alias, as it has been received for this object in the GraphQL response. <BR/>
-	 * This method <B>should not be used for Custom Scalars</B>, as the parser doesn't know if this alias is a custom
-	 * scalar, and which custom scalar to use at deserialization time. In most case, a value will then be provided by
-	 * this method with a basis json deserialization, but this value won't be the proper custom scalar value.
-	 * @param alias
-	 * @return
-	 */
-	public Object getAliasValue(String alias) {
-		return this.aliasValues.get(alias);
-	}
-
 	public String toString() {
-		return "__Schema {" //$NON-NLS-1$
-			+ "description: " + this.description //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "types: " + this.types //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "queryType: " + this.queryType //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "mutationType: " + this.mutationType //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "subscriptionType: " + this.subscriptionType //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "directives: " + this.directives //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "__typename: " + this.__typename //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "__Schema {" //
+			+ "description: " + this.description //
+			+ ", " //
+			+ "types: " + this.types //
+			+ ", " //
+			+ "queryType: " + this.queryType //
+			+ ", " //
+			+ "mutationType: " + this.mutationType //
+			+ ", " //
+			+ "subscriptionType: " + this.subscriptionType //
+			+ ", " //
+			+ "directives: " + this.directives //
+			+ ", " //
+			+ "__typename: " + this.__typename //
+			+ "}";
 	}
 
 	public static Builder builder() {
@@ -207,7 +159,8 @@ public class __Schema {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
+	public static class Builder extends AbstractGraphQLEntity.Builder<Builder, __Schema> {
+
 		private String description;
 		private List<__Type> types;
 		private __Type queryType;
@@ -246,15 +199,21 @@ public class __Schema {
 		}
 
 		public __Schema build() {
-			__Schema _object = new __Schema();
+			__Schema _object = build(new __Schema());
 			_object.setDescription(this.description);
 			_object.setTypes(this.types);
 			_object.setQueryType(this.queryType);
 			_object.setMutationType(this.mutationType);
 			_object.setSubscriptionType(this.subscriptionType);
 			_object.setDirectives(this.directives);
-			_object.set__typename("__Schema"); //$NON-NLS-1$
 			return _object;
 		}
+
+		@Override
+		String getTypeName() {
+			return "__Schema";
+		}
+
 	}
+
 }

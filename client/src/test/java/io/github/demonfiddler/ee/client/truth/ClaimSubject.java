@@ -30,7 +30,7 @@ import com.google.common.truth.Subject;
 
 import io.github.demonfiddler.ee.client.Claim;
 
-public class ClaimSubject extends TopicalEntitySubject<Claim> {
+public class ClaimSubject extends LinkableEntitySubject<Claim> {
 
     public static ClaimSubject assertThat(/*@Nullable*/ Claim claim) {
         return assertAbout(claims()).that(claim);

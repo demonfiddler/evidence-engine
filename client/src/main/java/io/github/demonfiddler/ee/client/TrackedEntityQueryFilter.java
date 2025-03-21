@@ -19,17 +19,13 @@
 
 package io.github.demonfiddler.ee.client;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.graphql_java_generator.annotation.GraphQLIgnore;
 import com.graphql_java_generator.annotation.GraphQLInputType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
-import com.graphql_java_generator.client.GraphQLObjectMapper;
 
 /**
  * Parameters to filter an ```ITrackedEntity``` query.
@@ -39,15 +35,7 @@ import com.graphql_java_generator.client.GraphQLObjectMapper;
  */
 @GraphQLInputType("TrackedEntityQueryFilter")
 @JsonInclude(Include.NON_NULL)
-public class TrackedEntityQueryFilter {
-
-	/**
-	 * This map contains the deserialized values for the alias, as parsed from the JSON response from the GraphQL
-	 * server. The key is the alias name, the value is the deserialiazed value (taking into account custom scalars,
-	 * lists, ...)
-	 */
-	@GraphQLIgnore
-	Map<String, Object> aliasValues = new HashMap<>();
+public class TrackedEntityQueryFilter extends AbstractGraphQLObject {
 
 	public TrackedEntityQueryFilter() {
 	}
@@ -79,7 +67,7 @@ public class TrackedEntityQueryFilter {
 	 * Return only records with these status codes (default: ALL).
 	 */
 	@JsonProperty("status")
-	public void setStatus(List<StatusKind> status) {
+	public final void setStatus(List<StatusKind> status) {
 		this.status = status;
 	}
 
@@ -87,7 +75,7 @@ public class TrackedEntityQueryFilter {
 	 * Return only records with these status codes (default: ALL).
 	 */
 	@JsonProperty("status")
-	public List<StatusKind> getStatus() {
+	public final List<StatusKind> getStatus() {
 		return this.status;
 	}
 
@@ -95,7 +83,7 @@ public class TrackedEntityQueryFilter {
 	 * Free text search string.
 	 */
 	@JsonProperty("text")
-	public void setText(String text) {
+	public final void setText(String text) {
 		this.text = text;
 	}
 
@@ -103,7 +91,7 @@ public class TrackedEntityQueryFilter {
 	 * Free text search string.
 	 */
 	@JsonProperty("text")
-	public String getText() {
+	public final String getText() {
 		return this.text;
 	}
 
@@ -111,7 +99,7 @@ public class TrackedEntityQueryFilter {
 	 * Whether to search ```text``` in advanced (boolean) mode.
 	 */
 	@JsonProperty("advancedSearch")
-	public void setAdvancedSearch(Boolean advancedSearch) {
+	public final void setAdvancedSearch(Boolean advancedSearch) {
 		this.advancedSearch = advancedSearch;
 	}
 
@@ -119,40 +107,18 @@ public class TrackedEntityQueryFilter {
 	 * Whether to search ```text``` in advanced (boolean) mode.
 	 */
 	@JsonProperty("advancedSearch")
-	public Boolean getAdvancedSearch() {
+	public final Boolean getAdvancedSearch() {
 		return this.advancedSearch;
 	}
 
-	/**
-	 * This method is called during the json deserialization process, by the {@link GraphQLObjectMapper}, each time an
-	 * alias value is read from the json.
-	 * @param aliasName
-	 * @param aliasDeserializedValue
-	 */
-	public void setAliasValue(String aliasName, Object aliasDeserializedValue) {
-		this.aliasValues.put(aliasName, aliasDeserializedValue);
-	}
-
-	/**
-	 * Retrieves the value for the given alias, as it has been received for this object in the GraphQL response. <BR/>
-	 * This method <B>should not be used for Custom Scalars</B>, as the parser doesn't know if this alias is a custom
-	 * scalar, and which custom scalar to use at deserialization time. In most case, a value will then be provided by
-	 * this method with a basis json deserialization, but this value won't be the proper custom scalar value.
-	 * @param alias
-	 * @return
-	 */
-	public Object getAliasValue(String alias) {
-		return this.aliasValues.get(alias);
-	}
-
 	public String toString() {
-		return "TrackedEntityQueryFilter {" //$NON-NLS-1$
-			+ "status: " + this.status //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "text: " + this.text //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "advancedSearch: " + this.advancedSearch //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "TrackedEntityQueryFilter {" //
+			+ "status: " + this.status //
+			+ ", " //
+			+ "text: " + this.text //
+			+ ", " //
+			+ "advancedSearch: " + this.advancedSearch //
+			+ "}";
 	}
 
 	public static Builder builder() {
@@ -163,7 +129,8 @@ public class TrackedEntityQueryFilter {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
+	@SuppressWarnings("unchecked")
+	abstract static class AbstractBuilder<B extends AbstractBuilder<B, T>, T extends TrackedEntityQueryFilter> {
 
 		private List<StatusKind> status;
 		private String text;
@@ -172,33 +139,42 @@ public class TrackedEntityQueryFilter {
 		/**
 		 * Return only records with these status codes (default: ALL).
 		 */
-		public Builder withStatus(List<StatusKind> statusParam) {
+		public final B withStatus(List<StatusKind> statusParam) {
 			this.status = statusParam;
-			return this;
+			return (B)this;
 		}
 
 		/**
 		 * Free text search string.
 		 */
-		public Builder withText(String textParam) {
+		public final B withText(String textParam) {
 			this.text = textParam;
-			return this;
+			return (B)this;
 		}
 
 		/**
 		 * Whether to search ```text``` in advanced (boolean) mode.
 		 */
-		public Builder withAdvancedSearch(Boolean advancedSearchParam) {
+		public final B withAdvancedSearch(Boolean advancedSearchParam) {
 			this.advancedSearch = advancedSearchParam;
-			return this;
+			return (B)this;
 		}
 
-		public TrackedEntityQueryFilter build() {
-			TrackedEntityQueryFilter _object = new TrackedEntityQueryFilter();
+		T build(T _object) {
 			_object.setStatus(this.status);
 			_object.setText(this.text);
 			_object.setAdvancedSearch(this.advancedSearch);
 			return _object;
+		}
+
+		public abstract T build();
+
+	}
+
+	public static class Builder extends AbstractBuilder<Builder, TrackedEntityQueryFilter> {
+
+		public TrackedEntityQueryFilter build() {
+			return build(new TrackedEntityQueryFilter());
 		}
 
 	}

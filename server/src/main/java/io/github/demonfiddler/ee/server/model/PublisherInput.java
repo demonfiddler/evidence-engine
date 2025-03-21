@@ -31,13 +31,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("PublisherInput")
-public class PublisherInput {
-
-	/**
-	 * The unique publisher identifier.
-	 */
-	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
-	Long id;
+public class PublisherInput extends AbstractBaseEntityInput {
 
 	/**
 	 * The publisher name.
@@ -68,20 +62,6 @@ public class PublisherInput {
 	 */
 	@GraphQLScalar(fieldName = "journalCount", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
 	Integer journalCount;
-
-	/**
-	 * The unique publisher identifier.
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	/**
-	 * The unique publisher identifier.
-	 */
-	public Long getId() {
-		return this.id;
-	}
 
 	/**
 	 * The publisher name.
@@ -177,22 +157,13 @@ public class PublisherInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
+	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, PublisherInput> {
 
-		private Long id;
 		private String name;
 		private String location;
 		private String country;
 		private URL url;
 		private Integer journalCount;
-
-		/**
-		 * The unique publisher identifier.
-		 */
-		public Builder withId(Long idParam) {
-			this.id = idParam;
-			return this;
-		}
 
 		/**
 		 * The publisher name.
@@ -234,9 +205,9 @@ public class PublisherInput {
 			return this;
 		}
 
+		@Override
 		public PublisherInput build() {
-			PublisherInput _object = new PublisherInput();
-			_object.setId(this.id);
+			PublisherInput _object = build(new PublisherInput());
 			_object.setName(this.name);
 			_object.setLocation(this.location);
 			_object.setCountry(this.country);

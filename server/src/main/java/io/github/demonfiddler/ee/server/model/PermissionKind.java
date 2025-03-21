@@ -19,6 +19,7 @@
 
 package io.github.demonfiddler.ee.server.model;
 
+import com.graphql_java_generator.annotation.GraphQLDirective;
 import com.graphql_java_generator.annotation.GraphQLEnumType;
 
 /**
@@ -31,18 +32,32 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
 public enum PermissionKind {
 
 	/** Use administrative functions. */
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Administer" })
 	ADM("ADM", "Administer"), //$NON-NLS-1$
 	/** Insert new record. */
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Create" })
 	CRE("CRE", "Create"), //$NON-NLS-1$
 	/** Delete existing record. */
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Delete" })
 	DEL("DEL", "Delete"), //$NON-NLS-1$
 	/** Link/unlink existing records. */
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Link" })
 	LNK("LNK", "Link"), //$NON-NLS-1$
 	/** Read existing record. */
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Read" })
 	REA("REA", "Read"), //$NON-NLS-1$
 	/** Update existing record. */
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Update" })
 	UPD("UPD", "Update"), //$NON-NLS-1$
 	/** Upload file. */
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Upload" })
 	UPL("UPL", "Upload"); //$NON-NLS-1$
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
@@ -88,7 +103,7 @@ public enum PermissionKind {
 				return e;
 			}
 		}
-		throw new IllegalArgumentException("No PermissionKind exists with '" + graphQlValue + "' as a GraphQL value"); //$NON-NLS-1$ //$NON-NLS-2$
+		throw new IllegalArgumentException("No PermissionKind exists with '" + graphQlValue + "' as a GraphQL value");
 	}
 
 }

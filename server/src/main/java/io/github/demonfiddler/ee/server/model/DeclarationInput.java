@@ -32,13 +32,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("DeclarationInput")
-public class DeclarationInput {
-
-	/**
-	 * The declaration identifier, required if updating an existing record.
-	 */
-	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
-	Long id;
+public class DeclarationInput extends AbstractBaseEntityInput {
 
 	/**
 	 * The kind of declaration.
@@ -82,20 +76,6 @@ public class DeclarationInput {
 	 */
 	@GraphQLScalar(fieldName = "notes", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
 	String notes;
-
-	/**
-	 * The declaration identifier, required if updating an existing record.
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	/**
-	 * The declaration identifier, required if updating an existing record.
-	 */
-	public Long getId() {
-		return this.id;
-	}
 
 	/**
 	 * The kind of declaration.
@@ -223,8 +203,8 @@ public class DeclarationInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
-		private Long id;
+	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, DeclarationInput> {
+
 		private DeclarationKind kind;
 		private String title;
 		private LocalDate date;
@@ -232,14 +212,6 @@ public class DeclarationInput {
 		private URL url;
 		private String signatories;
 		private String notes;
-
-		/**
-		 * The declaration identifier, required if updating an existing record.
-		 */
-		public Builder withId(Long idParam) {
-			this.id = idParam;
-			return this;
-		}
 
 		/**
 		 * The kind of declaration.
@@ -297,9 +269,9 @@ public class DeclarationInput {
 			return this;
 		}
 
+		@Override
 		public DeclarationInput build() {
-			DeclarationInput _object = new DeclarationInput();
-			_object.setId(this.id);
+			DeclarationInput _object = build(new DeclarationInput());
 			_object.setKind(this.kind);
 			_object.setTitle(this.title);
 			_object.setDate(this.date);
@@ -309,6 +281,7 @@ public class DeclarationInput {
 			_object.setNotes(this.notes);
 			return _object;
 		}
+
 	}
 
 }

@@ -31,19 +31,19 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
 public enum PermissionKind {
 
 	/** Use administrative functions. */
-	ADM("ADM", "Administer"), //$NON-NLS-1$
+	ADM("ADM", "Administer"), //
 	/** Insert new record. */
-	CRE("CRE", "Create"), //$NON-NLS-1$
+	CRE("CRE", "Create"), //
 	/** Delete existing record. */
-	DEL("DEL", "Delete"), //$NON-NLS-1$
+	DEL("DEL", "Delete"), //
 	/** Link/unlink existing records. */
-	LNK("LNK", "Link"), //$NON-NLS-1$
+	LNK("LNK", "Link"), //
 	/** Read existing record. */
-	REA("REA", "Read"), //$NON-NLS-1$
+	REA("REA", "Read"), //
 	/** Update existing record. */
-	UPD("UPD", "Update"), //$NON-NLS-1$
+	UPD("UPD", "Update"), //
 	/** Upload file. */
-	UPL("UPL", "Upload"); //$NON-NLS-1$
+	UPL("UPL", "Upload"); //
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different when the value in the GraphQL schema is a Java reserved keyword.
@@ -88,7 +88,7 @@ public enum PermissionKind {
 				return e;
 			}
 		}
-		throw new IllegalArgumentException("No PermissionKind exists with '" + graphQlValue + "' as a GraphQL value"); //$NON-NLS-1$ //$NON-NLS-2$
+		throw new IllegalArgumentException("No PermissionKind exists with '" + graphQlValue + "' as a GraphQL value");
 	}
 
 }

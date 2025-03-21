@@ -21,6 +21,7 @@ package io.github.demonfiddler.ee.server.model;
 
 import java.time.OffsetDateTime;
 
+import com.graphql_java_generator.annotation.GraphQLDirective;
 import com.graphql_java_generator.annotation.GraphQLInterfaceType;
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLScalar;
@@ -33,6 +34,12 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  */
 @GraphQLInterfaceType("ITrackedEntity")
 public interface ITrackedEntity extends IBaseEntity {
+
+	@GraphQLScalar(fieldName = "entityKind", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	void setEntityKind(String status);
+
+	@GraphQLScalar(fieldName = "entityKind", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String getEntityKind();
 
 	@GraphQLScalar(fieldName = "status", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
 	void setStatus(String status);
@@ -50,10 +57,12 @@ public interface ITrackedEntity extends IBaseEntity {
 
 	@GraphQLNonScalar(fieldName = "createdByUser", graphQLTypeSimpleName = "User", javaClass = User.class,
 		listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = {}, parameterTypes = {}, parameterValues = {})
 	void setCreatedByUser(User createdByUser);
 
 	@GraphQLNonScalar(fieldName = "createdByUser", graphQLTypeSimpleName = "User", javaClass = User.class,
 		listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = {}, parameterTypes = {}, parameterValues = {})
 	User getCreatedByUser();
 
 	@GraphQLScalar(fieldName = "updated", graphQLTypeSimpleName = "DateTime", javaClass = OffsetDateTime.class,
@@ -66,10 +75,12 @@ public interface ITrackedEntity extends IBaseEntity {
 
 	@GraphQLNonScalar(fieldName = "updatedByUser", graphQLTypeSimpleName = "User", javaClass = User.class,
 		listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = {}, parameterTypes = {}, parameterValues = {})
 	void setUpdatedByUser(User updatedByUser);
 
 	@GraphQLNonScalar(fieldName = "updatedByUser", graphQLTypeSimpleName = "User", javaClass = User.class,
 		listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = {}, parameterTypes = {}, parameterValues = {})
 	User getUpdatedByUser();
 
 	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage", javaClass = LogPage.class, listDepth = 0)

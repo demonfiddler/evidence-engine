@@ -19,8 +19,14 @@
 
 package io.github.demonfiddler.ee.client.util;
 
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+
 import com.graphql_java_generator.customscalars.CustomScalarRegistry;
 import com.graphql_java_generator.customscalars.CustomScalarRegistryImpl;
+
+import graphql.scalars.ExtendedScalars;
+import io.github.demonfiddler.ee.common.graphql.CustomScalars;
 
 public class CustomScalarRegistryInitializer {
 
@@ -31,26 +37,17 @@ public class CustomScalarRegistryInitializer {
 	public static void initCustomScalarRegistry() {
 		if (!CustomScalarRegistryImpl.isCustomScalarRegistryInitialized("")) {
 			CustomScalarRegistry customScalarRegistry = new CustomScalarRegistryImpl();
-			CustomScalarRegistryImpl.setCustomScalarRegistry("", customScalarRegistry); //$NON-NLS-1$
+			CustomScalarRegistryImpl.setCustomScalarRegistry("", customScalarRegistry);
 
-			customScalarRegistry.registerGraphQLScalarType("ID", graphql.scalars.ExtendedScalars.GraphQLLong,
-				Long.class);
-			customScalarRegistry.registerGraphQLScalarType("Country",
-				io.github.demonfiddler.ee.common.graphql.CustomScalars.COUNTRY, String.class);
-			customScalarRegistry.registerGraphQLScalarType("Date", graphql.scalars.ExtendedScalars.Date,
-				java.time.LocalDate.class);
-			customScalarRegistry.registerGraphQLScalarType("DateTime", graphql.scalars.ExtendedScalars.DateTime,
-				java.time.OffsetDateTime.class);
-			customScalarRegistry.registerGraphQLScalarType("ISSN",
-				io.github.demonfiddler.ee.common.graphql.CustomScalars.ISSN, String.class);
-			customScalarRegistry.registerGraphQLScalarType("Long", graphql.scalars.ExtendedScalars.GraphQLLong,
-				Long.class);
-			customScalarRegistry.registerGraphQLScalarType("URI",
-				io.github.demonfiddler.ee.common.graphql.CustomScalars.URI, java.net.URI.class);
-			customScalarRegistry.registerGraphQLScalarType("URL",
-				io.github.demonfiddler.ee.common.graphql.CustomScalars.URL, java.net.URL.class);
-			customScalarRegistry.registerGraphQLScalarType("Void",
-				io.github.demonfiddler.ee.common.graphql.CustomScalars.VOID, Void.class);
+			customScalarRegistry.registerGraphQLScalarType("ID", ExtendedScalars.GraphQLLong, Long.class);
+			customScalarRegistry.registerGraphQLScalarType("Country", CustomScalars.COUNTRY, String.class);
+			customScalarRegistry.registerGraphQLScalarType("Date", ExtendedScalars.Date, LocalDate.class);
+			customScalarRegistry.registerGraphQLScalarType("DateTime", ExtendedScalars.DateTime, OffsetDateTime.class);
+			customScalarRegistry.registerGraphQLScalarType("ISSN", CustomScalars.ISSN, String.class);
+			customScalarRegistry.registerGraphQLScalarType("Long", ExtendedScalars.GraphQLLong, Long.class);
+			customScalarRegistry.registerGraphQLScalarType("URI", CustomScalars.URI, java.net.URI.class);
+			customScalarRegistry.registerGraphQLScalarType("URL", CustomScalars.URL, java.net.URL.class);
+			customScalarRegistry.registerGraphQLScalarType("Void", CustomScalars.VOID, Void.class);
 		}
 	}
 

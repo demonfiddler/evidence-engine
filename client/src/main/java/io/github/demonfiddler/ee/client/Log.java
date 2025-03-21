@@ -20,20 +20,15 @@
 package io.github.demonfiddler.ee.client;
 
 import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.graphql_java_generator.annotation.GraphQLIgnore;
 import com.graphql_java_generator.annotation.GraphQLInputParameters;
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
-import com.graphql_java_generator.client.GraphQLObjectMapper;
 
 import io.github.demonfiddler.ee.client.util.CustomJacksonDeserializers;
 
@@ -45,25 +40,10 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonDeserializers;
  */
 @GraphQLObjectType("Log")
 @JsonInclude(Include.NON_NULL)
-public class Log implements IBaseEntity {
-
-	/**
-	 * This map contains the deserialized values for the alias, as parsed from the JSON response from the GraphQL
-	 * server. The key is the alias name, the value is the deserialiazed value (taking into account custom scalars,
-	 * lists, ...)
-	 */
-	@GraphQLIgnore
-	Map<String, Object> aliasValues = new HashMap<>();
+public class Log extends AbstractBaseEntity {
 
 	public Log() {
 	}
-
-	/**
-	 * The unique identifier for the log entry.
-	 */
-	@JsonProperty("id")
-	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
-	Long id;
 
 	/**
 	 * The date-time stamp.
@@ -79,7 +59,7 @@ public class Log implements IBaseEntity {
 	 */
 	@JsonProperty("user")
 	@GraphQLNonScalar(fieldName = "user", graphQLTypeSimpleName = "User", javaClass = User.class, listDepth = 0)
-	io.github.demonfiddler.ee.client.User user;
+	User user;
 
 	/**
 	 * The kind of transaction.
@@ -126,28 +106,6 @@ public class Log implements IBaseEntity {
 	@GraphQLScalar(fieldName = "linkedEntityId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
 	Long linkedEntityId;
 
-	@JsonProperty("__typename")
-	@GraphQLScalar(fieldName = "__typename", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	String __typename;
-
-	/**
-	 * The unique identifier for the log entry.
-	 */
-	@Override
-	@JsonIgnore
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	/**
-	 * The unique identifier for the log entry.
-	 */
-	@Override
-	@JsonIgnore
-	public Long getId() {
-		return this.id;
-	}
-
 	/**
 	 * The date-time stamp.
 	 */
@@ -168,7 +126,7 @@ public class Log implements IBaseEntity {
 	 * The user who made the change.
 	 */
 	@JsonProperty("user")
-	public void setUser(io.github.demonfiddler.ee.client.User user) {
+	public void setUser(User user) {
 		this.user = user;
 	}
 
@@ -176,7 +134,7 @@ public class Log implements IBaseEntity {
 	 * The user who made the change.
 	 */
 	@JsonProperty("user")
-	public io.github.demonfiddler.ee.client.User getUser() {
+	public User getUser() {
 		return this.user;
 	}
 
@@ -260,68 +218,32 @@ public class Log implements IBaseEntity {
 		return this.linkedEntityId;
 	}
 
-	@Override
-	@JsonIgnore
-	public void set__typename(String __typename) {
-		this.__typename = __typename;
-	}
-
-	@Override
-	@JsonIgnore
-	public String get__typename() {
-		return this.__typename;
-	}
-
-	/**
-	 * This method is called during the json deserialization process, by the {@link GraphQLObjectMapper}, each time an
-	 * alias value is read from the json.
-	 * @param aliasName
-	 * @param aliasDeserializedValue
-	 */
-	public void setAliasValue(String aliasName, Object aliasDeserializedValue) {
-		this.aliasValues.put(aliasName, aliasDeserializedValue);
-	}
-
-	/**
-	 * Retrieves the value for the given alias, as it has been received for this object in the GraphQL response. <BR/>
-	 * This method <B>should not be used for Custom Scalars</B>, as the parser doesn't know if this alias is a custom
-	 * scalar, and which custom scalar to use at deserialization time. In most case, a value will then be provided by
-	 * this method with a basis json deserialization, but this value won't be the proper custom scalar value.
-	 * @param alias
-	 * @return
-	 */
-	public Object getAliasValue(String alias) {
-		return this.aliasValues.get(alias);
-	}
-
 	public String toString() {
-		return "Log {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "timestamp: " + this.timestamp //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "user: " + this.user //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "transactionKind: " + this.transactionKind //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "entityKind: " + this.entityKind //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "entityId: " + this.entityId //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "linkedEntityKind: " + this.linkedEntityKind //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "linkedEntityId: " + this.linkedEntityId //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "__typename: " + this.__typename //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "Log {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "timestamp: " + this.timestamp //
+			+ ", " //
+			+ "user: " + this.user //
+			+ ", " //
+			+ "transactionKind: " + this.transactionKind //
+			+ ", " //
+			+ "entityKind: " + this.entityKind //
+			+ ", " //
+			+ "entityId: " + this.entityId //
+			+ ", " //
+			+ "linkedEntityKind: " + this.linkedEntityKind //
+			+ ", " //
+			+ "linkedEntityId: " + this.linkedEntityId //
+			+ ", " //
+			+ "__typename: " + this.__typename //
+			+ "}";
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((aliasValues == null) ? 0 : aliasValues.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		int result = super.hashCode();
 		result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
 		result = prime * result + ((user == null) ? 0 : user.hashCode());
 		result = prime * result + ((transactionKind == null) ? 0 : transactionKind.hashCode());
@@ -329,29 +251,14 @@ public class Log implements IBaseEntity {
 		result = prime * result + ((entityId == null) ? 0 : entityId.hashCode());
 		result = prime * result + ((linkedEntityKind == null) ? 0 : linkedEntityKind.hashCode());
 		result = prime * result + ((linkedEntityId == null) ? 0 : linkedEntityId.hashCode());
-		result = prime * result + ((__typename == null) ? 0 : __typename.hashCode());
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+        if (!super.equals(obj))
+            return false;
 		Log other = (Log)obj;
-		if (aliasValues == null) {
-			if (other.aliasValues != null)
-				return false;
-		} else if (!aliasValues.equals(other.aliasValues))
-			return false;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
 		if (timestamp == null) {
 			if (other.timestamp != null)
 				return false;
@@ -387,11 +294,6 @@ public class Log implements IBaseEntity {
 				return false;
 		} else if (!linkedEntityId.equals(other.linkedEntityId))
 			return false;
-		if (__typename == null) {
-			if (other.__typename != null)
-				return false;
-		} else if (!__typename.equals(other.__typename))
-			return false;
 		return true;
 	}
 
@@ -403,24 +305,15 @@ public class Log implements IBaseEntity {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
+	public static class Builder extends AbstractBaseEntity.Builder<Builder, Log> {
 
-		private Long id;
 		private OffsetDateTime timestamp;
-		private io.github.demonfiddler.ee.client.User user;
+		private User user;
 		private String transactionKind;
 		private String entityKind;
 		private Long entityId;
 		private String linkedEntityKind;
 		private Long linkedEntityId;
-
-		/**
-		 * The unique identifier for the log entry.
-		 */
-		public Builder withId(Long idParam) {
-			this.id = idParam;
-			return this;
-		}
 
 		/**
 		 * The date-time stamp.
@@ -478,9 +371,9 @@ public class Log implements IBaseEntity {
 			return this;
 		}
 
+		@Override
 		public Log build() {
-			Log _object = new Log();
-			_object.setId(this.id);
+			Log _object = build(new Log());
 			_object.setTimestamp(this.timestamp);
 			_object.setUser(this.user);
 			_object.setTransactionKind(this.transactionKind);
@@ -488,8 +381,12 @@ public class Log implements IBaseEntity {
 			_object.setEntityId(this.entityId);
 			_object.setLinkedEntityKind(this.linkedEntityKind);
 			_object.setLinkedEntityId(this.linkedEntityId);
-			_object.set__typename("Log"); //$NON-NLS-1$
 			return _object;
+		}
+
+		@Override
+		String getTypeName() {
+			return "Log";
 		}
 
 	}

@@ -29,14 +29,14 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
 @GraphQLEnumType("__TypeKind")
 public enum __TypeKind {
 
-		SCALAR("SCALAR"), //$NON-NLS-1$
-		OBJECT("OBJECT"), //$NON-NLS-1$
-		INTERFACE("INTERFACE"), //$NON-NLS-1$
-		UNION("UNION"), //$NON-NLS-1$
-		ENUM("ENUM"), //$NON-NLS-1$
-		INPUT_OBJECT("INPUT_OBJECT"), //$NON-NLS-1$
-		LIST("LIST"), //$NON-NLS-1$
-		NON_NULL("NON_NULL"); //$NON-NLS-1$
+	SCALAR("SCALAR"), //
+	OBJECT("OBJECT"), //
+	INTERFACE("INTERFACE"), //
+	UNION("UNION"), //
+	ENUM("ENUM"), //
+	INPUT_OBJECT("INPUT_OBJECT"), //
+	LIST("LIST"), //
+	NON_NULL("NON_NULL"); //
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different when the value in the GraphQL schema is a Java reserved keyword.
@@ -75,7 +75,7 @@ public enum __TypeKind {
 				return e;
 			}
 		}
-		throw new IllegalArgumentException("No __TypeKind exists with '" + graphQlValue + "' as a GraphQL value"); //$NON-NLS-1$ //$NON-NLS-2$
+		throw new IllegalArgumentException("No __TypeKind exists with '" + graphQlValue + "' as a GraphQL value"); //
 	}
 
 }

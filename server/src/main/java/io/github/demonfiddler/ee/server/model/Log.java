@@ -21,6 +21,7 @@ package io.github.demonfiddler.ee.server.model;
 
 import java.time.OffsetDateTime;
 
+import com.graphql_java_generator.annotation.GraphQLDirective;
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
@@ -62,6 +63,7 @@ public class Log implements IBaseEntity {
 	 * The user who made the change.
 	 */
 	@GraphQLNonScalar(fieldName = "user", graphQLTypeSimpleName = "User", javaClass = User.class, listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = {}, parameterTypes = {}, parameterValues = {})
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "user_id", nullable = false)
 	User user;
@@ -101,7 +103,6 @@ public class Log implements IBaseEntity {
 	/**
 	 * The unique identifier for the log entry.
 	 */
-	@Override
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -109,7 +110,6 @@ public class Log implements IBaseEntity {
 	/**
 	 * The unique identifier for the log entry.
 	 */
-	@Override
 	public Long getId() {
 		return this.id;
 	}
@@ -131,6 +131,7 @@ public class Log implements IBaseEntity {
 	/**
 	 * The user who made the change.
 	 */
+	@GraphQLDirective(name = "@auth", parameterNames = {}, parameterTypes = {}, parameterValues = {})
 	public void setUser(User user) {
 		this.user = user;
 	}
@@ -138,6 +139,7 @@ public class Log implements IBaseEntity {
 	/**
 	 * The user who made the change.
 	 */
+	@GraphQLDirective(name = "@auth", parameterNames = {}, parameterTypes = {}, parameterValues = {})
 	public User getUser() {
 		return this.user;
 	}
@@ -241,6 +243,7 @@ public class Log implements IBaseEntity {
 	 * {@link #builder()}
 	 */
 	public static class Builder {
+
 		private Long id;
 		private OffsetDateTime timestamp;
 		private User user;
@@ -326,6 +329,7 @@ public class Log implements IBaseEntity {
 			_object.setLinkedEntityId(this.linkedEntityId);
 			return _object;
 		}
+
 	}
 
 }

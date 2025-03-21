@@ -19,16 +19,9 @@
 
 package io.github.demonfiddler.ee.server.repository;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import io.github.demonfiddler.ee.server.model.Topic;
 
 public interface TopicRepository extends JpaRepository<Topic, Long>, CustomTopicRepository {
-
-	@Query(value = "select t from Topic t where t.id in (:ids)")
-	List<Topic> findByIds(List<Long> ids);
-
 }

@@ -19,7 +19,6 @@
 
 package io.github.demonfiddler.ee.client;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -29,14 +28,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.graphql_java_generator.annotation.GraphQLIgnore;
+import com.graphql_java_generator.annotation.GraphQLDirective;
 import com.graphql_java_generator.annotation.GraphQLInputParameters;
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 import com.graphql_java_generator.annotation.GraphQLQuery;
 import com.graphql_java_generator.annotation.GraphQLScalar;
 import com.graphql_java_generator.annotation.RequestType;
-import com.graphql_java_generator.client.GraphQLObjectMapper;
+import com.graphql_java_generator.client.GraphQLRequestObject;
 
 /**
  * Available mutations.
@@ -47,19 +46,11 @@ import com.graphql_java_generator.client.GraphQLObjectMapper;
 @GraphQLQuery(name = "Mutation", type = RequestType.mutation)
 @GraphQLObjectType("Mutation")
 @JsonInclude(Include.NON_NULL)
-public class Mutation implements com.graphql_java_generator.client.GraphQLRequestObject {
+public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObject {
 
 	private ObjectMapper mapper = null;
 	private JsonNode extensions;
 	private Map<String, JsonNode> extensionsAsMap = null;
-
-	/**
-	 * This map contains the deserialized values for the alias, as parsed from the JSON response from the GraphQL
-	 * server. The key is the alias name, the value is the deserialiazed value (taking into account custom scalars,
-	 * lists, ...)
-	 */
-	@GraphQLIgnore
-	Map<String, Object> aliasValues = new HashMap<>();
 
 	public Mutation() {
 	}
@@ -122,6 +113,42 @@ public class Mutation implements com.graphql_java_generator.client.GraphQLReques
 	@GraphQLScalar(fieldName = "deleteDeclaration", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class, listDepth = 0)
 	Declaration deleteDeclaration;
+
+	/**
+	 * Creates an entity link.
+	 */
+	@JsonProperty("createEntityLink")
+	@GraphQLInputParameters(names = { "entityLink" }, types = { "EntityLinkInput" }, mandatories = { true },
+		listDepths = { 0 }, itemsMandatory = { false })
+	@GraphQLNonScalar(fieldName = "createEntityLink", graphQLTypeSimpleName = "EntityLink",
+		javaClass = EntityLink.class, listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[LNK]" })
+	EntityLink createEntityLink;
+
+	/**
+	 * Updates an existing entity link.
+	 */
+	@JsonProperty("updateEntityLink")
+	@GraphQLInputParameters(names = { "entityLink" }, types = { "EntityLinkInput" }, mandatories = { true },
+		listDepths = { 0 }, itemsMandatory = { false })
+	@GraphQLNonScalar(fieldName = "updateEntityLink", graphQLTypeSimpleName = "EntityLink",
+		javaClass = EntityLink.class, listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[LNK]" })
+	EntityLink updateEntityLink;
+
+	/**
+	 * Deletes an entity link.
+	 */
+	@JsonProperty("deleteEntityLink")
+	@GraphQLInputParameters(names = { "entityLinkId" }, types = { "Long" }, mandatories = { true }, listDepths = { 0 },
+		itemsMandatory = { false })
+	@GraphQLNonScalar(fieldName = "deleteEntityLink", graphQLTypeSimpleName = "EntityLink",
+		javaClass = EntityLink.class, listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[LNK]" })
+	EntityLink deleteEntityLink;
 
 	/**
 	 * Create a new journal.
@@ -303,54 +330,6 @@ public class Mutation implements com.graphql_java_generator.client.GraphQLReques
 	Topic deleteTopic;
 
 	/**
-	 * Adds a new topic reference.
-	 */
-	@JsonProperty("addTopicRef")
-	@GraphQLInputParameters(names = { "topicRef" }, types = { "TopicRefInput" }, mandatories = { true },
-		listDepths = { 0 }, itemsMandatory = { false })
-	@GraphQLNonScalar(fieldName = "addTopicRef", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class,
-		listDepth = 0)
-	TopicRef addTopicRef;
-
-	/**
-	 * Updates an existing topic reference.
-	 */
-	@JsonProperty("updateTopicRef")
-	@GraphQLInputParameters(names = {"topicRef"}, types = {"TopicRefInput"}, mandatories = {true}, listDepths = {0}, itemsMandatory = {false})
-	@GraphQLNonScalar( fieldName = "updateTopicRef", graphQLTypeSimpleName = "TopicRef", javaClass = TopicRef.class, listDepth = 0)
-	TopicRef updateTopicRef;
-
-	/**
-	 * Removes a topic reference.
-	 */
-	@JsonProperty("removeTopicRef")
-	@GraphQLInputParameters(names = { "topicRef" }, types = { "TopicRefInput" }, mandatories = { true },
-		listDepths = { 0 }, itemsMandatory = { false })
-	@GraphQLScalar(fieldName = "removeTopicRef", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class,
-		listDepth = 0)
-	Boolean removeTopicRef;
-
-	/**
-	 * Links two entities.
-	 */
-	@JsonProperty("linkEntities")
-	@GraphQLInputParameters(names = { "link" }, types = { "LinkEntitiesInput" }, mandatories = { true },
-		listDepths = { 0 }, itemsMandatory = { false })
-	@GraphQLScalar(fieldName = "linkEntities", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class,
-		listDepth = 0)
-	Boolean linkEntities;
-
-	/**
-	 * Unlinks two linked entities.
-	 */
-	@JsonProperty("unlinkEntities")
-	@GraphQLInputParameters(names = { "link" }, types = { "LinkEntitiesInput" }, mandatories = { true },
-		listDepths = { 0 }, itemsMandatory = { false })
-	@GraphQLScalar(fieldName = "unlinkEntities", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class,
-		listDepth = 0)
-	Boolean unlinkEntities;
-
-	/**
 	 * Sets entity status.
 	 */
 	@JsonProperty("setEntityStatus")
@@ -408,10 +387,6 @@ public class Mutation implements com.graphql_java_generator.client.GraphQLReques
 	@GraphQLNonScalar(fieldName = "revokeUserPermissions", graphQLTypeSimpleName = "User", javaClass = User.class,
 		listDepth = 0)
 	User revokeUserPermissions;
-
-	@JsonProperty("__typename")
-	@GraphQLScalar(fieldName = "__typename", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	String __typename;
 
 	/**
 	 * Creates a new claim.
@@ -507,6 +482,66 @@ public class Mutation implements com.graphql_java_generator.client.GraphQLReques
 	@JsonProperty("deleteDeclaration")
 	public Declaration getDeleteDeclaration() {
 		return this.deleteDeclaration;
+	}
+
+	/**
+	 * Creates an entity link.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[LNK]" })
+	@JsonProperty("createEntityLink")
+	public void setCreateEntityLink(EntityLink createEntityLink) {
+		this.createEntityLink = createEntityLink;
+	}
+
+	/**
+	 * Creates an entity link.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[LNK]" })
+	@JsonProperty("createEntityLink")
+	public EntityLink getCreateEntityLink() {
+		return this.createEntityLink;
+	}
+
+	/**
+	 * Updates an existing entity link.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[LNK]" })
+	@JsonProperty("updateEntityLink")
+	public void setUpdateEntityLink(EntityLink updateEntityLink) {
+		this.updateEntityLink = updateEntityLink;
+	}
+
+	/**
+	 * Updates an existing entity link.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[LNK]" })
+	@JsonProperty("updateEntityLink")
+	public EntityLink getUpdateEntityLink() {
+		return this.updateEntityLink;
+	}
+
+	/**
+	 * Deletes an entity link.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[LNK]" })
+	@JsonProperty("deleteEntityLink")
+	public void setDeleteEntityLink(EntityLink deleteEntityLink) {
+		this.deleteEntityLink = deleteEntityLink;
+	}
+
+	/**
+	 * Deletes an entity link.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[LNK]" })
+	@JsonProperty("deleteEntityLink")
+	public EntityLink getDeleteEntityLink() {
+		return this.deleteEntityLink;
 	}
 
 	/**
@@ -798,86 +833,6 @@ public class Mutation implements com.graphql_java_generator.client.GraphQLReques
 	}
 
 	/**
-	 * Adds a new topic reference.
-	 */
-	@JsonProperty("addTopicRef")
-	public void setAddTopicRef(TopicRef addTopicRef) {
-		this.addTopicRef = addTopicRef;
-	}
-
-	/**
-	 * Adds a new topic reference.
-	 */
-	@JsonProperty("addTopicRef")
-	public TopicRef getAddTopicRef() {
-		return this.addTopicRef;
-	}
-
-	/**
-	  * Updates an existing topic reference.
- 	 */
-	@JsonProperty("updateTopicRef")
-	public void setUpdateTopicRef(TopicRef updateTopicRef) {
-		this.updateTopicRef = updateTopicRef;
-	}
-
-	/**
-	 * Updates an existing topic reference.
-	 */
-	@JsonProperty("updateTopicRef")
-	public TopicRef getUpdateTopicRef() {
-		return this.updateTopicRef;
-	}
-		  
-	/**
-	 * Removes a topic reference.
-	 */
-	@JsonProperty("removeTopicRef")
-	public void setRemoveTopicRef(Boolean removeTopicRef) {
-		this.removeTopicRef = removeTopicRef;
-	}
-
-	/**
-	 * Removes a topic reference.
-	 */
-	@JsonProperty("removeTopicRef")
-	public Boolean getRemoveTopicRef() {
-		return this.removeTopicRef;
-	}
-
-	/**
-	 * Links two entities.
-	 */
-	@JsonProperty("linkEntities")
-	public void setLinkEntities(Boolean linkEntities) {
-		this.linkEntities = linkEntities;
-	}
-
-	/**
-	 * Links two entities.
-	 */
-	@JsonProperty("linkEntities")
-	public Boolean getLinkEntities() {
-		return this.linkEntities;
-	}
-
-	/**
-	 * Unlinks two linked entities.
-	 */
-	@JsonProperty("unlinkEntities")
-	public void setUnlinkEntities(Boolean unlinkEntities) {
-		this.unlinkEntities = unlinkEntities;
-	}
-
-	/**
-	 * Unlinks two linked entities.
-	 */
-	@JsonProperty("unlinkEntities")
-	public Boolean getUnlinkEntities() {
-		return this.unlinkEntities;
-	}
-
-	/**
 	 * Sets entity status.
 	 */
 	@JsonProperty("setEntityStatus")
@@ -975,112 +930,76 @@ public class Mutation implements com.graphql_java_generator.client.GraphQLReques
 		return this.revokeUserPermissions;
 	}
 
-	@JsonProperty("__typename")
-	public void set__typename(String __typename) {
-		this.__typename = __typename;
-	}
-
-	@JsonProperty("__typename")
-	public String get__typename() {
-		return this.__typename;
-	}
-
-	/**
-	 * This method is called during the json deserialization process, by the {@link GraphQLObjectMapper}, each time an
-	 * alias value is read from the json.
-	 * @param aliasName
-	 * @param aliasDeserializedValue
-	 */
-	public void setAliasValue(String aliasName, Object aliasDeserializedValue) {
-		this.aliasValues.put(aliasName, aliasDeserializedValue);
-	}
-
-	/**
-	 * Retrieves the value for the given alias, as it has been received for this object in the GraphQL response. <BR/>
-	 * This method <B>should not be used for Custom Scalars</B>, as the parser doesn't know if this alias is a custom
-	 * scalar, and which custom scalar to use at deserialization time. In most case, a value will then be provided by
-	 * this method with a basis json deserialization, but this value won't be the proper custom scalar value.
-	 * @param alias
-	 * @return
-	 */
-	public Object getAliasValue(String alias) {
-		return this.aliasValues.get(alias);
-	}
-
 	public String toString() {
-		return "Mutation {" //$NON-NLS-1$
-			+ "createClaim: " + this.createClaim //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updateClaim: " + this.updateClaim //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "deleteClaim: " + this.deleteClaim //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createDeclaration: " + this.createDeclaration //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updateDeclaration: " + this.updateDeclaration //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "deleteDeclaration: " + this.deleteDeclaration //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createJournal: " + this.createJournal //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updateJournal: " + this.updateJournal //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "deleteJournal: " + this.deleteJournal //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createPerson: " + this.createPerson //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updatePerson: " + this.updatePerson //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "deletePerson: " + this.deletePerson //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createPublication: " + this.createPublication //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updatePublication: " + this.updatePublication //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "deletePublication: " + this.deletePublication //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createPublisher: " + this.createPublisher //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updatePublisher: " + this.updatePublisher //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "deletePublisher: " + this.deletePublisher //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createQuotation: " + this.createQuotation //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updateQuotation: " + this.updateQuotation //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "deleteQuotation: " + this.deleteQuotation //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createTopic: " + this.createTopic //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updateTopic: " + this.updateTopic //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "deleteTopic: " + this.deleteTopic //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "addTopicRef: " + this.addTopicRef //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updateTopicRef: " + this.updateTopicRef //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "removeTopicRef: " + this.removeTopicRef //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "linkEntities: " + this.linkEntities //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "unlinkEntities: " + this.unlinkEntities //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "setEntityStatus: " + this.setEntityStatus //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createUser: " + this.createUser //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updateUser: " + this.updateUser //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "deleteUser: " + this.deleteUser //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "grantUserPermissions: " + this.grantUserPermissions //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "revokeUserPermissions: " + this.revokeUserPermissions //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "__typename: " + this.__typename //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "Mutation {" //
+			+ "createClaim: " + this.createClaim //
+			+ ", " //
+			+ "updateClaim: " + this.updateClaim //
+			+ ", " //
+			+ "deleteClaim: " + this.deleteClaim //
+			+ ", " //
+			+ "createDeclaration: " + this.createDeclaration //
+			+ ", " //
+			+ "updateDeclaration: " + this.updateDeclaration //
+			+ ", " //
+			+ "deleteDeclaration: " + this.deleteDeclaration //
+			+ ", " //
+			+ "createEntityLink: " + this.createEntityLink //
+			+ ", " //
+			+ "updateEntityLink: " + this.updateEntityLink //
+			+ ", " //
+			+ "deleteEntityLink: " + this.deleteEntityLink //
+			+ ", " //
+			+ "createJournal: " + this.createJournal //
+			+ ", " //
+			+ "updateJournal: " + this.updateJournal //
+			+ ", " //
+			+ "deleteJournal: " + this.deleteJournal //
+			+ ", " //
+			+ "createPerson: " + this.createPerson //
+			+ ", " //
+			+ "updatePerson: " + this.updatePerson //
+			+ ", " //
+			+ "deletePerson: " + this.deletePerson //
+			+ ", " //
+			+ "createPublication: " + this.createPublication //
+			+ ", " //
+			+ "updatePublication: " + this.updatePublication //
+			+ ", " //
+			+ "deletePublication: " + this.deletePublication //
+			+ ", " //
+			+ "createPublisher: " + this.createPublisher //
+			+ ", " //
+			+ "updatePublisher: " + this.updatePublisher //
+			+ ", " //
+			+ "deletePublisher: " + this.deletePublisher //
+			+ ", " //
+			+ "createQuotation: " + this.createQuotation //
+			+ ", " //
+			+ "updateQuotation: " + this.updateQuotation //
+			+ ", " //
+			+ "deleteQuotation: " + this.deleteQuotation //
+			+ ", " //
+			+ "createTopic: " + this.createTopic //
+			+ ", " //
+			+ "updateTopic: " + this.updateTopic //
+			+ ", " //
+			+ "deleteTopic: " + this.deleteTopic //
+			+ ", " //
+			+ "setEntityStatus: " + this.setEntityStatus //
+			+ ", " //
+			+ "createUser: " + this.createUser //
+			+ ", " //
+			+ "updateUser: " + this.updateUser //
+			+ ", " //
+			+ "deleteUser: " + this.deleteUser //
+			+ ", " //
+			+ "grantUserPermissions: " + this.grantUserPermissions //
+			+ ", " //
+			+ "revokeUserPermissions: " + this.revokeUserPermissions //
+			+ ", " //
+			+ "__typename: " + this.__typename //
+			+ "}";
 	}
 
 	public static Builder builder() {
@@ -1091,13 +1010,17 @@ public class Mutation implements com.graphql_java_generator.client.GraphQLReques
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
+	public static class Builder extends AbstractGraphQLEntity.Builder<Builder, Mutation> {
+
 		private Claim createClaim;
 		private Claim updateClaim;
 		private Claim deleteClaim;
 		private Declaration createDeclaration;
 		private Declaration updateDeclaration;
 		private Declaration deleteDeclaration;
+		private EntityLink createEntityLink;
+		private EntityLink updateEntityLink;
+		private EntityLink deleteEntityLink;
 		private Journal createJournal;
 		private Journal updateJournal;
 		private Journal deleteJournal;
@@ -1116,11 +1039,6 @@ public class Mutation implements com.graphql_java_generator.client.GraphQLReques
 		private Topic createTopic;
 		private Topic updateTopic;
 		private Topic deleteTopic;
-		private TopicRef addTopicRef;
-		private TopicRef updateTopicRef;
-		private Boolean removeTopicRef;
-		private Boolean linkEntities;
-		private Boolean unlinkEntities;
 		private Boolean setEntityStatus;
 		private User createUser;
 		private User updateUser;
@@ -1173,6 +1091,30 @@ public class Mutation implements com.graphql_java_generator.client.GraphQLReques
 		 */
 		public Builder withDeleteDeclaration(Declaration deleteDeclarationParam) {
 			this.deleteDeclaration = deleteDeclarationParam;
+			return this;
+		}
+
+		/**
+		 * Creates an entity link.
+		 */
+		public Builder withCreateEntityLink(EntityLink createEntityLinkParam) {
+			this.createEntityLink = createEntityLinkParam;
+			return this;
+		}
+
+		/**
+		 * Updates an existing entity link.
+		 */
+		public Builder withUpdateEntityLink(EntityLink updateEntityLinkParam) {
+			this.updateEntityLink = updateEntityLinkParam;
+			return this;
+		}
+
+		/**
+		 * Deletes an entity link.
+		 */
+		public Builder withDeleteEntityLink(EntityLink deleteEntityLinkParam) {
+			this.deleteEntityLink = deleteEntityLinkParam;
 			return this;
 		}
 
@@ -1321,46 +1263,6 @@ public class Mutation implements com.graphql_java_generator.client.GraphQLReques
 		}
 
 		/**
-		 * Adds a new topic reference.
-		 */
-		public Builder withAddTopicRef(TopicRef addTopicRefParam) {
-			this.addTopicRef = addTopicRefParam;
-			return this;
-		}
-
-		/**
-		 * Updates an existing topic reference.
-		 */
-		public Builder withUpdateTopicRef(TopicRef updateTopicRefParam) {
-			this.updateTopicRef = updateTopicRefParam;
-			return this;
-		}
-
-		/**
-		 * Removes a topic reference.
-		 */
-		public Builder withRemoveTopicRef(Boolean removeTopicRefParam) {
-			this.removeTopicRef = removeTopicRefParam;
-			return this;
-		}
-
-		/**
-		 * Links two entities.
-		 */
-		public Builder withLinkEntities(Boolean linkEntitiesParam) {
-			this.linkEntities = linkEntitiesParam;
-			return this;
-		}
-
-		/**
-		 * Unlinks two linked entities.
-		 */
-		public Builder withUnlinkEntities(Boolean unlinkEntitiesParam) {
-			this.unlinkEntities = unlinkEntitiesParam;
-			return this;
-		}
-
-		/**
 		 * Sets entity status.
 		 */
 		public Builder withSetEntityStatus(Boolean setEntityStatusParam) {
@@ -1410,13 +1312,16 @@ public class Mutation implements com.graphql_java_generator.client.GraphQLReques
 		}
 
 		public Mutation build() {
-			Mutation _object = new Mutation();
+			Mutation _object = build(new Mutation());
 			_object.setCreateClaim(this.createClaim);
 			_object.setUpdateClaim(this.updateClaim);
 			_object.setDeleteClaim(this.deleteClaim);
 			_object.setCreateDeclaration(this.createDeclaration);
 			_object.setUpdateDeclaration(this.updateDeclaration);
 			_object.setDeleteDeclaration(this.deleteDeclaration);
+			_object.setCreateEntityLink(this.createEntityLink);
+			_object.setUpdateEntityLink(this.updateEntityLink);
+			_object.setDeleteEntityLink(this.deleteEntityLink);
 			_object.setCreateJournal(this.createJournal);
 			_object.setUpdateJournal(this.updateJournal);
 			_object.setDeleteJournal(this.deleteJournal);
@@ -1435,21 +1340,22 @@ public class Mutation implements com.graphql_java_generator.client.GraphQLReques
 			_object.setCreateTopic(this.createTopic);
 			_object.setUpdateTopic(this.updateTopic);
 			_object.setDeleteTopic(this.deleteTopic);
-			_object.setAddTopicRef(this.addTopicRef);
-			_object.setUpdateTopicRef(this.updateTopicRef);
-			_object.setRemoveTopicRef(this.removeTopicRef);
-			_object.setLinkEntities(this.linkEntities);
-			_object.setUnlinkEntities(this.unlinkEntities);
 			_object.setSetEntityStatus(this.setEntityStatus);
 			_object.setCreateUser(this.createUser);
 			_object.setUpdateUser(this.updateUser);
 			_object.setDeleteUser(this.deleteUser);
 			_object.setGrantUserPermissions(this.grantUserPermissions);
 			_object.setRevokeUserPermissions(this.revokeUserPermissions);
-			_object.set__typename("Mutation"); //$NON-NLS-1$
 			return _object;
 		}
+
+		@Override
+		String getTypeName() {
+			return "Mutation";
+		}
+
 	}
+
 	private ObjectMapper getMapper() {
 		if (this.mapper == null) {
 			this.mapper = new ObjectMapper();
@@ -1473,7 +1379,6 @@ public class Mutation implements com.graphql_java_generator.client.GraphQLReques
 		if (this.extensionsAsMap == null) {
 			this.extensionsAsMap =
 				new ObjectMapper().convertValue(this.extensions, new TypeReference<Map<String, JsonNode>>() {
-					// Empty bloc
 				});
 		}
 		return this.extensionsAsMap;

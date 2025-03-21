@@ -19,6 +19,7 @@
 
 package io.github.demonfiddler.ee.server.model;
 
+import com.graphql_java_generator.annotation.GraphQLDirective;
 import com.graphql_java_generator.annotation.GraphQLEnumType;
 
 /**
@@ -30,9 +31,17 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
 @GraphQLEnumType("StatusKind")
 public enum StatusKind {
 
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Draft" })
 	DRA("DRA", "Draft"), //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Published" })
 	PUB("PUB", "Published"), //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Suspended" })
 	SUS("SUS", "Suspended"), //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Deleted" })
 	DEL("DEL", "Deleted"); //$NON-NLS-1$
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
@@ -82,7 +91,7 @@ public enum StatusKind {
 				return e;
 			}
 		}
-		throw new IllegalArgumentException("No StatusKind exists with '" + graphQlValue + "' as a GraphQL value"); //$NON-NLS-1$ //$NON-NLS-2$
+		throw new IllegalArgumentException("No StatusKind exists with '" + graphQlValue + "' as a GraphQL value");
 	}
 
 }

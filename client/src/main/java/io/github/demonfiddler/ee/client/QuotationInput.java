@@ -21,17 +21,13 @@ package io.github.demonfiddler.ee.client;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.graphql_java_generator.annotation.GraphQLIgnore;
 import com.graphql_java_generator.annotation.GraphQLInputType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
-import com.graphql_java_generator.client.GraphQLObjectMapper;
 
 import io.github.demonfiddler.ee.client.util.CustomJacksonSerializers;
 
@@ -43,19 +39,12 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonSerializers;
  */
 @GraphQLInputType("QuotationInput")
 @JsonInclude(Include.NON_NULL)
-public class QuotationInput {
-
-	/**
-	 * This map contains the deserialized values for the alias, as parsed from the JSON response from the GraphQL
-	 * server. The key is the alias name, the value is the deserialiazed value (taking into account custom scalars,
-	 * lists, ...)
-	 */
-	@GraphQLIgnore
-	Map<String, Object> aliasValues = new HashMap<>();
+public class QuotationInput extends AbstractBaseEntityInput {
 
 	public QuotationInput() {
 	}
 
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
 	 * The quotation identifier, required if updating an existing record.
 	 */
@@ -107,17 +96,21 @@ public class QuotationInput {
 	@GraphQLScalar(fieldName = "notes", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
 	String notes;
 
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
 	 * The quotation identifier, required if updating an existing record.
 	 */
+	@Override
 	@JsonProperty("id")
 	public void setId(Long id) {
 		this.id = id;
 	}
 
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
 	 * The quotation identifier, required if updating an existing record.
 	 */
+	@Override
 	@JsonProperty("id")
 	public Long getId() {
 		return this.id;
@@ -219,44 +212,22 @@ public class QuotationInput {
 		return this.notes;
 	}
 
-	/**
-	 * This method is called during the json deserialization process, by the {@link GraphQLObjectMapper}, each time an
-	 * alias value is read from the json.
-	 * @param aliasName
-	 * @param aliasDeserializedValue
-	 */
-	public void setAliasValue(String aliasName, Object aliasDeserializedValue) {
-		this.aliasValues.put(aliasName, aliasDeserializedValue);
-	}
-
-	/**
-	 * Retrieves the value for the given alias, as it has been received for this object in the GraphQL response. <BR/>
-	 * This method <B>should not be used for Custom Scalars</B>, as the parser doesn't know if this alias is a custom
-	 * scalar, and which custom scalar to use at deserialization time. In most case, a value will then be provided by
-	 * this method with a basis json deserialization, but this value won't be the proper custom scalar value.
-	 * @param alias
-	 * @return
-	 */
-	public Object getAliasValue(String alias) {
-		return this.aliasValues.get(alias);
-	}
-
 	public String toString() {
-		return "QuotationInput {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "text: " + this.text //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "quotee: " + this.quotee //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "date: " + this.date //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "source: " + this.source //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "url: " + this.url //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "notes: " + this.notes //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "QuotationInput {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "text: " + this.text //
+			+ ", " //
+			+ "quotee: " + this.quotee //
+			+ ", " //
+			+ "date: " + this.date //
+			+ ", " //
+			+ "source: " + this.source //
+			+ ", " //
+			+ "url: " + this.url //
+			+ ", " //
+			+ "notes: " + this.notes //
+			+ "}";
 	}
 
 	public static Builder builder() {
@@ -267,23 +238,14 @@ public class QuotationInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
+	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, QuotationInput> {
 
-		private Long id;
 		private String text;
 		private String quotee;
 		private LocalDate date;
 		private String source;
 		private URL url;
 		private String notes;
-
-		/**
-		 * The quotation identifier, required if updating an existing record.
-		 */
-		public Builder withId(Long idParam) {
-			this.id = idParam;
-			return this;
-		}
 
 		/**
 		 * The text of the quotation.
@@ -333,9 +295,9 @@ public class QuotationInput {
 			return this;
 		}
 
+		@Override
 		public QuotationInput build() {
-			QuotationInput _object = new QuotationInput();
-			_object.setId(this.id);
+			QuotationInput _object = build(new QuotationInput());
 			_object.setText(this.text);
 			_object.setQuotee(this.quotee);
 			_object.setDate(this.date);

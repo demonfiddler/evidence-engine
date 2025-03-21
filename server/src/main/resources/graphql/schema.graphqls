@@ -27,7 +27,9 @@ Indicates the permission(s) required to execute a query/operation or access a fi
 Multiple values are ORed, i.e., any of the listed permissions suffices to authorise.
 Default just means authentication is required but no specific permission is necessary.
 """
-directive @ee_auth(permission: [PermissionKind!]) on OBJECT | FIELD_DEFINITION
+directive @auth(permission: [PermissionKind!]) on OBJECT | FIELD_DEFINITION
+"A label for an enum literal, typically used as a display string"
+directive @label(label: String!) on ENUM_VALUE
 
 # Custom scalar types used in this schema
 scalar Country @specifiedBy(url: "https://www.iso.org/obp/ui/#search")
@@ -75,19 +77,19 @@ input OrderInput {
 "Specifies lexical or numeric sort direction."
 enum DirectionKind {
     "Ascending direction."
-    ASC
+    ASC @label(label: "Ascending")
     "Descending direction."
-    DESC
+    DESC @label(label: "Descending")
 }
 
 "Specifies how null values are sorted."
 enum NullHandlingKind {
     "No special treatment, rely on native database null handling."
-    NATIVE
+    NATIVE @label(label: "Native")
     "Nulls sort first when ascending, last when descending."
-    NULLS_FIRST
+    NULLS_FIRST @label(label: "Nulls first")
     "Nulls sort last when ascending, first when descending."
-    NULLS_LAST
+    NULLS_LAST @label(label: "Nulls last")
 }
 
 #==================================================
@@ -101,6 +103,11 @@ interface IBaseEntity {
 
 "Interface for entities with a tracked lifecycle."
 interface ITrackedEntity {
+    "The entity kind."
+    entityKind(
+        "How to format the result. SHORT format is per ```EntityKind``` enum."
+        format: FormatKind = LONG
+    ): String
     "The entity status."
     status(
         "How to format the result. SHORT format is per ```StatusKind``` enum."
@@ -110,12 +117,12 @@ interface ITrackedEntity {
     "When the record was created."
     created: DateTime
     "The user who created the record."
-    createdByUser: User @ee_auth
+    createdByUser: User @auth
     # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
-    updatedByUser: User @ee_auth
+    updatedByUser: User @auth
     "Log of transactions involving the record."
     log(
         "Filters results."
@@ -125,15 +132,50 @@ interface ITrackedEntity {
     ): LogPage!
 }
 
-"Interface for entities with associated topics."
-interface ITopicalEntity {
-    "The topic(s) associated with the entity."
-    topicRefs(
+"Interface for entities that can be linked together."
+interface ILinkableEntity {
+    "Outbound links for which the receiver is the 'linked-from' entity"
+    fromEntityLinks(
         "Filters results."
-        filter: TopicRefQueryFilter,
+        filter: LinkableEntityQueryFilter,
         "Sorts and paginates results"
         pageSort: PageableInput
-    ): TopicRefPage!
+    ): EntityLinkPage
+    "Inbound links for which the receiver is the 'linked-to' entity"
+    toEntityLinks(
+        "Filters results."
+        filter: LinkableEntityQueryFilter,
+        "Sorts and paginates results"
+        pageSort: PageableInput
+    ): EntityLinkPage
+}
+
+"Interface for returning paged results."
+interface IPage {
+    "Dummy ID required for @Entity classes"
+    dummy: ID
+    "Whether the page has content."
+    hasContent: Boolean!
+    "Whether the page is empty (no content)."
+    isEmpty: Boolean!
+    "The current page number."
+    number: Int!
+    "The page size."
+    size: Int!
+    "The number of elements on this page."
+    numberOfElements: Int!
+    "The total number of pages available."
+    totalPages: Int!
+    "The total number of records."
+    totalElements: Long!
+    "Whether this is the first page."
+    isFirst: Boolean!
+    "Whether this is the last page."
+    isLast: Boolean!
+    "Whether there is next page."
+    hasNext: Boolean!
+    "Whether there is previous page."
+    hasPrevious: Boolean!
 }
 
 #==================================================
@@ -143,9 +185,14 @@ interface ITopicalEntity {
 #union TopicalEntity = Claim | Declaration | Person | Publication | Quotation
 
 "A claim made in respect of given topic(s)."
-type Claim implements IBaseEntity & ITrackedEntity & ITopicalEntity {
+type Claim implements IBaseEntity & ITrackedEntity & ILinkableEntity {
     "The unique claim identifier."
     id: ID!
+    "The entity kind."
+    entityKind(
+        "How to format the result. SHORT format is per ```EntityKind``` enum."
+        format: FormatKind = LONG
+    ): String
     "The entity status."
     status(
         "How to format the result. SHORT format is per ```StatusKind``` enum."
@@ -155,12 +202,12 @@ type Claim implements IBaseEntity & ITrackedEntity & ITopicalEntity {
     "When the record was created."
     created: DateTime
     "The user who created the record."
-    createdByUser: User @ee_auth
+    createdByUser: User @auth
     # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
-    updatedByUser: User @ee_auth
+    updatedByUser: User @auth
     "Log of transactions involving the record."
     log(
         "Filters results."
@@ -168,13 +215,20 @@ type Claim implements IBaseEntity & ITrackedEntity & ITopicalEntity {
         "Sorts and/or paginates results."
         pageSort: PageableInput
     ): LogPage!
-    "The topic(s) associated with the claim."
-    topicRefs(
+    "Outbound links for which the receiver is the 'linked-from' entity"
+    fromEntityLinks(
         "Filters results."
-        filter: TopicRefQueryFilter,
+        filter: LinkableEntityQueryFilter,
         "Sorts and paginates results"
         pageSort: PageableInput
-    ): TopicRefPage!
+    ): EntityLinkPage
+    "Inbound links for which the receiver is the 'linked-to' entity"
+    toEntityLinks(
+        "Filters results."
+        filter: LinkableEntityQueryFilter,
+        "Sorts and paginates results"
+        pageSort: PageableInput
+    ): EntityLinkPage
     "The text of the claim."
     text: String
     # TODO: support date formatting
@@ -206,11 +260,9 @@ input ClaimInput {
 }
 
 "Returns paginated claim query results."
-type ClaimPage {
+type ClaimPage implements IPage {
     "Dummy ID required for @Entity classes"
     dummy: ID
-    "The requested pageful of records."
-    content: [Claim!]!
     "Whether the page has content."
     hasContent: Boolean!
     "Whether the page is empty (no content)."
@@ -233,26 +285,33 @@ type ClaimPage {
     hasNext: Boolean!
     "Whether there is previous page."
     hasPrevious: Boolean!
+    "The requested pageful of records."
+    content: [Claim!]!
 }
 
 "Enumeration that allows selection of country format."
 enum CountryFormatKind {
     "ISO-3166-1 alpha-2 two-character code."
-    ALPHA_2
+    ALPHA_2 @label(label: "Alpha-2 code")
     "ISO-3166-1 alpha-3 three-character code."
-    ALPHA_3
+    ALPHA_3 @label(label: "Alpha-3 code")
     "ISO-3166-1 numeric three-digit code."
-    NUMERIC
+    NUMERIC @label(label: "Numeric code")
     "ISO-3166-1 official country name."
-    ISO_NAME
+    ISO_NAME @label(label: "ISO name")
     "Common name for the country."
-    COMMON_NAME
+    COMMON_NAME @label(label: "Common name")
 }
 
 "A public declaration or open letter made in respect of given topic(s)."
-type Declaration implements IBaseEntity & ITrackedEntity & ITopicalEntity {
+type Declaration implements IBaseEntity & ITrackedEntity & ILinkableEntity {
     "The unique declaration identifier."
     id: ID!
+    "The entity kind."
+    entityKind(
+        "How to format the result. SHORT format is per ```EntityKind``` enum."
+        format: FormatKind = LONG
+    ): String
     "The entity status."
     status(
         "How to format the result. SHORT format is per ```StatusKind``` enum."
@@ -262,12 +321,12 @@ type Declaration implements IBaseEntity & ITrackedEntity & ITopicalEntity {
     "When the record was created."
     created: DateTime
     "The user who created the record."
-    createdByUser: User @ee_auth
+    createdByUser: User @auth
     # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
-    updatedByUser: User @ee_auth
+    updatedByUser: User @auth
     "Log of transactions involving the record."
     log(
         "Filters results."
@@ -275,13 +334,20 @@ type Declaration implements IBaseEntity & ITrackedEntity & ITopicalEntity {
         "Sorts and/or paginates results."
         pageSort: PageableInput
     ): LogPage!
-    "The topic(s) associated with the declaration."
-    topicRefs(
+    "Outbound links for which the receiver is the 'linked-from' entity"
+    fromEntityLinks(
         "Filters results."
-        filter: TopicRefQueryFilter,
+        filter: LinkableEntityQueryFilter,
         "Sorts and paginates results"
         pageSort: PageableInput
-    ): TopicRefPage!
+    ): EntityLinkPage
+    "Inbound links for which the receiver is the 'linked-to' entity"
+    toEntityLinks(
+        "Filters results."
+        filter: LinkableEntityQueryFilter,
+        "Sorts and paginates results"
+        pageSort: PageableInput
+    ): EntityLinkPage
     "The kind of declaration."
     kind(
         "How to format the result. SHORT format is per ```DeclarationKind``` enum."
@@ -338,11 +404,9 @@ input DeclarationInput {
 }
 
 "Returns paginated declaration query results."
-type DeclarationPage {
+type DeclarationPage implements IPage {
     "Dummy ID required for @Entity classes"
     dummy: ID
-    "The requested pageful of records."
-    content: [Declaration!]!
     "Whether the page has content."
     hasContent: Boolean!
     "Whether the page is empty (no content)."
@@ -365,57 +429,55 @@ type DeclarationPage {
     hasNext: Boolean!
     "Whether there is previous page."
     hasPrevious: Boolean!
+    "The requested pageful of records."
+    content: [Declaration!]!
 }
 
 "Enumeration of permitted declaration kinds."
 enum DeclarationKind {
     "Public declaration."
-    DECL
+    DECL @label(label: "Declaration")
     "Open letter."
-    OPLE
+    OPLE @label(label: "Open letter")
     "Petition."
-    PETN
+    PETN @label(label: "Petition")
 }
 
 "Enumeration for entity kind."
 enum EntityKind {
     "Claim."
-    CLA
+    CLA @label(label: "Claim")
     "Country."
-    COU
+    COU @label(label: "Country")
     "Declaration."
-    DEC
+    DEC @label(label: "Declaration")
     "Journal."
-    JOU
+    JOU @label(label: "Journal")
+    "Link."
+    LNK @label(label: "Link")
     "Person."
-    PER
+    PER @label(label: "Person")
     "Publication."
-    PUB
+    PUB @label(label: "Publication")
     "Publisher."
-    PBR
+    PBR @label(label: "Publisher")
     "Quotation."
-    QUO
+    QUO @label(label: "Quotation")
     "Topic."
-    TOP
+    TOP @label(label: "Topic")
     "User."
-    USR
+    USR @label(label: "User")
 }
 
-"""
-Enumeration to specify whether to return the short (abbreviated) or long (full) value.
-Applied, for example, to publication kind and journal title, both of which have short and long versions, (e.g., code and label).
-"""
-enum FormatKind {
-    "Short form, abbreviated/coded."
-    SHORT
-    "Long form, human readadble."
-    LONG
-}
-
-"Journal details including abbreviation, publisher, etc."
-type Journal implements IBaseEntity & ITrackedEntity {
-    "The unique abreviation identifier."
+"An association between two entity records."
+type EntityLink implements IBaseEntity & ITrackedEntity {
+    "The unique declaration identifier."
     id: ID!
+    "The entity kind."
+    entityKind(
+        "How to format the result. SHORT format is per ```EntityKind``` enum."
+        format: FormatKind = LONG
+    ): String
     "The entity status."
     status(
         "How to format the result. SHORT format is per ```StatusKind``` enum."
@@ -425,12 +487,128 @@ type Journal implements IBaseEntity & ITrackedEntity {
     "When the record was created."
     created: DateTime
     "The user who created the record."
-    createdByUser: User @ee_auth
+    createdByUser: User @auth
     # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
-    updatedByUser: User @ee_auth
+    updatedByUser: User @auth
+    "Log of transactions involving the record."
+    log(
+        "Filters results."
+        filter: LogQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): LogPage!
+    "The 'linked-from' entity."
+    fromEntity: ILinkableEntity
+    "The locations within the 'linked-from' record, one per line."
+    fromEntityLocations: String
+    "The 'linked-to' entity."
+    toEntity: ILinkableEntity
+    "The locations within the 'linked-to' record, one per line."
+    toEntityLocations: String
+}
+
+"An input for linking two entities."
+input EntityLinkInput {
+    "The entity link identifier, required if updating an existing record."
+    id: ID
+    "The ID of the 'linked-from' entity."
+    fromEntityId: ID!
+    "The locations within the 'linked-from' record, one per line."
+    fromEntityLocations: String
+    "The ID of the 'linked-to' entity."
+    toEntityId: ID!
+    "The locations within the 'linked-to' record, one per line."
+    toEntityLocations: String
+}
+
+"Returns paginated entity link query results."
+type EntityLinkPage implements IPage {
+    "Dummy ID required for @Entity classes"
+    dummy: ID
+    "Whether the page has content."
+    hasContent: Boolean!
+    "Whether the page is empty (no content)."
+    isEmpty: Boolean!
+    "The current page number."
+    number: Int!
+    "The page size."
+    size: Int!
+    "The number of elements on this page."
+    numberOfElements: Int!
+    "The total number of pages available."
+    totalPages: Int!
+    "The total number of records."
+    totalElements: Long!
+    "Whether this is the first page."
+    isFirst: Boolean!
+    "Whether this is the last page."
+    isLast: Boolean!
+    "Whether there is next page."
+    hasNext: Boolean!
+    "Whether there is previous page."
+    hasPrevious: Boolean!
+    "The requested pageful of records."
+    content: [EntityLink!]!
+}
+
+"Parameters to filter an entity link query."
+input EntityLinkQueryFilter {
+    "The ID of the 'linked-from' (master) entity."
+    fromEntityId: ID
+    # Do we actually need this field? Certainly not if fromEntityId is specified but what if it isn't? Would that mean select target records if they are linked from by any entity of this kind? Is that even a useful/meaningful query? NO!
+    "The kind of the 'linked-from' entity."
+    fromEntityKind: EntityKind
+    "The ID of the 'linked-to' entity."
+    toEntityId: ID
+    # Do we actually need this field? Certainly not if toEntityId is specified but what if it isn't? Would that mean select target records of the specified type if they are linked from by fromEntityid? That is a useful/meaningful query.
+    "The kind of the 'linked-to' entity."
+    toEntityKind: EntityKind
+    "Return only records with these status codes (default: ALL)."
+    status: [StatusKind!]
+    "Free text search string (applied to the 'linked-to' entity)."
+    text: String
+    "Whether to search ```text``` in advanced (boolean) mode."
+    advancedSearch: Boolean = false
+}
+
+"""
+Enumeration to specify whether to return the short (abbreviated) or long (full) value.
+Applied, for example, to publication kind and journal title, both of which have short and long versions, (e.g., code and label).
+"""
+enum FormatKind {
+    "Short form, abbreviated/coded, e.g. enum literal."
+    SHORT @label(label: "Short")
+    "Long form, human readadble, e.g. enum label."
+    LONG @label(label: "Long")
+}
+
+"Journal details including abbreviation, publisher, etc."
+type Journal implements IBaseEntity & ITrackedEntity {
+    "The unique abreviation identifier."
+    id: ID!
+    "The entity kind."
+    entityKind(
+        "How to format the result. SHORT format is per ```EntityKind``` enum."
+        format: FormatKind = LONG
+    ): String
+    "The entity status."
+    status(
+        "How to format the result. SHORT format is per ```StatusKind``` enum."
+        format: FormatKind = LONG
+    ): String
+    # TODO: support date/time formatting
+    "When the record was created."
+    created: DateTime
+    "The user who created the record."
+    createdByUser: User @auth
+    # TODO: support date/time formatting
+    "When the record was last updated."
+    updated: DateTime
+    "The user who last updated the record."
+    updatedByUser: User @auth
     "Log of transactions involving the record."
     log(
         "Filters results."
@@ -470,11 +648,9 @@ input JournalInput {
 }
 
 "Returns paginated query results."
-type JournalPage {
+type JournalPage implements IPage {
     "Dummy ID required for @Entity classes"
     dummy: ID
-    "The requested pageful of records."
-    content: [Journal!]!
     "Whether the page has content."
     hasContent: Boolean!
     "Whether the page is empty (no content)."
@@ -497,18 +673,32 @@ type JournalPage {
     hasNext: Boolean!
     "Whether there is previous page."
     hasPrevious: Boolean!
+    "The requested pageful of records."
+    content: [Journal!]!
 }
 
-"An input for linking or unlinking two entities."
-input LinkEntitiesInput {
-    "The ID of the 'linked from' entity."
-    fromEntityId: ID!
-    "The kind of the 'linked from' entity."
-    fromEntityKind: EntityKind!
-    "The ID of the 'linked to' entity."
-    toEntityId: ID!
-    "The kind of the 'linked to' entity."
-    toEntityKind: EntityKind!
+"Parameters to filter an linkable entity query."
+input LinkableEntityQueryFilter {
+    "The topic identifier, mandatory when querying the master list or when master = NONE."
+    topicId: ID
+    "Whether queries including a topicId should be executed recursively."
+    recursive: Boolean
+    "The ID of the 'linked-from' (master) entity."
+    fromEntityId: ID
+    # Do we actually need this field? Certainly not if fromEntityId is specified but what if it isn't? Would that mean select target records if they are linked from by any entity of this kind? Is that even a useful/meaningful query? NO!
+    "The kind of the 'linked-from' entity."
+    fromEntityKind: EntityKind
+    "The ID of the 'linked-to' entity."
+    toEntityId: ID
+    # Do we actually need this field? Certainly not if toEntityId is specified but what if it isn't? Would that mean select target records of the specified type if they are linked from by fromEntityid? That is a useful/meaningful query.
+    "The kind of the 'linked-to' entity."
+    toEntityKind: EntityKind
+    "Return only records with these status codes (default: ALL)."
+    status: [StatusKind!]
+    "Free text search string (applied to the 'linked-to' entity)."
+    text: String
+    "Whether to search ```text``` in advanced (boolean) mode."
+    advancedSearch: Boolean = false
 }
 
 # TODO: See whether GraphQL has any hook points to perform logging
@@ -520,7 +710,7 @@ type Log implements IBaseEntity {
     "The date-time stamp."
     timestamp: DateTime
     "The user who made the change."
-    user: User @ee_auth
+    user: User @auth
     "The kind of transaction."
     transactionKind(
         "How to format the result. SHORT format is per ```TransactionKind``` enum."
@@ -559,11 +749,9 @@ input LogQueryFilter {
 }
 
 "Returns paginated log query results."
-type LogPage {
+type LogPage implements IPage {
     "Dummy ID required for @Entity classes"
     dummy: ID
-    "The requested pageful of records."
-    content: [Log!]!
     "Whether the page has content."
     hasContent: Boolean!
     "Whether the page is empty (no content)."
@@ -586,30 +774,37 @@ type LogPage {
     hasNext: Boolean!
     "Whether there is previous page."
     hasPrevious: Boolean!
+    "The requested pageful of records."
+    content: [Log!]!
 }
 
 "User access permissions."
 enum PermissionKind {
     "Use administrative functions."
-    ADM
+    ADM @label(label: "Administer")
     "Insert new record."
-    CRE
+    CRE @label(label: "Create")
     "Delete existing record."
-    DEL
+    DEL @label(label: "Delete")
     "Link/unlink existing records."
-    LNK
+    LNK @label(label: "Link")
     "Read existing record."
-    REA
+    REA @label(label: "Read")
     "Update existing record."
-    UPD
+    UPD @label(label: "Update")
     "Upload file."
-    UPL
+    UPL @label(label: "Upload")
 }
 
 "A person associated with given topic(s)."
-type Person implements IBaseEntity & ITrackedEntity & ITopicalEntity {
+type Person implements IBaseEntity & ITrackedEntity & ILinkableEntity {
     "The unique person identifier."
     id: ID!
+    "The entity kind."
+    entityKind(
+        "How to format the result. SHORT format is per ```EntityKind``` enum."
+        format: FormatKind = LONG
+    ): String
     "The entity status."
     status(
         "How to format the result. SHORT format is per ```StatusKind``` enum."
@@ -619,12 +814,12 @@ type Person implements IBaseEntity & ITrackedEntity & ITopicalEntity {
     "When the record was created."
     created: DateTime
     "The user who created the record."
-    createdByUser: User @ee_auth
+    createdByUser: User @auth
     # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
-    updatedByUser: User @ee_auth
+    updatedByUser: User @auth
     "Log of transactions involving the record."
     log(
         "Filters results."
@@ -632,13 +827,20 @@ type Person implements IBaseEntity & ITrackedEntity & ITopicalEntity {
         "Sorts and/or paginates results."
         pageSort: PageableInput
     ): LogPage!
-    "The topic(s) associated with the person."
-    topicRefs(
+    "Outbound links for which the receiver is the 'linked-from' entity"
+    fromEntityLinks(
         "Filters results."
-        filter: TopicRefQueryFilter,
+        filter: LinkableEntityQueryFilter,
         "Sorts and paginates results"
         pageSort: PageableInput
-    ): TopicRefPage!
+    ): EntityLinkPage
+    "Inbound links for which the receiver is the 'linked-to' entity"
+    toEntityLinks(
+        "Filters results."
+        filter: LinkableEntityQueryFilter,
+        "Sorts and paginates results"
+        pageSort: PageableInput
+    ): EntityLinkPage
     "The person's title(s)."
     title: String
     "The person's first name(s)."
@@ -703,11 +905,9 @@ input PersonInput {
 }
 
 "Returns paginated person query results."
-type PersonPage {
+type PersonPage implements IPage {
     "Dummy ID required for @Entity classes"
     dummy: ID
-    "The requested pageful of records."
-    content: [Person!]!
     "Whether the page has content."
     hasContent: Boolean!
     "Whether the page is empty (no content)."
@@ -730,12 +930,19 @@ type PersonPage {
     hasNext: Boolean!
     "Whether there is previous page."
     hasPrevious: Boolean!
+    "The requested pageful of records."
+    content: [Person!]!
 }
 
 "A publication associated with given topics."
-type Publication implements IBaseEntity & ITrackedEntity & ITopicalEntity {
+type Publication implements IBaseEntity & ITrackedEntity & ILinkableEntity {
     "The unique publication identifier."
     id: ID!
+    "The entity kind."
+    entityKind(
+        "How to format the result. SHORT format is per ```EntityKind``` enum."
+        format: FormatKind = LONG
+    ): String
     "The entity status."
     status(
         "How to format the result. SHORT format is per ```StatusKind``` enum."
@@ -745,12 +952,12 @@ type Publication implements IBaseEntity & ITrackedEntity & ITopicalEntity {
     "When the record was created."
     created: DateTime
     "The user who created the record."
-    createdByUser: User @ee_auth
+    createdByUser: User @auth
     # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
-    updatedByUser: User @ee_auth
+    updatedByUser: User @auth
     "Log of transactions involving the record."
     log(
         "Filters results."
@@ -758,18 +965,25 @@ type Publication implements IBaseEntity & ITrackedEntity & ITopicalEntity {
         "Sorts and/or paginates results."
         pageSort: PageableInput
     ): LogPage!
-    "The topic(s) associated with the publication."
-    topicRefs(
+    "Outbound links for which the receiver is the 'linked-from' entity"
+    fromEntityLinks(
         "Filters results."
-        filter: TopicRefQueryFilter,
+        filter: LinkableEntityQueryFilter,
         "Sorts and paginates results"
         pageSort: PageableInput
-    ): TopicRefPage!
+    ): EntityLinkPage
+    "Inbound links for which the receiver is the 'linked-to' entity"
+    toEntityLinks(
+        "Filters results."
+        filter: LinkableEntityQueryFilter,
+        "Sorts and paginates results"
+        pageSort: PageableInput
+    ): EntityLinkPage
     "The publication title."
     title: String
     "The names of the authors, one per line."
     authors: String
-    "The name of the journal in which the publication appeared."
+    "The journal in which the publication appeared."
     journal: Journal
     "The publication kind."
     kind(
@@ -958,11 +1172,9 @@ enum PublicationKind {
 }
 
 "Returns paginated publication query results."
-type PublicationPage {
+type PublicationPage implements IPage {
     "Dummy ID required for @Entity classes"
     dummy: ID
-    "The requested pageful of records."
-    content: [Publication!]!
     "Whether the page has content."
     hasContent: Boolean!
     "Whether the page is empty (no content)."
@@ -985,12 +1197,19 @@ type PublicationPage {
     hasNext: Boolean!
     "Whether there is previous page."
     hasPrevious: Boolean!
+    "The requested pageful of records."
+    content: [Publication!]!
 }
 
 "Book, journal, etc. publisher details."
 type Publisher implements IBaseEntity & ITrackedEntity {
     "The unique publisher identifier."
     id: ID!
+    "The entity kind."
+    entityKind(
+        "How to format the result. SHORT format is per ```EntityKind``` enum."
+        format: FormatKind = LONG
+    ): String
     "The entity status."
     status(
         "How to format the result. SHORT format is per ```StatusKind``` enum."
@@ -1000,12 +1219,12 @@ type Publisher implements IBaseEntity & ITrackedEntity {
     "When the record was created."
     created: DateTime
     "The user who created the record."
-    createdByUser: User @ee_auth
+    createdByUser: User @auth
     # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
-    updatedByUser: User @ee_auth
+    updatedByUser: User @auth
     "Log of transactions involving the record."
     log(
         "Filters results."
@@ -1045,11 +1264,9 @@ input PublisherInput {
 }
 
 "Returns paginated publisher query results."
-type PublisherPage {
+type PublisherPage implements IPage {
     "Dummy ID required for @Entity classes"
     dummy: ID
-    "The requested pageful of records."
-    content: [Publisher!]!
     "Whether the page has content."
     hasContent: Boolean!
     "Whether the page is empty (no content)."
@@ -1072,12 +1289,19 @@ type PublisherPage {
     hasNext: Boolean!
     "Whether there is previous page."
     hasPrevious: Boolean!
+    "The requested pageful of records."
+    content: [Publisher!]!
 }
 
 "A quotation associated with given topics."
-type Quotation implements IBaseEntity & ITrackedEntity & ITopicalEntity {
+type Quotation implements IBaseEntity & ITrackedEntity & ILinkableEntity {
     "The unique quotation identifier."
     id: ID!
+    "The entity kind."
+    entityKind(
+        "How to format the result. SHORT format is per ```EntityKind``` enum."
+        format: FormatKind = LONG
+    ): String
     "The entity status."
     status(
         "How to format the result. SHORT format is per ```StatusKind``` enum."
@@ -1087,12 +1311,12 @@ type Quotation implements IBaseEntity & ITrackedEntity & ITopicalEntity {
     "When the record was created."
     created: DateTime
     "The user who created the record."
-    createdByUser: User @ee_auth
+    createdByUser: User @auth
     # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
-    updatedByUser: User @ee_auth
+    updatedByUser: User @auth
     "Log of transactions involving the record."
     log(
         "Filters results."
@@ -1100,13 +1324,20 @@ type Quotation implements IBaseEntity & ITrackedEntity & ITopicalEntity {
         "Sorts and/or paginates results."
         pageSort: PageableInput
     ): LogPage!
-    "The topic(s) associated with the quotation."
-    topicRefs(
+    "Outbound links for which the receiver is the 'linked-from' entity"
+    fromEntityLinks(
         "Filters results."
-        filter: TopicRefQueryFilter,
+        filter: LinkableEntityQueryFilter,
         "Sorts and paginates results"
         pageSort: PageableInput
-    ): TopicRefPage!
+    ): EntityLinkPage
+    "Inbound links for which the receiver is the 'linked-to' entity"
+    toEntityLinks(
+        "Filters results."
+        filter: LinkableEntityQueryFilter,
+        "Sorts and paginates results"
+        pageSort: PageableInput
+    ): EntityLinkPage
     "The text of the quotation."
     text: String
     "The person(s) who made the quotation."
@@ -1148,11 +1379,9 @@ input QuotationInput {
 }
 
 "Returns paginated quotation query results."
-type QuotationPage {
+type QuotationPage implements IPage {
     "Dummy ID required for @Entity classes"
     dummy: ID
-    "The requested pageful of records."
-    content: [Quotation!]!
     "Whether the page has content."
     hasContent: Boolean!
     "Whether the page is empty (no content)."
@@ -1175,32 +1404,39 @@ type QuotationPage {
     hasNext: Boolean!
     "Whether there is previous page."
     hasPrevious: Boolean!
+    "The requested pageful of records."
+    content: [Quotation!]!
 }
 
-"Enumeration of lexical or numeric sort orders."
-enum SortKind {
-    "Ascending order."
-    ASC
-    "Descending order."
-    DESC
-}
+# "Enumeration of lexical or numeric sort orders."
+# enum SortKind {
+#     "Ascending order."
+#     ASC
+#     "Descending order."
+#     DESC
+# }
 
 "Enumeration of ITrackedEntity status codes."
 enum StatusKind {
     "Record is draft/new."
-    DRA
+    DRA @label(label: "Draft")
     "Record is published/active."
-    PUB
+    PUB @label(label: "Published")
     "Record is suspended/disabled/hidden."
-    SUS
+    SUS @label(label: "Suspended")
     "Record is deleted."
-    DEL
+    DEL @label(label: "Deleted")
 }
 
 "A node in the topic hierarchy tree."
-type Topic implements IBaseEntity & ITrackedEntity {
+type Topic implements IBaseEntity & ITrackedEntity & ILinkableEntity {
     "The unique topic identifier."
     id: ID!
+    "The entity kind"
+    entityKind(
+        "How to format the result. SHORT format is per ```EntityKind``` enum."
+        format: FormatKind = LONG
+    ): String
     "The entity status."
     status(
         "How to format the result. SHORT format is per ```StatusKind``` enum."
@@ -1210,12 +1446,12 @@ type Topic implements IBaseEntity & ITrackedEntity {
     "When the record was created."
     created: DateTime
     "The user who created the record."
-    createdByUser: User @ee_auth
+    createdByUser: User @auth
     # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
-    updatedByUser: User @ee_auth
+    updatedByUser: User @auth
     "Log of transactions involving the record."
     log(
         "Filters results."
@@ -1231,33 +1467,20 @@ type Topic implements IBaseEntity & ITrackedEntity {
     parent: Topic
     "The sub-topics."
     children: [Topic!]
-    "Referenced entities."
-    entities(
-        "The type of entity to return."
-        entityKind: EntityKind!,
+    "Outbound links for which the receiver is the 'linked-from' entity"
+    fromEntityLinks(
         "Filters results."
-        filter: TopicalEntityQueryFilter,
-        "Sorts and/or paginates results."
+        filter: LinkableEntityQueryFilter,
+        "Sorts and paginates results"
         pageSort: PageableInput
-    ): [ITopicalEntity!]
-}
-
-"Parameters to control an ```ITopicalEntity``` query."
-input TopicalEntityQueryFilter {
-    "The topic identifier, mandatory when querying the master list or when master = NONE."
-    topicId: ID
-    "Whether queries including a topicId should be executed recursively."
-    recursive: Boolean = true
-    "The master entity kind, if a master list is designated."
-    masterEntityKind: EntityKind
-    "The master entity identifier, if a master list is designated."
-    masterEntityId: Long
-    "Free text search string."
-    text: String
-    "Whether to search ```text``` in advanced (boolean) mode."
-    advancedSearch: Boolean = false
-    "Return only records with these status codes (default: ALL)."
-    status: [StatusKind!]
+    ): EntityLinkPage
+    "Inbound links for which the receiver is the 'linked-to' entity. N.B. always empty for topics"
+    toEntityLinks(
+        "Filters results."
+        filter: LinkableEntityQueryFilter,
+        "Sorts and paginates results"
+        pageSort: PageableInput
+    ): EntityLinkPage
 }
 
 "An input for creating or updating a topic."
@@ -1276,120 +1499,44 @@ input TopicInput {
 input TopicQueryFilter {
     "The parent topic identifier. Specify to get sub-topics, use -1 for top-level topics."
     parentId: Long
+    "Whether to return all sub-topics, recursively."
+    recursive: Boolean = false
+    "Return only topics with these status codes (default: ALL)."
+    status: [StatusKind!]
     "Free text search string."
     text: String
     "Whether to search ```text``` in advanced (boolean) mode."
     advancedSearch: Boolean = false
-    "Return only topics with these status codes (default: ALL)."
-    status: [StatusKind!]
-    "Whether to return all sub-topics, recursively."
-    recursive: Boolean = false
 }
 
 "Returns paginated topic query results."
-type TopicPage {
+type TopicPage implements IPage {
     "Dummy ID required for @Entity classes"
     dummy: ID
+    "Whether the page has content."
+    hasContent: Boolean!
+    "Whether the page is empty (no content)."
+    isEmpty: Boolean!
+    "The current page number."
+    number: Int!
+    "The page size."
+    size: Int!
+    "The number of elements on this page."
+    numberOfElements: Int!
+    "The total number of pages available."
+    totalPages: Int!
+    "The total number of records."
+    totalElements: Long!
+    "Whether this is the first page."
+    isFirst: Boolean!
+    "Whether this is the last page."
+    isLast: Boolean!
+    "Whether there is next page."
+    hasNext: Boolean!
+    "Whether there is previous page."
+    hasPrevious: Boolean!
     "The requested pageful of records."
     content: [Topic!]!
-    "Whether the page has content."
-    hasContent: Boolean!
-    "Whether the page is empty (no content)."
-    isEmpty: Boolean!
-    "The current page number."
-    number: Int!
-    "The page size."
-    size: Int!
-    "The number of elements on this page."
-    numberOfElements: Int!
-    "The total number of pages available."
-    totalPages: Int!
-    "The total number of records."
-    totalElements: Long!
-    "Whether this is the first page."
-    isFirst: Boolean!
-    "Whether this is the last page."
-    isLast: Boolean!
-    "Whether there is next page."
-    hasNext: Boolean!
-    "Whether there is previous page."
-    hasPrevious: Boolean!
-}
-
-"An association between a topic and an entity record."
-type TopicRef implements IBaseEntity {
-    # NOTE: only necessary because graphql-java-generator emits code with errors (missing ctor) if there is no ID field.
-    "The unique topic ref identifier."
-    id: ID!
-    "The unique identifier of the associated topic."
-    topicId: Long!
-    "The unique identifier of the associated entity record."
-    entityId: Long!
-    "The associated entity kind."
-    entityKind(
-        "How to format the result. SHORT format is per ```EntityKind``` enum."
-        format: FormatKind = LONG
-    ): String
-    "The locations within the associated record, one per line."
-    locations: String
-}
-
-"An input for creating or updating an association between a topic and an entity record."
-input TopicRefInput {
-    "The unique topic identifier. Only necessary because graphql-java-generator emits code with errors (missing ctor) if there is no ID field."
-    id: ID
-    "The unique identifier of the associated topic."
-    topicId: Long!
-    "The unique identifier of the associated entity record."
-    entityId: Long!
-    "The associated entity kind."
-    entityKind: EntityKind!
-    "The locations within the associated record, one per line."
-    locations: String
-}
-
-"Parameters to filter a topic reference query."
-input TopicRefQueryFilter {
-    "The unique identifier of the associated topic."
-    topicId: Long
-    "The unique identifier of the associated entity."
-    entityId: Long
-    "The associated entity kind."
-    entityKind: EntityKind!
-    "Free text search string."
-    text: String
-    "Whether to search ```text``` in advanced (boolean) mode."
-    advancedSearch: Boolean = false
-}
-
-"Returns paginated topic ref query results."
-type TopicRefPage {
-    "Dummy ID required for @Entity classes"
-    dummy: ID
-    "The requested pageful of records."
-    content: [TopicRef!]!
-    "Whether the page has content."
-    hasContent: Boolean!
-    "Whether the page is empty (no content)."
-    isEmpty: Boolean!
-    "The current page number."
-    number: Int!
-    "The page size."
-    size: Int!
-    "The number of elements on this page."
-    numberOfElements: Int!
-    "The total number of pages available."
-    totalPages: Int!
-    "The total number of records."
-    totalElements: Long!
-    "Whether this is the first page."
-    isFirst: Boolean!
-    "Whether this is the last page."
-    isLast: Boolean!
-    "Whether there is next page."
-    hasNext: Boolean!
-    "Whether there is previous page."
-    hasPrevious: Boolean!
 }
 
 "Parameters to filter an ```ITrackedEntity``` query."
@@ -1405,21 +1552,26 @@ input TrackedEntityQueryFilter {
 "Enumeration of the possible transaction kinds."
 enum TransactionKind {
     "Record created."
-    CRE
+    CRE @label(label: "Created")
     "Record updated."
-    UPD
+    UPD @label(label: "Updated")
     "Record deleted."
-    DEL
+    DEL @label(label: "Deleted")
     "Records linked."
-    LNK
+    LNK @label(label: "Linked")
     "Records unlinked."
-    UNL
+    UNL @label(label: "Unlinked")
 }
 
 "Describes a user of the system."
-type User implements IBaseEntity & ITrackedEntity @ee_auth {
+type User implements IBaseEntity & ITrackedEntity @auth {
     "The immutable, unique user identifier (system-assigned)."
     id: ID!
+    "The entity kind."
+    entityKind(
+        "How to format the result. SHORT format is per ```EntityKind``` enum."
+        format: FormatKind = LONG
+    ): String
     "The entity status."
     status(
         "How to format the result. SHORT format is per ```StatusKind``` enum."
@@ -1429,12 +1581,12 @@ type User implements IBaseEntity & ITrackedEntity @ee_auth {
     "When the record was created."
     created: DateTime
     "The user who created the record."
-    createdByUser: User @ee_auth(permission: [ADM])
+    createdByUser: User @auth(permission: [ADM])
     # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
-    updatedByUser: User @ee_auth(permission: [ADM])
+    updatedByUser: User @auth(permission: [ADM])
     "Log of transactions involving the record."
     log(
         "Filters results."
@@ -1449,15 +1601,15 @@ type User implements IBaseEntity & ITrackedEntity @ee_auth {
     "The user's last name."
     lastName: String
     "The user's email address."
-    email: String @ee_auth(permission: [ADM])
+    email: String @auth(permission: [ADM])
     # TODO: consider whether to reveal this through the GraphQL API.
     "A hash of the user's password."
-    password: String @ee_auth(permission: [ADM])
+    password: String @auth(permission: [ADM])
     "The permissions granted to the user."
     permissions(
         "How to format the results. SHORT format is per ```PermissionKind``` enum."
         format: FormatKind = LONG
-    ): [String!]! @ee_auth(permission: [ADM])
+    ): [String!]! @auth(permission: [ADM])
 }
 
 "Input for creating or updating a user of the system."
@@ -1478,11 +1630,9 @@ input UserInput {
 }
 
 "Returns paginated user query results."
-type UserPage {
+type UserPage implements IPage {
     "Dummy ID required for @Entity classes"
     dummy: ID
-    "The requested pageful of records."
-    content: [User!]!
     "Whether the page has content."
     hasContent: Boolean!
     "Whether the page is empty (no content)."
@@ -1505,6 +1655,8 @@ type UserPage {
     hasNext: Boolean!
     "Whether there is previous page."
     hasPrevious: Boolean!
+    "The requested pageful of records."
+    content: [User!]!
 }
 
 #==================================================
@@ -1515,7 +1667,8 @@ type Query {
     "Returns a paged list of claims."
     claims(
         "Filters results."
-        filter: TopicalEntityQueryFilter,
+        # filter: TopicalEntityQueryFilter,
+        filter: LinkableEntityQueryFilter,
         "Sorts and/or paginates results."
         pageSort: PageableInput
     ): ClaimPage!
@@ -1525,12 +1678,25 @@ type Query {
     "Returns a paged list of declarations."
     declarations(
         "Filters results."
-        filter: TopicalEntityQueryFilter,
+        # filter: TopicalEntityQueryFilter,
+        filter: LinkableEntityQueryFilter,
         "Sorts and/or paginates results."
         pageSort: PageableInput
     ): DeclarationPage!
     "Returns a declaration given its identifier."
     declarationById(id: ID!): Declaration
+
+    "Returns a paged list of entity links."
+    entityLinks(
+        "Filters results."
+        filter: EntityLinkQueryFilter,
+        "Sorts and paginates results"
+        pageSort: PageableInput
+    ): EntityLinkPage
+    "Returns an entity link given its identifier."
+    entityLinkById(id: ID!): EntityLink
+    "Returns an entity link given its from- and to-entity identifiers."
+    entityLinkByEntityIds(fromEntityId: ID!, toEntityId: ID!): EntityLink
 
     "Returns a paged list of journals."
     journals(
@@ -1553,7 +1719,8 @@ type Query {
     "Returns a paged list of persons."
     persons(
         "Filters results."
-        filter: TopicalEntityQueryFilter,
+        # filter: TopicalEntityQueryFilter,
+        filter: LinkableEntityQueryFilter,
         "Sorts and/or paginates results."
         pageSort: PageableInput
     ): PersonPage!
@@ -1563,7 +1730,8 @@ type Query {
     "Returns a paged list of publications."
     publications(
         "Filters results."
-        filter: TopicalEntityQueryFilter,
+        # filter: TopicalEntityQueryFilter,
+        filter: LinkableEntityQueryFilter,
         "Sorts and/or paginates results."
         pageSort: PageableInput
     ): PublicationPage!
@@ -1583,7 +1751,8 @@ type Query {
     "Returns a paged list of quotations."
     quotations(
         "Filters results."
-        filter: TopicalEntityQueryFilter,
+        # filter: TopicalEntityQueryFilter,
+        filter: LinkableEntityQueryFilter,
         "Sorts and/or paginates results."
         pageSort: PageableInput
     ): QuotationPage!
@@ -1600,112 +1769,95 @@ type Query {
     "Returns a topic given its identifier."
     topicById(id: ID!): Topic
 
-    "Returns a paged list of topic references."
-    topicRefs(
-        "Filters results."
-        filter: TopicRefQueryFilter!,
-        "Sorts and paginates results"
-        pageSort: PageableInput
-    ): TopicRefPage
-    "Returns a topic reference given its identifier."
-    topicRefById(id: ID!, entityKind: EntityKind!): TopicRef
-    "Returns a topic reference given its topic and entity identifiers."
-    topicRefByEntityId(topicId: ID!, entityId: ID!, entityKind: EntityKind!): TopicRef
-
     "Returns a paged list of users."
     users(
         "Filters results."
         filter: TrackedEntityQueryFilter,
         "Sorts and/or paginates results."
         pageSort: PageableInput
-    ): UserPage! @ee_auth(permission: [ADM])
+    ): UserPage! @auth(permission: [ADM])
     "Returns a user given its identifier."
-    userById(id: ID!): User @ee_auth(permission: [ADM])
+    userById(id: ID!): User @auth(permission: [ADM])
     "Returns a user given its username."
-    userByUsername(username: String!): User @ee_auth(permission: [ADM])
+    userByUsername(username: String!): User @auth(permission: [ADM])
 }
 
 "Available mutations."
 type Mutation {
     "Creates a new claim."
-    createClaim(claim: ClaimInput!): Claim @ee_auth(permission: [CRE])
+    createClaim(claim: ClaimInput!): Claim @auth(permission: [CRE])
     "Updates an existing claim."
-    updateClaim(claim: ClaimInput!): Claim @ee_auth(permission: [UPD])
+    updateClaim(claim: ClaimInput!): Claim @auth(permission: [UPD])
     "Deletes an existing claim."
-    deleteClaim(claimId: ID!): Claim @ee_auth(permission: [DEL])
+    deleteClaim(claimId: ID!): Claim @auth(permission: [DEL])
 
     "Creates a new declaration."
-    createDeclaration(declaration: DeclarationInput!): Declaration @ee_auth(permission: [CRE])
+    createDeclaration(declaration: DeclarationInput!): Declaration @auth(permission: [CRE])
     "Updates an existing declaration."
-    updateDeclaration(declaration: DeclarationInput!): Declaration @ee_auth(permission: [UPD])
+    updateDeclaration(declaration: DeclarationInput!): Declaration @auth(permission: [UPD])
     "Deletes an existing declaration."
-    deleteDeclaration(declarationId: ID!): Declaration @ee_auth(permission: [DEL])
+    deleteDeclaration(declarationId: ID!): Declaration @auth(permission: [DEL])
+
+    "Creates an entity link."
+    createEntityLink(entityLink: EntityLinkInput!) : EntityLink @auth(permission: [LNK])
+    "Updates an existing entity link."
+    updateEntityLink(entityLink: EntityLinkInput!): EntityLink @auth(permission: [LNK])
+    "Deletes an entity link."
+    deleteEntityLink(entityLinkId: Long!) : EntityLink @auth(permission: [LNK])
 
     "Create a new journal."
-    createJournal(journal: JournalInput!): Journal @ee_auth(permission: [CRE])
+    createJournal(journal: JournalInput!): Journal @auth(permission: [CRE])
     "Updates an existing journal."
-    updateJournal(journal: JournalInput!): Journal @ee_auth(permission: [UPD])
+    updateJournal(journal: JournalInput!): Journal @auth(permission: [UPD])
     "Deletes an existing journal."
-    deleteJournal(journalId: ID!): Journal @ee_auth(permission: [DEL])
+    deleteJournal(journalId: ID!): Journal @auth(permission: [DEL])
 
     "Creates a new person."
-    createPerson(person: PersonInput!): Person @ee_auth(permission: [CRE])
+    createPerson(person: PersonInput!): Person @auth(permission: [CRE])
     "Updates an existing person."
-    updatePerson(person: PersonInput!): Person @ee_auth(permission: [UPD])
+    updatePerson(person: PersonInput!): Person @auth(permission: [UPD])
     "Deletes an existing person."
-    deletePerson(personId: ID!): Person @ee_auth(permission: [DEL])
+    deletePerson(personId: ID!): Person @auth(permission: [DEL])
 
     "Creates a new publication."
-    createPublication(publication: PublicationInput!): Publication @ee_auth(permission: [CRE])
+    createPublication(publication: PublicationInput!): Publication @auth(permission: [CRE])
     "Updates an existing publication."
-    updatePublication(publication: PublicationInput!): Publication @ee_auth(permission: [UPD])
+    updatePublication(publication: PublicationInput!): Publication @auth(permission: [UPD])
     "Deletes an existing publication."
-    deletePublication(publicationId: ID!): Publication @ee_auth(permission: [DEL])
+    deletePublication(publicationId: ID!): Publication @auth(permission: [DEL])
 
     "Creates a new publisher."
-    createPublisher(publisher: PublisherInput!): Publisher @ee_auth(permission: [CRE])
+    createPublisher(publisher: PublisherInput!): Publisher @auth(permission: [CRE])
     "Updates an existing publisher."
-    updatePublisher(publisher: PublisherInput!): Publisher @ee_auth(permission: [UPD])
+    updatePublisher(publisher: PublisherInput!): Publisher @auth(permission: [UPD])
     "Deletes an existing publisher."
-    deletePublisher(publisherId: ID!): Publisher @ee_auth(permission: [DEL])
+    deletePublisher(publisherId: ID!): Publisher @auth(permission: [DEL])
 
     "Creates a new quotation."
-    createQuotation(quotation: QuotationInput!): Quotation @ee_auth(permission: [CRE])
+    createQuotation(quotation: QuotationInput!): Quotation @auth(permission: [CRE])
     "Updates an existing quotation."
-    updateQuotation(quotation: QuotationInput!): Quotation @ee_auth(permission: [UPD])
+    updateQuotation(quotation: QuotationInput!): Quotation @auth(permission: [UPD])
     "Deletes an existing quotation."
-    deleteQuotation(quotationId: ID!): Quotation @ee_auth(permission: [DEL])
+    deleteQuotation(quotationId: ID!): Quotation @auth(permission: [DEL])
 
     "Creates a new topic."
-    createTopic(topic: TopicInput!): Topic @ee_auth(permission: [CRE])
+    createTopic(topic: TopicInput!): Topic @auth(permission: [CRE])
     "Updates an existing topic."
-    updateTopic(topic: TopicInput!): Topic @ee_auth(permission: [UPD])
+    updateTopic(topic: TopicInput!): Topic @auth(permission: [UPD])
     "Deletes an existing topic."
-    deleteTopic(topicId: ID!): Topic @ee_auth(permission: [DEL])
-
-    "Adds a new topic reference."
-    addTopicRef(topicRef: TopicRefInput!): TopicRef @ee_auth(permission: [LNK])
-    "Updates an existing topic reference."
-    updateTopicRef(topicRef: TopicRefInput!): TopicRef @ee_auth(permission: [LNK])
-    "Removes a topic reference."
-    removeTopicRef(topicRef: TopicRefInput!): Boolean @ee_auth(permission: [LNK])
-
-    "Links two entities."
-    linkEntities(link: LinkEntitiesInput!) : Boolean @ee_auth(permission: [LNK])
-    "Unlinks two linked entities."
-    unlinkEntities(link: LinkEntitiesInput!) : Boolean @ee_auth(permission: [LNK])
+    deleteTopic(topicId: ID!): Topic @auth(permission: [DEL])
 
     "Sets entity status."
-    setEntityStatus(entityKind: EntityKind!, entityId: Long!, status: StatusKind!) : Boolean @ee_auth(permission: [UPD])
+    setEntityStatus(entityId: Long!, status: StatusKind!) : Boolean @auth(permission: [UPD])
 
     "Creates a new user."
-    createUser(user: UserInput!): User @ee_auth(permission: [ADM])
+    createUser(user: UserInput!): User @auth(permission: [ADM])
     "Updates an existing user."
-    updateUser(user: UserInput!): User @ee_auth(permission: [ADM])
+    updateUser(user: UserInput!): User @auth(permission: [ADM])
     "Deletes an existing user."
-    deleteUser(userId: ID!): User @ee_auth(permission: [ADM])
+    deleteUser(userId: ID!): User @auth(permission: [ADM])
     "Grants permissions to a user. The specified permissions are added to any existing ones."
-    grantUserPermissions(userId: ID!, permissions: [PermissionKind!]!): User @ee_auth(permission: [ADM])
+    grantUserPermissions(userId: ID!, permissions: [PermissionKind!]!): User @auth(permission: [ADM])
     "Revokes permissions from a user. The specified permissions are removed from the user; other permissions remain intact."
-    revokeUserPermissions(userId: ID!, permissions: [PermissionKind!]!): User @ee_auth(permission: [ADM])
+    revokeUserPermissions(userId: ID!, permissions: [PermissionKind!]!): User @auth(permission: [ADM])
 }

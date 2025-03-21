@@ -51,7 +51,7 @@ import io.github.demonfiddler.ee.client.util.SpringContext;
 @SpringBootTest(classes = GraphQLClientMain.class)
 @Order(7)
 @TestMethodOrder(OrderAnnotation.class)
-class QuotationTests extends AbstractTopicalEntityTests<Quotation> {
+class QuotationTests extends AbstractLinkableEntityTests<Quotation> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(QuotationTests.class);
 
@@ -161,6 +161,7 @@ class QuotationTests extends AbstractTopicalEntityTests<Quotation> {
 				LOGGER.error("Failed to initialise quotations list from server");
 			} else {
 				quotations = content;
+				quotation = quotations.get(0);
 				LOGGER.debug("Initialised quotations list from server");
 			}
 		}
@@ -255,7 +256,7 @@ class QuotationTests extends AbstractTopicalEntityTests<Quotation> {
 	@Test
 	@Order(5)
 	@EnabledIf("io.github.demonfiddler.ee.client.QuotationTests#hasExpectedQuotation")
-	void createQuotations() throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	void createQuotations() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		// Create another eight quotations and store them all in an array together with the previously created one.
 		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted("");
 		final int quotationCount = 8;
@@ -305,7 +306,7 @@ class QuotationTests extends AbstractTopicalEntityTests<Quotation> {
 	@EnabledIf("io.github.demonfiddler.ee.client.QuotationTests#hasExpectedQuotations")
 	void readQuotationsFiltered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
-		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
 
@@ -338,8 +339,12 @@ class QuotationTests extends AbstractTopicalEntityTests<Quotation> {
 
 		// "QUOTATION FIVE", "QUOTATION ONE", "QUOTATION SEVEN", "QUOTATION THREE", "Quotation eight", "Quotation four", "Quotation six",
 		// "Quotation two", "Updated test title"
-		// 5, 1, 7, 3, 8, 4, 6, 2, 0
-		List<Quotation> expected = subList(quotations, 5, 1, 7, 3, 8, 4, 6, 2, 0);
+		// CI: 8, 5, 4, 1, 7, 6, 3, 2, 0
+		// CS: 5, 1, 7, 3, 8, 4, 6, 2, 0
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5, 4, 1, 7, 6, 3, 2, 0 } //
+			: new int[] { 5, 1, 7, 3, 8, 4, 6, 2, 0 };
+		List<Quotation> expected = subList(quotations, indexes);
 		QuotationPage actuals = queryExecutor.quotations(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -402,8 +407,12 @@ class QuotationTests extends AbstractTopicalEntityTests<Quotation> {
 		// null/"QUOTATION THREE", null/"Quotation six", "Notes #1"/"QUOTATION ONE", "Notes #2"/"Quotation two",
 		// "Notes #4"/"Quotation four", "Notes #5 (filtered)"/"QUOTATION FIVE", "Notes #7 (filtered)"/"QUOTATION SEVEN",
 		// "Notes #8 (filtered)"/"Quotation eight", "Updated test notes"/"Updated test title"
-		// 3, 6, 1, 2, 4, 5, 7, 8, 0
-		List<Quotation> expected = subList(quotations, 3, 6, 1, 2, 4, 5, 7, 8, 0);
+		// CI: 6, 3, 1, 2, 4, 5, 7, 8, 0
+		// CS: 3, 6, 1, 2, 4, 5, 7, 8, 0
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 6, 3, 1, 2, 4, 5, 7, 8, 0 } //
+			: new int[] { 3, 6, 1, 2, 4, 5, 7, 8, 0 };
+		List<Quotation> expected = subList(quotations, indexes);
 		QuotationPage actuals = queryExecutor.quotations(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -412,17 +421,24 @@ class QuotationTests extends AbstractTopicalEntityTests<Quotation> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		textOrder.setDirection(DirectionKind.DESC);
-		expected = subList(quotations, 6, 3, 1, 2, 4, 5, 7, 8, 0);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 3, 6, 1, 2, 4, 5, 7, 8, 0 } //
+			: new int[] { 6, 3, 1, 2, 4, 5, 7, 8, 0 };
+		expected = subList(quotations, indexes);
 		actuals = queryExecutor.quotations(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		// "Notes #1"/"QUOTATION ONE", "Notes #2"/"Quotation two", "Notes #4"/"Quotation four", "Notes #5 (filtered)"/"QUOTATION FIVE",
 		// "Notes #7 (filtered)"/"QUOTATION SEVEN", "Notes #8 (filtered)"/"Quotation eight",
 		// "Updated test notes"/"Updated test title", null/"QUOTATION THREE", null/"Quotation six",
-		// 1, 2, 4, 5, 7, 8, 0, 3, 6
+		// CI: 1, 2, 4, 5, 7, 8, 0, 6, 3
+		// CS: 1, 2, 4, 5, 7, 8, 0, 3, 6
 		notesOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		textOrder.setDirection(null);
-		expected = subList(quotations, 1, 2, 4, 5, 7, 8, 0, 3, 6);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 2, 4, 5, 7, 8, 0, 6, 3 } //
+			: new int[] { 1, 2, 4, 5, 7, 8, 0, 3, 6 };
+		expected = subList(quotations, indexes);
 		actuals = queryExecutor.quotations(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -431,7 +447,10 @@ class QuotationTests extends AbstractTopicalEntityTests<Quotation> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		textOrder.setDirection(DirectionKind.DESC);
-		expected = subList(quotations, 1, 2, 4, 5, 7, 8, 0, 6, 3);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 2, 4, 5, 7, 8, 0, 3, 6 } //
+			: new int[] { 1, 2, 4, 5, 7, 8, 0, 6, 3 };
+		expected = subList(quotations, indexes);
 		actuals = queryExecutor.quotations(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
@@ -441,7 +460,7 @@ class QuotationTests extends AbstractTopicalEntityTests<Quotation> {
 	@EnabledIf("io.github.demonfiddler.ee.client.QuotationTests#hasExpectedQuotations")
 	void readQuotationsFilteredSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
-		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
 		OrderInput order = OrderInput.builder() //
@@ -451,9 +470,13 @@ class QuotationTests extends AbstractTopicalEntityTests<Quotation> {
 		SortInput sort = SortInput.builder().withOrders(orders).build();
 		PageableInput pageSort = PageableInput.builder().withSort(sort).build();
 
-		// "QUOTATION FIVE", "QUOTATION SEVEN", "Quotation eight", "Quotation six"
-		// 5, 7, 8, 6
-		List<Quotation> expected = subList(quotations, 5, 7, 8);
+		// "QUOTATION FIVE", "QUOTATION SEVEN", "Quotation eight"
+		// CI: 8, 5, 7
+		// CS: 5, 7, 8
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5, 7 } //
+			: new int[] { 5, 7, 8 };
+		List<Quotation> expected = subList(quotations, indexes);
 		QuotationPage actuals = queryExecutor.quotations(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -472,7 +495,7 @@ class QuotationTests extends AbstractTopicalEntityTests<Quotation> {
 	@EnabledIf("io.github.demonfiddler.ee.client.QuotationTests#hasExpectedQuotations")
 	void readQuotationsFilteredSortedNullHandling() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
-		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("quotation") //
 			.build();
 		OrderInput notesOrder = OrderInput.builder() //
@@ -489,8 +512,12 @@ class QuotationTests extends AbstractTopicalEntityTests<Quotation> {
 		// null/"QUOTATION THREE", null/"Quotation six", "Notes #1"/"QUOTATION ONE", "Notes #2"/"Quotation two",
 		// "Notes #4"/"Quotation four", "Notes #5 (filtered)"/"QUOTATION FIVE", "Notes #7 (filtered)"/"QUOTATION SEVEN",
 		// "Notes #8 (filtered)"/"Quotation eight", "Updated test notes"/"Updated test title"
-		// 3, 6, 1, 2, 4, 5, 7, 8
-		List<Quotation> expected = subList(quotations, 3, 6, 1, 2, 4, 5, 7, 8);
+		// CI: 6, 3, 1, 2, 4, 5, 7, 8
+		// CS: 3, 6, 1, 2, 4, 5, 7, 8
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 6, 3, 1, 2, 4, 5, 7, 8 } //
+			: new int[] { 3, 6, 1, 2, 4, 5, 7, 8 };
+		List<Quotation> expected = subList(quotations, indexes);
 		QuotationPage actuals = queryExecutor.quotations(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -499,21 +526,31 @@ class QuotationTests extends AbstractTopicalEntityTests<Quotation> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		textOrder.setDirection(DirectionKind.DESC);
-		expected = subList(quotations, 6, 3, 1, 2, 4, 5, 7, 8);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 3, 6, 1, 2, 4, 5, 7, 8 } //
+			: new int[] { 6, 3, 1, 2, 4, 5, 7, 8 };
+		expected = subList(quotations, indexes);
 		actuals = queryExecutor.quotations(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		// "Notes #1"/"QUOTATION ONE", "Notes #2"/"Quotation two", "Notes #4"/"Quotation four", "Notes #5 (filtered)"/"QUOTATION FIVE",
 		// "Notes #7 (filtered)"/"QUOTATION SEVEN", "Notes #8 (filtered)"/"Quotation eight", null/"QUOTATION THREE", null/"Quotation six"
-		// 1, 2, 4, 5, 7, 8, 3, 6
+		// CI: 1, 2, 4, 5, 7, 8, 6, 3
+		// CS: 1, 2, 4, 5, 7, 8, 3, 6
 		notesOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		textOrder.setDirection(DirectionKind.ASC);
-		expected = subList(quotations, 1, 2, 4, 5, 7, 8, 3, 6);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 2, 4, 5, 7, 8, 6, 3 } //
+			: new int[] { 1, 2, 4, 5, 7, 8, 3, 6 };
+		expected = subList(quotations, indexes);
 		actuals = queryExecutor.quotations(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		textOrder.setDirection(DirectionKind.DESC);
-		expected = subList(quotations, 1, 2, 4, 5, 7, 8, 6, 3);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 2, 4, 5, 7, 8, 3, 6 } //
+			: new int[] { 1, 2, 4, 5, 7, 8, 6, 3 };
+		expected = subList(quotations, indexes);
 		actuals = queryExecutor.quotations(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
@@ -549,7 +586,7 @@ class QuotationTests extends AbstractTopicalEntityTests<Quotation> {
 	@EnabledIf("io.github.demonfiddler.ee.client.QuotationTests#hasExpectedQuotations")
 	void readQuotationsPagedFiltered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
-		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
 		PageableInput pageSort = PageableInput.builder() //
@@ -585,50 +622,78 @@ class QuotationTests extends AbstractTopicalEntityTests<Quotation> {
 
 		// "QUOTATION FIVE", "QUOTATION ONE", "QUOTATION SEVEN", "QUOTATION THREE", "Quotation eight", "Quotation four", "Quotation six",
 		// "Quotation two", "Updated test title"
-		// 5, 1, 7, 3, 8, 4, 6, 2, 0
-		List<Quotation> expected = subList(quotations, 5, 1, 7, 3);
+		// CI: 8, 5, 4, 1, 7, 6, 3, 2, 0
+		// CS: 5, 1, 7, 3, 8, 4, 6, 2, 0
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5, 4, 1 } //
+			: new int[] { 5, 1, 7, 3 };
+		List<Quotation> expected = subList(quotations, indexes);
 		QuotationPage actuals = queryExecutor.quotations(responseSpec, null, pageSort);
 		checkPage(actuals, quotations.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(quotations, 8, 4, 6, 2);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 6, 3, 2 } //
+			: new int[] { 8, 4, 6, 2 };
+		expected = subList(quotations, indexes);
 		actuals = queryExecutor.quotations(responseSpec, null, pageSort);
 		checkPage(actuals, quotations.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(quotations, 0);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 0 } //
+			: new int[] { 0 };
+		expected = subList(quotations, indexes);
 		actuals = queryExecutor.quotations(responseSpec, null, pageSort);
 		checkPage(actuals, quotations.size(), 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(quotations, 5, 1, 7, 3);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5, 4, 1 } //
+			: new int[] { 5, 1, 7, 3 };
+		expected = subList(quotations, indexes);
 		actuals = queryExecutor.quotations(responseSpec, null, pageSort);
 		checkPage(actuals, quotations.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(quotations, 8, 4, 6, 2);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 6, 3, 2 } //
+			: new int[] { 8, 4, 6, 2 };
+		expected = subList(quotations, indexes);
 		actuals = queryExecutor.quotations(responseSpec, null, pageSort);
 		checkPage(actuals, quotations.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(quotations, 0);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 0 } //
+			: new int[] { 0 };
+		expected = subList(quotations, indexes);
 		actuals = queryExecutor.quotations(responseSpec, null, pageSort);
 		checkPage(actuals, quotations.size(), 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(quotations, 0, 2, 6, 4);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 0, 2, 3, 6 } //
+			: new int[] { 0, 2, 6, 4 };
+		expected = subList(quotations, indexes);
 		actuals = queryExecutor.quotations(responseSpec, null, pageSort);
 		checkPage(actuals, quotations.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(quotations, 8, 3, 7, 1);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 1, 4, 5 } //
+			: new int[] { 8, 3, 7, 1 };
+		expected = subList(quotations, indexes);
 		actuals = queryExecutor.quotations(responseSpec, null, pageSort);
 		checkPage(actuals, quotations.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(quotations, 5);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8 } //
+			: new int[] { 5 };
+		expected = subList(quotations, indexes);
 		actuals = queryExecutor.quotations(responseSpec, null, pageSort);
 		checkPage(actuals, quotations.size(), 3, 4, 2, true, false, false, true, expected, true);
 	}
@@ -638,7 +703,7 @@ class QuotationTests extends AbstractTopicalEntityTests<Quotation> {
 	@EnabledIf("io.github.demonfiddler.ee.client.QuotationTests#hasExpectedQuotations")
 	void readQuotationsPagedFilteredSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
-		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
 		OrderInput order = OrderInput.builder() //
@@ -653,35 +718,54 @@ class QuotationTests extends AbstractTopicalEntityTests<Quotation> {
 			.build();
 
 		// "QUOTATION FIVE", "QUOTATION SEVEN", "Quotation eight"
-		// 5, 7, 8
-		List<Quotation> expected = subList(quotations, 5, 7);
+		// CI: 8, 5, 7
+		// CS: 5, 7, 8
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5 } //
+			: new int[] { 5, 7 };
+		List<Quotation> expected = subList(quotations, indexes);
 		QuotationPage actuals = queryExecutor.quotations(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(quotations, 8);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7 } //
+			: new int[] { 8 };
+		expected = subList(quotations, indexes);
 		actuals = queryExecutor.quotations(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(quotations, 5, 7);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5 } //
+			: new int[] { 5, 7 };
+		expected = subList(quotations, indexes);
 		actuals = queryExecutor.quotations(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(quotations, 8);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7 } //
+			: new int[] { 8 };
+		expected = subList(quotations, indexes);
 		actuals = queryExecutor.quotations(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(quotations, 8, 7);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 5 } //
+			: new int[] { 8, 7 };
+		expected = subList(quotations, indexes);
 		actuals = queryExecutor.quotations(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(quotations, 5);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8 } //
+			: new int[] { 5 };
+		expected = subList(quotations, indexes);
 		actuals = queryExecutor.quotations(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 	}
@@ -696,7 +780,7 @@ class QuotationTests extends AbstractTopicalEntityTests<Quotation> {
 		OffsetDateTime earliestUpdated, String quotee, String text, LocalDate date, String source, URL url,
 		String notes, TransactionKind... txnKinds) {
 
-		checkTopicalEntity(quotation, status, earliestCreated, earliestUpdated, txnKinds);
+		checkLinkableEntity(quotation, status, earliestCreated, earliestUpdated, txnKinds);
 		assertThat(quotation).hasQuotee(quotee);
 		assertThat(quotation).hasText(text);
 		assertThat(quotation).hasDate(date);

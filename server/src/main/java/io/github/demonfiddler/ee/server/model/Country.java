@@ -24,6 +24,7 @@ import jakarta.persistence.Id;
 
 @Entity
 public class Country {
+
     @Id
     String alpha_2;
     String alpha_3;
@@ -97,4 +98,5 @@ public class Country {
     public void setNotes(String notes) {
         this.notes = notes;
     }
+
 }

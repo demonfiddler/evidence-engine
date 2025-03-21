@@ -21,7 +21,7 @@ package io.github.demonfiddler.ee.server.repository;
 
 import io.github.demonfiddler.ee.server.model.Person;
 
-public class CustomPersonRepositoryImpl extends CustomITopicalEntityRepositoryImpl<Person>
+public class CustomPersonRepositoryImpl extends CustomLinkableEntityRepositoryImpl<Person>
     implements CustomPersonRepository {
 
     @Override

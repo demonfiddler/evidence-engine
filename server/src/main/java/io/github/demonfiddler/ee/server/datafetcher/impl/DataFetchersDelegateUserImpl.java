@@ -21,26 +21,20 @@ package io.github.demonfiddler.ee.server.datafetcher.impl;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
-import org.dataloader.DataLoader;
 import org.springframework.stereotype.Component;
 
-import graphql.GraphQLContext;
 import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateUser;
 import io.github.demonfiddler.ee.server.model.FormatKind;
-import io.github.demonfiddler.ee.server.model.LogPage;
-import io.github.demonfiddler.ee.server.model.LogQueryFilter;
-import io.github.demonfiddler.ee.server.model.PageableInput;
 import io.github.demonfiddler.ee.server.model.PermissionKind;
 import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.repository.UserRepository;
 import jakarta.annotation.Resource;
 
 @Component
-public class DataFetchersDelegateUserImpl extends DataFetchersDelegateITrackedEntityBaseImpl
+public class DataFetchersDelegateUserImpl extends DataFetchersDelegateITrackedEntityBaseImpl<User>
     implements DataFetchersDelegateUser {
 
     @Resource
@@ -48,33 +42,7 @@ public class DataFetchersDelegateUserImpl extends DataFetchersDelegateITrackedEn
 
     @Override
     public List<User> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {
-        return userRepository.findByIds(keys);
-    }
-
-    @Override
-    public Object status(DataFetchingEnvironment dataFetchingEnvironment, User origin, FormatKind format) {
-        return _status(dataFetchingEnvironment, origin, format);
-    }
-
-    @Override
-    public Map<User, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-        List<User> keys) {
-
-        return _createdByUserMap(batchLoaderEnvironment, graphQLContext, keys);
-    }
-
-    @Override
-    public Map<User, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-        List<User> keys) {
-
-        return _updatedByUserMap(batchLoaderEnvironment, graphQLContext, keys);
-    }
-
-    @Override
-    public Object log(DataFetchingEnvironment dataFetchingEnvironment, DataLoader<Long, LogPage> dataLoader,
-        User origin, LogQueryFilter filter, PageableInput pageSort) {
-
-        return _log(dataFetchingEnvironment, origin, filter, pageSort);
+        return userRepository.findAllById(keys);
     }
 
     @Override

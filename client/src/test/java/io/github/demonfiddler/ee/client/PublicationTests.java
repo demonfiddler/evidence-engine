@@ -52,7 +52,7 @@ import io.github.demonfiddler.ee.client.util.SpringContext;
 @SpringBootTest(classes = GraphQLClientMain.class)
 @Order(5)
 @TestMethodOrder(OrderAnnotation.class)
-class PublicationTests extends AbstractTopicalEntityTests<Publication> {
+class PublicationTests extends AbstractLinkableEntityTests<Publication> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PublicationTests.class);
 
@@ -195,6 +195,7 @@ class PublicationTests extends AbstractTopicalEntityTests<Publication> {
 				LOGGER.error("Failed to initialise publications list from server");
 			} else {
 				publications = content;
+				publication = publications.get(0);
 				LOGGER.debug("Initialised publications list from server");
 			}
 		}
@@ -311,7 +312,7 @@ class PublicationTests extends AbstractTopicalEntityTests<Publication> {
 	@Test
 	@Order(5)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublication")
-	void createPublications() throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	void createPublications() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		// Create another eight publications and store them all in an array together with the previously created one.
 		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted("");
 		final int publicationCount = 8;
@@ -365,7 +366,7 @@ class PublicationTests extends AbstractTopicalEntityTests<Publication> {
 	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
 	void readPublicationsFiltered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
-		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
 
@@ -398,9 +399,12 @@ class PublicationTests extends AbstractTopicalEntityTests<Publication> {
 
 		// "PUBLICATION FIVE", "PUBLICATION ONE", "PUBLICATION SEVEN", "PUBLICATION THREE", "Publication eight",
 		// "Publication four", "Publication six", "Publication two", "Updated test publication"
-		// 5, 1, 7, 3, 8, 4, 6, 2, 0
-		List<Publication> expected = subList(publications, 5, 1, 7, 3, 8, 4, 6, 2, 0);
-
+		// CI: 8, 5, 4, 1, 7, 6, 3, 2, 0
+		// CS: 5, 1, 7, 3, 8, 4, 6, 2, 0
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5, 4, 1, 7, 6, 3, 2, 0 } //
+			: new int[] { 5, 1, 7, 3, 8, 4, 6, 2, 0 };
+		List<Publication> expected = subList(publications, indexes);
 		PublicationPage actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -464,8 +468,12 @@ class PublicationTests extends AbstractTopicalEntityTests<Publication> {
 		// null/"PUBLICATION THREE", null/"Publication six", "Notes #1"/"PUBLICATION ONE", "Notes #2"/"Publication two",
 		// "Notes #4"/"Publication four", "Notes #5 (filtered)"/"PUBLICATION FIVE", "Notes #7 (filtered)"/"PUBLICATION SEVEN",
 		// "Notes #8 (filtered)"/"Publication eight", "Updated test notes"/"Updated test publication"
-		// 3, 6, 1, 2, 4, 5, 7, 8, 0
-		List<Publication> expected = subList(publications, 3, 6, 1, 2, 4, 5, 7, 8, 0);
+		// CI: 6, 3, 1, 2, 4, 5, 7, 8, 0
+		// CS: 3, 6, 1, 2, 4, 5, 7, 8, 0
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 6, 3, 1, 2, 4, 5, 7, 8, 0 } //
+			: new int[] { 3, 6, 1, 2, 4, 5, 7, 8, 0 };
+		List<Publication> expected = subList(publications, indexes);
 		PublicationPage actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -475,16 +483,23 @@ class PublicationTests extends AbstractTopicalEntityTests<Publication> {
 
 		textOrder.setDirection(DirectionKind.DESC);
 		actuals = queryExecutor.publications(responseSpec, null, pageSort);
-		expected = subList(publications, 6, 3, 1, 2, 4, 5, 7, 8, 0);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 3, 6, 1, 2, 4, 5, 7, 8, 0 } //
+			: new int[] { 6, 3, 1, 2, 4, 5, 7, 8, 0 };
+		expected = subList(publications, indexes);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		// "Notes #1"/"PUBLICATION ONE", "Notes #2"/"Publication two", "Notes #4"/"Publication four", "Notes #5 (filtered)"/"PUBLICATION FIVE",
 		// "Notes #7 (filtered)"/"PUBLICATION SEVEN", "Notes #8 (filtered)"/"Publication eight",
 		// "Updated test notes"/"Updated test publication", null/"PUBLICATION THREE", null/"Publication six",
-		// 1, 2, 4, 5, 7, 8, 0, 3, 6
+		// CI: 1, 2, 4, 5, 7, 8, 0, 6, 3
+		// CS: 1, 2, 4, 5, 7, 8, 0, 3, 6
 		notesOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		textOrder.setDirection(null);
-		expected = subList(publications, 1, 2, 4, 5, 7, 8, 0, 3, 6);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 2, 4, 5, 7, 8, 0, 6, 3 } //
+			: new int[] { 1, 2, 4, 5, 7, 8, 0, 3, 6 };
+		expected = subList(publications, indexes);
 		actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -493,8 +508,11 @@ class PublicationTests extends AbstractTopicalEntityTests<Publication> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		textOrder.setDirection(DirectionKind.DESC);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 2, 4, 5, 7, 8, 0, 3, 6 } //
+			: new int[] { 1, 2, 4, 5, 7, 8, 0, 6, 3 };
+		expected = subList(publications, indexes);
 		actuals = queryExecutor.publications(responseSpec, null, pageSort);
-		expected = subList(publications, 1, 2, 4, 5, 7, 8, 0, 6, 3);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
 
@@ -503,7 +521,7 @@ class PublicationTests extends AbstractTopicalEntityTests<Publication> {
 	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
 	void readPublicationsFilteredSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
-		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
 			OrderInput order = OrderInput.builder() //
@@ -514,8 +532,12 @@ class PublicationTests extends AbstractTopicalEntityTests<Publication> {
 		PageableInput pageSort = PageableInput.builder().withSort(sort).build();
 
 		// "PUBLICATION FIVE", "PUBLICATION SEVEN", "Publication eight"
-		// 5, 7, 8
-		List<Publication> expected = subList(publications, 5, 7, 8);
+		// CI: 8, 5, 7
+		// CS: 5, 7, 8
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5, 7 } //
+			: new int[] { 5, 7, 8 };
+		List<Publication> expected = subList(publications, indexes);
 		PublicationPage actuals = queryExecutor.publications(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -534,7 +556,7 @@ class PublicationTests extends AbstractTopicalEntityTests<Publication> {
 	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
 	void readPublicationsFilteredSortedNullHandling() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
-		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("publication") //
 			.build();
 		OrderInput notesOrder = OrderInput.builder() //
@@ -551,8 +573,12 @@ class PublicationTests extends AbstractTopicalEntityTests<Publication> {
 		// null/"PUBLICATION THREE", null/"Publication six", "Notes #1"/"PUBLICATION ONE", "Notes #2"/"Publication two",
 		// "Notes #4"/"Publication four", "Notes #5 (filtered)"/"PUBLICATION FIVE", "Notes #7 (filtered)"/"PUBLICATION SEVEN",
 		// "Notes #8 (filtered)"/"Publication eight"
-		// 3, 6, 1, 2, 4, 5, 7, 8
-		List<Publication> expected = subList(publications, 3, 6, 1, 2, 4, 5, 7, 8);
+		// CI: 6, 3, 1, 2, 4, 5, 7, 8
+		// CS: 3, 6, 1, 2, 4, 5, 7, 8
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 6, 3, 1, 2, 4, 5, 7, 8 } //
+			: new int[] { 3, 6, 1, 2, 4, 5, 7, 8 };
+		List<Publication> expected = subList(publications, indexes);
 		PublicationPage actuals = queryExecutor.publications(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -561,22 +587,32 @@ class PublicationTests extends AbstractTopicalEntityTests<Publication> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		textOrder.setDirection(DirectionKind.DESC);
-		expected = subList(publications, 6, 3, 1, 2, 4, 5, 7, 8);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 3, 6, 1, 2, 4, 5, 7, 8 } //
+			: new int[] { 6, 3, 1, 2, 4, 5, 7, 8 };
+		expected = subList(publications, indexes);
 		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		// "Notes #1"/"PUBLICATION ONE", "Notes #2"/"Publication two", "Notes #4"/"Publication four", "Notes #5 (filtered)"/"PUBLICATION FIVE",
 		// "Notes #7 (filtered)"/"PUBLICATION SEVEN", "Notes #8 (filtered)"/"Publication eight",
-		// null/"PUBLICATION THREE", null/"Publication six",
-		// 1, 2, 4, 5, 7, 8, 3, 6
+		// null/"PUBLICATION THREE", null/"Publication six"
+		// CI: 1, 2, 4, 5, 7, 8, 6, 3
+		// CS: 1, 2, 4, 5, 7, 8, 3, 6
 		notesOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		textOrder.setDirection(DirectionKind.ASC);
-		expected = subList(publications, 1, 2, 4, 5, 7, 8, 3, 6);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 2, 4, 5, 7, 8, 6, 3 } //
+			: new int[] { 1, 2, 4, 5, 7, 8, 3, 6 };
+		expected = subList(publications, indexes);
 		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		textOrder.setDirection(DirectionKind.DESC);
-		expected = subList(publications, 1, 2, 4, 5, 7, 8, 6, 3);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 2, 4, 5, 7, 8, 3, 6 } //
+			: new int[] { 1, 2, 4, 5, 7, 8, 6, 3 };
+		expected = subList(publications, indexes);
 		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
@@ -611,7 +647,7 @@ class PublicationTests extends AbstractTopicalEntityTests<Publication> {
 	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
 	void readPublicationsPagedFiltered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
-		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
 		PageableInput pageSort = PageableInput.builder() //
@@ -647,50 +683,78 @@ class PublicationTests extends AbstractTopicalEntityTests<Publication> {
 
 		// "PUBLICATION FIVE", "PUBLICATION ONE", "PUBLICATION SEVEN", "PUBLICATION THREE", "Publication eight", "Publication four", "Publication six",
 		// "Publication two", "Updated test publication"
-		// 5, 1, 7, 3, 8, 4, 6, 2, 0
-		List<Publication> expected = subList(publications, 5, 1, 7, 3);
+		// CI: 8, 5, 4, 1, 7, 6, 3, 2, 0
+		// CS: 5, 1, 7, 3, 8, 4, 6, 2, 0
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5, 4, 1 } //
+			: new int[] { 5, 1, 7, 3 };
+		List<Publication> expected = subList(publications, indexes);
 		PublicationPage actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(publications, 8, 4, 6, 2);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 6, 3, 2 } //
+			: new int[] { 8, 4, 6, 2 };
+		expected = subList(publications, indexes);
 		actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 0 } //
+			: new int[] { 0 };
 		expected = subList(publications, 0);
 		actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(publications, 5, 1, 7, 3);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5, 4, 1 } //
+			: new int[] { 5, 1, 7, 3 };
+		expected = subList(publications, indexes);
 		actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(publications, 8, 4, 6, 2);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 6, 3, 2 } //
+			: new int[] { 8, 4, 6, 2 };
+		expected = subList(publications, indexes);
 		actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(publications, 0);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 0 } //
+			: new int[] { 0 };
+		expected = subList(publications, indexes);
 		actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(publications, 0, 2, 6, 4);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 0, 2, 3, 6 } //
+			: new int[] { 0, 2, 6, 4 };
+		expected = subList(publications, indexes);
 		actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(publications, 8, 3, 7, 1);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 1, 4, 5 } //
+			: new int[] { 8, 3, 7, 1 };
+		expected = subList(publications, indexes);
 		actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(publications, 5);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8 } //
+			: new int[] { 5 };
+		expected = subList(publications, indexes);
 		actuals = queryExecutor.publications(responseSpec, null, pageSort);
 		checkPage(actuals, 9, 3, 4, 2, true, false, false, true, expected, true);
 	}
@@ -700,7 +764,7 @@ class PublicationTests extends AbstractTopicalEntityTests<Publication> {
 	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
 	void readPublicationsPagedFilteredSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
-		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
 		OrderInput order = OrderInput.builder() //
@@ -715,35 +779,54 @@ class PublicationTests extends AbstractTopicalEntityTests<Publication> {
 			.build();
 
 		// "PUBLICATION FIVE", "PUBLICATION SEVEN", "Publication eight"
-		// 5, 7, 8
-		List<Publication> expected = subList(publications, 5, 7);
+		// CI: 8, 5, 7
+		// CS: 5, 7, 8
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5 } //
+			: new int[] { 5, 7 };
+		List<Publication> expected = subList(publications, indexes);
 		PublicationPage actuals = queryExecutor.publications(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(publications, 8);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7 } //
+			: new int[] { 8 };
+		expected = subList(publications, indexes);
 		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(publications, 5, 7);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5 } //
+			: new int[] { 5, 7 };
+		expected = subList(publications, indexes);
 		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(publications, 8);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7 } //
+			: new int[] { 8 };
+		expected = subList(publications, indexes);
 		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(publications, 8, 7);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 5 } //
+			: new int[] { 8, 7 };
+		expected = subList(publications, indexes);
 		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(publications, 5);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8 } //
+			: new int[] { 5 };
+		expected = subList(publications, indexes);
 		actuals = queryExecutor.publications(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 	}
@@ -762,7 +845,7 @@ class PublicationTests extends AbstractTopicalEntityTests<Publication> {
 		Integer year, String _abstract, String notes, Boolean peerReviewed, String doi, String isbn, URL url,
 		Boolean cached, LocalDate accessed, TransactionKind... txnKinds) {
 
-		checkTopicalEntity(publication, status, earliestCreated, earliestUpdated, txnKinds);
+		checkLinkableEntity(publication, status, earliestCreated, earliestUpdated, txnKinds);
 		assertThat(publication).hasTitle(title);
 		assertThat(publication).hasAuthors(authors);
 		if (journalId == null) {

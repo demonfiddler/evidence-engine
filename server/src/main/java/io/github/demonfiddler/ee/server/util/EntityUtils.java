@@ -29,6 +29,8 @@ import java.util.function.Supplier;
 
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
+import org.hibernate.Hibernate;
+import org.hibernate.proxy.HibernateProxy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -44,8 +46,10 @@ import io.github.demonfiddler.ee.server.model.Claim;
 import io.github.demonfiddler.ee.server.model.Country;
 import io.github.demonfiddler.ee.server.model.Declaration;
 import io.github.demonfiddler.ee.server.model.EntityKind;
+import io.github.demonfiddler.ee.server.model.EntityLink;
 import io.github.demonfiddler.ee.server.model.IBaseEntity;
 import io.github.demonfiddler.ee.server.model.IBaseEntityPage;
+import io.github.demonfiddler.ee.server.model.ITrackedEntity;
 import io.github.demonfiddler.ee.server.model.Journal;
 import io.github.demonfiddler.ee.server.model.OrderInput;
 import io.github.demonfiddler.ee.server.model.PageableInput;
@@ -77,6 +81,7 @@ public class EntityUtils {
 		ENTITY_KINDS.put(Country.class, EntityKind.COU);
 		ENTITY_KINDS.put(Declaration.class, EntityKind.DEC);
 		ENTITY_KINDS.put(Journal.class, EntityKind.JOU);
+		ENTITY_KINDS.put(EntityLink.class, EntityKind.LNK);
 		ENTITY_KINDS.put(Person.class, EntityKind.PER);
 		ENTITY_KINDS.put(Publication.class, EntityKind.PUB);
 		ENTITY_KINDS.put(Publisher.class, EntityKind.PBR);
@@ -88,6 +93,7 @@ public class EntityUtils {
 		ENTITY_NAMES.put(Country.class, "country");
 		ENTITY_NAMES.put(Declaration.class, "declaration");
 		ENTITY_NAMES.put(Journal.class, "journal");
+		ENTITY_NAMES.put(EntityLink.class, "entity_link");
 		ENTITY_NAMES.put(Person.class, "person");
 		ENTITY_NAMES.put(Publication.class, "publication");
 		ENTITY_NAMES.put(Publisher.class, "publisher");
@@ -124,12 +130,16 @@ public class EntityUtils {
 	 * @param accessor The accessor method to retrieve the values.
 	 * @return A list of values extracted from {@code keys} using {@code accessor}.
 	 */
+	@SuppressWarnings("unchecked")
 	public <K, V> Map<K, V> getValuesMap(List<K> keys, Function<K, V> accessor) {
 		Map<K, V> values = new HashMap<>();
 		for (K key : keys) {
 			V value = accessor.apply(key);
-			if (value != null)
+			if (value != null) {
+				if (value instanceof HibernateProxy)
+					value = (V)Hibernate.unproxy(value);
 				values.put(key, value);
+			}
 		}
 		return values;
 	}
@@ -150,6 +160,15 @@ public class EntityUtils {
 				values.put(key, value);
 		}
 		return values;
+	}
+
+	/**
+	 * Returns the {@code EntityKind} for the given entity.
+	 * @param entityClass The entity.
+	 * @return The corresponding entity kind.
+	 */
+	public EntityKind getEntityKind(ITrackedEntity entity) {
+		return EntityKind.valueOf(entity.getEntityKind());
 	}
 
 	/**
@@ -358,9 +377,6 @@ public class EntityUtils {
 				}
 				switch (order.getNullHandling()) {
 					case NULLS_FIRST:
-						// sql.append("IF(").append(qualifier).append('\"').append(property)
-						// 	.append("\" is NULL, 0, 1), ");
-						// CASE WHEN e."notes" IS NULL THEN 0 ELSE 1 END, 
 						sql.append("CASE WHEN ").append(qualifier).append('\"').append(property)
 							.append("\" is NULL THEN 0 ELSE 1 END, ");
 						if (multiline)
@@ -369,8 +385,6 @@ public class EntityUtils {
 							sql.append(' ');
 						break;
 					case NULLS_LAST:
-						// sql.append("IF(").append(qualifier).append('\"').append(property)
-						// 	.append("\" is NULL, 1, 0), ");
 						sql.append("CASE WHEN ").append(qualifier).append('\"').append(property)
 							.append("\" is NULL THEN 1 ELSE 0 END,");
 						if (multiline)

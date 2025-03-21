@@ -19,6 +19,7 @@
 
 package io.github.demonfiddler.ee.server.model;
 
+import com.graphql_java_generator.annotation.GraphQLDirective;
 import com.graphql_java_generator.annotation.GraphQLEnumType;
 
 /**
@@ -30,9 +31,15 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
 @GraphQLEnumType("NullHandlingKind")
 public enum NullHandlingKind {
 
-		NATIVE("NATIVE"), //$NON-NLS-1$
-		NULLS_FIRST("NULLS_FIRST"), //$NON-NLS-1$
-		NULLS_LAST("NULLS_LAST"); //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Native" })
+	NATIVE("NATIVE"), //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Nulls first" })
+	NULLS_FIRST("NULLS_FIRST"), //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Nulls last" })
+	NULLS_LAST("NULLS_LAST"); //$NON-NLS-1$
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different when the value in the GraphQL schema is a Java reserved keyword.
@@ -71,7 +78,7 @@ public enum NullHandlingKind {
 				return e;
 			}
 		}
-		throw new IllegalArgumentException("No NullHandlingKind exists with '" + graphQlValue + "' as a GraphQL value"); //$NON-NLS-1$ //$NON-NLS-2$
+		throw new IllegalArgumentException("No NullHandlingKind exists with '" + graphQlValue + "' as a GraphQL value");
 	}
 
 }

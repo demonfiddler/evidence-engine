@@ -21,7 +21,7 @@ package io.github.demonfiddler.ee.server.repository;
 
 import io.github.demonfiddler.ee.server.model.Claim;
 
-public class CustomClaimRepositoryImpl extends CustomITopicalEntityRepositoryImpl<Claim>
+public class CustomClaimRepositoryImpl extends CustomLinkableEntityRepositoryImpl<Claim>
     implements CustomClaimRepository {
 
     @Override

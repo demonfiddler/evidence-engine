@@ -29,25 +29,25 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
 @GraphQLEnumType("__DirectiveLocation")
 public enum __DirectiveLocation {
 
-		QUERY("QUERY"), //$NON-NLS-1$
-		MUTATION("MUTATION"), //$NON-NLS-1$
-		SUBSCRIPTION("SUBSCRIPTION"), //$NON-NLS-1$
-		FIELD("FIELD"), //$NON-NLS-1$
-		FRAGMENT_DEFINITION("FRAGMENT_DEFINITION"), //$NON-NLS-1$
-		FRAGMENT_SPREAD("FRAGMENT_SPREAD"), //$NON-NLS-1$
-		INLINE_FRAGMENT("INLINE_FRAGMENT"), //$NON-NLS-1$
-		VARIABLE_DEFINITION("VARIABLE_DEFINITION"), //$NON-NLS-1$
-		SCHEMA("SCHEMA"), //$NON-NLS-1$
-		SCALAR("SCALAR"), //$NON-NLS-1$
-		OBJECT("OBJECT"), //$NON-NLS-1$
-		FIELD_DEFINITION("FIELD_DEFINITION"), //$NON-NLS-1$
-		ARGUMENT_DEFINITION("ARGUMENT_DEFINITION"), //$NON-NLS-1$
-		INTERFACE("INTERFACE"), //$NON-NLS-1$
-		UNION("UNION"), //$NON-NLS-1$
-		ENUM("ENUM"), //$NON-NLS-1$
-		ENUM_VALUE("ENUM_VALUE"), //$NON-NLS-1$
-		INPUT_OBJECT("INPUT_OBJECT"), //$NON-NLS-1$
-		INPUT_FIELD_DEFINITION("INPUT_FIELD_DEFINITION"); //$NON-NLS-1$
+	QUERY("QUERY"), //
+	MUTATION("MUTATION"), //
+	SUBSCRIPTION("SUBSCRIPTION"), //
+	FIELD("FIELD"), //
+	FRAGMENT_DEFINITION("FRAGMENT_DEFINITION"), //
+	FRAGMENT_SPREAD("FRAGMENT_SPREAD"), //
+	INLINE_FRAGMENT("INLINE_FRAGMENT"), //
+	VARIABLE_DEFINITION("VARIABLE_DEFINITION"), //
+	SCHEMA("SCHEMA"), //
+	SCALAR("SCALAR"), //
+	OBJECT("OBJECT"), //
+	FIELD_DEFINITION("FIELD_DEFINITION"), //
+	ARGUMENT_DEFINITION("ARGUMENT_DEFINITION"), //
+	INTERFACE("INTERFACE"), //
+	UNION("UNION"), //
+	ENUM("ENUM"), //
+	ENUM_VALUE("ENUM_VALUE"), //
+	INPUT_OBJECT("INPUT_OBJECT"), //
+	INPUT_FIELD_DEFINITION("INPUT_FIELD_DEFINITION"); //
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different when the value in the GraphQL schema is a Java reserved keyword.
@@ -87,7 +87,7 @@ public enum __DirectiveLocation {
 			}
 		}
 		throw new IllegalArgumentException(
-			"No __DirectiveLocation exists with '" + graphQlValue + "' as a GraphQL value"); //$NON-NLS-1$ //$NON-NLS-2$
+			"No __DirectiveLocation exists with '" + graphQlValue + "' as a GraphQL value"); //
 	}
 
 }

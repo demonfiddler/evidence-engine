@@ -46,7 +46,6 @@ import reactor.core.publisher.Mono;
  */
 @Controller
 @SchemaMapping(typeName = "TopicPage")
-
 public class TopicPageController {
 
 	@Autowired
@@ -56,17 +55,15 @@ public class TopicPageController {
 	protected GraphqlServerUtils graphqlServerUtils;
 
 	public TopicPageController(BatchLoaderRegistry registry) {
-		// Registering the data loaders is useless if the @BatchMapping is used. But we
-		// need it here, for backward
-		// compatibility with code developed against the previous plugin versions
+		// Registering the data loaders is useless if @BatchMapping is used. But we need it here, for backward
+		// compatibility with code developed against previous plugin versions.
 		registry.forTypePair(Long.class, TopicPage.class).registerMappedBatchLoader((keysSet, env) -> {
 			List<Long> keys = new ArrayList<>(keysSet.size());
 			keys.addAll(keysSet);
 			return Mono.fromCallable(() -> {
-				Map<Long, io.github.demonfiddler.ee.server.model.TopicPage> map = new HashMap<>();
+				Map<Long, TopicPage> map = new HashMap<>();
 				// Values are returned in the same order as the keys list
-				List<io.github.demonfiddler.ee.server.model.TopicPage> values =
-					this.dataFetchersDelegateTopicPage.batchLoader(keys, env);
+				List<TopicPage> values = this.dataFetchersDelegateTopicPage.batchLoader(keys, env);
 				for (int i = 0; i < keys.size(); i++) {
 					map.put(keys.get(i), values.get(i));
 				}
@@ -76,9 +73,9 @@ public class TopicPageController {
 	}
 
 	/**
-	 * This methods loads the data for ${dataFetcher.graphQLType}.content. It is generated as the
+	 * Loads the data for TopicPage.content. It is generated as the
 	 * <code>generateBatchMappingDataFetchers</code> plugin parameter is true. <br/>
-	 * @param batchLoaderEnvironment The environement for this batch loaded. You can extract the GraphQLContext from
+	 * @param batchLoaderEnvironment The environment for this batch loader. You can extract the GraphQLContext from
 	 * this parameter.
 	 * @param graphQLContext
 	 * @param keys The objects for which the value for the content field must be retrieved.

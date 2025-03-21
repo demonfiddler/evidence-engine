@@ -21,20 +21,13 @@ package io.github.demonfiddler.ee.server.model;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 
-import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
 
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Transient;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 
 /**
  * A quotation associated with given topics.
@@ -43,69 +36,16 @@ import jakarta.persistence.Transient;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @Entity
+@PrimaryKeyJoinColumn(name = "id")
+@DiscriminatorValue("QUO")
 @GraphQLObjectType("Quotation")
-public class Quotation implements ITopicalEntity {
+public class Quotation extends AbstractLinkableEntity {
 
 	/**
-	 * The unique quotation identifier.
+	 * The quotation date.
 	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
-	Long id;
-
-	/**
-	 * The entity status.
-	 */
-	@GraphQLScalar(fieldName = "status", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	String status;
-
-	/**
-	 * When the record was created.
-	 */
-	@GraphQLScalar(fieldName = "created", graphQLTypeSimpleName = "DateTime", javaClass = OffsetDateTime.class,
-		listDepth = 0)
-	OffsetDateTime created;
-
-	/**
-	 * The user who created the record.
-	 */
-	@GraphQLNonScalar(fieldName = "createdByUser", graphQLTypeSimpleName = "User", javaClass = User.class,
-		listDepth = 0)
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "created_by_user_id", nullable = false)
-	User createdByUser;
-
-	/**
-	 * When the record was last updated.
-	 */
-	@GraphQLScalar(fieldName = "updated", graphQLTypeSimpleName = "DateTime", javaClass = OffsetDateTime.class,
-		listDepth = 0)
-	OffsetDateTime updated;
-
-	/**
-	 * The user who last updated the record.
-	 */
-	@GraphQLNonScalar(fieldName = "updatedByUser", graphQLTypeSimpleName = "User", javaClass = User.class,
-		listDepth = 0)
-	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "updated_by_user_id", nullable = true)
-	User updatedByUser;
-
-	/**
-	 * Log of transactions involving the record.
-	 */
-	@Transient
-	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage", javaClass = LogPage.class, listDepth = 0)
-	LogPage log;
-
-	/**
-	 * The topic(s) associated with the quotation.
-	 */
-	@Transient
-	@GraphQLNonScalar(fieldName = "topicRefs", graphQLTypeSimpleName = "TopicRefPage", javaClass = TopicRefPage.class,
-		listDepth = 0)
-	TopicRefPage topicRefs;
+	@GraphQLScalar(fieldName = "date", graphQLTypeSimpleName = "Date", javaClass = LocalDate.class, listDepth = 0)
+	LocalDate date;
 
 	/**
 	 * The text of the quotation.
@@ -118,12 +58,6 @@ public class Quotation implements ITopicalEntity {
 	 */
 	@GraphQLScalar(fieldName = "quotee", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
 	String quotee;
-
-	/**
-	 * The quotation date.
-	 */
-	@GraphQLScalar(fieldName = "date", graphQLTypeSimpleName = "Date", javaClass = LocalDate.class, listDepth = 0)
-	LocalDate date;
 
 	/**
 	 * The quotation source.
@@ -143,132 +77,23 @@ public class Quotation implements ITopicalEntity {
 	@GraphQLScalar(fieldName = "notes", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
 	String notes;
 
-	/**
-	 * The unique quotation identifier.
-	 */
 	@Override
-	public void setId(Long id) {
-		this.id = id;
+	public String getEntityKind() {
+		return EntityKind.QUO.name();
 	}
 
 	/**
-	 * The unique quotation identifier.
+	 * The quotation date.
 	 */
-	@Override
-	public Long getId() {
-		return this.id;
+	public void setDate(LocalDate date) {
+		this.date = date;
 	}
 
 	/**
-	 * The entity status.
+	 * The quotation date.
 	 */
-	@Override
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	/**
-	 * The entity status.
-	 */
-	@Override
-	public String getStatus() {
-		return this.status;
-	}
-
-	/**
-	 * When the record was created.
-	 */
-	@Override
-	public void setCreated(OffsetDateTime created) {
-		this.created = created;
-	}
-
-	/**
-	 * When the record was created.
-	 */
-	@Override
-	public OffsetDateTime getCreated() {
-		return this.created;
-	}
-
-	/**
-	 * The user who created the record.
-	 */
-	@Override
-	public void setCreatedByUser(User createdByUser) {
-		this.createdByUser = createdByUser;
-	}
-
-	/**
-	 * The user who created the record.
-	 */
-	@Override
-	public User getCreatedByUser() {
-		return this.createdByUser;
-	}
-
-	/**
-	 * When the record was last updated.
-	 */
-	@Override
-	public void setUpdated(OffsetDateTime updated) {
-		this.updated = updated;
-	}
-
-	/**
-	 * When the record was last updated.
-	 */
-	@Override
-	public OffsetDateTime getUpdated() {
-		return this.updated;
-	}
-
-	/**
-	 * The user who last updated the record.
-	 */
-	@Override
-	public void setUpdatedByUser(User updatedByUser) {
-		this.updatedByUser = updatedByUser;
-	}
-
-	/**
-	 * The user who last updated the record.
-	 */
-	@Override
-	public User getUpdatedByUser() {
-		return this.updatedByUser;
-	}
-
-	/**
-	 * Log of transactions involving the record.
-	 */
-	@Override
-	public void setLog(LogPage log) {
-		this.log = log;
-	}
-
-	/**
-	 * Log of transactions involving the record.
-	 */
-	@Override
-	public LogPage getLog() {
-		return this.log;
-	}
-
-	/**
-	 * The topic(s) associated with the quotation.
-	 */
-	@Override
-	public void setTopicRefs(TopicRefPage topicRefs) {
-		this.topicRefs = topicRefs;
-	}
-
-	/**
-	 * The topic(s) associated with the quotation.
-	 */
-	@Override
-	public TopicRefPage getTopicRefs() {
-		return this.topicRefs;
+	public LocalDate getDate() {
+		return this.date;
 	}
 
 	/**
@@ -297,20 +122,6 @@ public class Quotation implements ITopicalEntity {
 	 */
 	public String getQuotee() {
 		return this.quotee;
-	}
-
-	/**
-	 * The quotation date.
-	 */
-	public void setDate(LocalDate date) {
-		this.date = date;
-	}
-
-	/**
-	 * The quotation date.
-	 */
-	public LocalDate getDate() {
-		return this.date;
 	}
 
 	/**
@@ -371,13 +182,15 @@ public class Quotation implements ITopicalEntity {
 			+ ", " //$NON-NLS-1$
 			+ "log: " + this.log //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
-			+ "topicRefs: " + this.topicRefs //$NON-NLS-1$
+			+ "fromEntityLinks: " + this.fromEntityLinks //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
+			+ "toEntityLinks: " + this.toEntityLinks //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
+			+ "date: " + this.date //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "text: " + this.text //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "quotee: " + this.quotee //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "date: " + this.date //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "source: " + this.source //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
@@ -395,83 +208,20 @@ public class Quotation implements ITopicalEntity {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
-		private Long id;
-		private String status;
-		private OffsetDateTime created;
-		private User createdByUser;
-		private OffsetDateTime updated;
-		private User updatedByUser;
-		private LogPage log;
-		private TopicRefPage topicRefs;
+	public static class Builder extends AbstractLinkableEntity.Builder<Builder, Quotation> {
+
+		private LocalDate date;
 		private String text;
 		private String quotee;
-		private LocalDate date;
 		private String source;
 		private URL url;
 		private String notes;
 
 		/**
-		 * The unique quotation identifier.
+		 * The quotation date.
 		 */
-		public Builder withId(Long idParam) {
-			this.id = idParam;
-			return this;
-		}
-
-		/**
-		 * The entity status.
-		 */
-		public Builder withStatus(String statusParam) {
-			this.status = statusParam;
-			return this;
-		}
-
-		/**
-		 * When the record was created.
-		 */
-		public Builder withCreated(OffsetDateTime createdParam) {
-			this.created = createdParam;
-			return this;
-		}
-
-		/**
-		 * The user who created the record.
-		 */
-		public Builder withCreatedByUser(User createdByUserParam) {
-			this.createdByUser = createdByUserParam;
-			return this;
-		}
-
-		/**
-		 * When the record was last updated.
-		 */
-		public Builder withUpdated(OffsetDateTime updatedParam) {
-			this.updated = updatedParam;
-			return this;
-		}
-
-		/**
-		 * The user who last updated the record.
-		 */
-		public Builder withUpdatedByUser(User updatedByUserParam) {
-			this.updatedByUser = updatedByUserParam;
-			return this;
-		}
-
-		/**
-		 * Log of transactions involving the record.
-		 */
-		public Builder withLog(LogPage logParam) {
-			this.log = logParam;
-			return this;
-		}
-
-		/**
-		 * The topic(s) associated with the quotation.
-		 */
-		public Builder withTopicRefs(TopicRefPage topicRefsParam) {
-			this.topicRefs = topicRefsParam;
+		public Builder withDate(LocalDate dateParam) {
+			this.date = dateParam;
 			return this;
 		}
 
@@ -488,14 +238,6 @@ public class Quotation implements ITopicalEntity {
 		 */
 		public Builder withQuotee(String quoteeParam) {
 			this.quotee = quoteeParam;
-			return this;
-		}
-
-		/**
-		 * The quotation date.
-		 */
-		public Builder withDate(LocalDate dateParam) {
-			this.date = dateParam;
 			return this;
 		}
 
@@ -523,19 +265,12 @@ public class Quotation implements ITopicalEntity {
 			return this;
 		}
 
+		@Override
 		public Quotation build() {
-			Quotation _object = new Quotation();
-			_object.setId(this.id);
-			_object.setStatus(this.status);
-			_object.setCreated(this.created);
-			_object.setCreatedByUser(this.createdByUser);
-			_object.setUpdated(this.updated);
-			_object.setUpdatedByUser(this.updatedByUser);
-			_object.setLog(this.log);
-			_object.setTopicRefs(this.topicRefs);
+			Quotation _object = build(new Quotation());
+			_object.setDate(this.date);
 			_object.setText(this.text);
 			_object.setQuotee(this.quotee);
-			_object.setDate(this.date);
 			_object.setSource(this.source);
 			_object.setUrl(this.url);
 			_object.setNotes(this.notes);

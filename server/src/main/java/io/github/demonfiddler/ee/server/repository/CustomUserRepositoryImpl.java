@@ -25,7 +25,7 @@ import io.github.demonfiddler.ee.server.model.PermissionKind;
 import io.github.demonfiddler.ee.server.model.User;
 import jakarta.persistence.Query;
 
-public class CustomUserRepositoryImpl extends CustomITrackedEntityRepositoryImpl<User> implements CustomUserRepository {
+public class CustomUserRepositoryImpl extends CustomTrackedEntityRepositoryImpl<User> implements CustomUserRepository {
 
     @Override
     protected Class<User> getEntityClass() {
@@ -36,6 +36,8 @@ public class CustomUserRepositoryImpl extends CustomITrackedEntityRepositoryImpl
     protected String getFulltextColumns() {
         return "\"username\", \"first_name\", \"last_name\", \"email\", \"notes\"";
     }
+
+    // FIXME: these permission-related methods need rewriting/refactoring to work with the Spring Security data model.
 
     @Override
     @SuppressWarnings("unchecked")

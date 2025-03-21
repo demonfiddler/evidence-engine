@@ -21,7 +21,7 @@ package io.github.demonfiddler.ee.server.repository;
 
 import io.github.demonfiddler.ee.server.model.Declaration;
 
-public class CustomDeclarationRepositoryImpl extends CustomITopicalEntityRepositoryImpl<Declaration>
+public class CustomDeclarationRepositoryImpl extends CustomLinkableEntityRepositoryImpl<Declaration>
     implements CustomDeclarationRepository {
 
     @Override

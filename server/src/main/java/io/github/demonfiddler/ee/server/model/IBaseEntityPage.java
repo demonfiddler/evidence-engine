@@ -24,54 +24,10 @@ import java.util.List;
 /**
  * Interface for a slice of a paginated result set.
  */
-public interface IBaseEntityPage<T extends IBaseEntity> {
+public interface IBaseEntityPage<T extends IBaseEntity> extends IPage {
 
     void setContent(List<T> content);
 
     List<T> getContent();
-
-    void setHasContent(Boolean hasContent);
-
-    Boolean getHasContent();
-
-    void setIsEmpty(Boolean isEmpty);
-
-    Boolean getIsEmpty();
-
-    void setNumber(Integer number);
-
-    Integer getNumber();
-
-    void setSize(Integer size);
-
-    Integer getSize();
-
-    void setNumberOfElements(Integer numberOfElements);
-
-    Integer getNumberOfElements();
-
-    void setTotalPages(Integer totalPages);
-
-    Integer getTotalPages();
-
-    void setTotalElements(Long totalElements);
-
-    Long getTotalElements();
-
-    void setIsFirst(Boolean isFirst);
-
-    Boolean getIsFirst();
-
-    void setIsLast(Boolean isLast);
-
-    Boolean getIsLast();
-
-    void setHasNext(Boolean hasNext);
-
-    Boolean getHasNext();
-
-    void setHasPrevious(Boolean hasPrevious);
-
-    Boolean getHasPrevious();
 
 }

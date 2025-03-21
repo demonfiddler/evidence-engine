@@ -20,28 +20,17 @@
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
 import java.util.List;
-import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
-import org.dataloader.DataLoader;
 import org.springframework.stereotype.Component;
 
-import graphql.GraphQLContext;
-import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateQuotation;
-import io.github.demonfiddler.ee.server.model.FormatKind;
-import io.github.demonfiddler.ee.server.model.LogPage;
-import io.github.demonfiddler.ee.server.model.LogQueryFilter;
-import io.github.demonfiddler.ee.server.model.PageableInput;
 import io.github.demonfiddler.ee.server.model.Quotation;
-import io.github.demonfiddler.ee.server.model.TopicRefPage;
-import io.github.demonfiddler.ee.server.model.TopicRefQueryFilter;
-import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.repository.QuotationRepository;
 import jakarta.annotation.Resource;
 
 @Component
-public class DataFetchersDelegateQuotationImpl extends DataFetchersDelegateITopicalEntityBaseImpl<Quotation>
+public class DataFetchersDelegateQuotationImpl extends DataFetchersDelegateILinkableEntityBaseImpl<Quotation>
     implements DataFetchersDelegateQuotation {
 
     @Resource
@@ -49,40 +38,7 @@ public class DataFetchersDelegateQuotationImpl extends DataFetchersDelegateITopi
 
     @Override
     public List<Quotation> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {
-        return quotationRepository.findByIds(keys);
-    }
-
-    @Override
-    public Object status(DataFetchingEnvironment dataFetchingEnvironment, Quotation origin, FormatKind format) {
-        return _status(dataFetchingEnvironment, origin, format);
-    }
-
-    @Override
-    public Map<Quotation, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment,
-        GraphQLContext graphQLContext, List<Quotation> keys) {
-
-        return _createdByUserMap(batchLoaderEnvironment, graphQLContext, keys);
-    }
-
-    @Override
-    public Map<Quotation, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment,
-        GraphQLContext graphQLContext, List<Quotation> keys) {
-
-        return _updatedByUserMap(batchLoaderEnvironment, graphQLContext, keys);
-    }
-
-    @Override
-    public Object log(DataFetchingEnvironment dataFetchingEnvironment, DataLoader<Long, LogPage> dataLoader,
-        Quotation origin, LogQueryFilter filter, PageableInput pageSort) {
-
-        return _log(dataFetchingEnvironment, origin, filter, pageSort);
-    }
-
-    @Override
-    public Object topicRefs(DataFetchingEnvironment dataFetchingEnvironment, DataLoader<Long, TopicRefPage> dataLoader,
-        Quotation origin, TopicRefQueryFilter filter, PageableInput pageSort) {
-
-        return _topicRefs(dataFetchingEnvironment, origin, filter, pageSort);
+        return quotationRepository.findAllById(keys);
     }
 
 }

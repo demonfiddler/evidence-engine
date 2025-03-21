@@ -19,6 +19,7 @@ INSERT INTO "entity_kind" ("code", "label") VALUES
 	('CLA', 'Claim'),
 	('COU', 'Country'),
 	('DEC', 'Declaration'),
+	('LNK', 'Entity Link')
 	('JOU', 'Journal'),
 	('PER', 'Person'),
 	('PUB', 'Publication'),

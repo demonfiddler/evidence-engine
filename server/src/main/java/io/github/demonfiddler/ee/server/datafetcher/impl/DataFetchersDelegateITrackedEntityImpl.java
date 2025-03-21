@@ -20,56 +20,25 @@
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
 import java.util.List;
-import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
-import org.dataloader.DataLoader;
 import org.springframework.stereotype.Component;
 
-import graphql.GraphQLContext;
-import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateITrackedEntity;
-import io.github.demonfiddler.ee.server.model.FormatKind;
-import io.github.demonfiddler.ee.server.model.IBaseEntity;
-import io.github.demonfiddler.ee.server.model.ITrackedEntity;
-import io.github.demonfiddler.ee.server.model.LogPage;
-import io.github.demonfiddler.ee.server.model.LogQueryFilter;
-import io.github.demonfiddler.ee.server.model.PageableInput;
-import io.github.demonfiddler.ee.server.model.User;
-import io.github.demonfiddler.ee.server.repository.LogRepository;
+import io.github.demonfiddler.ee.server.model.AbstractTrackedEntity;
+import io.github.demonfiddler.ee.server.repository.TrackedEntityRepository;
 import jakarta.annotation.Resource;
 
 @Component
-public class DataFetchersDelegateITrackedEntityImpl extends DataFetchersDelegateITrackedEntityBaseImpl
-    implements DataFetchersDelegateITrackedEntity {
+public class DataFetchersDelegateITrackedEntityImpl extends DataFetchersDelegateITrackedEntityBaseImpl<AbstractTrackedEntity>
+    implements DataFetchersDelegateITrackedEntity<AbstractTrackedEntity> {
 
     @Resource
-    protected LogRepository logRepository;
+    TrackedEntityRepository trackedEntityRepository;
 
     @Override
-    public Object status(DataFetchingEnvironment dataFetchingEnvironment, ITrackedEntity origin, FormatKind format) {
-        return _status(dataFetchingEnvironment, origin, format);
-    }
-
-    @Override
-    public Map<ITrackedEntity, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment,
-        GraphQLContext graphQLContext, List<ITrackedEntity> keys) {
-
-        return _createdByUserMap(batchLoaderEnvironment, graphQLContext, keys);
-    }
-
-    @Override
-    public Map<ITrackedEntity, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment,
-        GraphQLContext graphQLContext, List<ITrackedEntity> keys) {
-
-        return _updatedByUserMap(batchLoaderEnvironment, graphQLContext, keys);
-    }
-
-    @Override
-    public Object log(DataFetchingEnvironment dataFetchingEnvironment, DataLoader<Long, LogPage> dataLoader,
-        ITrackedEntity origin, LogQueryFilter filter, PageableInput pageSort) {
-
-        return _log(dataFetchingEnvironment, (IBaseEntity)origin, filter, pageSort);
+    public List<AbstractTrackedEntity> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {
+        return trackedEntityRepository.findAllById(keys);
     }
 
 }

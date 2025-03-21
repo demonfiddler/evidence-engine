@@ -31,13 +31,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("ClaimInput")
-public class ClaimInput {
-
-	/**
-	 * The claim identifier, required if updating an existing record.
-	 */
-	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
-	Long id;
+public class ClaimInput extends AbstractBaseEntityInput {
 
 	/**
 	 * The text of the claim.
@@ -56,20 +50,6 @@ public class ClaimInput {
 	 */
 	@GraphQLScalar(fieldName = "notes", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
 	String notes;
-
-	/**
-	 * The claim identifier, required if updating an existing record.
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	/**
-	 * The claim identifier, required if updating an existing record.
-	 */
-	public Long getId() {
-		return this.id;
-	}
 
 	/**
 	 * The text of the claim.
@@ -133,19 +113,11 @@ public class ClaimInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
-		private Long id;
+	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, ClaimInput> {
+
 		private String text;
 		private LocalDate date;
 		private String notes;
-
-		/**
-		 * The claim identifier, required if updating an existing record.
-		 */
-		public Builder withId(Long idParam) {
-			this.id = idParam;
-			return this;
-		}
 
 		/**
 		 * The text of the claim.
@@ -171,13 +143,15 @@ public class ClaimInput {
 			return this;
 		}
 
+		@Override
 		public ClaimInput build() {
-			ClaimInput _object = new ClaimInput();
-			_object.setId(this.id);
+			ClaimInput _object = build(new ClaimInput());
 			_object.setText(this.text);
 			_object.setDate(this.date);
 			_object.setNotes(this.notes);
 			return _object;
 		}
+
 	}
+
 }

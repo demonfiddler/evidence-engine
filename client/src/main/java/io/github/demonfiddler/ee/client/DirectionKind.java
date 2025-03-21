@@ -30,12 +30,11 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
 @GraphQLEnumType("DirectionKind")
 public enum DirectionKind {
 
-		ASC("ASC"), //$NON-NLS-1$
-		DESC("DESC"); //$NON-NLS-1$
+	ASC("ASC"), //
+	DESC("DESC"); //
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
-	// are different
-	// when the value in the GraphQL schema is a Java reserved keyword.
+	// are different when the value in the GraphQL schema is a Java reserved keyword.
 	private final String graphQlValue;
 
 	private DirectionKind(String graphQlValue) {
@@ -71,7 +70,7 @@ public enum DirectionKind {
 				return e;
 			}
 		}
-		throw new IllegalArgumentException("No DirectionKind exists with '" + graphQlValue + "' as a GraphQL value"); //$NON-NLS-1$ //$NON-NLS-2$
+		throw new IllegalArgumentException("No DirectionKind exists with '" + graphQlValue + "' as a GraphQL value");
 	}
 
 }

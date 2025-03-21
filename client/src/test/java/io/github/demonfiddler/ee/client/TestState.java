@@ -24,25 +24,25 @@ import java.util.List;
 /** Checks completeness of state built up by integration tests. */
 class TestState {
 
-    static List<ITopicalEntity> getExpectedTopicalEntity() {
-        return List.of(ClaimTests.claim, DeclarationTests.declaration, PersonTests.person, PublicationTests.publication,
-            QuotationTests.quotation);
-    }
-
     static List<ITrackedEntity> getExpectedTrackedEntity() {
         return List.of(ClaimTests.claim, DeclarationTests.declaration, JournalTests.journal, PersonTests.person,
             PublicationTests.publication, PublisherTests.publisher, QuotationTests.quotation, TopicTests.parentTopic,
             TopicTests.childTopic);
     }
 
-    static List<List<? extends ITopicalEntity>> getExpectedTopicalEntities() {
-        return List.of(ClaimTests.claims, DeclarationTests.declarations, PersonTests.persons,
-            PublicationTests.publications, QuotationTests.quotations);
-    }
-
     static List<List<? extends ITrackedEntity>> getExpectedTrackedEntities() {
         return List.of(ClaimTests.claims, DeclarationTests.declarations, JournalTests.journals, PersonTests.persons,
             PublicationTests.publications, PublisherTests.publishers, QuotationTests.quotations, TopicTests.topics);
+    }
+
+    static List<ILinkableEntity> getExpectedLinkableEntity() {
+        return List.of(ClaimTests.claim, DeclarationTests.declaration, PersonTests.person, PublicationTests.publication,
+            QuotationTests.quotation);
+    }
+
+    static List<List<? extends ILinkableEntity>> getExpectedLinkableEntities() {
+        return List.of(ClaimTests.claims, DeclarationTests.declarations, PersonTests.persons,
+            PublicationTests.publications, QuotationTests.quotations);
     }
 
     static boolean hasExpectedEntity() {

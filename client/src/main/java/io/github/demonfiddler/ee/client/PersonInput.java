@@ -19,16 +19,11 @@
 
 package io.github.demonfiddler.ee.client;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.graphql_java_generator.annotation.GraphQLIgnore;
 import com.graphql_java_generator.annotation.GraphQLInputType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
-import com.graphql_java_generator.client.GraphQLObjectMapper;
 
 /**
  * An input for creating or updating a person.
@@ -38,19 +33,12 @@ import com.graphql_java_generator.client.GraphQLObjectMapper;
  */
 @GraphQLInputType("PersonInput")
 @JsonInclude(Include.NON_NULL)
-public class PersonInput {
-
-	/**
-	 * This map contains the deserialized values for the alias, as parsed from the JSON response from the GraphQL
-	 * server. The key is the alias name, the value is the deserialiazed value (taking into account custom scalars,
-	 * lists, ...)
-	 */
-	@GraphQLIgnore
-	Map<String, Object> aliasValues = new HashMap<>();
+public class PersonInput extends AbstractBaseEntityInput {
 
 	public PersonInput() {
 	}
 
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
 	 * The person identifier, required if updating an existing record.
 	 */
@@ -150,17 +138,21 @@ public class PersonInput {
 	@GraphQLScalar(fieldName = "published", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class, listDepth = 0)
 	Boolean published;
 
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
 	 * The person identifier, required if updating an existing record.
 	 */
+	@Override
 	@JsonProperty("id")
 	public void setId(Long id) {
 		this.id = id;
 	}
 
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
 	 * The person identifier, required if updating an existing record.
 	 */
+	@Override
 	@JsonProperty("id")
 	public Long getId() {
 		return this.id;
@@ -374,58 +366,36 @@ public class PersonInput {
 		return this.published;
 	}
 
-	/**
-	 * This method is called during the json deserialization process, by the {@link GraphQLObjectMapper}, each time an
-	 * alias value is read from the json.
-	 * @param aliasName
-	 * @param aliasDeserializedValue
-	 */
-	public void setAliasValue(String aliasName, Object aliasDeserializedValue) {
-		this.aliasValues.put(aliasName, aliasDeserializedValue);
-	}
-
-	/**
-	 * Retrieves the value for the given alias, as it has been received for this object in the GraphQL response. <BR/>
-	 * This method <B>should not be used for Custom Scalars</B>, as the parser doesn't know if this alias is a custom
-	 * scalar, and which custom scalar to use at deserialization time. In most case, a value will then be provided by
-	 * this method with a basis json deserialization, but this value won't be the proper custom scalar value.
-	 * @param alias
-	 * @return
-	 */
-	public Object getAliasValue(String alias) {
-		return this.aliasValues.get(alias);
-	}
-
 	public String toString() {
-		return "PersonInput {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "title: " + this.title //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "firstName: " + this.firstName //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "nickname: " + this.nickname //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "prefix: " + this.prefix //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "lastName: " + this.lastName //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "suffix: " + this.suffix //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "alias: " + this.alias //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "notes: " + this.notes //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "qualifications: " + this.qualifications //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "country: " + this.country //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "rating: " + this.rating //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "checked: " + this.checked //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "published: " + this.published //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "PersonInput {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "title: " + this.title //
+			+ ", " //
+			+ "firstName: " + this.firstName //
+			+ ", " //
+			+ "nickname: " + this.nickname //
+			+ ", " //
+			+ "prefix: " + this.prefix //
+			+ ", " //
+			+ "lastName: " + this.lastName //
+			+ ", " //
+			+ "suffix: " + this.suffix //
+			+ ", " //
+			+ "alias: " + this.alias //
+			+ ", " //
+			+ "notes: " + this.notes //
+			+ ", " //
+			+ "qualifications: " + this.qualifications //
+			+ ", " //
+			+ "country: " + this.country //
+			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
+			+ "checked: " + this.checked //
+			+ ", " //
+			+ "published: " + this.published //
+			+ "}";
 	}
 
 	public static Builder builder() {
@@ -436,9 +406,8 @@ public class PersonInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
+	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, PersonInput> {
 
-		private Long id;
 		private String title;
 		private String firstName;
 		private String nickname;
@@ -452,14 +421,6 @@ public class PersonInput {
 		private Integer rating;
 		private Boolean checked;
 		private Boolean published;
-
-		/**
-		 * The person identifier, required if updating an existing record.
-		 */
-		public Builder withId(Long idParam) {
-			this.id = idParam;
-			return this;
-		}
 
 		/**
 		 * The person's title(s).
@@ -565,9 +526,9 @@ public class PersonInput {
 			return this;
 		}
 
+		@Override
 		public PersonInput build() {
-			PersonInput _object = new PersonInput();
-			_object.setId(this.id);
+			PersonInput _object = build(new PersonInput());
 			_object.setTitle(this.title);
 			_object.setFirstName(this.firstName);
 			_object.setNickname(this.nickname);

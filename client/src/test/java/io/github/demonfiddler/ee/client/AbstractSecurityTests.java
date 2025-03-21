@@ -20,8 +20,6 @@
 package io.github.demonfiddler.ee.client;
 
 import static com.google.common.truth.Truth.assertThat;
-import static io.github.demonfiddler.ee.client.EntityKind.CLA;
-import static io.github.demonfiddler.ee.client.EntityKind.DEC;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -42,7 +40,7 @@ abstract class AbstractSecurityTests extends AbstractTrackedEntityTests<ITracked
     @FunctionalInterface
     static interface Method {
 
-        void accept(OperationKind opcode) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException;
+        void accept(OperationKind opcode) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException;
 
     }
 
@@ -77,62 +75,62 @@ abstract class AbstractSecurityTests extends AbstractTrackedEntityTests<ITracked
 
     @Test
     @Order(3)
-    void createJournal() throws GraphQLRequestPreparationException {
-        execute(this::mutateJournal, OperationKind.CREATE);
-    }
-
-    @Test
-    @Order(4)
-    void createPerson() throws GraphQLRequestPreparationException {
-        execute(this::mutatePerson, OperationKind.CREATE);
-    }
-
-    @Test
-    @Order(5)
-    void createPublication() throws GraphQLRequestPreparationException {
-        execute(this::mutatePublication, OperationKind.CREATE);
-    }
-
-    @Test
-    @Order(6)
-    void createPublisher() throws GraphQLRequestPreparationException {
-        execute(this::mutatePublisher, OperationKind.CREATE);
-    }
-
-    @Test
-    @Order(7)
-    void createQuotation() throws GraphQLRequestPreparationException {
-        execute(this::mutateQuotation, OperationKind.CREATE);
-    }
-
-    @Test
-    @Order(8)
-    void createTopic() throws GraphQLRequestPreparationException {
-        execute(this::mutateTopic, OperationKind.CREATE);
-    }
-
-    @Test
-    @Order(9)
-    void createTopicRef() throws GraphQLRequestPreparationException {
-        execute(this::mutateTopicRef, OperationKind.CREATE);
-    }
-
-    @Test
-    @Order(10)
     void createEntityLink() throws GraphQLRequestPreparationException {
         execute(this::mutateEntityLink, OperationKind.CREATE);
     }
 
     @Test
-    @Order(11)
+    @Order(4)
+    void createJournal() throws GraphQLRequestPreparationException {
+        execute(this::mutateJournal, OperationKind.CREATE);
+    }
+
+    @Test
+    @Order(5)
+    void createPerson() throws GraphQLRequestPreparationException {
+        execute(this::mutatePerson, OperationKind.CREATE);
+    }
+
+    @Test
+    @Order(6)
+    void createPublication() throws GraphQLRequestPreparationException {
+        execute(this::mutatePublication, OperationKind.CREATE);
+    }
+
+    @Test
+    @Order(7)
+    void createPublisher() throws GraphQLRequestPreparationException {
+        execute(this::mutatePublisher, OperationKind.CREATE);
+    }
+
+    @Test
+    @Order(8)
+    void createQuotation() throws GraphQLRequestPreparationException {
+        execute(this::mutateQuotation, OperationKind.CREATE);
+    }
+
+    @Test
+    @Order(9)
+    void createTopic() throws GraphQLRequestPreparationException {
+        execute(this::mutateTopic, OperationKind.CREATE);
+    }
+
+    @Test
+    @Order(10)
     void updateClaim() throws GraphQLRequestPreparationException {
         execute(this::mutateClaim, OperationKind.UPDATE);
     }
 
     @Test
-    @Order(12)
+    @Order(11)
     void updateDeclaration() throws GraphQLRequestPreparationException {
         execute(this::mutateDeclaration, OperationKind.UPDATE);
+    }
+
+    @Test
+    @Order(12)
+    void updateEntityLink() throws GraphQLRequestPreparationException {
+        execute(this::mutateEntityLink, OperationKind.UPDATE);
     }
 
     @Test
@@ -185,50 +183,44 @@ abstract class AbstractSecurityTests extends AbstractTrackedEntityTests<ITracked
 
     @Test
     @Order(21)
+    void deleteEntityLink() throws GraphQLRequestPreparationException {
+        execute(this::mutateEntityLink, OperationKind.DELETE);
+    }
+
+    @Test
+    @Order(22)
     void deleteJournal() throws GraphQLRequestPreparationException {
         execute(this::mutateJournal, OperationKind.DELETE);
     }
 
     @Test
-    @Order(22)
+    @Order(23)
     void deletePerson() throws GraphQLRequestPreparationException {
         execute(this::mutatePerson, OperationKind.DELETE);
     }
 
     @Test
-    @Order(23)
+    @Order(24)
     void deletePublication() throws GraphQLRequestPreparationException {
         execute(this::mutatePublication, OperationKind.DELETE);
     }
 
     @Test
-    @Order(24)
+    @Order(25)
     void deletePublisher() throws GraphQLRequestPreparationException {
         execute(this::mutatePublisher, OperationKind.DELETE);
     }
 
     @Test
-    @Order(25)
+    @Order(26)
     void deleteQuotation() throws GraphQLRequestPreparationException {
         execute(this::mutateQuotation, OperationKind.DELETE);
     }
 
     @Test
-    @Order(26)
+    @Order(27)
     void deleteTopic() throws GraphQLRequestPreparationException {
         execute(this::mutateTopic, OperationKind.DELETE);
-    }
-
-    @Test
-    @Order(27)
-    void deleteTopicRef() throws GraphQLRequestPreparationException {
-        execute(this::mutateTopicRef, OperationKind.DELETE);
-    }
-
-    @Test
-    @Order(28)
-    void deleteEntityLink() throws GraphQLRequestPreparationException {
-        execute(this::mutateEntityLink, OperationKind.DELETE);
     }
 
     private void execute(Method method, OperationKind opcode) throws GraphQLRequestPreparationException {
@@ -242,7 +234,7 @@ abstract class AbstractSecurityTests extends AbstractTrackedEntityTests<ITracked
     }
 
     private void mutateClaim(OperationKind opcode)
-        throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+        throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
         ClaimInput input = ClaimInput.builder() //
             .withDate(LocalDate.now()) //
@@ -257,6 +249,7 @@ abstract class AbstractSecurityTests extends AbstractTrackedEntityTests<ITracked
                 queryExecutor.claimById(RESPONSE_SPEC, ClaimTests.claim.getId());
                 break;
             case UPDATE:
+                input.setId(0L);
                 mutationExecutor.updateClaim(RESPONSE_SPEC, input);
                 break;
             case DELETE:
@@ -266,7 +259,7 @@ abstract class AbstractSecurityTests extends AbstractTrackedEntityTests<ITracked
     }
 
     private void mutateDeclaration(OperationKind opcode)
-        throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+        throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
         DeclarationInput input = DeclarationInput.builder() //
             .withDate(LocalDate.now()) //
@@ -281,6 +274,7 @@ abstract class AbstractSecurityTests extends AbstractTrackedEntityTests<ITracked
             case READ:
                 queryExecutor.declarationById(RESPONSE_SPEC, DeclarationTests.declaration.getId());
             case UPDATE:
+                input.setId(0L);
                 mutationExecutor.updateDeclaration(RESPONSE_SPEC, input);
                 break;
             case DELETE:
@@ -289,8 +283,30 @@ abstract class AbstractSecurityTests extends AbstractTrackedEntityTests<ITracked
         }
     }
 
+    private void mutateEntityLink(OperationKind opcode)
+        throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
+        EntityLinkInput input = EntityLinkInput.builder() //
+            .withFromEntityId(0L) //
+            .withToEntityId(0L) //
+            .build();
+        switch (opcode) {
+            case CREATE:
+                mutationExecutor.createEntityLink(RESPONSE_SPEC, input);
+                break;
+            case READ:
+                queryExecutor.entityLinkById(RESPONSE_SPEC, 0L);
+            case UPDATE:
+                input.setId(0L);
+                mutationExecutor.updateEntityLink(RESPONSE_SPEC, input);
+            case DELETE:
+                mutationExecutor.deleteEntityLink("", 0L);
+                break;
+        }
+    }
+
     private void mutateJournal(OperationKind opcode)
-        throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+        throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
         JournalInput input = JournalInput.builder() //
             .withTitle("Security title") //
@@ -304,6 +320,7 @@ abstract class AbstractSecurityTests extends AbstractTrackedEntityTests<ITracked
             case READ:
                 queryExecutor.journalById(RESPONSE_SPEC, JournalTests.journal.getId());
             case UPDATE:
+                input.setId(0L);
                 mutationExecutor.updateJournal(RESPONSE_SPEC, input);
                 break;
             case DELETE:
@@ -313,7 +330,7 @@ abstract class AbstractSecurityTests extends AbstractTrackedEntityTests<ITracked
     }
 
     private void mutatePerson(OperationKind opcode)
-        throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+        throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
         PersonInput input = PersonInput.builder() //
             .withTitle("Security title") //
@@ -326,6 +343,7 @@ abstract class AbstractSecurityTests extends AbstractTrackedEntityTests<ITracked
             case READ:
                 queryExecutor.personById(RESPONSE_SPEC, PersonTests.person.getId());
             case UPDATE:
+                input.setId(0L);
                 mutationExecutor.updatePerson(RESPONSE_SPEC, input);
                 break;
             case DELETE:
@@ -335,7 +353,7 @@ abstract class AbstractSecurityTests extends AbstractTrackedEntityTests<ITracked
     }
 
     private void mutatePublication(OperationKind opcode)
-        throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+        throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
         PublicationInput input = PublicationInput.builder() //
             .withTitle("Security title") //
@@ -348,6 +366,7 @@ abstract class AbstractSecurityTests extends AbstractTrackedEntityTests<ITracked
             case READ:
                 queryExecutor.publicationById(RESPONSE_SPEC, PublicationTests.publication.getId());
             case UPDATE:
+                input.setId(0L);
                 mutationExecutor.updatePublication(RESPONSE_SPEC, input);
                 break;
             case DELETE:
@@ -357,7 +376,7 @@ abstract class AbstractSecurityTests extends AbstractTrackedEntityTests<ITracked
     }
 
     private void mutatePublisher(OperationKind opcode)
-        throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+        throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
         PublisherInput input = PublisherInput.builder() //
             .withName("Security name") //
@@ -369,6 +388,7 @@ abstract class AbstractSecurityTests extends AbstractTrackedEntityTests<ITracked
             case READ:
                 queryExecutor.publisherById(RESPONSE_SPEC, PublisherTests.publisher.getId());
             case UPDATE:
+                input.setId(0L);
                 mutationExecutor.updatePublisher(RESPONSE_SPEC, input);
                 break;
             case DELETE:
@@ -378,7 +398,7 @@ abstract class AbstractSecurityTests extends AbstractTrackedEntityTests<ITracked
     }
 
     private void mutateQuotation(OperationKind opcode)
-        throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+        throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
         QuotationInput input = QuotationInput.builder() //
             .withDate(LocalDate.now()) //
@@ -393,6 +413,7 @@ abstract class AbstractSecurityTests extends AbstractTrackedEntityTests<ITracked
             case READ:
                 queryExecutor.quotationById(RESPONSE_SPEC, QuotationTests.quotation.getId());
             case UPDATE:
+                input.setId(0L);
                 mutationExecutor.updateQuotation(RESPONSE_SPEC, input);
                 break;
             case DELETE:
@@ -402,7 +423,7 @@ abstract class AbstractSecurityTests extends AbstractTrackedEntityTests<ITracked
     }
 
     private void mutateTopic(OperationKind opcode)
-        throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+        throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
         TopicInput input = TopicInput.builder() //
             .withLabel("Security label") //
@@ -415,54 +436,11 @@ abstract class AbstractSecurityTests extends AbstractTrackedEntityTests<ITracked
             case READ:
                 queryExecutor.topicById(RESPONSE_SPEC, TopicTests.parentTopic.getId());
             case UPDATE:
+                input.setId(0L);
                 mutationExecutor.updateTopic(RESPONSE_SPEC, input);
                 break;
             case DELETE:
                 mutationExecutor.deleteTopic(RESPONSE_SPEC, 0L);
-                break;
-        }
-    }
-
-    private void mutateTopicRef(OperationKind opcode)
-        throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
-
-        TopicRefInput input = TopicRefInput.builder() //
-            .withTopicId(0L) //
-            .withEntityId(0L) //
-            .withEntityKind(EntityKind.CLA) //
-            .build();
-        switch (opcode) {
-            case CREATE:
-                mutationExecutor.addTopicRef(RESPONSE_SPEC, input);
-                break;
-            case READ:
-                throw new UnsupportedOperationException("read TopicRef");
-            case UPDATE:
-                throw new UnsupportedOperationException("update TopicRef");
-            case DELETE:
-                mutationExecutor.removeTopicRef("", input);
-                break;
-        }
-    }
-
-    private void mutateEntityLink(OperationKind opcode)
-        throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
-
-        LinkEntitiesInput input = new LinkEntitiesInput();
-        input.setFromEntityKind(CLA);
-        input.setFromEntityId(0L);
-        input.setToEntityKind(DEC);
-        input.setToEntityId(0L);
-        switch (opcode) {
-            case CREATE:
-                mutationExecutor.linkEntities("", input);
-                break;
-            case READ:
-                throw new UnsupportedOperationException("read EntityLink");
-            case UPDATE:
-                throw new UnsupportedOperationException("update EntityLink");
-            case DELETE:
-                mutationExecutor.unlinkEntities("", input);
                 break;
         }
     }

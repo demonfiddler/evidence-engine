@@ -279,6 +279,7 @@ INSERT INTO "entity_kind" ("code", "label") VALUES
 	('COU', 'Country'),
 	('DEC', 'Declaration'),
 	('JOU', 'Journal'),
+	('LNK', 'EntityLink'),
 	('PER', 'Person'),
 	('PUB', 'Publication'),
 	('PBR', 'Publisher'),
@@ -367,17 +368,29 @@ INSERT INTO "transaction_kind" ("code", "label", "description") VALUES
 	('UNL', 'Unlink', 'Two linked records were unlinked'),
 	('UPD', 'Update', 'A record was updated');
 
-INSERT INTO "user" ("username", "first_name", "last_name", "country_code", "password") VALUES
-	('root', 'Root', 'User', 'GB', '{bcrypt}$2a$10$xL02gfgl.dEJBRzsgics5.fglRXyl.iQBNjfyXhCU14UQf2MJUHFK');
-SET @root_id = (SELECT "id" FROM "user" WHERE "username" = 'root');
--- The following update is necessary because an AUTO_INCREMENT column ignores an explicit value.
--- UPDATE "user" SET "id" = 0 WHERE "username" = 'root';
--- Create remaining users with id = 1, 2, 3, ...
--- ALTER TABLE "user" ALTER COLUMN "id" RESTART WITH 1;
-INSERT INTO "user" ("username", "first_name", "last_name", "country_code", "password", "created_by_user_id") VALUES
-	('admin', 'Administrative', 'User', 'GB', '{bcrypt}$2a$10$y9JB/y3fdX7.PUsOEadAi.gErBWCd.8oGn8IEE0KWjURLZEJ20GQi', @root_id),
-	('editor', 'Editing', 'User', 'GB', '{bcrypt}$2a$10$Yjve/6JOwx4vbmpCv7GXO.VAqSWaO8jgxjUXYh6H/fqaKq9WOaMbm', @root_id),
-	('user', 'Ordinary', 'User', 'GB', '{bcrypt}$2a$10$Yjve/6JOwx4vbmpCv7GXO.VAqSWaO8jgxjUXYh6H/fqaKq9WOaMbm', @root_id);
+INSERT INTO "entity" ("dtype", "status", "created_by_user_id") VALUES ('USR', 'PUB', NULL);
+SET @root_id = (SELECT "id" FROM "entity" WHERE "dtype" = 'USR');
+INSERT INTO "user" ("id", "username", "first_name", "last_name", "country_code", "password") VALUES
+	(@root_id, 'root', 'Root', 'User', 'GB', '{bcrypt}$2a$10$xL02gfgl.dEJBRzsgics5.fglRXyl.iQBNjfyXhCU14UQf2MJUHFK');
+UPDATE "entity" SET "created_by_user_id" = @root_id WHERE "id" = @root_id;
+
+INSERT INTO "entity" ("dtype", "status", "created_by_user_id") VALUES ('USR', 'PUB', NULL);
+SET @admin_id = @root_id + 1;
+INSERT INTO "user" ("id", "username", "first_name", "last_name", "country_code", "password") VALUES
+	(@admin_id, 'admin', 'Administrative', 'User', 'GB', '{bcrypt}$2a$10$y9JB/y3fdX7.PUsOEadAi.gErBWCd.8oGn8IEE0KWjURLZEJ20GQi');
+UPDATE "entity" SET "created_by_user_id" = @root_id WHERE "id" = @admin_id;
+
+INSERT INTO "entity" ("dtype", "status", "created_by_user_id") VALUES ('USR', 'PUB', NULL);
+SET @editor_id = @admin_id + 1;
+INSERT INTO "user" ("id", "username", "first_name", "last_name", "country_code", "password") VALUES
+	(@editor_id, 'editor', 'Editing', 'User', 'GB', '{bcrypt}$2a$10$Yjve/6JOwx4vbmpCv7GXO.VAqSWaO8jgxjUXYh6H/fqaKq9WOaMbm');
+UPDATE "entity" SET "created_by_user_id" = @root_id WHERE "id" = @editor_id;
+
+INSERT INTO "entity" ("dtype", "status", "created_by_user_id") VALUES ('USR', 'PUB', NULL);
+SET @user_id = @editor_id + 1;
+INSERT INTO "user" ("id", "username", "first_name", "last_name", "country_code", "password") VALUES
+	(@user_id, 'user', 'Ordinary', 'User', 'GB', '{bcrypt}$2a$10$Yjve/6JOwx4vbmpCv7GXO.VAqSWaO8jgxjUXYh6H/fqaKq9WOaMbm');
+UPDATE "entity" SET "created_by_user_id" = @root_id WHERE "id" = @user_id;
 
 INSERT INTO "group" ("group_name") VALUES
 	('Administrators'),

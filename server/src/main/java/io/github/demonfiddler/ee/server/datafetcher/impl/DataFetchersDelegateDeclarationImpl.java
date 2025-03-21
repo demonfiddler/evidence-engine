@@ -20,31 +20,22 @@
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
 import java.util.List;
-import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
-import org.dataloader.DataLoader;
 import org.springframework.stereotype.Component;
 
-import graphql.GraphQLContext;
 import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateDeclaration;
 import io.github.demonfiddler.ee.server.model.CountryFormatKind;
 import io.github.demonfiddler.ee.server.model.Declaration;
 import io.github.demonfiddler.ee.server.model.DeclarationKind;
 import io.github.demonfiddler.ee.server.model.FormatKind;
-import io.github.demonfiddler.ee.server.model.LogPage;
-import io.github.demonfiddler.ee.server.model.LogQueryFilter;
-import io.github.demonfiddler.ee.server.model.PageableInput;
-import io.github.demonfiddler.ee.server.model.TopicRefPage;
-import io.github.demonfiddler.ee.server.model.TopicRefQueryFilter;
-import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.repository.DeclarationRepository;
 import io.github.demonfiddler.ee.server.util.CountryUtils;
 import jakarta.annotation.Resource;
 
 @Component
-public class DataFetchersDelegateDeclarationImpl extends DataFetchersDelegateITopicalEntityBaseImpl<Declaration>
+public class DataFetchersDelegateDeclarationImpl extends DataFetchersDelegateILinkableEntityBaseImpl<Declaration>
     implements DataFetchersDelegateDeclaration {
 
     @Resource
@@ -54,40 +45,7 @@ public class DataFetchersDelegateDeclarationImpl extends DataFetchersDelegateITo
 
     @Override
     public List<Declaration> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {
-        return declarationRepository.findByIds(keys);
-    }
-
-    @Override
-    public Object status(DataFetchingEnvironment dataFetchingEnvironment, Declaration origin, FormatKind format) {
-        return _status(dataFetchingEnvironment, origin, format);
-    }
-
-    @Override
-    public Map<Declaration, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment,
-        GraphQLContext graphQLContext, List<Declaration> keys) {
-
-        return _createdByUserMap(batchLoaderEnvironment, graphQLContext, keys);
-    }
-
-    @Override
-    public Map<Declaration, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment,
-        GraphQLContext graphQLContext, List<Declaration> keys) {
-
-        return _updatedByUserMap(batchLoaderEnvironment, graphQLContext, keys);
-    }
-
-    @Override
-    public Object log(DataFetchingEnvironment dataFetchingEnvironment, DataLoader<Long, LogPage> dataLoader,
-        Declaration origin, LogQueryFilter filter, PageableInput pageSort) {
-
-        return _log(dataFetchingEnvironment, origin, filter, pageSort);
-    }
-
-    @Override
-    public Object topicRefs(DataFetchingEnvironment dataFetchingEnvironment, DataLoader<Long, TopicRefPage> dataLoader,
-        Declaration origin, TopicRefQueryFilter filter, PageableInput pageSort) {
-
-        return _topicRefs(dataFetchingEnvironment, origin, filter, pageSort);
+        return declarationRepository.findAllById(keys);
     }
 
     @Override

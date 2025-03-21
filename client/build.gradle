@@ -21,6 +21,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version "${springBootVersion}"
 	id 'io.spring.dependency-management' version "${dependencyManagementPluginVersion}"
+	// Uncomment the next line in order to run the generateClientCode task.
 	// id "com.graphql-java-generator.graphql-gradle-plugin3" version "${graphQLPluginVersion}"
 }
 
@@ -75,9 +76,14 @@ ext {
 }
 
 tasks.named('test') {
+	// N.B. Comment out the dependsOn and finalizedBy lines when running the generateClientCode task.
 	dependsOn project(':server').tasks.named('bootIntegrationTestServerBG')
 	outputs.dir snippetsDir
 	useJUnitPlatform()
+	if (project.hasProperty('caseInsensitive')) {
+		println 'Case insensitive testing selected'
+	    systemProperty('ee.test.case-insensitive', true)
+	}
 	systemProperty('junit.jupiter.testclass.order.default', 'org.junit.jupiter.api.ClassOrderer$OrderAnnotation')
 	finalizedBy project(':server').tasks.named('terminateIntegrationTestServer')
 }

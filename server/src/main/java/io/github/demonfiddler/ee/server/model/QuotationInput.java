@@ -32,13 +32,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("QuotationInput")
-public class QuotationInput {
-
-	/**
-	 * The quotation identifier, required if updating an existing record.
-	 */
-	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
-	Long id;
+public class QuotationInput extends AbstractBaseEntityInput {
 
 	/**
 	 * The text of the quotation.
@@ -75,20 +69,6 @@ public class QuotationInput {
 	 */
 	@GraphQLScalar(fieldName = "notes", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
 	String notes;
-
-	/**
-	 * The quotation identifier, required if updating an existing record.
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	/**
-	 * The quotation identifier, required if updating an existing record.
-	 */
-	public Long getId() {
-		return this.id;
-	}
 
 	/**
 	 * The text of the quotation.
@@ -200,23 +180,14 @@ public class QuotationInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
+	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, QuotationInput> {
 
-		private Long id;
 		private String text;
 		private String quotee;
 		private LocalDate date;
 		private String source;
 		private URL url;
 		private String notes;
-
-		/**
-		 * The quotation identifier, required if updating an existing record.
-		 */
-		public Builder withId(Long idParam) {
-			this.id = idParam;
-			return this;
-		}
 
 		/**
 		 * The text of the quotation.
@@ -266,9 +237,9 @@ public class QuotationInput {
 			return this;
 		}
 
+		@Override
 		public QuotationInput build() {
 			QuotationInput _object = new QuotationInput();
-			_object.setId(this.id);
 			_object.setText(this.text);
 			_object.setQuotee(this.quotee);
 			_object.setDate(this.date);

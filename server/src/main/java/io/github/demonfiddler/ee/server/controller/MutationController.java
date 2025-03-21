@@ -35,9 +35,8 @@ import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateMutation;
 import io.github.demonfiddler.ee.server.model.ClaimInput;
 import io.github.demonfiddler.ee.server.model.DeclarationInput;
-import io.github.demonfiddler.ee.server.model.EntityKind;
+import io.github.demonfiddler.ee.server.model.EntityLinkInput;
 import io.github.demonfiddler.ee.server.model.JournalInput;
-import io.github.demonfiddler.ee.server.model.LinkEntitiesInput;
 import io.github.demonfiddler.ee.server.model.PermissionKind;
 import io.github.demonfiddler.ee.server.model.PersonInput;
 import io.github.demonfiddler.ee.server.model.PublicationInput;
@@ -45,7 +44,6 @@ import io.github.demonfiddler.ee.server.model.PublisherInput;
 import io.github.demonfiddler.ee.server.model.QuotationInput;
 import io.github.demonfiddler.ee.server.model.StatusKind;
 import io.github.demonfiddler.ee.server.model.TopicInput;
-import io.github.demonfiddler.ee.server.model.TopicRefInput;
 import io.github.demonfiddler.ee.server.model.UserInput;
 
 /**
@@ -64,8 +62,8 @@ public class MutationController {
 	protected GraphqlServerUtils graphqlServerUtils;
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.createClaim. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.createClaim. It returns an Object: the data fetcher implementation may return any
+	 * type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -73,7 +71,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -89,8 +87,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.updateClaim. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.updateClaim. It returns an Object: the data fetcher implementation may return any
+	 * type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -98,7 +96,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -114,8 +112,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.deleteClaim. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.deleteClaim. It returns an Object: the data fetcher implementation may return any
+	 * type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -123,7 +121,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -139,8 +137,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.createDeclaration. It returns an Object: the data
-	 * fetcher implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.createDeclaration. It returns an Object: the data fetcher implementation may return
+	 * any type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -148,7 +146,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -167,8 +165,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.updateDeclaration. It returns an Object: the data
-	 * fetcher implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.updateDeclaration. It returns an Object: the data fetcher implementation may return
+	 * any type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -176,7 +174,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -195,8 +193,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.deleteDeclaration. It returns an Object: the data
-	 * fetcher implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.deleteDeclaration. It returns an Object: the data fetcher implementation may return
+	 * any type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -204,7 +202,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -223,8 +221,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.createJournal. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.createEntityLink. It returns an Object: the data fetcher implementation may return
+	 * any type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -232,7 +230,91 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
+	 * typically contains the id to use in the query.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
+	 * @param entityLink The parameter that will receive the field argument of the same name for the current data to
+	 * fetch
+	 * @return It may return any value that is valid for a spring-graphql controller, annotated by the
+	 * <code>@SchemaMapping</code> annotation
+	 */
+	@SchemaMapping(field = "createEntityLink")
+	public Object createEntityLink(DataFetchingEnvironment dataFetchingEnvironment,
+		@Argument("entityLink") EntityLinkInput entityLink) {
+
+		return this.dataFetchersDelegateMutation.createEntityLink(dataFetchingEnvironment, entityLink);
+	}
+
+	/**
+	 * Loads the data for Mutation.updateEntityLink. It returns an Object: the data fetcher implementation may return
+	 * any type that is accepted by a spring-graphql controller<BR/>
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
+	 * the author attribute of the <I>origin</I>, which is an instance of {ObjectType {name:Post, fields:{Field{name:id,
+	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
+	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
+	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
+	 * typically contains the id to use in the query.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
+	 * @param entityLink The parameter that will receive the field argument of the same name for the current data to
+	 * fetch
+	 * @return It may return any value that is valid for a spring-graphql controller, annotated by the
+	 * <code>@SchemaMapping</code> annotation
+	 */
+	@SchemaMapping(field = "updateEntityLink")
+	public Object updateEntityLink(DataFetchingEnvironment dataFetchingEnvironment,
+		@Argument("entityLink") EntityLinkInput entityLink) {
+
+		return this.dataFetchersDelegateMutation.updateEntityLink(dataFetchingEnvironment, entityLink);
+	}
+
+	/**
+	 * Loads the data for Mutation.deleteEntityLink. It returns an Object: the data fetcher implementation may return
+	 * any type that is accepted by a spring-graphql controller<BR/>
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
+	 * the author attribute of the <I>origin</I>, which is an instance of {ObjectType {name:Post, fields:{Field{name:id,
+	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
+	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
+	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
+	 * typically contains the id to use in the query.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
+	 * @param entityLinkId The parameter that will receive the field argument of the same name for the current data to
+	 * fetch
+	 * @return It may return any value that is valid for a spring-graphql controller, annotated by the
+	 * <code>@SchemaMapping</code> annotation
+	 */
+	@SchemaMapping(field = "deleteEntityLink")
+	public Object deleteEntityLink(DataFetchingEnvironment dataFetchingEnvironment,
+		@Argument("entityLinkId") Long entityLinkId) {
+
+		return this.dataFetchersDelegateMutation.deleteEntityLink(dataFetchingEnvironment, entityLinkId);
+	}
+
+	/**
+	 * Loads the data for Mutation.createJournal. It returns an Object: the data fetcher implementation may return any
+	 * type that is accepted by a spring-graphql controller<BR/>
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
+	 * the author attribute of the <I>origin</I>, which is an instance of {ObjectType {name:Post, fields:{Field{name:id,
+	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
+	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
+	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -250,8 +332,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.updateJournal. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.updateJournal. It returns an Object: the data fetcher implementation may return any
+	 * type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -259,7 +341,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -277,8 +359,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.deleteJournal. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.deleteJournal. It returns an Object: the data fetcher implementation may return any
+	 * type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -286,7 +368,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -305,8 +387,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.createPerson. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.createPerson. It returns an Object: the data fetcher implementation may return any
+	 * type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -314,7 +396,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -332,8 +414,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.updatePerson. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.updatePerson. It returns an Object: the data fetcher implementation may return any
+	 * type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -341,7 +423,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -359,8 +441,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.deletePerson. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.deletePerson. It returns an Object: the data fetcher implementation may return any
+	 * type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -368,7 +450,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -384,8 +466,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.createPublication. It returns an Object: the data
-	 * fetcher implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.createPublication. It returns an Object: the data fetcher implementation may return
+	 * any type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -393,7 +475,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -412,8 +494,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.updatePublication. It returns an Object: the data
-	 * fetcher implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.updatePublication. It returns an Object: the data fetcher implementation may return
+	 * any type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -421,7 +503,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -440,8 +522,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.deletePublication. It returns an Object: the data
-	 * fetcher implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.deletePublication. It returns an Object: the data fetcher implementation may return
+	 * any type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -449,7 +531,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -468,8 +550,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.createPublisher. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.createPublisher. It returns an Object: the data fetcher implementation may return any
+	 * type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -477,7 +559,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -496,8 +578,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.updatePublisher. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.updatePublisher. It returns an Object: the data fetcher implementation may return any
+	 * type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -505,7 +587,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -524,8 +606,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.deletePublisher. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.deletePublisher. It returns an Object: the data fetcher implementation may return any
+	 * type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -533,7 +615,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -552,8 +634,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.createQuotation. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.createQuotation. It returns an Object: the data fetcher implementation may return any
+	 * type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -561,7 +643,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -580,8 +662,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.updateQuotation. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.updateQuotation. It returns an Object: the data fetcher implementation may return any
+	 * type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -589,7 +671,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -608,8 +690,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.deleteQuotation. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.deleteQuotation. It returns an Object: the data fetcher implementation may return any
+	 * type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -617,7 +699,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -636,8 +718,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.createTopic. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.createTopic. It returns an Object: the data fetcher implementation may return any
+	 * type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -645,7 +727,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -661,8 +743,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.updateTopic. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.updateTopic. It returns an Object: the data fetcher implementation may return any
+	 * type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -670,7 +752,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -686,8 +768,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.deleteTopic. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.deleteTopic. It returns an Object: the data fetcher implementation may return any
+	 * type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -695,7 +777,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -710,133 +792,16 @@ public class MutationController {
 		return this.dataFetchersDelegateMutation.deleteTopic(dataFetchingEnvironment, topicId);
 	}
 
-	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.addTopicRef. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
-	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
-	 * GraphQL context for this DataFetcher
-	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
-	 * the author attribute of the <I>origin</I>, which is an instance of {ObjectType {name:Post, fields:{Field{name:id,
-	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
-	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
-	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
-	 * typically contains the id to use in the query.
-	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
-	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
-	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
-	 * will take care of the {@link NoSuchElementException} exception.
-	 * @param topicRef The parameter that will receive the field argument of the same name for the current data to fetch
-	 * @return It may return any value that is valid for a spring-graphql controller, annotated by the
-	 * <code>@SchemaMapping</code> annotation
-	 */
-	@SchemaMapping(field = "addTopicRef")
-	public Object addTopicRef(DataFetchingEnvironment dataFetchingEnvironment,
-		@Argument("topicRef") TopicRefInput topicRef) {
-
-		return this.dataFetchersDelegateMutation.addTopicRef(dataFetchingEnvironment, topicRef);
-	}
-
-	/** Updates an existing topic reference. */
-	@SchemaMapping(field = "updateTopicRef")
-	public Object updateTopicRef(DataFetchingEnvironment dataFetchingEnvironment,
-		@Argument("topicRef") TopicRefInput topicRef) {
-
-		return this.dataFetchersDelegateMutation.updateTopicRef(dataFetchingEnvironment, topicRef);
-	}
-
-	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.removeTopicRef. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
-	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
-	 * GraphQL context for this DataFetcher
-	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
-	 * the author attribute of the <I>origin</I>, which is an instance of {ObjectType {name:Post, fields:{Field{name:id,
-	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
-	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
-	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
-	 * typically contains the id to use in the query.
-	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
-	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
-	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
-	 * will take care of the {@link NoSuchElementException} exception.
-	 * @param topicRef The parameter that will receive the field argument of the same name for the current data to fetch
-	 * @return It may return any value that is valid for a spring-graphql controller, annotated by the
-	 * <code>@SchemaMapping</code> annotation
-	 */
-	@SchemaMapping(field = "removeTopicRef")
-	public Object removeTopicRef(DataFetchingEnvironment dataFetchingEnvironment,
-		@Argument("topicRef") TopicRefInput topicRef) {
-
-		return this.dataFetchersDelegateMutation.removeTopicRef(dataFetchingEnvironment, topicRef);
-	}
-
-	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.linkEntities. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
-	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
-	 * GraphQL context for this DataFetcher
-	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
-	 * the author attribute of the <I>origin</I>, which is an instance of {ObjectType {name:Post, fields:{Field{name:id,
-	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
-	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
-	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
-	 * typically contains the id to use in the query.
-	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
-	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
-	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
-	 * will take care of the {@link NoSuchElementException} exception.
-	 * @param link The parameter that will receive the field argument of the same name for the current data to fetch
-	 * @return It may return any value that is valid for a spring-graphql controller, annotated by the
-	 * <code>@SchemaMapping</code> annotation
-	 */
-	@SchemaMapping(field = "linkEntities")
-	public Object linkEntities(DataFetchingEnvironment dataFetchingEnvironment,
-		@Argument("link") LinkEntitiesInput link) {
-
-		return this.dataFetchersDelegateMutation.linkEntities(dataFetchingEnvironment, link);
-	}
-
-	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.unlinkEntities. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
-	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
-	 * GraphQL context for this DataFetcher
-	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
-	 * the author attribute of the <I>origin</I>, which is an instance of {ObjectType {name:Post, fields:{Field{name:id,
-	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
-	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
-	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
-	 * typically contains the id to use in the query.
-	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
-	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
-	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
-	 * will take care of the {@link NoSuchElementException} exception.
-	 * @param link The parameter that will receive the field argument of the same name for the current data to fetch
-	 * @return It may return any value that is valid for a spring-graphql controller, annotated by the
-	 * <code>@SchemaMapping</code> annotation
-	 */
-	@SchemaMapping(field = "unlinkEntities")
-	public Object unlinkEntities(DataFetchingEnvironment dataFetchingEnvironment,
-		@Argument("link") LinkEntitiesInput link) {
-
-		return this.dataFetchersDelegateMutation.unlinkEntities(dataFetchingEnvironment, link);
-	}
-
 	@SchemaMapping(field = "setEntityStatus")
-	public Object setEntityStatus(DataFetchingEnvironment dataFetchingEnvironment,
-		@Argument("entityKind") EntityKind entityKind, @Argument("entityId") Long entityId,
+	public Object setEntityStatus(DataFetchingEnvironment dataFetchingEnvironment, @Argument("entityId") Long entityId,
 		@Argument("status") StatusKind status) {
 
-		return this.dataFetchersDelegateMutation.setEntityStatus(dataFetchingEnvironment, entityKind, entityId, status);
+		return this.dataFetchersDelegateMutation.setEntityStatus(dataFetchingEnvironment, entityId, status);
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.createUser. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.createUser. It returns an Object: the data fetcher implementation may return any type
+	 * that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -844,7 +809,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -860,8 +825,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.updateUser. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.updateUser. It returns an Object: the data fetcher implementation may return any type
+	 * that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -869,7 +834,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -885,8 +850,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.deleteUser. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.deleteUser. It returns an Object: the data fetcher implementation may return any type
+	 * that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -894,7 +859,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -910,8 +875,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.grantUserPermissions. It returns an Object: the data
-	 * fetcher implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.grantUserPermissions. It returns an Object: the data fetcher implementation may
+	 * return any type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -919,7 +884,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -941,8 +906,8 @@ public class MutationController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.revokeUserPermissions. It returns an Object: the data
-	 * fetcher implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Mutation.revokeUserPermissions. It returns an Object: the data fetcher implementation may
+	 * return any type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -950,7 +915,7 @@ public class MutationController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the

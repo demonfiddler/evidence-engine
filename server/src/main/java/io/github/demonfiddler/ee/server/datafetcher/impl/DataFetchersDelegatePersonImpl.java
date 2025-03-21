@@ -20,30 +20,20 @@
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
 import java.util.List;
-import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
-import org.dataloader.DataLoader;
 import org.springframework.stereotype.Component;
 
-import graphql.GraphQLContext;
 import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegatePerson;
 import io.github.demonfiddler.ee.server.model.CountryFormatKind;
-import io.github.demonfiddler.ee.server.model.FormatKind;
-import io.github.demonfiddler.ee.server.model.LogPage;
-import io.github.demonfiddler.ee.server.model.LogQueryFilter;
-import io.github.demonfiddler.ee.server.model.PageableInput;
 import io.github.demonfiddler.ee.server.model.Person;
-import io.github.demonfiddler.ee.server.model.TopicRefPage;
-import io.github.demonfiddler.ee.server.model.TopicRefQueryFilter;
-import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.repository.PersonRepository;
 import io.github.demonfiddler.ee.server.util.CountryUtils;
 import jakarta.annotation.Resource;
 
 @Component
-public class DataFetchersDelegatePersonImpl extends DataFetchersDelegateITopicalEntityBaseImpl<Person>
+public class DataFetchersDelegatePersonImpl extends DataFetchersDelegateILinkableEntityBaseImpl<Person>
     implements DataFetchersDelegatePerson {
 
     @Resource
@@ -53,40 +43,7 @@ public class DataFetchersDelegatePersonImpl extends DataFetchersDelegateITopical
 
     @Override
     public List<Person> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {
-        return personRepository.findByIds(keys);
-    }
-
-    @Override
-    public Object status(DataFetchingEnvironment dataFetchingEnvironment, Person origin, FormatKind format) {
-        return _status(dataFetchingEnvironment, origin, format);
-    }
-
-    @Override
-    public Map<Person, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-        List<Person> keys) {
-
-        return _createdByUserMap(batchLoaderEnvironment, graphQLContext, keys);
-    }
-
-    @Override
-    public Map<Person, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
-        List<Person> keys) {
-
-        return _updatedByUserMap(batchLoaderEnvironment, graphQLContext, keys);
-    }
-
-    @Override
-    public Object log(DataFetchingEnvironment dataFetchingEnvironment, DataLoader<Long, LogPage> dataLoader,
-        Person origin, LogQueryFilter filter, PageableInput pageSort) {
-
-        return _log(dataFetchingEnvironment, origin, filter, pageSort);
-    }
-
-    @Override
-    public Object topicRefs(DataFetchingEnvironment dataFetchingEnvironment, DataLoader<Long, TopicRefPage> dataLoader,
-        Person origin, TopicRefQueryFilter filter, PageableInput pageSort) {
-
-        return _topicRefs(dataFetchingEnvironment, origin, filter, pageSort);
+        return personRepository.findAllById(keys);
     }
 
     @Override

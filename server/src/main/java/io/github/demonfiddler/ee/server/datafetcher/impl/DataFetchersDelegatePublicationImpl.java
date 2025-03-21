@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
-import org.dataloader.DataLoader;
 import org.springframework.stereotype.Component;
 
 import graphql.GraphQLContext;
@@ -31,19 +30,13 @@ import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegatePublication;
 import io.github.demonfiddler.ee.server.model.FormatKind;
 import io.github.demonfiddler.ee.server.model.Journal;
-import io.github.demonfiddler.ee.server.model.LogPage;
-import io.github.demonfiddler.ee.server.model.LogQueryFilter;
-import io.github.demonfiddler.ee.server.model.PageableInput;
 import io.github.demonfiddler.ee.server.model.Publication;
 import io.github.demonfiddler.ee.server.model.PublicationKind;
-import io.github.demonfiddler.ee.server.model.TopicRefPage;
-import io.github.demonfiddler.ee.server.model.TopicRefQueryFilter;
-import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.repository.PublicationRepository;
 import jakarta.annotation.Resource;
 
 @Component
-public class DataFetchersDelegatePublicationImpl extends DataFetchersDelegateITopicalEntityBaseImpl<Publication>
+public class DataFetchersDelegatePublicationImpl extends DataFetchersDelegateILinkableEntityBaseImpl<Publication>
     implements DataFetchersDelegatePublication {
 
     @Resource
@@ -51,40 +44,7 @@ public class DataFetchersDelegatePublicationImpl extends DataFetchersDelegateITo
 
     @Override
     public List<Publication> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {
-        return publicationRepository.findByIds(keys);
-    }
-
-    @Override
-    public Object status(DataFetchingEnvironment dataFetchingEnvironment, Publication origin, FormatKind format) {
-        return _status(dataFetchingEnvironment, origin, format);
-    }
-
-    @Override
-    public Map<Publication, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment,
-        GraphQLContext graphQLContext, List<Publication> keys) {
-
-        return _createdByUserMap(batchLoaderEnvironment, graphQLContext, keys);
-    }
-
-    @Override
-    public Map<Publication, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment,
-        GraphQLContext graphQLContext, List<Publication> keys) {
-
-        return _updatedByUserMap(batchLoaderEnvironment, graphQLContext, keys);
-    }
-
-    @Override
-    public Object log(DataFetchingEnvironment dataFetchingEnvironment, DataLoader<Long, LogPage> dataLoader,
-        Publication origin, LogQueryFilter filter, PageableInput pageSort) {
-
-        return _log(dataFetchingEnvironment, origin, filter, pageSort);
-    }
-
-    @Override
-    public Object topicRefs(DataFetchingEnvironment dataFetchingEnvironment, DataLoader<Long, TopicRefPage> dataLoader,
-        Publication origin, TopicRefQueryFilter filter, PageableInput pageSort) {
-
-        return _topicRefs(dataFetchingEnvironment, origin, filter, pageSort);
+        return publicationRepository.findAllById(keys);
     }
 
     @Override

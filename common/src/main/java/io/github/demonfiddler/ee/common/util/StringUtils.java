@@ -27,6 +27,18 @@ import java.util.StringTokenizer;
 public final class StringUtils {
 
     /**
+     * Counts the number of lines in a string.
+     * @param s The string.
+     * @return The number of lines in {@code s}.
+     */
+    public static int countLines(String s) {
+        if (s == null || s.isEmpty())
+            return 0;
+        StringTokenizer st = new StringTokenizer(s, "\n\r");
+        return st.countTokens();
+    }
+
+    /**
      * Uppercases the first character of a string and lowercases the rest.
      * @param s The string.
      * @return A copy of {@code s} with the first character uppercased and the remainder lowercased.
@@ -40,18 +52,6 @@ public final class StringUtils {
         for (int i = 1; i < c.length; i++)
             c[i] = Character.toLowerCase(c[i]);
         return new String(c);
-    }
-
-    /**
-     * Counts the number of lines in a string.
-     * @param s The string.
-     * @return The number of lines in {@code s}.
-     */
-    public static int countLines(String s) {
-        if (s == null || s.isEmpty())
-            return 0;
-        StringTokenizer st = new StringTokenizer(s, "\n\r");
-        return st.countTokens();
     }
 
     /** Private ctor prevents instantiation. */

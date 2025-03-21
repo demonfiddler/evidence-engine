@@ -19,7 +19,6 @@
 
 package io.github.demonfiddler.ee.client;
 
-import static com.google.common.truth.Truth.assertThat;
 import static io.github.demonfiddler.ee.client.TransactionKind.CRE;
 import static io.github.demonfiddler.ee.client.TransactionKind.DEL;
 import static io.github.demonfiddler.ee.client.TransactionKind.UPD;
@@ -49,32 +48,72 @@ import io.github.demonfiddler.ee.client.util.SpringContext;
 @SpringBootTest(classes = GraphQLClientMain.class)
 @Order(1)
 @TestMethodOrder(OrderAnnotation.class)
-class ClaimTests extends AbstractTopicalEntityTests<Claim> {
+class ClaimTests extends AbstractLinkableEntityTests<Claim> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClaimTests.class);
 
 	private static final String RESPONSE_SPEC = //
 		"""
-		{
-			id
-			status
-			created
-			createdByUser {
+			{
 				id
-				username
-				firstName
-				lastName
+				status
+				created
+				createdByUser {
+					id
+					username
+					firstName
+					lastName
+				}
+				updated
+				updatedByUser {
+					id
+					username
+					firstName
+					lastName
+				}
+				log {
+					hasContent
+					isEmpty
+					number
+					size
+					numberOfElements
+					totalPages
+					totalElements
+					isFirst
+					isLast
+					hasNext
+					hasPrevious
+					content {
+						timestamp
+						transactionKind
+						entityId
+						entityKind
+						user {
+							id
+							username
+							firstName
+							lastName
+						}
+					}
+				}
+				date
+				text
+				notes
 			}
-			updated
-			updatedByUser {
+			""";
+	private static final String MINIMAL_RESPONSE_SPEC = //
+		"""
+			{
 				id
-				username
-				firstName
-				lastName
+				status%s
+				date
+				text
+				notes
 			}
-			log {
-				hasContent
-				isEmpty
+			""";
+	static final String PAGED_RESPONSE_SPEC = //
+		"""
+			{
 				number
 				size
 				numberOfElements
@@ -84,57 +123,17 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 				isLast
 				hasNext
 				hasPrevious
+				isEmpty
+				hasContent
 				content {
-					timestamp
-					transactionKind
-					entityId
-					entityKind
-					user {
-						id
-						username
-						firstName
-						lastName
-					}
+					id
+					status%s
+					date
+					text
+					notes
 				}
 			}
-			date
-			text
-			notes
-		}
-		""";
-	private static final String MINIMAL_RESPONSE_SPEC = //
-		"""
-		{
-			id
-			status%s
-			date
-			text
-			notes
-		}
-		""";
-	static final String PAGED_RESPONSE_SPEC = //
-		"""
-		{
-			number
-			size
-			numberOfElements
-			totalPages
-			totalElements
-			isFirst
-			isLast
-			hasNext
-			hasPrevious
-			isEmpty
-			hasContent
-			content {
-				id
-				status%s
-				date
-				text
-				notes
-			}
-		}
-		""";
+			""";
 
 	static Claim claim;
 	static List<Claim> claims;
@@ -156,6 +155,7 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 				LOGGER.error("Failed to initialise claims list from server");
 			} else {
 				claims = content;
+				claim = claims.get(0);
 				LOGGER.debug("Initialised claims list from server");
 			}
 		}
@@ -176,8 +176,8 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 		Claim actual = mutationExecutor.createClaim(RESPONSE_SPEC, input);
 
 		LOG_DATES[0] = actual.getCreated();
-		checkClaim(actual, StatusKind.DRA.label(), earliestUpdated, null, claimDate, input.getText(),
-			input.getNotes(), CRE);
+		checkClaim(actual, StatusKind.DRA.label(), earliestUpdated, null, claimDate, input.getText(), input.getNotes(),
+			CRE);
 
 		claim = actual;
 	}
@@ -238,7 +238,7 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 	@Test
 	@Order(5)
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaim")
-	void createClaims() throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+	void createClaims() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		// Create another eight claims and store them all in an array together with the previously created one.
 		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted("");
 		final int claimCount = 8;
@@ -251,7 +251,7 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 		claim0.setNotes(claim.getNotes());
 		claim0.set__typename(claim.get__typename());
 		claims.add(claim0);
-		String[] numbers = {null, "one", "two", "three", "four", "five", "six", "seven", "eight"};
+		String[] numbers = { null, "one", "two", "three", "four", "five", "six", "seven", "eight" };
 		for (int i = 1; i <= claimCount; i++) {
 			LocalDate date = LocalDate.now();
 			String text = "Claim " + numbers[i];
@@ -273,7 +273,7 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 	@Test
 	@Order(6)
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaims")
-	void readClaims() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readClaims() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		ClaimPage actuals = queryExecutor.claims(responseSpec, null, null);
 
@@ -283,9 +283,9 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 	@Test
 	@Order(7)
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaims")
-	void readClaimsFiltered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readClaimsFiltered() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
-		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
 
@@ -307,7 +307,7 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 	@Test
 	@Order(8)
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaims")
-	void readClaimsSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readClaimsSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		OrderInput order = OrderInput.builder() //
 			.withProperty("text") //
@@ -318,8 +318,12 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 
 		// "CLAIM FIVE", "CLAIM ONE", "CLAIM SEVEN", "CLAIM THREE", "Claim eight", "Claim four", "Claim six",
 		// "Claim two", "Updated test title"
-		// 5, 1, 7, 3, 8, 4, 6, 2, 0
-		List<Claim> expected = subList(claims, 5, 1, 7, 3, 8, 4, 6, 2, 0);
+		// CI: 8, 5, 4, 1, 7, 6, 3, 2, 0
+		// CS: 5, 1, 7, 3, 8, 4, 6, 2, 0
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5, 4, 1, 7, 6, 3, 2, 0 } //
+			: new int[] { 5, 1, 7, 3, 8, 4, 6, 2, 0 };
+		List<Claim> expected = subList(claims, indexes);
 
 		ClaimPage actuals = queryExecutor.claims(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
@@ -337,7 +341,7 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 	@Test
 	@Order(9)
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaims")
-	void readClaimsSortedIgnoreCase() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readClaimsSortedIgnoreCase() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		OrderInput order = OrderInput.builder() //
 			.withProperty("text") //
@@ -368,7 +372,7 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 	@Test
 	@Order(10)
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaims")
-	void readClaimsSortedNullOrdered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readClaimsSortedNullOrdered() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		OrderInput notesOrder = OrderInput.builder() //
 			.withProperty("notes") //
@@ -384,9 +388,12 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 		// null/"CLAIM THREE", null/"Claim six", "Notes #1"/"CLAIM ONE", "Notes #2"/"Claim two",
 		// "Notes #4"/"Claim four", "Notes #5 (filtered)"/"CLAIM FIVE", "Notes #7 (filtered)"/"CLAIM SEVEN",
 		// "Notes #8 (filtered)"/"Claim eight", "Updated test notes"/"Updated test title"
-		// 3, 6, 1, 2, 4, 5, 7, 8, 0
-		List<Claim> expected = subList(claims, 3, 6, 1, 2, 4, 5, 7, 8, 0);
-
+		// CI: 6, 3, 1, 2, 4, 5, 7, 8, 0
+		// CS: 3, 6, 1, 2, 4, 5, 7, 8, 0
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 6, 3, 1, 2, 4, 5, 7, 8, 0 } //
+			: new int[] { 3, 6, 1, 2, 4, 5, 7, 8, 0 };
+		List<Claim> expected = subList(claims, indexes);
 		ClaimPage actuals = queryExecutor.claims(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -395,17 +402,24 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		textOrder.setDirection(DirectionKind.DESC);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 3, 6, 1, 2, 4, 5, 7, 8, 0 } //
+			: new int[] { 6, 3, 1, 2, 4, 5, 7, 8, 0 };
+		expected = subList(claims, indexes);
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
-		expected = subList(claims, 6, 3, 1, 2, 4, 5, 7, 8, 0);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		// "Notes #1"/"CLAIM ONE", "Notes #2"/"Claim two", "Notes #4"/"Claim four", "Notes #5 (filtered)"/"CLAIM FIVE",
 		// "Notes #7 (filtered)"/"CLAIM SEVEN", "Notes #8 (filtered)"/"Claim eight",
-		// "Updated test notes"/"Updated test title", null/"CLAIM THREE", null/"Claim six",
-		// 1, 2, 4, 5, 7, 8, 0, 3, 6
+		// "Updated test notes"/"Updated test title", null/"CLAIM THREE", null/"Claim six"
+		// CI: 1, 2, 4, 5, 7, 8, 0, 6, 3
+		// CS: 1, 2, 4, 5, 7, 8, 0, 3, 6
 		notesOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		textOrder.setDirection(null);
-		expected = subList(claims, 1, 2, 4, 5, 7, 8, 0, 3, 6);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 2, 4, 5, 7, 8, 0, 6, 3 } //
+			: new int[] { 1, 2, 4, 5, 7, 8, 0, 3, 6 };
+		expected = subList(claims, indexes);
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -414,17 +428,20 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		textOrder.setDirection(DirectionKind.DESC);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 2, 4, 5, 7, 8, 0, 3, 6 } //
+			: new int[] { 1, 2, 4, 5, 7, 8, 0, 6, 3 };
+		expected = subList(claims, indexes);
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
-		expected = subList(claims, 1, 2, 4, 5, 7, 8, 0, 6, 3);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
 
 	@Test
 	@Order(11)
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaims")
-	void readClaimsFilteredSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readClaimsFilteredSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
-		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
 		OrderInput order = OrderInput.builder() //
@@ -435,8 +452,12 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 		PageableInput pageSort = PageableInput.builder().withSort(sort).build();
 
 		// "CLAIM FIVE", "CLAIM SEVEN", "Claim eight"
-		// 5, 7, 8
-		List<Claim> expected = subList(claims, 5, 7, 8);
+		// CI: 8, 5, 7
+		// CS: 5, 7, 8
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5, 7 } //
+			: new int[] { 5, 7, 8 };
+		List<Claim> expected = subList(claims, indexes);
 		ClaimPage actuals = queryExecutor.claims(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 1, 3, 0, false, false, true, true, expected, true);
 
@@ -453,9 +474,10 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 	@Test
 	@Order(12)
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaims")
-	void readClaimsFilteredSortedNullHandling() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readClaimsFilteredSortedNullHandling()
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
-		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("claim") //
 			.build();
 		OrderInput notesOrder = OrderInput.builder() //
@@ -471,9 +493,13 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 
 		// null/"CLAIM THREE", null/"Claim six", "Notes #1"/"CLAIM ONE", "Notes #2"/"Claim two",
 		// "Notes #4"/"Claim four", "Notes #5 (filtered)"/"CLAIM FIVE", "Notes #7 (filtered)"/"CLAIM SEVEN",
-		// "Notes #8 (filtered)"/"Claim eight", "Updated test notes"/"Updated test title"
-		// 3, 6, 1, 2, 4, 5, 7, 8
-		List<Claim> expected = subList(claims, 3, 6, 1, 2, 4, 5, 7, 8);
+		// "Notes #8 (filtered)"/"Claim eight"
+		// CI: 6, 3, 1, 2, 4, 5, 7, 8
+		// CS: 3, 6, 1, 2, 4, 5, 7, 8
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 6, 3, 1, 2, 4, 5, 7, 8 } //
+			: new int[] { 3, 6, 1, 2, 4, 5, 7, 8 };
+		List<Claim> expected = subList(claims, indexes);
 		ClaimPage actuals = queryExecutor.claims(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
@@ -482,21 +508,32 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		textOrder.setDirection(DirectionKind.DESC);
-		expected = subList(claims, 6, 3, 1, 2, 4, 5, 7, 8);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 3, 6, 1, 2, 4, 5, 7, 8 } //
+			: new int[] { 6, 3, 1, 2, 4, 5, 7, 8 };
+		expected = subList(claims, indexes);
 		actuals = queryExecutor.claims(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		// "Notes #1"/"CLAIM ONE", "Notes #2"/"Claim two", "Notes #4"/"Claim four", "Notes #5 (filtered)"/"CLAIM FIVE",
-		// "Notes #7 (filtered)"/"CLAIM SEVEN", "Notes #8 (filtered)"/"Claim eight", null/"CLAIM THREE", null/"Claim six"
-		// 1, 2, 4, 5, 7, 8, 3, 6
+		// "Notes #7 (filtered)"/"CLAIM SEVEN", "Notes #8 (filtered)"/"Claim eight", null/"CLAIM THREE", null/"Claim
+		// six"
+		// CI: 1, 2, 4, 5, 7, 8, 6, 3
+		// CS: 1, 2, 4, 5, 7, 8, 3, 6
 		notesOrder.setNullHandling(NullHandlingKind.NULLS_LAST);
 		textOrder.setDirection(DirectionKind.ASC);
-		expected = subList(claims, 1, 2, 4, 5, 7, 8, 3, 6);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 2, 4, 5, 7, 8, 6, 3 } //
+			: new int[] { 1, 2, 4, 5, 7, 8, 3, 6 };
+		expected = subList(claims, indexes);
 		actuals = queryExecutor.claims(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 
 		textOrder.setDirection(DirectionKind.DESC);
-		expected = subList(claims, 1, 2, 4, 5, 7, 8, 6, 3);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 1, 2, 4, 5, 7, 8, 3, 6 } //
+			: new int[] { 1, 2, 4, 5, 7, 8, 6, 3 };
+		expected = subList(claims, indexes);
 		actuals = queryExecutor.claims(responseSpec, filter, pageSort);
 		checkPage(actuals, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, true);
 	}
@@ -504,7 +541,7 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 	@Test
 	@Order(13)
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaims")
-	void readClaimsPaged() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readClaimsPaged() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		// NOTE: assume that records are returned in the same order as the unpaged query.
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		PageableInput pageSort = PageableInput.builder() //
@@ -524,14 +561,14 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
 		expected = claims.subList(8, 9);
 		checkPage(actuals, claims.size(), 3, 4, 2, true, false, false, true, expected, true);
-	}	
+	}
 
 	@Test
 	@Order(14)
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaims")
-	void readClaimsPagedFiltered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readClaimsPagedFiltered() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
-		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
 		PageableInput pageSort = PageableInput.builder() //
@@ -545,14 +582,14 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 
 		pageSort.setPageNumber(1);
 		actuals = queryExecutor.claims(responseSpec, filter, pageSort);
-		expected = subList(claims,8);
+		expected = subList(claims, 8);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 	}
 
 	@Test
 	@Order(15)
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaims")
-	void readClaimsPagedSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readClaimsPagedSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
 		OrderInput order = OrderInput.builder() //
 			.withProperty("text") //
@@ -567,50 +604,78 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 
 		// "CLAIM FIVE", "CLAIM ONE", "CLAIM SEVEN", "CLAIM THREE", "Claim eight", "Claim four", "Claim six",
 		// "Claim two", "Updated test title"
-		// 5, 1, 7, 3, 8, 4, 6, 2, 0
-		List<Claim> expected = subList(claims, 5, 1, 7, 3);
+		// CI: 8, 5, 4, 1, 7, 6, 3, 2, 0
+		// CS: 5, 1, 7, 3, 8, 4, 6, 2, 0
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5, 4, 1 } //
+			: new int[] { 5, 1, 7, 3 };
+		List<Claim> expected = subList(claims, indexes);
 		ClaimPage actuals = queryExecutor.claims(responseSpec, null, pageSort);
 		checkPage(actuals, claims.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(claims, 8, 4, 6, 2);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 6, 3, 2 } //
+			: new int[] { 8, 4, 6, 2 };
+		expected = subList(claims, indexes);
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
 		checkPage(actuals, claims.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(claims, 0);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 0 } //
+			: new int[] { 0 };
+		expected = subList(claims, indexes);
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
 		checkPage(actuals, claims.size(), 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(claims, 5, 1, 7, 3);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5, 4, 1 } //
+			: new int[] { 5, 1, 7, 3 };
+		expected = subList(claims, indexes);
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
 		checkPage(actuals, claims.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(claims, 8, 4, 6, 2);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 6, 3, 2 } //
+			: new int[] { 8, 4, 6, 2 };
+		expected = subList(claims, indexes);
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
 		checkPage(actuals, claims.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(claims, 0);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 0 } //
+			: new int[] { 0 };
+		expected = subList(claims, indexes);
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
 		checkPage(actuals, claims.size(), 3, 4, 2, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(claims, 0, 2, 6, 4);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 0, 2, 3, 6 } //
+			: new int[] { 0, 2, 6, 4 };
+		expected = subList(claims, indexes);
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
 		checkPage(actuals, claims.size(), 3, 4, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(claims, 8, 3, 7, 1);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 1, 4, 5 } //
+			: new int[] { 8, 3, 7, 1 };
+		expected = subList(claims, indexes);
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
 		checkPage(actuals, claims.size(), 3, 4, 1, true, true, false, false, expected, true);
 
 		pageSort.setPageNumber(2);
-		expected = subList(claims, 5);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8 } //
+			: new int[] { 5 };
+		expected = subList(claims, indexes);
 		actuals = queryExecutor.claims(responseSpec, null, pageSort);
 		checkPage(actuals, claims.size(), 3, 4, 2, true, false, false, true, expected, true);
 	}
@@ -618,9 +683,9 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 	@Test
 	@Order(16)
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaims")
-	void readClaimsPagedFilteredSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
+	void readClaimsPagedFilteredSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
-		TopicalEntityQueryFilter filter = TopicalEntityQueryFilter.builder() //
+		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
 		OrderInput order = OrderInput.builder() //
@@ -635,35 +700,54 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 			.build();
 
 		// "CLAIM FIVE", "CLAIM SEVEN", "Claim eight"
-		// 5, 7, 8
-		List<Claim> expected = subList(claims, 5, 7);
+		// CI: 8, 5, 7
+		// CS: 5, 7, 8
+		int[] indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5 } //
+			: new int[] { 5, 7 };
+		List<Claim> expected = subList(claims, indexes);
 		ClaimPage actuals = queryExecutor.claims(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(claims, 8);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7 } //
+			: new int[] { 8 };
+		expected = subList(claims, indexes);
 		actuals = queryExecutor.claims(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.ASC);
 		pageSort.setPageNumber(0);
-		expected = subList(claims, 5, 7);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8, 5 } //
+			: new int[] { 5, 7 };
+		expected = subList(claims, indexes);
 		actuals = queryExecutor.claims(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(claims, 8);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7 } //
+			: new int[] { 8 };
+		expected = subList(claims, indexes);
 		actuals = queryExecutor.claims(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 
 		order.setDirection(DirectionKind.DESC);
 		pageSort.setPageNumber(0);
-		expected = subList(claims, 8, 7);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 7, 5 } //
+			: new int[] { 8, 7 };
+		expected = subList(claims, indexes);
 		actuals = queryExecutor.claims(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 0, false, true, true, false, expected, true);
 
 		pageSort.setPageNumber(1);
-		expected = subList(claims, 5);
+		indexes = CASE_INSENSITIVE //
+			? new int[] { 8 } //
+			: new int[] { 5 };
+		expected = subList(claims, indexes);
 		actuals = queryExecutor.claims(responseSpec, filter, pageSort);
 		checkPage(actuals, 3, 2, 2, 1, true, false, false, true, expected, true);
 	}
@@ -676,7 +760,7 @@ class ClaimTests extends AbstractTopicalEntityTests<Claim> {
 	private void checkClaim(Claim claim, String status, OffsetDateTime earliestCreated, OffsetDateTime earliestUpdated,
 		LocalDate date, String text, String notes, TransactionKind... txnKinds) {
 
-		checkTopicalEntity(claim, status, earliestCreated, earliestUpdated, txnKinds);
+		checkLinkableEntity(claim, status, earliestCreated, earliestUpdated, txnKinds);
 		assertThat(claim).hasDate(date);
 		assertThat(claim).hasText(text);
 		assertThat(claim).hasNotes(notes);

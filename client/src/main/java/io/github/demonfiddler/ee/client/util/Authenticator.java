@@ -140,9 +140,10 @@ public class Authenticator {
                 throw new IllegalStateException(
                     "Cannot login to '" + url + "'', as already logged into '" + this.url + '\'');
             }
-            if (!username.equals(this.username))
+            if (!username.equals(this.username)) {
                 throw new IllegalStateException(
                     "Cannot login as '" + username + "'', as already logged in as '" + this.username + '\'');
+            }
             LOGGER.debug("Already logged in as '{}'", username);
             return true;
         }
@@ -203,6 +204,7 @@ public class Authenticator {
         try {
             user = queryExecutor.userByUsername(REQUEST_SPEC, username);
         } catch (GraphQLRequestPreparationException | GraphQLRequestExecutionException e) {
+            jSessionId = rememberMe = null;
             throw new IllegalArgumentException("Failed to retrieve user: " + username, e);
         }
 
@@ -220,13 +222,13 @@ public class Authenticator {
 
         URI logoutUri = getUri("/logout", null, null);
         try {
-        webClient //
-            .post() //
-            .uri(logoutUri) //
-            .accept(TEXT_HTML, APPLICATION_XHTML_XML, APPLICATION_XML) //
-            .retrieve() //
-            .toBodilessEntity() //
-            .block();
+            webClient //
+                .post() //
+                .uri(logoutUri) //
+                .accept(TEXT_HTML, APPLICATION_XHTML_XML, APPLICATION_XML) //
+                .retrieve() //
+                .toBodilessEntity() //
+                .block();
         } catch (Forbidden e) {
             // Expected on logout.
         }

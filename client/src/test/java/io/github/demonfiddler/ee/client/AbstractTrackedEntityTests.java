@@ -34,6 +34,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 
+import com.google.common.collect.Range;
+
 @TestInstance(PER_CLASS)
 abstract class AbstractTrackedEntityTests<T extends ITrackedEntity> extends AbstractGraphQLTests {
 
@@ -50,16 +52,18 @@ abstract class AbstractTrackedEntityTests<T extends ITrackedEntity> extends Abst
 	void checkTrackedEntity(T entity, String status, OffsetDateTime earliestCreated, OffsetDateTime earliestUpdated,
 		TransactionKind... txnKinds) {
 
+		Range<OffsetDateTime> creationRange = createRange(earliestCreated);
 		assertThatTrackedEntity(entity).isNotNull();
 		assertThatTrackedEntity(entity).hasStatus(status);
-		assertThatTrackedEntity(entity).created().isAtLeast(earliestCreated);
+		assertThatTrackedEntity(entity).created().isIn(creationRange);
 		checkUser(entity.getCreatedByUser());
 		if (earliestUpdated == null) {
 			assertThatTrackedEntity(entity).updated().isNull();
 			assertThatTrackedEntity(entity).updatedByUser().isNull();
 		} else {
+			Range<OffsetDateTime> updatedRange = createRange(earliestUpdated);
 			assertThatTrackedEntity(entity).updated().isNotNull();
-			assertThatTrackedEntity(entity).updated().isAtLeast(earliestUpdated);
+			assertThatTrackedEntity(entity).updated().isIn(updatedRange);
 			checkUser(entity.getUpdatedByUser());
 		}
 		LogPage logPage = entity.getLog();
@@ -80,7 +84,8 @@ abstract class AbstractTrackedEntityTests<T extends ITrackedEntity> extends Abst
 		assertThat(logPage).hasSize(logEntries.size());
 		for (int i = 0; i < logEntries.size(); i++) {
 			Log log = logPage.getContent().get(i);
-			assertThat(log).hasTimestamp(LOG_DATES[i]);
+			Range<OffsetDateTime> logRange = createRange(LOG_DATES[i]);
+			assertThat(log).timestamp().isIn(logRange);
 			assertThat(log).hasTransactionKind(txnKinds[i].label());
 			assertThat(log).hasEntityKind(getEntityKind().label());
 			assertThat(log).hasEntityId(Long.valueOf(entity.getId()));

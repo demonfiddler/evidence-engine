@@ -19,18 +19,14 @@
 
 package io.github.demonfiddler.ee.client;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.graphql_java_generator.annotation.GraphQLIgnore;
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
-import com.graphql_java_generator.annotation.GraphQLScalar;
 
 import io.github.demonfiddler.ee.client.util.CustomJacksonDeserializers;
 
@@ -44,23 +40,8 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonDeserializers;
 @JsonInclude(Include.NON_NULL)
 public class TopicPage extends AbstractPage<Topic> {
 
-	/**
-	 * This map contains the deserialized values for the alias, as parsed from the JSON response from the GraphQL
-	 * server. The key is the alias name, the value is the deserialiazed value (taking into account custom scalars,
-	 * lists, ...)
-	 */
-	@GraphQLIgnore
-	Map<String, Object> aliasValues = new HashMap<>();
-
 	public TopicPage() {
 	}
-
-	/**
-	 * Dummy ID required for @Entity classes
-	 */
-	@JsonProperty("dummy")
-	@GraphQLScalar(fieldName = "dummy", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
-	Long dummy;
 
 	/**
 	 * The requested pageful of records.
@@ -69,107 +50,6 @@ public class TopicPage extends AbstractPage<Topic> {
 	@JsonDeserialize(using = CustomJacksonDeserializers.ListTopic.class)
 	@GraphQLNonScalar(fieldName = "content", graphQLTypeSimpleName = "Topic", javaClass = Topic.class, listDepth = 1)
 	List<Topic> content;
-
-	/**
-	 * Whether the page has content.
-	 */
-	@JsonProperty("hasContent")
-	@GraphQLScalar(fieldName = "hasContent", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class,
-		listDepth = 0)
-	Boolean hasContent;
-
-	/**
-	 * Whether the page is empty (no content).
-	 */
-	@JsonProperty("isEmpty")
-	@GraphQLScalar(fieldName = "isEmpty", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class, listDepth = 0)
-	Boolean isEmpty;
-
-	/**
-	 * The current page number.
-	 */
-	@JsonProperty("number")
-	@GraphQLScalar(fieldName = "number", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
-	Integer number;
-
-	/**
-	 * The page size.
-	 */
-	@JsonProperty("size")
-	@GraphQLScalar(fieldName = "size", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
-	Integer size;
-
-	/**
-	 * The number of elements on this page.
-	 */
-	@JsonProperty("numberOfElements")
-	@GraphQLScalar(fieldName = "numberOfElements", graphQLTypeSimpleName = "Int", javaClass = Integer.class,
-		listDepth = 0)
-	Integer numberOfElements;
-
-	/**
-	 * The total number of pages available.
-	 */
-	@JsonProperty("totalPages")
-	@GraphQLScalar(fieldName = "totalPages", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
-	Integer totalPages;
-
-	/**
-	 * The total number of records.
-	 */
-	@JsonProperty("totalElements")
-	@JsonDeserialize(using = CustomJacksonDeserializers.Long.class)
-	@GraphQLScalar(fieldName = "totalElements", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
-	Long totalElements;
-
-	/**
-	 * Whether this is the first page.
-	 */
-	@JsonProperty("isFirst")
-	@GraphQLScalar(fieldName = "isFirst", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class, listDepth = 0)
-	Boolean isFirst;
-
-	/**
-	 * Whether this is the last page.
-	 */
-	@JsonProperty("isLast")
-	@GraphQLScalar(fieldName = "isLast", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class, listDepth = 0)
-	Boolean isLast;
-
-	/**
-	 * Whether there is next page.
-	 */
-	@JsonProperty("hasNext")
-	@GraphQLScalar(fieldName = "hasNext", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class, listDepth = 0)
-	Boolean hasNext;
-
-	/**
-	 * Whether there is previous page.
-	 */
-	@JsonProperty("hasPrevious")
-	@GraphQLScalar(fieldName = "hasPrevious", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class,
-		listDepth = 0)
-	Boolean hasPrevious;
-
-	@JsonProperty("__typename")
-	@GraphQLScalar(fieldName = "__typename", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	String __typename;
-
-	/**
-	 * Dummy ID required for @Entity classes
-	 */
-	@JsonProperty("dummy")
-	public void setDummy(Long dummy) {
-		this.dummy = dummy;
-	}
-
-	/**
-	 * Dummy ID required for @Entity classes
-	 */
-	@JsonProperty("dummy")
-	public Long getDummy() {
-		return this.dummy;
-	}
 
 	/**
 	 * The requested pageful of records.
@@ -187,192 +67,6 @@ public class TopicPage extends AbstractPage<Topic> {
 		return this.content;
 	}
 
-	/**
-	 * Whether the page has content.
-	 */
-	@JsonProperty("hasContent")
-	public void setHasContent(Boolean hasContent) {
-		this.hasContent = hasContent;
-	}
-
-	/**
-	 * Whether the page has content.
-	 */
-	@JsonProperty("hasContent")
-	public Boolean getHasContent() {
-		return this.hasContent;
-	}
-
-	/**
-	 * Whether the page is empty (no content).
-	 */
-	@JsonProperty("isEmpty")
-	public void setIsEmpty(Boolean isEmpty) {
-		this.isEmpty = isEmpty;
-	}
-
-	/**
-	 * Whether the page is empty (no content).
-	 */
-	@JsonProperty("isEmpty")
-	public Boolean getIsEmpty() {
-		return this.isEmpty;
-	}
-
-	/**
-	 * The current page number.
-	 */
-	@JsonProperty("number")
-	public void setNumber(Integer number) {
-		this.number = number;
-	}
-
-	/**
-	 * The current page number.
-	 */
-	@JsonProperty("number")
-	public Integer getNumber() {
-		return this.number;
-	}
-
-	/**
-	 * The page size.
-	 */
-	@JsonProperty("size")
-	public void setSize(Integer size) {
-		this.size = size;
-	}
-
-	/**
-	 * The page size.
-	 */
-	@JsonProperty("size")
-	public Integer getSize() {
-		return this.size;
-	}
-
-	/**
-	 * The number of elements on this page.
-	 */
-	@JsonProperty("numberOfElements")
-	public void setNumberOfElements(Integer numberOfElements) {
-		this.numberOfElements = numberOfElements;
-	}
-
-	/**
-	 * The number of elements on this page.
-	 */
-	@JsonProperty("numberOfElements")
-	public Integer getNumberOfElements() {
-		return this.numberOfElements;
-	}
-
-	/**
-	 * The total number of pages available.
-	 */
-	@JsonProperty("totalPages")
-	public void setTotalPages(Integer totalPages) {
-		this.totalPages = totalPages;
-	}
-
-	/**
-	 * The total number of pages available.
-	 */
-	@JsonProperty("totalPages")
-	public Integer getTotalPages() {
-		return this.totalPages;
-	}
-
-	/**
-	 * The total number of records.
-	 */
-	@JsonProperty("totalElements")
-	public void setTotalElements(Long totalElements) {
-		this.totalElements = totalElements;
-	}
-
-	/**
-	 * The total number of records.
-	 */
-	@JsonProperty("totalElements")
-	public Long getTotalElements() {
-		return this.totalElements;
-	}
-
-	/**
-	 * Whether this is the first page.
-	 */
-	@JsonProperty("isFirst")
-	public void setIsFirst(Boolean isFirst) {
-		this.isFirst = isFirst;
-	}
-
-	/**
-	 * Whether this is the first page.
-	 */
-	@JsonProperty("isFirst")
-	public Boolean getIsFirst() {
-		return this.isFirst;
-	}
-
-	/**
-	 * Whether this is the last page.
-	 */
-	@JsonProperty("isLast")
-	public void setIsLast(Boolean isLast) {
-		this.isLast = isLast;
-	}
-
-	/**
-	 * Whether this is the last page.
-	 */
-	@JsonProperty("isLast")
-	public Boolean getIsLast() {
-		return this.isLast;
-	}
-
-	/**
-	 * Whether there is next page.
-	 */
-	@JsonProperty("hasNext")
-	public void setHasNext(Boolean hasNext) {
-		this.hasNext = hasNext;
-	}
-
-	/**
-	 * Whether there is next page.
-	 */
-	@JsonProperty("hasNext")
-	public Boolean getHasNext() {
-		return this.hasNext;
-	}
-
-	/**
-	 * Whether there is previous page.
-	 */
-	@JsonProperty("hasPrevious")
-	public void setHasPrevious(Boolean hasPrevious) {
-		this.hasPrevious = hasPrevious;
-	}
-
-	/**
-	 * Whether there is previous page.
-	 */
-	@JsonProperty("hasPrevious")
-	public Boolean getHasPrevious() {
-		return this.hasPrevious;
-	}
-
-	@JsonProperty("__typename")
-	public void set__typename(String __typename) {
-		this.__typename = __typename;
-	}
-
-	@JsonProperty("__typename")
-	public String get__typename() {
-		return this.__typename;
-	}
-
 	public static Builder builder() {
 		return new Builder();
 	}
@@ -381,10 +75,7 @@ public class TopicPage extends AbstractPage<Topic> {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder extends AbstractBuilder<TopicPage, Topic> {
-
-		Builder() {
-		}
+	public static class Builder extends AbstractPage.Builder<Builder, TopicPage, Topic> {
 
 		@Override
 		TopicPage createPage() {

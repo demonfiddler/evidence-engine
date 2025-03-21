@@ -21,21 +21,18 @@ package io.github.demonfiddler.ee.server.model;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Transient;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 
 /**
  * A publication associated with given topics.
@@ -44,69 +41,10 @@ import jakarta.persistence.Transient;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @Entity
+@PrimaryKeyJoinColumn(name = "id")
+@DiscriminatorValue("PUB")
 @GraphQLObjectType("Publication")
-public class Publication implements ITopicalEntity {
-
-	/**
-	 * The unique publication identifier.
-	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
-	Long id;
-
-	/**
-	 * The entity status.
-	 */
-	@GraphQLScalar(fieldName = "status", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	String status;
-
-	/**
-	 * When the record was created.
-	 */
-	@GraphQLScalar(fieldName = "created", graphQLTypeSimpleName = "DateTime", javaClass = OffsetDateTime.class,
-		listDepth = 0)
-	OffsetDateTime created;
-
-	/**
-	 * The user who created the record.
-	 */
-	@GraphQLNonScalar(fieldName = "createdByUser", graphQLTypeSimpleName = "User", javaClass = User.class,
-		listDepth = 0)
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "created_by_user_id", nullable = false)
-	User createdByUser;
-
-	/**
-	 * When the record was last updated.
-	 */
-	@GraphQLScalar(fieldName = "updated", graphQLTypeSimpleName = "DateTime", javaClass = OffsetDateTime.class,
-		listDepth = 0)
-	OffsetDateTime updated;
-
-	/**
-	 * The user who last updated the record.
-	 */
-	@GraphQLNonScalar(fieldName = "updatedByUser", graphQLTypeSimpleName = "User", javaClass = User.class,
-		listDepth = 0)
-	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "updated_by_user_id", nullable = true)
-	User updatedByUser;
-
-	/**
-	 * Log of transactions involving the record.
-	 */
-	@Transient
-	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage", javaClass = LogPage.class, listDepth = 0)
-	LogPage log;
-
-	/**
-	 * The topic(s) associated with the publication.
-	 */
-	@Transient
-	@GraphQLNonScalar(fieldName = "topicRefs", graphQLTypeSimpleName = "TopicRefPage", javaClass = TopicRefPage.class,
-		listDepth = 0)
-	TopicRefPage topicRefs;
+public class Publication extends AbstractLinkableEntity {
 
 	/**
 	 * The publication title.
@@ -121,7 +59,7 @@ public class Publication implements ITopicalEntity {
 	String authors;
 
 	/**
-	 * The name of the journal in which the publication appeared.
+	 * The journal in which the publication appeared.
 	 */
 	@GraphQLNonScalar(fieldName = "journal", graphQLTypeSimpleName = "Journal", javaClass = Journal.class,
 		listDepth = 0)
@@ -197,132 +135,9 @@ public class Publication implements ITopicalEntity {
 	@GraphQLScalar(fieldName = "accessed", graphQLTypeSimpleName = "Date", javaClass = LocalDate.class, listDepth = 0)
 	LocalDate accessed;
 
-	/**
-	 * The unique publication identifier.
-	 */
 	@Override
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	/**
-	 * The unique publication identifier.
-	 */
-	@Override
-	public Long getId() {
-		return this.id;
-	}
-
-	/**
-	 * The entity status.
-	 */
-	@Override
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	/**
-	 * The entity status.
-	 */
-	@Override
-	public String getStatus() {
-		return this.status;
-	}
-
-	/**
-	 * When the record was created.
-	 */
-	@Override
-	public void setCreated(OffsetDateTime created) {
-		this.created = created;
-	}
-
-	/**
-	 * When the record was created.
-	 */
-	@Override
-	public OffsetDateTime getCreated() {
-		return this.created;
-	}
-
-	/**
-	 * The user who created the record.
-	 */
-	@Override
-	public void setCreatedByUser(User createdByUser) {
-		this.createdByUser = createdByUser;
-	}
-
-	/**
-	 * The user who created the record.
-	 */
-	@Override
-	public User getCreatedByUser() {
-		return this.createdByUser;
-	}
-
-	/**
-	 * When the record was last updated.
-	 */
-	@Override
-	public void setUpdated(OffsetDateTime updated) {
-		this.updated = updated;
-	}
-
-	/**
-	 * When the record was last updated.
-	 */
-	@Override
-	public OffsetDateTime getUpdated() {
-		return this.updated;
-	}
-
-	/**
-	 * The user who last updated the record.
-	 */
-	@Override
-	public void setUpdatedByUser(User updatedByUser) {
-		this.updatedByUser = updatedByUser;
-	}
-
-	/**
-	 * The user who last updated the record.
-	 */
-	@Override
-	public User getUpdatedByUser() {
-		return this.updatedByUser;
-	}
-
-	/**
-	 * Log of transactions involving the record.
-	 */
-	@Override
-	public void setLog(LogPage log) {
-		this.log = log;
-	}
-
-	/**
-	 * Log of transactions involving the record.
-	 */
-	@Override
-	public LogPage getLog() {
-		return this.log;
-	}
-
-	/**
-	 * The topic(s) associated with the publication.
-	 */
-	@Override
-	public void setTopicRefs(TopicRefPage topicRefs) {
-		this.topicRefs = topicRefs;
-	}
-
-	/**
-	 * The topic(s) associated with the publication.
-	 */
-	@Override
-	public TopicRefPage getTopicRefs() {
-		return this.topicRefs;
+	public String getEntityKind() {
+		return EntityKind.PUB.name();
 	}
 
 	/**
@@ -354,14 +169,14 @@ public class Publication implements ITopicalEntity {
 	}
 
 	/**
-	 * The name of the journal in which the publication appeared.
+	 * The journal in which the publication appeared.
 	 */
 	public void setJournal(Journal journal) {
 		this.journal = journal;
 	}
 
 	/**
-	 * The name of the journal in which the publication appeared.
+	 * The journal in which the publication appeared.
 	 */
 	public Journal getJournal() {
 		return this.journal;
@@ -525,6 +340,8 @@ public class Publication implements ITopicalEntity {
 		return "Publication {" //$NON-NLS-1$
 			+ "id: " + this.id //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
+			+ "entityKind: " + this.getEntityKind() //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
 			+ "status: " + this.status //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "created: " + this.created //$NON-NLS-1$
@@ -537,7 +354,9 @@ public class Publication implements ITopicalEntity {
 			+ ", " //$NON-NLS-1$
 			+ "log: " + this.log //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
-			+ "topicRefs: " + this.topicRefs //$NON-NLS-1$
+			+ "fromEntityLinks: " + this.fromEntityLinks //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
+			+ "toEntityLinks: " + this.toEntityLinks //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "title: " + this.title //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
@@ -577,15 +396,8 @@ public class Publication implements ITopicalEntity {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
-		private Long id;
-		private String status;
-		private OffsetDateTime created;
-		private User createdByUser;
-		private OffsetDateTime updated;
-		private User updatedByUser;
-		private LogPage log;
-		private TopicRefPage topicRefs;
+	public static class Builder extends AbstractLinkableEntity.Builder<Builder, Publication> {
+
 		private String title;
 		private String authors;
 		private Journal journal;
@@ -600,70 +412,6 @@ public class Publication implements ITopicalEntity {
 		private URL url;
 		private Boolean cached;
 		private LocalDate accessed;
-
-		/**
-		 * The unique publication identifier.
-		 */
-		public Builder withId(Long idParam) {
-			this.id = idParam;
-			return this;
-		}
-
-		/**
-		 * The entity status.
-		 */
-		public Builder withStatus(String statusParam) {
-			this.status = statusParam;
-			return this;
-		}
-
-		/**
-		 * When the record was created.
-		 */
-		public Builder withCreated(OffsetDateTime createdParam) {
-			this.created = createdParam;
-			return this;
-		}
-
-		/**
-		 * The user who created the record.
-		 */
-		public Builder withCreatedByUser(User createdByUserParam) {
-			this.createdByUser = createdByUserParam;
-			return this;
-		}
-
-		/**
-		 * When the record was last updated.
-		 */
-		public Builder withUpdated(OffsetDateTime updatedParam) {
-			this.updated = updatedParam;
-			return this;
-		}
-
-		/**
-		 * The user who last updated the record.
-		 */
-		public Builder withUpdatedByUser(User updatedByUserParam) {
-			this.updatedByUser = updatedByUserParam;
-			return this;
-		}
-
-		/**
-		 * Log of transactions involving the record.
-		 */
-		public Builder withLog(LogPage logParam) {
-			this.log = logParam;
-			return this;
-		}
-
-		/**
-		 * The topic(s) associated with the publication.
-		 */
-		public Builder withTopicRefs(TopicRefPage topicRefsParam) {
-			this.topicRefs = topicRefsParam;
-			return this;
-		}
 
 		/**
 		 * The publication title.
@@ -777,16 +525,9 @@ public class Publication implements ITopicalEntity {
 			return this;
 		}
 
+		@Override
 		public Publication build() {
-			Publication _object = new Publication();
-			_object.setId(this.id);
-			_object.setStatus(this.status);
-			_object.setCreated(this.created);
-			_object.setCreatedByUser(this.createdByUser);
-			_object.setUpdated(this.updated);
-			_object.setUpdatedByUser(this.updatedByUser);
-			_object.setLog(this.log);
-			_object.setTopicRefs(this.topicRefs);
+			Publication _object = build(new Publication());
 			_object.setTitle(this.title);
 			_object.setAuthors(this.authors);
 			_object.setJournal(this.journal);
@@ -803,6 +544,7 @@ public class Publication implements ITopicalEntity {
 			_object.setAccessed(this.accessed);
 			return _object;
 		}
+
 	}
 
 }

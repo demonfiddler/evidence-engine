@@ -55,6 +55,7 @@ public class FormatUtils {
         ENTITY_KIND_LONG.put(EntityKind.COU, "Country");
         ENTITY_KIND_LONG.put(EntityKind.DEC, "Declaration");
         ENTITY_KIND_LONG.put(EntityKind.JOU, "Journal");
+        ENTITY_KIND_LONG.put(EntityKind.LNK, "EntityLink");
         ENTITY_KIND_LONG.put(EntityKind.PBR, "Publisher");
         ENTITY_KIND_LONG.put(EntityKind.PER, "Person");
         ENTITY_KIND_LONG.put(EntityKind.PUB, "Publication");
@@ -65,7 +66,7 @@ public class FormatUtils {
         PERMISSION_KIND_LONG.put(PermissionKind.ADM, "Use administrative functions");
         PERMISSION_KIND_LONG.put(PermissionKind.CRE, "Insert new record");
         PERMISSION_KIND_LONG.put(PermissionKind.DEL, "Delete existing record");
-        PERMISSION_KIND_LONG.put(PermissionKind.LNK, "Link existing records");
+        PERMISSION_KIND_LONG.put(PermissionKind.LNK, "Link/unlink existing records");
         PERMISSION_KIND_LONG.put(PermissionKind.REA, "Read existing record");
         PERMISSION_KIND_LONG.put(PermissionKind.UPD, "Update existing record");
         PERMISSION_KIND_LONG.put(PermissionKind.UPL, "Manage uploaded files");

@@ -30,13 +30,12 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
 @GraphQLEnumType("NullHandlingKind")
 public enum NullHandlingKind {
 
-		NATIVE("NATIVE"), //$NON-NLS-1$
-		NULLS_FIRST("NULLS_FIRST"), //$NON-NLS-1$
-		NULLS_LAST("NULLS_LAST"); //$NON-NLS-1$
+	NATIVE("NATIVE"), //
+	NULLS_FIRST("NULLS_FIRST"), //
+	NULLS_LAST("NULLS_LAST"); //
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
-	// are different
-	// when the value in the GraphQL schema is a Java reserved keyword.
+	// are different when the value in the GraphQL schema is a Java reserved keyword.
 	private final String graphQlValue;
 
 	private NullHandlingKind(String graphQlValue) {
@@ -72,7 +71,7 @@ public enum NullHandlingKind {
 				return e;
 			}
 		}
-		throw new IllegalArgumentException("No NullHandlingKind exists with '" + graphQlValue + "' as a GraphQL value"); //$NON-NLS-1$ //$NON-NLS-2$
+		throw new IllegalArgumentException("No NullHandlingKind exists with '" + graphQlValue + "' as a GraphQL value");
 	}
 
 }

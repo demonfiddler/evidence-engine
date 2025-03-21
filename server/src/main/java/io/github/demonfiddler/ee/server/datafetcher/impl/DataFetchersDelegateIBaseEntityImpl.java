@@ -22,7 +22,8 @@ package io.github.demonfiddler.ee.server.datafetcher.impl;
 import org.springframework.stereotype.Component;
 
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateIBaseEntity;
+import io.github.demonfiddler.ee.server.model.IBaseEntity;
 
 @Component
-public class DataFetchersDelegateIBaseEntityImpl implements DataFetchersDelegateIBaseEntity {
+public class DataFetchersDelegateIBaseEntityImpl implements DataFetchersDelegateIBaseEntity<IBaseEntity> {
 }

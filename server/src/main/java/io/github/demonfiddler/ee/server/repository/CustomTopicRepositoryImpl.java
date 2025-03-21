@@ -19,8 +19,6 @@
 
 package io.github.demonfiddler.ee.server.repository;
 
-import static io.github.demonfiddler.ee.server.util.EntityUtils.NL;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,17 +32,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.github.demonfiddler.ee.server.model.Topic;
 import io.github.demonfiddler.ee.server.model.TopicQueryFilter;
-import io.github.demonfiddler.ee.server.util.EntityUtils;
-import io.github.demonfiddler.ee.server.util.ProfileUtils;
-import jakarta.annotation.Resource;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 
-public class CustomTopicRepositoryImpl implements CustomTopicRepository {
+@Transactional
+public class CustomTopicRepositoryImpl extends AbstractCustomRepositoryImpl implements CustomTopicRepository {
 
     /** Describes the elements of a query. */
     static record QueryMetaData(@Nullable TopicQueryFilter filter, @NonNull Pageable pageable, String countQueryName,
@@ -52,14 +47,11 @@ public class CustomTopicRepositoryImpl implements CustomTopicRepository {
         boolean isAdvanced, boolean hasStatus, boolean isRecursive, boolean isPaged, boolean isSorted) {
     }
 
-    private static Logger logger = LoggerFactory.getLogger(CustomTopicRepositoryImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CustomTopicRepositoryImpl.class);
 
-    @PersistenceContext
-    EntityManager em;
-    @Resource
-    protected EntityUtils entityUtils;
-    @Resource
-    ProfileUtils profileUtils;
+    public Logger getLogger() {
+        return LOGGER;
+    }
 
     /**
      * Returns metadata about a query and paging/sorting specification.
@@ -90,27 +82,22 @@ public class CustomTopicRepositoryImpl implements CustomTopicRepository {
 
         StringBuilder countQueryName = new StringBuilder();
         StringBuilder selectQueryName = new StringBuilder();
-        countQueryName.append("topic.countBy");
-        selectQueryName.append("topic.findBy");
+        StringBuilder[] queryNames = { countQueryName, selectQueryName };
+        append("topic.", queryNames);
+        countQueryName.append("countBy");
+        selectQueryName.append("findBy");
         if (hasParentId) {
-            countQueryName.append("ParentId");
-            selectQueryName.append("ParentId");
+            append("Parent", queryNames);
+            if (isRecursive)
+                append("Recursive", queryNames);
         }
         if (hasStatus) {
-            countQueryName.append("Status");
-            selectQueryName.append("Status");
+            append("Status", queryNames);
         }
         if (hasText) {
-            countQueryName.append("Text");
-            selectQueryName.append("Text");
-            if (isAdvanced) {
-                countQueryName.append("Advanced");
-                selectQueryName.append("Advanced");
-            }
-        }
-        if (isRecursive) {
-            countQueryName.append("Recursive");
-            selectQueryName.append("Recursive");
+            append("Text", queryNames);
+            if (isAdvanced)
+                append("Advanced", queryNames);
         }
         if (isSorted) {
             entityUtils.appendOrderByToQueryName(selectQueryName, pageable);
@@ -128,9 +115,10 @@ public class CustomTopicRepositoryImpl implements CustomTopicRepository {
     private QueryPair defineNamedQueries(QueryMetaData m) {
         String template;
         String selectFields;
-        StringBuilder recursiveParentIdClause = new StringBuilder();
-        StringBuilder recursiveStatusClause1 = new StringBuilder();
-        StringBuilder recursiveStatusClause2 = new StringBuilder();
+        StringBuilder cteJoinClause = new StringBuilder();
+        StringBuilder cteParentIdClause = new StringBuilder();
+        StringBuilder cteStatusClause1 = new StringBuilder();
+        StringBuilder cteStatusClause2 = new StringBuilder();
         StringBuilder ftJoinClause = new StringBuilder();
         StringBuilder whereClause = new StringBuilder();
         StringBuilder orderByClause = new StringBuilder();
@@ -139,43 +127,52 @@ public class CustomTopicRepositoryImpl implements CustomTopicRepository {
         // text predicate is only ever applied to the main select.
         if (m.isRecursive) {
             if (m.filter.getParentId() == -1)
-                recursiveParentIdClause.append("IS NULL");
+                cteParentIdClause.append("IS NULL");
             else
-                recursiveParentIdClause.append("= :parentId");
+                cteParentIdClause.append("= :parentId");
             if (m.hasStatus) {
-                recursiveStatusClause1.append(NL) //
-                    .append("        AND t.\"status\" IN (:status)");
-                recursiveStatusClause2.append(NL) //
-                    .append("    WHERE t.\"status\" IN (:status)");
+                cteJoinClause.append(NL) //
+                    .append("    JOIN \"entity\" e").append(NL) //
+                    .append("    ON e.\"id\" = t.\"id\"");
+                cteStatusClause1.append(NL) //
+                    .append("        AND e.\"status\" IN (:status)");
+                cteStatusClause2.append(NL) //
+                    .append("    WHERE e.\"status\" IN (:status)");
             }
             // At first sight one might think that it would be more efficient to select the topic records from the
             // sub_topics temporary table, but this doesn't work because in MariaDB that table uses the MEMORY storage
-            // engine, which doesn't support full text indexes. Hence the need to select ids only and use them in the
+            // engine, which doesn't support full text indexes. Hence the need to select ids only then use them in the
             // final join.
             template = """
                 WITH RECURSIVE "sub_topic" ("id", "parent_id")
                 AS (
                     SELECT t."id", t."parent_id"
-                    FROM "topic" t
+                    FROM "topic" t%s
                     WHERE t."parent_id" %s%s
                     UNION ALL
                     SELECT t."id", t."parent_id"
-                    FROM "topic" t
+                    FROM "topic" t%s
                     JOIN "sub_topic" st
                     ON st."id" = t."parent_id"%s
                 )
                 SELECT %s
                 FROM "topic" t
+                JOIN "entity" e
+                ON e."id" = t."id"
                 JOIN "sub_topic" st
                 ON st."id" = t."id"%s%s%s;
                 """;
-            selectFields = "DISTINCT t.*";
+            selectFields =
+                "DISTINCT e.\"dtype\", e.\"status\", e.\"created\", e.\"created_by_user_id\", e.\"updated\", e.\"updated_by_user_id\", t.*";
         } else {
             template = """
-                %s%s%sSELECT %s
-                FROM "topic" t%s%s%s;
+                %s%s%s%s%sSELECT %s
+                FROM "topic" t
+                JOIN "entity" e
+                ON e."id" = t."id"%s%s%s;
                 """;
-            selectFields = "t.*";
+            selectFields =
+                "e.\"dtype\", e.\"status\", e.\"created\", e.\"created_by_user_id\", e.\"updated\", e.\"updated_by_user_id\", t.*";
         }
         if ((m.hasParentId || m.hasStatus) && !m.isRecursive || m.hasText) {
             boolean needsAnd = false;
@@ -197,7 +194,8 @@ public class CustomTopicRepositoryImpl implements CustomTopicRepository {
                     .append("    ");
                 if (needsAnd)
                     whereClause.append("AND ");
-                whereClause.append("\"status\" IN (:status)");
+                whereClause.append("e.\"status\" IN (:status)");
+                needsAnd = true;
             }
             if (m.hasTextH2) {
                 ftJoinClause.append(NL) //
@@ -209,7 +207,7 @@ public class CustomTopicRepositoryImpl implements CustomTopicRepository {
                     .append("    ");
                 if (needsAnd)
                     whereClause.append("AND ");
-                whereClause.append("MATCH (\"label\", \"description\", \"status\") AGAINST (:text");
+                whereClause.append("MATCH (\"label\", \"description\") AGAINST (:text");
                 if (m.isAdvanced)
                     whereClause.append(" IN BOOLEAN MODE");
                 whereClause.append(')');
@@ -217,23 +215,18 @@ public class CustomTopicRepositoryImpl implements CustomTopicRepository {
             }
         }
         if (m.isSorted)
-            entityUtils.appendOrderByClause(orderByClause, m.pageable, "", true);
+            entityUtils.appendOrderByClause(orderByClause, m.pageable, "t.", true);
 
-        String countSql = String.format(template, recursiveParentIdClause, recursiveStatusClause1,
-            recursiveStatusClause2, "COUNT(*)", ftJoinClause, whereClause, "");
-        String selectSql = String.format(template, recursiveParentIdClause, recursiveStatusClause1,
-            recursiveStatusClause2, selectFields, ftJoinClause, whereClause, orderByClause);
+        String countSql = String.format(template, cteJoinClause, cteParentIdClause, cteStatusClause1, cteJoinClause,
+            cteStatusClause2, "COUNT(*)", ftJoinClause, whereClause, "");
+        String selectSql = String.format(template, cteJoinClause, cteParentIdClause, cteStatusClause1, cteJoinClause,
+            cteStatusClause2, selectFields, ftJoinClause, whereClause, orderByClause);
 
         // NOTE: since the COUNT query does not include an ORDER BY clause, multiple executions of the same SELECT query
         // with different ORDER BY clauses will result in the registration of multiple identical COUNT queries, each of
         // which will simply overwrite the previous definition. This is not a problem, but it is somewhat inefficient.
-        Query countQuery = em.createNativeQuery(countSql, Long.class);
-        em.getEntityManagerFactory().addNamedQuery(m.countQueryName, countQuery);
-        logger.debug("Defined query '{}' as:\n{}", m.countQueryName, countSql);
-
-        Query selectQuery = em.createNativeQuery(selectSql, Topic.class);
-        em.getEntityManagerFactory().addNamedQuery(m.selectQueryName, selectQuery);
-        logger.debug("Defined query '{}' as:\n{}", m.selectQueryName, selectSql);
+        Query countQuery = defineNamedQuery(m.countQueryName, countSql, Long.class);
+        Query selectQuery = defineNamedQuery(m.selectQueryName, selectSql, Topic.class);
 
         return new QueryPair(countQuery, selectQuery);
     }
@@ -243,13 +236,15 @@ public class CustomTopicRepositoryImpl implements CustomTopicRepository {
     public Page<Topic> findByFilter(@NonNull TopicQueryFilter filter, @NonNull Pageable pageable) {
         QueryMetaData m = getQueryMetaData(filter, pageable);
 
-        QueryPair queries;
-        try {
+        QueryPair queries = null;
+        synchronized (queryNames) {
+            if (!queryNames.contains(m.countQueryName) || !queryNames.contains(m.selectQueryName))
+                queries = defineNamedQueries(m);
+        }
+        if (queries == null) {
             Query countQuery = em.createNamedQuery(m.countQueryName, Long.class);
             Query selectQuery = em.createNamedQuery(m.selectQueryName, Topic.class);
             queries = new QueryPair(countQuery, selectQuery);
-        } catch (IllegalArgumentException e) {
-            queries = defineNamedQueries(m);
         }
 
         Map<String, Object> params = new HashMap<>();

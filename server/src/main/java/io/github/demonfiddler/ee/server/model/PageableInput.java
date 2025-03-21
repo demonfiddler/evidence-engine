@@ -112,6 +112,7 @@ public class PageableInput {
 	 * {@link #builder()}
 	 */
 	public static class Builder {
+
 		private Integer pageNumber;
 		private Integer pageSize;
 		private SortInput sort;
@@ -147,6 +148,7 @@ public class PageableInput {
 			_object.setSort(this.sort);
 			return _object;
 		}
+
 	}
 
 }

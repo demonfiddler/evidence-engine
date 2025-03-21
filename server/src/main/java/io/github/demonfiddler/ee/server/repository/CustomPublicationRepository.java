@@ -20,7 +20,7 @@
 package io.github.demonfiddler.ee.server.repository;
 
 import io.github.demonfiddler.ee.server.model.Publication;
-import io.github.demonfiddler.ee.server.model.TopicalEntityQueryFilter;
+import io.github.demonfiddler.ee.server.model.LinkableEntityQueryFilter;
 
-public interface CustomPublicationRepository extends CustomRepository<Publication, TopicalEntityQueryFilter> {
+public interface CustomPublicationRepository extends CustomRepository<Publication, LinkableEntityQueryFilter> {
 }

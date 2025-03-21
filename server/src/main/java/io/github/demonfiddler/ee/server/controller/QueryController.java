@@ -31,12 +31,11 @@ import com.graphql_java_generator.server.util.GraphqlServerUtils;
 
 import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateQuery;
-import io.github.demonfiddler.ee.server.model.EntityKind;
+import io.github.demonfiddler.ee.server.model.EntityLinkQueryFilter;
+import io.github.demonfiddler.ee.server.model.LinkableEntityQueryFilter;
 import io.github.demonfiddler.ee.server.model.LogQueryFilter;
 import io.github.demonfiddler.ee.server.model.PageableInput;
 import io.github.demonfiddler.ee.server.model.TopicQueryFilter;
-import io.github.demonfiddler.ee.server.model.TopicRefQueryFilter;
-import io.github.demonfiddler.ee.server.model.TopicalEntityQueryFilter;
 import io.github.demonfiddler.ee.server.model.TrackedEntityQueryFilter;
 
 /**
@@ -46,18 +45,16 @@ import io.github.demonfiddler.ee.server.model.TrackedEntityQueryFilter;
  */
 @Controller
 @SchemaMapping(typeName = "Query")
-
 public class QueryController {
 
 	@Autowired
 	protected DataFetchersDelegateQuery dataFetchersDelegateQuery;
-
 	@Autowired
 	protected GraphqlServerUtils graphqlServerUtils;
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.claims. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Query.claims. It returns an Object: the data fetcher implementation may return any type that
+	 * is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -65,7 +62,7 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -78,14 +75,14 @@ public class QueryController {
 	 */
 	@SchemaMapping(field = "claims")
 	public Object claims(DataFetchingEnvironment dataFetchingEnvironment,
-		@Argument("filter") TopicalEntityQueryFilter filter, @Argument("pageSort") PageableInput pageSort) {
+		@Argument("filter") LinkableEntityQueryFilter filter, @Argument("pageSort") PageableInput pageSort) {
 
 		return this.dataFetchersDelegateQuery.claims(dataFetchingEnvironment, filter, pageSort);
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.claimById. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Query.claimById. It returns an Object: the data fetcher implementation may return any type
+	 * that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -93,7 +90,7 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -109,8 +106,8 @@ public class QueryController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.declarations. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Query.declarations. It returns an Object: the data fetcher implementation may return any type
+	 * that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -118,7 +115,7 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -131,14 +128,14 @@ public class QueryController {
 	 */
 	@SchemaMapping(field = "declarations")
 	public Object declarations(DataFetchingEnvironment dataFetchingEnvironment,
-		@Argument("filter") TopicalEntityQueryFilter filter, @Argument("pageSort") PageableInput pageSort) {
+		@Argument("filter") LinkableEntityQueryFilter filter, @Argument("pageSort") PageableInput pageSort) {
 
 		return this.dataFetchersDelegateQuery.declarations(dataFetchingEnvironment, filter, pageSort);
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.declarationById. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Query.declarationById. It returns an Object: the data fetcher implementation may return any
+	 * type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -146,7 +143,7 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -162,8 +159,8 @@ public class QueryController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.journals. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Query.entityLinks. It returns an Object: the data fetcher implementation may return any type
+	 * that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -171,7 +168,90 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
+	 * typically contains the id to use in the query.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
+	 * @param filter The parameter that will receive the field argument of the same name for the current data to fetch
+	 * @param pageSort The parameter that will receive the field argument of the same name for the current data to fetch
+	 * @return It may return any value that is valid for a spring-graphql controller, annotated by the
+	 * <code>@SchemaMapping</code> annotation
+	 */
+	@SchemaMapping(field = "entityLinks")
+	public Object entityLinks(DataFetchingEnvironment dataFetchingEnvironment,
+		@Argument("filter") EntityLinkQueryFilter filter, @Argument("pageSort") PageableInput pageSort) {
+
+		return this.dataFetchersDelegateQuery.entityLinks(dataFetchingEnvironment, filter, pageSort);
+	}
+
+	/**
+	 * Loads the data for Query.entityLinkById. It returns an Object: the data fetcher implementation may return any
+	 * type that is accepted by a spring-graphql controller<BR/>
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
+	 * the author attribute of the <I>origin</I>, which is an instance of {ObjectType {name:Post, fields:{Field{name:id,
+	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
+	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
+	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
+	 * typically contains the id to use in the query.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
+	 * @param id The parameter that will receive the field argument of the same name for the current data to fetch
+	 * @return It may return any value that is valid for a spring-graphql controller, annotated by the
+	 * <code>@SchemaMapping</code> annotation
+	 */
+	@SchemaMapping(field = "entityLinkById")
+	public Object entityLinkById(DataFetchingEnvironment dataFetchingEnvironment, @Argument("id") Long id) {
+		return this.dataFetchersDelegateQuery.entityLinkById(dataFetchingEnvironment, id);
+	}
+
+	/**
+	 * Loads the data for Query.entityLinkByEntityIds. It returns an Object: the data fetcher implementation may return
+	 * any type that is accepted by a spring-graphql controller<BR/>
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
+	 * the author attribute of the <I>origin</I>, which is an instance of {ObjectType {name:Post, fields:{Field{name:id,
+	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
+	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
+	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
+	 * typically contains the id to use in the query.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
+	 * @param fromEntityId The parameter that will receive the field argument of the same name for the current data to
+	 * fetch
+	 * @param toEntityId The parameter that will receive the field argument of the same name for the current data to
+	 * fetch
+	 * @return It may return any value that is valid for a spring-graphql controller, annotated by the
+	 * <code>@SchemaMapping</code> annotation
+	 */
+	@SchemaMapping(field = "entityLinkByEntityIds")
+	public Object entityLinkByEntityIds(DataFetchingEnvironment dataFetchingEnvironment,
+		@Argument("fromEntityId") Long fromEntityId, @Argument("toEntityId") Long toEntityId) {
+
+		return this.dataFetchersDelegateQuery.entityLinkByEntityIds(dataFetchingEnvironment, fromEntityId, toEntityId);
+	}
+
+	/**
+	 * Loads the data for Query.journals. It returns an Object: the data fetcher implementation may return any type that
+	 * is accepted by a spring-graphql controller<BR/>
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
+	 * the author attribute of the <I>origin</I>, which is an instance of {ObjectType {name:Post, fields:{Field{name:id,
+	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
+	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
+	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -190,8 +270,8 @@ public class QueryController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.journalById. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Query.journalById. It returns an Object: the data fetcher implementation may return any type
+	 * that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -199,7 +279,7 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -215,8 +295,8 @@ public class QueryController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.log. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Query.log. It returns an Object: the data fetcher implementation may return any type that is
+	 * accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -224,7 +304,7 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -243,8 +323,8 @@ public class QueryController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.persons. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Query.persons. It returns an Object: the data fetcher implementation may return any type that
+	 * is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -252,7 +332,7 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -265,14 +345,14 @@ public class QueryController {
 	 */
 	@SchemaMapping(field = "persons")
 	public Object persons(DataFetchingEnvironment dataFetchingEnvironment,
-		@Argument("filter") TopicalEntityQueryFilter filter, @Argument("pageSort") PageableInput pageSort) {
+		@Argument("filter") LinkableEntityQueryFilter filter, @Argument("pageSort") PageableInput pageSort) {
 
 		return this.dataFetchersDelegateQuery.persons(dataFetchingEnvironment, filter, pageSort);
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.personById. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Query.personById. It returns an Object: the data fetcher implementation may return any type
+	 * that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -280,7 +360,7 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -296,8 +376,8 @@ public class QueryController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.publications. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Query.publications. It returns an Object: the data fetcher implementation may return any type
+	 * that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -305,7 +385,7 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -318,14 +398,14 @@ public class QueryController {
 	 */
 	@SchemaMapping(field = "publications")
 	public Object publications(DataFetchingEnvironment dataFetchingEnvironment,
-		@Argument("filter") TopicalEntityQueryFilter filter, @Argument("pageSort") PageableInput pageSort) {
+		@Argument("filter") LinkableEntityQueryFilter filter, @Argument("pageSort") PageableInput pageSort) {
 
 		return this.dataFetchersDelegateQuery.publications(dataFetchingEnvironment, filter, pageSort);
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.publicationById. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Query.publicationById. It returns an Object: the data fetcher implementation may return any
+	 * type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -333,7 +413,7 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -349,8 +429,8 @@ public class QueryController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.publishers. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Query.publishers. It returns an Object: the data fetcher implementation may return any type
+	 * that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -358,7 +438,7 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -377,8 +457,8 @@ public class QueryController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.publisherById. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Query.publisherById. It returns an Object: the data fetcher implementation may return any type
+	 * that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -386,7 +466,7 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -402,8 +482,8 @@ public class QueryController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.quotations. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Query.quotations. It returns an Object: the data fetcher implementation may return any type
+	 * that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -411,7 +491,7 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -424,14 +504,14 @@ public class QueryController {
 	 */
 	@SchemaMapping(field = "quotations")
 	public Object quotations(DataFetchingEnvironment dataFetchingEnvironment,
-		@Argument("filter") TopicalEntityQueryFilter filter, @Argument("pageSort") PageableInput pageSort) {
+		@Argument("filter") LinkableEntityQueryFilter filter, @Argument("pageSort") PageableInput pageSort) {
 
 		return this.dataFetchersDelegateQuery.quotations(dataFetchingEnvironment, filter, pageSort);
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.quotationById. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Query.quotationById. It returns an Object: the data fetcher implementation may return any type
+	 * that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -439,7 +519,7 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -455,8 +535,8 @@ public class QueryController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.topics. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Query.topics. It returns an Object: the data fetcher implementation may return any type that
+	 * is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -464,7 +544,7 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -483,8 +563,8 @@ public class QueryController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.topicById. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Query.topicById. It returns an Object: the data fetcher implementation may return any type
+	 * that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -492,7 +572,7 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -508,8 +588,8 @@ public class QueryController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.topicRefs. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Query.users. It returns an Object: the data fetcher implementation may return any type that is
+	 * accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -517,70 +597,7 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
-	 * typically contains the id to use in the query.
-	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
-	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
-	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
-	 * will take care of the {@link NoSuchElementException} exception.
-	 * @param filter The parameter that will receive the field argument of the same name for the current data to fetch
-	 * @param pageSort The parameter that will receive the field argument of the same name for the current data to fetch
-	 * @return It may return any value that is valid for a spring-graphql controller, annotated by the
-	 * <code>@SchemaMapping</code> annotation
-	 */
-	@SchemaMapping(field = "topicRefs")
-	public Object topicRefs(DataFetchingEnvironment dataFetchingEnvironment,
-		@Argument("filter") TopicRefQueryFilter filter, @Argument("pageSort") PageableInput pageSort) {
-
-		return this.dataFetchersDelegateQuery.topicRefs(dataFetchingEnvironment, filter, pageSort);
-	}
-
-	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.topicRefById. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
-	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
-	 * GraphQL context for this DataFetcher
-	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
-	 * the author attribute of the <I>origin</I>, which is an instance of {ObjectType {name:Post, fields:{Field{name:id,
-	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
-	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
-	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
-	 * typically contains the id to use in the query.
-	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
-	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
-	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
-	 * will take care of the {@link NoSuchElementException} exception.
-	 * @param id The parameter that will receive the field argument of the same name for the current data to fetch
-	 * @return It may return any value that is valid for a spring-graphql controller, annotated by the
-	 * <code>@SchemaMapping</code> annotation
-	 */
-	@SchemaMapping(field = "topicRefById")
-	public Object topicRefById(DataFetchingEnvironment dataFetchingEnvironment, @Argument("id") Long id,
-		@Argument("entityKind") EntityKind entityKind) {
-
-		return this.dataFetchersDelegateQuery.topicRefById(dataFetchingEnvironment, id, entityKind);
-	}
-
-	/** Returns a topic reference given its topic and entity identifiers. */
-	@SchemaMapping(field = "topicRefByEntityId")
-	public Object topicRefByEntityId(DataFetchingEnvironment dataFetchingEnvironment, @Argument("topicId") Long topicId,
-		@Argument("entityId") Long entityId, @Argument("entityKind") EntityKind entityKind) {
-
-		return this.dataFetchersDelegateQuery.topicRefByEntityId(dataFetchingEnvironment, topicId, entityId, entityKind);
-	}
-
-	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.users. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
-	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
-	 * GraphQL context for this DataFetcher
-	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
-	 * the author attribute of the <I>origin</I>, which is an instance of {ObjectType {name:Post, fields:{Field{name:id,
-	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
-	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
-	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -599,8 +616,8 @@ public class QueryController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.userById. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Query.userById. It returns an Object: the data fetcher implementation may return any type that
+	 * is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -608,7 +625,7 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -624,8 +641,8 @@ public class QueryController {
 	}
 
 	/**
-	 * This method loads the data for ${dataFetcher.graphQLType}.userByUsername. It returns an Object: the data fetcher
-	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Query.userByUsername. It returns an Object: the data fetcher implementation may return any
+	 * type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -633,7 +650,7 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -644,7 +661,8 @@ public class QueryController {
 	 * <code>@SchemaMapping</code> annotation
 	 */
 	@SchemaMapping(field = "userByUsername")
-	public Object userByUsername(DataFetchingEnvironment dataFetchingEnvironment, @Argument("username") String username) {
+	public Object userByUsername(DataFetchingEnvironment dataFetchingEnvironment,
+		@Argument("username") String username) {
 		return this.dataFetchersDelegateQuery.userByUsername(dataFetchingEnvironment, username);
 	}
 

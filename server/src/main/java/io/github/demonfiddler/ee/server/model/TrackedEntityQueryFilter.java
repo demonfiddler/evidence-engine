@@ -34,121 +34,131 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
 public class TrackedEntityQueryFilter {
 
 	/**
+	 * Return only records with these status codes (default: ALL).
+	 */
+	@GraphQLScalar(fieldName = "status", graphQLTypeSimpleName = "StatusKind", javaClass = StatusKind.class,
+		listDepth = 1)
+	List<StatusKind> status;
+
+	/**
 	 * Free text search string.
 	 */
 	@GraphQLScalar(fieldName = "text", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	protected String text;
+	String text;
 
 	/**
 	 * Whether to search {@code text} in advanced (boolean) mode.
 	 */
 	@GraphQLScalar(fieldName = "advancedSearch", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class,
 		listDepth = 0)
-	protected Boolean advancedSearch = false;
+	Boolean advancedSearch = false;
 
 	/**
 	 * Return only records with these status codes (default: ALL).
 	 */
-	@GraphQLScalar(fieldName = "status", graphQLTypeSimpleName = "StatusKind", javaClass = StatusKind.class,
-		listDepth = 1)
-	protected List<StatusKind> status;
-
-	/**
-	 * Free text search string.
-	 */
-	public void setText(String text) {
-		this.text = text;
-	}
-
-	/**
-	 * Free text search string.
-	 */
-	public String getText() {
-		return this.text;
-	}
-
-	/**
-	 * Whether to search {@code text} in advanced (boolean) mode.
-	 */
-	public void setAdvancedSearch(Boolean advancedSearch) {
-		this.advancedSearch = advancedSearch;
-	}
-
-	/**
-	 * Whether to search {@code text} in advanced (boolean) mode.
-	 */
-	public Boolean getAdvancedSearch() {
-		return this.advancedSearch;
-	}
-
-	/**
-	 * Return only records with these status codes (default: ALL).
-	 */
-	public void setStatus(List<StatusKind> status) {
+	public final void setStatus(List<StatusKind> status) {
 		this.status = status;
 	}
 
 	/**
 	 * Return only records with these status codes (default: ALL).
 	 */
-	public List<StatusKind> getStatus() {
+	public final List<StatusKind> getStatus() {
 		return this.status;
+	}
+
+	/**
+	 * Free text search string.
+	 */
+	public final void setText(String text) {
+		this.text = text;
+	}
+
+	/**
+	 * Free text search string.
+	 */
+	public final String getText() {
+		return this.text;
+	}
+
+	/**
+	 * Whether to search {@code text} in advanced (boolean) mode.
+	 */
+	public final void setAdvancedSearch(Boolean advancedSearch) {
+		this.advancedSearch = advancedSearch;
+	}
+
+	/**
+	 * Whether to search {@code text} in advanced (boolean) mode.
+	 */
+	public final Boolean getAdvancedSearch() {
+		return this.advancedSearch;
 	}
 
 	public String toString() {
 		return "TrackedEntityQueryFilter {" //$NON-NLS-1$
+			+ "status: " + this.status //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
 			+ "text: " + this.text //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "advancedSearch: " + this.advancedSearch //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "status: " + this.status //$NON-NLS-1$
 			+ "}"; //$NON-NLS-1$
 	}
 
-	public static Builder builder() {
+	public static Builder builderForTrackedEntityQueryFilter() {
 		return new Builder();
 	}
 
-	/**
-	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
-	 * {@link #builder()}
-	 */
-	public static class Builder {
+	@SuppressWarnings("unchecked")
+	abstract static class AbstractBuilder<B extends AbstractBuilder<B, T>, T extends TrackedEntityQueryFilter> {
 
-		protected String text;
-		protected Boolean advancedSearch = false;
-		protected List<StatusKind> status;
+		private List<StatusKind> status;
+		private String text;
+		private Boolean advancedSearch;
+
+		/**
+		 * Return only records with these status codes (default: ALL).
+		 */
+		public final B withStatus(List<StatusKind> statusParam) {
+			this.status = statusParam;
+			return (B)this;
+		}
 
 		/**
 		 * Free text search string.
 		 */
-		public Builder withText(String textParam) {
+		public final B withText(String textParam) {
 			this.text = textParam;
-			return this;
+			return (B)this;
 		}
 
 		/**
 		 * Whether to search {@code text} in advanced (boolean) mode.
 		 */
-		public Builder withAdvancedSearch(Boolean advancedSearch) {
+		public final B withAdvancedSearch(Boolean advancedSearch) {
 			this.advancedSearch = advancedSearch;
-			return this;
+			return (B)this;
 		}
 
-		/**
-		 * Return only records with these status codes (default: ALL).
-		 */
-		public Builder withStatus(List<StatusKind> statusParam) {
-			this.status = statusParam;
-			return this;
-		}
-
-		public TrackedEntityQueryFilter build() {
-			TrackedEntityQueryFilter _object = new TrackedEntityQueryFilter();
+		T build(T _object) {
+			_object.setStatus(this.status);
 			_object.setText(this.text);
 			_object.setAdvancedSearch(this.advancedSearch);
-			_object.setStatus(this.status);
 			return _object;
+		}
+
+		public abstract T build();
+
+	}
+
+	/**
+	 * The Builder that helps building instance of this POJO. You can get an instance of this class by calling the
+	 * {@link #builderForTrackedEntityQueryFilter()}
+	 */
+	public static class Builder extends AbstractBuilder<Builder, TrackedEntityQueryFilter> {
+
+		public TrackedEntityQueryFilter build() {
+			return build(new TrackedEntityQueryFilter());
 		}
 
 	}

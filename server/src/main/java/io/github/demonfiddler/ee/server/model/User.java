@@ -19,20 +19,15 @@
 
 package io.github.demonfiddler.ee.server.model;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 
-import com.graphql_java_generator.annotation.GraphQLNonScalar;
+import com.graphql_java_generator.annotation.GraphQLDirective;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
 
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Transient;
 
 /**
@@ -42,61 +37,11 @@ import jakarta.persistence.Transient;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @Entity
+@PrimaryKeyJoinColumn(name = "id")
+@DiscriminatorValue("USR")
 @GraphQLObjectType("User")
-public class User implements ITrackedEntity {
-
-	/**
-	 * The immutable, unique user identifier (system-assigned).
-	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
-	Long id;
-
-	/**
-	 * The entity status.
-	 */
-	@GraphQLScalar(fieldName = "status", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	String status;
-
-	/**
-	 * When the record was created.
-	 */
-	@GraphQLScalar(fieldName = "created", graphQLTypeSimpleName = "DateTime", javaClass = OffsetDateTime.class,
-		listDepth = 0)
-	OffsetDateTime created;
-
-	/**
-	 * The user who created the record.
-	 */
-	@GraphQLNonScalar(fieldName = "createdByUser", graphQLTypeSimpleName = "User", javaClass = User.class,
-		listDepth = 0)
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "created_by_user_id", nullable = false)
-	User createdByUser;
-
-	/**
-	 * When the record was last updated.
-	 */
-	@GraphQLScalar(fieldName = "updated", graphQLTypeSimpleName = "DateTime", javaClass = OffsetDateTime.class,
-		listDepth = 0)
-	OffsetDateTime updated;
-
-	/**
-	 * The user who last updated the record.
-	 */
-	@GraphQLNonScalar(fieldName = "updatedByUser", graphQLTypeSimpleName = "User", javaClass = User.class,
-		listDepth = 0)
-	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "updated_by_user_id", nullable = true)
-	User updatedByUser;
-
-	/**
-	 * Log of transactions involving the record.
-	 */
-	@Transient
-	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage", javaClass = LogPage.class, listDepth = 0)
-	LogPage log;
+@GraphQLDirective(name = "@auth", parameterNames = {}, parameterTypes = {}, parameterValues = {})
+public class User extends AbstractTrackedEntity {
 
 	/**
 	 * The (mutable?) unique user name (user-assigned).
@@ -120,14 +65,17 @@ public class User implements ITrackedEntity {
 	 * The user's email address.
 	 */
 	@GraphQLScalar(fieldName = "email", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[ADM]" })
 	String email;
 
 	// TODO: consider whether to reveal this through the GraphQL API.
 	/**
 	 * A hash of the user's password.
 	 */
-	@GraphQLScalar(fieldName = "password", graphQLTypeSimpleName = "String", javaClass = String.class,
-		listDepth = 0)
+	@GraphQLScalar(fieldName = "password", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[ADM]" })
 	String password;
 
 	/**
@@ -135,118 +83,13 @@ public class User implements ITrackedEntity {
 	 */
 	@Transient
 	@GraphQLScalar(fieldName = "permissions", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 1)
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[ADM]" })
 	List<String> permissions;
 
-	/**
-	 * The immutable, unique user identifier (system-assigned).
-	 */
 	@Override
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	/**
-	 * The immutable, unique user identifier (system-assigned).
-	 */
-	@Override
-	public Long getId() {
-		return this.id;
-	}
-
-	/**
-	 * The entity status.
-	 */
-	@Override
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	/**
-	 * The entity status.
-	 */
-	@Override
-	public String getStatus() {
-		return this.status;
-	}
-
-	/**
-	 * When the record was created.
-	 */
-	@Override
-	public void setCreated(OffsetDateTime created) {
-		this.created = created;
-	}
-
-	/**
-	 * When the record was created.
-	 */
-	@Override
-	public OffsetDateTime getCreated() {
-		return this.created;
-	}
-
-	/**
-	 * The user who created the record.
-	 */
-	@Override
-	public void setCreatedByUser(User createdByUser) {
-		this.createdByUser = createdByUser;
-	}
-
-	/**
-	 * The user who created the record.
-	 */
-	@Override
-	public User getCreatedByUser() {
-		return this.createdByUser;
-	}
-
-	/**
-	 * When the record was last updated.
-	 */
-	@Override
-	public void setUpdated(OffsetDateTime updated) {
-		this.updated = updated;
-	}
-
-	/**
-	 * When the record was last updated.
-	 */
-	@Override
-	public OffsetDateTime getUpdated() {
-		return this.updated;
-	}
-
-	/**
-	 * The user who last updated the record.
-	 */
-	@Override
-	public void setUpdatedByUser(User updatedByUser) {
-		this.updatedByUser = updatedByUser;
-	}
-
-	/**
-	 * The user who last updated the record.
-	 */
-	@Override
-	public User getUpdatedByUser() {
-		return this.updatedByUser;
-	}
-
-	/**
-	 * Log of transactions involving the record.
-	 */
-	@Override
-	public void setLog(LogPage log) {
-		this.log = log;
-	}
-
-	/**
-	 * Log of transactions involving the record.
-	 */
-	@Override
-	public LogPage getLog() {
-		return this.log;
+	public String getEntityKind() {
+		return EntityKind.USR.name();
 	}
 
 	/**
@@ -294,6 +137,8 @@ public class User implements ITrackedEntity {
 	/**
 	 * The user's email address.
 	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[ADM]" })
 	public void setEmail(String email) {
 		this.email = email;
 	}
@@ -301,6 +146,8 @@ public class User implements ITrackedEntity {
 	/**
 	 * The user's email address.
 	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[ADM]" })
 	public String getEmail() {
 		return this.email;
 	}
@@ -309,6 +156,8 @@ public class User implements ITrackedEntity {
 	/**
 	 * A hash of the user's password.
 	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[ADM]" })
 	public void setPassword(String password) {
 		this.password = password;
 	}
@@ -317,6 +166,8 @@ public class User implements ITrackedEntity {
 	/**
 	 * A hash of the user's password.
 	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[ADM]" })
 	public String getPassword() {
 		return this.password;
 	}
@@ -324,6 +175,8 @@ public class User implements ITrackedEntity {
 	/**
 	 * The permissions granted to the user.
 	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[ADM]" })
 	public void setPermissions(List<String> permissions) {
 		this.permissions = permissions;
 	}
@@ -331,6 +184,8 @@ public class User implements ITrackedEntity {
 	/**
 	 * The permissions granted to the user.
 	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+		parameterValues = { "[ADM]" })
 	public List<String> getPermissions() {
 		return this.permissions;
 	}
@@ -338,6 +193,8 @@ public class User implements ITrackedEntity {
 	public String toString() {
 		return "User {" //$NON-NLS-1$
 			+ "id: " + this.id //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
+			+ "entityKind: " + this.getEntityKind() //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "status: " + this.status //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
@@ -373,77 +230,14 @@ public class User implements ITrackedEntity {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder {
+	public static class Builder extends AbstractTrackedEntity.Builder<Builder, User> {
 
-		private Long id;
-		private String status;
-		private OffsetDateTime created;
-		private User createdByUser;
-		private OffsetDateTime updated;
-		private User updatedByUser;
-		private LogPage log;
 		private String username;
 		private String firstName;
 		private String lastName;
 		private String email;
 		private String password;
 		private List<String> permissions;
-
-		/**
-		 * The immutable, unique user identifier (system-assigned).
-		 */
-		public Builder withId(Long idParam) {
-			this.id = idParam;
-			return this;
-		}
-
-		/**
-		 * The entity status.
-		 */
-		public Builder withStatus(String statusParam) {
-			this.status = statusParam;
-			return this;
-		}
-
-		/**
-		 * When the record was created.
-		 */
-		public Builder withCreated(OffsetDateTime createdParam) {
-			this.created = createdParam;
-			return this;
-		}
-
-		/**
-		 * The user who created the record.
-		 */
-		public Builder withCreatedByUser(User createdByUserParam) {
-			this.createdByUser = createdByUserParam;
-			return this;
-		}
-
-		/**
-		 * When the record was last updated.
-		 */
-		public Builder withUpdated(OffsetDateTime updatedParam) {
-			this.updated = updatedParam;
-			return this;
-		}
-
-		/**
-		 * The user who last updated the record.
-		 */
-		public Builder withUpdatedByUser(User updatedByUserParam) {
-			this.updatedByUser = updatedByUserParam;
-			return this;
-		}
-
-		/**
-		 * Log of transactions involving the record.
-		 */
-		public Builder withLog(LogPage logParam) {
-			this.log = logParam;
-			return this;
-		}
 
 		/**
 		 * The (mutable?) unique user name (user-assigned).
@@ -494,15 +288,9 @@ public class User implements ITrackedEntity {
 			return this;
 		}
 
+		@Override
 		public User build() {
-			User _object = new User();
-			_object.setId(this.id);
-			_object.setStatus(this.status);
-			_object.setCreated(this.created);
-			_object.setCreatedByUser(this.createdByUser);
-			_object.setUpdated(this.updated);
-			_object.setUpdatedByUser(this.updatedByUser);
-			_object.setLog(this.log);
+			User _object = build(new User());
 			_object.setUsername(this.username);
 			_object.setFirstName(this.firstName);
 			_object.setLastName(this.lastName);

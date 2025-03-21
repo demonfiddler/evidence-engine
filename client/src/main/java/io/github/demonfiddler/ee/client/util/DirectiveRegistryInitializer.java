@@ -39,9 +39,9 @@ public class DirectiveRegistryInitializer {
 		// Creating Directive skip
 		/////////////////////////////////////////////////////////////////////////////////////////////////////
 		directive = new Directive();
-		directive.setName("skip"); //$NON-NLS-1$
-		directive.setPackageName("io.github.demonfiddler.ee.client.util"); //$NON-NLS-1$
-		directive.getArguments().add(InputParameter.newHardCodedParameter("", "if", null, "Boolean", true, 0, false)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		directive.setName("skip");
+		directive.setPackageName("io.github.demonfiddler.ee.client.util");
+		directive.getArguments().add(InputParameter.newHardCodedParameter("", "if", null, "Boolean", true, 0, false));
 		directive.getDirectiveLocations().add(DirectiveLocation.FIELD);
 		directive.getDirectiveLocations().add(DirectiveLocation.FRAGMENT_SPREAD);
 		directive.getDirectiveLocations().add(DirectiveLocation.INLINE_FRAGMENT);
@@ -51,9 +51,9 @@ public class DirectiveRegistryInitializer {
 		// Creating Directive include
 		/////////////////////////////////////////////////////////////////////////////////////////////////////
 		directive = new Directive();
-		directive.setName("include"); //$NON-NLS-1$
-		directive.setPackageName("io.github.demonfiddler.ee.client.util"); //$NON-NLS-1$
-		directive.getArguments().add(InputParameter.newHardCodedParameter("", "if", null, "Boolean", true, 0, false)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		directive.setName("include");
+		directive.setPackageName("io.github.demonfiddler.ee.client.util");
+		directive.getArguments().add(InputParameter.newHardCodedParameter("", "if", null, "Boolean", true, 0, false));
 		directive.getDirectiveLocations().add(DirectiveLocation.FIELD);
 		directive.getDirectiveLocations().add(DirectiveLocation.FRAGMENT_SPREAD);
 		directive.getDirectiveLocations().add(DirectiveLocation.INLINE_FRAGMENT);
@@ -63,9 +63,9 @@ public class DirectiveRegistryInitializer {
 		// Creating Directive defer
 		/////////////////////////////////////////////////////////////////////////////////////////////////////
 		directive = new Directive();
-		directive.setName("defer"); //$NON-NLS-1$
-		directive.setPackageName("io.github.demonfiddler.ee.client.util"); //$NON-NLS-1$
-		directive.getArguments().add(InputParameter.newHardCodedParameter("", "if", null, "Boolean", true, 0, false)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		directive.setName("defer");
+		directive.setPackageName("io.github.demonfiddler.ee.client.util");
+		directive.getArguments().add(InputParameter.newHardCodedParameter("", "if", null, "Boolean", true, 0, false));
 		directive.getDirectiveLocations().add(DirectiveLocation.FIELD);
 		directiveRegistry.registerDirective(directive);
 
@@ -73,10 +73,10 @@ public class DirectiveRegistryInitializer {
 		// Creating Directive deprecated
 		/////////////////////////////////////////////////////////////////////////////////////////////////////
 		directive = new Directive();
-		directive.setName("deprecated"); //$NON-NLS-1$
-		directive.setPackageName("io.github.demonfiddler.ee.client.util"); //$NON-NLS-1$
+		directive.setName("deprecated");
+		directive.setPackageName("io.github.demonfiddler.ee.client.util");
 		directive.getArguments()
-			.add(InputParameter.newHardCodedParameter("", "reason", null, "String", false, 0, false)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			.add(InputParameter.newHardCodedParameter("", "reason", null, "String", false, 0, false));
 		directive.getDirectiveLocations().add(DirectiveLocation.FIELD_DEFINITION);
 		directive.getDirectiveLocations().add(DirectiveLocation.ENUM_VALUE);
 		directiveRegistry.registerDirective(directive);
@@ -85,10 +85,32 @@ public class DirectiveRegistryInitializer {
 		// Creating Directive specifiedBy
 		/////////////////////////////////////////////////////////////////////////////////////////////////////
 		directive = new Directive();
-		directive.setName("specifiedBy"); //$NON-NLS-1$
-		directive.setPackageName("io.github.demonfiddler.ee.client.util"); //$NON-NLS-1$
-		directive.getArguments().add(InputParameter.newHardCodedParameter("", "url", null, "String", true, 0, false)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		directive.setName("specifiedBy");
+		directive.setPackageName("io.github.demonfiddler.ee.client.util");
+		directive.getArguments().add(InputParameter.newHardCodedParameter("", "url", null, "String", true, 0, false));
 		directive.getDirectiveLocations().add(DirectiveLocation.SCALAR);
+		directiveRegistry.registerDirective(directive);
+
+		/////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Creating Directive auth
+		/////////////////////////////////////////////////////////////////////////////////////////////////////
+		directive = new Directive();
+		directive.setName("auth");
+		directive.setPackageName("io.github.demonfiddler.ee.client.util");
+		directive.getArguments()
+			.add(InputParameter.newHardCodedParameter("", "permission", null, "PermissionKind", false, 1, true));
+		directive.getDirectiveLocations().add(DirectiveLocation.OBJECT);
+		directive.getDirectiveLocations().add(DirectiveLocation.FIELD_DEFINITION);
+		directiveRegistry.registerDirective(directive);
+
+		/////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Creating Directive label
+		/////////////////////////////////////////////////////////////////////////////////////////////////////
+		directive = new Directive();
+		directive.setName("label"); //
+		directive.setPackageName("io.github.demonfiddler.ee.client.util"); //
+		directive.getArguments().add(InputParameter.newHardCodedParameter("", "label", null, "String", true, 0, false));
+		directive.getDirectiveLocations().add(DirectiveLocation.ENUM_VALUE);
 		directiveRegistry.registerDirective(directive);
 
 		DirectiveRegistryImpl.directiveRegistry = directiveRegistry;

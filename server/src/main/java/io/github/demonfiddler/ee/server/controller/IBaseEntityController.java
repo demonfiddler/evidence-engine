@@ -45,14 +45,14 @@ import reactor.core.publisher.Mono;
 public class IBaseEntityController {
 
 	@Autowired
-	protected DataFetchersDelegateIBaseEntity dataFetchersDelegateIBaseEntity;
+	protected DataFetchersDelegateIBaseEntity<IBaseEntity> dataFetchersDelegateIBaseEntity;
 
 	@Autowired
 	protected GraphqlServerUtils graphqlServerUtils;
 
 	public IBaseEntityController(BatchLoaderRegistry registry) {
-		// Registering the data loaders is useless if the @BatchMapping is used. But we
-		// need it here, for backward compatibility with code developed against the previous plugin versions.
+		// Registering the data loaders is useless if @BatchMapping is used. But we need it here, for backward
+		// compatibility with code developed against previous plugin versions.
 		registry.forTypePair(Long.class, IBaseEntity.class).registerMappedBatchLoader((keysSet, env) -> {
 			List<Long> keys = new ArrayList<>(keysSet.size());
 			keys.addAll(keysSet);
