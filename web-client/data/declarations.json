@@ -1,0 +1,233 @@
+{
+  "hasContent": true,
+  "isEmpty": false,
+  "number": 1,
+  "size": 5,
+  "numberOfElements": 2,
+  "totalPages": 1,
+  "totalElements": 2,
+  "isFirst": true,
+  "isLast": true,
+  "hasNext": false,
+  "hasPrevious": false,
+  "content": [
+    {
+      "id": 16,
+      "entityKind": "Declaration",
+      "status": "Published",
+      "created": "2025-04-01 09:00:00+0:00",
+      "createdByUser": {
+        "id": 1,
+        "username": "root",
+        "firstName": "Root",
+        "lastName": "User"
+      },
+      "updated": "2025-04-01 09:10:00+0:00",
+      "updatedByUser": {
+        "id": 2,
+        "username": "admin",
+        "firstName": "Administrative",
+        "lastName": "User"
+      },
+      "log": {
+        "hasContent": true,
+        "isEmpty": false,
+        "number": 1,
+        "size": 5,
+        "numberOfElements": 3,
+        "totalPages": 3,
+        "totalElements": 3,
+        "isFirst": true,
+        "isLast": true,
+        "hasNext": false,
+        "hasPrevious": false,
+        "content": [
+          {
+            "id": 4,
+            "timestamp": "2025-04-01 09:00:00+0:00",
+            "user": {
+              "username": "root",
+              "firstName": "Root",
+              "lastName": "User"
+            },
+            "transactionKind": "Created",
+            "linkedEntityKind": null,
+            "linkedEntityId": null
+          },
+          {
+            "id": 5,
+            "timestamp": "2025-04-01 09:05:00+0:00",
+            "user": {
+              "username": "admin",
+              "firstName": "Administrative",
+              "lastName": "User"
+            },
+            "transactionKind": "Updated",
+            "linkedEntityKind": null,
+            "linkedEntityId": null
+          },
+          {
+            "id": 6,
+            "timestamp": "2025-04-01 09:10:00+0:00",
+            "user": {
+              "username": "admin",
+              "firstName": "Administrative",
+              "lastName": "User"
+            },
+            "transactionKind": "Linked",
+            "linkedEntityKind": "Declaration",
+            "linkedEntityId": 666
+          }
+        ]
+      },
+      "fromEntityLinks": {
+        "content": [
+          {
+            "id": 15,
+            "fromEntityLocations": null,
+            "toEntity": {
+              "id": 123,
+              "entityKind": "Declaration",
+              "title": ""
+            },
+            "toEntityLocations": "p.1"
+          }
+        ]
+      },
+      "toEntityLinks": {
+        "content": [
+          {
+            "id": 16,
+            "fromEntity": {
+              "id": 128,
+              "entityKind": "Person",
+              "firstName": "Joseph",
+              "lastName": "Bloggs"
+            },
+            "fromEntityLocations": "leg",
+            "toEntityLocations": "paragraphs 4 - 6"
+          },
+          {
+            "id": 17,
+            "fromEntity": {
+              "id": 152,
+              "entityKind": "Publication",
+              "title": ""
+            },
+            "fromEntityLocations": "pp.112-115",
+            "toEntityLocations": "Chapter 3"
+          }
+        ]
+      },
+      "kind": "DECL",
+      "title": "The Climate Manifest of Heilegenroth",
+      "date": "2022-04-17",
+      "country": "DE",
+      "url": "https://klimamanifest-von-heiligenroth.de/",
+      "cached": false,
+      "signatories": "Ernst-Georg Beck\nPaul Bossert\nBranford Helgo\nEdgar Gärtner\nDr. Rainer Six\nHeinze Thieme\nProf. Hubert Becker\nRikard Bergsten\nProf. Horst-Joachim Lüdecke\nProf. Peter Martin\nMartin Bock\nDonald Clauson\nDr. Theo Eichten\nFlick Hendrikje\nDr. Albrecht Glatzle\nDr. Hauck Guenther\nProf. Detlef Hebert\nDr. Peter Heller\nDr. Albert Krause\nDr. Christoph Leinb\nDr. Hans Penner\nDr. Paul Matthews\nDr. Wuntke Knut\nKlaus-Eckart Puls\nDr. Herbert Backhaus\nDieter Ber\nGunter Ederer\nFerdinand Furst zu Hohenlohe-Bartenstein\nDieter Kramer\nUwe Tempel\nBrigitte Bossert\nNikolaus Lentz\nWerner Vermess Eisenkopf\nWilfried Heck\nHeinz Hofman\nRainer Hoffman\nWerner Eisenkopf",
+      "signatoryCount": 37,
+      "notes": "The website also has some useful resource links"
+    },
+    {
+      "id": 17,
+      "entityKind": "Claim",
+      "status": "Published",
+      "created": "2025-04-01 09:30:00+0:00",
+      "createdByUser": {
+        "id": 1,
+        "username": "root",
+        "firstName": "Root",
+        "lastName": "User"
+      },
+      "updated": "2025-04-01 09:40:00+0:00",
+      "updatedByUser": {
+        "id": 2,
+        "username": "admin",
+        "firstName": "Administrative",
+        "lastName": "User"
+      },
+      "log": {
+        "hasContent": true,
+        "isEmpty": false,
+        "number": 1,
+        "size": 5,
+        "numberOfElements": 3,
+        "totalPages": 3,
+        "totalElements": 3,
+        "isFirst": true,
+        "isLast": true,
+        "hasNext": false,
+        "hasPrevious": false,
+        "content": [
+          {
+            "id": 7,
+            "timestamp": "2025-04-01 09:30:00+0:00",
+            "user": {
+              "username": "root",
+              "firstName": "Root",
+              "lastName": "User"
+            },
+            "transactionKind": "Created",
+            "linkedEntityKind": null,
+            "linkedEntityId": null
+          },
+          {
+            "id": 8,
+            "timestamp": "2025-04-01 09:35:00+0:00",
+            "user": {
+              "username": "admin",
+              "firstName": "Administrative",
+              "lastName": "User"
+            },
+            "transactionKind": "Updated",
+            "linkedEntityKind": null,
+            "linkedEntityId": null
+          },
+          {
+            "id": 9,
+            "timestamp": "2025-04-01 09:40:00+0:00",
+            "user": {
+              "username": "admin",
+              "firstName": "Administrative",
+              "lastName": "User"
+            },
+            "transactionKind": "Linked",
+            "linkedEntityKind": "Declaration",
+            "linkedEntityId": 777
+          }
+        ]
+      },
+      "fromEntityLinks": {
+        "content": [
+          {
+            "id": 14,
+            "fromEntityLocations": "",
+            "toEntity": {
+            },
+            "toEntityLocations": ""
+          }
+        ]
+      },
+      "toEntityLinks": {
+        "content": [
+          {
+            "id": 15,
+            "fromEntity": null,
+            "fromEntityLocations": "",
+            "toEntityLocations": ""
+          }
+        ]
+      },
+      "kind": "OPLE",
+      "title": "Open Letter to United Nations",
+      "date": "2019-09-23",
+      "country": "World",
+      "url": "https://clintel.nl/wp-content/uploads/2019/09/ecd-letter-to-un.pdf",
+      "cached": true,
+      "signatories": "Prof. Guus Berkhout\nProf. Richard Lindzen\nProf. Reynald Du Berger\nProf. Ingemar Nordin\nTerry Dunleavy\nJim O’Brien\nViv Forbes\nProf. Alberto Prestininzi\nProf. Jeffrey Foss\nProf. Benoît Rittaud\nMorten Jødal\nProf. Fritz Vahrenholt\nRob Lemeire\nLord Monckton of Brenchley",
+      "signatoryCount": 14,
+      "notes": "Signed by some of the leading climate contrarian scientists"
+    }
+  ]
+}

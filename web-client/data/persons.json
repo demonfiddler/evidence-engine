@@ -1,0 +1,461 @@
+{
+  "hasContent": true,
+  "isEmpty": false,
+  "number": 1,
+  "size": 5,
+  "numberOfElements": 2,
+  "totalPages": 1,
+  "totalElements": 2,
+  "isFirst": true,
+  "isLast": false,
+  "hasNext": true,
+  "hasPrevious": false,
+  "content": [
+    {
+      "id": 18,
+      "entityKind": "Person",
+      "status": "Published",
+      "created": "2025-04-01 09:00:00+0:00",
+      "createdByUser": {
+        "id": 1,
+        "username": "root",
+        "firstName": "Root",
+        "lastName": "User"
+      },
+      "updated": "2025-04-01 09:10:00+0:00",
+      "updatedByUser": {
+        "id": 2,
+        "username": "admin",
+        "firstName": "Administrative",
+        "lastName": "User"
+      },
+      "log": {
+        "hasContent": true,
+        "isEmpty": false,
+        "number": 1,
+        "size": 5,
+        "numberOfElements": 3,
+        "totalPages": 3,
+        "totalElements": 3,
+        "isFirst": true,
+        "isLast": true,
+        "hasNext": false,
+        "hasPrevious": false,
+        "content": [
+          {
+            "id": 1,
+            "timestamp": "2025-04-01 09:00:00+0:00",
+            "user": {
+              "username": "root",
+              "firstName": "Root",
+              "lastName": "User"
+            },
+            "transactionKind": "Created",
+            "linkedEntityKind": null,
+            "linkedEntityId": null
+          },
+          {
+            "id": 2,
+            "timestamp": "2025-04-01 09:05:00+0:00",
+            "user": {
+              "username": "admin",
+              "firstName": "Administrative",
+              "lastName": "User"
+            },
+            "transactionKind": "Updated",
+            "linkedEntityKind": null,
+            "linkedEntityId": null
+          },
+          {
+            "id": 3,
+            "timestamp": "2025-04-01 09:10:00+0:00",
+            "user": {
+              "username": "admin",
+              "firstName": "Administrative",
+              "lastName": "User"
+            },
+            "transactionKind": "Linked",
+            "linkedEntityKind": "Declaration",
+            "linkedEntityId": 666
+          }
+        ]
+      },
+      "fromEntityLinks": {
+        "content": [
+          {
+            "id": 11,
+            "fromEntityLocations": null,
+            "toEntity": {
+              "id": 123,
+              "entityKind": "Declaration",
+              "title": "The Climate Manifest of Heiligenroth"
+            },
+            "toEntityLocations": "p.1"
+          }
+        ]
+      },
+      "toEntityLinks": {
+        "content": [
+          {
+            "id": 12,
+            "fromEntity": {
+              "id": 128,
+              "entityKind": "Person",
+              "firstName": "Joseph",
+              "lastName": "Bloggs"
+            },
+            "fromEntityLocations": "arm",
+            "toEntityLocations": "words 4 - 6"
+          },
+          {
+            "id": 13,
+            "fromEntity": {
+              "id": 152,
+              "entityKind": "Publication",
+              "title": ""
+            },
+            "fromEntityLocations": "pp.12-15",
+            "toEntityLocations": "words 5 - 7"
+          }
+        ]
+      },
+      "title": "Dr",
+      "firstName": "Khabibullo Ismailovich",
+      "nickname": "Habibullo",
+      "prefix": "",
+      "lastName": "Abdussamatov",
+      "suffix": "",
+      "alias": "",
+      "notes": "Russian mathematician and solar astrophysicist. Head of the Space Research Sector of the Sun, at Pulkovo Observatory of the Russian Academy of Sciences. Head of the Russian-Ukrainian Astrometria project on the board of the Russian segment of the ISS and Head of the Lunar Observatory Project on Monitoring of the Climate. Educated at Samarkand State University, Uzbekistan & Leningrad State University.",
+      "qualifications": "Dr.Sci.",
+      "country": "RU",
+      "rating": 4,
+      "checked": true,
+      "published": false
+    },
+    {
+      "id": 19,
+      "entityKind": "Person",
+      "status": "Published",
+      "created": "2025-04-01 09:30:00+0:00",
+      "createdByUser": {
+        "id": 1,
+        "username": "root",
+        "firstName": "Root",
+        "lastName": "User"
+      },
+      "updated": "2025-04-01 09:40:00+0:00",
+      "updatedByUser": {
+        "id": 2,
+        "username": "admin",
+        "firstName": "Administrative",
+        "lastName": "User"
+      },
+      "log": {
+        "hasContent": true,
+        "isEmpty": false,
+        "number": 1,
+        "size": 5,
+        "numberOfElements": 3,
+        "totalPages": 3,
+        "totalElements": 3,
+        "isFirst": true,
+        "isLast": true,
+        "hasNext": false,
+        "hasPrevious": false,
+        "content": [
+          {
+            "id": 8,
+            "timestamp": "2025-04-01 09:30:00+0:00",
+            "user": {
+              "username": "root",
+              "firstName": "Root",
+              "lastName": "User"
+            },
+            "transactionKind": "Created",
+            "linkedEntityKind": null,
+            "linkedEntityId": null
+          },
+          {
+            "id": 9,
+            "timestamp": "2025-04-01 09:35:00+0:00",
+            "user": {
+              "username": "admin",
+              "firstName": "Administrative",
+              "lastName": "User"
+            },
+            "transactionKind": "Updated",
+            "linkedEntityKind": null,
+            "linkedEntityId": null
+          },
+          {
+            "id": 10,
+            "timestamp": "2025-04-01 09:40:00+0:00",
+            "user": {
+              "username": "admin",
+              "firstName": "Administrative",
+              "lastName": "User"
+            },
+            "transactionKind": "Linked",
+            "linkedEntityKind": "Declaration",
+            "linkedEntityId": 777
+          }
+        ]
+      },
+      "fromEntityLinks": {
+        "content": [
+          {
+            "id": 14,
+            "fromEntityLocations": "",
+            "toEntity": {
+            },
+            "toEntityLocations": ""
+          }
+        ]
+      },
+      "toEntityLinks": {
+        "content": [
+          {
+            "id": 15,
+            "fromEntity": null,
+            "fromEntityLocations": "",
+            "toEntityLocations": ""
+          }
+        ]
+      },
+      "title": "Dr",
+      "firstName": "Joseph H.",
+      "nickname": "",
+      "prefix": "",
+      "lastName": "Abeles",
+      "suffix": "",
+      "alias": "",
+      "notes": "Distinguished Member of the Technical Staff; Director, Business Development Sarnoff Corporation.",
+      "qualifications": "M.A. & Ph.D. in Physics from Princeton University.",
+      "country": "US",
+      "rating": 1,
+      "checked": true,
+      "published": false
+    },
+    {
+      "id": 20,
+      "entityKind": "Person",
+      "status": "Published",
+      "created": "2025-04-02 10:00:00+0:00",
+      "createdByUser": {
+        "id": 1,
+        "username": "admin",
+        "firstName": "Administrative",
+        "lastName": "User"
+      },
+      "updated": "2025-04-02 10:05:00+0:00",
+      "updatedByUser": {
+        "id": 2,
+        "username": "admin",
+        "firstName": "Administrative",
+        "lastName": "User"
+      },
+      "log": {
+        "hasContent": false,
+        "isEmpty": false,
+        "number": 1,
+        "size": 5,
+        "numberOfElements": 0,
+        "totalPages": 0,
+        "totalElements": 0,
+        "isFirst": true,
+        "isLast": true,
+        "hasNext": false,
+        "hasPrevious": false,
+        "content": [
+        ]
+      },
+      "fromEntityLinks": {
+        "content": [
+        ]
+      },
+      "toEntityLinks": {
+        "content": [
+        ]
+      },
+      "title": "Prof",
+      "firstName": "Gunnar",
+      "nickname": "",
+      "prefix": "",
+      "lastName": "Abrahamsen",
+      "suffix": "",
+      "alias": "",
+      "notes": "Emeritus Professor of Soil Science, Norwegian University of Life Sciences. Department of Soil and Water Sciences, Agricultural University of Norway. Member of the Climate Realists’ Scientific Advisory Board.",
+      "qualifications": "",
+      "country": "DK",
+      "rating": 2,
+      "checked": true,
+      "published": false
+    },
+    {
+      "id": 21,
+      "entityKind": "Person",
+      "status": "Published",
+      "created": "2025-04-03 11:00:00+0:00",
+      "createdByUser": {
+        "id": 1,
+        "username": "root",
+        "firstName": "Root",
+        "lastName": "User"
+      },
+      "updated": "2025-04-03 11:05:00+0:00",
+      "updatedByUser": {
+        "id": 2,
+        "username": "admin",
+        "firstName": "Administrative",
+        "lastName": "User"
+      },
+      "log": {
+        "hasContent": false,
+        "isEmpty": false,
+        "number": 1,
+        "size": 5,
+        "numberOfElements": 0,
+        "totalPages": 0,
+        "totalElements": 0,
+        "isFirst": true,
+        "isLast": true,
+        "hasNext": false,
+        "hasPrevious": false,
+        "content": [
+        ]
+      },
+      "fromEntityLinks": {
+        "content": [
+        ]
+      },
+      "toEntityLinks": {
+        "content": [
+        ]
+      },
+      "title": "Prof",
+      "firstName": "Larry Delmar",
+      "nickname": "",
+      "prefix": "",
+      "lastName": "Agenbroad",
+      "suffix": "",
+      "alias": "",
+      "notes": "Deceased (1933–2014). Emeritus Professor of Geology & Quaternary Studies, Northern Arizona University, Flagstaff, Arizona, USA, Director, Mammoth Site of Hot Springs, Hot Springs, South Dakota, USA. Geological Society of America’s Rip Rapp Archaeological Geology Award (1996); Lowell Thomas Award from The Explorers Club for Lifetime Scientific Achievement (2005).",
+      "qualifications": "Degree in Geologic Engineering from University of Arizona, Ph.D. in Geology (1967).",
+      "country": "US",
+      "rating": 0,
+      "checked": false,
+      "published": false
+    },
+    {
+      "id": 22,
+      "entityKind": "Person",
+      "status": "Draft",
+      "created": "2025-04-04 12:00:00+0:00",
+      "createdByUser": {
+        "id": 1,
+        "username": "root",
+        "firstName": "Root",
+        "lastName": "User"
+      },
+      "updated": "2025-04-04 12:05:00+0:00",
+      "updatedByUser": {
+        "id": 2,
+        "username": "admin",
+        "firstName": "Administrative",
+        "lastName": "User"
+      },
+      "log": {
+        "hasContent": false,
+        "isEmpty": false,
+        "number": 1,
+        "size": 5,
+        "numberOfElements": 0,
+        "totalPages": 0,
+        "totalElements": 0,
+        "isFirst": true,
+        "isLast": true,
+        "hasNext": false,
+        "hasPrevious": false,
+        "content": [
+        ]
+      },
+      "fromEntityLinks": {
+        "content": [
+        ]
+      },
+      "toEntityLinks": {
+        "content": [
+        ]
+      },
+      "title": "Dr",
+      "firstName": "Harold Melvin",
+      "nickname": "",
+      "prefix": "",
+      "lastName": "Agnew",
+      "suffix": "",
+      "alias": "",
+      "notes": "Deceased (1921–2013). President, General Atomics Corporation (1979–1984) White House Science Councillor (1982–1989) Director, Los Alamos National Laboratory (1970–1979), E.O. Lawrence Award 1966, Enrico Fermi Award 1978, Los Alamos Medal (with H.A. Bethe) 2001 Member National Academy of Sciences, National Academy of Engineering; Fellow APS, AAAS.",
+      "qualifications": "B.A. from University of Denver (1942), M.S. (1948) & Ph.D. (1949) from University of Chicago.",
+      "country": "US",
+      "rating": 1,
+      "checked": true,
+      "published": false
+    },
+    {
+      "id": 23,
+      "entityKind": "Person",
+      "status": "Draft",
+      "created": "2025-04-05 13:00:00+0:00",
+      "createdByUser": {
+        "id": 1,
+        "username": "admin",
+        "firstName": "Administrative",
+        "lastName": "User"
+      },
+      "updated": "2025-04-05 13:05:00+0:00",
+      "updatedByUser": {
+        "id": 2,
+        "username": "admin",
+        "firstName": "Administrative",
+        "lastName": "User"
+      },
+      "log": {
+        "hasContent": false,
+        "isEmpty": false,
+        "number": 1,
+        "size": 5,
+        "numberOfElements": 0,
+        "totalPages": 0,
+        "totalElements": 0,
+        "isFirst": true,
+        "isLast": true,
+        "hasNext": false,
+        "hasPrevious": false,
+        "content": [
+        ]
+      },
+      "fromEntityLinks": {
+        "content": [
+        ]
+      },
+      "toEntityLinks": {
+        "content": [
+        ]
+      },
+      "title": "Prof",
+      "firstName": "Göran",
+      "nickname": "",
+      "prefix": "",
+      "lastName": "Ahlgren",
+      "suffix": "",
+      "alias": "",
+      "notes": "Director and General Secretary of the Stockholm Initiative. Professor of Organic Chemistry, Royal Institute of Technology, Stockholm.",
+      "qualifications": "Tekn. dr. docent in Organic Chemistry.",
+      "country": "SE",
+      "rating": 1,
+      "checked": true,
+      "published": false
+    }
+  ]
+}

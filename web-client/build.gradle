@@ -1,0 +1,61 @@
+/*----------------------------------------------------------------------------------------------------------------------
+ * Evidence Engine: A system for managing evidence on arbitrary scientific topics.
+ * Comprises an SQL database, GraphQL public API, Java app server, Java and web clients.
+ * Copyright © 2024-25 Adrian Price. All rights reserved.
+ *
+ * This file is part of Evidence Engine.
+ *
+ * Evidence Engine is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * Evidence Engine is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
+ * If not, see <https://www.gnu.org/licenses/>. 
+ *--------------------------------------------------------------------------------------------------------------------*/
+
+plugins {
+    id 'com.github.node-gradle.node' version '7.1.0'
+}
+
+// See https://github.com/node-gradle/gradle-node-plugin/blob/main/docs/usage.md
+node {
+    version = '22.14.0' // Specify the Node.js version
+//    npmVersion = null // No npm installation; we'll use pnpm
+//    distBaseUrl = "https://nodejs.org/dist"
+    download = false // Ensure Node.js is downloaded
+    workDir = file("${project.buildDir}/nodejs") // Node.js install directory
+    npmWorkDir = file("${project.buildDir}/npm") // npm install directory
+}
+
+task installDependencies(type: Exec) {
+    description = 'Install dependencies using pnpm'
+    group = 'build'
+    commandLine 'pnpm', 'install'
+    inputs.file 'package.json' // Dependency file
+    outputs.dir 'node_modules' // Output directory
+    workingDir 'web-client'
+}
+
+task buildReact(type: Exec) {
+    description = 'Build the Next.js/React application'
+    group = 'build'
+    commandLine 'pnpm', 'build'
+    workingDir 'web-client'
+//    dependsOn installDependencies
+}
+
+task startReact(type: Exec) {
+    description = 'Start the Next.js/React development server'
+    group = 'application'
+    commandLine 'pnpm', 'dev'
+    workingDir 'web-client'
+//    dependsOn installDependencies
+}
+
+task build {
+    dependsOn buildReact // Include the buildReact task in the overall build process
+}

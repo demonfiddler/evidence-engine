@@ -13,6 +13,7 @@
 			"workingDirectory": "${workspaceFolder}",
 			"args": ["--class-orderer", "org.junit.jupiter.api.ClassOrderer$OrderAnnotation"],
 			"vmArgs": ["-Djunit.jupiter.testclass.order.default=org.junit.jupiter.api.ClassOrderer$OrderAnnotation"]
-		}
+		},
+		"editor.indentSize": "tabSize"
 	}
 }

@@ -1,0 +1,304 @@
+{
+  "hasContent": true,
+  "isEmpty": false,
+  "number": 1,
+  "size": 0,
+  "numberOfElements": 5,
+  "totalPages": 1,
+  "totalElements": 5,
+  "isFirst": true,
+  "isLast": true,
+  "hasNext": false,
+  "hasPrevious": false,
+  "content": [
+    {
+      "id": 1,
+      "entityKind": "Topic",
+      "status": "Published",
+      "created": "2025-04-01 09:00:00+0:00",
+      "createdByUser": {
+        "id": 1,
+        "username": "root",
+        "firstName": "Root",
+        "lastName": "User"
+      },
+      "updated": "2025-04-01 09:10:00+0:00",
+      "updatedByUser": {
+        "id": 2,
+        "username": "admin",
+        "firstName": "Administrative",
+        "lastName": "User"
+      },
+      "label": "Climate",
+      "description": "Contrarian climate science",
+      "children": [
+        {
+          "id": 2,
+          "entityKind": "Topic",
+          "status": "Published",
+          "created": "2025-04-01 09:00:00+0:00",
+          "createdByUser": {
+            "id": 1,
+            "username": "root",
+            "firstName": "Root",
+            "lastName": "User"
+          },
+          "updated": "2025-04-01 09:10:00+0:00",
+          "updatedByUser": {
+            "id": 2,
+            "username": "admin",
+            "firstName": "Administrative",
+            "lastName": "User"
+          },
+          "label": "Extremes",
+          "description": "Extremes of weather",
+          "children": [
+            {
+              "id": 3,
+              "entityKind": "Topic",
+              "status": "Published",
+              "created": "2025-04-01 09:00:00+0:00",
+              "createdByUser": {
+                "id": 1,
+                "username": "root",
+                "firstName": "Root",
+                "lastName": "User"
+              },
+              "updated": "2025-04-01 09:10:00+0:00",
+              "updatedByUser": {
+                "id": 2,
+                "username": "admin",
+                "firstName": "Administrative",
+                "lastName": "User"
+              },
+              "label": "Precipitation",
+              "description": "Extremes of rain, sleet, hail, snow",
+              "children": []
+            },
+            {
+              "id": 4,
+              "entityKind": "Topic",
+              "status": "Published",
+              "created": "2025-04-01 09:00:00+0:00",
+              "createdByUser": {
+                "id": 1,
+                "username": "root",
+                "firstName": "Root",
+                "lastName": "User"
+              },
+              "updated": "2025-04-01 09:10:00+0:00",
+              "updatedByUser": {
+                "id": 2,
+                "username": "admin",
+                "firstName": "Administrative",
+                "lastName": "User"
+              },
+              "label": "Temperature",
+              "description": "Extremes of temperature",
+              "children": []
+            },
+            {
+              "id": 5,
+              "entityKind": "Topic",
+              "status": "Published",
+              "created": "2025-04-01 09:00:00+0:00",
+              "createdByUser": {
+                "id": 1,
+                "username": "root",
+                "firstName": "Root",
+                "lastName": "User"
+              },
+              "updated": "2025-04-01 09:10:00+0:00",
+              "updatedByUser": {
+                "id": 2,
+                "username": "admin",
+                "firstName": "Administrative",
+                "lastName": "User"
+              },
+              "label": "Wind",
+              "description": "Extreme cyclones, hurricanes, storms, tornadoes",
+              "children": []
+            },
+            {
+              "id": 6,
+              "entityKind": "Topic",
+              "status": "Published",
+              "created": "2025-04-01 09:00:00+0:00",
+              "createdByUser": {
+                "id": 1,
+                "username": "root",
+                "firstName": "Root",
+                "lastName": "User"
+              },
+              "updated": "2025-04-01 09:10:00+0:00",
+              "updatedByUser": {
+                "id": 2,
+                "username": "admin",
+                "firstName": "Administrative",
+                "lastName": "User"
+              },
+              "label": "Fire",
+              "description": "Extreme wildfire events",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "entityKind": "Topic",
+          "status": "Published",
+          "created": "2025-04-01 09:00:00+0:00",
+          "createdByUser": {
+            "id": 1,
+            "username": "root",
+            "firstName": "Root",
+            "lastName": "User"
+          },
+          "updated": "2025-04-01 09:10:00+0:00",
+          "updatedByUser": {
+            "id": 2,
+            "username": "admin",
+            "firstName": "Administrative",
+            "lastName": "User"
+          },
+          "label": "Historical",
+          "description": "Historical trends",
+          "children": []
+        },
+        {
+          "id": 8,
+          "entityKind": "Topic",
+          "status": "Published",
+          "created": "2025-04-01 09:00:00+0:00",
+          "createdByUser": {
+            "id": 1,
+            "username": "root",
+            "firstName": "Root",
+            "lastName": "User"
+          },
+          "updated": "2025-04-01 09:10:00+0:00",
+          "updatedByUser": {
+            "id": 2,
+            "username": "admin",
+            "firstName": "Administrative",
+            "lastName": "User"
+          },
+          "label": "Cycles",
+          "description": "Cyclical patterns",
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "entityKind": "Topic",
+      "status": "Published",
+      "created": "2025-04-01 09:00:00+0:00",
+      "createdByUser": {
+        "id": 1,
+        "username": "root",
+        "firstName": "Root",
+        "lastName": "User"
+      },
+      "updated": "2025-04-01 09:10:00+0:00",
+      "updatedByUser": {
+        "id": 2,
+        "username": "admin",
+        "firstName": "Administrative",
+        "lastName": "User"
+      },
+      "label": "Electromagnetic Radiation",
+      "description": "Adverse effects of electromagnetic radiation on living systems",
+      "children": [
+        {
+          "id": 10,
+          "entityKind": "Topic",
+          "status": "Published",
+          "created": "2025-04-01 09:00:00+0:00",
+          "createdByUser": {
+            "id": 1,
+            "username": "root",
+            "firstName": "Root",
+            "lastName": "User"
+          },
+          "updated": "2025-04-01 09:10:00+0:00",
+          "updatedByUser": {
+            "id": 2,
+            "username": "admin",
+            "firstName": "Administrative",
+            "lastName": "User"
+          },
+          "label": "Ecology",
+          "description": "Effects on ecological systems",
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "entityKind": "Topic",
+      "status": "Published",
+      "created": "2025-04-01 09:00:00+0:00",
+      "createdByUser": {
+        "id": 1,
+        "username": "root",
+        "firstName": "Root",
+        "lastName": "User"
+      },
+      "updated": "2025-04-01 09:10:00+0:00",
+      "updatedByUser": {
+        "id": 2,
+        "username": "admin",
+        "firstName": "Administrative",
+        "lastName": "User"
+      },
+      "label": "Radio-frequency EM Radiation",
+      "description": "Adverse effects of radio-frequency electromagnetic radiation (RFR) on living systems",
+      "children": []
+    },
+    {
+      "id": 12,
+      "entityKind": "Topic",
+      "status": "Published",
+      "created": "2025-04-01 09:00:00+0:00",
+      "createdByUser": {
+        "id": 1,
+        "username": "root",
+        "firstName": "Root",
+        "lastName": "User"
+      },
+      "updated": "2025-04-01 09:10:00+0:00",
+      "updatedByUser": {
+        "id": 2,
+        "username": "admin",
+        "firstName": "Administrative",
+        "lastName": "User"
+      },
+      "label": "Fluoride",
+      "description": "Fluoridation of public water supplies",
+      "children": []
+    },
+    {
+      "id": 13,
+      "entityKind": "Topic",
+      "status": "Published",
+      "created": "2025-04-01 09:00:00+0:00",
+      "createdByUser": {
+        "id": 1,
+        "username": "root",
+        "firstName": "Root",
+        "lastName": "User"
+      },
+      "updated": "2025-04-01 09:10:00+0:00",
+      "updatedByUser": {
+        "id": 2,
+        "username": "admin",
+        "firstName": "Administrative",
+        "lastName": "User"
+      },
+      "label": "Vaccines",
+      "description": "Adverse effects of vaccines",
+      "children": []
+    }
+  ]
+}

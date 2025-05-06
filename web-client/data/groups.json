@@ -1,0 +1,295 @@
+{
+  "hasContent": true,
+  "isEmpty": false,
+  "number": 1,
+  "size": 5,
+  "numberOfElements": 3,
+  "totalPages": 1,
+  "totalElements": 3,
+  "isFirst": true,
+  "isLast": true,
+  "hasNext": false,
+  "hasPrevious": false,
+  "content": [
+    {
+      "id": 1,
+      "entityKind": "GRP",
+      "status": "PUB",
+      "created": "2025-04-01T09:00:00+0:00",
+      "createdByUser": {
+        "username": "root",
+        "firstName": "Root",
+        "lastName": "User"
+      },
+      "groupname": "Administrators",
+      "authorities": [
+        "ADM",
+        "CRE",
+        "DEL",
+        "LNK",
+        "REA",
+        "UPD",
+        "UPL"
+      ],
+      "members": {
+        "hasContent": true,
+        "isEmpty": false,
+        "number": 1,
+        "size": 5,
+        "numberOfElements": 4,
+        "totalPages": 1,
+        "totalElements": 4,
+        "isFirst": true,
+        "isLast": true,
+        "hasNext": false,
+        "hasPrevious": false,
+        "content": [
+          {
+            "id": 1,
+            "entityKind": "USR",
+            "status": "PUB",
+            "created": "2025-04-01T09:00:00+0:00",
+            "createdByUser": {
+              "username": "root",
+              "firstName": "Root",
+              "lastName": "User"
+            },
+            "updated": null,
+            "updatedByUser": null,
+            "log": {
+              "hasContent": true,
+              "isEmpty": false,
+              "number": 1,
+              "size": 5,
+              "numberOfElements": 1,
+              "totalPages": 1,
+              "totalElements": 1,
+              "isFirst": true,
+              "isLast": true,
+              "hasNext": false,
+              "hasPrevious": false,
+              "content": [
+                {
+                  "id": 1,
+                  "timestamp": "2025-04-01T09:00:00+0:00",
+                  "user": {
+                    "username": "root",
+                    "firstName": "Root",
+                    "lastName": "User"
+                  },
+                  "transactionKind": "CRE"
+                }
+              ]
+            },
+            "username": "root",
+            "firstName": "Root",
+            "lastName": "User",
+            "email": "root@ee.campaign-resources.org",
+            "country": "GB",
+            "password": "{bcrypt}$2a$10$xL02gfgl.dEJBRzsgics5.fglRXyl.iQBNjfyXhCU14UQf2MJUHFK",
+            "authorities": []
+          },
+          {
+            "id": 2,
+            "entityKind": "USR",
+            "status": "PUB",
+            "created": "2025-04-01T09:01:00+0:00",
+            "createdByUser": {
+              "username": "root",
+              "firstName": "Root",
+              "lastName": "User"
+            },
+            "updated": "",
+            "updatedByUser": {},
+            "log": {
+              "hasContent": true,
+              "isEmpty": false,
+              "number": 1,
+              "size": 1,
+              "numberOfElements": 1,
+              "totalPages": 1,
+              "totalElements": 1,
+              "isFirst": true,
+              "isLast": true,
+              "hasNext": false,
+              "hasPrevious": false,
+              "content": [
+                {
+                  "id": 5,
+                  "timestamp": "2025-04-01T09:01:00+0:00",
+                  "user": {
+                    "username": "root",
+                    "firstName": "Root",
+                    "lastName": "User"
+                  },
+                  "transactionKind": "CRE"
+                }
+              ]
+            },
+            "username": "admin",
+            "firstName": "Administrative",
+            "lastName": "User",
+            "email": "admin@ee.campaign-resources.org",
+            "country": "GB",
+            "password": "{bcrypt}$2a$10$y9JB/y3fdX7.PUsOEadAi.gErBWCd.8oGn8IEE0KWjURLZEJ20GQi",
+            "authorities": []
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "entityKind": "GRP",
+      "status": "PUB",
+      "created": "2025-04-01T09:00:00+0:00",
+      "createdByUser": {
+        "username": "root",
+        "firstName": "Root",
+        "lastName": "User"
+      },
+      "groupname": "Editors",
+      "authorities": [
+        "CRE",
+        "LNK",
+        "REA",
+        "UPD",
+        "UPL"
+      ],
+      "members": {
+        "hasContent": true,
+        "isEmpty": false,
+        "number": 1,
+        "size": 5,
+        "numberOfElements": 4,
+        "totalPages": 1,
+        "totalElements": 4,
+        "isFirst": true,
+        "isLast": true,
+        "hasNext": false,
+        "hasPrevious": false,
+        "content": [
+          {
+            "id": 3,
+            "entityKind": "USR",
+            "status": "PUB",
+            "created": "2025-04-01T09:02:00+0:00",
+            "createdByUser": {
+              "username": "root",
+              "firstName": "Root",
+              "lastName": "User"
+            },
+            "updated": null,
+            "updatedByUser": null,
+            "log": {
+              "hasContent": true,
+              "isEmpty": false,
+              "number": 1,
+              "size": 5,
+              "numberOfElements": 1,
+              "totalPages": 1,
+              "totalElements": 1,
+              "isFirst": true,
+              "isLast": true,
+              "hasNext": false,
+              "hasPrevious": false,
+              "content": [
+                {
+                  "id": 6,
+                  "timestamp": "2025-04-01T09:02:00+0:00",
+                  "user": {
+                    "username": "root",
+                    "firstName": "Root",
+                    "lastName": "User"
+                  },
+                  "transactionKind": "CRE"
+                }
+              ]
+            },
+            "username": "editor",
+            "firstName": "Editing",
+            "lastName": "User",
+            "email": "editor@ee.campaign-resources.org",
+            "country": "GB",
+            "password": "{bcrypt}$2a$10$Yjve/6JOwx4vbmpCv7GXO.VAqSWaO8jgxjUXYh6H/fqaKq9WOaMbm",
+            "authorities": []
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "entityKind": "GRP",
+      "status": "PUB",
+      "created": "2025-04-01T09:00:00+0:00",
+      "createdByUser": {
+        "username": "root",
+        "firstName": "Root",
+        "lastName": "User"
+      },
+      "groupname": "Users",
+      "authorities": [
+        "REA"
+      ],
+      "members": {
+        "hasContent": true,
+        "isEmpty": false,
+        "number": 1,
+        "size": 5,
+        "numberOfElements": 4,
+        "totalPages": 1,
+        "totalElements": 4,
+        "isFirst": true,
+        "isLast": true,
+        "hasNext": false,
+        "hasPrevious": false,
+        "content": [
+          {
+            "id": 4,
+            "entityKind": "USR",
+            "status": "PUB",
+            "created": "2025-04-01T09:03:00+0:00",
+            "createdByUser": {
+              "username": "root",
+              "firstName": "Root",
+              "lastName": "User"
+            },
+            "updated": null,
+            "updatedByUser": null,
+            "log": {
+              "hasContent": true,
+              "isEmpty": false,
+              "number": 1,
+              "size": 5,
+              "numberOfElements": 1,
+              "totalPages": 1,
+              "totalElements": 1,
+              "isFirst": true,
+              "isLast": true,
+              "hasNext": false,
+              "hasPrevious": false,
+              "content": [
+                {
+                  "id": 7,
+                  "timestamp": "2025-04-01T09:03:00+0:00",
+                  "user": {
+                    "username": "root",
+                    "firstName": "Root",
+                    "lastName": "User"
+                  },
+                  "transactionKind": "CRE"
+                }
+              ]
+            },
+            "username": "user",
+            "firstName": "Ordinary",
+            "lastName": "User",
+            "email": "user@ee.campaign-resources.org",
+            "country": "GB",
+            "password": "{bcrypt}$2a$10$Yjve/6JOwx4vbmpCv7GXO.VAqSWaO8jgxjUXYh6H/fqaKq9WOaMbm",
+            "authorities": []
+          }
+        ]
+      }
+    }
+  ]
+}

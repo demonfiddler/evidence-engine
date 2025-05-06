@@ -23,7 +23,7 @@ INSERT INTO "topic" ("id", "label", "description", "parent_id", "status", "creat
 	(5, 'Wind', 'Extreme cyclones, hurricanes, storms, tornadoes', 2, 'DRA', '2024-11-10 22:22:53', 0, NULL, NULL),
 	(6, 'Fire', 'Extreme wildfire events', 2, 'DRA', '2024-11-10 22:45:30', 0, NULL, NULL),
 	(7, 'Historical', 'Historical trends', 1, 'DRA', '2024-11-10 22:23:59', 0, NULL, NULL),
-	(8, 'Cycles', 'Cyclical patterns', NULL, 'DRA', '2024-11-10 22:24:40', 0, NULL, NULL),
+	(8, 'Cycles', 'Cyclical patterns', 1, 'DRA', '2024-11-10 22:24:40', 0, NULL, NULL),
 	(9, 'Electromagnetic Radiation', 'Adverse effects of EM radiation on living systems', NULL, 'DRA', '2024-11-10 22:27:24', 0, NULL, NULL),
 	(10, 'Fluoride', 'Fluoridation of public water supplies', NULL, 'DRA', '2024-11-10 22:27:42', 0, NULL, NULL),
 	(11, 'Vaccines', 'Adverse effects of vaccines', NULL, 'DRA', '2024-11-10 22:29:02', 0, NULL, NULL);

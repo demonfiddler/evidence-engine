@@ -1,0 +1,69 @@
+/*----------------------------------------------------------------------------------------------------------------------
+ * Evidence Engine: A system for managing evidence on arbitrary scientific topics.
+ * Comprises an SQL database, GraphQL public API, Java app server, Java and web clients.
+ * Copyright © 2024-25 Adrian Price. All rights reserved.
+ *
+ * This file is part of Evidence Engine.
+ *
+ * Evidence Engine is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * Evidence Engine is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
+ * If not, see <https://www.gnu.org/licenses/>. 
+ *--------------------------------------------------------------------------------------------------------------------*/
+
+'use client'
+
+import "@/app/globals.css";
+import '@/app/ui/global.css';
+// import type { Metadata } from "next";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/app/ui//navigator/app-sidebar"
+import { UserIcon } from '@heroicons/react/24/outline';
+// import SideNav from "@/app/ui/navigator/sidenav"
+//import { apolloClient } from "@/lib/graphql-utils";
+//import { ApolloProvider } from "@apollo/client";
+
+// export const metadata: Metadata = {
+//   title: {
+//     template: '%s | Evidence Engine',
+//     default: 'Evidence Engine',
+//   },
+//   description: "Scientific evidence curated by campaign-resources.org",
+//   // metadataBase: new URL(process.env.webClientUrl);
+// };
+
+/*
+<ApolloProvider client={apolloClient}>
+{children}
+</ApolloProvider>
+*/
+export default function NavigableLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <SidebarProvider>
+      <AppSidebar />
+      <main className="flex flex-col">
+        <header className="grid grid-cols-3 items-center w-screen h-8 text-white bg-blue-500">
+          <SidebarTrigger title="Toggle sidebar" />
+          <p className="justify-self-center">Evidence Engine</p>
+          <UserIcon className="justify-self-end size-4" />
+        </header>
+        {children}
+        <div className="grow"></div>
+        <footer className="grid grid-cols-3 items-center w-screen h-8 text-xs text-white bg-blue-500">
+          <p>&nbsp;Copyright &copy; 2024-25 Adrian Price. All rights reserved.</p>
+          <p className="justify-self-center">A <a href="https://campaign-resources.org" target="_blank" className="text-white"><i>Campaign Resources</i></a> application</p>
+        </footer>
+      </main>
+    </SidebarProvider>
+  );
+}

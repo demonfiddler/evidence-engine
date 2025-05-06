@@ -1,0 +1,195 @@
+{
+  "hasContent": true,
+  "isEmpty": false,
+  "number": 1,
+  "size": 0,
+  "numberOfElements": 30,
+  "totalPages": 1,
+  "totalElements": 30,
+  "isFirst": true,
+  "isLast": true,
+  "hasNext": false,
+  "hasPrevious": false,
+  "content": [
+    {
+      "id": "3001",
+      "name": "101 Communications",
+      "url": "http://www.101com.com/",
+      "journal_count": 1
+    },
+    {
+      "id": "3002",
+      "name": "123Doc Education",
+      "url": "https://www.123doc.com/",
+      "journal_count": 2
+    },
+    {
+      "id": "3003",
+      "name": "3KBioXML Publishers, Pakistan",
+      "url": "http://www.3kbioxml.com/",
+      "journal_count": 7
+    },
+    {
+      "id": "3004",
+      "name": "A Consortium of American Refereed Publications",
+      "url": "http://www.universitypublications.net/",
+      "journal_count": 5
+    },
+    {
+      "id": "3005",
+      "name": "A K Peters Ltd",
+      "url": "http://www.akpeters.com/",
+      "journal_count": 2
+    },
+    {
+      "id": "3006",
+      "name": "A. Razmadze Mathematical Institute",
+      "url": "http://www.rmi.acnet.ge/hha/public.htm",
+      "journal_count": 1
+    },
+    {
+      "id": "3007",
+      "name": "A.J.Institute of Medical Sciences",
+      "url": "http://www.ajmedicals.in/",
+      "journal_count": 1
+    },
+    {
+      "id": "3008",
+      "name": "AACC International (American Association of Cereal Chemists)",
+      "url": "http://www.aaccnet.org",
+      "journal_count": 2
+    },
+    {
+      "id": "3009",
+      "name": "AAFO - American Association for Functional Orthodontics",
+      "url": "http://www.aafo.org",
+      "journal_count": 1
+    },
+    {
+      "id": "3010",
+      "name": "Aarya Publishing House",
+      "url": "http://ijcpa.in",
+      "journal_count": 1
+    },
+    {
+      "id": "3011",
+      "name": "AB Academic Publishers",
+      "url": null,
+      "journal_count": 1
+    },
+    {
+      "id": "3012",
+      "name": "Ab Imperio",
+      "url": "https://abimperio.net/",
+      "journal_count": 1
+    },
+    {
+      "id": "3013",
+      "name": "Abasyn University",
+      "url": "http://www.abasyn.edu.pk/",
+      "journal_count": 1
+    },
+    {
+      "id": "3014",
+      "name": "ABB",
+      "url": "http://www.abb.com",
+      "journal_count": 1
+    },
+    {
+      "id": "3015",
+      "name": "Abbey Publications",
+      "url": "http://palimpsest.stanford.edu/byorg/abbey/",
+      "journal_count": 2
+    },
+    {
+      "id": "3016",
+      "name": "ABC-CLIO",
+      "url": "http://www.abc-clio.com",
+      "journal_count": 1
+    },
+    {
+      "id": "3017",
+      "name": "Abdul Wali Khan University, Mardan, Pakistan",
+      "url": "http://www.awkum.edu.pk/",
+      "journal_count": 1
+    },
+    {
+      "id": "3018",
+      "name": "Abhinav Publications",
+      "url": "http://www.abhinavjournal.com/",
+      "journal_count": 9
+    },
+    {
+      "id": "3019",
+      "name": "Aboriginal History Inc.",
+      "url": "http://www.aboriginalhistory.org/",
+      "journal_count": 1
+    },
+    {
+      "id": "3020",
+      "name": "Aboriginal Studies Press",
+      "url": "http://www.aiatsis.gov.au/asp/welcome.html",
+      "journal_count": 1
+    },
+    {
+      "id": "3021",
+      "name": "Absalom Press",
+      "url": "http://www.jofap.org/",
+      "journal_count": 1
+    },
+    {
+      "id": "3022",
+      "name": "Academia Brasileira de Direito Constitucional",
+      "url": "http://abdconst.com.br/novo/",
+      "journal_count": 1
+    },
+    {
+      "id": "3023",
+      "name": "Academia Publishing",
+      "url": "http://academiapublishing.org/",
+      "journal_count": 10
+    },
+    {
+      "id": "3024",
+      "name": "Academia Scientiarum Fennica / Finnish Academy of Science and Letters",
+      "url": "http://www.acadsci.fi/",
+      "journal_count": 1
+    },
+    {
+      "id": "3025",
+      "name": "Academic Conferences Limited",
+      "url": "http://www.academic-conferences.org/",
+      "journal_count": 1
+    },
+    {
+      "id": "3026",
+      "name": "Academic Electronic Press",
+      "url": "http://www.elis.sk/",
+      "journal_count": 16
+    },
+    {
+      "id": "3027",
+      "name": "Academic Hosting & Event Management Solutions",
+      "url": "http://www.iiste.org/",
+      "journal_count": 31
+    },
+    {
+      "id": "3028",
+      "name": "Academic Journals",
+      "url": "http://www.academicjournals.net",
+      "journal_count": 43
+    },
+    {
+      "id": "3029",
+      "name": "Academic Journals (Openly)",
+      "url": "http://academicjournals.org/",
+      "journal_count": 96
+    },
+    {
+      "id": "3030",
+      "name": "Academic Leadership",
+      "url": "http://www.academicleadership.org",
+      "journal_count": 1
+    }
+  ]
+}
