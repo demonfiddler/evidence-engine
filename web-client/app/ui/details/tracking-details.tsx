@@ -20,24 +20,25 @@
 'use client'
 
 import ITrackedEntity from "@/app/model/ITrackedEntity";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import LogDialog from "../log/log-dialog";
+import RecordKind from "@/app/model/RecordKind";
+import { DetailState } from "./detail-handlers";
 
-export default function TrackingDetails({record}: {record: ITrackedEntity | undefined}) {
-  function showLog() {
-    console.log("Show log...")
-  }
+export default function TrackingDetails(
+  {recordKind, record, state}:
+  {recordKind: RecordKind, record: ITrackedEntity | undefined, state: DetailState}) {
 
   return (
-    <div className="w-full grid grid-cols-6 ml-2 mr-2 mb-2 gap-2">
+    <div className="w-full grid grid-cols-6 mb-2 gap-2">
       <Label htmlFor="db-id">Database ID:</Label>
       <Input id="db-id" type="text" readOnly={true} disabled={!record} value={String(record?.id ?? '')} />
       <Label htmlFor="status">Status:</Label>
       <Input id="status" type="text" className="" readOnly={true} disabled={!record} value={record?.status ?? ''} />
-      <Button onClick={showLog} className="col-start-6 w-20 place-self-center bg-blue-500" disabled={!record}>Show log</Button>
+      <LogDialog recordKind={recordKind} record={record} className="col-start-6" disabled={!record || !state.allowRead || state.creating} />
       <Label htmlFor="created" className="col-start-1">Created on:</Label>
-      <Input id="created" type="text" readOnly={true} disabled={!record} value={String(record?.created ?? '')}/>
+      <Input id="created" type="text" readOnly={true} disabled={!record} value={String(record?.created ?? '')} />
       <Label htmlFor="created-by">Created by:</Label>
       <Input id="created-by" type="text" className="" readOnly={true} disabled={!record} value={record?.createdByUser?.username ?? ''} />
       <Label htmlFor="updated" className="col-start-1">Updated on:</Label>

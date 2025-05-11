@@ -27,10 +27,12 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Button } from "@/components/ui/button";
 import ITrackedEntity from "@/app/model/ITrackedEntity";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
+import RecordKind from "@/app/model/RecordKind";
+import { DetailState } from "./detail-handlers";
 
 export default function StandardDetails(
-  {record, readOnly, showLinkingDetails}:
-  {record: ITrackedEntity | undefined, readOnly: boolean, showLinkingDetails: boolean}
+  {recordKind, record, state, showLinkingDetails}:
+  {recordKind: RecordKind, record: ITrackedEntity | undefined, state: DetailState, showLinkingDetails: boolean}
 ) {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -38,9 +40,11 @@ export default function StandardDetails(
     <Collapsible
       open={isOpen}
       onOpenChange={setIsOpen}
-      className="ml-2 space-y-2"
+      className="ml-2 mr-2 space-y-2"
     >
-      <span>Tracking & Linking</span>
+      <span>
+        { showLinkingDetails ? "Tracking & Linking" : "Tracking"}
+      </span>
       <CollapsibleTrigger asChild>
         <Button variant="ghost" size="sm">
           {
@@ -52,17 +56,17 @@ export default function StandardDetails(
         </Button>
       </CollapsibleTrigger>
       <CollapsibleContent className="flex flex-col w-full space-y-2">
-        <TrackingDetails record={record} />
+        <TrackingDetails recordKind={recordKind} record={record} state={state} />
         {
           showLinkingDetails
           ? <>
               <hr />
-              <LinkingDetails record={record as ILinkableEntity} readOnly={readOnly} />
+              <LinkingDetails record={record as ILinkableEntity} state={state} />
             </>
           : <></>
         }
       </CollapsibleContent>
-      <hr />
+      <hr className="border-1" />
     </Collapsible>
   )
 }

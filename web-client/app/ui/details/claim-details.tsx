@@ -27,28 +27,23 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Textarea } from "@/components/ui/textarea";
 import { cn, formatDate } from "@/lib/utils";
 import { CalendarIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
 import StandardDetails from "./standard-details";
+import { toast } from "sonner";
+import useDetailHandlers from "./detail-handlers";
+import DetailActions from "./detail-actions";
 
-export default function ClaimDetails({record}: {record: Claim | undefined}) {
-  const [ isEditing, setIsEditing ] = useState<boolean>(false)
+export default function ClaimDetails({ record }: { record: Claim | undefined }) {
+  const state = useDetailHandlers<Claim>("Claim", record)
+  const { updating } = state
 
   function setDate(e: any) {
-    console.log(`selected ${JSON.stringify(e)}`)
-  }
-
-  function handleClickSaveOrEdit() {
-    if (isEditing)
-      console.log("saving details...")
-    else
-      console.log("editing details...")
-    setIsEditing(!isEditing)
+    toast(`selected ${JSON.stringify(e)}`)
   }
 
   return (
     <fieldset className="border rounded-md w-2/3">
       <legend>&nbsp;Claim Details&nbsp;</legend>
-      <StandardDetails record={record} readOnly={isEditing} showLinkingDetails={true} />
+      <StandardDetails recordKind="Claim" record={record} state={state} showLinkingDetails={true} />
       <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Claim #${record?.id}` : "-Select a claim in the list above to see its details-"}</p>
       <div className="grid grid-cols-6 ml-2 mr-2 mb-2 gap-2">
         <Label htmlFor="date">Date:</Label>
@@ -56,7 +51,7 @@ export default function ClaimDetails({record}: {record: Claim | undefined}) {
           <PopoverTrigger id="date" asChild>
             <Button
               variant={"outline"}
-              disabled={!isEditing}
+              disabled={!updating}
               className={cn("w-[240px] justify-start text-left font-normal",
                 (!record || !record.date) && "text-muted-foreground")}>
               <CalendarIcon />
@@ -72,18 +67,11 @@ export default function ClaimDetails({record}: {record: Claim | undefined}) {
             />
           </PopoverContent>
         </Popover>
+        <DetailActions className="col-start-6 row-span-3" recordKind="Claim" record={record} state={state} />
         <Label htmlFor="text" className="col-start-1">Text:</Label>
-        <Textarea id="text" className="col-span-4" disabled={!record} readOnly={!isEditing} value={record?.text ?? ''} />
-        <Button className="col-start-6 w-20 place-self-center bg-blue-500" disabled={!record || isEditing}>New</Button>
+        <Textarea id="text" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.text ?? ''} />
         <Label htmlFor="notes" className="col-start-1">Notes:</Label>
-        <Textarea id="notes" className="col-span-4" disabled={!record} readOnly={!isEditing} value={record?.notes ?? ''} />
-        <Button
-          onClick={handleClickSaveOrEdit}
-          className="col-start-6 w-20 place-self-center bg-blue-500"
-          disabled={!record}
-        >
-          {isEditing ? 'Save' : 'Edit'}
-        </Button>
+        <Textarea id="notes" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.notes ?? ''} />
       </div>
     </fieldset>
   )

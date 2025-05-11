@@ -37,32 +37,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useState } from "react"
 import { CalendarIcon } from "@heroicons/react/24/outline"
 import Country from "@/app/model/Country"
 import rawCountries from "@/data/countries.json" assert {type: 'json'}
 import StandardDetails from "./standard-details"
+import useDetailHandlers from "./detail-handlers"
+import DetailActions from "./detail-actions"
 const countries = rawCountries as unknown as Country[]
 
 export default function DeclarationDetails({record}: {record: Declaration | undefined}) {
-  const [ isEditing, setIsEditing ] = useState<boolean>(false)
+  const state = useDetailHandlers<Declaration>("Declaration", record)
+  const { updating } = state
 
   function setDate(e: any) {
     console.log(`selected ${JSON.stringify(e)}`)
   }
 
-  function handleClickSaveOrEdit() {
-    if (isEditing)
-      console.log("saving details...")
-    else
-      console.log("editing details...")
-    setIsEditing(!isEditing)
-  }
-
   return (
     <fieldset className="border rounded-md w-2/3">
       <legend>&nbsp;Declaration Details&nbsp;</legend>
-      <StandardDetails record={record} readOnly={isEditing} showLinkingDetails={true} />
+      <StandardDetails recordKind="Declaration" record={record} state={state} showLinkingDetails={true} />
       <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Declaration #${record?.id}` : "-Select a declaration in the list above to see its details-"}</p>
       <div className="grid grid-cols-6 ml-2 mr-2 mb-2 gap-2 items-center">
         <Label htmlFor="date" className="text-right">Date:</Label>
@@ -70,9 +64,9 @@ export default function DeclarationDetails({record}: {record: Declaration | unde
           <PopoverTrigger asChild id="date" disabled={!record}>
             <Button
               variant={"outline"}
+              disabled={!updating}
               className={cn("w-[240px] justify-start text-left font-normal",
                 (!record || !record.date) && "text-muted-foreground")}
-              disabled={!isEditing}
             >
               <CalendarIcon />
               {formatDate(record?.date, "PPP")}
@@ -88,7 +82,7 @@ export default function DeclarationDetails({record}: {record: Declaration | unde
           </PopoverContent>
         </Popover>
         <Label htmlFor="kind" className="col-start-4">Kind:</Label>
-        <Select disabled={!isEditing} value={record?.kind ?? ''}>
+        <Select disabled={!record || !updating} value={record?.kind ?? ''}>
           <SelectTrigger id="kind" className="w-[180px]" disabled={!record}>
             <SelectValue placeholder="Specify kind" />
           </SelectTrigger>
@@ -101,14 +95,15 @@ export default function DeclarationDetails({record}: {record: Declaration | unde
             </SelectGroup>
           </SelectContent>
         </Select>
+        <DetailActions className="col-start-6 row-span-6" recordKind="Declaration" record={record} state={state} />
         <Label htmlFor="title" className="col-start-1">Title:</Label>
-        <Textarea id="title" className="col-span-4" disabled={!record} readOnly={!isEditing} value={record?.title ?? ''} />
+        <Textarea id="title" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.title ?? ''} />
         <Label htmlFor="url" className="col-start-1">URL:</Label>
-        <Input type="url" className="col-span-4" disabled={!record} readOnly={!isEditing} placeholder="URL" value={record?.url?.toString() ?? ''} />
+        <Input type="url" className="col-span-4" disabled={!record} readOnly={!updating} placeholder="URL" value={record?.url?.toString() ?? ''} />
         <Label htmlFor="cached" className="col-start-1">Cached:</Label>
-        <Checkbox id="cached" className="col-span-2" disabled={!record || !isEditing} checked={record?.cached} />
+        <Checkbox id="cached" className="col-span-2" disabled={!record || !updating} checked={record?.cached} />
         <Label htmlFor="country">Country:</Label>
-        <Select disabled={!isEditing} value={record?.country ?? ''}>
+        <Select disabled={!record || !updating} value={record?.country ?? ''}>
           <SelectTrigger id="country" className="w-[180px]" disabled={!record}>
             <SelectValue placeholder="Specify country" />
           </SelectTrigger>
@@ -121,19 +116,11 @@ export default function DeclarationDetails({record}: {record: Declaration | unde
           </SelectContent>
         </Select>
         <Label htmlFor="signatories" className="col-start-1">Title:</Label>
-        <Textarea id="signatories" className="col-span-2" disabled={!record} readOnly={!isEditing} value={record?.signatories ?? ''} />
+        <Textarea id="signatories" className="col-span-2" disabled={!record} readOnly={!updating} value={record?.signatories ?? ''} />
         <Label htmlFor="signatoryCount" className="">Signatory count:</Label>
-        <Input id="signatoryCount" type="signatoryCount" disabled={!record} readOnly={!isEditing} placeholder="count" value={record?.signatoryCount ?? ''} />
-        <Button className="col-start-6 w-20 place-self-center bg-blue-500" disabled={!record || isEditing}>New</Button>
+        <Input id="signatoryCount" type="signatoryCount" disabled={!record} readOnly={!updating} placeholder="count" value={record?.signatoryCount ?? ''} />
         <Label htmlFor="notes" className="col-start-1">Notes:</Label>
-        <Textarea id="notes" className="col-span-4" disabled={!record} readOnly={!isEditing} value={record?.notes ?? ''} />
-        <Button
-          onClick={handleClickSaveOrEdit}
-          className="col-start-6 w-20 place-self-center bg-blue-500"
-          disabled={!record}
-        >
-          {isEditing ? 'Save' : 'Edit'}
-        </Button>
+        <Textarea id="notes" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.notes ?? ''} />
       </div>
     </fieldset>
   )

@@ -23,13 +23,14 @@ import '@/app/ui/global.css'
 import { inter } from '@/app/ui/fonts'
 // import { Metadata } from 'next'
 import { Toaster } from "@/components/ui/sonner"
-import { MasterLinkContext, MasterLinkContextBase, MasterLinkContextType, SelectedRecordsContext, SelectedRecordsContextBase, SelectedRecordsContextType } from '@/lib/context'
+import { MasterLinkContext, MasterLinkContextBase, MasterLinkContextType, SecurityContext, SecurityContextBase, SecurityContextType, SelectedRecordsContext, SelectedRecordsContextBase, SelectedRecordsContextType } from '@/lib/context'
 import RecordKind from './model/RecordKind'
 import ILinkableEntity from './model/ILinkableEntity'
 import { getRecordLabel } from '@/lib/utils'
 import { useState } from 'react'
 import { useSessionStorage } from 'usehooks-ts'
 import Topic from './model/Topic'
+import User from './model/User'
 
 // export const metadata: Metadata = {
 //   title: {
@@ -45,8 +46,13 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const [securityContextSs, storeSecurityContext] = useSessionStorage<SecurityContextBase>('security-context', {})
   const [masterLinkContextSs, storeMasterLinkContext] = useSessionStorage<MasterLinkContextBase>('master-link', { masterRecordKind: "None" })
   const [selectedRecordsContextSs, storeSelectedRecordsContext] = useSessionStorage<SelectedRecordsContextBase>('selected-records', {})
+  const [securityContext, setSecurityContext] = useState<SecurityContextType>({
+    ...securityContextSs,
+    setSecurityContext: setSecurityPrincipal
+  })
   const [masterLinkContext, setMasterLinkContext] = useState<MasterLinkContextType>({
     ...masterLinkContextSs,
     setMasterTopic: setMasterTopic,
@@ -57,6 +63,20 @@ export default function RootLayout({
     ...selectedRecordsContextSs,
     setSelectedRecord: setSelectedRecord
   })
+
+  function setSecurityPrincipal(secCtx: SecurityContextType, user?: User) {
+    const newSecCtxSs = {
+      ...secCtx,
+      username: user?.username,
+      authorities: user?.authorities
+    }
+    const newCtx = {
+      ...newSecCtxSs,
+      setSecurityPrincipal: setSecurityPrincipal
+    }
+    storeSecurityContext(newSecCtxSs)
+    setSecurityContext(newCtx)
+  }
 
   function setMasterTopic(mlCtx: MasterLinkContextType, topic?: Topic) {
     console.log(`enter RootLayout.setMasterTopic(topicId: ${topic?.id}), mlCtx: ${JSON.stringify(mlCtx)}`)
@@ -146,12 +166,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
-        <MasterLinkContext value={masterLinkContext}>
-          <SelectedRecordsContext value={selectedRecordsContext}>
-            {children}
-            <Toaster />
-          </SelectedRecordsContext>
-        </MasterLinkContext>
+        <SecurityContext value={securityContext}>
+          <MasterLinkContext value={masterLinkContext}>
+            <SelectedRecordsContext value={selectedRecordsContext}>
+              {children}
+              <Toaster />
+            </SelectedRecordsContext>
+          </MasterLinkContext>
+        </SecurityContext>
       </body>
     </html>
   );

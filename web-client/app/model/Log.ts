@@ -30,7 +30,7 @@ export default interface Log extends IBaseEntity {
   /** The kind of entity affected. */
   entityKind?: string
   /** The ID of the entity affected. */
-  entityId?: string
+  entityId?: BigInt | string
   /** The kind of entity linked/unlinked (where applicable). */
   linkedEntityKind?: string
   /** The ID of the entity linked/unlinked (where applicable). */

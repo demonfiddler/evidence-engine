@@ -20,33 +20,26 @@
 'use client'
 
 import Group from "@/app/model/Group"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useState } from "react"
 import StandardDetails from "./standard-details"
 import { Checkbox } from "@/components/ui/checkbox"
+import useDetailHandlers from "./detail-handlers"
+import DetailActions from "./detail-actions"
 
 export default function GroupDetails({record}: {record: Group | undefined}) {
-  const [ isEditing, setIsEditing ] = useState<boolean>(false)
-
-  function handleClickSaveOrEdit() {
-    if (isEditing)
-      console.log("saving details...")
-    else
-      console.log("editing details...")
-    setIsEditing(!isEditing)
-  }
+  const state = useDetailHandlers<Group>("Group", record)
+  const { updating } = state
 
   return (
     <fieldset className="border rounded-md w-2/3">
       <legend>&nbsp;Group Details&nbsp;</legend>
-      <StandardDetails record={record} readOnly={isEditing} showLinkingDetails={false} />
+      <StandardDetails recordKind="Group" record={record} state={state} showLinkingDetails={false} />
       <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Group #${record?.id}` : "-Select a group in the list above to see its details-"}</p>
       <div className="grid grid-cols-6 ml-2 mr-2 mb-2 gap-2 items-center">
         <Label htmlFor="groupname" className="">Group name:</Label>
-        <Input id="groupname" disabled={!record} readOnly={!isEditing} placeholder="groupname" value={record?.groupname ?? ''} />
-        <Button className="col-start-6 w-20 place-self-center bg-blue-500" disabled={!record || isEditing}>New</Button>
+        <Input id="groupname" disabled={!record} readOnly={!updating} placeholder="groupname" value={record?.groupname ?? ''} />
+        <DetailActions className="col-start-6 row-span-3" recordKind="Group" record={record} state={state} />
         <fieldset className="flex flex-row col-span-5 border rounded-md p-4 gap-4 w-full" disabled={!record}>
           <legend>&nbsp;Authorities&nbsp;</legend>
           <Checkbox id="adm" checked={record?.authorities?.includes("ADM")}/>
@@ -64,13 +57,6 @@ export default function GroupDetails({record}: {record: Group | undefined}) {
           <Checkbox id="upl" checked={record?.authorities?.includes("UPL")}/>
           <Label htmlFor="upl">Upload files</Label>
         </fieldset>
-        <Button
-          onClick={handleClickSaveOrEdit}
-          className="col-start-6 w-20 place-self-center bg-blue-500"
-          disabled={!record}
-        >
-          {isEditing ? 'Save' : 'Edit'}
-        </Button>
       </div>
     </fieldset>
   )

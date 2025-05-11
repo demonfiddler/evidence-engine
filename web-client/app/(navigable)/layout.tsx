@@ -24,10 +24,7 @@ import '@/app/ui/global.css';
 // import type { Metadata } from "next";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/app/ui//navigator/app-sidebar"
-import { UserIcon } from '@heroicons/react/24/outline';
-// import SideNav from "@/app/ui/navigator/sidenav"
-//import { apolloClient } from "@/lib/graphql-utils";
-//import { ApolloProvider } from "@apollo/client";
+import SignIn from "../ui/security/sign-in";
 
 // export const metadata: Metadata = {
 //   title: {
@@ -52,14 +49,14 @@ export default function NavigableLayout({
     <SidebarProvider>
       <AppSidebar />
       <main className="flex flex-col">
-        <header className="grid grid-cols-3 items-center w-screen h-8 text-white bg-blue-500">
-          <SidebarTrigger title="Toggle sidebar" />
+        <header className="grid grid-cols-3 items-center w-screen h-12 rounded-md text-white bg-blue-500">
+          <SidebarTrigger className="" title="Toggle sidebar (Ctrl+B)" />
           <p className="justify-self-center">Evidence Engine</p>
-          <UserIcon className="justify-self-end size-4" />
+          <SignIn className="justify-self-end" />
         </header>
         {children}
         <div className="grow"></div>
-        <footer className="grid grid-cols-3 items-center w-screen h-8 text-xs text-white bg-blue-500">
+        <footer className="grid grid-cols-3 items-center w-screen h-12 text-xs rounded-md text-white bg-blue-500">
           <p>&nbsp;Copyright &copy; 2024-25 Adrian Price. All rights reserved.</p>
           <p className="justify-self-center">A <a href="https://campaign-resources.org" target="_blank" className="text-white"><i>Campaign Resources</i></a> application</p>
         </footer>

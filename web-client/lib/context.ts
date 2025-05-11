@@ -22,6 +22,8 @@ import { createContext } from 'react';
 import ILinkableEntity from "../app/model/ILinkableEntity"
 import RecordKind from "../app/model/RecordKind"
 import Topic from "../app/model/Topic"
+import Authority from '@/app/model/Authority';
+import User from '@/app/model/User';
 
 export type MasterLinkContextBase = {
   masterTopicId?: BigInt | string
@@ -60,4 +62,19 @@ export type SelectedRecordsContextType = SelectedRecordsContextBase & {
 
 export const SelectedRecordsContext = createContext<SelectedRecordsContextType>({
   setSelectedRecord: () => {throw new Error("setSelectedRecord() not supported in default SelectedRecordsContext")}
+})
+
+export type SecurityContextBase = {
+  username?: string
+  authorities?: Authority[]
+}
+
+export type SecurityContextType = SecurityContextBase & {
+  setSecurityContext: (secCtx: SecurityContextType, user?: User) => void
+  // hasAuthority: (authority: Authority) => boolean
+}
+
+export const SecurityContext = createContext<SecurityContextType>({
+  setSecurityContext: () => {throw new Error("setSecurityContext() not supported in default SecurityContext")}
+  // hasAuthority: (authority: Authority) => authorities?.includes(authority)
 })

@@ -22,6 +22,7 @@ import Declaration from "@/app/model/Declaration"
 import Group from "@/app/model/Group"
 import ITrackedEntity from "@/app/model/ITrackedEntity"
 import Journal from "@/app/model/Journal"
+import Log from "@/app/model/Log"
 import Person from "@/app/model/Person"
 import Publication from "@/app/model/Publication"
 import Publisher from "@/app/model/Publisher"
@@ -67,13 +68,17 @@ export function getRecordLabel(recordKind: RecordKind | undefined, record?: ITra
       const claim = record as Claim
       return `${recordKind} #${record?.id}: ${claim?.text}`
     }
+    case "Declaration": {
+      const declaration = record as Declaration
+      return `${recordKind} #${record?.id}: ${declaration?.title}`
+    }
     case "Journal": {
       const journal = record as Journal
       return `${recordKind} #${record?.id}: ${journal?.title}`
     }
-    case "Declaration": {
-      const declaration = record as Declaration
-      return `${recordKind} #${record?.id}: ${declaration?.title}`
+    case "Log": {
+      const log = record as Log
+      return `${recordKind} #${record?.id}: ${log?.entityKind} #${log?.entityId} ${log?.transactionKind}`
     }
     case "Person": {
       const person = record as Person

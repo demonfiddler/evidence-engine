@@ -27,33 +27,27 @@ import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Textarea } from "@/components/ui/textarea"
 import { cn, formatDate } from "@/lib/utils"
-import { useState } from "react"
 import { CalendarIcon } from "@heroicons/react/24/outline"
 import StandardDetails from "./standard-details"
+import DetailActions from "./detail-actions"
+import useDetailHandlers from "./detail-handlers"
 
 export default function QuotationDetails({record}: {record: Quotation | undefined}) {
-  const [ isEditing, setIsEditing ] = useState<boolean>(false)
+  const state = useDetailHandlers<Quotation>("Quotation", record)
+  const { updating } = state
 
   function setDate(e: any) {
     console.log(`selected ${JSON.stringify(e)}`)
   }
 
-  function handleClickSaveOrEdit() {
-    if (isEditing)
-      console.log("saving details...")
-    else
-      console.log("editing details...")
-    setIsEditing(!isEditing)
-  }
-
   return (
     <fieldset className="border rounded-md w-2/3">
       <legend>&nbsp;Quotation Details&nbsp;</legend>
-      <StandardDetails record={record} readOnly={isEditing} showLinkingDetails={true} />
+      <StandardDetails recordKind="Quotation" record={record} state={state} showLinkingDetails={true} />
       <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Quotation #${record?.id}` : "-Select a quotation in the list above to see its details-"}</p>
       <div className="grid grid-cols-6 ml-2 mr-2 mb-2 gap-2 items-center">
         <Label htmlFor="quotee" className="">Quotee:</Label>
-        <Input id="quotee" disabled={!record} readOnly={!isEditing} placeholder="count" value={record?.quotee ?? ''} />
+        <Input id="quotee" disabled={!record} readOnly={!updating} placeholder="count" value={record?.quotee ?? ''} />
         <Label htmlFor="date" className="col-start-3 text-right">Date:</Label>
         <Popover>
           <PopoverTrigger asChild id="date" disabled={!record}>
@@ -61,7 +55,7 @@ export default function QuotationDetails({record}: {record: Quotation | undefine
               variant={"outline"}
               className={cn("w-[240px] justify-start text-left font-normal",
                 (!record || !record.date) && "text-muted-foreground")}
-              disabled={!isEditing}
+              disabled={!updating}
             >
               <CalendarIcon />
               {formatDate(record?.date, "PPP")}
@@ -76,22 +70,15 @@ export default function QuotationDetails({record}: {record: Quotation | undefine
             />
           </PopoverContent>
         </Popover>
+        <DetailActions className="col-start-6 row-span-5" recordKind="Quotation" record={record} state={state} />
         <Label htmlFor="text" className="col-start-1">Quote:</Label>
-        <Textarea id="text" className="col-span-4" disabled={!record} readOnly={!isEditing} value={record?.text ?? ''} />
+        <Textarea id="text" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.text ?? ''} />
         <Label htmlFor="source" className="col-start-1">Source:</Label>
-        <Input type="source" className="col-span-4" disabled={!record} readOnly={!isEditing} placeholder="URL" value={record?.source ?? ''} />
+        <Input type="source" className="col-span-4" disabled={!record} readOnly={!updating} placeholder="URL" value={record?.source ?? ''} />
         <Label htmlFor="url" className="col-start-1">URL:</Label>
-        <Input type="url" className="col-span-4" disabled={!record} readOnly={!isEditing} placeholder="URL" value={record?.url?.toString() ?? ''} />
-        <Button className="col-start-6 w-20 place-self-center bg-blue-500" disabled={!record || isEditing}>New</Button>
+        <Input type="url" className="col-span-4" disabled={!record} readOnly={!updating} placeholder="URL" value={record?.url?.toString() ?? ''} />
         <Label htmlFor="notes" className="col-start-1">Notes:</Label>
-        <Textarea id="notes" className="col-span-4" disabled={!record} readOnly={!isEditing} value={record?.notes ?? ''} />
-        <Button
-          onClick={handleClickSaveOrEdit}
-          className="col-start-6 w-20 place-self-center bg-blue-500"
-          disabled={!record}
-        >
-          {isEditing ? 'Save' : 'Edit'}
-        </Button>
+        <Textarea id="notes" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.notes ?? ''} />
       </div>
     </fieldset>
   )

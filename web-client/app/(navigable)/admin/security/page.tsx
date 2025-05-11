@@ -121,7 +121,7 @@ export default function Security() {
             page={showUsersOrMembers == "users" ? userPage : selectedGroup?.members}
             onSelect={setSelectedUser}
           />
-          <UserDetails user={selectedUser} group={selectedGroup} editable={showUsersOrMembers == "users"} />
+          <UserDetails user={selectedUser} group={selectedGroup} showUsersOrMembers={showUsersOrMembers} />
         </TabsContent>
       </Tabs>
     </main>

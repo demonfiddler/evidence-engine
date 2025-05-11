@@ -28,7 +28,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Textarea } from "@/components/ui/textarea";
 import { cn, formatDate } from "@/lib/utils";
 import { CalendarIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -43,6 +42,8 @@ import rawJournals from "@/data/journals.json" assert {type: 'json'}
 import rawPublicationKinds from "@/data/publication-kinds.json" assert {type: 'json'}
 import Journal from "@/app/model/Journal";
 import StandardDetails from "./standard-details";
+import useDetailHandlers from "./detail-handlers";
+import DetailActions from "./detail-actions";
 
 type PublicationKind = {
   kind: string
@@ -52,32 +53,26 @@ const journals = rawJournals.content as unknown as Journal[]
 const publicationKinds = rawPublicationKinds as unknown as PublicationKind[]
 
 export default function PublicationDetails({record}: {record: Publication | undefined}) {
-  const [ isEditing, setIsEditing ] = useState<boolean>(false)
+  const state = useDetailHandlers<Publication>("Publication", record)
+  const { updating } = state
 
   function setDate(e: any) {
     console.log(`selected ${JSON.stringify(e)}`)
   }
 
-  function handleClickSaveOrEdit() {
-    if (isEditing)
-      console.log("saving details...")
-    else
-      console.log("editing details...")
-    setIsEditing(!isEditing)
-  }
-
   return (
     <fieldset className="border rounded-md w-2/3">
       <legend>&nbsp;Publication Details&nbsp;</legend>
-      <StandardDetails record={record} readOnly={isEditing} showLinkingDetails={true} />
+      <StandardDetails recordKind="Publication" record={record} state={state} showLinkingDetails={true} />
       <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Publication #${record?.id}` : "-Select a publication in the list above to see its details-"}</p>
       <div className="grid grid-cols-6 ml-2 mr-2 mb-2 gap-2">
         <Label htmlFor="title" className="col-start-1">Text:</Label>
-        <Input id="title" className="col-span-4" disabled={!record} readOnly={!isEditing} value={record?.title ?? ''} />
+        <Input id="title" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.title ?? ''} />
+        <DetailActions className="col-start-6 row-span-3" recordKind="Publication" record={record} state={state} />
         <Label htmlFor="authors" className="col-start-1">Authors:</Label>
-        <Textarea id="authors" className="col-span-2" disabled={!record} readOnly={!isEditing} value={record?.authors ?? ''} />
+        <Textarea id="authors" className="col-span-2" disabled={!record} readOnly={!updating} value={record?.authors ?? ''} />
         <Label htmlFor="kind" className="col-start-1">Kind:</Label>
-        <Select disabled={!isEditing} value={record?.kind ?? ''}>
+        <Select disabled={!updating} value={record?.kind ?? ''}>
           <SelectTrigger id="kind" className="" disabled={!record}>
             <SelectValue placeholder="Specify kind" />
           </SelectTrigger>
@@ -90,7 +85,7 @@ export default function PublicationDetails({record}: {record: Publication | unde
           </SelectContent>
         </Select>
         <Label htmlFor="journal" className="">Journal:</Label>
-        <Select disabled={!isEditing} value={record?.journal?.id?.toString() ?? ''}>
+        <Select disabled={!updating} value={record?.journal?.id?.toString() ?? ''}>
           <SelectTrigger id="journal" className="col-span-2" disabled={!record}>
             <SelectValue className="col-span-2 w-full" placeholder="Specify journal" />
           </SelectTrigger>
@@ -107,7 +102,7 @@ export default function PublicationDetails({record}: {record: Publication | unde
           <PopoverTrigger id="date" asChild>
             <Button
               variant={"outline"}
-              disabled={!isEditing}
+              disabled={!updating}
               className={cn("justify-start text-left font-normal",
                 (!record || !record.date) && "text-muted-foreground")}>
               <CalendarIcon />
@@ -124,26 +119,25 @@ export default function PublicationDetails({record}: {record: Publication | unde
           </PopoverContent>
         </Popover>
         <Label htmlFor="year">Year:</Label>
-        <Input type="number" id="year" className="" disabled={!record} readOnly={!isEditing} value={record?.year ?? ''} />
-        <Button className="col-start-6 w-20 place-self-center bg-blue-500" disabled={!record || isEditing}>New</Button>
+        <Input type="number" id="year" className="" disabled={!record} readOnly={!updating} value={record?.year ?? ''} />
         <Label htmlFor="abstract" className="col-start-1">Abstract:</Label>
-        <Textarea id="abstract" className="col-span-4" disabled={!record} readOnly={!isEditing} value={record?.abstract ?? ''} />
+        <Textarea id="abstract" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.abstract ?? ''} />
         <Label htmlFor="peerReviewed" className="col-start-1">Peer reviewed:</Label>
-        <Checkbox id="peerReviewed" className="col-span-2" disabled={!record || !isEditing} checked={record?.peerReviewed} />
+        <Checkbox id="peerReviewed" className="col-span-2" disabled={!record || !updating} checked={record?.peerReviewed} />
         <Label htmlFor="cached" className="">Cached:</Label>
-        <Checkbox id="cached" className="" disabled={!record || !isEditing} checked={record?.cached} />
+        <Checkbox id="cached" className="" disabled={!record || !updating} checked={record?.cached} />
         <Label htmlFor="doi" className="col-start-1">DOI:</Label>
-        <Input id="doi" className="col-span-2" disabled={!record} readOnly={!isEditing} value={record?.doi ?? ''} />
+        <Input id="doi" className="col-span-2" disabled={!record} readOnly={!updating} value={record?.doi ?? ''} />
         <Label htmlFor="isbn">ISBN:</Label>
-        <Input id="isbn" className="" disabled={!record} readOnly={!isEditing} value={record?.isbn ?? ''} />
+        <Input id="isbn" className="" disabled={!record} readOnly={!updating} value={record?.isbn ?? ''} />
         <Label htmlFor="url" className="col-start-1">URL:</Label>
-        <Input id="url" className="col-span-2" disabled={!record} readOnly={!isEditing} value={record?.url?.toString() ?? ''} />
+        <Input id="url" className="col-span-2" disabled={!record} readOnly={!updating} value={record?.url?.toString() ?? ''} />
         <Label htmlFor="accessed">Accessed:</Label>
         <Popover>
           <PopoverTrigger id="accessed" asChild>
             <Button
               variant={"outline"}
-              disabled={!isEditing}
+              disabled={!updating}
               className={cn("justify-start text-left font-normal",
                 (!record || !record.date) && "text-muted-foreground")}>
               <CalendarIcon />
@@ -160,14 +154,7 @@ export default function PublicationDetails({record}: {record: Publication | unde
           </PopoverContent>
         </Popover>
         <Label htmlFor="notes" className="col-start-1">Notes:</Label>
-        <Textarea id="notes" className="col-span-4" disabled={!record} readOnly={!isEditing} value={record?.notes ?? ''} />
-        <Button
-          onClick={handleClickSaveOrEdit}
-          className="col-start-6 w-20 place-self-center bg-blue-500"
-          disabled={!record}
-        >
-          {isEditing ? 'Save' : 'Edit'}
-        </Button>
+        <Textarea id="notes" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.notes ?? ''} />
       </div>
     </fieldset>
   )

@@ -17,18 +17,23 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-type RecordKind =
-  "None" |
-  "Claim" |
-  "Declaration" |
-  "Journal" |
-  "Log" |
-  "Person" |
-  "Publication" |
-  "Publisher" |
-  "Quotation" |
-  "Topic" |
-  "User" |
-  "Group"
+'use client'
 
-export default RecordKind
+import { ColumnDef } from "@tanstack/react-table"
+import DataTableColumnHeader from "@/app/ui/data-table/data-table-column-header"
+import IBaseEntity from "@/app/model/IBaseEntity"
+
+export const columns: ColumnDef<IBaseEntity>[] = [
+  {
+    accessorKey: "id",
+    enableSorting: true,
+    // enableSortingRemoval: true, // mentioned in TanStack docs but not recognised by IDE.
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="ID" />
+    ),
+  }
+]
+
+export const columnVisibility = {
+  id: true,
+}

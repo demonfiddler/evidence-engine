@@ -43,11 +43,14 @@ import {
   ExclamationCircleIcon,
   HomeIcon,
   InformationCircleIcon,
+  ListBulletIcon,
   NewspaperIcon,
   QuestionMarkCircleIcon,
   ShieldCheckIcon,
   UserIcon,
 } from '@heroicons/react/24/outline';
+import { useContext } from 'react';
+import { SecurityContext } from '@/lib/context';
 
 const appItems = [
   { title: 'Home', url: '/', icon: HomeIcon },
@@ -57,6 +60,7 @@ const appItems = [
   { title: 'Persons', url: '/persons', icon: UserIcon },
   { title: 'Declarations', url: '/declarations', icon: EnvelopeOpenIcon },
   { title: 'Quotations', url: '/quotations', icon: ChatBubbleBottomCenterTextIcon },
+  { title: 'Log', url: '/log', icon: ListBulletIcon },
   { title: 'Help', url: '/help', icon: QuestionMarkCircleIcon },
   { title: 'About', url: '/about', icon: InformationCircleIcon },
 ];
@@ -68,6 +72,9 @@ const adminItems = [
 ];
 
 export function AppSidebar() {
+  const securityContext = useContext(SecurityContext)
+  const allowAdmin = securityContext.authorities?.includes("ADM")
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -95,24 +102,28 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>Adminstration</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {adminItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
+        {
+          allowAdmin ?
+          <SidebarGroup>
+            <SidebarGroupLabel>Adminstration</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {adminItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <Link href={item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+          : <></>
+        }
+        </SidebarContent>
       <SidebarFooter />
     </Sidebar>
   )

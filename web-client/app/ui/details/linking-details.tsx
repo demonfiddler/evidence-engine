@@ -26,28 +26,49 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
+import { toast } from "sonner";
+import { getRecordLabel } from "@/lib/utils";
+import RecordKind from "@/app/model/RecordKind";
+import { DetailState } from "./detail-handlers";
 // import { useImmer } from 'use-immer';
 
 export default function LinkingDetails(
-    {record, readOnly}:
-    {record: ILinkableEntity | undefined, readOnly: boolean}
+    {record, state}:
+    {record: ILinkableEntity | undefined, state: DetailState}
   ) {
   const [ selectedLinkId, setSelectedLinkId ] = useState<string>()
   const [ isEditing, setIsEditing ] = useState<boolean>(false)
   const [ fromEntityLocations, setFromEntityLocations ] = useState<string>()
   const [ toEntityLocations, setToEntityLocations ] = useState<string>()
+  const allowLinking = record && state.allowLink && !state.updating
 
-  function handleClickLink() {
-    console.log("Link...")
+  function handleLinkorCancel() {
+    if (isEditing) {
+      toast("Cancelling ...")
+      // TODO: handle cancel
+    } else {
+      toast("Linking...")
+      // TODO: handle link
+    }
+    setIsEditing(false)
   }
-  function handleClickUnlink() {
-    console.log(`Unlink EntityLink#${selectedLinkId}...`)
+
+  function handleUnlink() {
+    if (confirm(`Delete record link #${selectedLinkId}?`)) {
+      toast(`Unlinking EntityLink#${selectedLinkId}...`)
+      // TODO: delete link
+    } else {
+      toast(`Cancelling delete EntityLink#${selectedLinkId}...`)
+    }
   }
-  function handleClickSaveOrEdit() {
-    if (isEditing)
-      console.log("saving locations...")
-    else
-      console.log("editing locations...")
+
+  function handleSaveOrEdit() {
+    if (isEditing) {
+      toast("Saving locations...")
+      // TODO: save locations
+    } else {
+      toast("Editing locations...")
+    }
     setIsEditing(!isEditing)
   }
 
@@ -74,11 +95,15 @@ export default function LinkingDetails(
   }
 
   return (
-    <div className="w-full grid grid-cols-6 ml-2 mr-2 mb-2 gap-2">
-      <Label htmlFor="master" className="">Links from:</Label>
+    <div className="w-full grid grid-cols-6 gap-2">
+      <Label htmlFor="master">Links from:</Label>
       <Select disabled={!record || isEditing} value={selectedLinkId} onValueChange={handleSelectedLinkChange}>
-        <SelectTrigger className="col-span-3 w-full">
-          <SelectValue />
+        <SelectTrigger className="col-span-4 w-full">
+          <SelectValue placeholder={
+            record?.toEntityLinks?.content?.length ?? 0 > 0
+            ? "-Select an inbound link-"
+            : "-No inbound links-"}
+          />
         </SelectTrigger>
         <SelectContent>
           {
@@ -86,28 +111,33 @@ export default function LinkingDetails(
               const fromEntity = link.fromEntity;
               const linkId = link.id?.toString() ?? ''
               return fromEntity
-                ? <SelectItem key={linkId} value={linkId}>{`${fromEntity?.entityKind}\u00a0#${fromEntity?.id}`}</SelectItem>
+                ? <SelectItem key={linkId} value={linkId}>{`${getRecordLabel(fromEntity?.entityKind as RecordKind, fromEntity)}`}</SelectItem>
                 : null
             })
           }
         </SelectContent>
       </Select>
-      <Button onClick={handleClickLink} className="w-20 place-self-end bg-blue-500" disabled={!record}>Link</Button>
-      <Button onClick={handleClickUnlink} className="w-20 place-self-center bg-blue-500" disabled={!record}>Unlink</Button>
+      <Button
+        className="w-20 place-self-center bg-blue-500"
+        disabled={!allowLinking}
+        onClick={handleLinkorCancel}
+      >
+        {isEditing ? "Cancel" : "Link"}
+      </Button>
       <Label htmlFor="from-loc" className="col-start-1">From location(s):</Label>
       <Input
         id="from-loc"
         type="text"
         className="col-span-4"
         disabled={!record}
-        readOnly={!isEditing}
+        readOnly={!allowLinking || !isEditing}
         value={fromEntityLocations}
         onChange={e => setFromEntityLocations(e.target.value)}
       />
       <Button
-        onClick={handleClickSaveOrEdit}
-        className="row-span-2 w-20 place-self-center bg-blue-500"
-        disabled={!record || readOnly}
+        className="w-20 place-self-center bg-blue-500"
+        disabled={!allowLinking || !selectedLinkId}
+        onClick={handleSaveOrEdit}
       >
         {isEditing ? 'Save' : 'Edit'}
       </Button>
@@ -117,54 +147,17 @@ export default function LinkingDetails(
         type="text"
         className="col-span-4"
         disabled={!record}
-        readOnly={!isEditing}
+        readOnly={!allowLinking || !isEditing}
         value={toEntityLocations}
         onChange={e => setToEntityLocations(e.target.value)}
       />
-    </div>
-  )
-}
-
-function EntityLinkLocations({entityLink, disabled}: {entityLink: EntityLink | null, disabled: boolean}) {
-  const [ isEditing, setIsEditing ] = useState<boolean>(false)
-  const [ fromEntityLocations, setFromEntityLocations ] = useState(entityLink?.fromEntityLocations)
-  const [ toEntityLocations, setToEntityLocations ] = useState(entityLink?.toEntityLocations)
-
-  function handleClickSaveOrEdit() {
-    if (isEditing)
-      console.log("saving locations...")
-    else
-      console.log("editing locations...")
-    setIsEditing(!isEditing)
-  }
-
-  return (
-    <>
-      <Label htmlFor="from-loc" className="col-start-1">From location(s):</Label>
-      <Input
-        id="from-loc"
-        type="text"
-        className="col-span-4"
-        disabled={disabled}
-        readOnly={!isEditing}
-        value={isEditing ? fromEntityLocations : entityLink?.fromEntityLocations}
-        onChange={e => setFromEntityLocations(e.target.value)}
-      />
       <Button
-        onClick={handleClickSaveOrEdit}
-        className="row-span-2 w-20 place-self-center bg-blue-500"
-        disabled={disabled}>{isEditing ? 'Save' : 'Edit'}
+        className="w-20 place-self-center bg-blue-500"
+        disabled={!allowLinking || !selectedLinkId || isEditing}
+        onClick={handleUnlink}
+      >
+        Unlink
       </Button>
-      <Label htmlFor="to-loc">To location(s):</Label>
-      <Input
-        id="to-loc"
-        type="text"
-        className="col-span-4"
-        disabled={disabled}
-        readOnly={!isEditing}
-        value={isEditing ? toEntityLocations : entityLink?.toEntityLocations}
-        onChange={e => setToEntityLocations(e.target.value)}
-      />
-    </>
+    </div>
   )
 }

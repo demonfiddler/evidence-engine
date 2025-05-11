@@ -97,9 +97,9 @@ export default function Page() {
                 <CardTitle>Mission Statement</CardTitle>
               </CardHeader>
               <CardContent className="grid grid-cols-1 gap-2 overflow-y-auto">
-                <p>Refute anti-truth, anti-human, anti-freedom mainstream narratives.</p>
-                <p>Focus on truth, health, justice and freedom.</p>
-                <p>Curate high-quality contrarian scientific and other evidence, making it readily accessible to researchers and activists.</p>
+                <p><b>Refute</b> anti-truth, anti-human, anti-freedom mainstream narratives.</p>
+                <p><b>Focus</b> on truth, health, justice and freedom.</p>
+                <p><b>Curate</b> high-quality contrarian scientific and other evidence, making it readily accessible to researchers and activists.</p>
               </CardContent>
             </Card>
             <Card className="size-1/3 aspect-square flex-none bg-blue-50 shadow-blue-200 shadow-xl">
@@ -107,7 +107,7 @@ export default function Page() {
                 <CardTitle>Description</CardTitle>
               </CardHeader>
               <CardContent className="grid grid-cols-1 gap-2 overflow-y-auto">
-                <p>This online database details scientific claims, publications, declarations and quotations from leading scientists, organised in an extensible hierarchy of topics.</p>
+                <p>This online database details scientific claims, publications, declarations and quotations from leading scientists, organised within an extensible topic hierarchy.</p>
                 <p>Information in these categories is presented in searchable, sortable, pageable lists that can be exported to various formats.</p>
                 <p>The lists can be linked in various ways to show the relationships between records in each information category.</p>
               </CardContent>

@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { ChevronDownIcon, ChevronRightIcon, ChevronUpDownIcon } from "@heroicons/react/24/outline"
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline"
 
 import DataTableColumnHeader from "@/app/ui/data-table/data-table-column-header"
 
@@ -69,14 +69,14 @@ export const expandColumn: ColumnDef<any> = {
   header: ({ table }) => (
     table.getCanSomeRowsExpand() ?
       <Button variant="ghost" className="" onClick={table.getToggleAllRowsExpandedHandler()}>
-        {table.getIsAllRowsExpanded() ? <ChevronDownIcon /> : <ChevronRightIcon />}
+        {table.getIsAllRowsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
       </Button>
       : <></>
   ),
   cell: ({ row }) =>
     row.getCanExpand() ?
       <Button variant="ghost" onClick={row.getToggleExpandedHandler()}>
-          {row.getIsExpanded() ? <ChevronDownIcon /> : <ChevronRightIcon />}
+          {row.getIsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
       </Button>
       : <></>,
   enableSorting: false,

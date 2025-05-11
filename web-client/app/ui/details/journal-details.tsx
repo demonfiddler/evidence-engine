@@ -19,10 +19,8 @@
 
 'use client'
 
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -37,35 +35,30 @@ import Journal from "@/app/model/Journal";
 import Publisher from "@/app/model/Publisher";
 import rawPublishers from "@/data/publishers.json" assert {type: 'json'}
 import StandardDetails from "./standard-details";
+import useDetailHandlers from "./detail-handlers";
+import DetailActions from "./detail-actions";
 
 const publishers = rawPublishers.content as unknown as Publisher[]
 
 export default function JournalDetails({record}: {record: Journal | undefined}) {
-  const [ isEditing, setIsEditing ] = useState<boolean>(false)
-
-  function handleClickSaveOrEdit() {
-    if (isEditing)
-      console.log("saving details...")
-    else
-      console.log("editing details...")
-    setIsEditing(!isEditing)
-  }
+  const state = useDetailHandlers<Journal>("Journal", record)
+  const { updating } = state
 
   return (
     <fieldset className="border rounded-md w-2/3">
       <legend>&nbsp;Journal Details&nbsp;</legend>
-      <StandardDetails record={record} readOnly={isEditing} showLinkingDetails={false} />
+      <StandardDetails recordKind="Journal" record={record} state={state} showLinkingDetails={false} />
       <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Journal #${record?.id}` : "-Select a journal in the list above to see its details-"}</p>
       <div className="grid grid-cols-6 ml-2 mr-2 mb-2 gap-2">
         <Label htmlFor="title" className="col-start-1">Title:</Label>
-        <Input id="title" className="col-span-4" disabled={!record} readOnly={!isEditing} value={record?.title ?? ''} />
+        <Input id="title" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.title ?? ''} />
+        <DetailActions className="col-start-6 row-span-5" recordKind="Journal" record={record} state={state} />
         <Label htmlFor="abbreviation" className="col-start-1">Abbreviation:</Label>
-        <Input id="abbreviation" className="col-span-2" disabled={!record} readOnly={!isEditing} value={record?.abbreviation ?? ''} />
+        <Input id="abbreviation" className="col-span-2" disabled={!record} readOnly={!updating} value={record?.abbreviation ?? ''} />
         <Label htmlFor="issn" className="">ISSN:</Label>
-        <Input id="issn" className="col-span-1" disabled={!record} readOnly={!isEditing} value={record?.issn ?? ''} />
-        <Button className="col-start-6 w-20 place-self-center bg-blue-500" disabled={!record || isEditing}>New</Button>
+        <Input id="issn" className="col-span-1" disabled={!record} readOnly={!updating} value={record?.issn ?? ''} />
         <Label htmlFor="publisher" className="col-start-1">Publisher:</Label>
-        <Select disabled={!isEditing} value={record?.publisher?.id?.toString() ?? ''}>
+        <Select disabled={!updating} value={record?.publisher?.id?.toString() ?? ''}>
           <SelectTrigger id="publisher" className="col-span-2" disabled={!record}>
             <SelectValue className="col-span-2 w-full" placeholder="Specify publisher" />
           </SelectTrigger>
@@ -78,16 +71,9 @@ export default function JournalDetails({record}: {record: Journal | undefined}) 
           </SelectContent>
         </Select>
         <Label htmlFor="url" className="col-start-1">URL:</Label>
-        <Input id="url" className="col-span-4" disabled={!record} readOnly={!isEditing} value={record?.url?.toString() ?? ''} />
+        <Input id="url" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.url?.toString() ?? ''} />
         <Label htmlFor="notes" className="col-start-1">Notes:</Label>
-        <Textarea id="notes" className="col-span-4" disabled={!record} readOnly={!isEditing} value={record?.notes ?? ''} />
-        <Button
-          onClick={handleClickSaveOrEdit}
-          className="col-start-6 w-20 place-self-center bg-blue-500"
-          disabled={!record}
-        >
-          {isEditing ? 'Save' : 'Edit'}
-        </Button>
+        <Textarea id="notes" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.notes ?? ''} />
       </div>
     </fieldset>
   )
