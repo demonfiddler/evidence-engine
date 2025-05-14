@@ -33,58 +33,128 @@ export const columns: ColumnDef<Publication>[] = [
   selectColumn,
   ... trackedEntityColumns,
   {
+    id: "title",
     accessorKey: "title",
     enableHiding: false,
     enableSorting: true,
+    size: 500,
     // enableColumnFilter: false,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Title" />
     ),
   },
   {
+    id: "authors",
     accessorKey: "authors",
     enableHiding: true,
     enableSorting: false,
+    size: 150,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Authors" />
     )
   },
   {
-    accessorKey: "journal",
+    id: "journal",
+    accessorKey: "journal.title",
     enableHiding: true,
     enableSorting: true,
+    size: 400,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Journal" />
     ),
   },
   {
+    id: "date",
     accessorKey: "date",
     enableHiding: true,
     enableSorting: true,
+    size: 132,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Date" />
     ),
   },
   {
+    id: "year",
     accessorKey: "year",
     enableHiding: true,
     enableSorting: true,
+    size: 90,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Year" />
     ),
   },
   {
+    id: "abstract",
     accessorKey: "abstract",
     enableHiding: true,
     enableSorting: false,
+    size: 400,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Abstract" />
     ),
   },
   {
+    id: "doi",
+    accessorKey: "doi",
+    enableHiding: true,
+    enableSorting: true,
+    size: 200,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="DOI" />
+    ),
+    cell: ({getValue}) => (
+      <a href={`https://doi.org/${getValue() as string}`} target="_blank">{getValue() as string}</a>
+    )
+  },
+  {
+    id: "isbn",
+    accessorKey: "isbn",
+    enableHiding: true,
+    enableSorting: true,
+    size: 170,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="ISBN" />
+    ),
+  },
+  {
+    id: "url",
+    accessorKey: "url",
+    enableHiding: true,
+    enableSorting: true,
+    size: 300,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="URL" />
+    ),
+    cell: ({getValue}) => (
+      <a href={getValue() as string} target="_blank">{getValue() as string}</a>
+    )
+  },
+  {
+    id: "accessed",
+    accessorKey: "accessed",
+    enableHiding: true,
+    enableSorting: true,
+    size: 132,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Accessed" />
+    ),
+  },
+  {
+    id: "notes",
+    accessorKey: "notes",
+    enableHiding: true,
+    enableSorting: false,
+    size: 400,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Notes" />
+    ),
+  },
+  {
+    id: "cached",
     accessorKey: "cached",
     enableHiding: true,
     enableSorting: true,
+    size: 128,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Cached" />
     ),
@@ -96,9 +166,11 @@ export const columns: ColumnDef<Publication>[] = [
     )
   },
   {
+    id: "peerReviewed",
     accessorKey: "peerReviewed",
     enableHiding: true,
     enableSorting: true,
+    size: 128,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Peer Reviewed" />
     ),
@@ -108,46 +180,6 @@ export const columns: ColumnDef<Publication>[] = [
         aria-label="Content has been peer reviewed"
       />
     )
-  },
-  {
-    accessorKey: "doi",
-    enableHiding: true,
-    enableSorting: true,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="DOI" />
-    ),
-  },
-  {
-    accessorKey: "isbn",
-    enableHiding: true,
-    enableSorting: true,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="ISBN" />
-    ),
-  },
-  {
-    accessorKey: "url",
-    enableHiding: true,
-    enableSorting: true,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="URL" />
-    ),
-  },
-  {
-    accessorKey: "notes",
-    enableHiding: true,
-    enableSorting: false,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Notes" />
-    ),
-  },
-  {
-    accessorKey: "accessed",
-    enableHiding: true,
-    enableSorting: true,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Accessed" />
-    ),
   },
   actionColumn
 ]
@@ -161,11 +193,11 @@ export const columnVisibility = {
   date: false,
   year: true,
   abstract: false,
-  cached: false,
-  peerReviewed: false,
   doi: true,
   isbn: true,
   url: false,
+  accessed: false,
   notes: false,
-  accessed: false
+  cached: false,
+  peerReviewed: false,
 }

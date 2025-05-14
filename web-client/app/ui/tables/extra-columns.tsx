@@ -38,6 +38,10 @@ import DataTableColumnHeader from "@/app/ui/data-table/data-table-column-header"
 
 export const actionColumn: ColumnDef<any> = {
   id: "action",
+  enableSorting: false,
+  enableHiding: false,
+  enableResizing: false,
+  size: 72,
   header: ({ column }) => (
     <DataTableColumnHeader className="justify-end" column={column} title="Actions" />
   ),
@@ -60,31 +64,35 @@ export const actionColumn: ColumnDef<any> = {
       </DropdownMenu>
     )
   },
-  enableSorting: false,
-  enableHiding: false,
 }
 
 export const expandColumn: ColumnDef<any> = {
   id: "expand",
+  enableSorting: false,
+  enableHiding: false,
+  enableResizing: false,
+  size: 48,
   header: ({ table }) => (
     table.getCanSomeRowsExpand() ?
-      <Button variant="ghost" className="" onClick={table.getToggleAllRowsExpandedHandler()}>
+      <Button variant="ghost" className="w-8 h-8" onClick={table.getToggleAllRowsExpandedHandler()}>
         {table.getIsAllRowsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
       </Button>
       : <></>
   ),
   cell: ({ row }) =>
     row.getCanExpand() ?
-      <Button variant="ghost" onClick={row.getToggleExpandedHandler()}>
+      <Button variant="ghost" className="w-8 h-8" onClick={row.getToggleExpandedHandler()}>
           {row.getIsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
       </Button>
       : <></>,
-  enableSorting: false,
-  enableHiding: false,
 }
 
 export const selectColumn: ColumnDef<any> = {
   id: "select",
+  enableSorting: false,
+  enableHiding: false,
+  enableResizing: false,
+  size: 32,
   header: ({ table }) => (
       table.options.enableMultiRowSelection ?
       <Checkbox
@@ -114,6 +122,4 @@ export const selectColumn: ColumnDef<any> = {
       />
     </RadioGroup>
   ),
-  enableSorting: false,
-  enableHiding: false,
 }

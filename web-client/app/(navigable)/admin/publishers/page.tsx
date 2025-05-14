@@ -54,7 +54,7 @@ export default function Publishers() {
       </div>
       <DataTable<Publisher, unknown>
         recordKind="Publisher"
-        columns={columns}
+        defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
         onSelect={setSelectedRow}

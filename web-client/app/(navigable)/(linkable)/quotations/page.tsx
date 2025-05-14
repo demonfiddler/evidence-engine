@@ -54,7 +54,7 @@ export default function Quotations() {
       </div>
       <DataTable<Quotation, unknown>
         recordKind="Quotation"
-        columns={columns}
+        defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
         onSelect={setSelectedRow}

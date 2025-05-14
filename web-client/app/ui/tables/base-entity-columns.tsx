@@ -25,8 +25,10 @@ import IBaseEntity from "@/app/model/IBaseEntity"
 
 export const columns: ColumnDef<IBaseEntity>[] = [
   {
+    id: "id",
     accessorKey: "id",
     enableSorting: true,
+    size: 75,
     // enableSortingRemoval: true, // mentioned in TanStack docs but not recognised by IDE.
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="ID" />

@@ -37,7 +37,7 @@ export default function PersonDetails({record}: {record: Person | undefined}) {
   const { updating } = state
 
   return (
-    <fieldset className="border rounded-md w-2/3">
+    <fieldset className="border shadow-lg rounded-md w-2/3">
       <legend>&nbsp;Person Details&nbsp;</legend>
       <StandardDetails recordKind="Person" record={record} state={state} showLinkingDetails={true} />
       <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Person #${record?.id}` : "-Select a person in the list above to see his/her details-"}</p>
@@ -58,9 +58,9 @@ export default function PersonDetails({record}: {record: Person | undefined}) {
         <Label htmlFor="alias" className="col-start-1">Alias:</Label>
         <Input id="alias" className="col-span-2" disabled={!record} readOnly={!updating} value={record?.alias ?? ''} />
         <Label htmlFor="notes" className="col-start-1">Notes:</Label>
-        <Textarea id="notes" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.notes ?? ''} />
+        <Textarea id="notes" className="col-span-4 h-40 overflow-y-auto" disabled={!record} readOnly={!updating} value={record?.notes ?? ''} />
         <Label htmlFor="qualifications" className="col-start-1">Qualifications:</Label>
-        <Textarea id="qualifications" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.qualifications ?? ''} />
+        <Textarea id="qualifications" className="col-span-4 h-40 overflow-y-auto" disabled={!record} readOnly={!updating} value={record?.qualifications ?? ''} />
         <Label htmlFor="country" className="col-start-1">Country:</Label>
         <Select disabled={!updating} value={record?.country ?? ''}>
           <SelectTrigger id="country" className="w-[180px]" disabled={!record}>

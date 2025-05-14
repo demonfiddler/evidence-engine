@@ -54,7 +54,7 @@ export default function Logs() {
       </div>
       <DataTable<Log, unknown>
         recordKind="Log"
-        columns={columns}
+        defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
         onSelect={setSelectedRow}

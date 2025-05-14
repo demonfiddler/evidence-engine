@@ -54,7 +54,7 @@ export default function Journals() {
       </div>
       <DataTable<Journal, unknown>
         recordKind="Journal"
-        columns={columns}
+        defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
         onSelect={setSelectedRow}

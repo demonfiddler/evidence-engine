@@ -54,7 +54,7 @@ export default function Publications() {
       </div>
       <DataTable<Publication, unknown>
         recordKind="Publication"
-        columns={columns}
+        defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
         onSelect={setSelectedRow}

@@ -25,6 +25,7 @@ import Declaration from "@/app/model/Declaration"
 import { columns as trackedEntityColumns, columnVisibility as trackedEntityColumnVisibility } from "./tracked-entity-columns"
 import { actionColumn as rawActionColumn, selectColumn as rawSelectColumn } from "./extra-columns"
 import { formatDate } from "@/lib/utils"
+import { Checkbox } from "@/components/ui/checkbox"
 
 const actionColumn = rawActionColumn as ColumnDef<Declaration>
 const selectColumn = rawSelectColumn as ColumnDef<Declaration>
@@ -33,26 +34,32 @@ export const columns: ColumnDef<Declaration>[] = [
   selectColumn,
   ... trackedEntityColumns,
   {
+    id: "kind",
     accessorKey: "kind",
     enableHiding: true,
     enableSorting: true,
+    size: 112,
     // enableColumnFilter: false,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Kind" />
     ),
   },
   {
+    id: "title",
     accessorKey: "title",
     enableHiding: false,
-    enableSorting: false,
+    enableSorting: true,
+    size: 360,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Title" />
     ),
   },
   {
+    id: "date",
     accessorKey: "date",
     enableHiding: true,
     enableSorting: true,
+    size: 132,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Date" />
     ),
@@ -61,41 +68,70 @@ export const columns: ColumnDef<Declaration>[] = [
     )
   },
   {
+    id: "country",
     accessorKey: "country",
     enableHiding: true,
-    enableSorting: false,
+    enableSorting: true,
+    size: 150,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Country" />
     ),
   },
   {
+    id: "url",
+    accessorKey: "url",
+    enableHiding: true,
+    enableSorting: true,
+    size: 300,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="URL" />
+    ),
+    cell: ({getValue}) => (
+      <a href={getValue() as string} target="_blank">{getValue() as string}</a>
+    )
+  },
+  {
+    id: "cached",
     accessorKey: "cached",
     enableHiding: true,
-    enableSorting: false,
+    enableSorting: true,
+    size: 116,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Cached" />
     ),
+    cell: ({row}) => (
+      <Checkbox
+        checked={row.original.cached}
+        aria-label="Cached on EE server"
+      />
+    )
   },
   {
+    id: "signatories",
     accessorKey: "signatories",
     enableHiding: true,
     enableSorting: false,
+    size: 200,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Signatories" />
     ),
   },
   {
+    id: "signatoryCount",
     accessorKey: "signatoryCount",
     enableHiding: true,
-    enableSorting: false,
+    enableSorting: true,
+    size: 150,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Signatory Count" />
     ),
   },
   {
+    id: "notes",
     accessorKey: "notes",
     enableHiding: true,
     enableSorting: false,
+    size: 300,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Notes" />
     ),
@@ -109,6 +145,7 @@ export const columnVisibility = {
   title: true,
   date: true,
   country: true,
+  url: false,
   cached: false,
   signatories: false,
   signatoryCount: false,

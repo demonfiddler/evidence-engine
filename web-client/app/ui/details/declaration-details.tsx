@@ -43,6 +43,7 @@ import rawCountries from "@/data/countries.json" assert {type: 'json'}
 import StandardDetails from "./standard-details"
 import useDetailHandlers from "./detail-handlers"
 import DetailActions from "./detail-actions"
+import Link from "next/link"
 const countries = rawCountries as unknown as Country[]
 
 export default function DeclarationDetails({record}: {record: Declaration | undefined}) {
@@ -54,7 +55,7 @@ export default function DeclarationDetails({record}: {record: Declaration | unde
   }
 
   return (
-    <fieldset className="border rounded-md w-2/3">
+    <fieldset className="border shadow-lg rounded-md w-2/3">
       <legend>&nbsp;Declaration Details&nbsp;</legend>
       <StandardDetails recordKind="Declaration" record={record} state={state} showLinkingDetails={true} />
       <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Declaration #${record?.id}` : "-Select a declaration in the list above to see its details-"}</p>
@@ -65,7 +66,7 @@ export default function DeclarationDetails({record}: {record: Declaration | unde
             <Button
               variant={"outline"}
               disabled={!updating}
-              className={cn("w-[240px] justify-start text-left font-normal",
+              className={cn("w-full justify-start text-left font-normal",
                 (!record || !record.date) && "text-muted-foreground")}
             >
               <CalendarIcon />
@@ -97,9 +98,13 @@ export default function DeclarationDetails({record}: {record: Declaration | unde
         </Select>
         <DetailActions className="col-start-6 row-span-6" recordKind="Declaration" record={record} state={state} />
         <Label htmlFor="title" className="col-start-1">Title:</Label>
-        <Textarea id="title" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.title ?? ''} />
+        <Input id="title" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.title ?? ''} />
         <Label htmlFor="url" className="col-start-1">URL:</Label>
-        <Input type="url" className="col-span-4" disabled={!record} readOnly={!updating} placeholder="URL" value={record?.url?.toString() ?? ''} />
+        {
+          updating
+          ? <Input type="url" className="col-span-4" placeholder="URL" value={record?.url?.toString() ?? ''} />
+          : <Link className="col-span-4" href={record?.url?.toString() ?? ''} target="_blank">{record?.url?.toString() ?? ''}</Link>
+        }
         <Label htmlFor="cached" className="col-start-1">Cached:</Label>
         <Checkbox id="cached" className="col-span-2" disabled={!record || !updating} checked={record?.cached} />
         <Label htmlFor="country">Country:</Label>
@@ -115,12 +120,12 @@ export default function DeclarationDetails({record}: {record: Declaration | unde
             </SelectGroup>
           </SelectContent>
         </Select>
-        <Label htmlFor="signatories" className="col-start-1">Title:</Label>
-        <Textarea id="signatories" className="col-span-2" disabled={!record} readOnly={!updating} value={record?.signatories ?? ''} />
+        <Label htmlFor="signatories" className="col-start-1">Signatories:</Label>
+        <Textarea id="signatories" className="col-span-2 h-40 overflow-y-auto" disabled={!record} readOnly={!updating} value={record?.signatories ?? ''} />
         <Label htmlFor="signatoryCount" className="">Signatory count:</Label>
         <Input id="signatoryCount" type="signatoryCount" disabled={!record} readOnly={!updating} placeholder="count" value={record?.signatoryCount ?? ''} />
         <Label htmlFor="notes" className="col-start-1">Notes:</Label>
-        <Textarea id="notes" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.notes ?? ''} />
+        <Textarea id="notes" className="col-span-4 h-40 overflow-y-auto" disabled={!record} readOnly={!updating} value={record?.notes ?? ''} />
       </div>
     </fieldset>
   )

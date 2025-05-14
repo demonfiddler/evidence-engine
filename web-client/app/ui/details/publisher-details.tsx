@@ -36,6 +36,7 @@ import rawCountries from "@/data/countries.json" assert {type: 'json'}
 import Country from "@/app/model/Country";
 import useDetailHandlers from "./detail-handlers";
 import DetailActions from "./detail-actions";
+import Link from "next/link";
 
 const countries = rawCountries as unknown as Country[]
 
@@ -44,7 +45,7 @@ export default function PublisherDetails({record}: {record: Publisher | undefine
   const { updating } = state
 
   return (
-    <fieldset className="border rounded-md w-2/3">
+    <fieldset className="border shadow-lg rounded-md w-2/3">
       <legend>&nbsp;Publisher Details&nbsp;</legend>
       <StandardDetails recordKind="Publisher" record={record} state={state} showLinkingDetails={false} />
       <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Publisher #${record?.id}` : "-Select a publisher in the list above to see its details-"}</p>
@@ -56,7 +57,7 @@ export default function PublisherDetails({record}: {record: Publisher | undefine
         <Input id="location" className="col-span-2" disabled={!record} readOnly={!updating} value={record?.location ?? ''} />
         <Label htmlFor="country">Country:</Label>
         <Select disabled={!updating} value={record?.country ?? ''}>
-          <SelectTrigger id="country" className="" disabled={!record}>
+          <SelectTrigger id="country" className="w-full" disabled={!record}>
             <SelectValue placeholder="Specify country" />
           </SelectTrigger>
           <SelectContent>
@@ -68,7 +69,11 @@ export default function PublisherDetails({record}: {record: Publisher | undefine
           </SelectContent>
         </Select>
         <Label htmlFor="url" className="col-start-1">URL:</Label>
-        <Input id="url" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.url?.toString() ?? ''} />
+        {
+          updating
+          ? <Input id="url" className="col-span-4" value={record?.url?.toString() ?? ''} />
+          : <Link className="col-span-4" href={record?.url?.toString() ?? ''} target="_blank">{record?.url?.toString() ?? ''}</Link>
+        }
         <Label htmlFor="journalCount" className="col-start-1">Journal count:</Label>
         <Input type="number" id="journalCount" className="col-span-1" disabled={!record} readOnly={!updating} value={record?.journalCount ?? ''} />
       </div>

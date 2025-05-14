@@ -34,18 +34,22 @@ export const columns: ColumnDef<Topic>[] = [
   selectColumn,
   ... trackedEntityColumns,
   {
+    id: "label",
     accessorKey: "label",
     enableHiding: true,
     enableSorting: true,
     // enableColumnFilter: false,
+    size: 240,
     header: ({ column }) => <DataTableColumnHeader column={column} title="Label" />,
     cell: ({ row, getValue }) => <div className="flex flex-row" style={{paddingLeft: `${row.depth}rem`}}>{row.depth > 0 ? <ArrowTurnDownRightIcon className="w-4 h-4" /> : <></>}{getValue<string>()}</div>
   },
   expandColumn,
   {
+    id: "description",
     accessorKey: "description",
     enableHiding: true,
     enableSorting: false,
+    size: 600,
     header: ({ column }) => <DataTableColumnHeader column={column} title="Description" />,
   },
   actionColumn

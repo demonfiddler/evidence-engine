@@ -22,26 +22,24 @@
 import { ColumnDef } from "@tanstack/react-table"
 import DataTableColumnHeader from "@/app/ui/data-table/data-table-column-header"
 import type ITrackedEntity from "@/app/model/ITrackedEntity"
+import { columns as baseEntityColumns, columnVisibility as baseEntityColumnVisibility } from "./base-entity-columns"
 
 export const columns: ColumnDef<ITrackedEntity>[] = [
+  ...baseEntityColumns,
   {
-    accessorKey: "id",
-    enableSorting: true,
-    // enableSortingRemoval: true, // mentioned in TanStack docs but not recognised by IDE.
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="ID" />
-    ),
-  },
-  {
+    id: "status",
     accessorKey: "status",
     enableSorting: true,
+    size: 108,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Status" />
     ),
   },
   {
+    id: "created",
     accessorKey: "created",
     enableSorting: true,
+    size: 132,
     header: ({ column }) => (
       <DataTableColumnHeader className="" column={column} title="Created" />
     ),
@@ -60,15 +58,19 @@ export const columns: ColumnDef<ITrackedEntity>[] = [
     },
   },
   {
+    id: "createdByUsername",
     accessorKey: "createdByUser.username",
     enableSorting: true,
+    size: 140,
     header: ({ column }) => (
       <DataTableColumnHeader className="" column={column} title="Created by" />
     ),
   },
   {
+    id: "updated",
     accessorKey: "updated",
     enableSorting: true,
+    size: 132,
     header: ({ column }) => (
       <DataTableColumnHeader className="" column={column} title="Updated" />
     ),
@@ -87,8 +89,10 @@ export const columns: ColumnDef<ITrackedEntity>[] = [
     },
   },
   {
+    id: "updatedByUsername",
     accessorKey: "updatedByUser.username",
     enableSorting: true,
+    size: 140,
     header: ({ column }) => (
       <DataTableColumnHeader className="" column={column} title="Updated by" />
     ),
@@ -96,10 +100,10 @@ export const columns: ColumnDef<ITrackedEntity>[] = [
 ]
 
 export const columnVisibility = {
-  id: true,
+  ...baseEntityColumnVisibility,
   status: true,
   created: false,
-  createdByUser_username: false,
+  createdByUsername: false,
   updated: false,
-  updatedByUser_username: false
+  updatedByUsername: false
 }

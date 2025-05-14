@@ -32,57 +32,71 @@ export const columns: ColumnDef<User>[] = [
   selectColumn,
   ... trackedEntityColumns,
   {
+    id: "username",
     accessorKey: "username",
     enableHiding: false,
     enableSorting: true,
+    size: 132,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Username" />
     ),
   },
   {
+    id: "firstName",
     accessorKey: "firstName",
-    enableHiding: false,
+    enableHiding: true,
     enableSorting: true,
+    size: 132,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="First Name" />
     ),
   },
   {
+    id: "lastName",
     accessorKey: "lastName",
-    enableHiding: false,
+    enableHiding: true,
     enableSorting: true,
+    size: 132,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Last Name" />
     ),
   },
   {
+    id: "email",
     accessorKey: "email",
-    enableHiding: false,
+    enableHiding: true,
     enableSorting: true,
+    size: 300,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Email" />
     ),
   },
   {
+    id: "country",
     accessorKey: "country",
     enableHiding: true,
     enableSorting: true,
+    size: 150,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Country" />
     ),
   },
   {
+    id: "password",
     accessorKey: "password",
-    enableHiding: false,
-    enableSorting: true,
+    enableHiding: true,
+    enableSorting: false,
+    size: 200,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="password" />
     ),
   },
   {
+    id: "authorities",
     accessorKey: "authorities",
     enableHiding: true,
     enableSorting: true,
+    size: 280,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Authorities" />
     ),

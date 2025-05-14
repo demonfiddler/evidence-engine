@@ -33,18 +33,22 @@ export const columns: ColumnDef<Quotation>[] = [
   selectColumn,
   ... trackedEntityColumns,
   {
+    id: "quotee",
     accessorKey: "quotee",
     enableHiding: true,
     enableSorting: true,
+    size: 200,
     // enableColumnFilter: false,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Quotee" />
     ),
   },
   {
+    id: "date",
     accessorKey: "date",
     enableHiding: true,
     enableSorting: true,
+    size: 132,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Date" />
     ),
@@ -53,33 +57,44 @@ export const columns: ColumnDef<Quotation>[] = [
     )
   },
   {
+    id: "text",
     accessorKey: "text",
     enableHiding: false,
     enableSorting: false,
+    size: 500,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Quote" />
     ),
   },
   {
+    id: "source",
     accessorKey: "source",
     enableHiding: true,
     enableSorting: false,
+    size: 300,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Source" />
     ),
   },
   {
+    id: "url",
     accessorKey: "url",
     enableHiding: true,
     enableSorting: false,
+    size: 300,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="URL" />
     ),
+    cell: ({getValue}) => (
+      <a href={getValue() as string} target="_blank">{getValue() as string}</a>
+    )
   },
   {
+    id: "notes",
     accessorKey: "notes",
     enableHiding: true,
     enableSorting: false,
+    size: 400,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Notes" />
     ),

@@ -32,42 +32,55 @@ export const columns: ColumnDef<Publication>[] = [
   selectColumn,
   ... trackedEntityColumns,
   {
+    id: "name",
     accessorKey: "name",
     enableHiding: false,
     enableSorting: true,
+    size: 400,
     // enableColumnFilter: false,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Name" />
     ),
   },
   {
+    id: "location",
     accessorKey: "location",
     enableHiding: true,
     enableSorting: true,
+    size: 200,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Location" />
     )
   },
   {
+    id: "country",
     accessorKey: "country",
     enableHiding: true,
     enableSorting: true,
+    size: 150,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Country" />
     ),
   },
   {
+    id: "url",
     accessorKey: "url",
     enableHiding: true,
     enableSorting: true,
+    size: 300,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="URL" />
     ),
+    cell: ({getValue}) => (
+      <a href={getValue() as string} target="_blank">{getValue() as string}</a>
+    )
   },
   {
+    id: "journalCount",
     accessorKey: "journalCount",
     enableHiding: true,
     enableSorting: true,
+    size: 150,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Journal Count" />
     ),

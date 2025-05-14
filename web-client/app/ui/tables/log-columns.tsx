@@ -34,9 +34,11 @@ const ownColumns1: ColumnDef<Log>[] = [
   selectColumn,
   ... baseEntityColumns,
   {
+    id: "timestamp",
     accessorKey: "timestamp",
     enableHiding: true,
     enableSorting: true,
+    size: 220,
     // enableColumnFilter: false,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Timestamp" />
@@ -46,9 +48,11 @@ const ownColumns1: ColumnDef<Log>[] = [
     )
   },
   {
+    id: "user",
     accessorKey: "user",
     enableHiding: true,
     enableSorting: true,
+    size: 140,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="User" />
     ),
@@ -57,9 +61,11 @@ const ownColumns1: ColumnDef<Log>[] = [
     )
   },
   {
+    id: "transactionKind",
     accessorKey: "transactionKind",
     enableHiding: true,
     enableSorting: true,
+    size: 150,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Transaction" />
     )
@@ -68,17 +74,21 @@ const ownColumns1: ColumnDef<Log>[] = [
 
 const ownColumns2: ColumnDef<Log>[] = [
   {
+    id: "linkedEntityKind",
     accessorKey: "linkedEntityKind",
     enableHiding: true,
     enableSorting: true,
+    size: 200,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Linked Record Kind" />
     ),
   },
   {
+    id: "linkedEntityId",
     accessorKey: "linkedEntityId",
     enableHiding: true,
     enableSorting: true,
+    size: 170,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Linked Entity ID" />
     ),
@@ -94,48 +104,21 @@ export const ownColumns: ColumnDef<Log>[] = [
 export const columns: ColumnDef<Log>[] = [
   ...ownColumns1,
   {
-    accessorKey: "timestamp",
-    enableHiding: true,
-    enableSorting: true,
-    // enableColumnFilter: false,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Timestamp" />
-    ),
-    cell: ({ row }) => (
-      <div className="font-medium">{formatDate(row.getValue("timestamp"))}</div>
-    )
-  },
-  {
-    accessorKey: "user",
-    enableHiding: true,
-    enableSorting: true,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="User" />
-    ),
-    cell: ({cell}) => (
-      (cell.getValue() as User)?.username
-    )
-  },
-  {
-    accessorKey: "transactionKind",
-    enableHiding: true,
-    enableSorting: true,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Transaction" />
-    )
-  },
-  {
+    id: "entityKind",
     accessorKey: "entityKind",
     enableHiding: true,
     enableSorting: true,
+    size: 150,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Record Kind" />
     ),
   },
   {
+    id: "entityId",
     accessorKey: "entityId",
     enableHiding: true,
     enableSorting: true,
+    size: 120,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Entity ID" />
     ),

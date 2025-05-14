@@ -32,45 +32,56 @@ export const columns: ColumnDef<Journal>[] = [
   selectColumn,
   ... trackedEntityColumns,
   {
+    id: "title",
     accessorKey: "title",
-    size: 150,
     enableHiding: false,
     enableSorting: true,
+    size: 400,
     // enableColumnFilter: false,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Title" />
     ),
   },
   {
+    id: "abbreviation",
     accessorKey: "abbreviation",
-    size: 150,
     enableHiding: true,
     enableSorting: true,
+    size: 200,
     // enableColumnFilter: false,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Abbreviation" />
     ),
   },
   {
+    id: "url",
     accessorKey: "url",
     enableHiding: true,
     enableSorting: true,
+    size: 300,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="URL" />
     ),
+    cell: ({getValue}) => (
+      <a href={getValue() as string} target="_blank">{getValue() as string}</a>
+    )
   },
   {
+    id: "issn",
     accessorKey: "issn",
     enableHiding: true,
     enableSorting: true,
+    size: 150,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="ISSN" />
     ),
   },
   {
+    id: "publisher",
     accessorKey: "publisher",
     enableHiding: true,
     enableSorting: true,
+    size: 150,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Publisher" />
     ),
@@ -84,9 +95,11 @@ export const columns: ColumnDef<Journal>[] = [
     )
   },
   {
+    id: "notes",
     accessorKey: "notes",
     enableHiding: true,
     enableSorting: false,
+    size: 400,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Notes" />
     ),

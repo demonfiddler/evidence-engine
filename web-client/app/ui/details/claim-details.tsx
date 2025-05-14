@@ -41,7 +41,7 @@ export default function ClaimDetails({ record }: { record: Claim | undefined }) 
   }
 
   return (
-    <fieldset className="border rounded-md w-2/3">
+    <fieldset className="border shadow-lg rounded-md w-2/3">
       <legend>&nbsp;Claim Details&nbsp;</legend>
       <StandardDetails recordKind="Claim" record={record} state={state} showLinkingDetails={true} />
       <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Claim #${record?.id}` : "-Select a claim in the list above to see its details-"}</p>
@@ -69,9 +69,9 @@ export default function ClaimDetails({ record }: { record: Claim | undefined }) 
         </Popover>
         <DetailActions className="col-start-6 row-span-3" recordKind="Claim" record={record} state={state} />
         <Label htmlFor="text" className="col-start-1">Text:</Label>
-        <Textarea id="text" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.text ?? ''} />
+        <Textarea id="text" className="col-span-4 h-40 overflow-y-auto" disabled={!record} readOnly={!updating} value={record?.text ?? ''} />
         <Label htmlFor="notes" className="col-start-1">Notes:</Label>
-        <Textarea id="notes" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.notes ?? ''} />
+        <Textarea id="notes" className="col-span-4 h-40 overflow-y-auto" disabled={!record} readOnly={!updating} value={record?.notes ?? ''} />
       </div>
     </fieldset>
   )

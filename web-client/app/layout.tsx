@@ -120,10 +120,10 @@ export default function RootLayout({
   }
 
   function setMasterRecordKind(mlCtx: MasterLinkContextType, srCtx: SelectedRecordsContextType, masterRecordKind: RecordKind) {
-    console.log(`enter RootLayout.setMasterRecordKind(masterRecordKind: ${masterRecordKind}), mlCtx: ${JSON.stringify(mlCtx)}, srCtx: ${JSON.stringify(srCtx)}`)
-    console.log(`\tselectedRecordsContext = ${JSON.stringify(selectedRecordsContext)}`)
+    // console.log(`enter RootLayout.setMasterRecordKind(masterRecordKind: ${masterRecordKind}), mlCtx: ${JSON.stringify(mlCtx)}, srCtx: ${JSON.stringify(srCtx)}`)
+    // console.log(`\tselectedRecordsContext = ${JSON.stringify(selectedRecordsContext)}`)
     const masterRecord = srCtx[masterRecordKind]
-    console.log(`\tmasterRecord = ${JSON.stringify(masterRecord)}`)
+    // console.log(`\tmasterRecord = ${JSON.stringify(masterRecord)}`)
 
     const newCtxSs = {
       ...mlCtx,
@@ -160,8 +160,8 @@ export default function RootLayout({
     console.log(`\tRootLayout.setSelectedRecord(masterRecordKind: ${recordKind}), newCtx=${JSON.stringify(newCtx)}`)
   }
 
-  console.log(`RootLayout(): masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
-  console.log(`RootLayout(): selectedRecordsContext = ${JSON.stringify(selectedRecordsContext)}`)
+  // console.log(`RootLayout(): masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
+  // console.log(`RootLayout(): selectedRecordsContext = ${JSON.stringify(selectedRecordsContext)}`)
 
   return (
     <html lang="en">

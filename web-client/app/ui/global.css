@@ -66,3 +66,37 @@ input[type='number']::-webkit-outer-spin-button {
 .ee .dropdown {
   width: fit-content
 }
+
+.resizer {
+  position: absolute;
+  top: 0; 
+  width: 5px;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+}
+
+.resizer.ltr {
+  right: 0;
+}
+
+.resizer.rtl {
+  left: 0;
+}
+
+.resizer.isResizing {
+  background: blue;
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .resizer {
+    opacity: 0;
+  }
+
+  *:hover > .resizer {
+    opacity: 1;
+  }
+}

@@ -32,17 +32,21 @@ export const columns: ColumnDef<Group>[] = [
   selectColumn,
   ... trackedEntityColumns,
   {
+    id: "groupname",
     accessorKey: "groupname",
     enableHiding: false,
     enableSorting: true,
+    size: 150,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Group Name" />
     ),
   },
   {
+    id: "authorities",
     accessorKey: "authorities",
     enableHiding: true,
-    enableSorting: true,
+    enableSorting: false,
+    size: 280,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Authorities" />
     ),

@@ -26,7 +26,7 @@ import { formatDate } from "@/lib/utils";
 
 export default function LogDetails({record}: {record: Log | undefined}) {
   return (
-    <fieldset className="border rounded-md w-2/3">
+    <fieldset className="border shadow-lg rounded-md w-2/3">
       <legend>&nbsp;Log Details&nbsp;</legend>
       <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Log #${record?.id}` : "-Select a log entry in the list above to see its details-"}</p>
       <div className="grid grid-cols-4 ml-2 mr-2 mb-2 gap-2">

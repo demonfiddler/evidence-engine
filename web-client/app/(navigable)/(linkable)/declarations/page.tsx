@@ -54,7 +54,7 @@ export default function Declarations() {
       </div>
       <DataTable<Declaration, unknown>
         recordKind="Declaration"
-        columns={columns}
+        defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
         onSelect={setSelectedRow}

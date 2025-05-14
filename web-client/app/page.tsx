@@ -64,7 +64,7 @@ export default function Page() {
               src="/hero-desktop.png"
               width={1000}
               height={760}
-              className="hidden md:block"
+              className="hidden md:block shadow-xl"
               alt="Screenshots of the Evidence Engine showing desktop version"
             />
             {/* <Image
@@ -76,7 +76,7 @@ export default function Page() {
             /> */}
           </div>
           <div className="flex gap-8 rounded-lg bg-gray-50 px-6 py-10 md:min-w-1/6 md:px-20">
-            <Card className="size-1/3 aspect-square flex-none bg-red-50 shadow-red-200 shadow-xl">
+            <Card className="size-1/3 aspect-square flex-none bg-red-50 shadow-red-200 shadow-xl transition-transform duration-300 ease-in-out transform hover:scale-105">
               <CardHeader className="justify-center">
                 <CardTitle>The Challenge</CardTitle>
                 {/* <CardDescription>
@@ -92,7 +92,7 @@ export default function Page() {
                 <p>Card Footer</p>
               </CardFooter> */}
             </Card>
-            <Card className="size-1/3 aspect-square flex-none bg-green-50 shadow-green-200 shadow-xl">
+            <Card className="size-1/3 aspect-square flex-none bg-green-50 shadow-green-200 shadow-xl transition-transform duration-300 ease-in-out transform hover:scale-105">
               <CardHeader className="justify-center">
                 <CardTitle>Mission Statement</CardTitle>
               </CardHeader>
@@ -102,7 +102,7 @@ export default function Page() {
                 <p><b>Curate</b> high-quality contrarian scientific and other evidence, making it readily accessible to researchers and activists.</p>
               </CardContent>
             </Card>
-            <Card className="size-1/3 aspect-square flex-none bg-blue-50 shadow-blue-200 shadow-xl">
+            <Card className="size-1/3 aspect-square flex-none bg-blue-50 shadow-blue-200 shadow-xl transition-transform duration-300 ease-in-out transform hover:scale-105">
               <CardHeader className="justify-center">
                 <CardTitle>Description</CardTitle>
               </CardHeader>

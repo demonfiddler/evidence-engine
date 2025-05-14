@@ -22,6 +22,7 @@
 import {
   ColumnDef,
   ColumnFiltersState,
+  ColumnResizeMode,
   ExpandedState,
   RowSelectionState,
   SortingState,
@@ -52,17 +53,9 @@ import { MasterLinkContext, SelectedRecordsContext } from "@/lib/context"
 import RecordKind from "@/app/model/RecordKind"
 import { isLinkableEntity } from "@/lib/utils"
 
-// These strings are present solely to enable TailwindCSS to detect that we might be using these classes.
-const widthClasses = [
-  "max-w-50",
-  "max-w-100",
-  "max-w-150",
-  "max-w-200",
-]
-
 interface DataTableProps<TData, TValue> {
   recordKind: RecordKind
-  columns: ColumnDef<TData, TValue>[]
+  defaultColumns: ColumnDef<TData, TValue>[]
   defaultColumnVisibility: VisibilityState
   page?: IPage<TData>
   getSubRows?: (row: TData) => TData[] | undefined
@@ -71,7 +64,7 @@ interface DataTableProps<TData, TValue> {
 
 export default function DataTable<TData extends IBaseEntity, TValue>({
   recordKind,
-  columns,
+  defaultColumns,
   defaultColumnVisibility,
   page,
   getSubRows,
@@ -79,9 +72,13 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
 }: DataTableProps<TData, TValue>) {
   const masterLinkContext = useContext(MasterLinkContext)
   const selectedRecordsContext = useContext(SelectedRecordsContext)
-  const [sorting, setSorting] = useState<SortingState>([{id: "id", desc: false}])
+  const [columns] = useState<typeof defaultColumns>(() => [
+    ...defaultColumns,
+  ])
+  const [sorting, setSorting] = useState<SortingState>([/*{id: "id", desc: false}*/])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({...defaultColumnVisibility})
+  const [columnResizeMode/*, setColumnResizeMode*/] = useState<ColumnResizeMode>("onChange") // "onEnd" "onChange"
   // const [columnOrder, setColumnOrder] = useState<string[]>([])
   const selectedRecord = selectedRecordsContext[recordKind]
   const [rowSelection, setRowSelection] = useState(selectedRecord ? {[selectedRecord.id.toString()]: true} : {})
@@ -108,7 +105,8 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
     enableExpanding: true,
     maxMultiSortColCount: 5, // default is unlimited
     onColumnFiltersChange: setColumnFilters,
-    // columnResizeMode: 'onChange', // default "onEnd"
+    columnResizeMode: columnResizeMode,
+    columnResizeDirection: "ltr",
     getFilteredRowModel: getFilteredRowModel(),
     // filterFromLeafRows: false,
     // maxLeafRowFilterDepth: 0,
@@ -130,6 +128,11 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
     // debugTable: true,
     // debugHeaders: true,
     // debugColumns: true,
+    // defaultColumn: {
+    //   size: 150, //starting column size
+    //   minSize: 10, //enforced during column resizing
+    //   maxSize: 500, //enforced during column resizing
+    // },
     state: {
       sorting,
       // columnOrder,
@@ -140,6 +143,17 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
       // pagination,
     }
   })
+
+  function computeTableMetrics() {
+    let length = 0
+    const widths: {[key: string] : number} = {}
+    table.getVisibleLeafColumns().forEach(col => {
+      length += col.getSize()
+      widths[col.columnDef.id ?? 'unknown'] = col.getSize()
+    })
+    widths.length = length
+    return widths
+  }
 
   function findItem(rowId: any, data?: TData[]) : TData | undefined {
     if (!data)
@@ -178,57 +192,91 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
     console.log(`exit DataTable.rowSelectionChanged, masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
   }
 
-  console.log(`DataTable(): table.getState().rowSelection = ${JSON.stringify(table.getState().rowSelection)}`)
-  console.log(`DataTable(): masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
-  console.log(`DataTable(): selectedRecordsContext = ${JSON.stringify(selectedRecordsContext)}`)
+  // console.log(`DataTable(): table.getState().rowSelection = ${JSON.stringify(table.getState().rowSelection)}`)
+  // console.log(`DataTable(): masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
+  // console.log(`DataTable(): selectedRecordsContext = ${JSON.stringify(selectedRecordsContext)}`)
+  // console.log(`DataTable(): ${JSON.stringify({columnSizing: table.getState().columnSizing, columnSizingInfo: table.getState().columnSizingInfo})}`)
+  console.log(`table.getTotalSize() = ${table.getTotalSize()}, computeTableMetrics() = ${JSON.stringify(computeTableMetrics())}`)
 
   return (
-    <fieldset className="p-2 border rounded-md">
+    <fieldset className="p-2 border rounded-md shadow-lg">
       {/* <legend>&nbsp;Filter&nbsp;</legend> */}
       <div className="flex flex-col gap-2">
         <DataTableFilter table={table} isLinkableEntity={isLinkableEntity(recordKind)} />
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader className="bg-gray-50">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) =>
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
+        <Table className="table-fixed border rounded-md" style={{width: `${table.getTotalSize()}px`}}>
+          <colgroup> {
+            table.getHeaderGroups().map(headerGroup => headerGroup.headers.map(header => (
+              <col key={header.id} style={{width: `${header.getSize()}px`}} />)))
+          }
+          </colgroup>
+          <TableHeader className="bg-gray-50">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id} className="">
+                {headerGroup.headers.map((header) =>
+                  <TableHead key={header.id} className="pl-2 pr-0 relative border">
+                    {
+                      header.isPlaceholder
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
                             header.getContext()
-                          )}
-                    </TableHead>
-                  )}
+                          )
+                    }
+                    {
+                      header.column.columnDef.enableResizing ?? true
+                      ? <div
+                        {...{
+                          onDoubleClick: () => header.column.resetSize(),
+                          onMouseDown: header.getResizeHandler(),
+                          onTouchStart: header.getResizeHandler(),
+                          className: `resizer ${
+                            table.options.columnResizeDirection
+                          } ${
+                            header.column.getIsResizing() ? 'isResizing' : ''
+                          }`,
+                          style: {
+                            transform:
+                              columnResizeMode === 'onEnd' && header.column.getIsResizing()
+                              ? `translateX(${
+                                  (table.options.columnResizeDirection === 'rtl'
+                                    ? -1
+                                    : 1) *
+                                  (table.getState().columnSizingInfo.deltaOffset ?? 0)
+                                }px)`
+                              : '',
+                          },
+                        }}
+                      />
+                      : null
+                    }
+                  </TableHead>
+                )}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id} className="border truncate" title={String(cell.getValue() ?? '')}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
                 </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className={`max-w-${cell.column.columnDef.size} overflow-hidden`} title={String(cell.getValue() ?? '')}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                  ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
-                    -No results-
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
+                ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  -No results-
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
         <DataTablePagination table={table} />
       </div>
     </fieldset>

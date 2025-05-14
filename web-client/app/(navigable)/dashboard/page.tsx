@@ -39,15 +39,13 @@ export default function Dashboard() {
       </div>
       <hgroup>
         <h2>Topics & Records</h2>
-        <div className="shrink flex-auto">
+        <div className="shrink flex-auto shadow-lg">
           <TopicsAndRecords headerClassName="border bg-cyan-50" className="border" />
         </div>
       </hgroup>
       <hgroup>
         <h2>Database Statistics</h2>
-        <div className="">
-          <DatabaseStatistics />
-        </div>
+        <DatabaseStatistics />
       </hgroup>
     </main>
   );

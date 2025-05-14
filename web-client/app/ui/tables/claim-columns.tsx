@@ -33,30 +33,37 @@ export const columns: ColumnDef<Claim>[] = [
   selectColumn,
   ... trackedEntityColumns,
   {
+    id: "text",
     accessorKey: "text",
-    size: 150,
     enableHiding: false,
     enableSorting: true,
+    size: 500,
+    maxSize: 750,
     // enableColumnFilter: false,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Text" />
     ),
   },
   {
+    id: "date",
     accessorKey: "date",
     enableHiding: true,
     enableSorting: true,
+    size: 132,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Date" />
     ),
     cell: ({ row }) => (
       <div className="font-medium">{formatDate(row.getValue("date"))}</div>
-    )
+    ),
   },
   {
+    id: "notes",
     accessorKey: "notes",
     enableHiding: true,
     enableSorting: false,
+    size: 500,
+    maxSize: 750,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Notes" />
     ),

@@ -47,7 +47,7 @@ export default function LogDialog({
 ) {
   const [open, setOpen] = useState(false)
   const selectedRecordsContext = useContext(SelectedRecordsContext)
-  const [selectedRow, setSelectedRow] = useState<Log|undefined>(() => {
+  const [/*selectedRow, */setSelectedRow] = useState<Log|undefined>(() => {
     const selectedRecordId = selectedRecordsContext.Log?.id
     return record?.log?.content.find(record => record.id == selectedRecordId)
   });
@@ -67,7 +67,7 @@ export default function LogDialog({
         </DialogHeader>
         <DataTable<Log, unknown>
           recordKind="Log"
-          columns={columns}
+          defaultColumns={columns}
           defaultColumnVisibility={columnVisibility}
           page={record?.log}
           onSelect={setSelectedRow}

@@ -44,6 +44,7 @@ import Journal from "@/app/model/Journal";
 import StandardDetails from "./standard-details";
 import useDetailHandlers from "./detail-handlers";
 import DetailActions from "./detail-actions";
+import Link from "next/link";
 
 type PublicationKind = {
   kind: string
@@ -61,7 +62,7 @@ export default function PublicationDetails({record}: {record: Publication | unde
   }
 
   return (
-    <fieldset className="border rounded-md w-2/3">
+    <fieldset className="border shadow-lg rounded-md w-2/3">
       <legend>&nbsp;Publication Details&nbsp;</legend>
       <StandardDetails recordKind="Publication" record={record} state={state} showLinkingDetails={true} />
       <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Publication #${record?.id}` : "-Select a publication in the list above to see its details-"}</p>
@@ -70,10 +71,10 @@ export default function PublicationDetails({record}: {record: Publication | unde
         <Input id="title" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.title ?? ''} />
         <DetailActions className="col-start-6 row-span-3" recordKind="Publication" record={record} state={state} />
         <Label htmlFor="authors" className="col-start-1">Authors:</Label>
-        <Textarea id="authors" className="col-span-2" disabled={!record} readOnly={!updating} value={record?.authors ?? ''} />
+        <Textarea id="authors" className="col-span-2 h-40 overflow-y-auto" disabled={!record} readOnly={!updating} value={record?.authors ?? ''} />
         <Label htmlFor="kind" className="col-start-1">Kind:</Label>
         <Select disabled={!updating} value={record?.kind ?? ''}>
-          <SelectTrigger id="kind" className="" disabled={!record}>
+          <SelectTrigger id="kind" className="w-full" disabled={!record}>
             <SelectValue placeholder="Specify kind" />
           </SelectTrigger>
           <SelectContent>
@@ -84,9 +85,9 @@ export default function PublicationDetails({record}: {record: Publication | unde
             </SelectGroup>
           </SelectContent>
         </Select>
-        <Label htmlFor="journal" className="">Journal:</Label>
+        <Label htmlFor="journal" className="col-start-4">Journal:</Label>
         <Select disabled={!updating} value={record?.journal?.id?.toString() ?? ''}>
-          <SelectTrigger id="journal" className="col-span-2" disabled={!record}>
+          <SelectTrigger id="journal" className="col-span-1 w-full" disabled={!record}>
             <SelectValue className="col-span-2 w-full" placeholder="Specify journal" />
           </SelectTrigger>
           <SelectContent>
@@ -118,20 +119,28 @@ export default function PublicationDetails({record}: {record: Publication | unde
             />
           </PopoverContent>
         </Popover>
-        <Label htmlFor="year">Year:</Label>
+        <Label htmlFor="year" className="col-start-4">Year:</Label>
         <Input type="number" id="year" className="" disabled={!record} readOnly={!updating} value={record?.year ?? ''} />
         <Label htmlFor="abstract" className="col-start-1">Abstract:</Label>
-        <Textarea id="abstract" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.abstract ?? ''} />
+        <Textarea id="abstract" className="col-span-4 h-40 overflow-y-auto" disabled={!record} readOnly={!updating} value={record?.abstract ?? ''} />
         <Label htmlFor="peerReviewed" className="col-start-1">Peer reviewed:</Label>
         <Checkbox id="peerReviewed" className="col-span-2" disabled={!record || !updating} checked={record?.peerReviewed} />
         <Label htmlFor="cached" className="">Cached:</Label>
         <Checkbox id="cached" className="" disabled={!record || !updating} checked={record?.cached} />
         <Label htmlFor="doi" className="col-start-1">DOI:</Label>
-        <Input id="doi" className="col-span-2" disabled={!record} readOnly={!updating} value={record?.doi ?? ''} />
+        {
+          updating
+          ? <Input id="doi" className="col-span-2" value={record?.doi ?? ''} />
+          : <Link className="col-span-2" href={record?.doi ? `https://doi.org/${record?.doi ?? ''}` : ''} target="_blank">{record?.doi ?? ''}</Link>
+        }
         <Label htmlFor="isbn">ISBN:</Label>
         <Input id="isbn" className="" disabled={!record} readOnly={!updating} value={record?.isbn ?? ''} />
         <Label htmlFor="url" className="col-start-1">URL:</Label>
-        <Input id="url" className="col-span-2" disabled={!record} readOnly={!updating} value={record?.url?.toString() ?? ''} />
+        {
+          updating
+          ? <Input id="url" className="col-span-2" value={record?.url?.toString() ?? ''} />
+          : <Link className="col-span-2" href={record?.url?.toString() ?? ''} target="_blank">{record?.url?.toString() ?? ''}</Link>
+        }
         <Label htmlFor="accessed">Accessed:</Label>
         <Popover>
           <PopoverTrigger id="accessed" asChild>
@@ -154,7 +163,7 @@ export default function PublicationDetails({record}: {record: Publication | unde
           </PopoverContent>
         </Popover>
         <Label htmlFor="notes" className="col-start-1">Notes:</Label>
-        <Textarea id="notes" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.notes ?? ''} />
+        <Textarea id="notes" className="col-span-4 h-40 overflow-y-auto" disabled={!record} readOnly={!updating} value={record?.notes ?? ''} />
       </div>
     </fieldset>
   )

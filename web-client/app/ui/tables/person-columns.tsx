@@ -33,101 +33,124 @@ export const columns: ColumnDef<Person>[] = [
   selectColumn,
   ... trackedEntityColumns,
   {
+    id: "title",
     accessorKey: "title",
-    size: 150,
     enableHiding: true,
     enableSorting: true,
+    size: 90,
     // enableColumnFilter: false,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Title" />
     ),
   },
   {
+    id: "firstName",
     accessorKey: "firstName",
     enableHiding: true,
     enableSorting: true,
+    size: 150,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="First Name(s)" />
     ),
   },
   {
+    id: "nickname",
     accessorKey: "nickname",
     enableHiding: true,
     enableSorting: true,
+    size: 150,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Nickname" />
     ),
   },
   {
+    id: "prefix",
     accessorKey: "prefix",
     enableHiding: true,
     enableSorting: true,
+    size: 100,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Prefix" />
     ),
   },
   {
+    id: "lastName",
     accessorKey: "lastName",
     enableHiding: true,
     enableSorting: true,
+    size: 150,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Last Name" />
     ),
   },
   {
+    id: "suffix",
     accessorKey: "suffix",
     enableHiding: true,
     enableSorting: true,
+    size: 100,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Suffix" />
     ),
   },
   {
+    id: "alias",
     accessorKey: "alias",
     enableHiding: true,
     enableSorting: true,
+    size: 200,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Alias" />
     ),
   },
   {
-    accessorKey: "notes",
-    enableHiding: true,
-    enableSorting: false,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Notes" />
-    ),
-  },
-  {
+    id: "qualifications",
     accessorKey: "qualifications",
     enableHiding: true,
     enableSorting: true,
+    size: 500,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Qualifications" />
     ),
   },
   {
+    id: "notes",
+    accessorKey: "notes",
+    enableHiding: true,
+    enableSorting: false,
+    size: 500,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Notes" />
+    ),
+  },
+  {
+    id: "country",
     accessorKey: "country",
     enableHiding: true,
     enableSorting: true,
+    size: 150,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Country" />
     ),
   },
   {
+    id: "rating",
     accessorKey: "rating",
     enableHiding: true,
     enableSorting: true,
+    size: 100,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Rating" />
     ),
   },
   {
+    id: "checked",
     accessorKey: "checked",
     enableHiding: true,
     enableSorting: true,
+    size: 128,
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="checked" />
+      <DataTableColumnHeader column={column} title="Checked" />
     ),
     cell: ({row}) => (
       <Checkbox
@@ -137,9 +160,11 @@ export const columns: ColumnDef<Person>[] = [
     )
   },
   {
+    id: "published",
     accessorKey: "published",
     enableHiding: true,
     enableSorting: true,
+    size: 128,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Published" />
     ),
@@ -162,10 +187,10 @@ export const columnVisibility = {
   lastName: true,
   suffix: false,
   alias: false,
-  notes: false,
   qualifications: false,
+  notes: false,
   country: true,
   rating: true,
-  checked: false,
-  published: false
+  checked: true,
+  published: true
 }

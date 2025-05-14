@@ -37,6 +37,7 @@ import rawPublishers from "@/data/publishers.json" assert {type: 'json'}
 import StandardDetails from "./standard-details";
 import useDetailHandlers from "./detail-handlers";
 import DetailActions from "./detail-actions";
+import Link from "next/link";
 
 const publishers = rawPublishers.content as unknown as Publisher[]
 
@@ -45,7 +46,7 @@ export default function JournalDetails({record}: {record: Journal | undefined}) 
   const { updating } = state
 
   return (
-    <fieldset className="border rounded-md w-2/3">
+    <fieldset className="border shadow-lg rounded-md w-2/3">
       <legend>&nbsp;Journal Details&nbsp;</legend>
       <StandardDetails recordKind="Journal" record={record} state={state} showLinkingDetails={false} />
       <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Journal #${record?.id}` : "-Select a journal in the list above to see its details-"}</p>
@@ -59,7 +60,7 @@ export default function JournalDetails({record}: {record: Journal | undefined}) 
         <Input id="issn" className="col-span-1" disabled={!record} readOnly={!updating} value={record?.issn ?? ''} />
         <Label htmlFor="publisher" className="col-start-1">Publisher:</Label>
         <Select disabled={!updating} value={record?.publisher?.id?.toString() ?? ''}>
-          <SelectTrigger id="publisher" className="col-span-2" disabled={!record}>
+          <SelectTrigger id="publisher" className="col-span-2 w-full" disabled={!record}>
             <SelectValue className="col-span-2 w-full" placeholder="Specify publisher" />
           </SelectTrigger>
           <SelectContent>
@@ -71,9 +72,13 @@ export default function JournalDetails({record}: {record: Journal | undefined}) 
           </SelectContent>
         </Select>
         <Label htmlFor="url" className="col-start-1">URL:</Label>
-        <Input id="url" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.url?.toString() ?? ''} />
+        {
+          updating
+          ? <Input id="url" className="col-span-4" value={record?.url?.toString() ?? ''} />
+          : <Link className="col-span-4" href={record?.url?.toString() ?? ''} target="_blank">{record?.url?.toString() ?? ''}</Link>
+        }
         <Label htmlFor="notes" className="col-start-1">Notes:</Label>
-        <Textarea id="notes" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.notes ?? ''} />
+        <Textarea id="notes" className="col-span-4 h-40 overflow-y-auto" disabled={!record} readOnly={!updating} value={record?.notes ?? ''} />
       </div>
     </fieldset>
   )

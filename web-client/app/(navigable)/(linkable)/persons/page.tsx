@@ -54,7 +54,7 @@ export default function Persons() {
       </div>
       <DataTable<Person, unknown>
         recordKind="Person"
-        columns={columns}
+        defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
         onSelect={setSelectedRow}

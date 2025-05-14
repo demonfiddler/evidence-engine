@@ -31,6 +31,7 @@ import { CalendarIcon } from "@heroicons/react/24/outline"
 import StandardDetails from "./standard-details"
 import DetailActions from "./detail-actions"
 import useDetailHandlers from "./detail-handlers"
+import Link from "next/link"
 
 export default function QuotationDetails({record}: {record: Quotation | undefined}) {
   const state = useDetailHandlers<Quotation>("Quotation", record)
@@ -41,19 +42,19 @@ export default function QuotationDetails({record}: {record: Quotation | undefine
   }
 
   return (
-    <fieldset className="border rounded-md w-2/3">
+    <fieldset className="border shadow-lg rounded-md w-2/3">
       <legend>&nbsp;Quotation Details&nbsp;</legend>
       <StandardDetails recordKind="Quotation" record={record} state={state} showLinkingDetails={true} />
       <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Quotation #${record?.id}` : "-Select a quotation in the list above to see its details-"}</p>
       <div className="grid grid-cols-6 ml-2 mr-2 mb-2 gap-2 items-center">
-        <Label htmlFor="quotee" className="">Quotee:</Label>
-        <Input id="quotee" disabled={!record} readOnly={!updating} placeholder="count" value={record?.quotee ?? ''} />
-        <Label htmlFor="date" className="col-start-3 text-right">Date:</Label>
+        <Label htmlFor="quotee">Quotee:</Label>
+        <Input id="quotee" className="col-span-2" disabled={!record} readOnly={!updating} placeholder="count" value={record?.quotee ?? ''} />
+        <Label htmlFor="date" className="text-right">Date:</Label>
         <Popover>
           <PopoverTrigger asChild id="date" disabled={!record}>
             <Button
               variant={"outline"}
-              className={cn("w-[240px] justify-start text-left font-normal",
+              className={cn("w-full justify-start text-left font-normal",
                 (!record || !record.date) && "text-muted-foreground")}
               disabled={!updating}
             >
@@ -72,13 +73,17 @@ export default function QuotationDetails({record}: {record: Quotation | undefine
         </Popover>
         <DetailActions className="col-start-6 row-span-5" recordKind="Quotation" record={record} state={state} />
         <Label htmlFor="text" className="col-start-1">Quote:</Label>
-        <Textarea id="text" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.text ?? ''} />
+        <Textarea id="text" className="col-span-4 h-40 overflow-y-auto" disabled={!record} readOnly={!updating} value={record?.text ?? ''} />
         <Label htmlFor="source" className="col-start-1">Source:</Label>
         <Input type="source" className="col-span-4" disabled={!record} readOnly={!updating} placeholder="URL" value={record?.source ?? ''} />
         <Label htmlFor="url" className="col-start-1">URL:</Label>
-        <Input type="url" className="col-span-4" disabled={!record} readOnly={!updating} placeholder="URL" value={record?.url?.toString() ?? ''} />
+        {
+          updating
+          ? <Input type="url" className="col-span-4" placeholder="URL" value={record?.url?.toString() ?? ''} />
+          : <Link className="col-span-4" href={record?.url?.toString() ?? ''} target="_blank">{record?.url?.toString() ?? ''}</Link>
+        }
         <Label htmlFor="notes" className="col-start-1">Notes:</Label>
-        <Textarea id="notes" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.notes ?? ''} />
+        <Textarea id="notes" className="col-span-4 h-40 overflow-y-auto" disabled={!record} readOnly={!updating} value={record?.notes ?? ''} />
       </div>
     </fieldset>
   )

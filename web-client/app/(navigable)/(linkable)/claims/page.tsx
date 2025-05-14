@@ -54,7 +54,7 @@ export default function Claims() {
       </div>
       <DataTable<Claim, unknown>
         recordKind="Claim"
-        columns={columns}
+        defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
         onSelect={setSelectedRow}

@@ -39,7 +39,9 @@ import {
     SchoolTeacherIcon,
     NobelPrizeIcon
 } from "@/app/ui/icons";
+import Link from "next/link";
 
+type StatKey = "topics" | "claims" | "declarations" | "persons" | "publications" | "quotations" | "nobels" | "professors" | "doctorates"
 const stats = {
   "topics": "4/7",
   "claims": 248,
@@ -52,12 +54,12 @@ const stats = {
   "doctorates": 620,
 };
 const items = [
-  { heading: "Topics", description: "Top-level / nested topics", icon: Bars3BottomRightIcon, property: "topics"},
-  { heading: "Claims", description: "Total claims of fact", icon: ExclamationCircleIcon, property: "claims"},
-  { heading: "Declarations", description: "Total declarations, public letters, etc.", icon: EnvelopeOpenIcon, property: "declarations"},
-  { heading: "Persons", description: "Total scientists, professionals, etc.", icon: UserIcon, property: "persons"},
-  { heading: "Publications", description: "Total scientific publications, papers, etc.", icon: BeakerIcon, property: "publications"},
-  { heading: "Quotations", description: "Total quotations", icon: ChatBubbleBottomCenterTextIcon, property: "quotations"},
+  { heading: "Topics", description: "Top-level / nested topics", icon: Bars3BottomRightIcon, property: "topics", link: "/admin/topics"},
+  { heading: "Claims", description: "Total claims of fact", icon: ExclamationCircleIcon, property: "claims", link: "/claims"},
+  { heading: "Declarations", description: "Total declarations, public letters, etc.", icon: EnvelopeOpenIcon, property: "declarations", link: "/declarations"},
+  { heading: "Persons", description: "Total scientists, professionals, etc.", icon: UserIcon, property: "persons", link: "/persons"},
+  { heading: "Publications", description: "Total scientific publications, papers, etc.", icon: BeakerIcon, property: "publications", link: "/publications"},
+  { heading: "Quotations", description: "Total quotations", icon: ChatBubbleBottomCenterTextIcon, property: "quotations", link: "/quotations"},
   { heading: "Nobel Prizes", description: "Total Nobel Laureates", icon: NobelPrizeIcon, property: "nobels"},
   { heading: "Professors", description: "Total university professors (past and present)", icon: SchoolTeacherIcon, property: "professors"},
   { heading: "Doctorates", description: "Total qualified to doctoral level", icon: AcademicCapIcon, property: "doctorates"},
@@ -68,7 +70,8 @@ export default function DatabaseStatistics() {
     <div className="flex flex-wrap gap-4">
       {
         items.map(item => (
-          <Card key={item.property} className="w-64 h-64 bg-cyan-50">
+          <Link key={item.property} href={item.link ?? ""}>
+          <Card className="w-64 h-64 bg-cyan-50 shadow-lg transition-transform duration-300 ease-in-out transform hover:scale-105">
             <CardHeader className="flex justify-center">
               <item.icon className="w-8" />
               <CardTitle className="text-2xl">{item.heading}</CardTitle>
@@ -77,12 +80,13 @@ export default function DatabaseStatistics() {
               </CardDescription> */}
             </CardHeader>
             <CardContent className="grid justify-items-center text-4xl">
-              {`${stats[item.property]}`}
+              {`${stats[item.property as StatKey]}`}
             </CardContent>
             <CardFooter className="text-center">
               <p className="flex-grow text-center">{item.description}</p>
             </CardFooter>
           </Card>
+          </Link>
         ))
       }
     </div>

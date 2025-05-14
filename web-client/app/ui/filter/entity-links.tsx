@@ -55,7 +55,7 @@ export default function EntityLinks(
   const [isOpen, setIsOpen] = useState(false)
   const masterLinkContext = useContext(MasterLinkContext)
   const selectedRecordsContext = useContext(SelectedRecordsContext)
-  const [topicPlaceholder, setTopicPlaceholder] = useState("")
+  const [topicPlaceholder, setTopicPlaceholder] = useState(masterLinkContext.masterTopicId ? String.fromCharCode(160) : "-Choose topic-")
   const [data, setData] = useState(getData(topics))
 
   function getData(topics: Topic[]): TopicTreeNode[] {
@@ -123,12 +123,12 @@ export default function EntityLinks(
     masterLinkContext.setMasterRecordKind(masterLinkContext, selectedRecordsContext, masterRecordKind)
   }
 
-  console.log(`EntityLinks(): masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
-  console.log(`EntityLinks(): selectedRecordsContext = ${JSON.stringify(selectedRecordsContext)}`)
+  // console.log(`EntityLinks(): masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
+  // console.log(`EntityLinks(): selectedRecordsContext = ${JSON.stringify(selectedRecordsContext)}`)
 
   return (
     <Collapsible
-      className="border rounded-md w-fit"
+      className="border shadow-lg rounded-md w-fit"
       open={isOpen}
       onOpenChange={setIsOpen}
     >
@@ -171,9 +171,7 @@ export default function EntityLinks(
             <div className="flex flex-col m-2 gap-2">
               <RadioGroup
                 className="flex flex-row"
-                // defaultValue="None"
                 value={masterLinkContext.masterRecordKind}
-                // onValueChange={onSelectMasterRecordKind}>
                 onValueChange={handleMasterRecordKindChange}>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="None" id="option-one" />
@@ -193,7 +191,7 @@ export default function EntityLinks(
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="Publication" id="option-five" />
-                  <Label htmlFor="option-five">Publications</Label>
+                  <Label htmlFor="option-five">Publication</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="Quotation" id="option-six" />

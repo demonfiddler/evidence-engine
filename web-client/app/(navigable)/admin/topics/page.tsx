@@ -54,7 +54,7 @@ export default function Topics() {
       </div>
       <DataTable<Topic, unknown>
         recordKind="Topic"
-        columns={columns}
+        defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
         getSubRows={row => { console.log(`getSubRows({JSON.stringify(row)})`); return row.children }}

@@ -58,7 +58,7 @@ export default function TopicDetails({record}: {record: Topic | undefined}) {
   const { updating } = state
 
   return (
-    <fieldset className="border rounded-md w-2/3">
+    <fieldset className="border shadow-lg rounded-md w-2/3">
       <legend>&nbsp;Topic Details&nbsp;</legend>
       <StandardDetails recordKind="Topic" record={record} state={state} showLinkingDetails={true} />
       <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Topic #${record?.id}` : "-Select a topic in the list above to see its details-"}</p>

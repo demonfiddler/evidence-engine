@@ -77,7 +77,7 @@ export default function Security() {
           </div>
           <DataTable<Group, unknown>
             recordKind="Group"
-            columns={groupColumns}
+            defaultColumns={groupColumns}
             defaultColumnVisibility={groupColumnVisibility}
             page={groupPage}
             onSelect={setSelectedGroup}
@@ -116,7 +116,7 @@ export default function Security() {
           </div>
           <DataTable<User, unknown>
             recordKind="User"
-            columns={userColumns}
+            defaultColumns={userColumns}
             defaultColumnVisibility={userColumnVisibility}
             page={showUsersOrMembers == "users" ? userPage : selectedGroup?.members}
             onSelect={setSelectedUser}
