@@ -69,13 +69,14 @@ export default function Security() {
           <TabsTrigger value="groups">Groups</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
         </TabsList>
-        <TabsContent className="flex flex-col gap-4" value="groups">
+        <TabsContent className="grid grid-cols-1 gap-4" value="groups">
           <div className="flex flex-row items-center">
             <UsersIcon className="w-6 h-6"/>
             &nbsp;
             <h2>Groups</h2>
           </div>
           <DataTable<Group, unknown>
+            className="size-fit min-w-[700px]"
             recordKind="Group"
             defaultColumns={groupColumns}
             defaultColumnVisibility={groupColumnVisibility}
@@ -85,42 +86,45 @@ export default function Security() {
           <GroupDetails record={selectedGroup} />
           <p>See group members in the 'Users' tab</p>
         </TabsContent>
-        <TabsContent className="flex flex-col gap-4" value="users">
-          <div className="flex flex-row items-center">
-            <UserIcon className="w-6 h-6"/>
-            &nbsp;
-            <h2>Users</h2>
-            <div className="flex grow justify-end">
-              Show:
+        <TabsContent className="grid grid-cols-1 gap-4" value="users">
+          <div className="size-fit">
+            <div className="flex flex-row items-center">
+              <UserIcon className="w-6 h-6"/>
               &nbsp;
-              <RadioGroup
-                className="flex flex-row"
-                value={showUsersOrMembers}
-                onValueChange={setShowUsersOrMembers}>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem id="users" value="users" />
-                  <Label htmlFor="users">Users</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem id="members" value="members" disabled={!selectedGroup} />
-                  <Label htmlFor="members">
-                    {
-                      selectedGroup
-                      ? `Members of Group '${selectedGroup?.groupname}'`
-                      : "Group members: select a group"
-                    }
-                  </Label>
-                </div>
-              </RadioGroup>
+              <h2>Users</h2>
+              <div className="flex grow justify-end">
+                Show:
+                &nbsp;
+                <RadioGroup
+                  className="flex flex-row"
+                  value={showUsersOrMembers}
+                  onValueChange={setShowUsersOrMembers}>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem id="users" value="users" />
+                    <Label htmlFor="users">Users</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem id="members" value="members" disabled={!selectedGroup} />
+                    <Label htmlFor="members">
+                      {
+                        selectedGroup
+                        ? `Members of Group '${selectedGroup?.groupname}'`
+                        : "Group members: select a group"
+                      }
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </div>
             </div>
+            <DataTable<User, unknown>
+              className="size-fit"
+              recordKind="User"
+              defaultColumns={userColumns}
+              defaultColumnVisibility={userColumnVisibility}
+              page={showUsersOrMembers == "users" ? userPage : selectedGroup?.members}
+              onSelect={setSelectedUser}
+            />
           </div>
-          <DataTable<User, unknown>
-            recordKind="User"
-            defaultColumns={userColumns}
-            defaultColumnVisibility={userColumnVisibility}
-            page={showUsersOrMembers == "users" ? userPage : selectedGroup?.members}
-            onSelect={setSelectedUser}
-          />
           <UserDetails user={selectedUser} group={selectedGroup} showUsersOrMembers={showUsersOrMembers} />
         </TabsContent>
       </Tabs>

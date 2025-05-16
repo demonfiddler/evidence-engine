@@ -37,8 +37,8 @@ export const columns: ColumnDef<Group>[] = [
     enableHiding: false,
     enableSorting: true,
     size: 150,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Group Name" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Group Name" />
     ),
   },
   {
@@ -47,8 +47,8 @@ export const columns: ColumnDef<Group>[] = [
     enableHiding: true,
     enableSorting: false,
     size: 280,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Authorities" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Authorities" />
     ),
     cell: ({ getValue }) => (
       <div className="font-medium">{getValue()?.toString() ?? ''}</div>

@@ -40,8 +40,8 @@ export const columns: ColumnDef<Declaration>[] = [
     enableSorting: true,
     size: 112,
     // enableColumnFilter: false,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Kind" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Kind" />
     ),
   },
   {
@@ -50,8 +50,8 @@ export const columns: ColumnDef<Declaration>[] = [
     enableHiding: false,
     enableSorting: true,
     size: 360,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Title" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Title" />
     ),
   },
   {
@@ -59,9 +59,9 @@ export const columns: ColumnDef<Declaration>[] = [
     accessorKey: "date",
     enableHiding: true,
     enableSorting: true,
-    size: 132,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Date" />
+    size: 140,
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Date" />
     ),
     cell: ({ row }) => (
       <div className="font-medium">{formatDate(row.getValue("date"))}</div>
@@ -73,8 +73,8 @@ export const columns: ColumnDef<Declaration>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 150,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Country" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Country" />
     ),
   },
   {
@@ -83,8 +83,8 @@ export const columns: ColumnDef<Declaration>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 300,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="URL" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="URL" />
     ),
     cell: ({getValue}) => (
       <a href={getValue() as string} target="_blank">{getValue() as string}</a>
@@ -96,15 +96,18 @@ export const columns: ColumnDef<Declaration>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 116,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Cached" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Cached" />
     ),
     cell: ({row}) => (
       <Checkbox
         checked={row.original.cached}
         aria-label="Cached on EE server"
       />
-    )
+    ),
+    meta: {
+      className: "text-center"
+    }
   },
   {
     id: "signatories",
@@ -112,8 +115,8 @@ export const columns: ColumnDef<Declaration>[] = [
     enableHiding: true,
     enableSorting: false,
     size: 200,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Signatories" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Signatories" />
     ),
   },
   {
@@ -121,10 +124,13 @@ export const columns: ColumnDef<Declaration>[] = [
     accessorKey: "signatoryCount",
     enableHiding: true,
     enableSorting: true,
-    size: 150,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Signatory Count" />
+    size: 140,
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Sig. Count" />
     ),
+    meta: {
+      className: "text-right"
+    }
   },
   {
     id: "notes",
@@ -132,8 +138,8 @@ export const columns: ColumnDef<Declaration>[] = [
     enableHiding: true,
     enableSorting: false,
     size: 300,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Notes" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Notes" />
     ),
   },
   actionColumn

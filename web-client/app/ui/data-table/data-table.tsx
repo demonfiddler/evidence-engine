@@ -20,9 +20,9 @@
 'use client'
 
 import {
+  Cell,
   ColumnDef,
   ColumnFiltersState,
-  ColumnResizeMode,
   ExpandedState,
   RowSelectionState,
   SortingState,
@@ -40,20 +40,60 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { useContext, useState } from "react"
+import { CSSProperties, useContext, useState } from "react"
+import {
+  DndContext,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  closestCenter,
+  type DragEndEvent,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import { restrictToHorizontalAxis } from '@dnd-kit/modifiers'
+import {
+  arrayMove,
+  SortableContext,
+  horizontalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { DataTablePagination } from "./data-table-pagination"
 import type IPage from "@/app/model/IPage"
 import DataTableFilter from "./data-table-filter"
 import IBaseEntity from "@/app/model/IBaseEntity"
 import { MasterLinkContext, SelectedRecordsContext } from "@/lib/context"
 import RecordKind from "@/app/model/RecordKind"
-import { isLinkableEntity } from "@/lib/utils"
+import { cn, isLinkableEntity } from "@/lib/utils"
+
+function DragAlongCell<TData>({ cell }: { cell: Cell<TData, unknown> }) {
+  const { isDragging, setNodeRef, transform } = useSortable({
+    id: cell.column.id,
+  })
+
+  const style: CSSProperties = {
+    opacity: isDragging ? 0.8 : 1,
+    position: 'relative',
+    transform: CSS.Translate.toString(transform), // translate instead of transform to avoid squishing
+    transition: 'width transform 0.2s ease-in-out',
+    width: cell.column.getSize(),
+    zIndex: isDragging ? 1 : 0,
+  }
+  const className = (cell.column.columnDef?.meta as ColumnMetaData)?.className
+
+  return (
+    <TableCell key={cell.id} className={cn("truncate border box-border", className)} style={style} ref={setNodeRef} title={String(cell.getValue() ?? '')}>
+      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+    </TableCell>
+  )
+}
 
 interface DataTableProps<TData, TValue> {
+  className?: string
   recordKind: RecordKind
   defaultColumns: ColumnDef<TData, TValue>[]
   defaultColumnVisibility: VisibilityState
@@ -62,7 +102,12 @@ interface DataTableProps<TData, TValue> {
   onSelect: (row?: TData) => void
 }
 
+interface ColumnMetaData {
+  className?: string
+}
+
 export default function DataTable<TData extends IBaseEntity, TValue>({
+  className,
   recordKind,
   defaultColumns,
   defaultColumnVisibility,
@@ -78,12 +123,16 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
   const [sorting, setSorting] = useState<SortingState>([/*{id: "id", desc: false}*/])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({...defaultColumnVisibility})
-  const [columnResizeMode/*, setColumnResizeMode*/] = useState<ColumnResizeMode>("onChange") // "onEnd" "onChange"
-  // const [columnOrder, setColumnOrder] = useState<string[]>([])
+  const [columnOrder, setColumnOrder] = useState<string[]>(() => columns.map(c => c.id!))
   const selectedRecord = selectedRecordsContext[recordKind]
   const [rowSelection, setRowSelection] = useState(selectedRecord ? {[selectedRecord.id.toString()]: true} : {})
   // const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 })
   const [expanded, setExpanded] = useState<ExpandedState>({})
+  const sensors = useSensors(
+    useSensor(MouseSensor, {}),
+    useSensor(TouchSensor, {}),
+    useSensor(KeyboardSensor, {})
+  )
 
   const table = useReactTable({
     data: page?.content ?? [],
@@ -105,7 +154,8 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
     enableExpanding: true,
     maxMultiSortColCount: 5, // default is unlimited
     onColumnFiltersChange: setColumnFilters,
-    columnResizeMode: columnResizeMode,
+    onColumnOrderChange: setColumnOrder,
+    columnResizeMode: "onChange",
     columnResizeDirection: "ltr",
     getFilteredRowModel: getFilteredRowModel(),
     // filterFromLeafRows: false,
@@ -133,9 +183,15 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
     //   minSize: 10, //enforced during column resizing
     //   maxSize: 500, //enforced during column resizing
     // },
+    initialState: {
+      columnPinning: {
+        left: ['select'],
+        right: ['action'],
+      },
+    },
     state: {
       sorting,
-      // columnOrder,
+      columnOrder,
       columnFilters,
       columnVisibility,
       rowSelection,
@@ -192,93 +248,86 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
     console.log(`exit DataTable.rowSelectionChanged, masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
   }
 
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event
+    if (active && over && active.id !== over.id) {
+      setColumnOrder(columnOrder => {
+        const oldIndex = columnOrder.indexOf(active.id as string)
+        const newIndex = columnOrder.indexOf(over.id as string)
+        return arrayMove(columnOrder, oldIndex, newIndex)
+      })
+    }
+  }
+
   // console.log(`DataTable(): table.getState().rowSelection = ${JSON.stringify(table.getState().rowSelection)}`)
   // console.log(`DataTable(): masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
   // console.log(`DataTable(): selectedRecordsContext = ${JSON.stringify(selectedRecordsContext)}`)
   // console.log(`DataTable(): ${JSON.stringify({columnSizing: table.getState().columnSizing, columnSizingInfo: table.getState().columnSizingInfo})}`)
-  console.log(`table.getTotalSize() = ${table.getTotalSize()}, computeTableMetrics() = ${JSON.stringify(computeTableMetrics())}`)
+  // console.log(`table.getTotalSize() = ${table.getTotalSize()}, computeTableMetrics() = ${JSON.stringify(computeTableMetrics())}`)
 
   return (
-    <fieldset className="p-2 border rounded-md shadow-lg">
-      {/* <legend>&nbsp;Filter&nbsp;</legend> */}
-      <div className="flex flex-col gap-2">
-        <DataTableFilter table={table} isLinkableEntity={isLinkableEntity(recordKind)} />
-        <Table className="table-fixed border rounded-md" style={{width: `${table.getTotalSize()}px`}}>
-          <colgroup> {
-            table.getHeaderGroups().map(headerGroup => headerGroup.headers.map(header => (
-              <col key={header.id} style={{width: `${header.getSize()}px`}} />)))
-          }
-          </colgroup>
-          <TableHeader className="bg-gray-50">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="">
-                {headerGroup.headers.map((header) =>
-                  <TableHead key={header.id} className="pl-2 pr-0 relative border">
-                    {
-                      header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )
-                    }
-                    {
-                      header.column.columnDef.enableResizing ?? true
-                      ? <div
-                        {...{
-                          onDoubleClick: () => header.column.resetSize(),
-                          onMouseDown: header.getResizeHandler(),
-                          onTouchStart: header.getResizeHandler(),
-                          className: `resizer ${
-                            table.options.columnResizeDirection
-                          } ${
-                            header.column.getIsResizing() ? 'isResizing' : ''
-                          }`,
-                          style: {
-                            transform:
-                              columnResizeMode === 'onEnd' && header.column.getIsResizing()
-                              ? `translateX(${
-                                  (table.options.columnResizeDirection === 'rtl'
-                                    ? -1
-                                    : 1) *
-                                  (table.getState().columnSizingInfo.deltaOffset ?? 0)
-                                }px)`
-                              : '',
-                          },
-                        }}
-                      />
-                      : null
-                    }
-                  </TableHead>
-                )}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="border truncate" title={String(cell.getValue() ?? '')}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
+    // NOTE: This provider creates div elements, so don't nest inside of <table> elements
+    <DndContext
+      collisionDetection={closestCenter}
+      modifiers={[restrictToHorizontalAxis]}
+      onDragEnd={handleDragEnd}
+      sensors={sensors}
+    >
+      {/* <fieldset className="p-2 border box-content rounded-md shadow-lg"> */}
+      <fieldset className={cn("p-2 border rounded-md shadow-lg", className)}>
+        {/* <legend>&nbsp;Filter&nbsp;</legend> */}
+        <div className="flex flex-col gap-2">
+          <DataTableFilter table={table} isLinkableEntity={isLinkableEntity(recordKind)} />
+          <Table className="table-fixed box-border" style={{width: `${table.getTotalSize()}px`}}>
+            <colgroup>
+              {table.getHeaderGroups().map(headerGroup => headerGroup.headers.map(header => (
+                <col key={header.id} style={{width: `${header.getSize()}px`}} />)))
+              }
+            </colgroup>
+            <TableHeader className="bg-gray-50">
+              {table.getHeaderGroups().map(headerGroup => (
+                <TableRow key={headerGroup.id}>
+                  <SortableContext
+                    items={columnOrder}
+                    strategy={horizontalListSortingStrategy}
+                  >
+                    {headerGroup.headers.map(header =>
+                      flexRender(header.column.columnDef.header, header.getContext())
+                    )}
+                  </SortableContext>
                 </TableRow>
-                ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  -No results-
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-        <DataTablePagination table={table} />
-      </div>
-    </fieldset>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <SortableContext
+                        key={cell.id}
+                        items={columnOrder}
+                        strategy={horizontalListSortingStrategy}
+                      >
+                        <DragAlongCell key={cell.id} cell={cell} />
+                      </SortableContext>
+                    ))}
+                  </TableRow>
+                  ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                    -No results-
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+          <DataTablePagination table={table} />
+        </div>
+      </fieldset>
+    </DndContext>
   )
 }

@@ -38,6 +38,10 @@ import { SelectedRecordsContext } from "@/lib/context";
 import Log from "@/app/model/Log";
 import { ownColumns as columns, columnVisibility } from "@/app/ui/tables/log-columns"
 import DataTable from "../data-table/data-table";
+import rawEmptyPage from "@/data/empty-page.json" assert {type: 'json'}
+import IPage from "@/app/model/IPage";
+
+const emptyPage = rawEmptyPage as unknown as IPage<Log>
 
 export default function LogDialog({
   className, disabled, recordKind, record
@@ -69,7 +73,7 @@ export default function LogDialog({
           recordKind="Log"
           defaultColumns={columns}
           defaultColumnVisibility={columnVisibility}
-          page={record?.log}
+          page={record?.log ?? emptyPage}
           onSelect={setSelectedRow}
         />
         <DialogFooter>

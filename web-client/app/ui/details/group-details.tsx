@@ -32,7 +32,7 @@ export default function GroupDetails({record}: {record: Group | undefined}) {
   const { updating } = state
 
   return (
-    <fieldset className="border shadow-lg rounded-md w-2/3">
+    <fieldset className="border shadow-lg rounded-md">
       <legend>&nbsp;Group Details&nbsp;</legend>
       <StandardDetails recordKind="Group" record={record} state={state} showLinkingDetails={false} />
       <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Group #${record?.id}` : "-Select a group in the list above to see its details-"}</p>

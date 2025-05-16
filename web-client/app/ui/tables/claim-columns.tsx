@@ -40,8 +40,8 @@ export const columns: ColumnDef<Claim>[] = [
     size: 500,
     maxSize: 750,
     // enableColumnFilter: false,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Text" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Text" />
     ),
   },
   {
@@ -49,9 +49,9 @@ export const columns: ColumnDef<Claim>[] = [
     accessorKey: "date",
     enableHiding: true,
     enableSorting: true,
-    size: 132,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Date" />
+    size: 140,
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Date" />
     ),
     cell: ({ row }) => (
       <div className="font-medium">{formatDate(row.getValue("date"))}</div>
@@ -64,8 +64,8 @@ export const columns: ColumnDef<Claim>[] = [
     enableSorting: false,
     size: 500,
     maxSize: 750,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Notes" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Notes" />
     ),
   },
   actionColumn

@@ -31,17 +31,17 @@ export const columns: ColumnDef<ITrackedEntity>[] = [
     accessorKey: "status",
     enableSorting: true,
     size: 108,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Status" />
     ),
   },
   {
     id: "created",
     accessorKey: "created",
     enableSorting: true,
-    size: 132,
-    header: ({ column }) => (
-      <DataTableColumnHeader className="" column={column} title="Created" />
+    size: 140,
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Created" />
     ),
     cell: ({ row }) => {
       const created = row.getValue("created");
@@ -62,17 +62,17 @@ export const columns: ColumnDef<ITrackedEntity>[] = [
     accessorKey: "createdByUser.username",
     enableSorting: true,
     size: 140,
-    header: ({ column }) => (
-      <DataTableColumnHeader className="" column={column} title="Created by" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Created by" />
     ),
   },
   {
     id: "updated",
     accessorKey: "updated",
     enableSorting: true,
-    size: 132,
-    header: ({ column }) => (
-      <DataTableColumnHeader className="" column={column} title="Updated" />
+    size: 140,
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Updated" />
     ),
     cell: ({ row }) => {
       const updated = row.getValue("updated");
@@ -93,8 +93,8 @@ export const columns: ColumnDef<ITrackedEntity>[] = [
     accessorKey: "updatedByUser.username",
     enableSorting: true,
     size: 140,
-    header: ({ column }) => (
-      <DataTableColumnHeader className="" column={column} title="Updated by" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Updated by" />
     ),
   },
 ]

@@ -39,8 +39,8 @@ export const columns: ColumnDef<Person>[] = [
     enableSorting: true,
     size: 90,
     // enableColumnFilter: false,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Title" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Title" />
     ),
   },
   {
@@ -49,8 +49,8 @@ export const columns: ColumnDef<Person>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 150,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="First Name(s)" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="First Name(s)" />
     ),
   },
   {
@@ -59,8 +59,8 @@ export const columns: ColumnDef<Person>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 150,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Nickname" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Nickname" />
     ),
   },
   {
@@ -69,8 +69,8 @@ export const columns: ColumnDef<Person>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 100,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Prefix" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Prefix" />
     ),
   },
   {
@@ -79,8 +79,8 @@ export const columns: ColumnDef<Person>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 150,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Last Name" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Last Name" />
     ),
   },
   {
@@ -89,8 +89,8 @@ export const columns: ColumnDef<Person>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 100,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Suffix" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Suffix" />
     ),
   },
   {
@@ -99,8 +99,8 @@ export const columns: ColumnDef<Person>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 200,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Alias" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Alias" />
     ),
   },
   {
@@ -109,8 +109,8 @@ export const columns: ColumnDef<Person>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 500,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Qualifications" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Qualifications" />
     ),
   },
   {
@@ -119,8 +119,8 @@ export const columns: ColumnDef<Person>[] = [
     enableHiding: true,
     enableSorting: false,
     size: 500,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Notes" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Notes" />
     ),
   },
   {
@@ -129,8 +129,8 @@ export const columns: ColumnDef<Person>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 150,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Country" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Country" />
     ),
   },
   {
@@ -139,9 +139,12 @@ export const columns: ColumnDef<Person>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 100,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Rating" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Rating" />
     ),
+    meta: {
+      className: "text-center"
+    }
   },
   {
     id: "checked",
@@ -149,15 +152,18 @@ export const columns: ColumnDef<Person>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 128,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Checked" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Checked" />
     ),
     cell: ({row}) => (
       <Checkbox
         checked={row.original.checked}
         aria-label="Credentials checked"
       />
-    )
+    ),
+    meta: {
+      className: "text-center"
+    }
   },
   {
     id: "published",
@@ -165,8 +171,8 @@ export const columns: ColumnDef<Person>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 128,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Published" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Published" />
     ),
     cell: ({row}) => (
       <Checkbox
@@ -174,6 +180,9 @@ export const columns: ColumnDef<Person>[] = [
         aria-label="Author of peer-reviewed publications"
       />
     ),
+    meta: {
+      className: "text-center"
+    }
   },
   actionColumn
 ]

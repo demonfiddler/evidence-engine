@@ -28,11 +28,14 @@ export const columns: ColumnDef<IBaseEntity>[] = [
     id: "id",
     accessorKey: "id",
     enableSorting: true,
-    size: 75,
+    size: 100,
     // enableSortingRemoval: true, // mentioned in TanStack docs but not recognised by IDE.
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="ID" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="ID" />
     ),
+    meta: {
+      "className": "text-right"
+    }
   }
 ]
 

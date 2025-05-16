@@ -35,6 +35,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline"
 
 import DataTableColumnHeader from "@/app/ui/data-table/data-table-column-header"
+import { TableHead } from "@/components/ui/table"
 
 export const actionColumn: ColumnDef<any> = {
   id: "action",
@@ -42,14 +43,14 @@ export const actionColumn: ColumnDef<any> = {
   enableHiding: false,
   enableResizing: false,
   size: 72,
-  header: ({ column }) => (
-    <DataTableColumnHeader className="justify-end" column={column} title="Actions" />
+  header: ({ table, header, column }) => (
+    <DataTableColumnHeader table={table} header={header} column={column} title="Actions" />
   ),
   cell: ({ row }) => {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
+          <Button variant="ghost" className="justify-self-center h-8 w-8 p-0">
             <span className="sr-only">Open menu</span>
             <MoreHorizontal className="h-4 w-4" />
           </Button>
@@ -64,6 +65,9 @@ export const actionColumn: ColumnDef<any> = {
       </DropdownMenu>
     )
   },
+  meta: {
+    className: "text-center"
+  }
 }
 
 export const expandColumn: ColumnDef<any> = {
@@ -71,20 +75,27 @@ export const expandColumn: ColumnDef<any> = {
   enableSorting: false,
   enableHiding: false,
   enableResizing: false,
-  size: 48,
-  header: ({ table }) => (
-    table.getCanSomeRowsExpand() ?
-      <Button variant="ghost" className="w-8 h-8" onClick={table.getToggleAllRowsExpandedHandler()}>
-        {table.getIsAllRowsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
-      </Button>
-      : <></>
+  size: 50,
+  header: ({ table, header }) => (
+    <TableHead key={header.id} className="border">
+      {
+        table.getCanSomeRowsExpand()
+          ? <Button variant="ghost" className="w-8 h-8" onClick={table.getToggleAllRowsExpandedHandler()}>
+            {table.getIsAllRowsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
+          </Button>
+          : null
+      }
+    </TableHead>
   ),
   cell: ({ row }) =>
     row.getCanExpand() ?
       <Button variant="ghost" className="w-8 h-8" onClick={row.getToggleExpandedHandler()}>
           {row.getIsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
       </Button>
-      : <></>,
+      : null,
+  meta: {
+    className: "text-center"
+  }
 }
 
 export const selectColumn: ColumnDef<any> = {
@@ -93,27 +104,30 @@ export const selectColumn: ColumnDef<any> = {
   enableHiding: false,
   enableResizing: false,
   size: 32,
-  header: ({ table }) => (
-      table.options.enableMultiRowSelection ?
-      <Checkbox
-        checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-      : <></>
-    ),
+  header: ({ table, header }) => (
+    <TableHead key={header.id} className="border">
+      {
+        table.options.enableMultiRowSelection
+        ? <Checkbox
+          checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+        : null
+      }
+    </TableHead>
+  ),
   cell: ({ table, row }) => (
-    table.options.enableMultiRowSelection ?
-    <Checkbox
+    table.options.enableMultiRowSelection
+    ? <Checkbox
       checked={row.getIsSelected()}
       onCheckedChange={(value) => row.toggleSelected(!!value)}
       aria-label="Select row"
     />
-    :
-    <RadioGroup>
+    : <RadioGroup>
       <RadioGroupItem
         value={row.id}
         checked={row.getIsSelected()}
@@ -122,4 +136,7 @@ export const selectColumn: ColumnDef<any> = {
       />
     </RadioGroup>
   ),
+  meta: {
+    className: "text-center"
+  }
 }

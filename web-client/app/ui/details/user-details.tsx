@@ -70,7 +70,7 @@ export default function UserDetails({ user, group, showUsersOrMembers }: { user?
   }
 
   return (
-    <fieldset className="border shadow-lg rounded-md w-2/3">
+    <fieldset className="border shadow-lg rounded-md">
       <legend>&nbsp;User Details&nbsp;</legend>
       <StandardDetails recordKind="User" record={user} state={state} showLinkingDetails={false} />
       <p className="pt-2 pb-4">&nbsp;&nbsp;{user ? `Details for selected User #${user?.id}` : "-Select a user in the list above to see its details-"}</p>

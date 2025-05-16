@@ -38,8 +38,8 @@ export const columns: ColumnDef<Journal>[] = [
     enableSorting: true,
     size: 400,
     // enableColumnFilter: false,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Title" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Title" />
     ),
   },
   {
@@ -49,8 +49,8 @@ export const columns: ColumnDef<Journal>[] = [
     enableSorting: true,
     size: 200,
     // enableColumnFilter: false,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Abbreviation" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Abbreviation" />
     ),
   },
   {
@@ -59,8 +59,8 @@ export const columns: ColumnDef<Journal>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 300,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="URL" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="URL" />
     ),
     cell: ({getValue}) => (
       <a href={getValue() as string} target="_blank">{getValue() as string}</a>
@@ -72,8 +72,8 @@ export const columns: ColumnDef<Journal>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 150,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="ISSN" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="ISSN" />
     ),
   },
   {
@@ -82,8 +82,8 @@ export const columns: ColumnDef<Journal>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 150,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Publisher" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Publisher" />
     ),
     cell: ({ row }) => (
       <div className="font-medium">{
@@ -100,8 +100,8 @@ export const columns: ColumnDef<Journal>[] = [
     enableHiding: true,
     enableSorting: false,
     size: 400,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Notes" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Notes" />
     ),
   },
   actionColumn

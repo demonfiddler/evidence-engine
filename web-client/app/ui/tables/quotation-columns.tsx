@@ -39,8 +39,8 @@ export const columns: ColumnDef<Quotation>[] = [
     enableSorting: true,
     size: 200,
     // enableColumnFilter: false,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Quotee" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Quotee" />
     ),
   },
   {
@@ -48,9 +48,9 @@ export const columns: ColumnDef<Quotation>[] = [
     accessorKey: "date",
     enableHiding: true,
     enableSorting: true,
-    size: 132,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Date" />
+    size: 140,
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Date" />
     ),
     cell: ({ row }) => (
       <div className="font-medium">{formatDate(row.getValue("date"))}</div>
@@ -62,8 +62,8 @@ export const columns: ColumnDef<Quotation>[] = [
     enableHiding: false,
     enableSorting: false,
     size: 500,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Quote" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Quote" />
     ),
   },
   {
@@ -72,8 +72,8 @@ export const columns: ColumnDef<Quotation>[] = [
     enableHiding: true,
     enableSorting: false,
     size: 300,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Source" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Source" />
     ),
   },
   {
@@ -82,8 +82,8 @@ export const columns: ColumnDef<Quotation>[] = [
     enableHiding: true,
     enableSorting: false,
     size: 300,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="URL" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="URL" />
     ),
     cell: ({getValue}) => (
       <a href={getValue() as string} target="_blank">{getValue() as string}</a>
@@ -95,8 +95,8 @@ export const columns: ColumnDef<Quotation>[] = [
     enableHiding: true,
     enableSorting: false,
     size: 400,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Notes" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Notes" />
     ),
   },
   actionColumn

@@ -40,7 +40,7 @@ export const columns: ColumnDef<Topic>[] = [
     enableSorting: true,
     // enableColumnFilter: false,
     size: 240,
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Label" />,
+    header: ({ table, header, column }) => <DataTableColumnHeader table={table} header={header} column={column} title="Label" />,
     cell: ({ row, getValue }) => <div className="flex flex-row" style={{paddingLeft: `${row.depth}rem`}}>{row.depth > 0 ? <ArrowTurnDownRightIcon className="w-4 h-4" /> : <></>}{getValue<string>()}</div>
   },
   expandColumn,
@@ -50,7 +50,7 @@ export const columns: ColumnDef<Topic>[] = [
     enableHiding: true,
     enableSorting: false,
     size: 600,
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Description" />,
+    header: ({ table, header, column }) => <DataTableColumnHeader table={table} header={header} column={column} title="Description" />,
   },
   actionColumn
 ]

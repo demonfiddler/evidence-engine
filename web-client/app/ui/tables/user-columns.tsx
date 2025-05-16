@@ -37,8 +37,8 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: false,
     enableSorting: true,
     size: 132,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Username" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Username" />
     ),
   },
   {
@@ -47,8 +47,8 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 132,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="First Name" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="First Name" />
     ),
   },
   {
@@ -57,8 +57,8 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 132,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Last Name" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Last Name" />
     ),
   },
   {
@@ -67,8 +67,8 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 300,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Email" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Email" />
     ),
   },
   {
@@ -77,8 +77,8 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 150,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Country" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Country" />
     ),
   },
   {
@@ -87,8 +87,8 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: true,
     enableSorting: false,
     size: 200,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="password" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="password" />
     ),
   },
   {
@@ -97,12 +97,15 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 280,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Authorities" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Authorities" />
     ),
     cell: ({ getValue }) => (
       <div className="font-medium">{getValue()?.toString() ?? ''}</div>
-    )
+    ),
+    meta: {
+      className: "text-center"
+    }
   },
   actionColumn
 ]

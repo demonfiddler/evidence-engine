@@ -39,8 +39,8 @@ export const columns: ColumnDef<Publication>[] = [
     enableSorting: true,
     size: 500,
     // enableColumnFilter: false,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Title" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Title" />
     ),
   },
   {
@@ -49,8 +49,8 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: false,
     size: 150,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Authors" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Authors" />
     )
   },
   {
@@ -59,8 +59,8 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 400,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Journal" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Journal" />
     ),
   },
   {
@@ -68,9 +68,9 @@ export const columns: ColumnDef<Publication>[] = [
     accessorKey: "date",
     enableHiding: true,
     enableSorting: true,
-    size: 132,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Date" />
+    size: 140,
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Date" />
     ),
   },
   {
@@ -79,9 +79,12 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 90,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Year" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Year" />
     ),
+    meta: {
+      className: "text-right"
+    }
   },
   {
     id: "abstract",
@@ -89,8 +92,8 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: false,
     size: 400,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Abstract" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Abstract" />
     ),
   },
   {
@@ -99,8 +102,8 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 200,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="DOI" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="DOI" />
     ),
     cell: ({getValue}) => (
       <a href={`https://doi.org/${getValue() as string}`} target="_blank">{getValue() as string}</a>
@@ -112,8 +115,8 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 170,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="ISBN" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="ISBN" />
     ),
   },
   {
@@ -122,8 +125,8 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 300,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="URL" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="URL" />
     ),
     cell: ({getValue}) => (
       <a href={getValue() as string} target="_blank">{getValue() as string}</a>
@@ -135,8 +138,8 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 132,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Accessed" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Accessed" />
     ),
   },
   {
@@ -145,8 +148,8 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: false,
     size: 400,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Notes" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Notes" />
     ),
   },
   {
@@ -155,31 +158,37 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 128,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Cached" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Cached" />
     ),
     cell: ({row}) => (
       <Checkbox
         checked={row.original.cached}
         aria-label="Content cached"
       />
-    )
+    ),
+    meta: {
+      className: "text-center"
+    }
   },
   {
     id: "peerReviewed",
     accessorKey: "peerReviewed",
     enableHiding: true,
     enableSorting: true,
-    size: 128,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Peer Reviewed" />
+    size: 146,
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Peer Rev'd" />
     ),
     cell: ({row}) => (
       <Checkbox
         checked={row.original.peerReviewed}
         aria-label="Content has been peer reviewed"
       />
-    )
+    ),
+    meta: {
+      className: "text-center"
+    }
   },
   actionColumn
 ]

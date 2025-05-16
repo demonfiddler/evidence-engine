@@ -38,8 +38,8 @@ export const columns: ColumnDef<Publication>[] = [
     enableSorting: true,
     size: 400,
     // enableColumnFilter: false,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Name" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Name" />
     ),
   },
   {
@@ -48,8 +48,8 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 200,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Location" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Location" />
     )
   },
   {
@@ -58,8 +58,8 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 150,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Country" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Country" />
     ),
   },
   {
@@ -68,8 +68,8 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 300,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="URL" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="URL" />
     ),
     cell: ({getValue}) => (
       <a href={getValue() as string} target="_blank">{getValue() as string}</a>
@@ -81,9 +81,12 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 150,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Journal Count" />
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title="Jnl. Count" />
     ),
+    meta: {
+      className: "text-right"
+    }
   },
   actionColumn
 ]
