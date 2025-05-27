@@ -28,7 +28,7 @@ import { Button } from "@/components/ui/button";
 import ITrackedEntity from "@/app/model/ITrackedEntity";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 import RecordKind from "@/app/model/RecordKind";
-import { DetailState } from "./detail-handlers";
+import { DetailState } from "./detail-actions";
 
 export default function StandardDetails(
   {recordKind, record, state, showLinkingDetails}:

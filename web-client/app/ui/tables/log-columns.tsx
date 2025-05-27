@@ -41,7 +41,7 @@ const ownColumns1: ColumnDef<Log>[] = [
     size: 220,
     // enableColumnFilter: false,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Timestamp" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Timestamp" />
     ),
     cell: ({ row }) => (
       <div className="font-medium">{formatDate(row.getValue("timestamp"))}</div>
@@ -54,7 +54,7 @@ const ownColumns1: ColumnDef<Log>[] = [
     enableSorting: true,
     size: 140,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="User" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="User" />
     ),
     cell: ({cell}) => (
       (cell.getValue() as User)?.username
@@ -67,7 +67,7 @@ const ownColumns1: ColumnDef<Log>[] = [
     enableSorting: true,
     size: 150,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Transaction" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Transaction" />
     )
   }
 ]
@@ -80,7 +80,7 @@ const ownColumns2: ColumnDef<Log>[] = [
     enableSorting: true,
     size: 200,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Linked Record Kind" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Linked Record Kind" />
     ),
   },
   {
@@ -90,7 +90,7 @@ const ownColumns2: ColumnDef<Log>[] = [
     enableSorting: true,
     size: 170,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Linked Entity ID" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Linked Entity ID" />
     ),
     meta: {
       className: "text-right"
@@ -113,7 +113,7 @@ export const columns: ColumnDef<Log>[] = [
     enableSorting: true,
     size: 150,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Record Kind" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Record Kind" />
     ),
   },
   {
@@ -123,7 +123,7 @@ export const columns: ColumnDef<Log>[] = [
     enableSorting: true,
     size: 120,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Entity ID" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Entity ID" />
     ),
     meta: {
       className: "text-right"

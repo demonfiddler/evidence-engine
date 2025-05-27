@@ -38,7 +38,7 @@ export const columns: ColumnDef<User>[] = [
     enableSorting: true,
     size: 132,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Username" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Username" />
     ),
   },
   {
@@ -48,7 +48,7 @@ export const columns: ColumnDef<User>[] = [
     enableSorting: true,
     size: 132,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="First Name" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="First Name" />
     ),
   },
   {
@@ -58,7 +58,7 @@ export const columns: ColumnDef<User>[] = [
     enableSorting: true,
     size: 132,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Last Name" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Last Name" />
     ),
   },
   {
@@ -68,7 +68,7 @@ export const columns: ColumnDef<User>[] = [
     enableSorting: true,
     size: 300,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Email" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Email" />
     ),
   },
   {
@@ -78,7 +78,7 @@ export const columns: ColumnDef<User>[] = [
     enableSorting: true,
     size: 150,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Country" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Country" />
     ),
   },
   {
@@ -88,7 +88,7 @@ export const columns: ColumnDef<User>[] = [
     enableSorting: false,
     size: 200,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="password" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="password" />
     ),
   },
   {
@@ -98,7 +98,7 @@ export const columns: ColumnDef<User>[] = [
     enableSorting: true,
     size: 280,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Authorities" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Authorities" />
     ),
     cell: ({ getValue }) => (
       <div className="font-medium">{getValue()?.toString() ?? ''}</div>

@@ -32,7 +32,7 @@ export const columns: ColumnDef<ITrackedEntity>[] = [
     enableSorting: true,
     size: 108,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Status" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Status" />
     ),
   },
   {
@@ -41,7 +41,7 @@ export const columns: ColumnDef<ITrackedEntity>[] = [
     enableSorting: true,
     size: 140,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Created" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Created" />
     ),
     cell: ({ row }) => {
       const created = row.getValue("created");
@@ -63,7 +63,7 @@ export const columns: ColumnDef<ITrackedEntity>[] = [
     enableSorting: true,
     size: 140,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Created by" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Created by" />
     ),
   },
   {
@@ -72,7 +72,7 @@ export const columns: ColumnDef<ITrackedEntity>[] = [
     enableSorting: true,
     size: 140,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Updated" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Updated" />
     ),
     cell: ({ row }) => {
       const updated = row.getValue("updated");
@@ -94,7 +94,7 @@ export const columns: ColumnDef<ITrackedEntity>[] = [
     enableSorting: true,
     size: 140,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Updated by" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Updated by" />
     ),
   },
 ]

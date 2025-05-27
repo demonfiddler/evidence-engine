@@ -34,30 +34,102 @@ import {
 import StandardDetails from "./standard-details";
 import rawCountries from "@/data/countries.json" assert {type: 'json'}
 import Country from "@/app/model/Country";
-import useDetailHandlers from "./detail-handlers";
-import DetailActions from "./detail-actions";
+import DetailActions, { createDetailState, DetailMode } from "./detail-actions";
 import Link from "next/link";
+import { Action } from "@/lib/utils";
+import { Dispatch, useContext, useState } from "react";
+import { SecurityContext } from "@/lib/context";
+import { useImmerReducer } from "use-immer";
 
 const countries = rawCountries as unknown as Country[]
 
-export default function PublisherDetails({record}: {record: Publisher | undefined}) {
-  const state = useDetailHandlers<Publisher>("Publisher", record)
+function publisherReducer(draft?: Publisher, action?: Action) {
+  if (draft && action) {
+    switch (action.command) {
+      case "new":
+        Object.keys(draft).forEach(key => (draft as any)[key] = undefined)
+        break
+      case "edit":
+        Object.assign(draft, action.value);
+        break
+      case "setCountry":
+        draft.country = action.value
+        break
+      case "setJournalCount":
+        draft.journalCount = action.value
+        break
+      case "setLocation":
+        draft.location = action.value
+        break
+      case "setName":
+        draft.name = action.value
+        break
+      case "setStatus":
+        draft.status = action.value
+        break
+      case "setUrl":
+        draft.url = action.value
+        break
+    }
+  }
+}
+
+export default function PublisherDetails(
+  {record, pageDispatch}:
+  {record?: Publisher; pageDispatch: Dispatch<Action>}) {
+
+  const securityContext = useContext(SecurityContext)
+  const [mode, setMode] = useState<DetailMode>("view")
+  const [mutableRecord, recordDispatch] = useImmerReducer(publisherReducer, record ?? {})
+
+  const state = createDetailState(securityContext, mode, record)
   const { updating } = state
+  const publisher = updating ? mutableRecord : record
+
+  function dispatch(command: string, value: any) {
+    recordDispatch({recordId: publisher?.id ?? "0", command: command, value: value})
+  }
 
   return (
     <fieldset className="border shadow-lg rounded-md w-2/3">
       <legend>&nbsp;Publisher Details&nbsp;</legend>
-      <StandardDetails recordKind="Publisher" record={record} state={state} showLinkingDetails={false} />
-      <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Publisher #${record?.id}` : "-Select a publisher in the list above to see its details-"}</p>
+      <StandardDetails recordKind="Publisher" record={publisher} state={state} showLinkingDetails={false} />
+      <p className="pt-2 pb-4">&nbsp;&nbsp;{publisher ? `Details for selected Publisher #${publisher?.id}` : "-Select a publisher in the list above to see its details-"}</p>
       <div className="grid grid-cols-6 ml-2 mr-2 mb-2 gap-2">
         <Label htmlFor="name" className="col-start-1">Name:</Label>
-        <Input id="name" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.name ?? ''} />
-        <DetailActions className="col-start-6 row-span-5" recordKind="Publisher" record={record} state={state} />
+        <Input
+          id="name"
+          className="col-span-4"
+          disabled={!publisher}
+          readOnly={!updating}
+          value={publisher?.name ?? ''}
+          onChange={e => dispatch("setName", e.target.value)}
+        />
+        <DetailActions
+          className="col-start-6 row-span-5"
+          recordKind="Publisher"
+          record={publisher}
+          state={state}
+          setMode={setMode}
+          pageDispatch={pageDispatch}
+          recordDispatch={recordDispatch}
+        />
         <Label htmlFor="location" className="col-start-1">Location:</Label>
-        <Input id="location" className="col-span-2" disabled={!record} readOnly={!updating} value={record?.location ?? ''} />
+        <Input
+          id="location"
+          className="col-span-2"
+          disabled={!publisher}
+          readOnly={!updating}
+          value={publisher?.location ?? ''}
+          onChange={e => dispatch("setLocation", e.target.value)}
+        />
         <Label htmlFor="country">Country:</Label>
-        <Select disabled={!updating} value={record?.country ?? ''}>
-          <SelectTrigger id="country" className="w-full" disabled={!record}>
+        <Select
+          disabled={!updating}
+          value={publisher?.country ?? ''}
+          onValueChange={value => dispatch("setCountry", value)}
+        >
+          <SelectTrigger id="country" className="w-full" disabled={!publisher}>
             <SelectValue placeholder="Specify country" />
           </SelectTrigger>
           <SelectContent>
@@ -71,11 +143,24 @@ export default function PublisherDetails({record}: {record: Publisher | undefine
         <Label htmlFor="url" className="col-start-1">URL:</Label>
         {
           updating
-          ? <Input id="url" className="col-span-4" value={record?.url?.toString() ?? ''} />
-          : <Link className="col-span-4" href={record?.url?.toString() ?? ''} target="_blank">{record?.url?.toString() ?? ''}</Link>
+          ? <Input
+              id="url"
+              className="col-span-4"
+              value={publisher?.url ?? ''}
+              onChange={e => dispatch("setUrl", e.target.value)}
+            />
+          : <Link className="col-span-4" href={publisher?.url ?? ''} target="_blank">{publisher?.url ?? ''}</Link>
         }
         <Label htmlFor="journalCount" className="col-start-1">Journal count:</Label>
-        <Input type="number" id="journalCount" className="col-span-1" disabled={!record} readOnly={!updating} value={record?.journalCount ?? ''} />
+        <Input
+          type="number"
+          id="journalCount"
+          className="col-span-1"
+          disabled={!publisher}
+          readOnly={!updating}
+          value={publisher?.journalCount ?? ''}
+          onChange={e => dispatch("setJournalCount", e.target.value)}
+        />
       </div>
     </fieldset>
   )

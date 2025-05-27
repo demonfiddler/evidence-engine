@@ -31,6 +31,8 @@ import rawPage from "@/data/journals.json" assert {type: 'json'}
 import IPage from "@/app/model/IPage";
 import Journal from "@/app/model/Journal";
 import { SelectedRecordsContext } from "@/lib/context";
+import { useImmerReducer } from "use-immer";
+import { pageReducer } from "@/lib/utils";
 
 // export const metadata: Metadata = {
 //   title: "Journals",
@@ -38,12 +40,11 @@ import { SelectedRecordsContext } from "@/lib/context";
 // };
 
 export default function Journals() {
-  const page = rawPage as unknown as IPage<Journal>
+  const [page, pageDispatch] = useImmerReducer(pageReducer as typeof pageReducer<Journal>,
+    rawPage as unknown as IPage<Journal>)
   const selectedRecordsContext = useContext(SelectedRecordsContext)
-  const [selectedRow, setSelectedRow] = useState<Journal|undefined>(() => {
-    const selectedRecordId = selectedRecordsContext.Journal?.id
-    return page.content.find(record => record.id == selectedRecordId)
-  });
+  const [selectedRecordId, setSelectedRecordId] = useState<string|BigInt|undefined>(selectedRecordsContext.Claim?.id)
+  const selectedRecord = page.content.find(r => r.id == selectedRecordId)
 
   return (
     <main className="flex flex-col items-start m-4 gap-4">
@@ -57,9 +58,9 @@ export default function Journals() {
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
-        onSelect={setSelectedRow}
+        onSelect={setSelectedRecordId}
       />
-      <JournalDetails record={selectedRow} />
+      <JournalDetails record={selectedRecord} pageDispatch={pageDispatch} />
     </main>
   );
 }

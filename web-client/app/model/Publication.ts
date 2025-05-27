@@ -44,7 +44,7 @@ export default interface Publication extends ILinkableEntity {
   /** The International Standard Book Number. */
   isbn?: string
   /** The URL for the publication online. */
-  url?: URL | string
+  url?: /*URL | */string
   /** Flag to indicate that url content is cached on this application server. */
   cached?: boolean
   /** The date the publication was accessed when compiling the database. */

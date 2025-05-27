@@ -41,7 +41,7 @@ export const columns: ColumnDef<Declaration>[] = [
     size: 112,
     // enableColumnFilter: false,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Kind" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Kind" />
     ),
   },
   {
@@ -51,7 +51,7 @@ export const columns: ColumnDef<Declaration>[] = [
     enableSorting: true,
     size: 360,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Title" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Title" />
     ),
   },
   {
@@ -61,7 +61,7 @@ export const columns: ColumnDef<Declaration>[] = [
     enableSorting: true,
     size: 140,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Date" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Date" />
     ),
     cell: ({ row }) => (
       <div className="font-medium">{formatDate(row.getValue("date"))}</div>
@@ -74,7 +74,7 @@ export const columns: ColumnDef<Declaration>[] = [
     enableSorting: true,
     size: 150,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Country" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Country" />
     ),
   },
   {
@@ -84,7 +84,7 @@ export const columns: ColumnDef<Declaration>[] = [
     enableSorting: true,
     size: 300,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="URL" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="URL" />
     ),
     cell: ({getValue}) => (
       <a href={getValue() as string} target="_blank">{getValue() as string}</a>
@@ -97,7 +97,7 @@ export const columns: ColumnDef<Declaration>[] = [
     enableSorting: true,
     size: 116,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Cached" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Cached" />
     ),
     cell: ({row}) => (
       <Checkbox
@@ -116,7 +116,7 @@ export const columns: ColumnDef<Declaration>[] = [
     enableSorting: false,
     size: 200,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Signatories" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Signatories" />
     ),
   },
   {
@@ -126,7 +126,7 @@ export const columns: ColumnDef<Declaration>[] = [
     enableSorting: true,
     size: 140,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Sig. Count" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Sig. Count" />
     ),
     meta: {
       className: "text-right"
@@ -139,7 +139,7 @@ export const columns: ColumnDef<Declaration>[] = [
     enableSorting: false,
     size: 300,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Notes" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Notes" />
     ),
   },
   actionColumn

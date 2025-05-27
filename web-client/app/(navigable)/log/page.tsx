@@ -40,10 +40,8 @@ import { SelectedRecordsContext } from "@/lib/context";
 export default function Logs() {
   const page = rawPage as unknown as IPage<Log>
   const selectedRecordsContext = useContext(SelectedRecordsContext)
-  const [selectedRow, setSelectedRow] = useState<Log|undefined>(() => {
-    const selectedRecordId = selectedRecordsContext.Log?.id
-    return page.content.find(record => record.id == selectedRecordId)
-  });
+  const [selectedRecordId, setSelectedRecordId] = useState<string|BigInt|undefined>(selectedRecordsContext.Log?.id)
+  const selectedRecord = page.content.find(r => r.id == selectedRecordId)
 
   return (
     <main className="flex flex-col items-start m-4 gap-4">
@@ -57,9 +55,9 @@ export default function Logs() {
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
-        onSelect={setSelectedRow}
+        onSelect={setSelectedRecordId}
       />
-      <LogDetails record={selectedRow} />
+      <LogDetails record={selectedRecord} />
     </main>
   );
 }

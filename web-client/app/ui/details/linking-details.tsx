@@ -29,7 +29,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { getRecordLabel } from "@/lib/utils";
 import RecordKind from "@/app/model/RecordKind";
-import { DetailState } from "./detail-handlers";
+import { DetailState } from "./detail-actions";
 // import { useImmer } from 'use-immer';
 
 export default function LinkingDetails(

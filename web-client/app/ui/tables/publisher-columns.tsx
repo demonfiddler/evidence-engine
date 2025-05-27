@@ -39,7 +39,7 @@ export const columns: ColumnDef<Publication>[] = [
     size: 400,
     // enableColumnFilter: false,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Name" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Name" />
     ),
   },
   {
@@ -49,7 +49,7 @@ export const columns: ColumnDef<Publication>[] = [
     enableSorting: true,
     size: 200,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Location" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Location" />
     )
   },
   {
@@ -59,7 +59,7 @@ export const columns: ColumnDef<Publication>[] = [
     enableSorting: true,
     size: 150,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Country" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Country" />
     ),
   },
   {
@@ -69,7 +69,7 @@ export const columns: ColumnDef<Publication>[] = [
     enableSorting: true,
     size: 300,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="URL" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="URL" />
     ),
     cell: ({getValue}) => (
       <a href={getValue() as string} target="_blank">{getValue() as string}</a>
@@ -82,7 +82,7 @@ export const columns: ColumnDef<Publication>[] = [
     enableSorting: true,
     size: 150,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Jnl. Count" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Jnl. Count" />
     ),
     meta: {
       className: "text-right"

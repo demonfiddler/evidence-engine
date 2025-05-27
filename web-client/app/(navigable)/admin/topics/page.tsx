@@ -31,6 +31,8 @@ import rawPage from "@/data/topics.json" assert {type: 'json'}
 import IPage from "@/app/model/IPage";
 import Topic from "@/app/model/Topic";
 import { SelectedRecordsContext } from "@/lib/context";
+import { useImmerReducer } from "use-immer";
+import { pageReducer } from "@/lib/utils";
 
 // export const metadata: Metadata = {
 //   title: "Topics",
@@ -38,12 +40,11 @@ import { SelectedRecordsContext } from "@/lib/context";
 // };
 
 export default function Topics() {
-  const page = rawPage as unknown as IPage<Topic>
+  const [page, pageDispatch] = useImmerReducer(pageReducer as typeof pageReducer<Topic>,
+    rawPage as unknown as IPage<Topic>)
   const selectedRecordsContext = useContext(SelectedRecordsContext)
-  const [selectedRow, setSelectedRow] = useState<Topic|undefined>(() => {
-    const selectedRecordId = selectedRecordsContext.Topic?.id
-    return page.content.find(record => record.id == selectedRecordId)
-  });
+  const [selectedRecordId, setSelectedRecordId] = useState<string|BigInt|undefined>(selectedRecordsContext.Claim?.id)
+  const selectedRecord = page.content.find(r => r.id == selectedRecordId)
 
   return (
     <main className="flex flex-col items-start m-4 gap-4">
@@ -57,10 +58,10 @@ export default function Topics() {
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
-        getSubRows={row => { console.log(`getSubRows({JSON.stringify(row)})`); return row.children }}
-        onSelect={setSelectedRow}
+        getSubRows={row => row.children }
+        onSelect={setSelectedRecordId}
       />
-      <TopicDetails record={selectedRow} />
+      <TopicDetails record={selectedRecord} pageDispatch={pageDispatch} />
     </main>
   );
 }

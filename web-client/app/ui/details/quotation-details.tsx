@@ -26,64 +26,149 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Textarea } from "@/components/ui/textarea"
-import { cn, formatDate } from "@/lib/utils"
+import { Action, cn, formatDate } from "@/lib/utils"
 import { CalendarIcon } from "@heroicons/react/24/outline"
 import StandardDetails from "./standard-details"
-import DetailActions from "./detail-actions"
-import useDetailHandlers from "./detail-handlers"
+import DetailActions, { createDetailState, DetailMode } from "./detail-actions"
 import Link from "next/link"
+import { Dispatch, useContext, useState } from "react"
+import { SecurityContext } from "@/lib/context"
+import { useImmerReducer } from "use-immer"
 
-export default function QuotationDetails({record}: {record: Quotation | undefined}) {
-  const state = useDetailHandlers<Quotation>("Quotation", record)
+function quotationReducer(draft?: Quotation, action?: Action) {
+  if (draft && action) {
+    switch (action.command) {
+      case "new":
+        Object.keys(draft).forEach(key => (draft as any)[key] = undefined)
+        break
+      case "edit":
+        Object.assign(draft, action.value);
+        break
+      case "setDate":
+        draft.date = action.value
+        break
+      case "setNotes":
+        draft.notes = action.value
+        break
+      case "setQuotee":
+        draft.quotee = action.value
+        break
+      case "setSource":
+        draft.source = action.value
+        break
+      case "setStatus":
+        draft.status = action.value
+        break
+      case "setText":
+        draft.text = action.value
+        break
+    }
+  }
+}
+
+export default function QuotationDetails(
+  {record,  pageDispatch}:
+  {record?: Quotation; pageDispatch: Dispatch<Action>}) {
+
+  const securityContext = useContext(SecurityContext)
+  const [mode, setMode] = useState<DetailMode>("view")
+  const [mutableRecord, recordDispatch] = useImmerReducer(quotationReducer, record ?? {})
+
+  const state = createDetailState(securityContext, mode, record)
   const { updating } = state
+  const quotation = updating ? mutableRecord : record
 
-  function setDate(e: any) {
-    console.log(`selected ${JSON.stringify(e)}`)
+  function dispatch(command: string, value: any) {
+    recordDispatch({recordId: quotation?.id ?? "0", command: command, value: value})
   }
 
   return (
     <fieldset className="border shadow-lg rounded-md w-2/3">
       <legend>&nbsp;Quotation Details&nbsp;</legend>
-      <StandardDetails recordKind="Quotation" record={record} state={state} showLinkingDetails={true} />
-      <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Quotation #${record?.id}` : "-Select a quotation in the list above to see its details-"}</p>
+      <StandardDetails recordKind="Quotation" record={quotation} state={state} showLinkingDetails={true} />
+      <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Quotation #${quotation?.id}` : "-Select a quotation in the list above to see its details-"}</p>
       <div className="grid grid-cols-6 ml-2 mr-2 mb-2 gap-2 items-center">
         <Label htmlFor="quotee">Quotee:</Label>
-        <Input id="quotee" className="col-span-2" disabled={!record} readOnly={!updating} placeholder="count" value={record?.quotee ?? ''} />
+        <Input
+          id="quotee"
+          className="col-span-2"
+          disabled={!quotation}
+          readOnly={!updating}
+          placeholder="count"
+          value={quotation?.quotee ?? ''}
+          onChange={e => dispatch("setQuotee", e.target.value)}
+        />
         <Label htmlFor="date" className="text-right">Date:</Label>
         <Popover>
-          <PopoverTrigger asChild id="date" disabled={!record}>
+          <PopoverTrigger asChild id="date" disabled={!quotation}>
             <Button
               variant={"outline"}
               className={cn("w-full justify-start text-left font-normal",
-                (!record || !record.date) && "text-muted-foreground")}
+                (!quotation || !quotation.date) && "text-muted-foreground")}
               disabled={!updating}
             >
               <CalendarIcon />
-              {formatDate(record?.date, "PPP")}
+              {formatDate(quotation?.date, "PPP")}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="col-span-2 w-auto p-0" align="start">
             <Calendar
               mode="single"
-              selected={record?.date}
-              onSelect={setDate}
+              selected={quotation?.date}
+              onSelect={(day, selectedDay, activeModifiers) => dispatch("setDate", selectedDay)}
               initialFocus
             />
           </PopoverContent>
         </Popover>
-        <DetailActions className="col-start-6 row-span-5" recordKind="Quotation" record={record} state={state} />
+        <DetailActions
+          className="col-start-6 row-span-5"
+          recordKind="Quotation"
+          record={quotation}
+          state={state}
+          setMode={setMode}
+          pageDispatch={pageDispatch}
+          recordDispatch={recordDispatch}
+        />
         <Label htmlFor="text" className="col-start-1">Quote:</Label>
-        <Textarea id="text" className="col-span-4 h-40 overflow-y-auto" disabled={!record} readOnly={!updating} value={record?.text ?? ''} />
+        <Textarea
+          id="text"
+          className="col-span-4 h-40 overflow-y-auto"
+          disabled={!quotation}
+          readOnly={!updating}
+          value={quotation?.text ?? ''}
+          onChange={e => dispatch("setText", e.target.value)}
+        />
         <Label htmlFor="source" className="col-start-1">Source:</Label>
-        <Input type="source" className="col-span-4" disabled={!record} readOnly={!updating} placeholder="URL" value={record?.source ?? ''} />
+        <Input
+          type="source"
+          className="col-span-4"
+          disabled={!quotation}
+          readOnly={!updating}
+          placeholder="URL"
+          value={quotation?.source ?? ''}
+          onChange={e => dispatch("setSource", e.target.value)}
+        />
         <Label htmlFor="url" className="col-start-1">URL:</Label>
         {
           updating
-          ? <Input type="url" className="col-span-4" placeholder="URL" value={record?.url?.toString() ?? ''} />
-          : <Link className="col-span-4" href={record?.url?.toString() ?? ''} target="_blank">{record?.url?.toString() ?? ''}</Link>
+          ? <Input
+            type="url"
+            className="col-span-4"
+            placeholder="URL"
+            value={quotation?.url ?? ''}
+            onChange={e => dispatch("setUrl", e.target.value)}
+          />
+          : <Link className="col-span-4" href={record?.url ?? ''} target="_blank">{record?.url ?? ''}</Link>
         }
         <Label htmlFor="notes" className="col-start-1">Notes:</Label>
-        <Textarea id="notes" className="col-span-4 h-40 overflow-y-auto" disabled={!record} readOnly={!updating} value={record?.notes ?? ''} />
+        <Textarea
+          id="notes"
+          className="col-span-4 h-40 overflow-y-auto"
+          disabled={!quotation}
+          readOnly={!updating}
+          value={quotation?.notes ?? ''}
+            onChange={e => dispatch("setNotes", e.target.value)}
+        />
       </div>
     </fieldset>
   )

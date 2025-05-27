@@ -44,7 +44,7 @@ export const actionColumn: ColumnDef<any> = {
   enableResizing: false,
   size: 72,
   header: ({ table, header, column }) => (
-    <DataTableColumnHeader table={table} header={header} column={column} title="Actions" />
+    <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Actions" />
   ),
   cell: ({ row }) => {
     return (

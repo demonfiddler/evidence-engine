@@ -35,32 +35,114 @@ import Journal from "@/app/model/Journal";
 import Publisher from "@/app/model/Publisher";
 import rawPublishers from "@/data/publishers.json" assert {type: 'json'}
 import StandardDetails from "./standard-details";
-import useDetailHandlers from "./detail-handlers";
-import DetailActions from "./detail-actions";
+import DetailActions, { createDetailState, DetailMode } from "./detail-actions";
 import Link from "next/link";
+import { Action } from "@/lib/utils";
+import { Dispatch, useContext, useState } from "react";
+import { SecurityContext } from "@/lib/context";
+import { useImmerReducer } from "use-immer";
 
 const publishers = rawPublishers.content as unknown as Publisher[]
 
-export default function JournalDetails({record}: {record: Journal | undefined}) {
-  const state = useDetailHandlers<Journal>("Journal", record)
+function journalReducer(draft?: Journal, action?: Action) {
+  if (draft && action) {
+    switch (action.command) {
+      case "new":
+        Object.keys(draft).forEach(key => (draft as any)[key] = undefined)
+        break
+      case "edit":
+        Object.assign(draft, action.value);
+        break
+      case "setAbbreviation":
+        draft.abbreviation = action.value
+        break
+      case "setIssn":
+        draft.issn = action.value
+        break
+      case "setNotes":
+        draft.notes = action.value
+        break
+      case "setPublisher":
+        draft.publisher = action.value
+        break
+      case "setStatus":
+        draft.status = action.value
+        break
+      case "setTitle":
+        draft.title = action.value
+        break
+      case "setUrl":
+        draft.url = action.value
+        break
+    }
+  }
+}
+
+export default function JournalDetails(
+  {record, pageDispatch}:
+  {record?: Journal; pageDispatch: Dispatch<Action>}) {
+
+  const securityContext = useContext(SecurityContext)
+  const [mode, setMode] = useState<DetailMode>("view")
+  const [mutableRecord, recordDispatch] = useImmerReducer(journalReducer, record ?? {})
+
+  const state = createDetailState(securityContext, mode, record)
   const { updating } = state
+  const journal = updating ? mutableRecord : record
+
+  function dispatch(command: string, value: any) {
+    recordDispatch({recordId: journal?.id ?? "0", command: command, value: value})
+  }
 
   return (
     <fieldset className="border shadow-lg rounded-md w-2/3">
       <legend>&nbsp;Journal Details&nbsp;</legend>
-      <StandardDetails recordKind="Journal" record={record} state={state} showLinkingDetails={false} />
-      <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Journal #${record?.id}` : "-Select a journal in the list above to see its details-"}</p>
+      <StandardDetails recordKind="Journal" record={journal} state={state} showLinkingDetails={false} />
+      <p className="pt-2 pb-4">&nbsp;&nbsp;{journal ? `Details for selected Journal #${journal?.id}` : "-Select a journal in the list above to see its details-"}</p>
       <div className="grid grid-cols-6 ml-2 mr-2 mb-2 gap-2">
         <Label htmlFor="title" className="col-start-1">Title:</Label>
-        <Input id="title" className="col-span-4" disabled={!record} readOnly={!updating} value={record?.title ?? ''} />
-        <DetailActions className="col-start-6 row-span-5" recordKind="Journal" record={record} state={state} />
+        <Input
+          id="title"
+          className="col-span-4"
+          disabled={!journal}
+          readOnly={!updating}
+          value={journal?.title ?? ''}
+          onChange={e => dispatch("setTitle", e.target.value)}
+        />
+        <DetailActions
+          className="col-start-6 row-span-5"
+          recordKind="Journal"
+          record={journal}
+          state={state}
+          setMode={setMode}
+          pageDispatch={pageDispatch}
+          recordDispatch={recordDispatch}
+        />
         <Label htmlFor="abbreviation" className="col-start-1">Abbreviation:</Label>
-        <Input id="abbreviation" className="col-span-2" disabled={!record} readOnly={!updating} value={record?.abbreviation ?? ''} />
+        <Input
+          id="abbreviation"
+          className="col-span-2"
+          disabled={!journal}
+          readOnly={!updating}
+          value={journal?.abbreviation ?? ''}
+          onChange={e => dispatch("setAbbreviation", e.target.value)}
+        />
         <Label htmlFor="issn" className="">ISSN:</Label>
-        <Input id="issn" className="col-span-1" disabled={!record} readOnly={!updating} value={record?.issn ?? ''} />
+        <Input
+          id="issn"
+          className="col-span-1"
+          disabled={!journal}
+          readOnly={!updating}
+          value={journal?.issn ?? ''}
+          onChange={e => dispatch("setIssn", e.target.value)}
+        />
         <Label htmlFor="publisher" className="col-start-1">Publisher:</Label>
-        <Select disabled={!updating} value={record?.publisher?.id?.toString() ?? ''}>
-          <SelectTrigger id="publisher" className="col-span-2 w-full" disabled={!record}>
+        <Select
+          disabled={!updating}
+          value={journal?.publisher?.id?.toString() ?? ''}
+          onValueChange={value => dispatch("setPublisher", value)}
+        >
+          <SelectTrigger id="publisher" className="col-span-2 w-full" disabled={!journal}>
             <SelectValue className="col-span-2 w-full" placeholder="Specify publisher" />
           </SelectTrigger>
           <SelectContent>
@@ -74,11 +156,23 @@ export default function JournalDetails({record}: {record: Journal | undefined}) 
         <Label htmlFor="url" className="col-start-1">URL:</Label>
         {
           updating
-          ? <Input id="url" className="col-span-4" value={record?.url?.toString() ?? ''} />
-          : <Link className="col-span-4" href={record?.url?.toString() ?? ''} target="_blank">{record?.url?.toString() ?? ''}</Link>
+          ? <Input
+              id="url"
+              className="col-span-4"
+              value={journal?.url ?? ''}
+              onChange={e => dispatch("setUrl", e.target.value)}
+            />
+          : <Link className="col-span-4" href={journal?.url ?? ''} target="_blank">{journal?.url ?? ''}</Link>
         }
         <Label htmlFor="notes" className="col-start-1">Notes:</Label>
-        <Textarea id="notes" className="col-span-4 h-40 overflow-y-auto" disabled={!record} readOnly={!updating} value={record?.notes ?? ''} />
+        <Textarea
+          id="notes"
+          className="col-span-4 h-40 overflow-y-auto"
+          disabled={!journal}
+          readOnly={!updating}
+          value={journal?.notes ?? ''}
+          onChange={e => dispatch("setNotes", e.target.value)}
+        />
       </div>
     </fieldset>
   )

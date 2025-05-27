@@ -24,7 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import LogDialog from "../log/log-dialog";
 import RecordKind from "@/app/model/RecordKind";
-import { DetailState } from "./detail-handlers";
+import { DetailState } from "./detail-actions";
 
 export default function TrackingDetails(
   {recordKind, record, state}:

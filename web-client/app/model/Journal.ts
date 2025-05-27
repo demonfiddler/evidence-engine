@@ -26,7 +26,7 @@ export default interface Journal extends ITrackedEntity {
   /** The official abbreviation. */
   abbreviation?: string
   /** Web link to the journal's home page. */
-  url?: URL | string
+  url?: /*URL | */string
   /** The International Standard Serial Number. */
   issn?: string
   /** The journal publisher. */

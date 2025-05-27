@@ -37,6 +37,8 @@ import User from "@/app/model/User";
 import UserDetails from "@/app/ui/details/user-details";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
+import { useImmerReducer } from "use-immer"
+import { pageReducer } from "@/lib/utils"
 
 // export const metadata: Metadata = {
 //   title: "Users & Groups",
@@ -44,17 +46,15 @@ import { Label } from "@/components/ui/label"
 // };
 
 export default function Security() {
-  const groupPage = rawGroupPage as unknown as IPage<Group>
-  const userPage = rawUserPage as unknown as IPage<User>
+  const [groupPage, groupPageDispatch] = useImmerReducer(pageReducer as typeof pageReducer<Group>,
+    rawGroupPage as unknown as IPage<Group>)
+  const [userPage, userPageDispatch] = useImmerReducer(pageReducer as typeof pageReducer<User>,
+    rawUserPage as unknown as IPage<User>)
   const selectedRecordsContext = useContext(SelectedRecordsContext)
-  const [selectedGroup, setSelectedGroup] = useState<Group|undefined>(() => {
-    const selectedRecordId = selectedRecordsContext.Group?.id
-    return groupPage.content.find(record => record.id == selectedRecordId)
-  });
-  const [selectedUser, setSelectedUser] = useState<User|undefined>(() => {
-    const selectedRecordId = selectedRecordsContext.User?.id
-    return userPage.content.find(record => record.id == selectedRecordId)
-  });
+  const [selectedGroupId, setSelectedGroupId] = useState<string|BigInt|undefined>(selectedRecordsContext.Group?.id)
+  const [selectedUserId, setSelectedUserId] = useState<string|BigInt|undefined>(selectedRecordsContext.User?.id)
+  const selectedGroup = groupPage.content.find(r => r.id == selectedGroupId)
+  const selectedUser = userPage.content.find(r => r.id == selectedUserId)
   const [showUsersOrMembers, setShowUsersOrMembers] = useState("users")
 
   return (
@@ -81,9 +81,9 @@ export default function Security() {
             defaultColumns={groupColumns}
             defaultColumnVisibility={groupColumnVisibility}
             page={groupPage}
-            onSelect={setSelectedGroup}
+            onSelect={setSelectedGroupId}
           />
-          <GroupDetails record={selectedGroup} />
+          <GroupDetails record={selectedGroup} pageDispatch={groupPageDispatch} />
           <p>See group members in the 'Users' tab</p>
         </TabsContent>
         <TabsContent className="grid grid-cols-1 gap-4" value="users">
@@ -122,10 +122,15 @@ export default function Security() {
               defaultColumns={userColumns}
               defaultColumnVisibility={userColumnVisibility}
               page={showUsersOrMembers == "users" ? userPage : selectedGroup?.members}
-              onSelect={setSelectedUser}
+              onSelect={setSelectedUserId}
             />
           </div>
-          <UserDetails user={selectedUser} group={selectedGroup} showUsersOrMembers={showUsersOrMembers} />
+          <UserDetails
+            user={selectedUser}
+            group={selectedGroup}
+            showUsersOrMembers={showUsersOrMembers}
+            pageDispatch={userPageDispatch}
+          />
         </TabsContent>
       </Tabs>
     </main>

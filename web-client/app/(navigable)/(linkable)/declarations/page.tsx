@@ -21,16 +21,17 @@
 
 // import type { Metadata } from "next";
 import { useContext, useState } from "react";
+import { useImmerReducer } from "use-immer";
 import { EnvelopeOpenIcon } from '@heroicons/react/24/outline';
 
 import DeclarationDetails from "@/app/ui/details/declaration-details";
 import DataTable from "@/app/ui/data-table/data-table";
-
 import { columns, columnVisibility } from "@/app/ui/tables/declaration-columns"
 import rawPage from "@/data/declarations.json" assert {type: 'json'}
 import IPage from "@/app/model/IPage";
 import Declaration from "@/app/model/Declaration";
 import { SelectedRecordsContext } from "@/lib/context";
+import { pageReducer } from "@/lib/utils";
 
 // export const metadata: Metadata = {
 //   title: "Declarations",
@@ -38,12 +39,11 @@ import { SelectedRecordsContext } from "@/lib/context";
 // };
 
 export default function Declarations() {
-  const page = rawPage as unknown as IPage<Declaration>
+  const [page, pageDispatch] = useImmerReducer(pageReducer as typeof pageReducer<Declaration>,
+    rawPage as unknown as IPage<Declaration>)
   const selectedRecordsContext = useContext(SelectedRecordsContext)
-  const [selectedRow, setSelectedRow] = useState<Declaration|undefined>(() => {
-    const selectedRecordId = selectedRecordsContext.Declaration?.id
-    return page.content.find(record => record.id == selectedRecordId)
-  });
+  const [selectedRecordId, setSelectedRecordId] = useState<string|BigInt|undefined>(selectedRecordsContext.Declaration?.id)
+  const selectedRecord = page.content.find(r => r.id == selectedRecordId)
 
   return (
     <main className="flex flex-col items-start m-4 gap-4">
@@ -57,9 +57,9 @@ export default function Declarations() {
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
-        onSelect={setSelectedRow}
+        onSelect={setSelectedRecordId}
       />
-      <DeclarationDetails record={selectedRow} />
+      <DeclarationDetails record={selectedRecord} pageDispatch={pageDispatch} />
     </main>
   );
 }

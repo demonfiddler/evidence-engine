@@ -29,7 +29,7 @@ export default interface Quotation extends ILinkableEntity {
   /** The quotation source. */
   source?: string
   /** The URL for the quotation online. */
-  url?: URL | string
+  url?: /*URL | */string
   /** Notes on the quotation. */
   notes?: string
 }

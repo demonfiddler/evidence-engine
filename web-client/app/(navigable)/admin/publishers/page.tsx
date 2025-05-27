@@ -31,6 +31,8 @@ import rawPage from "@/data/publishers.json" assert {type: 'json'}
 import IPage from "@/app/model/IPage";
 import Publisher from "@/app/model/Publisher";
 import { SelectedRecordsContext } from "@/lib/context";
+import { useImmerReducer } from "use-immer";
+import { pageReducer } from "@/lib/utils";
 
 // export const metadata: Metadata = {
 //   title: "Publishers",
@@ -38,12 +40,11 @@ import { SelectedRecordsContext } from "@/lib/context";
 // };
 
 export default function Publishers() {
-  const page = rawPage as unknown as IPage<Publisher>
+  const [page, pageDispatch] = useImmerReducer(pageReducer as typeof pageReducer<Publisher>,
+    rawPage as unknown as IPage<Publisher>)
   const selectedRecordsContext = useContext(SelectedRecordsContext)
-  const [selectedRow, setSelectedRow] = useState<Publisher|undefined>(() => {
-    const selectedRecordId = selectedRecordsContext.Publisher?.id
-    return page.content.find(record => record.id == selectedRecordId)
-  });
+  const [selectedRecordId, setSelectedRecordId] = useState<string|BigInt|undefined>(selectedRecordsContext.Claim?.id)
+  const selectedRecord = page.content.find(r => r.id == selectedRecordId)
 
   return (
     <main className="flex flex-col items-start m-4 gap-4">
@@ -57,9 +58,9 @@ export default function Publishers() {
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
-        onSelect={setSelectedRow}
+        onSelect={setSelectedRecordId}
       />
-      <PublisherDetails record={selectedRow} />
+      <PublisherDetails record={selectedRecord} pageDispatch={pageDispatch} />
     </main>
   );
 }

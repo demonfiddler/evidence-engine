@@ -20,6 +20,7 @@
 import Claim from "@/app/model/Claim"
 import Declaration from "@/app/model/Declaration"
 import Group from "@/app/model/Group"
+import IPage from "@/app/model/IPage"
 import ITrackedEntity from "@/app/model/ITrackedEntity"
 import Journal from "@/app/model/Journal"
 import Log from "@/app/model/Log"
@@ -122,3 +123,29 @@ export function setTopicFields(path: string, parentId?: BigInt | string, topics?
     }
   }
 }
+
+type Action = {
+  recordId: BigInt | string
+  command: string
+  value: any
+}
+export type { Action }
+
+export function pageReducer<T extends ITrackedEntity>(draft: IPage<T>, action: Action) {
+  const recordIndex = draft.content.findIndex(c => c.id == action.recordId)
+  switch (action.command) {
+    case "add":
+      draft.content.push(action.value)
+      break
+    case "update":
+      if (recordIndex != -1)
+        draft.content.splice(recordIndex, 1, action.value)
+      break
+    case "delete":
+      // N.B. This is a hard delete that physically deletes the record. We plan to implement only a soft delete.
+      if (recordIndex != -1)
+        draft.content.splice(recordIndex, 1)
+      break
+  }
+}
+

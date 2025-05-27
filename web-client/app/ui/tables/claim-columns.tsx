@@ -41,7 +41,7 @@ export const columns: ColumnDef<Claim>[] = [
     maxSize: 750,
     // enableColumnFilter: false,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Text" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Text" />
     ),
   },
   {
@@ -51,7 +51,7 @@ export const columns: ColumnDef<Claim>[] = [
     enableSorting: true,
     size: 140,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Date" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Date" />
     ),
     cell: ({ row }) => (
       <div className="font-medium">{formatDate(row.getValue("date"))}</div>
@@ -65,7 +65,7 @@ export const columns: ColumnDef<Claim>[] = [
     size: 500,
     maxSize: 750,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Notes" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Notes" />
     ),
   },
   actionColumn

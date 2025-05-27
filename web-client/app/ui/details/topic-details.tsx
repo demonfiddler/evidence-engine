@@ -33,9 +33,11 @@ import {
 } from "@/components/ui/select"
 import rawTopics from "@/data/topics.json" assert {type: 'json'}
 import StandardDetails from "./standard-details"
-import { setTopicFields } from "@/lib/utils"
-import useDetailHandlers from "./detail-handlers"
-import DetailActions from "./detail-actions"
+import { Action, setTopicFields } from "@/lib/utils"
+import DetailActions, { createDetailState, DetailMode } from "./detail-actions"
+import { Dispatch, useContext, useState } from "react"
+import { SecurityContext } from "@/lib/context"
+import { useImmerReducer } from "use-immer"
 
 const topics = rawTopics.content as unknown as Topic[]
 setTopicFields("", undefined, topics)
@@ -53,22 +55,77 @@ function flatten(topics: Topic[], result: Topic[]) : Topic[] {
 }
 const flatTopics = flatten(topics, [])
 
-export default function TopicDetails({record}: {record: Topic | undefined}) {
-  const state = useDetailHandlers<Topic>("Topic", record)
+function topicReducer(draft?: Topic, action?: Action) {
+  if (draft && action) {
+    switch (action.command) {
+      case "new":
+        Object.keys(draft).forEach(key => (draft as any)[key] = undefined)
+        break
+      case "edit":
+        Object.assign(draft, action.value);
+        break
+      case "setDescription":
+        draft.description = action.value
+        break
+      case "setLabel":
+        draft.label = action.value
+        break
+      case "setParentId":
+        draft.parentId = action.value
+        break
+      case "setStatus":
+        draft.status = action.value
+        break
+    }
+  }
+}
+
+export default function TopicDetails(
+  {record, pageDispatch}:
+  {record?: Topic; pageDispatch: Dispatch<Action>}) {
+
+  const securityContext = useContext(SecurityContext)
+  const [mode, setMode] = useState<DetailMode>("view")
+  const [mutableRecord, recordDispatch] = useImmerReducer(topicReducer, record ?? {})
+
+  const state = createDetailState(securityContext, mode, record)
   const { updating } = state
+  const topic = updating ? mutableRecord : record
+
+  function dispatch(command: string, value: any) {
+    recordDispatch({recordId: topic?.id ?? "0", command: command, value: value})
+  }
 
   return (
     <fieldset className="border shadow-lg rounded-md w-2/3">
       <legend>&nbsp;Topic Details&nbsp;</legend>
-      <StandardDetails recordKind="Topic" record={record} state={state} showLinkingDetails={true} />
-      <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Topic #${record?.id}` : "-Select a topic in the list above to see its details-"}</p>
+      <StandardDetails recordKind="Topic" record={topic} state={state} showLinkingDetails={true} />
+      <p className="pt-2 pb-4">&nbsp;&nbsp;{topic ? `Details for selected Topic #${topic?.id}` : "-Select a topic in the list above to see its details-"}</p>
       <div className="grid grid-cols-6 ml-2 mr-2 mb-2 gap-2 items-center">
         <Label htmlFor="path" className="col-start-1">Path:</Label>
-        <Input id="path" className="col-span-4" readOnly={true} value={record?.path} />
-        <DetailActions className="col-start-6 row-span-5" recordKind="Topic" record={record} state={state} />
+        <Input
+          id="path"
+          className="col-span-4"
+          readOnly={true}
+          value={topic?.path}
+          // onChange={e => dispatch("setPath", e.target.value)}
+        />
+        <DetailActions
+          className="col-start-6 row-span-5"
+          recordKind="Topic"
+          record={topic}
+          state={state}
+          setMode={setMode}
+          pageDispatch={pageDispatch}
+          recordDispatch={recordDispatch}
+        />
         <Label htmlFor="parent" className="col-start-1">Parent:</Label>
-        <Select disabled={!updating} value={record?.parentId?.toString() ?? ''}>
-          <SelectTrigger id="parent" className="col-span-4" disabled={!record}>
+        <Select
+          disabled={!updating}
+          value={topic?.parentId?.toString() ?? ''}
+          onValueChange={value => dispatch("setParentId", value)}
+        >
+          <SelectTrigger id="parent" className="col-span-4" disabled={!topic}>
             <SelectValue className="col-span-4 w-full" placeholder="Specify parent" />
           </SelectTrigger>
           <SelectContent>
@@ -85,19 +142,21 @@ export default function TopicDetails({record}: {record: Topic | undefined}) {
         <Input
           id="label"
           className="col-span-4"
-          disabled={!record}
+          disabled={!topic}
           readOnly={!updating}
           placeholder="label"
-          value={record?.label ?? ''}
+          value={topic?.label ?? ''}
+          onChange={e => dispatch("setLabel", e.target.value)}
         />
         <Label htmlFor="description" className="">Description:</Label>
         <Input
           id="description"
           className="col-span-4"
-          disabled={!record}
+          disabled={!topic}
           readOnly={!updating}
           placeholder="description"
-          value={record?.description ?? ''}
+          value={topic?.description ?? ''}
+          onChange={e => dispatch("setDescription", e.target.value)}
         />
       </div>
     </fieldset>

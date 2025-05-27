@@ -99,7 +99,7 @@ interface DataTableProps<TData, TValue> {
   defaultColumnVisibility: VisibilityState
   page?: IPage<TData>
   getSubRows?: (row: TData) => TData[] | undefined
-  onSelect: (row?: TData) => void
+  onSelect: (recordId?: string|BigInt) => void
 }
 
 interface ColumnMetaData {
@@ -200,16 +200,16 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
     }
   })
 
-  function computeTableMetrics() {
-    let length = 0
-    const widths: {[key: string] : number} = {}
-    table.getVisibleLeafColumns().forEach(col => {
-      length += col.getSize()
-      widths[col.columnDef.id ?? 'unknown'] = col.getSize()
-    })
-    widths.length = length
-    return widths
-  }
+  // function computeTableMetrics() {
+  //   let length = 0
+  //   const widths: {[key: string] : number} = {}
+  //   table.getVisibleLeafColumns().forEach(col => {
+  //     length += col.getSize()
+  //     widths[col.columnDef.id ?? 'unknown'] = col.getSize()
+  //   })
+  //   widths.length = length
+  //   return widths
+  // }
 
   function findItem(rowId: any, data?: TData[]) : TData | undefined {
     if (!data)
@@ -229,7 +229,7 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
   }
 
   function rowSelectionChanged(selection: Updater<RowSelectionState>) {
-    console.log(`enter DataTable.rowSelectionChanged, masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
+    // console.log(`enter DataTable.rowSelectionChanged, masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
     setRowSelection(selection)
 
     let selectedRecord
@@ -240,12 +240,12 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
       if (selected)
         selectedRecord = findItem(id, page?.content)
     }
-    console.log(`\tselectedRecord = ${JSON.stringify(selectedRecord)}`)
+    // console.log(`\tselectedRecord = ${JSON.stringify(selectedRecord)}`)
     if (masterLinkContext.masterRecordKind == recordKind)
       masterLinkContext.setMasterRecord(masterLinkContext, selectedRecord)
     selectedRecordsContext.setSelectedRecord(selectedRecordsContext, recordKind, selectedRecord)
-    onSelect(selectedRecord)
-    console.log(`exit DataTable.rowSelectionChanged, masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
+    onSelect(selectedRecord?.id)
+    // console.log(`exit DataTable.rowSelectionChanged, masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
   }
 
   function handleDragEnd(event: DragEndEvent) {
@@ -273,9 +273,7 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
       onDragEnd={handleDragEnd}
       sensors={sensors}
     >
-      {/* <fieldset className="p-2 border box-content rounded-md shadow-lg"> */}
       <fieldset className={cn("p-2 border rounded-md shadow-lg", className)}>
-        {/* <legend>&nbsp;Filter&nbsp;</legend> */}
         <div className="flex flex-col gap-2">
           <DataTableFilter table={table} isLinkableEntity={isLinkableEntity(recordKind)} />
           <Table className="table-fixed box-border" style={{width: `${table.getTotalSize()}px`}}>

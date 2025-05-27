@@ -29,7 +29,7 @@ export default interface Declaration extends ILinkableEntity {
   /** The country to which the declaration relates. */
   country?: string
   /** The URL for the declaration online. */
-  url?: URL | string
+  url?: /*URL | */string
   /** Flag to indicate that url content is cached on this application server. */
   cached?: boolean
   /** Names of persons who signed the declaration, one per line. */

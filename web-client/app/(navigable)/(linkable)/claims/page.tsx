@@ -20,17 +20,18 @@
 'use client'
 
 // import type { Metadata } from "next";
-import { useContext, useState } from "react";
-import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
+import { useContext, useState } from "react"
+import { useImmerReducer } from "use-immer"
+import { ExclamationCircleIcon } from "@heroicons/react/24/outline"
 
-import ClaimDetails from "@/app/ui/details/claim-details";
-import DataTable from "@/app/ui/data-table/data-table";
-
+import ClaimDetails from "@/app/ui/details/claim-details"
+import DataTable from "@/app/ui/data-table/data-table"
 import { columns, columnVisibility } from "@/app/ui/tables/claim-columns"
 import rawPage from "@/data/claims.json" assert {type: 'json'}
 import IPage from "@/app/model/IPage";
 import Claim from "@/app/model/Claim";
 import { SelectedRecordsContext } from "@/lib/context";
+import { pageReducer } from "@/lib/utils"
 
 // export const metadata: Metadata = {
 //   title: "Claims",
@@ -38,12 +39,13 @@ import { SelectedRecordsContext } from "@/lib/context";
 // };
 
 export default function Claims() {
-  const page = rawPage as unknown as IPage<Claim>
+  const [page, pageDispatch] = useImmerReducer(pageReducer as typeof pageReducer<Claim>,
+    rawPage as unknown as IPage<Claim>)
   const selectedRecordsContext = useContext(SelectedRecordsContext)
-  const [selectedRow, setSelectedRow] = useState<Claim|undefined>(() => {
-    const selectedRecordId = selectedRecordsContext.Claim?.id
-    return page.content.find(record => record.id == selectedRecordId)
-  });
+  const [selectedRecordId, setSelectedRecordId] = useState<string|BigInt|undefined>(selectedRecordsContext.Claim?.id)
+  const selectedRecord = page.content.find(r => r.id == selectedRecordId)
+
+  // console.log(`Claims() page: ${JSON.stringify(page)})`)
 
   return (
     <main className="flex flex-col items-start m-4 gap-4">
@@ -57,9 +59,9 @@ export default function Claims() {
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
-        onSelect={setSelectedRow}
+        onSelect={setSelectedRecordId}
       />
-      <ClaimDetails record={selectedRow} />
+      <ClaimDetails record={selectedRecord} pageDispatch={pageDispatch} />
     </main>
   );
 }

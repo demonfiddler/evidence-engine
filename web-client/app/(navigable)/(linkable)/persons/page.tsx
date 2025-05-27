@@ -31,6 +31,8 @@ import rawPage from "@/data/persons.json" assert {type: 'json'}
 import IPage from "@/app/model/IPage";
 import Person from "@/app/model/Person";
 import { SelectedRecordsContext } from "@/lib/context";
+import { useImmerReducer } from "use-immer";
+import { pageReducer } from "@/lib/utils";
 
 // export const metadata: Metadata = {
 //   title: "Persons",
@@ -38,12 +40,11 @@ import { SelectedRecordsContext } from "@/lib/context";
 // };
 
 export default function Persons() {
-  const page = rawPage as unknown as IPage<Person>
+  const [page, pageDispatch] = useImmerReducer(pageReducer as typeof pageReducer<Person>,
+    rawPage as unknown as IPage<Person>)
   const selectedRecordsContext = useContext(SelectedRecordsContext)
-  const [selectedRow, setSelectedRow] = useState<Person|undefined>(() => {
-    const selectedRecordId = selectedRecordsContext.Person?.id
-    return page.content.find(record => record.id == selectedRecordId)
-  });
+  const [selectedRecordId, setSelectedRecordId] = useState<string|BigInt|undefined>(selectedRecordsContext.Person?.id)
+  const selectedRecord = page.content.find(r => r.id == selectedRecordId)
 
   return (
     <main className="flex flex-col items-start m-4 gap-4">
@@ -57,9 +58,9 @@ export default function Persons() {
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
-        onSelect={setSelectedRow}
+        onSelect={setSelectedRecordId}
       />
-      <PersonDetails record={selectedRow} />
+      <PersonDetails record={selectedRecord} pageDispatch={pageDispatch} />
     </main>
   );
 }

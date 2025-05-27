@@ -39,7 +39,7 @@ export const columns: ColumnDef<Journal>[] = [
     size: 400,
     // enableColumnFilter: false,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Title" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Title" />
     ),
   },
   {
@@ -50,7 +50,7 @@ export const columns: ColumnDef<Journal>[] = [
     size: 200,
     // enableColumnFilter: false,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Abbreviation" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Abbreviation" />
     ),
   },
   {
@@ -60,7 +60,7 @@ export const columns: ColumnDef<Journal>[] = [
     enableSorting: true,
     size: 300,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="URL" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="URL" />
     ),
     cell: ({getValue}) => (
       <a href={getValue() as string} target="_blank">{getValue() as string}</a>
@@ -73,7 +73,7 @@ export const columns: ColumnDef<Journal>[] = [
     enableSorting: true,
     size: 150,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="ISSN" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="ISSN" />
     ),
   },
   {
@@ -83,7 +83,7 @@ export const columns: ColumnDef<Journal>[] = [
     enableSorting: true,
     size: 150,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Publisher" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Publisher" />
     ),
     cell: ({ row }) => (
       <div className="font-medium">{
@@ -101,7 +101,7 @@ export const columns: ColumnDef<Journal>[] = [
     enableSorting: false,
     size: 400,
     header: ({ table, header, column }) => (
-      <DataTableColumnHeader table={table} header={header} column={column} title="Notes" />
+      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Notes" />
     ),
   },
   actionColumn
