@@ -39,7 +39,7 @@ export default function Paginator() {
     size: 5,
     numberOfElements: 5,
     totalPages: 3,
-    totalElements: BigInt(13),
+    totalElements: "13",
     isFirst: true,
     isLast: false,
     hasNext: true,

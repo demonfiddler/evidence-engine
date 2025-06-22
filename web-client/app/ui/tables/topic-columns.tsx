@@ -20,7 +20,6 @@
 'use client'
 
 import { ColumnDef } from "@tanstack/react-table"
-import DataTableColumnHeader from "@/app/ui/data-table/data-table-column-header"
 import Topic from "@/app/model/Topic"
 import { columns as trackedEntityColumns, columnVisibility as trackedEntityColumnVisibility } from "./tracked-entity-columns"
 import { actionColumn as rawActionColumn, expandColumn as rawExpandColumn, selectColumn as rawSelectColumn } from "./extra-columns"
@@ -40,8 +39,8 @@ export const columns: ColumnDef<Topic>[] = [
     enableSorting: true,
     // enableColumnFilter: false,
     size: 240,
-    header: ({ table, header, column }) => <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Label" />,
-    cell: ({ row, getValue }) => <div className="flex flex-row" style={{paddingLeft: `${row.depth}rem`}}>{row.depth > 0 ? <ArrowTurnDownRightIcon className="w-4 h-4" /> : <></>}{getValue<string>()}</div>
+    header: "Label",
+    cell: ({ row, cell, getValue }) => <div key={cell.id} className="flex flex-row" style={{paddingLeft: `${row.depth}rem`}}>{row.depth > 0 ? <ArrowTurnDownRightIcon className="w-4 h-4" /> : <></>}{getValue<string>()}</div>
   },
   expandColumn,
   {
@@ -50,7 +49,7 @@ export const columns: ColumnDef<Topic>[] = [
     enableHiding: true,
     enableSorting: false,
     size: 600,
-    header: ({ table, header, column }) => <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Description" />,
+    header: "Description",
   },
   actionColumn
 ]

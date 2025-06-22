@@ -20,7 +20,6 @@
 'use client'
 
 import { ColumnDef } from "@tanstack/react-table"
-import DataTableColumnHeader from "@/app/ui/data-table/data-table-column-header"
 import Quotation from "@/app/model/Quotation"
 import { columns as trackedEntityColumns, columnVisibility as trackedEntityColumnVisibility } from "./tracked-entity-columns"
 import { actionColumn as rawActionColumn, selectColumn as rawSelectColumn } from "./extra-columns"
@@ -39,9 +38,7 @@ export const columns: ColumnDef<Quotation>[] = [
     enableSorting: true,
     size: 200,
     // enableColumnFilter: false,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Quotee" />
-    ),
+    header: "Quotee",
   },
   {
     id: "date",
@@ -49,11 +46,9 @@ export const columns: ColumnDef<Quotation>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 140,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Date" />
-    ),
-    cell: ({ row }) => (
-      <div className="font-medium">{formatDate(row.getValue("date"))}</div>
+    header: "Date",
+    cell: ({ row, cell }) => (
+      <div key={cell.id} className="font-medium">{formatDate(row.getValue("date"))}</div>
     )
   },
   {
@@ -62,9 +57,7 @@ export const columns: ColumnDef<Quotation>[] = [
     enableHiding: false,
     enableSorting: false,
     size: 500,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Quote" />
-    ),
+    header: "Quote",
   },
   {
     id: "source",
@@ -72,9 +65,7 @@ export const columns: ColumnDef<Quotation>[] = [
     enableHiding: true,
     enableSorting: false,
     size: 300,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Source" />
-    ),
+    header: "Source",
   },
   {
     id: "url",
@@ -82,11 +73,9 @@ export const columns: ColumnDef<Quotation>[] = [
     enableHiding: true,
     enableSorting: false,
     size: 300,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="URL" />
-    ),
-    cell: ({getValue}) => (
-      <a href={getValue() as string} target="_blank">{getValue() as string}</a>
+    header: "URL",
+    cell: ({cell, getValue}) => (
+      <a key={cell.id} href={getValue() as string} target="_blank">{getValue() as string}</a>
     )
   },
   {
@@ -95,9 +84,7 @@ export const columns: ColumnDef<Quotation>[] = [
     enableHiding: true,
     enableSorting: false,
     size: 400,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Notes" />
-    ),
+    header: "Notes",
   },
   actionColumn
 ]

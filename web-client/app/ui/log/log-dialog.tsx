@@ -51,10 +51,7 @@ export default function LogDialog({
 ) {
   const [open, setOpen] = useState(false)
   const selectedRecordsContext = useContext(SelectedRecordsContext)
-  const [/*selectedRow, */setSelectedRow] = useState<Log|undefined>(() => {
-    const selectedRecordId = selectedRecordsContext.Log?.id
-    return record?.log?.content.find(record => record.id == selectedRecordId)
-  });
+  const [setSelectedRecordId] = useState(selectedRecordsContext.Log?.id)
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -74,10 +71,9 @@ export default function LogDialog({
           defaultColumns={columns}
           defaultColumnVisibility={columnVisibility}
           page={record?.log ?? emptyPage}
-          onSelect={setSelectedRow}
         />
         <DialogFooter>
-          <Button type="submit" onClick={() => setOpen(false)}>Close</Button>
+          <Button onClick={() => setOpen(false)}>Close</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

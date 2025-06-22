@@ -20,7 +20,6 @@
 'use client'
 
 import { ColumnDef } from "@tanstack/react-table"
-import DataTableColumnHeader from "@/app/ui/data-table/data-table-column-header"
 import User from "@/app/model/User"
 import { columns as trackedEntityColumns, columnVisibility as trackedEntityColumnVisibility } from "./tracked-entity-columns"
 import { actionColumn as rawActionColumn, selectColumn as rawSelectColumn } from "./extra-columns"
@@ -37,9 +36,7 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: false,
     enableSorting: true,
     size: 132,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Username" />
-    ),
+    header: "Username",
   },
   {
     id: "firstName",
@@ -47,9 +44,7 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 132,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="First Name" />
-    ),
+    header: "First Name",
   },
   {
     id: "lastName",
@@ -57,9 +52,7 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 132,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Last Name" />
-    ),
+    header: "Last Name",
   },
   {
     id: "email",
@@ -67,9 +60,7 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 300,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Email" />
-    ),
+    header: "Email",
   },
   {
     id: "country",
@@ -77,9 +68,7 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 150,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Country" />
-    ),
+    header: "Country",
   },
   {
     id: "password",
@@ -87,9 +76,7 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: true,
     enableSorting: false,
     size: 200,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="password" />
-    ),
+    header: "Password",
   },
   {
     id: "authorities",
@@ -97,11 +84,9 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 280,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Authorities" />
-    ),
-    cell: ({ getValue }) => (
-      <div className="font-medium">{getValue()?.toString() ?? ''}</div>
+    header: "Authorities",
+    cell: ({ cell, getValue }) => (
+      <div key={cell.id} className="font-medium">{getValue()?.toString() ?? ''}</div>
     ),
     meta: {
       className: "text-center"

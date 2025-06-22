@@ -34,7 +34,6 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline"
 
-import DataTableColumnHeader from "@/app/ui/data-table/data-table-column-header"
 import { TableHead } from "@/components/ui/table"
 
 export const actionColumn: ColumnDef<any> = {
@@ -43,12 +42,10 @@ export const actionColumn: ColumnDef<any> = {
   enableHiding: false,
   enableResizing: false,
   size: 72,
-  header: ({ table, header, column }) => (
-    <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Actions" />
-  ),
-  cell: ({ row }) => {
+  header: "Actions",
+  cell: ({ cell }) => {
     return (
-      <DropdownMenu>
+      <DropdownMenu key={cell.id}>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="justify-self-center h-8 w-8 p-0">
             <span className="sr-only">Open menu</span>
@@ -76,20 +73,16 @@ export const expandColumn: ColumnDef<any> = {
   enableHiding: false,
   enableResizing: false,
   size: 50,
-  header: ({ table, header }) => (
-    <TableHead key={header.id} className="border">
-      {
-        table.getCanSomeRowsExpand()
-          ? <Button variant="ghost" className="w-8 h-8" onClick={table.getToggleAllRowsExpandedHandler()}>
-            {table.getIsAllRowsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
-          </Button>
-          : null
-      }
-    </TableHead>
+  header: ({ table }) => (
+      table.getCanSomeRowsExpand()
+        ? <Button variant="ghost" className="w-8 h-8" onClick={table.getToggleAllRowsExpandedHandler()}>
+          {table.getIsAllRowsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
+        </Button>
+        : null
   ),
-  cell: ({ row }) =>
+  cell: ({ row, cell }) =>
     row.getCanExpand() ?
-      <Button variant="ghost" className="w-8 h-8" onClick={row.getToggleExpandedHandler()}>
+      <Button key={cell.id} variant="ghost" className="w-8 h-8" onClick={row.getToggleExpandedHandler()}>
           {row.getIsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
       </Button>
       : null,
@@ -104,30 +97,27 @@ export const selectColumn: ColumnDef<any> = {
   enableHiding: false,
   enableResizing: false,
   size: 32,
-  header: ({ table, header }) => (
-    <TableHead key={header.id} className="border">
-      {
-        table.options.enableMultiRowSelection
-        ? <Checkbox
-          checked={
-              table.getIsAllPageRowsSelected() ||
-              (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-        : null
-      }
-    </TableHead>
-  ),
-  cell: ({ table, row }) => (
+  header: ({ table }) => (
     table.options.enableMultiRowSelection
     ? <Checkbox
+      checked={
+        table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+      }
+      onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+      aria-label="Select all"
+    />
+    : null
+  ),
+  cell: ({ table, row, cell }) => (
+    table.options.enableMultiRowSelection
+    ? <Checkbox
+      key={cell.id}
       checked={row.getIsSelected()}
       onCheckedChange={(value) => row.toggleSelected(!!value)}
       aria-label="Select row"
     />
-    : <RadioGroup>
+    : <RadioGroup key={cell.id}>
       <RadioGroupItem
         value={row.id}
         checked={row.getIsSelected()}

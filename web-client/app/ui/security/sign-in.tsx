@@ -137,7 +137,7 @@ export default function SignIn({className} : {className: string}) {
             <p className="col-span-1 text-red-500">{error}</p>
           </div>
           <DialogFooter>
-            <Button type="submit" disabled={!username || !password} onClick={authenticate}>Sign in</Button>
+            <Button disabled={!username || !password} onClick={authenticate}>Sign in</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

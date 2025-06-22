@@ -20,7 +20,6 @@
 'use client'
 
 import { ColumnDef } from "@tanstack/react-table"
-import DataTableColumnHeader from "@/app/ui/data-table/data-table-column-header"
 import Log from "@/app/model/Log"
 import { columns as baseEntityColumns, columnVisibility as baseEntityColumnVisibility } from "./base-entity-columns"
 import { actionColumn as rawActionColumn, selectColumn as rawSelectColumn } from "./extra-columns"
@@ -40,11 +39,9 @@ const ownColumns1: ColumnDef<Log>[] = [
     enableSorting: true,
     size: 220,
     // enableColumnFilter: false,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Timestamp" />
-    ),
-    cell: ({ row }) => (
-      <div className="font-medium">{formatDate(row.getValue("timestamp"))}</div>
+    header: "Timestamp",
+    cell: ({ row, cell }) => (
+      <div key={cell.id} className="font-medium">{formatDate(row.getValue("timestamp"))}</div>
     )
   },
   {
@@ -53,11 +50,9 @@ const ownColumns1: ColumnDef<Log>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 140,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="User" />
-    ),
+    header: "User",
     cell: ({cell}) => (
-      (cell.getValue() as User)?.username
+      <span key={cell.id}>{(cell.getValue() as User)?.username}</span>
     )
   },
   {
@@ -66,9 +61,7 @@ const ownColumns1: ColumnDef<Log>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 150,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Transaction" />
-    )
+    header: "Transaction",
   }
 ]
 
@@ -79,9 +72,7 @@ const ownColumns2: ColumnDef<Log>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 200,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Linked Record Kind" />
-    ),
+    header: "Linked Record Kind",
   },
   {
     id: "linkedEntityId",
@@ -89,9 +80,7 @@ const ownColumns2: ColumnDef<Log>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 170,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Linked Entity ID" />
-    ),
+    header: "Linked Record ID",
     meta: {
       className: "text-right"
     }
@@ -112,9 +101,7 @@ export const columns: ColumnDef<Log>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 150,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Record Kind" />
-    ),
+    header: "Record Kind",
   },
   {
     id: "entityId",
@@ -122,9 +109,7 @@ export const columns: ColumnDef<Log>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 120,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Entity ID" />
-    ),
+    header: "Record ID",
     meta: {
       className: "text-right"
     }

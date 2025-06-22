@@ -113,7 +113,7 @@ CALL FT_CREATE_INDEX('PUBLIC', 'entity_link', 'from_entity_locations,to_entity_l
 CREATE TABLE "journal" (
   "id" BIGINT NOT NULL COMMENT 'The journal ID',
   "title" VARCHAR(100) NOT NULL COMMENT 'The journal, etc. title',
-  "abbreviation" VARCHAR(50) DEFAULT NULL COMMENT 'The abbreviation for title',
+  "abbreviation" VARCHAR(50) DEFAULT NULL COMMENT 'The ISO 4 title abbreviation',
   "url" VARCHAR(200) DEFAULT NULL COMMENT 'Web link to the journal''s home page',
   "issn" CHAR(9) DEFAULT NULL CHECK ("issn" REGEXP '^[0-9]{4}-[0-9]{3}[0-9X]$') COMMENT 'The International Standard Serial Number',
   "publisher_id" BIGINT DEFAULT NULL COMMENT 'The ID of the publisher',

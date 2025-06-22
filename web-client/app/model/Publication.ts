@@ -26,27 +26,27 @@ export default interface Publication extends ILinkableEntity {
   /** The names of the authors, one per line. */
   authors?: string
   /** The journal in which the publication appeared. */
-  journal?: Journal
+  journal?: Journal | null
   /** The publication kind. */
   kind?: string
   /** The publication date. */
-  date?: Date | string
+  date?: Date | string | null
   /** The publication year. */
-  year?: number
+  year?: number | null
   /** The publication abstract. */
-  abstract?: string
+  abstract?: string | null
   /** User notes about the publication. */
-  notes?: string
+  notes?: string | null
   /** Whether the publication has been peer reviewed. */
   peerReviewed?: boolean
   /** The Digital Object Identifier. */
-  doi?: string
+  doi?: string | null
   /** The International Standard Book Number. */
-  isbn?: string
+  isbn?: string | null
   /** The URL for the publication online. */
-  url?: /*URL | */string
+  url?: /*URL | */string | null
   /** Flag to indicate that url content is cached on this application server. */
   cached?: boolean
   /** The date the publication was accessed when compiling the database. */
-  accessed?: Date | string
+  accessed?: Date | string | null
 }

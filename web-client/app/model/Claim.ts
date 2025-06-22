@@ -23,7 +23,7 @@ export default interface Claim extends ILinkableEntity {
   /** The text of the claim. */
   text?: string
   /** The date the claim was made. */
-  date?: Date
+  date?: string | null
   /** Added notes about the claim. */
-  notes?: string
+  notes?: string | null
 }

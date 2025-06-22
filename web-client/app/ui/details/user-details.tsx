@@ -22,7 +22,15 @@
 import User from "@/app/model/User"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 import {
   Select,
   SelectContent,
@@ -37,266 +45,317 @@ import { Checkbox } from "@/components/ui/checkbox"
 import Country from "@/app/model/Country"
 import rawCountries from "@/data/countries.json" assert {type: 'json'}
 import Group from "@/app/model/Group"
-import { Action, getRecordLabel } from "@/lib/utils"
+import { getRecordLabel, SecurityFormAction } from "@/lib/utils"
 import DetailActions, { createDetailState, DetailMode } from "./detail-actions"
 import { toast } from "sonner"
-import Authority from "@/app/model/Authority"
-import { Dispatch, useContext, useState } from "react"
+import { authorities } from "./authority-ui"
+import { useCallback, useContext, useMemo, useState } from "react"
 import { SecurityContext } from "@/lib/context"
-import { useImmerReducer } from "use-immer"
+import { useFormContext } from "react-hook-form"
+import { UserFormFields } from "../validators/user"
 
 const countries = rawCountries as unknown as Country[]
 
-function userReducer(draft?: User, action?: Action) {
-  if (draft && action) {
-    switch (action.command) {
-      case "new":
-        Object.keys(draft).forEach(key => (draft as any)[key] = undefined)
-        break
-      case "edit":
-        Object.assign(draft, action.value);
-        break
-      case "setAdmAuthority":
-        setAuthority(draft, "ADM", action.value)
-        break
-      case "setCreAuthority":
-        setAuthority(draft, "CRE", action.value)
-        break
-      case "setDelAuthority":
-        setAuthority(draft, "DEL", action.value)
-        break
-      case "setLnkAuthority":
-        setAuthority(draft, "LNK", action.value)
-        break
-      case "setReaAuthority":
-        setAuthority(draft, "REA", action.value)
-        break
-      case "setUpdAuthority":
-        setAuthority(draft, "UPD", action.value)
-        break
-      case "setUplAuthority":
-        setAuthority(draft, "UPL", action.value)
-        break
-      case "setCountry":
-        draft.country = action.value
-        break
-      case "setEmail":
-        draft.email = action.value
-        break
-      case "setFirstName":
-        draft.firstName = action.value
-        break
-      case "setLastName":
-        draft.lastName = action.value
-        break
-      case "setUsername":
-        draft.username = action.value
-        break
-      case "setPassword":
-        draft.password = action.value
-        break
-      case "setStatus":
-        draft.status = action.value
-        break
-    }
-  }
-}
-
-function setAuthority(draft: User, authority: Authority, grant: boolean) {
-  if (!draft.authorities)
-    draft.authorities = []
-  const index = draft.authorities?.findIndex(a => a == authority) as number
-  if (grant) {
-    if (index == -1)
-      draft.authorities?.push(authority)
-  } else {
-    if (index != -1)
-      draft.authorities?.splice(index, 1)
-  }
-}
-
 export default function UserDetails(
-  { user, group, showUsersOrMembers, pageDispatch }:
-  { user?: User, group?: Group, showUsersOrMembers: string, pageDispatch: Dispatch<Action> }) {
+  {
+    user,
+    group,
+    showUsersOrMembers,
+    onFormAction
+  }:
+  {
+    user?: User,
+    group?: Group,
+    showUsersOrMembers: string,
+    onFormAction: (command: SecurityFormAction, formValue: UserFormFields) => void
+  }) {
 
   const securityContext = useContext(SecurityContext)
+  const form = useFormContext<UserFormFields>()
   const [mode, setMode] = useState<DetailMode>("view")
-  const [mutableRecord, recordDispatch] = useImmerReducer(userReducer, user ?? {})
+  const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
 
-  const state = createDetailState(securityContext, mode, user)
+  const state = useMemo(() => createDetailState(securityContext, mode), [securityContext, mode])
   const { updating } = state
-  if (updating)
-    user = mutableRecord
-
-  function dispatch(command: string, value: any) {
-    recordDispatch({recordId: group?.id ?? "0", command: command, value: value})
-  }
 
   const showingUsers = showUsersOrMembers == "users"
-  if (!showingUsers)
-    state.disableNewCancelButton = state.disableEditSaveButton = state.disableDeleteButton = true
+  // if (!showingUsers)
+  //   state.disableNewCancelButton = state.disableEditSaveButton = state.disableDeleteButton = true
 
   // TODO: the Add button/function should not be enabled if the user is already a member of the group.
-  function handleAddOrRemove() {
+  const handleAddOrRemove = useCallback(() => {
     const userLabel = getRecordLabel("User", user)
     const groupLabel = getRecordLabel("Group", group)
     if (showingUsers) {
       if (confirm(`Add user ${userLabel} to ${groupLabel}?`)) {
-        toast(`Adding user ${userLabel} to group ${groupLabel} ...`)
-        // TODO: add user to group
+        toast(`Adding user ${userLabel} to ${groupLabel} ...`)
+        onFormAction("add", form.getValues())
       }
     } else {
       if (confirm(`Remove user ${userLabel} from ${groupLabel}?`)) {
-        toast(`Removing user ${userLabel} to group ${groupLabel} ...`)
-        // TODO: remove user from group
+        toast(`Removing user ${userLabel} to ${groupLabel} ...`)
+        onFormAction("remove", form.getValues())
       }
     }
-  }
+  }, [user, group, onFormAction, form])
 
   return (
     <fieldset className="border shadow-lg rounded-md">
       <legend>&nbsp;User Details&nbsp;</legend>
       <StandardDetails recordKind="User" record={user} state={state} showLinkingDetails={false} />
-      <p className="pt-2 pb-4">&nbsp;&nbsp;{user ? `Details for selected User #${user?.id}` : "-Select a user in the list above to see its details-"}</p>
-      <div className="grid grid-cols-6 ml-2 mr-2 mb-2 gap-2 items-center">
-        <Label htmlFor="username" className="">Username:</Label>
-        <Input
-          id="username"
-          disabled={!user}
-          readOnly={!updating}
-          placeholder="username"
-          value={user?.username ?? ''}
-          onChange={e => dispatch("setUsername", e.target.value)}
-        />
-        <Label htmlFor="email" className="">Email:</Label>
-        <Input
-          id="email"
-          className="col-span-2"
-          disabled={!user}
-          readOnly={!updating}
-          placeholder="email"
-          value={user?.email ?? ''}
-          onChange={e => dispatch("setEmail", e.target.value)}
-        />
-        <Button
-          className="col-start-6 w-20 place-self-center bg-blue-500"
-          disabled={!user || !group || updating}
-          title={
-            showingUsers
-              ? `Add selected User to ${getRecordLabel("Group", group)}`
-              : `Remove selected user from  ${getRecordLabel("Group", group)}`
-          }
-          onClick={handleAddOrRemove}
-        >
-          {
-            showingUsers
-              ? "Add"
-              : "Remove"
-          }
-        </Button>
-        <Label htmlFor="firstName" className="col-start-1">First name:</Label>
-        <Input
-          id="firstName"
-          className="col-span-2"
-          disabled={!user}
-          readOnly={!updating}
-          placeholder="first name"
-          value={user?.firstName ?? ''}
-          onChange={e => dispatch("setFirstName", e.target.value)}
-        />
-        {/* TODO: Should the New/Edit/Delete buttons be disabled when showing group members? */}
-        <DetailActions
-          className="col-start-6 row-span-3"
-          recordKind="User"
-          record={user}
-          state={state}
-          setMode={setMode}
-          pageDispatch={pageDispatch}
-          recordDispatch={recordDispatch}
-        />
-        <Label htmlFor="lastName" className="col-start-1">Last name:</Label>
-        <Input
-          id="lastName"
-          className="col-span-2"
-          disabled={!user}
-          readOnly={!updating}
-          placeholder="last name"
-          value={user?.lastName ?? ''}
-          onChange={e => dispatch("setLastName", e.target.value)}
-        />
-        <Label htmlFor="country" className="col-start-1">Country:</Label>
-        <Select
-          disabled={!updating}
-          value={user?.country ?? ''}
-          onValueChange={value => dispatch("setCountry", value)}
-        >
-          <SelectTrigger id="country" className="w-[180px]" disabled={!user}>
-            <SelectValue placeholder="Specify country" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Countries</SelectLabel>
-              {countries.map(country =>
-                <SelectItem key={country.alpha_2} value={country.alpha_2}>{country.common_name}</SelectItem>)}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Label htmlFor="password" className="">Password:</Label>
-        <Input
-          id="password"
-          className="col-span-2"
-          disabled={!user}
-          readOnly={!updating}
-          placeholder="password"
-          value={user?.password ?? ''}
-          onChange={e => dispatch("setPassword", e.target.value)}
-        />
-        <fieldset className="flex flex-row col-span-5 border rounded-md p-4 gap-4 w-full" disabled={!showingUsers}>
-          <legend>&nbsp;Authorities&nbsp;</legend>
-          <Checkbox
-            id="adm"
-            checked={user?.authorities?.includes("ADM")}
-            onCheckedChange={checked => dispatch("setAdmAuthority", checked)}
-          />
-          <Label htmlFor="adm">Adminster</Label>
-          <Checkbox
-            id="cre"
-            checked={user?.authorities?.includes("CRE")}
-            onCheckedChange={checked => dispatch("setCreAuthority", checked)}
-          />
-          <Label htmlFor="cre">Create records</Label>
-          <Checkbox
-            id="del"
-            checked={user?.authorities?.includes("DEL")}
-            onCheckedChange={checked => dispatch("setDelAuthority", checked)}
-          />
-          <Label htmlFor="del">Delete records</Label>
-          <Checkbox
-            id="lnk"
-            checked={user?.authorities?.includes("LNK")}
-            onCheckedChange={checked => dispatch("setLnkAuthority", checked)}
-          />
-          <Label htmlFor="lnk">Link records</Label>
-          <Checkbox
-            id="rea"
-            checked={user?.authorities?.includes("REA")}
-            onCheckedChange={checked => dispatch("setReaAuthority", checked)}
-          />
-          <Label htmlFor="rea">Read records</Label>
-          <Checkbox
-            id="upd"
-            checked={user?.authorities?.includes("UPD")}
-            onCheckedChange={checked => dispatch("setUpdAuthority", checked)}
-          />
-          <Label htmlFor="upd">Update records</Label>
-          <Checkbox
-            id="upl"
-            checked={user?.authorities?.includes("UPL")}
-            onCheckedChange={checked => dispatch("setUplAuthority", checked)}
-          />
-          <Label htmlFor="upl">Upload files</Label>
-        </fieldset>
-      </div>
+      <Form {...form}>
+        <form>
+          <FormDescription>
+            <span className="pt-2 pb-4">&nbsp;&nbsp;{user ? `Details for selected User #${user?.id}` : "-Select a user in the list above to see its details-"}</span>
+          </FormDescription>
+          <div className="grid grid-cols-3 ml-2 mr-2 mt-4 mb-4 gap-4 items-center">
+            <FormField
+              control={form.control}
+              name="username"
+              render={({field}) => (
+                <FormItem className="">
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="username"
+                      disabled={!user}
+                      readOnly={!updating}
+                      placeholder="username"
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The user's username
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              type="button"
+              className="col-start-3 w-20 place-self-center bg-blue-500"
+              disabled={!user || !group || updating}
+              title={
+                showingUsers
+                  ? `Add selected User to ${getRecordLabel("Group", group)}`
+                  : `Remove selected user from  ${getRecordLabel("Group", group)}`
+              }
+              onClick={handleAddOrRemove}
+            >
+              {
+                showingUsers
+                  ? "Add"
+                  : "Remove"
+              }
+            </Button>
+            <FormField
+              control={form.control}
+              name="firstName"
+              render={({field}) => (
+                <FormItem className="">
+                  <FormLabel>First name</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="firstName"
+                      className="col-span-2"
+                      disabled={!user}
+                      readOnly={!updating}
+                      placeholder="first name"
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The user's first name
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="lastName"
+              render={({field}) => (
+                <FormItem className="">
+                  <FormLabel>Last name</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="lastName"
+                      className=""
+                      disabled={!user}
+                      readOnly={!updating}
+                      placeholder="last name"
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The user's last name
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* TODO: Should the New/Edit/Delete buttons be disabled when showing group members? */}
+            <DetailActions
+              className="col-start-3 row-span-3"
+              recordKind="User"
+              record={user}
+              form={form}
+              state={state}
+              setMode={setMode}
+              showFieldHelp={showFieldHelp}
+              setShowFieldHelp={setShowFieldHelp}
+              onFormAction={onFormAction}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({field}) => (
+                <FormItem className="col-span-2">
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="email"
+                      type="email"
+                      disabled={!user}
+                      readOnly={!updating}
+                      placeholder="email"
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The user's email address
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({field}) => (
+                <FormItem className="col-span-2">
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="password"
+                      // type="password"
+                      disabled={!user}
+                      readOnly={!updating}
+                      placeholder="password"
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        bcrypt hash of user's password
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="country"
+              render={({ field }) => (
+                <FormItem className="col-start-1">
+                  <FormLabel>Country</FormLabel>
+                  <Select
+                    disabled={!updating}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger id="country" className="w-full" disabled={!user}>
+                        <SelectValue placeholder="Specify country" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Countries</SelectLabel>
+                        {
+                          countries.map(country => (
+                            <SelectItem
+                              key={country.alpha_2}
+                              value={country.alpha_2}>
+                              {country.common_name}
+                            </SelectItem>
+                          ))
+                        }
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The user's country of residence
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <fieldset className="col-start-1 col-span-2 grid grid-cols-7 border rounded-md p-4 gap-4 w-full" disabled={!user}>
+              <legend>&nbsp;Authorities&nbsp;</legend>
+              {
+                authorities.map(auth => (
+                  <FormField
+                    key={auth.key}
+                    control={form.control}
+                    name={auth.key}
+                    render={({field}) => (
+                      <FormItem>
+                        <FormLabel>{auth.label}</FormLabel>
+                        <FormControl>
+                          <Checkbox
+                            id={auth.key}
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        {
+                          showFieldHelp
+                          ? <FormDescription>
+                              {auth.description}
+                            </FormDescription>
+                          : null
+                        }
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ))
+              }
+              {
+                showFieldHelp
+                ? <FormDescription className="col-span-3">
+                    The authorities granted to the user
+                  </FormDescription>
+                : null
+              }
+            </fieldset>
+          </div>
+        </form>
+      </Form>
     </fieldset>
   )
 }

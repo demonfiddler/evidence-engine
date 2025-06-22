@@ -21,7 +21,15 @@
 
 import Topic from "@/app/model/Topic"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 import {
   Select,
   SelectContent,
@@ -31,16 +39,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import rawTopics from "@/data/topics.json" assert {type: 'json'}
 import StandardDetails from "./standard-details"
-import { Action, setTopicFields } from "@/lib/utils"
+import { FormAction } from "@/lib/utils"
 import DetailActions, { createDetailState, DetailMode } from "./detail-actions"
-import { Dispatch, useContext, useState } from "react"
+import { useContext, useMemo, useState } from "react"
 import { SecurityContext } from "@/lib/context"
-import { useImmerReducer } from "use-immer"
+import { useFormContext } from "react-hook-form"
+import { TopicFormFields } from "../validators/topic"
 
-const topics = rawTopics.content as unknown as Topic[]
-setTopicFields("", undefined, topics)
 function flatten(topics: Topic[], result: Topic[]) : Topic[] {
   for (let topic of topics) {
     result.push({
@@ -53,112 +59,182 @@ function flatten(topics: Topic[], result: Topic[]) : Topic[] {
   }
   return result
 }
-const flatTopics = flatten(topics, [])
-
-function topicReducer(draft?: Topic, action?: Action) {
-  if (draft && action) {
-    switch (action.command) {
-      case "new":
-        Object.keys(draft).forEach(key => (draft as any)[key] = undefined)
-        break
-      case "edit":
-        Object.assign(draft, action.value);
-        break
-      case "setDescription":
-        draft.description = action.value
-        break
-      case "setLabel":
-        draft.label = action.value
-        break
-      case "setParentId":
-        draft.parentId = action.value
-        break
-      case "setStatus":
-        draft.status = action.value
-        break
-    }
-  }
-}
 
 export default function TopicDetails(
-  {record, pageDispatch}:
-  {record?: Topic; pageDispatch: Dispatch<Action>}) {
+  { record, topics, onFormAction }:
+  { record?: Topic; topics: Topic[], onFormAction: (command: FormAction, formValue: TopicFormFields) => void }) {
 
   const securityContext = useContext(SecurityContext)
+  const form = useFormContext()
   const [mode, setMode] = useState<DetailMode>("view")
-  const [mutableRecord, recordDispatch] = useImmerReducer(topicReducer, record ?? {})
+  const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
 
-  const state = createDetailState(securityContext, mode, record)
+  const state = useMemo(() => createDetailState(securityContext, mode), [securityContext, mode])
   const { updating } = state
-  const topic = updating ? mutableRecord : record
 
-  function dispatch(command: string, value: any) {
-    recordDispatch({recordId: topic?.id ?? "0", command: command, value: value})
-  }
+  const flatTopics = flatten(topics, [])
+  // FIXME: A topic can't be its own ancestor
+  const topicIdx = flatTopics.findIndex(t => t.id == record?.id)
+  flatTopics.splice(topicIdx, 1)
 
   return (
     <fieldset className="border shadow-lg rounded-md w-2/3">
       <legend>&nbsp;Topic Details&nbsp;</legend>
-      <StandardDetails recordKind="Topic" record={topic} state={state} showLinkingDetails={true} />
-      <p className="pt-2 pb-4">&nbsp;&nbsp;{topic ? `Details for selected Topic #${topic?.id}` : "-Select a topic in the list above to see its details-"}</p>
-      <div className="grid grid-cols-6 ml-2 mr-2 mb-2 gap-2 items-center">
-        <Label htmlFor="path" className="col-start-1">Path:</Label>
-        <Input
-          id="path"
-          className="col-span-4"
-          readOnly={true}
-          value={topic?.path}
-          // onChange={e => dispatch("setPath", e.target.value)}
-        />
-        <DetailActions
-          className="col-start-6 row-span-5"
-          recordKind="Topic"
-          record={topic}
-          state={state}
-          setMode={setMode}
-          pageDispatch={pageDispatch}
-          recordDispatch={recordDispatch}
-        />
-        <Label htmlFor="parent" className="col-start-1">Parent:</Label>
-        <Select
-          disabled={!updating}
-          value={topic?.parentId?.toString() ?? ''}
-          onValueChange={value => dispatch("setParentId", value)}
-        >
-          <SelectTrigger id="parent" className="col-span-4" disabled={!topic}>
-            <SelectValue className="col-span-4 w-full" placeholder="Specify parent" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Topics</SelectLabel> {
-                flatTopics.map(topic => <SelectItem key={topic.id?.toString() ?? ''} value={topic.id?.toString() ?? ''}>
-                  {`Topic #${topic.id}: ${topic.path}`}
-                </SelectItem>)
-              }
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Label htmlFor="label" className="col-start-1">Label:</Label>
-        <Input
-          id="label"
-          className="col-span-4"
-          disabled={!topic}
-          readOnly={!updating}
-          placeholder="label"
-          value={topic?.label ?? ''}
-          onChange={e => dispatch("setLabel", e.target.value)}
-        />
-        <Label htmlFor="description" className="">Description:</Label>
-        <Input
-          id="description"
-          className="col-span-4"
-          disabled={!topic}
-          readOnly={!updating}
-          placeholder="description"
-          value={topic?.description ?? ''}
-          onChange={e => dispatch("setDescription", e.target.value)}
-        />
-      </div>
+      <StandardDetails recordKind="Topic" record={record} state={state} showLinkingDetails={true} />
+      <Form {...form}>
+        <form>
+          <FormDescription>
+            <span className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Topic #${record?.id}` : "-Select a topic in the list above to see its details-"}</span>
+          </FormDescription>
+          <div className="grid grid-cols-5 ml-2 mr-2 mt-4 mb-4 gap-4 items-center">
+            <FormField
+              control={form.control}
+              name="path"
+              render={({field}) => (
+                <FormItem className="col-span-2">
+                  <FormLabel>Path</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="path"
+                      className="col-span-4"
+                      readOnly={true}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The full path to the topic
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="parentId"
+              render={({ field }) => (
+                <FormItem className="col-span-2">
+                  <FormLabel>Parent</FormLabel>
+                  <Select
+                    disabled={!updating}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger id="parentId" className="col-span-4" disabled={!record}>
+                        <SelectValue className="col-span-4 w-full" placeholder="Specify parent" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Topics</SelectLabel>
+                        {
+                          record?.parentId
+                          ? (
+                            <SelectItem
+                              key="0"
+                              value="0"
+                            >
+                              <span>-Clear Selection-</span>
+                            </SelectItem>
+                          )
+                          : null
+                        }
+                        {
+                          flatTopics.map(topic => (
+                            <SelectItem
+                              key={topic.id ?? ''}
+                              value={topic.id ?? ''}
+                            >
+                              {`Topic #${topic.id}: ${topic.path}`}
+                            </SelectItem>
+                          ))
+                        }
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The parent topic
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DetailActions
+              className="col-start-5 row-span-5"
+              recordKind="Topic"
+              record={record}
+              form={form}
+              state={state}
+              setMode={setMode}
+              showFieldHelp={showFieldHelp}
+              setShowFieldHelp={setShowFieldHelp}
+              onFormAction={onFormAction}
+            />
+            <FormField
+              control={form.control}
+              name="label"
+              render={({field}) => (
+                <FormItem className="col-span-2">
+                  <FormLabel>Label</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="label"
+                      className=""
+                      disabled={!record}
+                      readOnly={!updating}
+                      placeholder="label"
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The short topic label
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({field}) => (
+                <FormItem className="col-span-2">
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="description"
+                      className=""
+                      disabled={!record}
+                      readOnly={!updating}
+                      placeholder="description"
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The long topic description
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </form>
+      </Form>
     </fieldset>
   )
 }

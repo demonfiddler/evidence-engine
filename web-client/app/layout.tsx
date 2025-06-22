@@ -19,6 +19,12 @@
 
 'use client'
 
+if (process.env.NODE_ENV === 'development') {
+  console.log("layout.tsx: development mode detected")
+  const wdyr = require('../wdyr');
+  console.log(`wdyr = ${JSON.stringify(wdyr)}`)
+}
+
 import '@/app/ui/global.css'
 import { inter } from '@/app/ui/fonts'
 // import { Metadata } from 'next'
@@ -144,7 +150,7 @@ export default function RootLayout({
   }
 
   function setSelectedRecord(srCtx: SelectedRecordsContextType, recordKind: RecordKind, record?: ILinkableEntity) {
-    console.log(`enter RootLayout.setSelectedRecord(recordKind: ${recordKind}), recordId: ${record?.id}, srCtx: ${JSON.stringify(srCtx)}`)
+    // console.log(`enter RootLayout.setSelectedRecord(recordKind: ${recordKind}), recordId: ${record?.id}, srCtx: ${JSON.stringify(srCtx)}`)
 
     const newCtxSs = {
       ...srCtx,
@@ -157,7 +163,7 @@ export default function RootLayout({
     storeSelectedRecordsContext(newCtxSs)
     setSelectedRecordsContext(newCtx)
 
-    console.log(`\tRootLayout.setSelectedRecord(masterRecordKind: ${recordKind}), newCtx=${JSON.stringify(newCtx)}`)
+    // console.log(`\tRootLayout.setSelectedRecord(masterRecordKind: ${recordKind}), newCtx=${JSON.stringify(newCtx)}`)
   }
 
   // console.log(`RootLayout(): masterLinkContext = ${JSON.stringify(masterLinkContext)}`)

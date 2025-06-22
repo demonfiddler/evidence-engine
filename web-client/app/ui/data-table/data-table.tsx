@@ -40,10 +40,11 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { CSSProperties, useContext, useState } from "react"
+import { CSSProperties, useCallback, useContext, useState } from "react"
 import {
   DndContext,
   KeyboardSensor,
@@ -69,6 +70,7 @@ import IBaseEntity from "@/app/model/IBaseEntity"
 import { MasterLinkContext, SelectedRecordsContext } from "@/lib/context"
 import RecordKind from "@/app/model/RecordKind"
 import { cn, isLinkableEntity } from "@/lib/utils"
+import DataTableColumnHeader from "./data-table-column-header"
 
 function DragAlongCell<TData>({ cell }: { cell: Cell<TData, unknown> }) {
   const { isDragging, setNodeRef, transform } = useSortable({
@@ -99,7 +101,7 @@ interface DataTableProps<TData, TValue> {
   defaultColumnVisibility: VisibilityState
   page?: IPage<TData>
   getSubRows?: (row: TData) => TData[] | undefined
-  onSelect: (recordId?: string|BigInt) => void
+  onRowSelectionChange?: (recordId?: string) => void
 }
 
 interface ColumnMetaData {
@@ -113,14 +115,15 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
   defaultColumnVisibility,
   page,
   getSubRows,
-  onSelect
+  onRowSelectionChange
 }: DataTableProps<TData, TValue>) {
+  console.log("DataTable: render")
   const masterLinkContext = useContext(MasterLinkContext)
   const selectedRecordsContext = useContext(SelectedRecordsContext)
   const [columns] = useState<typeof defaultColumns>(() => [
     ...defaultColumns,
   ])
-  const [sorting, setSorting] = useState<SortingState>([/*{id: "id", desc: false}*/])
+  const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({...defaultColumnVisibility})
   const [columnOrder, setColumnOrder] = useState<string[]>(() => columns.map(c => c.id!))
@@ -133,6 +136,45 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
     useSensor(TouchSensor, {}),
     useSensor(KeyboardSensor, {})
   )
+  const findItem = useCallback((rowId: any, data?: TData[]) : TData | undefined => {
+    // console.log(`DataTable.findItem: rowId=${rowId}`)
+    if (!data)
+      return undefined
+    for (let row of data) {
+      if (row.id == rowId)
+        return row
+      if (getSubRows) {
+        const subRows = getSubRows(row)
+        if (subRows) {
+          const found = findItem(rowId, subRows)
+          if (found)
+            return found
+        }
+      }
+    }
+  }, [getSubRows])
+
+  const rowSelectionChanged = useCallback((selection: Updater<RowSelectionState>) => {
+    // console.log(`enter DataTable.rowSelectionChanged, masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
+    console.log(`DataTable.rowSelectionChanged: selection=${JSON.stringify(selection)}`)
+    setRowSelection(selection)
+
+    let selectedRecord
+    const rowSelectionState = typeof selection == "function" ? selection({}) : selection
+    const entries = Object.entries(rowSelectionState)
+    if (entries.length == 1) {
+      const [id, selected] = entries[0]
+      if (selected)
+        selectedRecord = findItem(id, page?.content)
+    }
+    // console.log(`\tselectedRecord = ${JSON.stringify(selectedRecord)}`)
+    if (masterLinkContext.masterRecordKind == recordKind)
+      masterLinkContext.setMasterRecord(masterLinkContext, selectedRecord)
+    selectedRecordsContext.setSelectedRecord(selectedRecordsContext, recordKind, selectedRecord)
+    if (onRowSelectionChange)
+      onRowSelectionChange(selectedRecord?.id)
+    // console.log(`exit DataTable.rowSelectionChanged, masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
+  }, [setRowSelection, findItem, masterLinkContext, selectedRecordsContext, recordKind, onRowSelectionChange])
 
   const table = useReactTable({
     data: page?.content ?? [],
@@ -211,44 +253,8 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
   //   return widths
   // }
 
-  function findItem(rowId: any, data?: TData[]) : TData | undefined {
-    if (!data)
-      return undefined
-    for (let row of data) {
-      if (row.id == rowId)
-        return row
-      if (getSubRows) {
-        const subRows = getSubRows(row)
-        if (subRows) {
-          const found = findItem(rowId, subRows)
-          if (found)
-            return found
-        }
-      }
-    }
-  }
-
-  function rowSelectionChanged(selection: Updater<RowSelectionState>) {
-    // console.log(`enter DataTable.rowSelectionChanged, masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
-    setRowSelection(selection)
-
-    let selectedRecord
-    const rowSelectionState = typeof selection == "function" ? selection({}) : selection
-    const entries = Object.entries(rowSelectionState)
-    if (entries.length == 1) {
-      const [id, selected] = entries[0]
-      if (selected)
-        selectedRecord = findItem(id, page?.content)
-    }
-    // console.log(`\tselectedRecord = ${JSON.stringify(selectedRecord)}`)
-    if (masterLinkContext.masterRecordKind == recordKind)
-      masterLinkContext.setMasterRecord(masterLinkContext, selectedRecord)
-    selectedRecordsContext.setSelectedRecord(selectedRecordsContext, recordKind, selectedRecord)
-    onSelect(selectedRecord?.id)
-    // console.log(`exit DataTable.rowSelectionChanged, masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
-  }
-
-  function handleDragEnd(event: DragEndEvent) {
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
+    console.log(`DataTable.handleDragEnd: event=${JSON.stringify(event)}`)
     const { active, over } = event
     if (active && over && active.id !== over.id) {
       setColumnOrder(columnOrder => {
@@ -257,7 +263,7 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
         return arrayMove(columnOrder, oldIndex, newIndex)
       })
     }
-  }
+  }, [setColumnOrder, columnOrder])
 
   // console.log(`DataTable(): table.getState().rowSelection = ${JSON.stringify(table.getState().rowSelection)}`)
   // console.log(`DataTable(): masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
@@ -290,7 +296,17 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
                     strategy={horizontalListSortingStrategy}
                   >
                     {headerGroup.headers.map(header =>
-                      flexRender(header.column.columnDef.header, header.getContext())
+                      typeof header.column.columnDef.header == "function"
+                      ? <TableHead key={header.id} className="border">
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                        </TableHead>
+                      : <DataTableColumnHeader
+                        key={header.id}
+                        table={table}
+                        header={header}
+                        column={header.column}
+                        title={header.column.columnDef.header ?? ''}
+                      />
                     )}
                   </SortableContext>
                 </TableRow>
@@ -329,3 +345,5 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
     </DndContext>
   )
 }
+
+// DataTable.whyDidYouRender = true;

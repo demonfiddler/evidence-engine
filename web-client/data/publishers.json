@@ -190,6 +190,12 @@
       "name": "Academic Leadership",
       "url": "http://www.academicleadership.org",
       "journal_count": 1
+    },
+    {
+      "id": "3031",
+      "name": "Elsevier",
+      "url": "http://www.elsevier.com",
+      "journal_count": 2638
     }
   ]
 }

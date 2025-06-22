@@ -114,7 +114,7 @@ export function getRecordLabel(recordKind: RecordKind | undefined, record?: ITra
   }
 }
 
-export function setTopicFields(path: string, parentId?: BigInt | string, topics?: Topic[]) {
+export function setTopicFields(path: string, parentId?: string, topics?: Topic[]) {
   if (topics) {
     for (let t of topics) {
       t.path = (path.length > 0 ? path + " > " : path) + t.label;
@@ -124,28 +124,44 @@ export function setTopicFields(path: string, parentId?: BigInt | string, topics?
   }
 }
 
+export type FormAction = "create" | "update" | "delete" | "reset"
+export type SecurityFormAction = FormAction | "add" | "remove"
+
 type Action = {
-  recordId: BigInt | string
+  recordId: string
   command: string
   value: any
 }
-export type { Action }
 
-export function pageReducer<T extends ITrackedEntity>(draft: IPage<T>, action: Action) {
-  const recordIndex = draft.content.findIndex(c => c.id == action.recordId)
-  switch (action.command) {
-    case "add":
-      draft.content.push(action.value)
-      break
-    case "update":
-      if (recordIndex != -1)
-        draft.content.splice(recordIndex, 1, action.value)
-      break
-    case "delete":
-      // N.B. This is a hard delete that physically deletes the record. We plan to implement only a soft delete.
-      if (recordIndex != -1)
-        draft.content.splice(recordIndex, 1)
-      break
-  }
+type MutationAction<T, F> = {
+  command: T
+  value: F
+}
+export type { Action, MutationAction }
+
+export function toDate(value?: string | Date | null) {
+  return value instanceof Date
+    ? value as Date
+    : typeof value == "string"
+      ? new Date(value)
+      : ''
 }
 
+export function toIsoString(value?: string | Date) {
+  return value instanceof Date
+    ? value.toISOString()
+    : value && typeof value == "string"
+      ? value
+      : null
+}
+
+export function toInteger(s?: string | number) {
+  switch (typeof s) {
+    case "string":
+      return parseInt(s)
+    case "number":
+      return Math.floor(s)
+    default:
+      return null
+  }
+}

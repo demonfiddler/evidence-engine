@@ -20,8 +20,16 @@
 'use client'
 
 import Publisher from "@/app/model/Publisher";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/ui/form"
 import {
   Select,
   SelectContent,
@@ -36,132 +44,199 @@ import rawCountries from "@/data/countries.json" assert {type: 'json'}
 import Country from "@/app/model/Country";
 import DetailActions, { createDetailState, DetailMode } from "./detail-actions";
 import Link from "next/link";
-import { Action } from "@/lib/utils";
-import { Dispatch, useContext, useState } from "react";
+import { FormAction } from "@/lib/utils";
+import { useContext, useMemo, useState } from "react";
 import { SecurityContext } from "@/lib/context";
-import { useImmerReducer } from "use-immer";
+import { useFormContext } from "react-hook-form"
+import { PublisherFormFields } from "../validators/publisher";
 
 const countries = rawCountries as unknown as Country[]
 
-function publisherReducer(draft?: Publisher, action?: Action) {
-  if (draft && action) {
-    switch (action.command) {
-      case "new":
-        Object.keys(draft).forEach(key => (draft as any)[key] = undefined)
-        break
-      case "edit":
-        Object.assign(draft, action.value);
-        break
-      case "setCountry":
-        draft.country = action.value
-        break
-      case "setJournalCount":
-        draft.journalCount = action.value
-        break
-      case "setLocation":
-        draft.location = action.value
-        break
-      case "setName":
-        draft.name = action.value
-        break
-      case "setStatus":
-        draft.status = action.value
-        break
-      case "setUrl":
-        draft.url = action.value
-        break
-    }
-  }
-}
-
 export default function PublisherDetails(
-  {record, pageDispatch}:
-  {record?: Publisher; pageDispatch: Dispatch<Action>}) {
+  { record, onFormAction }:
+  { record?: Publisher; onFormAction: (command: FormAction, formValue: PublisherFormFields) => void }) {
 
   const securityContext = useContext(SecurityContext)
+  const form = useFormContext()
   const [mode, setMode] = useState<DetailMode>("view")
-  const [mutableRecord, recordDispatch] = useImmerReducer(publisherReducer, record ?? {})
+  const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
 
-  const state = createDetailState(securityContext, mode, record)
+  const state = useMemo(() => createDetailState(securityContext, mode), [securityContext, mode])
   const { updating } = state
-  const publisher = updating ? mutableRecord : record
-
-  function dispatch(command: string, value: any) {
-    recordDispatch({recordId: publisher?.id ?? "0", command: command, value: value})
-  }
 
   return (
     <fieldset className="border shadow-lg rounded-md w-2/3">
       <legend>&nbsp;Publisher Details&nbsp;</legend>
-      <StandardDetails recordKind="Publisher" record={publisher} state={state} showLinkingDetails={false} />
-      <p className="pt-2 pb-4">&nbsp;&nbsp;{publisher ? `Details for selected Publisher #${publisher?.id}` : "-Select a publisher in the list above to see its details-"}</p>
-      <div className="grid grid-cols-6 ml-2 mr-2 mb-2 gap-2">
-        <Label htmlFor="name" className="col-start-1">Name:</Label>
-        <Input
-          id="name"
-          className="col-span-4"
-          disabled={!publisher}
-          readOnly={!updating}
-          value={publisher?.name ?? ''}
-          onChange={e => dispatch("setName", e.target.value)}
-        />
-        <DetailActions
-          className="col-start-6 row-span-5"
-          recordKind="Publisher"
-          record={publisher}
-          state={state}
-          setMode={setMode}
-          pageDispatch={pageDispatch}
-          recordDispatch={recordDispatch}
-        />
-        <Label htmlFor="location" className="col-start-1">Location:</Label>
-        <Input
-          id="location"
-          className="col-span-2"
-          disabled={!publisher}
-          readOnly={!updating}
-          value={publisher?.location ?? ''}
-          onChange={e => dispatch("setLocation", e.target.value)}
-        />
-        <Label htmlFor="country">Country:</Label>
-        <Select
-          disabled={!updating}
-          value={publisher?.country ?? ''}
-          onValueChange={value => dispatch("setCountry", value)}
-        >
-          <SelectTrigger id="country" className="w-full" disabled={!publisher}>
-            <SelectValue placeholder="Specify country" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Countries</SelectLabel>
-                {countries.map(country =>
-                  <SelectItem key={country.alpha_2} value={country.alpha_2}>{country.common_name}</SelectItem>)}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Label htmlFor="url" className="col-start-1">URL:</Label>
-        {
-          updating
-          ? <Input
-              id="url"
-              className="col-span-4"
-              value={publisher?.url ?? ''}
-              onChange={e => dispatch("setUrl", e.target.value)}
+      <StandardDetails recordKind="Publisher" record={record} state={state} showLinkingDetails={false} />
+      <Form {...form}>
+        <form>
+          <FormDescription>
+            <span className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Publisher #${record?.id}` : "-Select a publisher in the list above to see its details-"}</span>
+          </FormDescription>
+          <div className="grid grid-cols-3 ml-2 mr-2 mt-4 mb-4 gap-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({field}) => (
+                <FormItem className="col-span-2">
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="name"
+                      className=""
+                      disabled={!record}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The publisher's company name
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          : <Link className="col-span-4" href={publisher?.url ?? ''} target="_blank">{publisher?.url ?? ''}</Link>
-        }
-        <Label htmlFor="journalCount" className="col-start-1">Journal count:</Label>
-        <Input
-          type="number"
-          id="journalCount"
-          className="col-span-1"
-          disabled={!publisher}
-          readOnly={!updating}
-          value={publisher?.journalCount ?? ''}
-          onChange={e => dispatch("setJournalCount", e.target.value)}
-        />
-      </div>
+            <DetailActions
+              className="col-start-3 row-span-4"
+              recordKind="Publisher"
+              record={record}
+              form={form}
+              state={state}
+              setMode={setMode}
+              showFieldHelp={showFieldHelp}
+              setShowFieldHelp={setShowFieldHelp}
+              onFormAction={onFormAction}
+            />
+            <FormField
+              control={form.control}
+              name="location"
+              render={({field}) => (
+                <FormItem className="">
+                  <FormLabel>Location</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="location"
+                      className="col-span-2"
+                      disabled={!record}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The publisher's location (city/region)
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="country"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Country</FormLabel>
+                  <Select
+                    disabled={!updating}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger id="country" className="w-full" disabled={!record}>
+                        <SelectValue placeholder="Specify country" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Countries</SelectLabel>
+                          {
+                            countries.map(country => (
+                              <SelectItem
+                                key={country.alpha_2}
+                                value={country.alpha_2}>
+                                {country.common_name}
+                              </SelectItem>
+                            ))
+                          }
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The publisher's country
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="url"
+              render={({field}) => (
+                <FormItem className="col-start-1 col-span-2">
+                  <FormLabel>URL</FormLabel>
+                  <FormControl>
+                    {
+                      updating
+                      ? <Input
+                          id="url"
+                          className=""
+                          {...field}
+                        />
+                      : <Link className="" href={record?.url ?? ''} target="_blank">{record?.url ?? ''}</Link>
+                    }
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The publishers's online web address
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="journalCount"
+              render={({field}) => (
+                <FormItem className="">
+                  <FormLabel>Journal count</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="journalCount"
+                      type="number"
+                      className="col-span-1"
+                      disabled={!record}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The number of journals published by this organisation
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </form>
+      </Form>
     </fieldset>
   )
 }

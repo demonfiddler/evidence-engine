@@ -139,7 +139,7 @@ CREATE TABLE IF NOT EXISTS "entity_link" (
 CREATE TABLE IF NOT EXISTS "journal" (
   "id"  bigint(20) unsigned NOT NULL COMMENT 'The journal ID',
   "title" varchar(100) NOT NULL COMMENT 'The journal, etc. title',
-  "abbreviation" varchar(50) DEFAULT NULL COMMENT 'The abbreviation for title',
+  "abbreviation" varchar(50) DEFAULT NULL COMMENT 'The ISO 4 title abbreviation',
   "url" varchar(200) DEFAULT NULL COMMENT 'Web link to the journal''s home page',
   "issn" char(9) DEFAULT NULL COMMENT 'The International Standard Serial Number',
   "publisher_id"  bigint(20) unsigned DEFAULT NULL COMMENT 'The ID of the publisher',

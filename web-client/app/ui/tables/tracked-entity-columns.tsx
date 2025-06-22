@@ -20,7 +20,6 @@
 'use client'
 
 import { ColumnDef } from "@tanstack/react-table"
-import DataTableColumnHeader from "@/app/ui/data-table/data-table-column-header"
 import type ITrackedEntity from "@/app/model/ITrackedEntity"
 import { columns as baseEntityColumns, columnVisibility as baseEntityColumnVisibility } from "./base-entity-columns"
 
@@ -31,19 +30,15 @@ export const columns: ColumnDef<ITrackedEntity>[] = [
     accessorKey: "status",
     enableSorting: true,
     size: 108,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Status" />
-    ),
+    header: "Status",
   },
   {
     id: "created",
     accessorKey: "created",
     enableSorting: true,
     size: 140,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Created" />
-    ),
-    cell: ({ row }) => {
+    header: "Created",
+    cell: ({ row, cell }) => {
       const created = row.getValue("created");
       let createdDate;
       switch (typeof created) {
@@ -54,7 +49,7 @@ export const columns: ColumnDef<ITrackedEntity>[] = [
           createdDate = created as Date;
       }
       const formatted = createdDate && createdDate.toDateString();
-      return <div className="font-medium">{formatted}</div>
+      return <div id={cell.id} className="font-medium">{formatted}</div>
     },
   },
   {
@@ -62,19 +57,15 @@ export const columns: ColumnDef<ITrackedEntity>[] = [
     accessorKey: "createdByUser.username",
     enableSorting: true,
     size: 140,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Created by" />
-    ),
+    header: "Created by",
   },
   {
     id: "updated",
     accessorKey: "updated",
     enableSorting: true,
     size: 140,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Updated" />
-    ),
-    cell: ({ row }) => {
+    header: "Updated",
+    cell: ({ cell, row }) => {
       const updated = row.getValue("updated");
       let updatedDate;
       switch (typeof updated) {
@@ -85,7 +76,7 @@ export const columns: ColumnDef<ITrackedEntity>[] = [
           updatedDate = updated as Date;
       }
       const formatted = updatedDate && updatedDate.toDateString();
-      return <div className="font-medium">{formatted}</div>
+      return <div id={cell.id} className="font-medium">{formatted}</div>
     },
   },
   {
@@ -93,9 +84,7 @@ export const columns: ColumnDef<ITrackedEntity>[] = [
     accessorKey: "updatedByUser.username",
     enableSorting: true,
     size: 140,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Updated by" />
-    ),
+    header: "Updated by",
   },
 ]
 

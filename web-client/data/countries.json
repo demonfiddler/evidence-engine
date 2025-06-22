@@ -242,6 +242,7 @@
 	{"alpha_2": "VI", "alpha_3": "VIR", "numeric": "850", "iso_name": "Virgin Islands {U.S.}", "common_name": "Virgin Islands {U.S.}", "year": 1974, "cc_tld": ".vi", "notes": null},
 	{"alpha_2": "VN", "alpha_3": "VNM", "numeric": "704", "iso_name": "Viet Nam", "common_name": "Vietnam", "year": 1974, "cc_tld": ".vn",  "notes": "ISO country name follows UN designation {common name: Vietnam}. Code used for Republic of Viet Nam {common name: South Vietnam} before 1977. Official name Socialist Republic of Viet Nam."},
 	{"alpha_2": "VU", "alpha_3": "VUT", "numeric": "548", "iso_name": "Vanuatu", "common_name": "Vanuatu", "year": 1980, "cc_tld": ".vu",  "notes": "Name changed from New Hebrides {NH}"},
+	{"alpha_2": "WD", "alpha_3": "WLD", "numeric": "000", "iso_name": "World", "common_name": "World", "year": 1970, "cc_tld": ".world",  "notes": "Not an ISO country"},
 	{"alpha_2": "WF", "alpha_3": "WLF", "numeric": "876", "iso_name": "Wallis and Futuna", "common_name": "Wallis and Futuna", "year": 1974, "cc_tld": ".wf",  "notes": "Previous ISO country name: Wallis and Futuna Islands"},
 	{"alpha_2": "WS", "alpha_3": "WSM", "numeric": "882", "iso_name": "Samoa", "common_name": "Samoa", "year": 1974, "cc_tld": ".ws",  "notes": "Code taken from former name: Western Samoa"},
 	{"alpha_2": "YE", "alpha_3": "YEM", "numeric": "887", "iso_name": "Yemen", "common_name": "Yemen", "year": 1974, "cc_tld": ".ye",  "notes": "Previous ISO country name: Yemen, Republic of {for three years after the unification}. Code used for North Yemen before unification in 1990."},

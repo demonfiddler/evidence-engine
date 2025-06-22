@@ -20,15 +20,14 @@
 'use client'
 
 import { ColumnDef } from "@tanstack/react-table"
-import DataTableColumnHeader from "@/app/ui/data-table/data-table-column-header"
-import Publication from "@/app/model/Publication"
+import Publisher from "@/app/model/Publisher"
 import { columns as trackedEntityColumns, columnVisibility as trackedEntityColumnVisibility } from "./tracked-entity-columns"
 import { actionColumn as rawActionColumn, selectColumn as rawSelectColumn } from "./extra-columns"
 
-const actionColumn = rawActionColumn as ColumnDef<Publication>
-const selectColumn = rawSelectColumn as ColumnDef<Publication>
+const actionColumn = rawActionColumn as ColumnDef<Publisher>
+const selectColumn = rawSelectColumn as ColumnDef<Publisher>
 
-export const columns: ColumnDef<Publication>[] = [
+export const columns: ColumnDef<Publisher>[] = [
   selectColumn,
   ... trackedEntityColumns,
   {
@@ -38,9 +37,7 @@ export const columns: ColumnDef<Publication>[] = [
     enableSorting: true,
     size: 400,
     // enableColumnFilter: false,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Name" />
-    ),
+    header: "Name",
   },
   {
     id: "location",
@@ -48,9 +45,7 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 200,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Location" />
-    )
+    header: "Location",
   },
   {
     id: "country",
@@ -58,9 +53,7 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 150,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Country" />
-    ),
+    header: "Country",
   },
   {
     id: "url",
@@ -68,11 +61,9 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 300,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="URL" />
-    ),
-    cell: ({getValue}) => (
-      <a href={getValue() as string} target="_blank">{getValue() as string}</a>
+    header: "URL",
+    cell: ({cell, getValue}) => (
+      <a key={cell.id} href={getValue() as string} target="_blank">{getValue() as string}</a>
     )
   },
   {
@@ -81,9 +72,7 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 150,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Jnl. Count" />
-    ),
+    header: "Jnl. Count",
     meta: {
       className: "text-right"
     }

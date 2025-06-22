@@ -40,7 +40,7 @@ import { SelectedRecordsContext } from "@/lib/context";
 export default function Logs() {
   const page = rawPage as unknown as IPage<Log>
   const selectedRecordsContext = useContext(SelectedRecordsContext)
-  const [selectedRecordId, setSelectedRecordId] = useState<string|BigInt|undefined>(selectedRecordsContext.Log?.id)
+  const [selectedRecordId, setSelectedRecordId] = useState<string|undefined>(selectedRecordsContext.Log?.id)
   const selectedRecord = page.content.find(r => r.id == selectedRecordId)
 
   return (
@@ -55,7 +55,7 @@ export default function Logs() {
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
-        onSelect={setSelectedRecordId}
+        onRowSelectionChange={setSelectedRecordId}
       />
       <LogDetails record={selectedRecord} />
     </main>

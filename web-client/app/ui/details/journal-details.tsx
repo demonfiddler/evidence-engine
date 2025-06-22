@@ -19,7 +19,6 @@
 
 'use client'
 
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import {
@@ -31,149 +30,239 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 import Journal from "@/app/model/Journal";
 import Publisher from "@/app/model/Publisher";
 import rawPublishers from "@/data/publishers.json" assert {type: 'json'}
 import StandardDetails from "./standard-details";
 import DetailActions, { createDetailState, DetailMode } from "./detail-actions";
 import Link from "next/link";
-import { Action } from "@/lib/utils";
-import { Dispatch, useContext, useState } from "react";
+import { FormAction } from "@/lib/utils";
+import { useContext, useMemo, useState } from "react";
 import { SecurityContext } from "@/lib/context";
-import { useImmerReducer } from "use-immer";
+import { useFormContext } from "react-hook-form"
+import { JournalFormFields } from "../validators/journal";
 
 const publishers = rawPublishers.content as unknown as Publisher[]
 
-function journalReducer(draft?: Journal, action?: Action) {
-  if (draft && action) {
-    switch (action.command) {
-      case "new":
-        Object.keys(draft).forEach(key => (draft as any)[key] = undefined)
-        break
-      case "edit":
-        Object.assign(draft, action.value);
-        break
-      case "setAbbreviation":
-        draft.abbreviation = action.value
-        break
-      case "setIssn":
-        draft.issn = action.value
-        break
-      case "setNotes":
-        draft.notes = action.value
-        break
-      case "setPublisher":
-        draft.publisher = action.value
-        break
-      case "setStatus":
-        draft.status = action.value
-        break
-      case "setTitle":
-        draft.title = action.value
-        break
-      case "setUrl":
-        draft.url = action.value
-        break
-    }
-  }
-}
-
 export default function JournalDetails(
-  {record, pageDispatch}:
-  {record?: Journal; pageDispatch: Dispatch<Action>}) {
+  { record, onFormAction }:
+  { record?: Journal; onFormAction: (command: FormAction, formValue: JournalFormFields) => void } ) {
 
   const securityContext = useContext(SecurityContext)
+  const form = useFormContext()
   const [mode, setMode] = useState<DetailMode>("view")
-  const [mutableRecord, recordDispatch] = useImmerReducer(journalReducer, record ?? {})
-
-  const state = createDetailState(securityContext, mode, record)
+  const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
+  const state = useMemo(() => createDetailState(securityContext, mode), [securityContext, mode])
   const { updating } = state
-  const journal = updating ? mutableRecord : record
-
-  function dispatch(command: string, value: any) {
-    recordDispatch({recordId: journal?.id ?? "0", command: command, value: value})
-  }
 
   return (
     <fieldset className="border shadow-lg rounded-md w-2/3">
       <legend>&nbsp;Journal Details&nbsp;</legend>
-      <StandardDetails recordKind="Journal" record={journal} state={state} showLinkingDetails={false} />
-      <p className="pt-2 pb-4">&nbsp;&nbsp;{journal ? `Details for selected Journal #${journal?.id}` : "-Select a journal in the list above to see its details-"}</p>
-      <div className="grid grid-cols-6 ml-2 mr-2 mb-2 gap-2">
-        <Label htmlFor="title" className="col-start-1">Title:</Label>
-        <Input
-          id="title"
-          className="col-span-4"
-          disabled={!journal}
-          readOnly={!updating}
-          value={journal?.title ?? ''}
-          onChange={e => dispatch("setTitle", e.target.value)}
-        />
-        <DetailActions
-          className="col-start-6 row-span-5"
-          recordKind="Journal"
-          record={journal}
-          state={state}
-          setMode={setMode}
-          pageDispatch={pageDispatch}
-          recordDispatch={recordDispatch}
-        />
-        <Label htmlFor="abbreviation" className="col-start-1">Abbreviation:</Label>
-        <Input
-          id="abbreviation"
-          className="col-span-2"
-          disabled={!journal}
-          readOnly={!updating}
-          value={journal?.abbreviation ?? ''}
-          onChange={e => dispatch("setAbbreviation", e.target.value)}
-        />
-        <Label htmlFor="issn" className="">ISSN:</Label>
-        <Input
-          id="issn"
-          className="col-span-1"
-          disabled={!journal}
-          readOnly={!updating}
-          value={journal?.issn ?? ''}
-          onChange={e => dispatch("setIssn", e.target.value)}
-        />
-        <Label htmlFor="publisher" className="col-start-1">Publisher:</Label>
-        <Select
-          disabled={!updating}
-          value={journal?.publisher?.id?.toString() ?? ''}
-          onValueChange={value => dispatch("setPublisher", value)}
-        >
-          <SelectTrigger id="publisher" className="col-span-2 w-full" disabled={!journal}>
-            <SelectValue className="col-span-2 w-full" placeholder="Specify publisher" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Publishers</SelectLabel> {
-                publishers.map(publisher => <SelectItem key={publisher.id?.toString() ?? ''} value={publisher.id?.toString() ?? ''}>{publisher.name}</SelectItem>)
-              }
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Label htmlFor="url" className="col-start-1">URL:</Label>
-        {
-          updating
-          ? <Input
-              id="url"
-              className="col-span-4"
-              value={journal?.url ?? ''}
-              onChange={e => dispatch("setUrl", e.target.value)}
+      <StandardDetails recordKind="Journal" record={record} state={state} showLinkingDetails={false} />
+      <Form {...form}>
+        <form>
+          <FormDescription>
+            <span className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Journal #${record?.id}` : "-Select a journal in the list above to see its details-"}</span>
+          </FormDescription>
+          <div className="grid grid-cols-3 ml-2 mr-2 mt-4 mb-4 gap-4">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({field}) => (
+                <FormItem className="col-span-2">
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="title"
+                      className=""
+                      disabled={!record}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The journal's official name/title
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          : <Link className="col-span-4" href={journal?.url ?? ''} target="_blank">{journal?.url ?? ''}</Link>
-        }
-        <Label htmlFor="notes" className="col-start-1">Notes:</Label>
-        <Textarea
-          id="notes"
-          className="col-span-4 h-40 overflow-y-auto"
-          disabled={!journal}
-          readOnly={!updating}
-          value={journal?.notes ?? ''}
-          onChange={e => dispatch("setNotes", e.target.value)}
-        />
-      </div>
+            <DetailActions
+              className="col-start-3 row-span-5"
+              recordKind="Journal"
+              record={record}
+              form={form}
+              state={state}
+              setMode={setMode}
+              showFieldHelp={showFieldHelp}
+              setShowFieldHelp={setShowFieldHelp}
+              onFormAction={onFormAction}
+            />
+            <FormField
+              control={form.control}
+              name="abbreviation"
+              render={({field}) => (
+                <FormItem className="col-span-1">
+                  <FormLabel>Abbreviation</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="abbreviation"
+                      className=""
+                      disabled={!record}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The ISO 4 journal title abbreviation
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="issn"
+              render={({field}) => (
+                <FormItem className="col-span-1">
+                  <FormLabel>ISSN</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="issn"
+                      className="col-span-1"
+                      disabled={!record}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The international standard serial number
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="publisherId"
+              render={({ field }) => (
+                <FormItem className="col-span-2">
+                  <FormLabel>Publisher</FormLabel>
+                  <Select
+                    disabled={!updating}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger id="publisherId" className="w-full" disabled={!record}>
+                        <SelectValue className="w-full" placeholder="Specify publisher" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Publishers</SelectLabel>
+                        {
+                          publishers.map(publisher => (
+                            <SelectItem
+                              key={publisher.id?.toString() ?? ''}
+                              value={publisher.id?.toString() ?? ''}>
+                              {publisher.name}
+                            </SelectItem>
+                          ))
+                        }
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The journal publisher
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="url"
+              render={({field}) => (
+                <FormItem className="col-span-2">
+                  <FormLabel>URL</FormLabel>
+                  <FormControl>
+                    {
+                      updating
+                      ? <Input
+                          id="url"
+                          // type="url"
+                          className=""
+                          {...field}
+                        />
+                      : <Link className="" href={record?.url ?? ''} target="_blank">{record?.url ?? ''}</Link>
+                    }
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The journals's online web address
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({field}) => (
+                <FormItem className="col-start-1 col-span-2">
+                  <FormLabel>Notes</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      id="notes"
+                      className="col-span-4 h-40 overflow-y-auto"
+                      disabled={!record}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        Contributor notes about the journal
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </form>
+      </Form>
     </fieldset>
   )
 }

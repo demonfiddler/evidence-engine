@@ -25,11 +25,11 @@ export default interface Quotation extends ILinkableEntity {
   /** The person(s) who made the quotation. */
   quotee?: string
   /** The quotation date. */
-  date?: Date | string
+  date?: Date | string | null
   /** The quotation source. */
-  source?: string
+  source?: string | null
   /** The URL for the quotation online. */
-  url?: /*URL | */string
+  url?: /*URL | */string | null
   /** Notes on the quotation. */
-  notes?: string
+  notes?: string | null
 }

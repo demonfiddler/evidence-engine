@@ -21,25 +21,25 @@ import ILinkableEntity from "./ILinkableEntity";
 
 export default interface Person extends ILinkableEntity {
   /** The person's title(s). */
-  title?: string
+  title?: string | null
   /** The person's first name(s). */
-  firstName?: string
+  firstName?: string | null
   /** The person's nickname. */
-  nickname?: string
+  nickname?: string | null
   /** The prefix to the person's last name. */
-  prefix?: string
+  prefix?: string | null
   /** The person's last name. */
   lastName?: string
   /** The suffix to the person's name. */
-  suffix?: string
+  suffix?: string | null
   /** Last name alias. */
-  alias?: string
+  alias?: string | null
   /** Brief biography, notes, etc. */
-  notes?: string
+  notes?: string | null
   /** Academic qualifications. */
-  qualifications?: string
+  qualifications?: string | null
   /** The primary country associated with the person. */
-  country?: string
+  country?: string | null
   /** A five-star rating for the person, intended to reflect credibility, experience, qualifications, etc. */
   rating?: number
   /** Whether the person's credentials have been checked. */

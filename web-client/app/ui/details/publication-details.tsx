@@ -20,13 +20,21 @@
 'use client'
 
 import Publication from "@/app/model/Publication";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar"
 import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
-import { Action, cn, formatDate } from "@/lib/utils";
+import { cn, formatDate, FormAction } from "@/lib/utils";
 import { CalendarIcon } from "@heroicons/react/24/outline";
 import { Input } from "@/components/ui/input";
 import {
@@ -44,9 +52,10 @@ import Journal from "@/app/model/Journal";
 import StandardDetails from "./standard-details";
 import DetailActions, { createDetailState, DetailMode } from "./detail-actions";
 import Link from "next/link";
-import { Dispatch, useContext, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { SecurityContext } from "@/lib/context";
-import { useImmerReducer } from "use-immer";
+import { useFormContext } from "react-hook-form"
+import { PublicationFormFields } from "../validators/publication";
 
 type PublicationKind = {
   kind: string
@@ -55,263 +64,478 @@ type PublicationKind = {
 const journals = rawJournals.content as unknown as Journal[]
 const publicationKinds = rawPublicationKinds as unknown as PublicationKind[]
 
-function publicationReducer(draft?: Publication, action?: Action) {
-  if (draft && action) {
-    switch (action.command) {
-      case "new":
-        Object.keys(draft).forEach(key => (draft as any)[key] = undefined)
-        break
-      case "edit":
-        Object.assign(draft, action.value);
-        break
-      case "setAbstract":
-        draft.abstract = action.value
-        break
-      case "setAccessed":
-        draft.accessed = action.value
-        break
-      case "setAuthors":
-        draft.authors = action.value
-        break
-      case "setCached":
-        draft.cached = action.value
-        break
-      case "setDate":
-        draft.date = action.value
-        break
-      case "setDoi":
-        draft.doi = action.value
-        break
-      case "setIsbn":
-        draft.isbn = action.value
-        break
-      case "setJournal":
-        draft.journal = action.value
-        break
-      case "setKind":
-        draft.kind = action.value
-        break
-      case "setNotes":
-        draft.notes = action.value
-        break
-      case "setPeerReviewed":
-        draft.peerReviewed = action.value
-        break
-      case "setStatus":
-        draft.status = action.value
-        break
-      case "setTitle":
-        draft.title = action.value
-        break
-      case "setUrl":
-        draft.url = action.value
-        break
-      case "setYear":
-        draft.year = action.value
-        break
-    }
-  }
-}
-
 export default function PublicationDetails(
-  { record, pageDispatch }:
-  { record?: Publication; pageDispatch: Dispatch<Action> }) {
+  { record, onFormAction }:
+  { record?: Publication; onFormAction: (command: FormAction, formValue: PublicationFormFields) => void }) {
 
+  // console.log("PublicationDetails: render")
   const securityContext = useContext(SecurityContext)
+  const form = useFormContext()
   const [mode, setMode] = useState<DetailMode>("view")
-  const [mutableRecord, recordDispatch] = useImmerReducer(publicationReducer, record ?? {})
+  const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
 
-  const state = createDetailState(securityContext, mode, record)
+  const state = useMemo(() => createDetailState(securityContext, mode), [securityContext, mode])
   const { updating } = state
-  const publication = updating ? mutableRecord : record
 
-  function dispatch(command: string, value: any) {
-    recordDispatch({recordId: publication?.id ?? "0", command: command, value: value})
-  }
+  // console.log(`PublicationDetails: valid=${form.formState.isValid}, dirtyFields==${JSON.stringify(form.formState.dirtyFields)}, fieldState==${JSON.stringify(form.getFieldState("kind"))}, errors=${JSON.stringify(form.formState.errors)}`)
 
   return (
     <fieldset className="border shadow-lg rounded-md w-2/3">
       <legend>&nbsp;Publication Details&nbsp;</legend>
-      <StandardDetails recordKind="Publication" record={publication} state={state} showLinkingDetails={true} />
-      <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Publication #${publication?.id}` : "-Select a publication in the list above to see its details-"}</p>
-      <div className="grid grid-cols-6 ml-2 mr-2 mb-2 gap-2">
-        <Label htmlFor="title" className="col-start-1">Text:</Label>
-        <Input
-          id="title"
-          className="col-span-4"
-          disabled={!publication}
-          readOnly={!updating}
-          value={publication?.title ?? ''}
-          onChange={e => dispatch("setTitle", e.target.value)}
-        />
-        <DetailActions
-          className="col-start-6 row-span-3"
-          recordKind="Publication"
-          record={publication}
-          state={state}
-          setMode={setMode}
-          pageDispatch={pageDispatch}
-          recordDispatch={recordDispatch}
-        />
-        <Label htmlFor="authors" className="col-start-1">Authors:</Label>
-        <Textarea
-          id="authors"
-          className="col-span-2 h-40 overflow-y-auto"
-          disabled={!publication}
-          readOnly={!updating}
-          value={publication?.authors ?? ''}
-          onChange={e => dispatch("setAuthors", e.target.value)}
-        />
-        <Label htmlFor="kind" className="col-start-1">Kind:</Label>
-        <Select
-          disabled={!updating}
-          value={publication?.kind ?? ''}
-          onValueChange={value => dispatch("setKind", value)}
-        >
-          <SelectTrigger id="kind" className="w-full" disabled={!publication}>
-            <SelectValue placeholder="Specify kind" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Publication Kinds</SelectLabel> {
-                publicationKinds.map(pk => <SelectItem key={pk.kind} value={pk.kind}>{pk.label}</SelectItem>)
-              }
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Label htmlFor="journal" className="col-start-4">Journal:</Label>
-        <Select
-          disabled={!updating}
-          value={publication?.journal?.id?.toString() ?? ''}
-          onValueChange={value => dispatch("setJournal", value)}
-        >
-          <SelectTrigger id="journal" className="col-span-1 w-full" disabled={!publication}>
-            <SelectValue className="col-span-2 w-full" placeholder="Specify journal" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Journals</SelectLabel> {
-                journals.map(journal => <SelectItem key={journal.id?.toString() ?? ''} value={journal.id?.toString() ?? ''}>{journal.title}</SelectItem>)
-              }
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Label htmlFor="date" className="col-start-1">Date published:</Label>
-        <Popover>
-          <PopoverTrigger id="date" asChild>
-            <Button
-              variant={"outline"}
-              disabled={!updating}
-              className={cn("justify-start text-left font-normal",
-                (!publication || !publication.date) && "text-muted-foreground")}>
-              <CalendarIcon />
-              {formatDate(publication?.date, "PPP")}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={publication?.date}
-              onSelect={(day, selectedDay, activeModifiers) => dispatch("setDate", selectedDay)}
-              initialFocus
+      <StandardDetails recordKind="Publication" record={record} state={state} showLinkingDetails={true} />
+      <Form {...form}>
+        <form>
+          <FormDescription>
+            <span className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Publication #${record?.id}` : "-Select a publication in the list above to see its details-"}</span>
+          </FormDescription>
+          <div className="grid grid-cols-4 ml-2 mr-2 mt-4 mb-4 gap-4 items-start">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({field}) => (
+                <FormItem className="col-span-3">
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="title"
+                      className=""
+                      disabled={!record}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The publication name/title
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </PopoverContent>
-        </Popover>
-        <Label htmlFor="year" className="col-start-4">Year:</Label>
-        <Input
-          type="number"
-          id="year"
-          className=""
-          disabled={!publication}
-          readOnly={!updating}
-          value={publication?.year ?? ''}
-          onChange={e => dispatch("setYear", e.target.value)}
-        />
-        <Label htmlFor="abstract" className="col-start-1">Abstract:</Label>
-        <Textarea
-          id="abstract"
-          className="col-span-4 h-40 overflow-y-auto"
-          disabled={!publication}
-          readOnly={!updating}
-          value={publication?.abstract ?? ''}
-          onChange={e => dispatch("setAbstract", e.target.value)}
-        />
-        <Label htmlFor="peerReviewed" className="col-start-1">Peer reviewed:</Label>
-        <Checkbox
-          id="peerReviewed"
-          className="col-span-2"
-          disabled={!updating}
-          checked={publication?.peerReviewed}
-          onCheckedChange={checked => dispatch("setPeerReviewed", checked)}
-        />
-        <Label htmlFor="cached" className="">Cached:</Label>
-        <Checkbox
-          id="cached"
-          disabled={!updating}
-          checked={publication?.cached}
-          onCheckedChange={checked => dispatch("setCached", checked)}
-        />
-        <Label htmlFor="doi" className="col-start-1">DOI:</Label>
-        {
-          updating
-          ? <Input
-              id="doi"
-              className="col-span-2"
-              value={publication?.doi ?? ''}
-              onChange={e => dispatch("setDoi", e.target.value)}
+            <DetailActions
+              className="col-start-4 row-span-7"
+              recordKind="Publication"
+              record={record}
+              form={form}
+              state={state}
+              setMode={setMode}
+              showFieldHelp={showFieldHelp}
+              setShowFieldHelp={setShowFieldHelp}
+              onFormAction={onFormAction}
             />
-          : <Link className="col-span-2" href={publication?.doi ? `https://doi.org/${publication?.doi ?? ''}` : ''} target="_blank">{publication?.doi ?? ''}</Link>
-        }
-        <Label htmlFor="isbn">ISBN:</Label>
-        <Input
-          id="isbn"
-          disabled={!publication}
-          readOnly={!updating}
-          value={publication?.isbn ?? ''}
-          onChange={e => dispatch("setIsbn", e.target.value)}
-        />
-        <Label htmlFor="url" className="col-start-1">URL:</Label>
-        {
-          updating
-          ? <Input
-              id="url"
-              className="col-span-2"
-              value={publication?.url ?? ''}
-              onChange={e => dispatch("setUrl", e.target.value)}
+            <FormField
+              control={form.control}
+              name="kind"
+              render={({ field }) => (
+                <FormItem className="col-start-1">
+                  <FormLabel>Kind</FormLabel>
+                  <Select
+                    disabled={!updating}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger id="kind" className="w-full" disabled={!record}>
+                        <SelectValue placeholder="Specify kind" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Publication Kind</SelectLabel> {
+                          publicationKinds.map(kind =>
+                            <SelectItem
+                              key={kind.kind?.toString() ?? ''}
+                              value={kind.kind?.toString() ?? ''}>
+                              {kind.label}
+                            </SelectItem>)
+                        }
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The kind of declaration
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          : <Link className="col-span-2" href={publication?.url ?? ''} target="_blank">{publication?.url ?? ''}</Link>
-        }
-        <Label htmlFor="accessed">Accessed:</Label>
-        <Popover>
-          <PopoverTrigger id="accessed" asChild>
-            <Button
-              variant={"outline"}
-              disabled={!updating}
-              className={cn("justify-start text-left font-normal",
-                (!publication || !publication.date) && "text-muted-foreground")}>
-              <CalendarIcon />
-              {formatDate(publication?.accessed, "PPP")}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={publication?.accessed}
-              onSelect={(day, selectedDay, activeModifiers) => dispatch("setAccessed", selectedDay)}
-              initialFocus
+            <FormField
+              control={form.control}
+              name="journalId"
+              render={({ field }) => (
+                <FormItem className="col-span-2">
+                  <FormLabel>Journal</FormLabel>
+                  <Select
+                    disabled={!updating}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger id="journal" className="w-full" disabled={!record}>
+                        <SelectValue className="w-full" placeholder="Specify journal" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Journals</SelectLabel> {
+                          journals.map(journal => (
+                            <SelectItem
+                              key={journal.id?.toString() ?? ''}
+                              value={journal.id?.toString() ?? ''}>
+                              {journal.title}
+                            </SelectItem>
+                          ))
+                        }
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The journal or series containing the publication
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </PopoverContent>
-        </Popover>
-        <Label htmlFor="notes" className="col-start-1">Notes:</Label>
-        <Textarea
-          id="notes"
-          className="col-span-4 h-40 overflow-y-auto"
-          disabled={!publication}
-          readOnly={!updating}
-          value={publication?.notes ?? ''}
-          onChange={e => dispatch("setNotes", e.target.value)}
-        />
-      </div>
+            <FormField
+              control={form.control}
+              name="authors"
+              render={({field}) => (
+                <FormItem className="">
+                  <FormLabel>Authors</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      id="authors"
+                      className=" h-40 overflow-y-auto"
+                      disabled={!record}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The author(s) of the publication, one per line
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="date"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Publication date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger id="date" asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          disabled={!updating}
+                          className={cn("justify-start text-left font-normal",
+                            (!record || !record.date) && "text-muted-foreground")}>
+                          <CalendarIcon />
+                          {field.value ? (
+                            formatDate(field.value, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The publication date
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage className="" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="year"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Publication year</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="year"
+                      type="number"
+                      className=""
+                      disabled={!record}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The publication year
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="doi"
+              render={({field}) => (
+                <FormItem className="col-span-2">
+                  <FormLabel>DOI</FormLabel>
+                  <FormControl>
+                    {
+                      updating
+                      ? <Input
+                          id="doi"
+                          className="col-span-2"
+                          {...field}
+                        />
+                      : <Link className="col-span-2" href={record?.doi ? `https://doi.org/${record?.doi ?? ''}` : ''} target="_blank">{record?.doi ?? ''}</Link>
+                    }
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The publication's digital object identifier
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="isbn"
+              render={({field}) => (
+                <FormItem className="">
+                  <FormLabel>ISBN</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="isbn"
+                      disabled={!record}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The publication's international standard book number
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="url"
+              render={({field}) => (
+                <FormItem className="col-span-2">
+                  <FormLabel>URL</FormLabel>
+                  <FormControl>
+                    {
+                      updating
+                      ? <Input
+                          id="url"
+                          type="url"
+                          className=""
+                          {...field}
+                        />
+                      : <Link className="" href={record?.url ?? ''} target="_blank">{record?.url ?? ''}</Link>
+                    }
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The publication's online web address
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="accessed"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Accessed</FormLabel>
+                  <Popover>
+                    <PopoverTrigger id="accessed" asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          disabled={!updating}
+                          className={cn("justify-start text-left font-normal",
+                            (!record || !record.date) && "text-muted-foreground")}>
+                          <CalendarIcon />
+                          {field.value ? (
+                            formatDate(field.value, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The date the publication was last accessed by contributor
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage className="" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="peerReviewed"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Peer reviewed</FormLabel>
+                  <FormControl>
+                    <Checkbox
+                      id="peerReviewed"
+                      className="col-span-1"
+                      disabled={!updating}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        Whether the publication was peer-reviewed
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="cached"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Cached</FormLabel>
+                  <FormControl>
+                    <Checkbox
+                      id="cached"
+                      disabled={!updating}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        Whether the publication content is cached on this server
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="abstract"
+              render={({field}) => (
+                <FormItem className="col-start-1 col-span-3">
+                  <FormLabel>Abstract</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      id="abstract"
+                      className="h-40 overflow-y-auto"
+                      disabled={!record}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        Concise summary of the publication
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({field}) => (
+                <FormItem className="col-start-1 col-span-3">
+                  <FormLabel>Notes</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      id="notes"
+                      className="col-span-4 h-40 overflow-y-auto"
+                      disabled={!record}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        Contributor notes about the publication
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </form>
+      </Form>
     </fieldset>
   )
 }
+
+// PublicationDetails.whyDidYouRender = true;

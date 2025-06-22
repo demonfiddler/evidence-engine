@@ -20,7 +20,6 @@
 'use client'
 
 import { ColumnDef } from "@tanstack/react-table"
-import DataTableColumnHeader from "@/app/ui/data-table/data-table-column-header"
 import Publication from "@/app/model/Publication"
 import { columns as trackedEntityColumns, columnVisibility as trackedEntityColumnVisibility } from "./tracked-entity-columns"
 import { actionColumn as rawActionColumn, selectColumn as rawSelectColumn } from "./extra-columns"
@@ -39,9 +38,7 @@ export const columns: ColumnDef<Publication>[] = [
     enableSorting: true,
     size: 500,
     // enableColumnFilter: false,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Title" />
-    ),
+    header: "Title",
   },
   {
     id: "authors",
@@ -49,9 +46,7 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: false,
     size: 150,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Authors" />
-    )
+    header: "Authors",
   },
   {
     id: "journal",
@@ -59,9 +54,7 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 400,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Journal" />
-    ),
+    header: "Journal",
   },
   {
     id: "date",
@@ -69,9 +62,7 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 140,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Date" />
-    ),
+    header: "Date",
   },
   {
     id: "year",
@@ -79,9 +70,7 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 90,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Year" />
-    ),
+    header: "Year",
     meta: {
       className: "text-right"
     }
@@ -92,9 +81,7 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: false,
     size: 400,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Abstract" />
-    ),
+    header: "Abstract",
   },
   {
     id: "doi",
@@ -102,11 +89,9 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 200,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="DOI" />
-    ),
-    cell: ({getValue}) => (
-      <a href={`https://doi.org/${getValue() as string}`} target="_blank">{getValue() as string}</a>
+    header: "DOI",
+    cell: ({cell, getValue}) => (
+      <a key={cell.id} href={`https://doi.org/${getValue() as string}`} target="_blank">{getValue() as string}</a>
     )
   },
   {
@@ -115,9 +100,7 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 170,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="ISBN" />
-    ),
+    header: "ISBN",
   },
   {
     id: "url",
@@ -125,11 +108,9 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 300,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="URL" />
-    ),
-    cell: ({getValue}) => (
-      <a href={getValue() as string} target="_blank">{getValue() as string}</a>
+    header: "URL",
+    cell: ({cell, getValue}) => (
+      <a key={cell.id} href={getValue() as string} target="_blank">{getValue() as string}</a>
     )
   },
   {
@@ -138,9 +119,7 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 132,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Accessed" />
-    ),
+    header: "Accessed",
   },
   {
     id: "notes",
@@ -148,9 +127,7 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: false,
     size: 400,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Notes" />
-    ),
+    header: "Notes",
   },
   {
     id: "cached",
@@ -158,11 +135,10 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 128,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Cached" />
-    ),
-    cell: ({row}) => (
+    header: "Cached",
+    cell: ({row, cell}) => (
       <Checkbox
+        key={cell.id}
         checked={row.original.cached}
         aria-label="Content cached"
       />
@@ -177,11 +153,10 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 146,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Peer Rev'd" />
-    ),
-    cell: ({row}) => (
+    header: "Peer Rev'd",
+    cell: ({row, cell}) => (
       <Checkbox
+        key={cell.id}
         checked={row.original.peerReviewed}
         aria-label="Content has been peer reviewed"
       />

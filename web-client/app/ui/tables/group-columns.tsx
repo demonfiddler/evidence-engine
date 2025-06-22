@@ -20,7 +20,6 @@
 'use client'
 
 import { ColumnDef } from "@tanstack/react-table"
-import DataTableColumnHeader from "@/app/ui/data-table/data-table-column-header"
 import Group from "@/app/model/Group"
 import { columns as trackedEntityColumns, columnVisibility as trackedEntityColumnVisibility } from "./tracked-entity-columns"
 import { actionColumn as rawActionColumn, selectColumn as rawSelectColumn } from "./extra-columns"
@@ -37,9 +36,7 @@ export const columns: ColumnDef<Group>[] = [
     enableHiding: false,
     enableSorting: true,
     size: 150,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Group Name" />
-    ),
+    header: "Group Name",
   },
   {
     id: "authorities",
@@ -47,11 +44,9 @@ export const columns: ColumnDef<Group>[] = [
     enableHiding: true,
     enableSorting: false,
     size: 280,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Authorities" />
-    ),
-    cell: ({ getValue }) => (
-      <div className="font-medium">{getValue()?.toString() ?? ''}</div>
+    header: "Authorities",
+    cell: ({ cell, getValue }) => (
+      <div key={cell.id} className="font-medium">{getValue()?.toString() ?? ''}</div>
     )
   },
   actionColumn

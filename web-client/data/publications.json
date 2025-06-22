@@ -82,7 +82,7 @@
         "notes": ""
       },
       "kind": "JOUR",
-      "date": "",
+      "date": "2023-08-03",
       "year": "2023",
       "abstract": "This paper compares the ideas contained in the main papers published on climate change since World War II to arrive at a suggested consensus of our present knowledge regarding climatic changes and their causes. Atmospheric carbon dioxide is only suggested as a cause in one theory, which, despite its wide acceptance by Politicians, the media, and the Public, ignores the findings in other studies, including the ideas found in the Milankovitch Cycles. It also does not explain the well-known NASA map of the changes between the global 1951-1978 and the 2010-2019 mean annual temperatures. The other theories by Oceanographers, Earth scientists, and Geographers fit together to indicate that the variations in climate are the result of differential solar heating of the Earth, resulting in a series of processes redistributing the heat to produce a more uniform range of climates around the surface of the Earth. Key factors are the shape of the Earth and the Milankovitch Cycles, the distribution of land and water bodies, the differences between heating land and water, ocean currents and gateways, air masses, and hurricanes. Low atmospheric carbon dioxide levels during cold events could result in too little of this gas to support photosynthesis in plants, resulting in the extermination of most life on Earth as we know it. The 23 ka Milankovitch cycle has begun to reduce the winter insolation received at the surface of the atmosphere in the mid-latitudes of the Northern Hemisphere starting in 2020. This results in extreme weather as the winter insolation reaching the surface of the atmosphere in the higher latitudes of the Northern Hemisphere decreases while the summer air temperatures increase. It heralds the start of the next glaciation. A brief outline is given of some of the climatic changes and consequences that may be expected in western Canada during the next 11.5 ka.",
       "cached": false,
@@ -287,7 +287,7 @@
         "notes": ""
       },
       "kind": "JOUR",
-      "date": "",
+      "date": "2021-02-05",
       "year": "2021",
       "abstract": "The European Center for Medium-Range Weather Forecasts (ECMWF) released its latest reanalysis dataset named ERA5 in 2017. To assess the performance of ERA5 in Antarctica, we compare the near-surface temperature data from ERA5 and ERA-Interim with the measured data from 41 weather stations. ERA5 has a strong linear relationship with monthly observations, and the statistical significant correlation coefficients (p &lt; 0.05) are higher than 0.95 at all stations selected. The performance of ERA5 shows regional differences, and the correlations are high in West Antarctica and low in East Antarctica. Compared with ERA5, ERA-Interim has a slightly higher linear relationship with observations in the Antarctic Peninsula. ERA5 agrees well with the temperature observations in austral spring, with significant correlation coefficients higher than 0.90 and bias lower than 0.70 °C. The temperature trend from ERA5 is consistent with that from observations, in which a cooling trend dominates East Antarctica and West Antarctica, while a warming trend exists in the Antarctic Peninsula except during austral summer. Generally, ERA5 can effectively represent the temperature changes in Antarctica and its three subregions. Although ERA5 has bias, ERA5 can play an important role as a powerful tool to explore the climate change in Antarctica with sparse in situ observations.",
       "cached": false,
@@ -410,7 +410,7 @@
         "notes": ""
       },
       "kind": "GEN",
-      "date": "",
+      "date": "2020-06-04",
       "year": "2020",
       "abstract": "The atmospheric temperatures and concentrations of Earth's five most important, greenhouse gases, H2O, CO2, O3, N2O and CH4 control the cloud-free, thermal radiative flux from the Earth to outer space. Over 1/3 million lines having strengths as low as 10−27 cm of the HITRAN database were used to evaluate the dependence of the forcing on the gas concentrations. For a hypothetical, optically thin atmosphere, where there is negligible saturation of the absorption bands, or interference of one type of greenhouse gas with others, the per-molecule forcings are of order 10−22 W for H2O, CO2, O3, N2O and CH4. For current atmospheric concentrations, the per-molecule forcings of the abundant greenhouse gases H2O and CO2 are suppressed by four orders of magnitude. The forcings of the less abundant greenhouse gases, O3, N2O and CH4, are also suppressed, but much less so. For current concentrations, the per-molecule forcings are two to three orders of magnitude greater for O3, N2O and CH4, than those of H2O or CO2. Doubling the current concentrations of CO2, N2O or CH4 increases the forcings by a few per cent. These forcing results are close to previously published values even though the calculations did not utilize either a CO2 or H2O continuum. The change in surface temperature due to CO2 doubling is estimated taking into account radiative-convective equilibrium of the atmosphere as well as water feedback for the cases of fixed absolute and relative humidities as well as the effect of using a pseudoadiabatic lapse rate to model the troposphere temperature. Satellite spectral measurements at various latitudes are in excellent quantitative agreement with modelled intensities.",
       "cached": false,
@@ -419,7 +419,7 @@
       "isbn": "",
       "url": "https://arxiv.org/abs/2006.03098",
       "notes": null,
-      "accessed": ""
+      "accessed": null
     },
     {
       "id": "194",

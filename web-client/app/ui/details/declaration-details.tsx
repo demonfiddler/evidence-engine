@@ -24,10 +24,18 @@ import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Textarea } from "@/components/ui/textarea"
-import { Action, cn, formatDate } from "@/lib/utils"
+import { cn, formatDate, FormAction } from "@/lib/utils"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/ui/form"
 import {
   Select,
   SelectContent,
@@ -43,203 +51,322 @@ import rawCountries from "@/data/countries.json" assert {type: 'json'}
 import StandardDetails from "./standard-details"
 import DetailActions, { createDetailState, DetailMode } from "./detail-actions"
 import Link from "next/link"
-import { Dispatch, useContext, useState } from "react"
-import { useImmerReducer } from "use-immer"
+import { useContext, useMemo, useState } from "react"
 import { SecurityContext } from "@/lib/context"
+import { useFormContext } from "react-hook-form"
+import { DeclarationFormFields } from "../validators/declaration"
 const countries = rawCountries as unknown as Country[]
 
-function declarationReducer(draft?: Declaration, action?: Action) {
-  if (draft && action) {
-    switch (action.command) {
-      case "new":
-        Object.keys(draft).forEach(key => (draft as any)[key] = undefined)
-        break
-      case "edit":
-        Object.assign(draft, action.value);
-        break
-      case "setCached":
-        draft.cached = action.value
-        break
-      case "setCountry":
-        draft.country = action.value
-        break
-      case "setDate":
-        draft.date = action.value
-        break
-      case "setKind":
-        draft.kind = action.value
-        break
-      case "setNotes":
-        draft.notes = action.value
-        break
-      case "setStatus":
-        draft.status = action.value
-        break
-      case "setSignatories":
-        draft.signatories = action.value
-        break
-      case "setSignatoryCount":
-        draft.signatoryCount = action.value
-        break
-      case "setTitle":
-        draft.title = action.value
-        break
-      case "setUrl":
-        draft.url = action.value
-        break
-    }
-  }
-}
-
 export default function DeclarationDetails(
-  { record, pageDispatch}:
-  { record?: Declaration; pageDispatch: Dispatch<Action>}) {
+  { record, onFormAction }:
+  { record?: Declaration; onFormAction: (command: FormAction, formValue: DeclarationFormFields) => void }) {
 
   const securityContext = useContext(SecurityContext)
+  const form = useFormContext()
   const [mode, setMode] = useState<DetailMode>("view")
-  const [mutableRecord, recordDispatch] = useImmerReducer(declarationReducer, record ?? {})
+  const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
 
-  const state = createDetailState(securityContext, mode, record)
+  const state = useMemo(() => createDetailState(securityContext, mode), [securityContext, mode])
   const { updating } = state
-  const declaration = updating ? mutableRecord : record
 
-  // console.log(`declaration = ${JSON.stringify(declaration)}`)
-  // console.log(`mutableRecord = ${JSON.stringify(mutableRecord)}`)
-
-  function dispatch(command: string, value: any) {
-    recordDispatch({recordId: declaration?.id ?? "0", command: command, value: value})
-  }
+  // console.log(`DeclarationDetails: valid=${form.formState.isValid}, dirtyFields==${JSON.stringify(form.formState.dirtyFields)}, fieldState==${JSON.stringify(form.getFieldState("kind"))}, errors=${JSON.stringify(form.formState.errors)}`)
 
   return (
     <fieldset className="border shadow-lg rounded-md w-2/3">
       <legend>&nbsp;Declaration Details&nbsp;</legend>
-      <StandardDetails recordKind="Declaration" record={declaration} state={state} showLinkingDetails={true} />
-      <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Declaration #${declaration?.id}` : "-Select a declaration in the list above to see its details-"}</p>
-      <div className="grid grid-cols-6 ml-2 mr-2 mb-2 gap-2 items-center">
-        <Label htmlFor="date" className="text-right">Date:</Label>
-        <Popover>
-          <PopoverTrigger asChild id="date" disabled={!declaration}>
-            <Button
-              variant={"outline"}
-              disabled={!updating}
-              className={cn("w-full justify-start text-left font-normal",
-                (!declaration || !declaration.date) && "text-muted-foreground")}
-            >
-              <CalendarIcon />
-              {formatDate(declaration?.date, "PPP")}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="col-span-2 w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={declaration?.date}
-              onSelect={(day, selectedDay, activeModifiers) => dispatch("setDate", selectedDay)}
-              initialFocus
+      <StandardDetails recordKind="Declaration" record={record} state={state} showLinkingDetails={true} />
+      <Form {...form}>
+        <form>
+          <FormDescription>
+            <span className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Declaration #${record?.id}` : "-Select a declaration in the list above to see its details-"}</span>
+          </FormDescription>
+          <div className="grid grid-cols-3 ml-2 mr-2 mt-4 mb-4 gap-4 items-start">
+            <FormField
+              control={form.control}
+              name="date"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger id="date" asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          disabled={!updating}
+                          className={cn("w-full justify-start text-left font-normal",
+                            (!record || !record.date) && "text-muted-foreground")}
+                        >
+                          <CalendarIcon />
+                          {field.value ? (
+                            formatDate(field.value, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="col-span-2 w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The date the declaration was last issued
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage className="col-start-2 col-span-4" />
+                </FormItem>
+              )}
             />
-          </PopoverContent>
-        </Popover>
-        <Label htmlFor="kind" className="col-start-4">Kind:</Label>
-        <Select
-          disabled={!updating}
-          value={declaration?.kind ?? ''}
-          onValueChange={value => dispatch("setKind", value)}
-        >
-          <SelectTrigger id="kind" className="w-[180px]" disabled={!declaration}>
-            <SelectValue placeholder="Specify kind" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Declaration Kinds</SelectLabel>
-              <SelectItem value="DECL">Declaration</SelectItem>
-              <SelectItem value="OPLE">Open Letter</SelectItem>
-              <SelectItem value="PETN">Petition</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <DetailActions
-          className="col-start-6 row-span-6"
-          recordKind="Declaration"
-          record={declaration}
-          state={state}
-          setMode={setMode}
-          pageDispatch={pageDispatch}
-          recordDispatch={recordDispatch}
-        />
-        <Label htmlFor="title" className="col-start-1">Title:</Label>
-        <Input
-          id="title"
-          className="col-span-4"
-          disabled={!declaration}
-          readOnly={!updating}
-          value={declaration?.title ?? ''}
-          onChange={e => dispatch("setTitle", e.target.value)}
-        />
-        <Label htmlFor="url" className="col-start-1">URL:</Label>
-        {
-          updating
-          ? <Input
-              type="url"
-              className="col-span-4"
-              placeholder="URL"
-              value={declaration?.url ?? ''}
-              onChange={e => dispatch("setUrl", e.target.value)}
+            <FormField
+              control={form.control}
+              name="kind"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Kind</FormLabel>
+                  <Select
+                    disabled={!updating}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger id="kind" className="w-full" disabled={!record}>
+                        <SelectValue placeholder="Specify kind" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Declaration Kinds</SelectLabel>
+                        <SelectItem value="DECL">Declaration</SelectItem>
+                        <SelectItem value="OPLE">Open Letter</SelectItem>
+                        <SelectItem value="PETN">Petition</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The kind of declaration
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          : <Link className="col-span-4" href={declaration?.url ?? ''} target="_blank">{declaration?.url ?? ''}</Link>
-        }
-        <Label htmlFor="cached" className="col-start-1">Cached:</Label>
-        <Checkbox
-          id="cached"
-          className="col-span-2"
-          disabled={!updating}
-          checked={declaration?.cached}
-          onCheckedChange={checked => dispatch("setCached", checked)}
-        />
-        <Label htmlFor="country">Country:</Label>
-        <Select
-          disabled={!updating}
-          value={declaration?.country ?? ''}
-          onValueChange={value => dispatch("setCountry", value)}
-        >
-          <SelectTrigger id="country" className="w-[180px]" disabled={!declaration}>
-            <SelectValue placeholder="Specify country" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Countries</SelectLabel>
-                {countries.map(country =>
-                  <SelectItem key={country.alpha_2} value={country.alpha_2}>{country.common_name}</SelectItem>)}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Label htmlFor="signatories" className="col-start-1">Signatories:</Label>
-        <Textarea
-          id="signatories"
-          className="col-span-2 h-40 overflow-y-auto"
-          disabled={!declaration}
-          readOnly={!updating}
-          value={declaration?.signatories ?? ''}
-          onChange={e => dispatch("setSignatories", e.target.value)}
-        />
-        <Label htmlFor="signatoryCount" className="">Signatory count:</Label>
-        <Input
-          id="signatoryCount"
-          type="signatoryCount"
-          disabled={!declaration}
-          readOnly={!updating}
-          placeholder="count"
-          value={declaration?.signatoryCount ?? ''}
-          onChange={e => dispatch("setSignatoryCount", e.target.value)}
-        />
-        <Label htmlFor="notes" className="col-start-1">Notes:</Label>
-        <Textarea
-          id="notes"
-          className="col-span-4 h-40 overflow-y-auto"
-          disabled={!declaration}
-          readOnly={!updating}
-          value={declaration?.notes ?? ''}
-          onChange={e => dispatch("setNotes", e.target.value)}
-        />
-      </div>
+            <DetailActions
+              className="col-start-3 row-span-6"
+              recordKind="Declaration"
+              record={record}
+              form={form}
+              state={state}
+              setMode={setMode}
+              showFieldHelp={showFieldHelp}
+              setShowFieldHelp={setShowFieldHelp}
+              onFormAction={onFormAction}
+            />
+            <FormField
+              control={form.control}
+              name="title"
+              render={({field}) => (
+                <FormItem className="col-span-2">
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="title"
+                      disabled={!record}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The declaration's official name/title
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="url"
+              render={({field}) => (
+                <FormItem className="col-span-2">
+                  <FormLabel>URL</FormLabel>
+                  <FormControl>
+                    {
+                      updating
+                      ? <Input
+                          type="url"
+                          placeholder="URL"
+                          {...field}
+                        />
+                      : <Link href={record?.url ?? ''} target="_blank">{record?.url ?? ''}</Link>
+                    }
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The declaration's online web address
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="cached"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Cached</FormLabel>
+                  <FormControl>
+                    <Checkbox
+                      id="cached"
+                      disabled={!updating}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        Whether the declaration is cached in this server
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="country"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Country</FormLabel>
+                  <Select
+                    disabled={!updating}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger id="country" className="w-full" disabled={!record}>
+                        <SelectValue placeholder="Specify country" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Countries</SelectLabel>
+                          {countries.map(country =>
+                            <SelectItem key={country.alpha_2} value={country.alpha_2}>{country.common_name}</SelectItem>)}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The country in which the declaration was issued
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="signatories"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Signatories</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      id="signatories"
+                      className="h-40 overflow-y-auto"
+                      disabled={!record}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        Signatory names, verbatim, one per line
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="signatoryCount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Signatory count</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      id="signatoryCount"
+                      disabled={!record}
+                      readOnly={!updating}
+                      placeholder="count"
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The number of signatories
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({field}) => (
+                <FormItem className="col-span-2">
+                  <FormLabel>Notes</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      id="notes"
+                      className="h-40 overflow-y-auto"
+                      disabled={!record}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        Contributor notes on the declaration
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </form>
+      </Form>
     </fieldset>
   )
 }

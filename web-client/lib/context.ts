@@ -26,10 +26,10 @@ import Authority from '@/app/model/Authority';
 import User from '@/app/model/User';
 
 export type MasterLinkContextBase = {
-  masterTopicId?: BigInt | string
-  masterTopicDescription?: string
-  masterTopicPath?: string
-  masterRecordId?: BigInt | string
+  masterTopicId?: string
+  masterTopicDescription?: string | null
+  masterTopicPath?: string | null
+  masterRecordId?: string
   masterRecordLabel?: string
   masterRecordKind: RecordKind
 }
@@ -48,7 +48,7 @@ export const MasterLinkContext = createContext<MasterLinkContextType>({
 });
 
 export type SelectedRecord = {
-  id: BigInt | string
+  id: string
   label: string
 }
 

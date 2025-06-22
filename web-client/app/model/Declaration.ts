@@ -25,17 +25,17 @@ export default interface Declaration extends ILinkableEntity {
   /** The declaration name or title. */
   title?: string
   /** The date the declaration was published. */
-  date?: Date | string
+  date?: Date | string | null
   /** The country to which the declaration relates. */
-  country?: string
+  country?: string | null
   /** The URL for the declaration online. */
-  url?: /*URL | */string
+  url?: /*URL | */string | null
   /** Flag to indicate that url content is cached on this application server. */
   cached?: boolean
   /** Names of persons who signed the declaration, one per line. */
-  signatories?: string
+  signatories?: string | null
   /** The number of signatories. */
-  signatoryCount?: number
+  signatoryCount?: number | null
   /** Added notes about the declaration. */
-  notes?: string
+  notes?: string | null
 }

@@ -25,10 +25,10 @@ import User from "./User";
 export default interface Group extends ITrackedEntity {
   /** The unique group name. */
   groupname?: string
-  /** The group's first name. */
-  description?: string
+  // /** The group description. */
+  // description?: string
   /** The authorities granted to the group. */
   authorities?: Authority[]
-  /** The group members */
+  /** The group members. */
   members?: IPage<User>
 }

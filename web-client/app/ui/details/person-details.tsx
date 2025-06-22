@@ -20,7 +20,15 @@
 'use client'
 
 import Person from "@/app/model/Person";
-import { Label } from "@/components/ui/label";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -29,216 +37,391 @@ import rawCountries from "@/data/countries.json" assert {type: 'json'}
 import Country from "@/app/model/Country"
 import StandardDetails from "./standard-details";
 import DetailActions, { createDetailState, DetailMode } from "./detail-actions";
-import { Dispatch, useContext, useState } from "react";
-import { Action } from "@/lib/utils";
+import { useContext, useMemo, useState } from "react";
+import { FormAction } from "@/lib/utils";
+import { useFormContext } from "react-hook-form"
 import { SecurityContext } from "@/lib/context";
-import { useImmerReducer } from "use-immer";
+import { PersonFormFields } from "../validators/person";
 
-function personReducer(draft?: Person, action?: Action) {
-  if (draft && action) {
-    switch (action.command) {
-      case "new":
-        Object.keys(draft).forEach(key => (draft as any)[key] = undefined)
-        break
-      case "edit":
-        Object.assign(draft, action.value);
-        break
-      case "setAlias":
-        draft.alias = action.value
-        break
-      case "setChecked":
-        draft.checked = action.value
-        break
-      case "setCountry":
-        draft.country = action.value
-        break
-      case "setFirstName":
-        draft.firstName = action.value
-        break
-      case "setLastName":
-        draft.lastName = action.value
-        break
-      case "setNickname":
-        draft.nickname = action.value
-        break
-      case "setNotes":
-        draft.notes = action.value
-        break
-      case "setPrefix":
-        draft.prefix = action.value
-        break
-      case "setPublished":
-        draft.published = action.value
-        break
-      case "setQualifications":
-        draft.qualifications = action.value
-        break
-      case "setRating":
-        draft.rating = action.value
-        break
-      case "setStatus":
-        draft.status = action.value
-        break
-      case "setSuffix":
-        draft.suffix = action.value
-        break
-      case "setTitle":
-        draft.title = action.value
-        break
-    }
-  }
-}
+const countries = rawCountries as unknown as Country[]
 
 export default function PersonDetails(
-  {record, pageDispatch}:
-  {record?: Person; pageDispatch: Dispatch<Action>}) {
+  { record, onFormAction }:
+  { record?: Person; onFormAction: (command: FormAction, formValue: PersonFormFields) => void }) {
 
-  const countries = rawCountries as unknown as Country[]
+  const form = useFormContext()
   const securityContext = useContext(SecurityContext)
   const [mode, setMode] = useState<DetailMode>("view")
-  const [mutableRecord, recordDispatch] = useImmerReducer(personReducer, record ?? {})
+  const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
 
-  const state = createDetailState(securityContext, mode, record)
+  const state = useMemo(() => createDetailState(securityContext, mode), [securityContext, mode])
   const { updating } = state
-  const person = updating ? mutableRecord : record
-
-  function dispatch(command: string, value: any) {
-    recordDispatch({recordId: person?.id ?? "0", command: command, value: value})
-  }
 
   return (
     <fieldset className="border shadow-lg rounded-md w-2/3">
       <legend>&nbsp;Person Details&nbsp;</legend>
-      <StandardDetails recordKind="Person" record={person} state={state} showLinkingDetails={true} />
-      <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Person #${person?.id}` : "-Select a person in the list above to see his/her details-"}</p>
-      <div className="grid grid-cols-6 ml-2 mr-2 mb-2 gap-2">
-        <Label htmlFor="title" className="col-start-1">Title:</Label>
-        <Input
-          id="title"
-          disabled={!person}
-          readOnly={!updating}
-          placeholder="title"
-          value={person?.title ?? ''}
-          onChange={e => dispatch("setTitle", e.target.value)}
-        />
-        <Label htmlFor="nickname" className="">Nickname:</Label>
-        <Input
-          id="nickname"
-          disabled={!person}
-          readOnly={!updating}
-          value={person?.nickname ?? ''}
-          onChange={e => dispatch("setNickname", e.target.value)}
-        />
-        <DetailActions
-          className="col-start-6 row-span-8"
-          recordKind="Person"
-          record={person}
-          state={state}
-          setMode={setMode}
-          pageDispatch={pageDispatch}
-          recordDispatch={recordDispatch}
-        />
-        <Label htmlFor="firstName" className="">First name:</Label>
-        <Input
-          id="firstName"
-          disabled={!person}
-          readOnly={!updating}
-          value={person?.firstName ?? ''}
-          onChange={e => dispatch("setFirstName", e.target.value)}
-        />
-        <Label htmlFor="prefix" className="">Prefix:</Label>
-        <Input
-          id="prefix"
-          disabled={!person}
-          readOnly={!updating}
-          value={person?.prefix ?? ''}
-          onChange={e => dispatch("setPrefix", e.target.value)}
-        />
-        <Label htmlFor="lastName" className="col-start-1">Last name:</Label>
-        <Input
-          id="lastName"
-          disabled={!person}
-          readOnly={!updating}
-          value={person?.lastName ?? ''}
-          onChange={e => dispatch("setLastName", e.target.value)}
-        />
-        <Label htmlFor="suffix" className="">Suffix:</Label>
-        <Input
-          id="suffix"
-          disabled={!person}
-          readOnly={!updating}
-          value={person?.suffix ?? ''}
-          onChange={e => dispatch("setSuffix", e.target.value)}
-        />
-        <Label htmlFor="alias" className="col-start-1">Alias:</Label>
-        <Input
-          id="alias"
-          className="col-span-2"
-          disabled={!person}
-          readOnly={!updating}
-          value={person?.alias ?? ''}
-          onChange={e => dispatch("setAlias", e.target.value)}
-        />
-        <Label htmlFor="notes" className="col-start-1">Notes:</Label>
-        <Textarea
-          id="notes"
-          className="col-span-4 h-40 overflow-y-auto"
-          disabled={!person}
-          readOnly={!updating}
-          value={person?.notes ?? ''}
-          onChange={e => dispatch("setNotes", e.target.value)}
-        />
-        <Label htmlFor="qualifications" className="col-start-1">Qualifications:</Label>
-        <Textarea
-          id="qualifications"
-          className="col-span-4 h-40 overflow-y-auto"
-          disabled={!person}
-          readOnly={!updating}
-          value={person?.qualifications ?? ''}
-          onChange={e => dispatch("setQualifications", e.target.value)}
-        />
-        <Label htmlFor="country" className="col-start-1">Country:</Label>
-        <Select
-          disabled={!updating}
-          value={person?.country ?? ''}
-          onValueChange={value => dispatch("setCountry", value)}
-        >
-          <SelectTrigger id="country" className="w-[180px]" disabled={!person}>
-            <SelectValue placeholder="Specify country" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Countries</SelectLabel>
-                {countries.map(country =>
-                  <SelectItem key={country.alpha_2} value={country.alpha_2}>{country.common_name}</SelectItem>)}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Label htmlFor="rating" className="">Rating:</Label>
-        <Input
-          id="rating"
-          type="number"
-          disabled={!person}
-          readOnly={!updating}
-          placeholder="title"
-          value={person?.rating ?? ''}
-          onChange={e => dispatch("setRating", e.target.value)}
-        />
-        <Label htmlFor="checked" className="col-start-1">Checked:</Label>
-        <Checkbox
-          id="checked"
-          disabled={!updating}
-          checked={person?.checked}
-          onCheckedChange={checked => dispatch("setChecked", checked)}
-        />
-        <Label htmlFor="published" className="">Published:</Label>
-        <Checkbox
-          id="published"
-          disabled={!updating}
-          checked={person?.published}
-          onCheckedChange={checked => dispatch("setPublished", checked)}
-        />
-      </div>
+      <StandardDetails recordKind="Person" record={record} state={state} showLinkingDetails={true} />
+      <Form {...form}>
+        <form>
+          <FormDescription>
+            <span className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Person #${record?.id}` : "-Select a person in the list above to see his/her details-"}</span>
+          </FormDescription>
+          <div className="grid grid-cols-5 ml-2 mr-2 mt-4 mb-4 gap-2">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({field}) => (
+                <FormItem className="">
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="title"
+                      disabled={!record}
+                      readOnly={!updating}
+                      placeholder="title"
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The person's formal honorific title (Dr, Prof, Sir, etc.)
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="firstName"
+              render={({field}) => (
+                <FormItem className="">
+                  <FormLabel>First name(s)</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="firstName"
+                      disabled={!record}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The person's forename(s) or initials
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="nickname"
+              render={({field}) => (
+                <FormItem className="">
+                  <FormLabel>Nickname</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="nickname"
+                      disabled={!record}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The person's informal nickname
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DetailActions
+              className="col-start-5 row-span-8"
+              recordKind="Person"
+              record={record}
+              form={form}
+              state={state}
+              setMode={setMode}
+              showFieldHelp={showFieldHelp}
+              setShowFieldHelp={setShowFieldHelp}
+              onFormAction={onFormAction}
+            />
+            <FormField
+              control={form.control}
+              name="prefix"
+              render={({field}) => (
+                <FormItem className="col-start-1">
+                  <FormLabel>Prefix</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="prefix"
+                      disabled={!record}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The prefix to the person's surname (de, van, zu, etc.)
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="lastName"
+              render={({field}) => (
+                <FormItem className="">
+                  <FormLabel>Last name</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="lastName"
+                      disabled={!record}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The person's surname/family name, excluding any prefix
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="suffix"
+              render={({field}) => (
+                <FormItem className="">
+                  <FormLabel>Suffix</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="suffix"
+                      disabled={!record}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The suffix to the person's surname (Jnr, Snr, III, etc.)
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="alias"
+              render={({field}) => (
+                <FormItem className="">
+                  <FormLabel>Alias</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="alias"
+                      className="col-span-2"
+                      disabled={!record}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        An alternative name by which the person is also known
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({field}) => (
+                <FormItem className="col-start-1 col-span-4">
+                  <FormLabel>Notes</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      id="notes"
+                      className="h-40 overflow-y-auto"
+                      disabled={!record}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        Biographical and other notes about the person
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="qualifications"
+              render={({field}) => (
+                <FormItem className="col-start-1 col-span-4">
+                  <FormLabel>Qualifications</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      id="qualifications"
+                      className="h-40 overflow-y-auto"
+                      disabled={!record}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The person's formal academic qualifications
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="country"
+              render={({ field }) => (
+                <FormItem className="col-start-1">
+                  <FormLabel>Country</FormLabel>
+                  <Select
+                    disabled={!updating}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger id="country" className="w-full" disabled={!record}>
+                        <SelectValue placeholder="Specify country" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Countries</SelectLabel>
+                          {countries.map(country =>
+                            <SelectItem key={country.alpha_2} value={country.alpha_2}>{country.common_name}</SelectItem>)}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        The country with which the person is primarily associated
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="rating"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Rating</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="rating"
+                      type="number"
+                      disabled={!record}
+                      readOnly={!updating}
+                      placeholder="rating"
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        A star-rating to reflect the person's eminence and credibility
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="checked"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Checked</FormLabel>
+                  <FormControl>
+                    <Checkbox
+                      id="checked"
+                      disabled={!updating}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        Whether the person's details and credentials have been checked
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="published"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Published</FormLabel>
+                  <FormControl>
+                    <Checkbox
+                      id="published"
+                      disabled={!updating}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        Whether the person has authored peer-reviewed publications
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </form>
+      </Form>
     </fieldset>
   )
 }

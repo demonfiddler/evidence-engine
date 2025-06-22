@@ -24,13 +24,13 @@ export default interface User extends ITrackedEntity {
   /** The (mutable?) unique user name (user-assigned). */
   username?: string
   /** The user's first name. */
-  firstName?: string
+  firstName?: string | null
   /** The user's last name. */
-  lastName?: string
+  lastName?: string | null
   /** The user's email address. */
-  email?: string
+  email?: string | null
   /** The user's country of habitation. */
-  country?: string
+  country?: string | null
   /** A hash of the user's password. */
   password?: string
   /** The authorities granted to the user. */

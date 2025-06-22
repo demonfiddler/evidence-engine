@@ -20,7 +20,6 @@
 'use client'
 
 import { ColumnDef } from "@tanstack/react-table"
-import DataTableColumnHeader from "@/app/ui/data-table/data-table-column-header"
 import IBaseEntity from "@/app/model/IBaseEntity"
 
 export const columns: ColumnDef<IBaseEntity>[] = [
@@ -30,9 +29,7 @@ export const columns: ColumnDef<IBaseEntity>[] = [
     enableSorting: true,
     size: 100,
     // enableSortingRemoval: true, // mentioned in TanStack docs but not recognised by IDE.
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="ID" />
-    ),
+    header: "ID",
     meta: {
       "className": "text-right"
     }

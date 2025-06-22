@@ -19,13 +19,16 @@
 
 'use client'
 
-import { Dispatch, SetStateAction } from "react"
+import { Dispatch, SetStateAction, useCallback } from "react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button";
-import { Action, cn, getRecordLabel } from "@/lib/utils";
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
+import { cn, getRecordLabel, FormAction } from "@/lib/utils";
 import ITrackedEntity from "@/app/model/ITrackedEntity";
 import RecordKind from "@/app/model/RecordKind";
 import { SecurityContextType } from "@/lib/context"
+import { UseFormReturn } from "react-hook-form";
 
 export type ClickHandler = () => void
 
@@ -42,15 +45,11 @@ export type DetailState = {
   editing: boolean
   updating: boolean
   creating: boolean
-  disableNewCancelButton: boolean
-  disableEditSaveButton: boolean
-  disableDeleteButton: boolean
 }
 
 export function createDetailState(
   securityContext: SecurityContextType,
-  mode: DetailMode,
-  record?: ITrackedEntity,
+  mode: DetailMode
 ): DetailState {
 
   const allowCreate = securityContext.authorities?.includes("CRE") ?? false
@@ -74,69 +73,98 @@ export function createDetailState(
     creating: creating,
     editing: editing,
     updating: updating,
-    disableNewCancelButton: !updating && !allowCreate,
-    disableEditSaveButton: !record || !updating && !allowEdit,
-    disableDeleteButton: !record || !allowDelete || updating,
   }
 }
 
-export default function DetailActions<T extends ITrackedEntity>(
-  { className, recordKind, record, state, setMode, pageDispatch, recordDispatch }:
+export default function DetailActions<T extends ITrackedEntity, S>(
+  {
+    className,
+    recordKind,
+    record,
+    form,
+    state,
+    setMode,
+    showFieldHelp,
+    setShowFieldHelp,
+    onFormAction
+  } :
   {
     className?: string
     recordKind: RecordKind
     record?: T
+    form: UseFormReturn<any>
     state: DetailState
     setMode: Dispatch<SetStateAction<DetailMode>>
-    pageDispatch: Dispatch<Action>
-    recordDispatch: Dispatch<Action | undefined>
-  } ) {
+    showFieldHelp: boolean
+    setShowFieldHelp: any
+    onFormAction: (command: FormAction, value: S) => void
+  }) {
 
+  // console.log("DetailActions: render")
   const recordLabel = getRecordLabel(recordKind, record)
 
-  function handleNewOrCancel() {
+  const handleNewOrCancel = useCallback(() => {
+    console.log(`ENTER handleNewOrCancel(), state = ${JSON.stringify(state)}, isDirty = ${JSON.stringify(form.formState.isDirty)}, isValid = ${JSON.stringify(form.formState.isValid)}`)
     if (state.updating) {
-      if (confirm(`Discard changes to ${recordLabel}?`)) {
+      if (form.formState.isDirty) {
+        if (!confirm(`Discard changes to ${recordLabel}?`))
+          return
         toast(`Cancelling ${state.mode}...`)
+      }
+      onFormAction("reset", form.getValues())
+      setMode("view")
+    } else {
+      toast(`Creating new ${recordKind}...`)
+      setMode("create")
+      onFormAction("reset", {} as S)
+      // form.reset({}, {keepValues: false, keepDefaultValues:false})
+    }
+  }, [state, form, recordLabel, onFormAction, setMode])
+
+  const handleEditOrSave = useCallback(() => {
+    console.log(`ENTER handleEditOrSave(), state = ${JSON.stringify(state)}, isDirty = ${JSON.stringify(form.formState.isDirty)}, isValid = ${JSON.stringify(form.formState.isValid)}`)
+    if (state.editing) {
+      if (form.formState.isDirty) {
+        if (form.formState.isValid) {
+          toast(`Saving updated ${recordKind}...`)
+          onFormAction("update", form.getValues())
+          setMode("view")
+        }
+      } else {
+        setMode("view")
+      }
+    } else if (state.creating) {
+      if (form.formState.isDirty) {
+        if (form.formState.isValid) {
+          toast(`Saving new ${recordKind}...`)
+          onFormAction("create", form.getValues())
+          setMode("view")
+        }
+      } else {
         setMode("view")
       }
     } else {
-      toast(`Creating new ${recordKind}...`)
-      recordDispatch({recordId: record?.id ?? "0", command: "new", value: record})
-      setMode("create")
-    }
-  }
-
-  function handleEditOrSave() {
-    if (state.editing) {
-      toast(`Saving updated ${recordKind}...`)
-      pageDispatch({recordId: record?.id ?? "0", command: "update", value: record})
-      setMode("view")
-    } else if (state.creating) {
-      toast(`Saving new ${recordKind}...`)
-      pageDispatch({recordId: record?.id ?? "0", command: "add", value: record})
-      setMode("view")
-    } else {
       toast(`Editing ${recordKind} details...`)
-      recordDispatch({recordId: record?.id ?? "0", command: "edit", value: record})
+      form.trigger()
       setMode("edit")
     }
-  }
+  }, [state, form, onFormAction, setMode])
 
-  function handleDelete() {
+  const handleDelete = useCallback(() => {
     if (confirm(`Delete ${recordLabel}?`)) {
       toast(`Deleting ${recordLabel}...`)
-      pageDispatch({recordId: record?.id ?? "0", command: "delete", value: undefined})
+      onFormAction("delete", form.getValues())
       setMode("view")
     }
-  }
+  }, [recordLabel, onFormAction, form, setMode])
 
   return (
-    <div className={cn("self-start flex flex-col gap-2", className)}>
+    <div className={cn("self-start flex flex-col gap-2 items-center", className)}>
       <Button
+        type="button"
         onClick={handleNewOrCancel}
         className="col-start-6 w-20 place-self-center bg-blue-500"
-        disabled={state.disableNewCancelButton}
+        disabled={!state.updating && !state.allowCreate}
         title={
           state.updating
           ? `Discard changes to ${recordLabel}`
@@ -146,9 +174,10 @@ export default function DetailActions<T extends ITrackedEntity>(
         {state.updating ? 'Cancel' : 'New'}
       </Button>
       <Button
+        type="button"
         onClick={handleEditOrSave}
         className="col-start-6 w-20 place-self-center bg-blue-500"
-        disabled={state.disableEditSaveButton}
+        disabled={!record || !state.updating && !state.allowEdit || state.updating && !form.formState.isValid}
         title={
           state.updating
           ? `Save changes to ${recordLabel}`
@@ -158,13 +187,22 @@ export default function DetailActions<T extends ITrackedEntity>(
         {state.updating ? 'Save' : 'Edit'}
       </Button>
       <Button
+        type="button"
         onClick={handleDelete}
         className="col-start-6 w-20 place-self-center bg-blue-500"
-        disabled={state.disableDeleteButton}
+        disabled={!record || !state.allowDelete || state.updating}
         title={`Delete the selected ${recordLabel}`}
       >
         Delete
       </Button>
+      <Label htmlFor="field-help">Field Help</Label>
+      <Switch
+        id="field-help"
+        checked={showFieldHelp}
+        onCheckedChange={setShowFieldHelp}
+      />
     </div>
   )
 }
+
+// DetailActions.whyDidYouRender = true;

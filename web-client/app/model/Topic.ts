@@ -23,11 +23,11 @@ export default interface Topic extends ILinkableEntity {
   /** The topic label for display in the user interface. */
   label?: string
   /** The topic description. */
-  description?: string
+  description?: string | null
   /** The full path to the topic. */
-  path?: string
+  path?: string | null
   /** The ID of the parent topic, if any. */
-  parentId?: BigInt | string
+  parentId?: string | null
   /** The sub-topics. */
   children?: Topic[]
 }

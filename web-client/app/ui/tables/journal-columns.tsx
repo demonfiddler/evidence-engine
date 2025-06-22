@@ -20,7 +20,6 @@
 'use client'
 
 import { ColumnDef } from "@tanstack/react-table"
-import DataTableColumnHeader from "@/app/ui/data-table/data-table-column-header"
 import Journal from "@/app/model/Journal"
 import { columns as trackedEntityColumns, columnVisibility as trackedEntityColumnVisibility } from "./tracked-entity-columns"
 import { actionColumn as rawActionColumn, selectColumn as rawSelectColumn } from "./extra-columns"
@@ -38,9 +37,7 @@ export const columns: ColumnDef<Journal>[] = [
     enableSorting: true,
     size: 400,
     // enableColumnFilter: false,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Title" />
-    ),
+    header: "Title",
   },
   {
     id: "abbreviation",
@@ -49,9 +46,7 @@ export const columns: ColumnDef<Journal>[] = [
     enableSorting: true,
     size: 200,
     // enableColumnFilter: false,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Abbreviation" />
-    ),
+    header: "Abbreviation",
   },
   {
     id: "url",
@@ -59,11 +54,9 @@ export const columns: ColumnDef<Journal>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 300,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="URL" />
-    ),
-    cell: ({getValue}) => (
-      <a href={getValue() as string} target="_blank">{getValue() as string}</a>
+    header: "URL",
+    cell: ({cell, getValue}) => (
+      <a key={cell.id} href={getValue() as string} target="_blank">{getValue() as string}</a>
     )
   },
   {
@@ -72,9 +65,7 @@ export const columns: ColumnDef<Journal>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 150,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="ISSN" />
-    ),
+    header: "ISSN",
   },
   {
     id: "publisher",
@@ -82,11 +73,9 @@ export const columns: ColumnDef<Journal>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 150,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Publisher" />
-    ),
-    cell: ({ row }) => (
-      <div className="font-medium">{
+    header: "Publisher",
+    cell: ({ row, cell }) => (
+      <div key={cell.id} className="font-medium">{
         row.original.publisher
         ? `${row.original.publisher?.id} : ${row.original.publisher?.name}`
         : <></>
@@ -100,9 +89,7 @@ export const columns: ColumnDef<Journal>[] = [
     enableHiding: true,
     enableSorting: false,
     size: 400,
-    header: ({ table, header, column }) => (
-      <DataTableColumnHeader key={header.id} table={table} header={header} column={column} title="Notes" />
-    ),
+    header: "Notes",
   },
   actionColumn
 ]
