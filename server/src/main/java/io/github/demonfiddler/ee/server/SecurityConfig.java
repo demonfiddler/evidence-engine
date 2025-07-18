@@ -22,6 +22,8 @@ package io.github.demonfiddler.ee.server;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 
+import java.util.List;
+
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
@@ -42,6 +45,9 @@ import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import io.github.demonfiddler.ee.server.repository.JdbcTokenRepositoryImplEx;
 import io.github.demonfiddler.ee.server.repository.JdbcUserDetailsManagerEx;
@@ -60,7 +66,7 @@ public class SecurityConfig {
     private ProfileUtils profileUtils;
     @Autowired
     private DataSource dataSource;
-    private JdbcUserDetailsManagerEx userDetailsManager;
+    private JdbcUserDetailsManager userDetailsManager;
     private ProviderManager authenticationManager;
     private DaoAuthenticationProvider daoAuthenticationProvider;
     private RememberMeAuthenticationProvider rememberMeAuthenticationProvider;
@@ -72,8 +78,7 @@ public class SecurityConfig {
     private void init() {
         if (userDetailsManager == null) {
             userDetailsManager = new JdbcUserDetailsManagerEx(dataSource);
-            daoAuthenticationProvider = new DaoAuthenticationProvider();
-            daoAuthenticationProvider.setUserDetailsService(userDetailsManager);
+            daoAuthenticationProvider = new DaoAuthenticationProvider(userDetailsManager);
             rememberMeAuthenticationProvider = new RememberMeAuthenticationProvider(REMEMBER_ME_KEY);
             authenticationManager = new ProviderManager(rememberMeAuthenticationProvider, daoAuthenticationProvider);
             userDetailsManager.setAuthenticationManager(authenticationManager);
@@ -89,7 +94,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    UserDetailsManager userDetailsManager(DataSource dataSource) {
+    UserDetailsManager userDetailsManager() {
         init();
         return userDetailsManager;
     }
@@ -110,6 +115,19 @@ public class SecurityConfig {
     UsernamePasswordAuthenticationFilter usernamePasswordAuthenticationFilter() {
         init();
         return usernamePasswordAuthenticationFilter;
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:3000"));
+        config.setAllowedMethods(List.of("GET", "POST", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Content-Type", "Authorization"));
+        config.setAllowCredentials(true); // optional, depending on your needs
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 
     @Bean
@@ -139,8 +157,11 @@ public class SecurityConfig {
              // .x509PrincipalExtractor(/*X509PrincipalExtractor*/null) //
              // .subjectPrincipalRegex("CN=(.*?),") //
              // ) //
-            .csrf(customizer -> customizer //
-                .ignoringRequestMatchers("/graphql")) //
+            .cors(Customizer.withDefaults()) // enables CORS support
+            .csrf(csrf -> csrf.disable())    // disables CSRF (safe for stateless APIs)
+            // .csrf(customizer -> customizer //
+            //     .ignoringRequestMatchers("/graphql")) //
+            // .csrf(csrf -> csrf.disable()) // optional, depending on your setup
             .authenticationManager(authenticationManager) //
             .authenticationProvider(daoAuthenticationProvider) //
             .addFilterBefore(usernamePasswordAuthenticationFilter, AnonymousAuthenticationFilter.class) //
@@ -148,7 +169,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(customizer -> {
                 customizer //
                     .requestMatchers("/graphiql").authenticated() //
-                    .requestMatchers(HttpMethod.POST, "/graphql").permitAll() //
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // allow preflight
+                    .requestMatchers(HttpMethod.POST, "/graphql").permitAll()
                     .anyRequest().authenticated();
             }) //
             .rememberMe(customizer -> {

@@ -20,12 +20,25 @@
 package io.github.demonfiddler.ee.server.repository;
 
 import java.util.List;
-
-import io.github.demonfiddler.ee.server.model.PermissionKind;
+import io.github.demonfiddler.ee.server.model.AuthorityKind;
 import io.github.demonfiddler.ee.server.model.User;
 import jakarta.persistence.Query;
 
 public class CustomUserRepositoryImpl extends CustomTrackedEntityRepositoryImpl<User> implements CustomUserRepository {
+
+    private static final String QUERY_SELECT_ALL_AUTHORITIES = "user.selectAllAuthorities";
+    private static final String SQL_SELECT_ALL_AUTHORITIES = """
+        SELECT "authority"
+        FROM "user_authority" ua
+        WHERE ua."user_id" = :userId
+        UNION
+        SELECT "authority"
+        FROM "group_authority" ga
+        JOIN "group_user" gu
+        ON gu."group_id" = ga."group_id"
+        JOIN "user" u
+        ON u."username" = gu."username" AND u."id" = :userId 
+    """;
 
     @Override
     protected Class<User> getEntityClass() {
@@ -37,37 +50,18 @@ public class CustomUserRepositoryImpl extends CustomTrackedEntityRepositoryImpl<
         return "\"username\", \"first_name\", \"last_name\", \"email\", \"notes\"";
     }
 
-    // FIXME: these permission-related methods need rewriting/refactoring to work with the Spring Security data model.
-
     @Override
     @SuppressWarnings("unchecked")
-    public List<PermissionKind> findUserPermissions(Long userId) {
-        String sql = "SELECT permission_code FROM user_permission WHERE user_id = :userId";
-        Query query = em.createNativeQuery(sql, PermissionKind.class);
-        query.setParameter("user_id", userId);
-        return (List<PermissionKind>)query.getResultList();
-    }
-
-    @Override
-    public int addUserPermissions(Long userId, List<PermissionKind> permissions) {
-        String sql = "REPLACE INTO user_permission (user_id, permission_code) VALUES (:userId, :permissionCode);";
-        Query query = em.createNativeQuery(sql);
-        int updateCount = 0;
-        for (PermissionKind permission : permissions) {
-            query.setParameter("user_id", userId);
-            query.setParameter("permission_code", permission.toString());
-            updateCount += query.executeUpdate();
+    public List<AuthorityKind> findAllUserAuthorities(Long userId) {
+        Query query = null;
+        synchronized (queryNames) {
+            if (!queryNames.contains(QUERY_SELECT_ALL_AUTHORITIES))
+                query = defineNamedQuery(QUERY_SELECT_ALL_AUTHORITIES, SQL_SELECT_ALL_AUTHORITIES, AuthorityKind.class);
         }
-        return updateCount;
-    }
-
-    @Override
-    public int removeUserPermissions(Long userId, List<PermissionKind> permissions) {
-        String sql = "DELETE FROM user_permission WHERE user_id = :userId AND permission_code IN (:permissions);";
-        Query query = em.createNativeQuery(sql);
-        query.setParameter("user_id", userId);
-        query.setParameter("permission_code", permissions);
-        return query.executeUpdate();
+        if (query == null)
+            query = em.createNamedQuery(QUERY_SELECT_ALL_AUTHORITIES, AuthorityKind.class);
+        query.setParameter("userId", userId);
+        return (List<AuthorityKind>)query.getResultList();
     }
 
 }

@@ -27,9 +27,9 @@ import io.github.demonfiddler.ee.server.model.Claim;
 import io.github.demonfiddler.ee.server.model.ClaimPage;
 import io.github.demonfiddler.ee.server.model.Declaration;
 import io.github.demonfiddler.ee.server.model.DeclarationPage;
-import io.github.demonfiddler.ee.server.model.EntityKind;
 import io.github.demonfiddler.ee.server.model.EntityLinkPage;
 import io.github.demonfiddler.ee.server.model.EntityLinkQueryFilter;
+import io.github.demonfiddler.ee.server.model.GroupPage;
 import io.github.demonfiddler.ee.server.model.JournalPage;
 import io.github.demonfiddler.ee.server.model.LinkableEntityQueryFilter;
 import io.github.demonfiddler.ee.server.model.LogPage;
@@ -49,6 +49,7 @@ import io.github.demonfiddler.ee.server.model.UserPage;
 import io.github.demonfiddler.ee.server.repository.ClaimRepository;
 import io.github.demonfiddler.ee.server.repository.DeclarationRepository;
 import io.github.demonfiddler.ee.server.repository.EntityLinkRepository;
+import io.github.demonfiddler.ee.server.repository.GroupRepository;
 import io.github.demonfiddler.ee.server.repository.JournalRepository;
 import io.github.demonfiddler.ee.server.repository.LogRepository;
 import io.github.demonfiddler.ee.server.repository.PersonRepository;
@@ -86,6 +87,8 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     @Resource
     private UserRepository userRepository;
     @Resource
+    private GroupRepository groupRepository;
+    @Resource
     private EntityUtils entityUtils;
 
     @Override
@@ -97,7 +100,6 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     public Object claims(DataFetchingEnvironment dataFetchingEnvironment, LinkableEntityQueryFilter filter,
         PageableInput pageSort) {
 
-        filter = fixFilter(filter, EntityKind.CLA);
         return entityUtils.findByFilter(filter, pageSort, claimRepository, ClaimPage::new);
     }
 
@@ -110,7 +112,6 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     public Object declarations(DataFetchingEnvironment dataFetchingEnvironment, LinkableEntityQueryFilter filter,
         PageableInput pageSort) {
 
-        filter = fixFilter(filter, EntityKind.DEC);
         return entityUtils.findByFilter(filter, pageSort, declarationRepository, DeclarationPage::new);
     }
 
@@ -159,7 +160,6 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     public Object persons(DataFetchingEnvironment dataFetchingEnvironment, LinkableEntityQueryFilter filter,
         PageableInput pageSort) {
 
-        filter = fixFilter(filter, EntityKind.PER);
         return entityUtils.findByFilter(filter, pageSort, personRepository, PersonPage::new);
     }
 
@@ -172,7 +172,6 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     public Object publications(DataFetchingEnvironment dataFetchingEnvironment, LinkableEntityQueryFilter filter,
         PageableInput pageSort) {
 
-        filter = fixFilter(filter, EntityKind.PUB);
         return entityUtils.findByFilter(filter, pageSort, publicationRepository, PublicationPage::new);
     }
 
@@ -197,7 +196,6 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     public Object quotations(DataFetchingEnvironment dataFetchingEnvironment, LinkableEntityQueryFilter filter,
         PageableInput pageSort) {
 
-        filter = fixFilter(filter, EntityKind.QUO);
         return entityUtils.findByFilter(filter, pageSort, quotationRepository, QuotationPage::new);
     }
 
@@ -214,6 +212,13 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     }
 
     @Override
+    public Object users(DataFetchingEnvironment dataFetchingEnvironment, TrackedEntityQueryFilter filter,
+        PageableInput pageSort) {
+
+        return entityUtils.findByFilter(filter, pageSort, userRepository, UserPage::new);
+    }
+
+    @Override
     public Object userById(DataFetchingEnvironment dataFetchingEnvironment, Long id) {
         return userRepository.findById(id).get();
     }
@@ -224,17 +229,20 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     }
 
     @Override
-    public Object users(DataFetchingEnvironment dataFetchingEnvironment, TrackedEntityQueryFilter filter,
+    public Object groups(DataFetchingEnvironment dataFetchingEnvironment, TrackedEntityQueryFilter filter,
         PageableInput pageSort) {
 
-        return entityUtils.findByFilter(filter, pageSort, userRepository, UserPage::new);
+        return entityUtils.findByFilter(filter, pageSort, groupRepository, GroupPage::new);
     }
 
-    private LinkableEntityQueryFilter fixFilter(LinkableEntityQueryFilter filter, EntityKind entityKind) {
-        if (filter == null)
-            filter = new LinkableEntityQueryFilter();
-        filter.setToEntityKind(entityKind);
-        return filter;
+    @Override
+    public Object groupById(DataFetchingEnvironment dataFetchingEnvironment, Long id) {
+        return groupRepository.findById(id).get();
+    }
+
+    @Override
+    public Object groupByGroupname(DataFetchingEnvironment dataFetchingEnvironment, String groupname) {
+        return groupRepository.findByGroupname(groupname).get();
     }
 
 }

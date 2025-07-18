@@ -19,8 +19,8 @@
 
 'use client'
 
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -39,17 +39,17 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import Journal from "@/app/model/Journal";
-import Publisher from "@/app/model/Publisher";
+import Journal from "@/app/model/Journal"
+import Publisher from "@/app/model/Publisher"
 import rawPublishers from "@/data/publishers.json" assert {type: 'json'}
-import StandardDetails from "./standard-details";
-import DetailActions, { createDetailState, DetailMode } from "./detail-actions";
-import Link from "next/link";
-import { FormAction } from "@/lib/utils";
-import { useContext, useMemo, useState } from "react";
-import { SecurityContext } from "@/lib/context";
+import StandardDetails from "./standard-details"
+import DetailActions, { createDetailState, DetailMode } from "./detail-actions"
+import Link from "next/link"
+import { FormAction } from "@/lib/utils"
+import { useMemo, useState } from "react"
+import useAuth from "@/hooks/use-auth"
 import { useFormContext } from "react-hook-form"
-import { JournalFormFields } from "../validators/journal";
+import { JournalFormFields } from "../validators/journal"
 
 const publishers = rawPublishers.content as unknown as Publisher[]
 
@@ -57,11 +57,11 @@ export default function JournalDetails(
   { record, onFormAction }:
   { record?: Journal; onFormAction: (command: FormAction, formValue: JournalFormFields) => void } ) {
 
-  const securityContext = useContext(SecurityContext)
+  const {hasAuthority} = useAuth()
   const form = useFormContext()
   const [mode, setMode] = useState<DetailMode>("view")
   const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
-  const state = useMemo(() => createDetailState(securityContext, mode), [securityContext, mode])
+  const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
   const { updating } = state
 
   return (

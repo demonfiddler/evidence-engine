@@ -36,8 +36,9 @@ import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateMutation
 import io.github.demonfiddler.ee.server.model.ClaimInput;
 import io.github.demonfiddler.ee.server.model.DeclarationInput;
 import io.github.demonfiddler.ee.server.model.EntityLinkInput;
+import io.github.demonfiddler.ee.server.model.GroupInput;
 import io.github.demonfiddler.ee.server.model.JournalInput;
-import io.github.demonfiddler.ee.server.model.PermissionKind;
+import io.github.demonfiddler.ee.server.model.AuthorityKind;
 import io.github.demonfiddler.ee.server.model.PersonInput;
 import io.github.demonfiddler.ee.server.model.PublicationInput;
 import io.github.demonfiddler.ee.server.model.PublisherInput;
@@ -875,7 +876,7 @@ public class MutationController {
 	}
 
 	/**
-	 * Loads the data for Mutation.grantUserPermissions. It returns an Object: the data fetcher implementation may
+	 * Loads the data for Mutation.grantUserAuthorities. It returns an Object: the data fetcher implementation may
 	 * return any type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
@@ -891,22 +892,22 @@ public class MutationController {
 	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
 	 * will take care of the {@link NoSuchElementException} exception.
 	 * @param userId The parameter that will receive the field argument of the same name for the current data to fetch
-	 * @param permissions The parameter that will receive the field argument of the same name for the current data to
+	 * @param authorities The parameter that will receive the field argument of the same name for the current data to
 	 * fetch
 	 * @return It may return any value that is valid for a spring-graphql controller, annotated by the
 	 * <code>@SchemaMapping</code> annotation
 	 */
-	@SchemaMapping(field = "grantUserPermissions")
+	@SchemaMapping(field = "grantUserAuthorities")
 	@SuppressWarnings("unchecked")
-	public Object grantUserPermissions(DataFetchingEnvironment dataFetchingEnvironment, @Argument("userId") Long userId,
-		@Argument("permissions") List<String> permissions) {
+	public Object grantUserAuthorities(DataFetchingEnvironment dataFetchingEnvironment, @Argument("userId") Long userId,
+		@Argument("authorities") List<String> authorities) {
 
-		return this.dataFetchersDelegateMutation.grantUserPermissions(dataFetchingEnvironment, userId,
-			(List<PermissionKind>)GraphqlUtils.graphqlUtils.stringToEnumValue(permissions, PermissionKind.class));
+		return this.dataFetchersDelegateMutation.grantUserAuthorities(dataFetchingEnvironment, userId,
+			(List<AuthorityKind>)GraphqlUtils.graphqlUtils.stringToEnumValue(authorities, AuthorityKind.class));
 	}
 
 	/**
-	 * Loads the data for Mutation.revokeUserPermissions. It returns an Object: the data fetcher implementation may
+	 * Loads the data for Mutation.revokeUserAuthorities. It returns an Object: the data fetcher implementation may
 	 * return any type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
@@ -922,18 +923,436 @@ public class MutationController {
 	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
 	 * will take care of the {@link NoSuchElementException} exception.
 	 * @param userId The parameter that will receive the field argument of the same name for the current data to fetch
-	 * @param permissions The parameter that will receive the field argument of the same name for the current data to
+	 * @param authorities The parameter that will receive the field argument of the same name for the current data to
 	 * fetch
 	 * @return It may return any value that is valid for a spring-graphql controller, annotated by the
 	 * <code>@SchemaMapping</code> annotation
 	 */
-	@SchemaMapping(field = "revokeUserPermissions")
+	@SchemaMapping(field = "revokeUserAuthorities")
 	@SuppressWarnings("unchecked")
-	public Object revokeUserPermissions(DataFetchingEnvironment dataFetchingEnvironment,
-		@Argument("userId") Long userId, @Argument("permissions") List<String> permissions) {
+	public Object revokeUserAuthorities(DataFetchingEnvironment dataFetchingEnvironment,
+		@Argument("userId") Long userId, @Argument("authorities") List<String> authorities) {
 
-		return this.dataFetchersDelegateMutation.revokeUserPermissions(dataFetchingEnvironment, userId,
-			(List<PermissionKind>)GraphqlUtils.graphqlUtils.stringToEnumValue(permissions, PermissionKind.class));
+		return this.dataFetchersDelegateMutation.revokeUserAuthorities(dataFetchingEnvironment, userId,
+			(List<AuthorityKind>)GraphqlUtils.graphqlUtils.stringToEnumValue(authorities, AuthorityKind.class));
+	}
+
+	/**
+	 * This method loads the data for ${dataFetcher.graphQLType}.createGroup. It
+	 * returns an Object: the data
+	 * fetcher implementation may return any type that is accepted by a
+	 * spring-graphql controller<BR/>
+	 * 
+	 * 
+	 * @param dataFetchingEnvironment
+	 *                                The GraphQL {@link DataFetchingEnvironment}.
+	 *                                It gives you access to the full GraphQL
+	 *                                context for this
+	 *                                DataFetcher
+	 * @param origin
+	 *                                The object from which the field is fetch. In
+	 *                                other word: the aim of this data fetcher is to
+	 *                                fetch the
+	 *                                author attribute of the <I>origin</I>, which
+	 *                                is an instance of {ObjectType {name:Post,
+	 *                                fields:{Field{name:id, type:ID!,
+	 *                                params:[]},Field{name:date, type:Date!,
+	 *                                params:[]},Field{name:author,
+	 *                                type:Member,
+	 *                                params:[]},Field{name:publiclyAvailable,
+	 *                                type:Boolean, params:[]},Field{name:title,
+	 *                                type:String!, params:[]},Field{name:content,
+	 *                                type:String!, params:[]},Field{name:authorId,
+	 *                                type:ID,
+	 *                                params:[]},Field{name:topicId, type:ID,
+	 *                                params:[]}}, comments ""}. It depends on your
+	 *                                data modle, but
+	 *                                it typically contains the id to use in the
+	 *                                query.
+	 * @throws NoSuchElementException
+	 *                                This method may return a
+	 *                                {@link NoSuchElementException} exception. In
+	 *                                this case, the exception is
+	 *                                trapped by the calling method, and the return
+	 *                                is consider as null. This allows to use the
+	 *                                {@link Optional#get()} method directly,
+	 *                                without caring of whether or not there is a
+	 *                                value. The
+	 *                                generated code will take care of the
+	 *                                {@link NoSuchElementException} exception.
+	 * @param group
+	 *              The parameter that will receive the field argument of the same
+	 *              name for the current data to fetch
+	 * @return
+	 *         It may return any value that is valid for a spring-graphql
+	 *         controller, annotated by
+	 *         the <code>@SchemaMapping</code> annotation
+	 */
+	@SchemaMapping(field = "createGroup")
+	public Object createGroup(DataFetchingEnvironment dataFetchingEnvironment, @Argument("group") GroupInput group) {
+		return this.dataFetchersDelegateMutation.createGroup(dataFetchingEnvironment, group);
+	}
+
+	/**
+	 * This method loads the data for ${dataFetcher.graphQLType}.updateGroup. It
+	 * returns an Object: the data
+	 * fetcher implementation may return any type that is accepted by a
+	 * spring-graphql controller<BR/>
+	 * 
+	 * 
+	 * @param dataFetchingEnvironment
+	 *                                The GraphQL {@link DataFetchingEnvironment}.
+	 *                                It gives you access to the full GraphQL
+	 *                                context for this
+	 *                                DataFetcher
+	 * @param origin
+	 *                                The object from which the field is fetch. In
+	 *                                other word: the aim of this data fetcher is to
+	 *                                fetch the
+	 *                                author attribute of the <I>origin</I>, which
+	 *                                is an instance of {ObjectType {name:Post,
+	 *                                fields:{Field{name:id, type:ID!,
+	 *                                params:[]},Field{name:date, type:Date!,
+	 *                                params:[]},Field{name:author,
+	 *                                type:Member,
+	 *                                params:[]},Field{name:publiclyAvailable,
+	 *                                type:Boolean, params:[]},Field{name:title,
+	 *                                type:String!, params:[]},Field{name:content,
+	 *                                type:String!, params:[]},Field{name:authorId,
+	 *                                type:ID,
+	 *                                params:[]},Field{name:topicId, type:ID,
+	 *                                params:[]}}, comments ""}. It depends on your
+	 *                                data modle, but
+	 *                                it typically contains the id to use in the
+	 *                                query.
+	 * @throws NoSuchElementException
+	 *                                This method may return a
+	 *                                {@link NoSuchElementException} exception. In
+	 *                                this case, the exception is
+	 *                                trapped by the calling method, and the return
+	 *                                is consider as null. This allows to use the
+	 *                                {@link Optional#get()} method directly,
+	 *                                without caring of whether or not there is a
+	 *                                value. The
+	 *                                generated code will take care of the
+	 *                                {@link NoSuchElementException} exception.
+	 * @param group
+	 *              The parameter that will receive the field argument of the same
+	 *              name for the current data to fetch
+	 * @return
+	 *         It may return any value that is valid for a spring-graphql
+	 *         controller, annotated by
+	 *         the <code>@SchemaMapping</code> annotation
+	 */
+	@SchemaMapping(field = "updateGroup")
+	public Object updateGroup(DataFetchingEnvironment dataFetchingEnvironment, @Argument("group") GroupInput group) {
+		return this.dataFetchersDelegateMutation.updateGroup(dataFetchingEnvironment, group);
+	}
+
+	/**
+	 * This method loads the data for ${dataFetcher.graphQLType}.deleteGroup. It
+	 * returns an Object: the data
+	 * fetcher implementation may return any type that is accepted by a
+	 * spring-graphql controller<BR/>
+	 * 
+	 * 
+	 * @param dataFetchingEnvironment
+	 *                                The GraphQL {@link DataFetchingEnvironment}.
+	 *                                It gives you access to the full GraphQL
+	 *                                context for this
+	 *                                DataFetcher
+	 * @param origin
+	 *                                The object from which the field is fetch. In
+	 *                                other word: the aim of this data fetcher is to
+	 *                                fetch the
+	 *                                author attribute of the <I>origin</I>, which
+	 *                                is an instance of {ObjectType {name:Post,
+	 *                                fields:{Field{name:id, type:ID!,
+	 *                                params:[]},Field{name:date, type:Date!,
+	 *                                params:[]},Field{name:author,
+	 *                                type:Member,
+	 *                                params:[]},Field{name:publiclyAvailable,
+	 *                                type:Boolean, params:[]},Field{name:title,
+	 *                                type:String!, params:[]},Field{name:content,
+	 *                                type:String!, params:[]},Field{name:authorId,
+	 *                                type:ID,
+	 *                                params:[]},Field{name:topicId, type:ID,
+	 *                                params:[]}}, comments ""}. It depends on your
+	 *                                data modle, but
+	 *                                it typically contains the id to use in the
+	 *                                query.
+	 * @throws NoSuchElementException
+	 *                                This method may return a
+	 *                                {@link NoSuchElementException} exception. In
+	 *                                this case, the exception is
+	 *                                trapped by the calling method, and the return
+	 *                                is consider as null. This allows to use the
+	 *                                {@link Optional#get()} method directly,
+	 *                                without caring of whether or not there is a
+	 *                                value. The
+	 *                                generated code will take care of the
+	 *                                {@link NoSuchElementException} exception.
+	 * @param groupId
+	 *                The parameter that will receive the field argument of the same
+	 *                name for the current data to fetch
+	 * @return
+	 *         It may return any value that is valid for a spring-graphql
+	 *         controller, annotated by
+	 *         the <code>@SchemaMapping</code> annotation
+	 */
+	@SchemaMapping(field = "deleteGroup")
+	public Object deleteGroup(DataFetchingEnvironment dataFetchingEnvironment, @Argument("groupId") Long groupId) {
+		return this.dataFetchersDelegateMutation.deleteGroup(dataFetchingEnvironment, groupId);
+	}
+
+	/**
+	 * This method loads the data for ${dataFetcher.graphQLType}.addGroupMember. It
+	 * returns an Object: the data
+	 * fetcher implementation may return any type that is accepted by a
+	 * spring-graphql controller<BR/>
+	 * 
+	 * 
+	 * @param dataFetchingEnvironment
+	 *                                The GraphQL {@link DataFetchingEnvironment}.
+	 *                                It gives you access to the full GraphQL
+	 *                                context for this
+	 *                                DataFetcher
+	 * @param origin
+	 *                                The object from which the field is fetch. In
+	 *                                other word: the aim of this data fetcher is to
+	 *                                fetch the
+	 *                                author attribute of the <I>origin</I>, which
+	 *                                is an instance of {ObjectType {name:Post,
+	 *                                fields:{Field{name:id, type:ID!,
+	 *                                params:[]},Field{name:date, type:Date!,
+	 *                                params:[]},Field{name:author,
+	 *                                type:Member,
+	 *                                params:[]},Field{name:publiclyAvailable,
+	 *                                type:Boolean, params:[]},Field{name:title,
+	 *                                type:String!, params:[]},Field{name:content,
+	 *                                type:String!, params:[]},Field{name:authorId,
+	 *                                type:ID,
+	 *                                params:[]},Field{name:topicId, type:ID,
+	 *                                params:[]}}, comments ""}. It depends on your
+	 *                                data modle, but
+	 *                                it typically contains the id to use in the
+	 *                                query.
+	 * @throws NoSuchElementException
+	 *                                This method may return a
+	 *                                {@link NoSuchElementException} exception. In
+	 *                                this case, the exception is
+	 *                                trapped by the calling method, and the return
+	 *                                is consider as null. This allows to use the
+	 *                                {@link Optional#get()} method directly,
+	 *                                without caring of whether or not there is a
+	 *                                value. The
+	 *                                generated code will take care of the
+	 *                                {@link NoSuchElementException} exception.
+	 * @param groupId
+	 *                The parameter that will receive the field argument of the same
+	 *                name for the current data to fetch
+	 * @param userId
+	 *                The parameter that will receive the field argument of the same
+	 *                name for the current data to fetch
+	 * @return
+	 *         It may return any value that is valid for a spring-graphql
+	 *         controller, annotated by
+	 *         the <code>@SchemaMapping</code> annotation
+	 */
+	@SchemaMapping(field = "addGroupMember")
+	public Object addGroupMember(DataFetchingEnvironment dataFetchingEnvironment, @Argument("groupId") Long groupId,
+		@Argument("userId") Long userId) {
+
+		return this.dataFetchersDelegateMutation.addGroupMember(dataFetchingEnvironment, groupId, userId);
+	}
+
+	/**
+	 * This method loads the data for ${dataFetcher.graphQLType}.removeGroupMember.
+	 * It returns an Object: the data
+	 * fetcher implementation may return any type that is accepted by a
+	 * spring-graphql controller<BR/>
+	 * 
+	 * 
+	 * @param dataFetchingEnvironment
+	 *                                The GraphQL {@link DataFetchingEnvironment}.
+	 *                                It gives you access to the full GraphQL
+	 *                                context for this
+	 *                                DataFetcher
+	 * @param origin
+	 *                                The object from which the field is fetch. In
+	 *                                other word: the aim of this data fetcher is to
+	 *                                fetch the
+	 *                                author attribute of the <I>origin</I>, which
+	 *                                is an instance of {ObjectType {name:Post,
+	 *                                fields:{Field{name:id, type:ID!,
+	 *                                params:[]},Field{name:date, type:Date!,
+	 *                                params:[]},Field{name:author,
+	 *                                type:Member,
+	 *                                params:[]},Field{name:publiclyAvailable,
+	 *                                type:Boolean, params:[]},Field{name:title,
+	 *                                type:String!, params:[]},Field{name:content,
+	 *                                type:String!, params:[]},Field{name:authorId,
+	 *                                type:ID,
+	 *                                params:[]},Field{name:topicId, type:ID,
+	 *                                params:[]}}, comments ""}. It depends on your
+	 *                                data modle, but
+	 *                                it typically contains the id to use in the
+	 *                                query.
+	 * @throws NoSuchElementException
+	 *                                This method may return a
+	 *                                {@link NoSuchElementException} exception. In
+	 *                                this case, the exception is
+	 *                                trapped by the calling method, and the return
+	 *                                is consider as null. This allows to use the
+	 *                                {@link Optional#get()} method directly,
+	 *                                without caring of whether or not there is a
+	 *                                value. The
+	 *                                generated code will take care of the
+	 *                                {@link NoSuchElementException} exception.
+	 * @param groupId
+	 *                The parameter that will receive the field argument of the same
+	 *                name for the current data to fetch
+	 * @param userId
+	 *                The parameter that will receive the field argument of the same
+	 *                name for the current data to fetch
+	 * @return
+	 *         It may return any value that is valid for a spring-graphql
+	 *         controller, annotated by
+	 *         the <code>@SchemaMapping</code> annotation
+	 */
+	@SchemaMapping(field = "removeGroupMember")
+	public Object removeGroupMember(DataFetchingEnvironment dataFetchingEnvironment, @Argument("groupId") Long groupId,
+		@Argument("userId") Long userId) {
+
+		return this.dataFetchersDelegateMutation.removeGroupMember(dataFetchingEnvironment, groupId, userId);
+	}
+
+	/**
+	 * This method loads the data for
+	 * ${dataFetcher.graphQLType}.grantGroupAuthorities. It returns an Object: the
+	 * data
+	 * fetcher implementation may return any type that is accepted by a
+	 * spring-graphql controller<BR/>
+	 * 
+	 * 
+	 * @param dataFetchingEnvironment
+	 *                                The GraphQL {@link DataFetchingEnvironment}.
+	 *                                It gives you access to the full GraphQL
+	 *                                context for this
+	 *                                DataFetcher
+	 * @param origin
+	 *                                The object from which the field is fetch. In
+	 *                                other word: the aim of this data fetcher is to
+	 *                                fetch the
+	 *                                author attribute of the <I>origin</I>, which
+	 *                                is an instance of {ObjectType {name:Post,
+	 *                                fields:{Field{name:id, type:ID!,
+	 *                                params:[]},Field{name:date, type:Date!,
+	 *                                params:[]},Field{name:author,
+	 *                                type:Member,
+	 *                                params:[]},Field{name:publiclyAvailable,
+	 *                                type:Boolean, params:[]},Field{name:title,
+	 *                                type:String!, params:[]},Field{name:content,
+	 *                                type:String!, params:[]},Field{name:authorId,
+	 *                                type:ID,
+	 *                                params:[]},Field{name:topicId, type:ID,
+	 *                                params:[]}}, comments ""}. It depends on your
+	 *                                data modle, but
+	 *                                it typically contains the id to use in the
+	 *                                query.
+	 * @throws NoSuchElementException
+	 *                                This method may return a
+	 *                                {@link NoSuchElementException} exception. In
+	 *                                this case, the exception is
+	 *                                trapped by the calling method, and the return
+	 *                                is consider as null. This allows to use the
+	 *                                {@link Optional#get()} method directly,
+	 *                                without caring of whether or not there is a
+	 *                                value. The
+	 *                                generated code will take care of the
+	 *                                {@link NoSuchElementException} exception.
+	 * @param groupId
+	 *                    The parameter that will receive the field argument of the
+	 *                    same name for the current data to fetch
+	 * @param authorities
+	 *                    The parameter that will receive the field argument of the
+	 *                    same name for the current data to fetch
+	 * @return
+	 *         It may return any value that is valid for a spring-graphql
+	 *         controller, annotated by
+	 *         the <code>@SchemaMapping</code> annotation
+	 */
+	@SchemaMapping(field = "grantGroupAuthorities")
+	@SuppressWarnings("unchecked")
+	public Object grantGroupAuthorities(DataFetchingEnvironment dataFetchingEnvironment,
+		@Argument("groupId") Long groupId, @Argument("authorities") List<String> authorities) {
+
+		return this.dataFetchersDelegateMutation.grantGroupAuthorities(dataFetchingEnvironment, groupId,
+			(List<AuthorityKind>) GraphqlUtils.graphqlUtils.stringToEnumValue(authorities, AuthorityKind.class));
+	}
+
+	/**
+	 * This method loads the data for
+	 * ${dataFetcher.graphQLType}.revokeGroupAuthorities. It returns an Object: the
+	 * data
+	 * fetcher implementation may return any type that is accepted by a
+	 * spring-graphql controller<BR/>
+	 * 
+	 * 
+	 * @param dataFetchingEnvironment
+	 *                                The GraphQL {@link DataFetchingEnvironment}.
+	 *                                It gives you access to the full GraphQL
+	 *                                context for this
+	 *                                DataFetcher
+	 * @param origin
+	 *                                The object from which the field is fetch. In
+	 *                                other word: the aim of this data fetcher is to
+	 *                                fetch the
+	 *                                author attribute of the <I>origin</I>, which
+	 *                                is an instance of {ObjectType {name:Post,
+	 *                                fields:{Field{name:id, type:ID!,
+	 *                                params:[]},Field{name:date, type:Date!,
+	 *                                params:[]},Field{name:author,
+	 *                                type:Member,
+	 *                                params:[]},Field{name:publiclyAvailable,
+	 *                                type:Boolean, params:[]},Field{name:title,
+	 *                                type:String!, params:[]},Field{name:content,
+	 *                                type:String!, params:[]},Field{name:authorId,
+	 *                                type:ID,
+	 *                                params:[]},Field{name:topicId, type:ID,
+	 *                                params:[]}}, comments ""}. It depends on your
+	 *                                data modle, but
+	 *                                it typically contains the id to use in the
+	 *                                query.
+	 * @throws NoSuchElementException
+	 *                                This method may return a
+	 *                                {@link NoSuchElementException} exception. In
+	 *                                this case, the exception is
+	 *                                trapped by the calling method, and the return
+	 *                                is consider as null. This allows to use the
+	 *                                {@link Optional#get()} method directly,
+	 *                                without caring of whether or not there is a
+	 *                                value. The
+	 *                                generated code will take care of the
+	 *                                {@link NoSuchElementException} exception.
+	 * @param groupId
+	 *                    The parameter that will receive the field argument of the
+	 *                    same name for the current data to fetch
+	 * @param authorities
+	 *                    The parameter that will receive the field argument of the
+	 *                    same name for the current data to fetch
+	 * @return
+	 *         It may return any value that is valid for a spring-graphql
+	 *         controller, annotated by
+	 *         the <code>@SchemaMapping</code> annotation
+	 */
+	@SchemaMapping(field = "revokeGroupAuthorities")
+	@SuppressWarnings("unchecked")
+	public Object revokeGroupAuthorities(DataFetchingEnvironment dataFetchingEnvironment,
+		@Argument("groupId") Long groupId, @Argument("authorities") List<String> authorities) {
+
+		return this.dataFetchersDelegateMutation.revokeGroupAuthorities(dataFetchingEnvironment, groupId,
+			(List<AuthorityKind>) GraphqlUtils.graphqlUtils.stringToEnumValue(authorities, AuthorityKind.class));
 	}
 
 }

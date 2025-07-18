@@ -7,6 +7,7 @@ export const EntityKind = z.enum([
   "CLA",
   "COU",
   "DEC",
+  "GRP",
   "JOU",
   "LNK",
   "PER",

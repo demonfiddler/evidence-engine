@@ -50,6 +50,8 @@ import io.github.demonfiddler.ee.server.controller.TopicController;
 import io.github.demonfiddler.ee.server.controller.TopicPageController;
 import io.github.demonfiddler.ee.server.controller.EntityLinkController;
 import io.github.demonfiddler.ee.server.controller.EntityLinkPageController;
+import io.github.demonfiddler.ee.server.controller.GroupController;
+import io.github.demonfiddler.ee.server.controller.GroupPageController;
 import io.github.demonfiddler.ee.server.controller.UserController;
 import io.github.demonfiddler.ee.server.controller.UserPageController;
 
@@ -366,6 +368,34 @@ public class GraphQLPluginAutoConfiguration {
 	@ConditionalOnMissingBean(name = "userPageController")
 	UserPageController userPageController(BatchLoaderRegistry registry) {
 		return new UserPageController(registry);
+	}
+
+	/**
+	 * Default declaration of the spring controller for the entity
+	 * <code>Group</code>. This default spring can be overridden by declaring a
+	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
+	 * The <code>GroupController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 */
+	@Bean
+	@ConditionalOnMissingBean(name = "groupController")
+	GroupController groupController(BatchLoaderRegistry registry) {
+		return new GroupController(registry);
+	}
+
+	/**
+	 * Default declaration of the spring controller for the entity
+	 * <code>GroupPage</code>. This default spring can be overridden by declaring a
+	 * Spring Bean of same type and name, that has the &amp;Primary spring annotation.<br/>
+	 * The <code>GroupPageController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
+	 */
+	@Bean
+	@ConditionalOnMissingBean(name = "groupPageController")
+	GroupPageController groupPageController(BatchLoaderRegistry registry) {
+		return new GroupPageController(registry);
 	}
 
 	/**

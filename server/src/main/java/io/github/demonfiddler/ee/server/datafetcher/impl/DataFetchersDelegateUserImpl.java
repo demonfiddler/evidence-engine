@@ -19,16 +19,19 @@
 
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
 import org.springframework.stereotype.Component;
 
+import graphql.GraphQLContext;
 import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateUser;
 import io.github.demonfiddler.ee.server.model.FormatKind;
-import io.github.demonfiddler.ee.server.model.PermissionKind;
+import io.github.demonfiddler.ee.server.model.Group;
+import io.github.demonfiddler.ee.server.model.AggregationKind;
+import io.github.demonfiddler.ee.server.model.AuthorityKind;
 import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.repository.UserRepository;
 import jakarta.annotation.Resource;
@@ -46,14 +49,28 @@ public class DataFetchersDelegateUserImpl extends DataFetchersDelegateITrackedEn
     }
 
     @Override
-    public Object permissions(DataFetchingEnvironment dataFetchingEnvironment, User origin, FormatKind format) {
-        // TODO: fetch permissions from user_authority and group_authority tables
-        List<String> permissionStrings = origin.getPermissions();
-        List<PermissionKind> permissions = //
-            permissionStrings == null //
-                ? Collections.emptyList() //
-                : permissionStrings.stream().map(s -> PermissionKind.valueOf(s)).toList();
-        return formatUtils.formatPermissionKinds(permissions, format);
+    public Object authorities(DataFetchingEnvironment dataFetchingEnvironment, User origin, AggregationKind aggregation,
+        FormatKind format) {
+
+        List<AuthorityKind> authorities;
+        switch(aggregation) {
+            case OWN:
+                authorities = origin.getAuthorities();
+                break;
+            case ALL:
+                authorities = userRepository.findAllUserAuthorities(origin.getId());
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported AggregationKind: " + aggregation);
+        }
+        return formatUtils.formatAuthorityKinds(authorities, format);
+    }
+
+    @Override
+    public Map<User, List<Group>> groups(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+        List<User> keys) {
+
+        return entityUtils.getListValuesMap(keys, User::getGroups);
     }
 
 }

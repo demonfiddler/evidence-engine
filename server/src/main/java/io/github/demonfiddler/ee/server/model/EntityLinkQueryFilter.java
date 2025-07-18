@@ -86,28 +86,28 @@ public class EntityLinkQueryFilter extends TrackedEntityQueryFilter {
 	}
 
 	/**
-	 * The 'linked-to' entity kind.
+	 * The 'linked-to' entity kind, if a master list is designated.
 	 */
 	public EntityKind getToEntityKind() {
 		return toEntityKind;
 	}
 
 	/**
-	 * The 'linked-to' entity kind.
+	 * The 'linked-to' entity kind, if a master list is designated.
 	 */
 	public void setToEntityKind(EntityKind toEntityKind) {
 		this.toEntityKind = toEntityKind;
 	}
 
 	/**
-	 * The 'linked-to' entity identifier.
+	 * The 'linked-to' entity identifier, if a master list is designated.
 	 */
 	public Long getToEntityId() {
 		return toEntityId;
 	}
 
 	/**
-	 * The 'linked-to' entity identifier.
+	 * The 'linked-to' entity identifier, if a master list is designated.
 	 */
 	public void setToEntityId(Long toEntityId) {
 		this.toEntityId = toEntityId;

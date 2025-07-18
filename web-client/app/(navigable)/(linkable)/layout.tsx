@@ -22,8 +22,6 @@
 import "@/app/globals.css";
 import '@/app/ui/global.css';
 import EntityLinks from "@/app/ui/filter/entity-links"
-//import { apolloClient } from "@/lib/graphql-utils";
-//import { ApolloProvider } from "@apollo/client";
 
 // export const metadata: Metadata = {
 //   title: {
@@ -34,17 +32,11 @@ import EntityLinks from "@/app/ui/filter/entity-links"
 //   // metadataBase: new URL(process.env.webClientUrl);
 // };
 
-/*
-<ApolloProvider client={apolloClient}>
-{children}
-</ApolloProvider>
-*/
 export default function LinkableEntityLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <div className="m-4">
       <EntityLinks />

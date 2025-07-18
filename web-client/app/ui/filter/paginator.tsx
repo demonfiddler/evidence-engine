@@ -50,19 +50,19 @@ export default function Paginator() {
   const end = start + page.numberOfElements - 1;
 
   function firstPage() {
-    console.log("Go to first page")
+    // console.log("Go to first page")
   }
 
   function previousPage() {
-    console.log("Go to previous page")
+    // console.log("Go to previous page")
   }
 
   function nextPage() {
-    console.log("Go to next page")
+    // console.log("Go to next page")
   }
 
   function lastPage() {
-    console.log("Go to last page")
+    // console.log("Go to last page")
   }
 
   return (

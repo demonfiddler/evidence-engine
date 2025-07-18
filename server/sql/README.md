@@ -20,12 +20,12 @@ These scripts populate various lookup tables, although note that all required in
 | [populatedb-country.sql](populatedb-country.sql) | Populates the "country" lookup table. |
 | [populatedb-declaration_kind.sql](populatedb-declaration_kind.sql) | Populates the "declaration_kind" lookup table. |
 | [populatedb-entity_kind.sql](populatedb-entity_kind.sql) | Populates the "entity_kind" lookup table. |
-| [populatedb-permission_kind.sql](populatedb-permission_kind.sql) | Populates the "permission_kind" lookup table. |
+| [populatedb-authority_kind.sql](populatedb-authority_kind.sql) | Populates the "authority_kind" lookup table. |
 | [populatedb-publication_kind.sql](populatedb-publication_kind.sql) | Populates the "publication_kind" lookup table. |
 | [populatedb-publisher.sql](populatedb-publisher.sql) | Populates the "publisher" lookup table with known publishers. |
 | [populatedb-status_kind.sql](populatedb-status_kind.sql) | Populates the "status_kind" lookup table. |
 | [populatedb-transaction_kind.sql](populatedb-transaction_kind.sql) | Populates the "transaction_kind" lookup table. |
-| [populatedb-user.sql](populatedb-user.sql) | Populates the "user" lookup table with a single 'root' user with all permissions. |
+| [populatedb-user.sql](populatedb-user.sql) | Populates the "user" lookup table with a single 'root' user with all authorities. |
 
 ## Experimental Scripts
 

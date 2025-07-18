@@ -121,8 +121,8 @@ public class Authenticator {
 
     /**
      * <p>
-     * Signs into the server using the credentials supplied by Spring configuration properties. Remembers the
-     * authentication token so that subsequent GraphQL calls will be authenticated.
+     * Signs into the server using the specified credentials. Remembers the authentication token so
+     * that subsequent GraphQL calls will be authenticated.
      * </p>
      * @param url The GraphQL endpoint URL. Can be {@code null}.
      * @param username The username.

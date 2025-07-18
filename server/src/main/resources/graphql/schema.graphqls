@@ -23,11 +23,11 @@
 "Indicates where the target is defined online."
 directive @specifiedBy(url: String!) on SCALAR
 """
-Indicates the permission(s) required to execute a query/operation or access a field.
-Multiple values are ORed, i.e., any of the listed permissions suffices to authorise.
-Default just means authentication is required but no specific permission is necessary.
+Indicates the authority(s) required to execute a query/operation or access a field.
+Multiple values are ORed, i.e., any of the listed authorities suffices to authorise.
+Default just means authentication is required but no specific authority is necessary.
 """
-directive @auth(permission: [PermissionKind!]) on OBJECT | FIELD_DEFINITION
+directive @auth(authority: [AuthorityKind!]) on OBJECT | FIELD_DEFINITION
 "A label for an enum literal, typically used as a display string"
 directive @label(label: String!) on ENUM_VALUE
 
@@ -158,7 +158,7 @@ interface IPage {
     hasContent: Boolean!
     "Whether the page is empty (no content)."
     isEmpty: Boolean!
-    "The current page number."
+    "The current page number (zero-based)."
     number: Int!
     "The page size."
     size: Int!
@@ -183,6 +183,14 @@ interface IPage {
 
 #"Polymorphism support. Using this construct results in the generation of an empty interface"
 #union TopicalEntity = Claim | Declaration | Person | Publication | Quotation
+
+"How to aggregate granted authorities."
+enum AggregationKind {
+    "Return just the authorities granted directly to the user."
+    OWN @label(label: "Own authorities")
+    "Return all authorities both granted directly to the user and indirectly via group memberships."
+    ALL @label(label: "All authorities")
+}
 
 "A claim made in respect of given topic(s)."
 type Claim implements IBaseEntity & ITrackedEntity & ILinkableEntity {
@@ -451,6 +459,8 @@ enum EntityKind {
     COU @label(label: "Country")
     "Declaration."
     DEC @label(label: "Declaration")
+    "Group."
+    GRP @label(label: "Group")
     "Journal."
     JOU @label(label: "Journal")
     "Link."
@@ -778,8 +788,8 @@ type LogPage implements IPage {
     content: [Log!]!
 }
 
-"User access permissions."
-enum PermissionKind {
+"User/Group access authorities."
+enum AuthorityKind {
     "Use administrative functions."
     ADM @label(label: "Administer")
     "Insert new record."
@@ -1581,12 +1591,12 @@ type User implements IBaseEntity & ITrackedEntity @auth {
     "When the record was created."
     created: DateTime
     "The user who created the record."
-    createdByUser: User @auth(permission: [ADM])
+    createdByUser: User @auth(authority: [ADM])
     # TODO: support date/time formatting
     "When the record was last updated."
     updated: DateTime
     "The user who last updated the record."
-    updatedByUser: User @auth(permission: [ADM])
+    updatedByUser: User @auth(authority: [ADM])
     "Log of transactions involving the record."
     log(
         "Filters results."
@@ -1601,21 +1611,25 @@ type User implements IBaseEntity & ITrackedEntity @auth {
     "The user's last name."
     lastName: String
     "The user's email address."
-    email: String @auth(permission: [ADM])
+    email: String @auth(authority: [ADM])
     # TODO: consider whether to reveal this through the GraphQL API.
     "A hash of the user's password."
-    password: String @auth(permission: [ADM])
-    "The permissions granted to the user."
-    permissions(
-        "How to format the results. SHORT format is per ```PermissionKind``` enum."
+    password: String @auth(authority: [ADM])
+    "The authorities granted to the user."
+    authorities(
+        "How to aggregate authorities."
+        aggregation: AggregationKind = OWN
+        "How to format the results. SHORT format is per ```AuthorityKind``` enum."
         format: FormatKind = LONG
-    ): [String!]! @auth(permission: [ADM])
+    ): [String!]! @auth(authority: [ADM])
+    "The groups of which the user is a member."
+    groups: [Group!] @auth(authority: [ADM])
 }
 
 "Input for creating or updating a user of the system."
 input UserInput {
     "The immutable, unique user identifier (system-assigned)."
-    id: ID!
+    id: ID
     "The (mutable?) unique user name (user-assigned)."
     username: String!
     "The user's first name."
@@ -1659,6 +1673,84 @@ type UserPage implements IPage {
     content: [User!]!
 }
 
+type Group implements IBaseEntity & ITrackedEntity @auth {
+    "The immutable, unique user identifier (system-assigned)."
+    id: ID!
+    "The entity kind."
+    entityKind(
+        "How to format the result. SHORT format is per ```EntityKind``` enum."
+        format: FormatKind = LONG
+    ): String
+    "The entity status."
+    status(
+        "How to format the result. SHORT format is per ```StatusKind``` enum."
+        format: FormatKind = LONG
+    ): String
+    # TODO: support date/time formatting
+    "When the record was created."
+    created: DateTime
+    "The user who created the record."
+    createdByUser: User @auth(authority: [ADM])
+    # TODO: support date/time formatting
+    "When the record was last updated."
+    updated: DateTime
+    "The user who last updated the record."
+    updatedByUser: User @auth(authority: [ADM])
+    "Log of transactions involving the record."
+    log(
+        "Filters results."
+        filter: LogQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): LogPage!
+    "The (mutable?) unique group name."
+    groupname: String
+    "The authorities granted to the group."
+    authorities(
+        "How to format the results. SHORT format is per ```AuthorityKind``` enum."
+        format: FormatKind = LONG
+    ): [String!]! @auth(authority: [ADM])
+    "The members of the group."
+    members: [User!] @auth(authority: [ADM])
+}
+
+input GroupInput {
+    "The immutable, unique group identifier (system-assigned)."
+    id: ID
+    "The (mutable?) unique group name (user-assigned)."
+    groupname: String!
+}
+
+"Returns paginated group query results."
+type GroupPage implements IPage {
+    "Dummy ID required for @Entity classes"
+    dummy: ID
+    "Whether the page has content."
+    hasContent: Boolean!
+    "Whether the page is empty (no content)."
+    isEmpty: Boolean!
+    "The current page number."
+    number: Int!
+    "The page size."
+    size: Int!
+    "The number of elements on this page."
+    numberOfElements: Int!
+    "The total number of pages available."
+    totalPages: Int!
+    "The total number of records."
+    totalElements: Long!
+    "Whether this is the first page."
+    isFirst: Boolean!
+    "Whether this is the last page."
+    isLast: Boolean!
+    "Whether there is next page."
+    hasNext: Boolean!
+    "Whether there is previous page."
+    hasPrevious: Boolean!
+    "The requested pageful of records."
+    content: [Group!]!
+}
+
 #==================================================
 # API ENTRY POINTS
 
@@ -1667,7 +1759,6 @@ type Query {
     "Returns a paged list of claims."
     claims(
         "Filters results."
-        # filter: TopicalEntityQueryFilter,
         filter: LinkableEntityQueryFilter,
         "Sorts and/or paginates results."
         pageSort: PageableInput
@@ -1678,7 +1769,6 @@ type Query {
     "Returns a paged list of declarations."
     declarations(
         "Filters results."
-        # filter: TopicalEntityQueryFilter,
         filter: LinkableEntityQueryFilter,
         "Sorts and/or paginates results."
         pageSort: PageableInput
@@ -1719,7 +1809,6 @@ type Query {
     "Returns a paged list of persons."
     persons(
         "Filters results."
-        # filter: TopicalEntityQueryFilter,
         filter: LinkableEntityQueryFilter,
         "Sorts and/or paginates results."
         pageSort: PageableInput
@@ -1730,7 +1819,6 @@ type Query {
     "Returns a paged list of publications."
     publications(
         "Filters results."
-        # filter: TopicalEntityQueryFilter,
         filter: LinkableEntityQueryFilter,
         "Sorts and/or paginates results."
         pageSort: PageableInput
@@ -1751,7 +1839,6 @@ type Query {
     "Returns a paged list of quotations."
     quotations(
         "Filters results."
-        # filter: TopicalEntityQueryFilter,
         filter: LinkableEntityQueryFilter,
         "Sorts and/or paginates results."
         pageSort: PageableInput
@@ -1775,89 +1862,116 @@ type Query {
         filter: TrackedEntityQueryFilter,
         "Sorts and/or paginates results."
         pageSort: PageableInput
-    ): UserPage! @auth(permission: [ADM])
+    ): UserPage! @auth(authority: [ADM])
     "Returns a user given its identifier."
-    userById(id: ID!): User @auth(permission: [ADM])
+    userById(id: ID!): User @auth(authority: [ADM])
     "Returns a user given its username."
-    userByUsername(username: String!): User @auth(permission: [ADM])
+    userByUsername(username: String!): User @auth(authority: [ADM])
+
+    "Returns a paged list of groups."
+    groups(
+        "Filters results."
+        filter: TrackedEntityQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): GroupPage! @auth(authority: [ADM])
+    "Returns a group given its identifier."
+    groupById(id: ID!): Group @auth(authority: [ADM])
+    "Returns a group given its groupname."
+    groupByGroupname(groupname: String!): Group @auth(authority: [ADM])
 }
 
 "Available mutations."
 type Mutation {
     "Creates a new claim."
-    createClaim(claim: ClaimInput!): Claim @auth(permission: [CRE])
+    createClaim(claim: ClaimInput!): Claim @auth(authority: [CRE])
     "Updates an existing claim."
-    updateClaim(claim: ClaimInput!): Claim @auth(permission: [UPD])
+    updateClaim(claim: ClaimInput!): Claim @auth(authority: [UPD])
     "Deletes an existing claim."
-    deleteClaim(claimId: ID!): Claim @auth(permission: [DEL])
+    deleteClaim(claimId: ID!): Claim @auth(authority: [DEL])
 
     "Creates a new declaration."
-    createDeclaration(declaration: DeclarationInput!): Declaration @auth(permission: [CRE])
+    createDeclaration(declaration: DeclarationInput!): Declaration @auth(authority: [CRE])
     "Updates an existing declaration."
-    updateDeclaration(declaration: DeclarationInput!): Declaration @auth(permission: [UPD])
+    updateDeclaration(declaration: DeclarationInput!): Declaration @auth(authority: [UPD])
     "Deletes an existing declaration."
-    deleteDeclaration(declarationId: ID!): Declaration @auth(permission: [DEL])
+    deleteDeclaration(declarationId: ID!): Declaration @auth(authority: [DEL])
 
     "Creates an entity link."
-    createEntityLink(entityLink: EntityLinkInput!) : EntityLink @auth(permission: [LNK])
+    createEntityLink(entityLink: EntityLinkInput!) : EntityLink @auth(authority: [LNK])
     "Updates an existing entity link."
-    updateEntityLink(entityLink: EntityLinkInput!): EntityLink @auth(permission: [LNK])
+    updateEntityLink(entityLink: EntityLinkInput!): EntityLink @auth(authority: [LNK])
     "Deletes an entity link."
-    deleteEntityLink(entityLinkId: Long!) : EntityLink @auth(permission: [LNK])
+    deleteEntityLink(entityLinkId: Long!) : EntityLink @auth(authority: [LNK])
 
     "Create a new journal."
-    createJournal(journal: JournalInput!): Journal @auth(permission: [CRE])
+    createJournal(journal: JournalInput!): Journal @auth(authority: [CRE])
     "Updates an existing journal."
-    updateJournal(journal: JournalInput!): Journal @auth(permission: [UPD])
+    updateJournal(journal: JournalInput!): Journal @auth(authority: [UPD])
     "Deletes an existing journal."
-    deleteJournal(journalId: ID!): Journal @auth(permission: [DEL])
+    deleteJournal(journalId: ID!): Journal @auth(authority: [DEL])
 
     "Creates a new person."
-    createPerson(person: PersonInput!): Person @auth(permission: [CRE])
+    createPerson(person: PersonInput!): Person @auth(authority: [CRE])
     "Updates an existing person."
-    updatePerson(person: PersonInput!): Person @auth(permission: [UPD])
+    updatePerson(person: PersonInput!): Person @auth(authority: [UPD])
     "Deletes an existing person."
-    deletePerson(personId: ID!): Person @auth(permission: [DEL])
+    deletePerson(personId: ID!): Person @auth(authority: [DEL])
 
     "Creates a new publication."
-    createPublication(publication: PublicationInput!): Publication @auth(permission: [CRE])
+    createPublication(publication: PublicationInput!): Publication @auth(authority: [CRE])
     "Updates an existing publication."
-    updatePublication(publication: PublicationInput!): Publication @auth(permission: [UPD])
+    updatePublication(publication: PublicationInput!): Publication @auth(authority: [UPD])
     "Deletes an existing publication."
-    deletePublication(publicationId: ID!): Publication @auth(permission: [DEL])
+    deletePublication(publicationId: ID!): Publication @auth(authority: [DEL])
 
     "Creates a new publisher."
-    createPublisher(publisher: PublisherInput!): Publisher @auth(permission: [CRE])
+    createPublisher(publisher: PublisherInput!): Publisher @auth(authority: [CRE])
     "Updates an existing publisher."
-    updatePublisher(publisher: PublisherInput!): Publisher @auth(permission: [UPD])
+    updatePublisher(publisher: PublisherInput!): Publisher @auth(authority: [UPD])
     "Deletes an existing publisher."
-    deletePublisher(publisherId: ID!): Publisher @auth(permission: [DEL])
+    deletePublisher(publisherId: ID!): Publisher @auth(authority: [DEL])
 
     "Creates a new quotation."
-    createQuotation(quotation: QuotationInput!): Quotation @auth(permission: [CRE])
+    createQuotation(quotation: QuotationInput!): Quotation @auth(authority: [CRE])
     "Updates an existing quotation."
-    updateQuotation(quotation: QuotationInput!): Quotation @auth(permission: [UPD])
+    updateQuotation(quotation: QuotationInput!): Quotation @auth(authority: [UPD])
     "Deletes an existing quotation."
-    deleteQuotation(quotationId: ID!): Quotation @auth(permission: [DEL])
+    deleteQuotation(quotationId: ID!): Quotation @auth(authority: [DEL])
 
     "Creates a new topic."
-    createTopic(topic: TopicInput!): Topic @auth(permission: [CRE])
+    createTopic(topic: TopicInput!): Topic @auth(authority: [CRE])
     "Updates an existing topic."
-    updateTopic(topic: TopicInput!): Topic @auth(permission: [UPD])
+    updateTopic(topic: TopicInput!): Topic @auth(authority: [UPD])
     "Deletes an existing topic."
-    deleteTopic(topicId: ID!): Topic @auth(permission: [DEL])
+    deleteTopic(topicId: ID!): Topic @auth(authority: [DEL])
 
     "Sets entity status."
-    setEntityStatus(entityId: Long!, status: StatusKind!) : Boolean @auth(permission: [UPD])
+    setEntityStatus(entityId: Long!, status: StatusKind!) : Boolean @auth(authority: [UPD])
 
     "Creates a new user."
-    createUser(user: UserInput!): User @auth(permission: [ADM])
+    createUser(user: UserInput!): User @auth(authority: [ADM])
     "Updates an existing user."
-    updateUser(user: UserInput!): User @auth(permission: [ADM])
+    updateUser(user: UserInput!): User @auth(authority: [ADM])
     "Deletes an existing user."
-    deleteUser(userId: ID!): User @auth(permission: [ADM])
-    "Grants permissions to a user. The specified permissions are added to any existing ones."
-    grantUserPermissions(userId: ID!, permissions: [PermissionKind!]!): User @auth(permission: [ADM])
-    "Revokes permissions from a user. The specified permissions are removed from the user; other permissions remain intact."
-    revokeUserPermissions(userId: ID!, permissions: [PermissionKind!]!): User @auth(permission: [ADM])
+    deleteUser(userId: ID!): User @auth(authority: [ADM])
+    "Grants authorities to a user. The specified authorities are added to any existing ones."
+    grantUserAuthorities(userId: ID!, authorities: [AuthorityKind!]!): User @auth(authority: [ADM])
+    "Revokes authorities from a user. The specified authorities are removed from the user; other authorities remain intact."
+    revokeUserAuthorities(userId: ID!, authorities: [AuthorityKind!]!): User @auth(authority: [ADM])
+
+    "Creates a new group."
+    createGroup(group: GroupInput!): Group @auth(authority: [ADM])
+    "Updates an existing group."
+    updateGroup(group: GroupInput!): Group @auth(authority: [ADM])
+    "Deletes an existing group."
+    deleteGroup(groupId: ID!): Group @auth(authority: [ADM])
+    "Adds a user to a group."
+    addGroupMember(groupId: ID!, userId: ID!): Group @auth(authority: [ADM])
+    "Removes a user from a group."
+    removeGroupMember(groupId: ID!, userId: ID!): Group @auth(authority: [ADM])
+    "Grants authorities to a group. The specified authorities are added to any existing ones."
+    grantGroupAuthorities(groupId: ID!, authorities: [AuthorityKind!]!): Group @auth(authority: [ADM])
+    "Revokes authorities from a group. The specified authorities are removed from the group; other authorities remain intact."
+    revokeGroupAuthorities(groupId: ID!, authorities: [AuthorityKind!]!): Group @auth(authority: [ADM])
 }

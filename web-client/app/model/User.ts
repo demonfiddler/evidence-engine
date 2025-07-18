@@ -18,6 +18,7 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 import Authority from "./Authority";
+import Group from "./Group";
 import ITrackedEntity from "./ITrackedEntity";
 
 export default interface User extends ITrackedEntity {
@@ -35,4 +36,6 @@ export default interface User extends ITrackedEntity {
   password?: string
   /** The authorities granted to the user. */
   authorities?: Authority[]
+  /** The groups of which the user is a member. */
+  groups?: Group[]
 }

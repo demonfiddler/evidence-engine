@@ -40,7 +40,7 @@ import StandardDetails from "./standard-details"
 import DetailActions, { createDetailState, DetailMode } from "./detail-actions"
 import Link from "next/link"
 import { useContext, useMemo, useState } from "react"
-import { SecurityContext } from "@/lib/context"
+import useAuth from "@/hooks/use-auth"
 import { useFormContext } from "react-hook-form"
 import { QuotationFormFields } from "../validators/quotation"
 
@@ -48,12 +48,12 @@ export default function QuotationDetails(
   { record, onFormAction }:
   { record?: Quotation; onFormAction: (command: FormAction, formValue: QuotationFormFields) => void } ) {
 
-  const securityContext = useContext(SecurityContext)
+  const {hasAuthority} = useAuth()
   const form = useFormContext()
   const [mode, setMode] = useState<DetailMode>("view")
   const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
 
-  const state = useMemo(() => createDetailState(securityContext, mode), [securityContext, mode])
+  const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
   const { updating } = state
 
   return (

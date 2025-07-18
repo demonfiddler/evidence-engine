@@ -46,7 +46,7 @@ import DetailActions, { createDetailState, DetailMode } from "./detail-actions";
 import Link from "next/link";
 import { FormAction } from "@/lib/utils";
 import { useContext, useMemo, useState } from "react";
-import { SecurityContext } from "@/lib/context";
+import useAuth from "@/hooks/use-auth"
 import { useFormContext } from "react-hook-form"
 import { PublisherFormFields } from "../validators/publisher";
 
@@ -56,12 +56,12 @@ export default function PublisherDetails(
   { record, onFormAction }:
   { record?: Publisher; onFormAction: (command: FormAction, formValue: PublisherFormFields) => void }) {
 
-  const securityContext = useContext(SecurityContext)
+  const {hasAuthority} = useAuth()
   const form = useFormContext()
   const [mode, setMode] = useState<DetailMode>("view")
   const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
 
-  const state = useMemo(() => createDetailState(securityContext, mode), [securityContext, mode])
+  const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
   const { updating } = state
 
   return (

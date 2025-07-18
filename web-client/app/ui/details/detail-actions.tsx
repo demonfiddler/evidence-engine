@@ -29,6 +29,7 @@ import ITrackedEntity from "@/app/model/ITrackedEntity";
 import RecordKind from "@/app/model/RecordKind";
 import { SecurityContextType } from "@/lib/context"
 import { UseFormReturn } from "react-hook-form";
+import Authority from "@/app/model/Authority";
 
 export type ClickHandler = () => void
 
@@ -48,31 +49,31 @@ export type DetailState = {
 }
 
 export function createDetailState(
-  securityContext: SecurityContextType,
+  hasAuthority: (authority: Authority) => boolean,
   mode: DetailMode
 ): DetailState {
 
-  const allowCreate = securityContext.authorities?.includes("CRE") ?? false
-  const allowEdit = securityContext.authorities?.includes("UPD") ?? false
-  const allowDelete = securityContext.authorities?.includes("DEL") ?? false
+  const allowCreate = hasAuthority("CRE")
+  const allowEdit = hasAuthority("UPD")
+  const allowDelete = hasAuthority("DEL")
   const allowUpdate = allowCreate || allowEdit
-  const allowLink = securityContext.authorities?.includes("LNK") ?? false
-  const allowRead = securityContext.authorities?.includes("REA") ?? false
+  const allowLink = hasAuthority("LNK")
+  const allowRead = hasAuthority("REA")
   const creating = mode == "create"
   const editing = mode == "edit"
   const updating = mode == "create" || mode == "edit"
 
   return {
-    mode: mode,
-    allowCreate: allowCreate,
-    allowEdit: allowEdit,
-    allowDelete: allowDelete,
-    allowUpdate: allowUpdate,
-    allowLink: allowLink,
-    allowRead: allowRead,
-    creating: creating,
-    editing: editing,
-    updating: updating,
+    mode,
+    allowCreate,
+    allowEdit,
+    allowDelete,
+    allowUpdate,
+    allowLink,
+    allowRead,
+    creating,
+    editing,
+    updating,
   }
 }
 
@@ -104,17 +105,17 @@ export default function DetailActions<T extends ITrackedEntity, S>(
   const recordLabel = getRecordLabel(recordKind, record)
 
   const handleNewOrCancel = useCallback(() => {
-    console.log(`ENTER handleNewOrCancel(), state = ${JSON.stringify(state)}, isDirty = ${JSON.stringify(form.formState.isDirty)}, isValid = ${JSON.stringify(form.formState.isValid)}`)
+    // console.log(`ENTER handleNewOrCancel(), state = ${JSON.stringify(state)}, isDirty = ${JSON.stringify(form.formState.isDirty)}, isValid = ${JSON.stringify(form.formState.isValid)}`)
     if (state.updating) {
       if (form.formState.isDirty) {
         if (!confirm(`Discard changes to ${recordLabel}?`))
           return
-        toast(`Cancelling ${state.mode}...`)
+        toast.info(`Cancelling ${state.mode}...`)
       }
       onFormAction("reset", form.getValues())
       setMode("view")
     } else {
-      toast(`Creating new ${recordKind}...`)
+      toast.info(`Creating new ${recordKind}...`)
       setMode("create")
       onFormAction("reset", {} as S)
       // form.reset({}, {keepValues: false, keepDefaultValues:false})
@@ -122,11 +123,11 @@ export default function DetailActions<T extends ITrackedEntity, S>(
   }, [state, form, recordLabel, onFormAction, setMode])
 
   const handleEditOrSave = useCallback(() => {
-    console.log(`ENTER handleEditOrSave(), state = ${JSON.stringify(state)}, isDirty = ${JSON.stringify(form.formState.isDirty)}, isValid = ${JSON.stringify(form.formState.isValid)}`)
+    // console.log(`ENTER handleEditOrSave(), state = ${JSON.stringify(state)}, isDirty = ${JSON.stringify(form.formState.isDirty)}, isValid = ${JSON.stringify(form.formState.isValid)}`)
     if (state.editing) {
       if (form.formState.isDirty) {
         if (form.formState.isValid) {
-          toast(`Saving updated ${recordKind}...`)
+          toast.info(`Saving updated ${recordKind}...`)
           onFormAction("update", form.getValues())
           setMode("view")
         }
@@ -136,7 +137,7 @@ export default function DetailActions<T extends ITrackedEntity, S>(
     } else if (state.creating) {
       if (form.formState.isDirty) {
         if (form.formState.isValid) {
-          toast(`Saving new ${recordKind}...`)
+          toast.info(`Saving new ${recordKind}...`)
           onFormAction("create", form.getValues())
           setMode("view")
         }
@@ -144,7 +145,7 @@ export default function DetailActions<T extends ITrackedEntity, S>(
         setMode("view")
       }
     } else {
-      toast(`Editing ${recordKind} details...`)
+      toast.info(`Editing ${recordKind} details...`)
       form.trigger()
       setMode("edit")
     }
@@ -152,7 +153,7 @@ export default function DetailActions<T extends ITrackedEntity, S>(
 
   const handleDelete = useCallback(() => {
     if (confirm(`Delete ${recordLabel}?`)) {
-      toast(`Deleting ${recordLabel}...`)
+      toast.warning(`Deleting ${recordLabel}...`)
       onFormAction("delete", form.getValues())
       setMode("view")
     }

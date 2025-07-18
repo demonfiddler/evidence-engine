@@ -20,22 +20,25 @@
 'use client'
 
 // import type { Metadata } from "next";
-import { useCallback, useContext, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { BeakerIcon } from '@heroicons/react/24/outline';
 
 import PublicationDetails from "@/app/ui/details/publication-details";
 import DataTable from "@/app/ui/data-table/data-table";
 
 import { columns, columnVisibility } from "@/app/ui/tables/publication-columns"
-import rawPage from "@/data/publications.json" assert {type: 'json'}
 import IPage from "@/app/model/IPage";
 import Publication from "@/app/model/Publication";
-import { SelectedRecordsContext } from "@/lib/context";
+import { MasterLinkContext, SelectedRecordsContext } from "@/lib/context";
 import { useImmerReducer } from "use-immer";
-import { MutationAction, FormAction, toDate, toInteger, toIsoString } from "@/lib/utils";
+import { MutationAction, FormAction, toDate, toInteger, toIsoString, SearchSettings } from "@/lib/utils";
 import { useForm, FormProvider } from "react-hook-form"
 import { PublicationFormFields, PublicationKind, PublicationSchema as PublicationSchema } from "@/app/ui/validators/publication";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
+import { LinkableEntityQueryFilter } from "@/app/model/schema";
+import { useQuery } from "@apollo/client";
+import { QUERY_PUBLICATIONS } from "@/lib/graphql-queries";
+import { toast } from "sonner";
 
 // export const metadata: Metadata = {
 //   title: "Publications",
@@ -83,9 +86,12 @@ function copyFromForm(publication: Publication, formValue: PublicationFormFields
 export default function Publications() {
   // All functions declared here are wrapped in calls to useCallback() in order to avoid re-rendering loop errors.
   // Similarly, objects passed to hooks are memoized in order to avoid passing different identical objects to hooks.
+  const masterLinkContext = useContext(MasterLinkContext)
   const selectedRecordsContext = useContext(SelectedRecordsContext)
+  const [search, setSearch] = useState<SearchSettings>({advancedSearch: false, showOnlyLinkedRecords: false} as SearchSettings)
   const [selectedRecordId, setSelectedRecordId] = useState<string|undefined>(selectedRecordsContext.Publication?.id)
-  const pageReducer = useCallback((draft: IPage<Publication>, action: MutationAction<FormAction, PublicationFormFields>) => {
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+/*  const pageReducer = useCallback((draft: IPage<Publication>, action: MutationAction<FormAction, PublicationFormFields>) => {
     // console.log(`Publications.pageReducer: action = ${JSON.stringify(action)}`)
     const idx = draft.content.findIndex(c => c.id == selectedRecordId)
     switch (action.command) {
@@ -113,9 +119,69 @@ export default function Publications() {
         }
         break
     }
-  }, [selectedRecordId, setSelectedRecordId])
-  const [page, pageDispatch] = useImmerReducer(pageReducer, rawPage as unknown as IPage<Publication>)
-  const getSelectedRecord = useCallback((id?: string) => page.content.find(r => r.id == id), [page])
+  }, [selectedRecordId, setSelectedRecordId])*/
+  // const [page, pageDispatch] = useImmerReducer(pageReducer, rawPage as unknown as IPage<Publication>)
+  const filter = useMemo(() => {
+    const filter: LinkableEntityQueryFilter = {
+      status: search.status ? [search.status] : undefined,
+      text: search.text,
+    }
+    if (search.text)
+      filter.advancedSearch = search.advancedSearch
+    if (search.showOnlyLinkedRecords) {
+      if (masterLinkContext.masterTopicId) {
+        filter.topicId = masterLinkContext.masterTopicId
+        filter.recursive = true
+      }
+      if (masterLinkContext.masterRecordId) {
+        switch (masterLinkContext.masterRecordKind) {
+          case "Person":
+            filter.toEntityId = masterLinkContext.masterRecordId
+            break
+          case "Claim":
+          case "Quotation":
+            filter.fromEntityId = masterLinkContext.masterRecordId
+            break
+        }
+      }
+    }
+    console.log(`Publications effect: filter = ${JSON.stringify(filter)}`)
+    return filter
+  }, [search, masterLinkContext])
+
+  const pageSort = useMemo(() => {
+    const pageSort = {
+      pageNumber: pagination.pageIndex,
+      pageSize: pagination.pageSize
+    }
+    console.log(`Publications effect: pageSort = ${JSON.stringify(pageSort)}`)
+    return pageSort
+  }, [pagination])
+
+  const result = useQuery(
+    QUERY_PUBLICATIONS,
+    {
+      variables: {
+        filter,
+        pageSort
+      },
+    }
+  )
+
+  // Whenever filter or pagination changes, ask Apollo to refetch
+  useEffect(() => {
+    console.log(`Publications effect: search = ${JSON.stringify(search)}`)
+    result.refetch({
+      filter,
+      pageSort
+    });
+  }, [filter, pageSort]);
+
+  console.log(`result.loading = ${result.loading}, result.error = ${JSON.stringify(result.error)}, result.data = ${JSON.stringify(result.data)}`)
+  // console.log(`result.loading = ${result.loading}, result.error = ${JSON.stringify(result.error)}`)
+  const page = result.data?.publications as IPage<Publication>
+
+  const getSelectedRecord = useCallback((id?: string) => page?.content.find(r => r.id == id), [page])
   const selectedRecord = getSelectedRecord(selectedRecordId)
   const origFormValue = useMemo(() => copyToForm(selectedRecord), [selectedRecord])
   const form = useForm<PublicationFormFields>({
@@ -128,15 +194,20 @@ export default function Publications() {
     // console.log(`Publications.handleFormAction: command="${command}" action = ${JSON.stringify(formValue)}`)
     switch (command) {
       case "create":
-      case "update":
-      case "delete":
-        pageDispatch({command: command, value: formValue})
+        // TODO: invoke mutation: createPublication
         break
+      case "update":
+        // TODO: invoke mutation: updatePublication
+        break
+      case "delete":
+        // TODO: invoke mutation: deletePublication
+        break
+        // OLD: pageDispatch({command: command, value: formValue})
       case "reset":
         form.reset(origFormValue)
         break
     }
-  }, [form, pageDispatch, selectedRecord])
+  }, [form, /*pageDispatch, */selectedRecord])
 
   const handleRowSelectionChange = useCallback((recordId?: string) => {
     // console.log(`Publications.handleRowSelectionChange: recordId = ${recordId}`)
@@ -144,6 +215,11 @@ export default function Publications() {
     const publication = getSelectedRecord(recordId)
     form.reset(copyToForm(publication))
   }, [setSelectedRecordId, getSelectedRecord, form])
+
+  if (result.error) {
+    toast.error(`Fetch error:\n\n${JSON.stringify(result.error)}`)
+    console.error(result.error)
+  }
 
   return (
     <main className="flex flex-col items-start m-4 gap-4">
@@ -157,6 +233,11 @@ export default function Publications() {
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
+        loading={result.loading}
+        pagination={pagination}
+        onPaginationChange={setPagination}
+        search={search}
+        onSearchChange={setSearch}
         onRowSelectionChange={handleRowSelectionChange}
       />
       <FormProvider {...form}>

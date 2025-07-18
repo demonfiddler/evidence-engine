@@ -28,7 +28,7 @@ import com.google.common.truth.IterableSubject;
 import com.google.common.truth.StringSubject;
 import com.google.common.truth.Subject;
 
-import io.github.demonfiddler.ee.client.PermissionKind;
+import io.github.demonfiddler.ee.client.AuthorityKind;
 import io.github.demonfiddler.ee.client.User;
 
 public class UserSubject extends TrackedEntitySubject<User> {
@@ -86,16 +86,16 @@ public class UserSubject extends TrackedEntitySubject<User> {
         return check("password()").that(actual.getPassword());
     }
 
-    public void hasPermissions(PermissionKind... permissions) {
-        permissions().containsExactlyElementsIn(List.of(permissions).stream().map(p -> p.name()).toList());
+    public void hasAuthorities(AuthorityKind... authorities) {
+        authorities().containsExactlyElementsIn(List.of(authorities).stream().map(p -> p.name()).toList());
     }
 
-    public void hasPermissions(String... permissions) {
-        permissions().containsExactlyElementsIn(permissions);
+    public void hasAuthorities(String... authorities) {
+        authorities().containsExactlyElementsIn(authorities);
     }
 
-    public IterableSubject permissions() {
-        return check("permissions()").that(actual.getPermissions());
+    public IterableSubject authorities() {
+        return check("authorities()").that(actual.getAuthorities());
     }
 
 }

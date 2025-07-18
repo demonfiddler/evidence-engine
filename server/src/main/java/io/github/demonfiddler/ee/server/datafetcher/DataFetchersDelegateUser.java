@@ -19,11 +19,20 @@
 
 package io.github.demonfiddler.ee.server.datafetcher;
 
+import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.dataloader.BatchLoaderEnvironment;
+
+import com.graphql_java_generator.annotation.GraphQLDirective;
+
+import graphql.GraphQLContext;
 import graphql.schema.DataFetchingEnvironment;
+import io.github.demonfiddler.ee.server.model.AggregationKind;
 import io.github.demonfiddler.ee.server.model.FormatKind;
+import io.github.demonfiddler.ee.server.model.Group;
 import io.github.demonfiddler.ee.server.model.User;
 
 /**
@@ -38,49 +47,62 @@ import io.github.demonfiddler.ee.server.model.User;
 public interface DataFetchersDelegateUser extends DataFetchersDelegateITrackedEntity<User> {
 
 	/**
-	 * Description for the permissions field: <br/>
-	 * The permissions granted to the user. <br/>
-	 * Loads the data for User.permissions. It may return whatever is accepted by the Spring Controller,
-	 * that is:
+	 * Description for the authorities field: <br/>
+	 * The authorities granted to the user.
+	 * <br/>
+	 *
+	 * This method loads the data for User.authorities. It may return whatever is 
+	 * accepted by the Spring Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a List<String>)</li>
-	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a Mono&lt;List<String>&gt; or a
-	 * Flux&lt;List<String>&gt;</li>
+	 * <li>A resolved value of any type (typically, a List<java.lang.String>)</li>
+	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as described in Reactive DataFetcher. 
+	 * This would typically be a Mono&lt;List<java.lang.String>&gt; or a Flux&lt;List<java.lang.String>&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
-	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
-	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;List<String>&gt;</li>
+	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work, AnnotatedControllerConfigurer must be 
+	 *     configured with an Executor. This would typically by a Callable&lt;List<java.lang.String>&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<List<String>>. This allows to use
-	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
-	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
-	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
-	 * run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<List<java.lang.String>>. This 
+	 *     allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 *     number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid to load several 
+	 *     times the same data, and allows parallel execution of the queries, if multiple queries are to be run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
-	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
-	 * GraphQL context for this DataFetcher
-	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
-	 * the permissions attribute of the <I>origin</I>, which is an instance of {ObjectType {name:User,
-	 * fields:{Field{name:id, type:ID!, params:[]},Field{name:status, type:String,
-	 * params:[format:FormatKind]},Field{name:created, type:DateTime, params:[]},Field{name:createdByUser, type:User,
-	 * params:[]},Field{name:updated, type:DateTime, params:[]},Field{name:updatedByUser, type:User,
-	 * params:[]},Field{name:log, type:LogPage!,
-	 * params:[filter:LogQueryFilter,pageSort:PageableInput]},Field{name:username, type:String,
-	 * params:[]},Field{name:firstName, type:String, params:[]},Field{name:lastName, type:String,
-	 * params:[]},Field{name:email, type:String, params:[]},Field{name:password, type:String,
-	 * params:[]},Field{name:permissions, type:[String!]!, params:[format:FormatKind]}}, implements
-	 * IBaseEntity,ITrackedEntity, comments ""}. It depends on your data model, but it typically contains the id to use
-	 * in the query.
-	 * @param format The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
-	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
-	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
-	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
-	 * will take care of the {@link NoSuchElementException} exception.
+	 * 
+	 * @param dataFetchingEnvironment 
+	 *     The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full GraphQL context for this DataFetcher
+	 * @param origin 
+	 *    The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch the authorities attribute
+	 *    of the <I>origin</I>, which is an instance of {ObjectType {name:User, fields:{Field{name:id, type:ID!, params:[]},Field{name:entityKind, type:String, params:[format:FormatKind]},Field{name:status, type:String, params:[format:FormatKind]},Field{name:created, type:DateTime, params:[]},Field{name:createdByUser, type:User, params:[]},Field{name:updated, type:DateTime, params:[]},Field{name:updatedByUser, type:User, params:[]},Field{name:log, type:LogPage!, params:[filter:LogQueryFilter,pageSort:PageableInput]},Field{name:username, type:String, params:[]},Field{name:firstName, type:String, params:[]},Field{name:lastName, type:String, params:[]},Field{name:email, type:String, params:[]},Field{name:password, type:String, params:[]},Field{name:authorities, type:[String!]!, params:[aggregation:AggregationKind,format:FormatKind]},Field{name:groups, type:[Group!], params:[]}}, implements IBaseEntity,ITrackedEntity, comments ""}. It depends on your data modle, but it typically contains 
+	 *    the id to use in the query.
+	 * @param aggregation 
+	 *     The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @param format 
+	 *     The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @throws NoSuchElementException 
+	 *     This method may return a {@link NoSuchElementException} exception. In this case, the exception is trapped 
+	 *     by the calling method, and the return is consider as null. This allows to use the {@link Optional#get()} method directly, without caring of 
+	 *     whether or not there is a value. The generated code will take care of the {@link NoSuchElementException} exception. 
 	 */
-	Object permissions(DataFetchingEnvironment dataFetchingEnvironment, User origin, FormatKind format);
+	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	public Object authorities(DataFetchingEnvironment dataFetchingEnvironment, User origin, AggregationKind aggregation,
+		FormatKind format);
+
+   	/**
+	 * This methods loads the data for User.groups. It is generated as the 
+	 * <code>generateBatchMappingDataFetchers</code> plugin parameter is true. <br/>
+	 * 
+	 * @param batchLoaderEnvironment
+	 * 		The environement for this batch loaded. You can extract the GraphQLContext from this parameter.
+	 * @param graphQLContext
+	 * @param keys
+	 * 		The objects for which the value for the groups field must be retrieved.
+	 * @return This method returns <code>${dataFetcher.batchMappingReturnType.value}</code>, as defined by the
+	 * 		<code>batchMappingDataFetcherReturnType</code> plugin parameter. <br/>
+	 * 		Please look at the spring-graphql annotation for a documentation on how to return the proper values
+	 */
+	public Map<User, List<Group>> groups(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+		List<User> keys);
 
 }

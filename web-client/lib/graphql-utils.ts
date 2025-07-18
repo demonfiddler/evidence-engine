@@ -17,10 +17,66 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import { ApolloClient, InMemoryCache, ApolloProvider, gql } from '@apollo/client';
+import { ApolloClient, InMemoryCache } from '@apollo/client';
+
+// console.log(`process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL=${process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL}, process.env.NEXT_PUBLIC_WEB_CLIENT_URL=${process.env.NEXT_PUBLIC_WEB_CLIENT_URL}`)
 
 export const apolloClient = new ApolloClient({
-    // TODO: figure out how to do this client-side / in the browser.
-    uri: process.env.graphqlEndpointUrl,
-    cache: new InMemoryCache(),
+    uri: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL,
+    cache: new InMemoryCache({
+        possibleTypes: {
+            IBaseEntity: [
+                "Claim",
+                "EntityLink",
+                "Declaration",
+                "Group",
+                "Journal",
+                "Log",
+                "Person",
+                "Publication",
+                "Publisher",
+                "Quotation",
+                "Topic",
+                "User",
+            ],
+            ITrackedEntity: [
+                "Claim",
+                "EntityLink",
+                "Declaration",
+                "Group",
+                "Journal",
+                "Person",
+                "Publication",
+                "Publisher",
+                "Quotation",
+                "Topic",
+                "User",
+            ],
+            ILinkableEntity: [
+                "Claim",
+                "Declaration",
+                "Person",
+                "Publication",
+                "Quotation",
+                "Topic"
+            ],
+            IPage: [
+                "ClaimPage",
+                "EntityLinkPage",
+                "DeclarationPage",
+                "GroupPage",
+                "JournalPage",
+                "PersonPage",
+                "PublicationPage",
+                "PublisherPage",
+                "QuotationPage",
+                "TopicPage",
+                "UserPage",
+            ]
+        },
+        typePolicies: {
+            // See https://www.apollographql.com/docs/react/caching/cache-configuration#typepolicy-fields
+            // __TYPENAME: {...}
+        }
+    }),
 });

@@ -44,10 +44,10 @@ export default function LinkingDetails(
 
   function handleLinkorCancel() {
     if (isEditing) {
-      toast("Cancelling ...")
+      toast.info("Cancelling ...")
       // TODO: handle cancel
     } else {
-      toast("Linking...")
+      toast.info("Linking...")
       // TODO: handle link
     }
     setIsEditing(false)
@@ -55,19 +55,19 @@ export default function LinkingDetails(
 
   function handleUnlink() {
     if (confirm(`Delete record link #${selectedLinkId}?`)) {
-      toast(`Unlinking EntityLink#${selectedLinkId}...`)
+      toast.info(`Unlinking EntityLink#${selectedLinkId}...`)
       // TODO: delete link
     } else {
-      toast(`Cancelling delete EntityLink#${selectedLinkId}...`)
+      toast.info(`Cancelling delete EntityLink#${selectedLinkId}...`)
     }
   }
 
   function handleSaveOrEdit() {
     if (isEditing) {
-      toast("Saving locations...")
+      toast.info("Saving locations...")
       // TODO: save locations
     } else {
-      toast("Editing locations...")
+      toast.info("Editing locations...")
     }
     setIsEditing(!isEditing)
   }

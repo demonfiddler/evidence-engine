@@ -22,26 +22,102 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import Search from "../filter/search";
 import { DataTableViewOptions, DataTableViewOptionsProps } from "./data-table-view-options";
+import { SearchSettings } from "@/lib/utils";
+import { Dispatch, SetStateAction } from "react";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+//import { Label } from "@/components/ui/label";
+import { StatusKind } from "@/app/model/schema";
+
+type DataTableFilterProps<TData> = DataTableViewOptionsProps<TData> & {
+  isLinkableEntity: boolean
+  search: SearchSettings
+  onSearchChange: Dispatch<SetStateAction<SearchSettings>>
+}
 
 export default function DataTableFilter<TData>({
   table,
-  isLinkableEntity
-}: DataTableViewOptionsProps<TData>) {
+  isLinkableEntity,
+  search,
+  onSearchChange
+}: DataTableFilterProps<TData>) {
+
+  function handleStatusChange(status: string) {
+    onSearchChange({
+      ...search,
+      status: (status && status != "ALL") ? status as StatusKind : undefined
+    })
+  }
+
+  function handleTextChange(text?: string) {
+    onSearchChange({
+      ...search,
+      text: text ?? undefined
+    })
+  }
+
+  function handleAdvancedSearchChange(advancedSearch: boolean) {
+    onSearchChange({
+      ...search,
+      advancedSearch
+    })
+  }
+
+  function handleShowOnlyLinkedRecordsChange(showOnlyLinkedRecords: boolean) {
+    onSearchChange({
+      ...search,
+      showOnlyLinkedRecords
+    })
+  }
+
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2">
-        <Search />
-        <Checkbox id="advanced" title="Use advanced text search syntax" />
+        {/* <Label>Status:</Label> */}
+        <Select
+          value={search.status ?? ''}
+          onValueChange={handleStatusChange}
+        >
+          <SelectTrigger id="kind" className="">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Status Kinds</SelectLabel>
+              {
+                search.status
+                ? <SelectItem value="ALL">-Clear-</SelectItem>
+                : null
+              }
+              <SelectItem value="DRA">Draft</SelectItem>
+              <SelectItem value="PUB">Published</SelectItem>
+              <SelectItem value="SUS">Suspended</SelectItem>
+              <SelectItem value="DEL">Deleted</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        <Search value={search.text} onChangeValue={handleTextChange} />
+        {/* See https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode */}
+        <Checkbox
+          id="advanced"
+          title="Use advanced text search syntax"
+          checked={search.advancedSearch}
+          onCheckedChange={handleAdvancedSearchChange}
+        />
         <label htmlFor="advanced">Advanced</label>
         {
           isLinkableEntity
           ? <>
-              <Checkbox id="linkedOnly" title="Only show records linked to the current master record" />
+              <Checkbox
+                id="linkedOnly"
+                title="Only show records linked to the current master record(s)"
+                checked={search.showOnlyLinkedRecords}
+                onCheckedChange={handleShowOnlyLinkedRecordsChange}
+              />
               <label htmlFor="linkedOnly" className="flex-none">Show only linked records</label>
             </>
-          : <></>
+          : null
         }
-        <DataTableViewOptions table={table} isLinkableEntity={isLinkableEntity} />
+        <DataTableViewOptions table={table} />
       </div>
     </div>
   )

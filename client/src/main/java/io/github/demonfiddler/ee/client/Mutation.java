@@ -122,7 +122,7 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 		listDepths = { 0 }, itemsMandatory = { false })
 	@GraphQLNonScalar(fieldName = "createEntityLink", graphQLTypeSimpleName = "EntityLink",
 		javaClass = EntityLink.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	EntityLink createEntityLink;
 
@@ -134,7 +134,7 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 		listDepths = { 0 }, itemsMandatory = { false })
 	@GraphQLNonScalar(fieldName = "updateEntityLink", graphQLTypeSimpleName = "EntityLink",
 		javaClass = EntityLink.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	EntityLink updateEntityLink;
 
@@ -146,7 +146,7 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 		itemsMandatory = { false })
 	@GraphQLNonScalar(fieldName = "deleteEntityLink", graphQLTypeSimpleName = "EntityLink",
 		javaClass = EntityLink.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	EntityLink deleteEntityLink;
 
@@ -359,7 +359,7 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	User updateUser;
 
 	/**
-	 * Updates an existing user.
+	 * Deletes an existing user.
 	 */
 	@JsonProperty("deleteUser")
 	@GraphQLInputParameters(names = { "userId" }, types = { "ID" }, mandatories = { true }, listDepths = { 0 },
@@ -368,25 +368,91 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	User deleteUser;
 
 	/**
-	 * Grants permissions to a user. The specified permissions are added to any existing ones.
+	 * Grants authorities to a user. The specified authorities are added to any existing ones.
 	 */
-	@JsonProperty("grantUserPermissions")
-	@GraphQLInputParameters(names = { "userId", "permissions" }, types = { "ID", "PermissionKind" },
+	@JsonProperty("grantUserAuthorities")
+	@GraphQLInputParameters(names = { "userId", "authorities" }, types = { "ID", "AuthorityKind" },
 		mandatories = { true, true }, listDepths = { 0, 1 }, itemsMandatory = { false, true })
-	@GraphQLNonScalar(fieldName = "grantUserPermissions", graphQLTypeSimpleName = "User", javaClass = User.class,
+	@GraphQLNonScalar(fieldName = "grantUserAuthorities", graphQLTypeSimpleName = "User", javaClass = User.class,
 		listDepth = 0)
-	User grantUserPermissions;
+	User grantUserAuthorities;
 
 	/**
-	 * Revokes permissions from a user. The specified permissions are removed from the user; other permissions remain
+	 * Revokes authorities from a user. The specified authorities are removed from the user; other authorities remain
 	 * intact.
 	 */
-	@JsonProperty("revokeUserPermissions")
-	@GraphQLInputParameters(names = { "userId", "permissions" }, types = { "ID", "PermissionKind" },
+	@JsonProperty("revokeUserAuthorities")
+	@GraphQLInputParameters(names = { "userId", "authorities" }, types = { "ID", "AuthorityKind" },
 		mandatories = { true, true }, listDepths = { 0, 1 }, itemsMandatory = { false, true })
-	@GraphQLNonScalar(fieldName = "revokeUserPermissions", graphQLTypeSimpleName = "User", javaClass = User.class,
+	@GraphQLNonScalar(fieldName = "revokeUserAuthorities", graphQLTypeSimpleName = "User", javaClass = User.class,
 		listDepth = 0)
-	User revokeUserPermissions;
+	User revokeUserAuthorities;
+
+	/**
+	 * Creates a new group.
+	 */
+	@JsonProperty("createGroup")
+	@GraphQLInputParameters(names = { "group" }, types = { "GroupInput" }, mandatories = { true }, listDepths = { 0 },
+		itemsMandatory = { false })
+	@GraphQLNonScalar(fieldName = "createGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
+	Group createGroup;
+
+	/**
+	 * Updates an existing group.
+	 */
+	@JsonProperty("updateGroup")
+	@GraphQLInputParameters(names = { "group" }, types = { "GroupInput" }, mandatories = { true }, listDepths = { 0 },
+		itemsMandatory = { false })
+	@GraphQLNonScalar(fieldName = "updateGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
+	Group updateGroup;
+
+	/**
+	 * Deletes an existing group.
+	 */
+	@JsonProperty("deleteGroup")
+	@GraphQLInputParameters(names = { "groupId" }, types = { "ID" }, mandatories = { true }, listDepths = { 0 },
+		itemsMandatory = { false })
+	@GraphQLScalar(fieldName = "deleteGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
+	Group deleteGroup;
+
+	/**
+	 * Adds a user to a group.
+	 */
+	@JsonProperty("addGroupMember")
+	@GraphQLInputParameters(names = {"groupId", "userId"}, types = {"ID", "ID"}, mandatories = {true, true}, listDepths = {0, 0}, itemsMandatory = {false, false})
+	@GraphQLNonScalar( fieldName = "addGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	Group addGroupMember;
+
+	/**
+	 * Removes a user from a group.
+	 */
+	@JsonProperty("removeGroupMember")
+	@GraphQLInputParameters(names = {"groupId", "userId"}, types = {"ID", "ID"}, mandatories = {true, true}, listDepths = {0, 0}, itemsMandatory = {false, false})
+	@GraphQLNonScalar( fieldName = "removeGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	Group removeGroupMember;
+
+	/**
+	 * Grants authorities to a group. The specified authorities are added to any existing ones.
+	 */
+	@JsonProperty("grantGroupAuthorities")
+	@GraphQLInputParameters(names = { "groupId", "authorities" }, types = { "ID", "AuthorityKind" },
+		mandatories = { true, true }, listDepths = { 0, 1 }, itemsMandatory = { false, true })
+	@GraphQLNonScalar(fieldName = "grantGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class,
+		listDepth = 0)
+	Group grantGroupAuthorities;
+
+	/**
+	 * Revokes authorities from a group. The specified authorities are removed from the group; other authorities remain
+	 * intact.
+	 */
+	@JsonProperty("revokeGroupAuthorities")
+	@GraphQLInputParameters(names = { "groupId", "authorities" }, types = { "ID", "AuthorityKind" },
+		mandatories = { true, true }, listDepths = { 0, 1 }, itemsMandatory = { false, true })
+	@GraphQLNonScalar(fieldName = "revokeGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class,
+		listDepth = 0)
+	Group revokeGroupAuthorities;
 
 	/**
 	 * Creates a new claim.
@@ -487,7 +553,7 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	/**
 	 * Creates an entity link.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	@JsonProperty("createEntityLink")
 	public void setCreateEntityLink(EntityLink createEntityLink) {
@@ -497,7 +563,7 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	/**
 	 * Creates an entity link.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	@JsonProperty("createEntityLink")
 	public EntityLink getCreateEntityLink() {
@@ -507,7 +573,7 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	/**
 	 * Updates an existing entity link.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	@JsonProperty("updateEntityLink")
 	public void setUpdateEntityLink(EntityLink updateEntityLink) {
@@ -517,7 +583,7 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	/**
 	 * Updates an existing entity link.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	@JsonProperty("updateEntityLink")
 	public EntityLink getUpdateEntityLink() {
@@ -527,7 +593,7 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	/**
 	 * Deletes an entity link.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	@JsonProperty("deleteEntityLink")
 	public void setDeleteEntityLink(EntityLink deleteEntityLink) {
@@ -537,7 +603,7 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	/**
 	 * Deletes an entity link.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	@JsonProperty("deleteEntityLink")
 	public EntityLink getDeleteEntityLink() {
@@ -897,37 +963,155 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	}
 
 	/**
-	 * Grants permissions to a user. The specified permissions are added to any existing ones.
+	 * Grants authorities to a user. The specified authorities are added to any existing ones.
 	 */
-	@JsonProperty("grantUserPermissions")
-	public void setGrantUserPermissions(User grantUserPermissions) {
-		this.grantUserPermissions = grantUserPermissions;
+	@JsonProperty("grantUserAuthorities")
+	public void setGrantUserAuthorities(User grantUserAuthorities) {
+		this.grantUserAuthorities = grantUserAuthorities;
 	}
 
 	/**
-	 * Grants permissions to a user. The specified permissions are added to any existing ones.
+	 * Grants authorities to a user. The specified authorities are added to any existing ones.
 	 */
-	@JsonProperty("grantUserPermissions")
-	public User getGrantUserPermissions() {
-		return this.grantUserPermissions;
+	@JsonProperty("grantUserAuthorities")
+	public User getGrantUserAuthorities() {
+		return this.grantUserAuthorities;
 	}
 
 	/**
-	 * Revokes permissions from a user. The specified permissions are removed from the user; other permissions remain
+	 * Revokes authorities from a user. The specified authorities are removed from the user; other authorities remain
 	 * intact.
 	 */
-	@JsonProperty("revokeUserPermissions")
-	public void setRevokeUserPermissions(User revokeUserPermissions) {
-		this.revokeUserPermissions = revokeUserPermissions;
+	@JsonProperty("revokeUserAuthorities")
+	public void setRevokeUserAuthorities(User revokeUserAuthorities) {
+		this.revokeUserAuthorities = revokeUserAuthorities;
 	}
 
 	/**
-	 * Revokes permissions from a user. The specified permissions are removed from the user; other permissions remain
+	 * Revokes authorities from a user. The specified authorities are removed from the user; other authorities remain
 	 * intact.
 	 */
-	@JsonProperty("revokeUserPermissions")
-	public User getRevokeUserPermissions() {
-		return this.revokeUserPermissions;
+	@JsonProperty("revokeUserAuthorities")
+	public User getRevokeUserAuthorities() {
+		return this.revokeUserAuthorities;
+	}
+
+	/**
+	 * Creates a new group.
+	 */
+	@JsonProperty("createGroup")
+	public void setCreateGroup(Group createGroup) {
+		this.createGroup = createGroup;
+	}
+
+	/**
+	 * Creates a new group.
+	 */
+	@JsonProperty("createGroup")
+	public Group getCreateGroup() {
+		return this.createGroup;
+	}
+
+	/**
+	 * Updates an existing group.
+	 */
+	@JsonProperty("updateGroup")
+	public void setUpdateGroup(Group updateGroup) {
+		this.updateGroup = updateGroup;
+	}
+
+	/**
+	 * Updates an existing group.
+	 */
+	@JsonProperty("updateGroup")
+	public Group getUpdateGroup() {
+		return this.updateGroup;
+	}
+
+	/**
+	 * Updates an existing group.
+	 */
+	@JsonProperty("deleteGroup")
+	public void setDeleteGroup(Group deleteGroup) {
+		this.deleteGroup = deleteGroup;
+	}
+
+	/**
+	 * Updates an existing group.
+	 */
+	@JsonProperty("deleteGroup")
+	public Group getDeleteGroup() {
+		return this.deleteGroup;
+	}
+
+	/**
+	  * Adds a user to a group.
+ 	 */
+	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	@JsonProperty("addGroupMember")
+	public void setAddGroupMember(Group addGroupMember) {
+		this.addGroupMember = addGroupMember;
+	}
+
+	/**
+	 * Adds a user to a group.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	@JsonProperty("addGroupMember")
+	public Group getAddGroupMember() {
+		return this.addGroupMember;
+	}
+		
+	/**
+	  * Removes a user from a group.
+ 	 */
+	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	@JsonProperty("removeGroupMember")
+	public void setRemoveGroupMember(Group removeGroupMember) {
+		this.removeGroupMember = removeGroupMember;
+	}
+
+	/**
+	 * Removes a user from a group.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	@JsonProperty("removeGroupMember")
+	public Group getRemoveGroupMember() {
+		return this.removeGroupMember;
+	}
+
+	/**
+	 * Grants authorities to a group. The specified authorities are added to any existing ones.
+	 */
+	@JsonProperty("grantGroupAuthorities")
+	public void setGrantGroupAuthorities(Group grantGroupAuthorities) {
+		this.grantGroupAuthorities = grantGroupAuthorities;
+	}
+
+	/**
+	 * Grants authorities to a group. The specified authorities are added to any existing ones.
+	 */
+	@JsonProperty("grantGroupAuthorities")
+	public Group getGrantGroupAuthorities() {
+		return this.grantGroupAuthorities;
+	}
+
+	/**
+	 * Revokes authorities from a group. The specified authorities are removed from the group; other authorities remain
+	 * intact.
+	 */
+	@JsonProperty("revokeGroupAuthorities")
+	public void setRevokeGroupAuthorities(Group revokeGroupAuthorities) {
+		this.revokeGroupAuthorities = revokeGroupAuthorities;
+	}
+
+	/**
+	 * Revokes authorities from a group. The specified authorities are removed from the group; other authorities remain
+	 * intact.
+	 */
+	@JsonProperty("revokeGroupAuthorities")
+	public Group getRevokeGroupAuthorities() {
+		return this.revokeGroupAuthorities;
 	}
 
 	public String toString() {
@@ -994,9 +1178,19 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 			+ ", " //
 			+ "deleteUser: " + this.deleteUser //
 			+ ", " //
-			+ "grantUserPermissions: " + this.grantUserPermissions //
+			+ "grantUserAuthorities: " + this.grantUserAuthorities //
 			+ ", " //
-			+ "revokeUserPermissions: " + this.revokeUserPermissions //
+			+ "revokeUserAuthorities: " + this.revokeUserAuthorities //
+			+ ", " //
+			+ "createGroup: " + this.createGroup //
+			+ ", " //
+			+ "updateGroup: " + this.updateGroup //
+			+ ", " //
+			+ "deleteGroup: " + this.deleteGroup //
+			+ ", " //
+			+ "grantGroupAuthorities: " + this.grantGroupAuthorities //
+			+ ", " //
+			+ "revokeGroupAuthorities: " + this.revokeGroupAuthorities //
 			+ ", " //
 			+ "__typename: " + this.__typename //
 			+ "}";
@@ -1043,8 +1237,15 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 		private User createUser;
 		private User updateUser;
 		private User deleteUser;
-		private User grantUserPermissions;
-		private User revokeUserPermissions;
+		private User grantUserAuthorities;
+		private User revokeUserAuthorities;
+		private Group createGroup;
+		private Group updateGroup;
+		private Group deleteGroup;
+		private Group addGroupMember;
+		private Group removeGroupMember;
+		private Group grantGroupAuthorities;
+		private Group revokeGroupAuthorities;
 
 		/**
 		 * Creates a new claim.
@@ -1295,19 +1496,77 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 		}
 
 		/**
-		 * Grants permissions to a user. The specified permissions are added to any existing ones.
+		 * Grants authorities to a user. The specified authorities are added to any existing ones.
 		 */
-		public Builder withGrantUserPermissions(User grantUserPermissionsParam) {
-			this.grantUserPermissions = grantUserPermissionsParam;
+		public Builder withGrantUserAuthorities(User grantUserAuthoritiesParam) {
+			this.grantUserAuthorities = grantUserAuthoritiesParam;
 			return this;
 		}
 
 		/**
-		 * Revokes permissions from a user. The specified permissions are removed from the user; other permissions
+		 * Revokes authorities from a user. The specified authorities are removed from the user; other authorities
 		 * remain intact.
 		 */
-		public Builder withRevokeUserPermissions(User revokeUserPermissionsParam) {
-			this.revokeUserPermissions = revokeUserPermissionsParam;
+		public Builder withRevokeUserAuthorities(User revokeUserAuthoritiesParam) {
+			this.revokeUserAuthorities = revokeUserAuthoritiesParam;
+			return this;
+		}
+
+		/**
+		 * Creates a new group.
+		 */
+		public Builder withCreateGroup(Group createGroupParam) {
+			this.createGroup = createGroupParam;
+			return this;
+		}
+
+		/**
+		 * Updates an existing group.
+		 */
+		public Builder withUpdateGroup(Group updateGroupParam) {
+			this.updateGroup = updateGroupParam;
+			return this;
+		}
+
+		/**
+		 * Deletes an existing group.
+		 */
+		public Builder withDeleteGroup(Group deleteGroupParam) {
+			this.deleteGroup = deleteGroupParam;
+			return this;
+		}
+
+		/**
+		 * Adds a user to a group.
+		 */
+		public Builder withAddGroupMember(Group addGroupMemberParam) {
+			this.addGroupMember = addGroupMemberParam;
+			return this;
+		}
+
+		/**
+		 * Removes a user from a group.
+		 */
+		public Builder withRemoveGroupMember(Group removeGroupMemberParam) {
+			this.removeGroupMember = removeGroupMemberParam;
+			return this;
+		}
+
+		/**
+		 * Grants authorities to a group. The specified authorities are added to any
+		 * existing ones.
+		 */
+		public Builder withGrantGroupAuthorities(Group grantGroupAuthoritiesParam) {
+			this.grantGroupAuthorities = grantGroupAuthoritiesParam;
+			return this;
+		}
+
+		/**
+		 * Revokes authorities from a group. The specified authorities are removed from
+		 * the group; other authorities remain intact.
+		 */
+		public Builder withRevokeGroupAuthorities(Group revokeGroupAuthoritiesParam) {
+			this.revokeGroupAuthorities = revokeGroupAuthoritiesParam;
 			return this;
 		}
 
@@ -1344,8 +1603,15 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 			_object.setCreateUser(this.createUser);
 			_object.setUpdateUser(this.updateUser);
 			_object.setDeleteUser(this.deleteUser);
-			_object.setGrantUserPermissions(this.grantUserPermissions);
-			_object.setRevokeUserPermissions(this.revokeUserPermissions);
+			_object.setGrantUserAuthorities(this.grantUserAuthorities);
+			_object.setRevokeUserAuthorities(this.revokeUserAuthorities);
+			_object.setCreateGroup(this.createGroup);
+			_object.setUpdateGroup(this.updateGroup);
+			_object.setDeleteGroup(this.deleteGroup);
+			_object.setAddGroupMember(this.addGroupMember);
+			_object.setRemoveGroupMember(this.removeGroupMember);
+			_object.setGrantGroupAuthorities(this.grantGroupAuthorities);
+			_object.setRevokeGroupAuthorities(this.revokeGroupAuthorities);
 			return _object;
 		}
 

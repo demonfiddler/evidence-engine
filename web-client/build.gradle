@@ -57,5 +57,5 @@ task startReact(type: Exec) {
 }
 
 task build {
-    dependsOn buildReact // Include the buildReact task in the overall build process
+//    dependsOn buildReact // Include the buildReact task in the overall build process
 }

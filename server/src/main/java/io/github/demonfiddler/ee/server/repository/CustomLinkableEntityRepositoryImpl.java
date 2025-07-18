@@ -39,17 +39,18 @@ import jakarta.persistence.Query;
 
 /**
  * An abstract base implementation of the {@code CustomRepository} interface.
+ * 
  * @param <T> The type handled by the implementation.
  */
 public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEntity> extends AbstractCustomRepositoryImpl
     implements CustomRepository<T, LinkableEntityQueryFilter> {
 
     /** Describes the elements of a query. */
-    private static record QueryMetaData(LinkableEntityQueryFilter filter, Pageable pageable, String countQueryName,
-        String selectQueryName, boolean hasTopic, boolean isRecursive, boolean hasFromEntityKind,
-        boolean hasFromEntityId, String fromEntityName, boolean hasToEntityKind, boolean hasToEntityId,
-        String toEntityName, boolean hasStatus, boolean hasText, boolean hasTextH2, boolean hasTextMariaDB,
-        boolean isAdvanced, boolean isPaged, boolean isSorted) {
+    private static record QueryMetaData(LinkableEntityQueryFilter filter, Pageable pageable, String entityName,
+        String countQueryName, String selectQueryName, boolean hasTopic, boolean isRecursive,
+        boolean hasFromEntityKind, boolean hasFromEntityId, String fromEntityName, boolean hasToEntityKind,
+        boolean hasToEntityId, String toEntityName, boolean hasStatus, boolean hasText, boolean hasTextH2,
+        boolean hasTextMariaDB, boolean isAdvanced, boolean isPaged, boolean isSorted) {
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomLinkableEntityRepositoryImpl.class);
@@ -60,20 +61,24 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
     }
 
     /**
-     * Returns the runtime entity class corresponding to the {@literal <T>} type parameter.
+     * Returns the runtime entity class corresponding to the {@literal <T>} type
+     * parameter.
+     * 
      * @return The runtime entity class.
      */
     protected abstract Class<T> getEntityClass();
 
     /**
      * Returns the database columns for which there exists a full text index.
+     * 
      * @return A comma-separated list of back-quoted database column names.
      */
     protected abstract String getFulltextColumns();
 
     /**
      * Returns metadata about a query and paging/sorting specification.
-     * @param filter The query filter, must not be {@code null}.
+     * 
+     * @param filter   The query filter, must not be {@code null}.
      * @param pageable Specifies sorting and pagination, must not be {@code null}.
      * @return Query metadata.
      */
@@ -93,13 +98,14 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
         boolean isAdvanced = hasText && filter.getAdvancedSearch();
         boolean isPaged = pageable.isPaged();
         boolean isSorted = pageable.getSort().isSorted();
+        String entityName = entityUtils.getEntityName(getEntityClass());
         String fromEntityName = hasFromEntityKind ? entityUtils.getEntityName(filter.getFromEntityKind()) : "";
-        // NOTE: Semantics of filter.toEntityKind are duplicated by getEntityClass() - should we do anything about this?
-        String toEntityName = hasToEntityKind ? entityUtils.getEntityName(filter.getToEntityKind())
-            : entityUtils.getEntityName(getEntityClass());
+        String toEntityName = hasToEntityKind ? entityUtils.getEntityName(filter.getToEntityKind()) : "";
 
-        // For paged queries, we need to ensure that the sort order includes "id" because otherwise the join with H2's
-        // FT_SEARCH_DATA can result in records duplicated across successive pages, OR result sets involving JOINs can
+        // For paged queries, we need to ensure that the sort order includes "id"
+        // because otherwise the join with H2's
+        // FT_SEARCH_DATA can result in records duplicated across successive pages, OR
+        // result sets involving JOINs can
         // be returned in a nondeterministic order.
         if (isPaged && pageable.getSort().filter(o -> o.getProperty().equals("id")).isEmpty()) {
             Sort sort = pageable.getSort().and(Sort.by("id"));
@@ -110,7 +116,7 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
         StringBuilder countQueryName = new StringBuilder();
         StringBuilder selectQueryName = new StringBuilder();
         StringBuilder[] queryNames = { countQueryName, selectQueryName };
-        append(toEntityName, queryNames);
+        append(entityName, queryNames);
         countQueryName.append(".countBy");
         selectQueryName.append(".findBy");
         if (hasTopic) {
@@ -125,11 +131,13 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
             if (hasFromEntityId)
                 append("Id", queryNames);
         }
-        if (/*hasToEntityKind ||*/hasToEntityId) {
+        if (hasToEntityKind || hasToEntityId) {
             append("ToEntity", queryNames);
-            // Unnecessary, since the query name start with toEntityName.
-            // if (hasToEntityKind)
-            // append("Kind", queryNames);
+            // Unnecessary, since the query name starts with toEntityName?
+            // Actually, it depends on whether the query's entity kind is linked as the
+            // fromEntity or the toEntity!
+            if (hasToEntityKind)
+                append("Kind", queryNames);
             if (hasToEntityId)
                 append("Id", queryNames);
         }
@@ -144,146 +152,172 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
             entityUtils.appendOrderByToQueryName(selectQueryName, pageable);
         }
 
-        return new QueryMetaData(filter, pageable, countQueryName.toString(), selectQueryName.toString(), hasTopic,
-            isRecursive, hasFromEntityKind, hasFromEntityId, fromEntityName, hasToEntityKind, hasToEntityId,
+        return new QueryMetaData(filter, pageable, entityName, countQueryName.toString(), selectQueryName.toString(),
+            hasTopic, isRecursive, hasFromEntityKind, hasFromEntityId, fromEntityName, hasToEntityKind, hasToEntityId,
             toEntityName, hasStatus, hasText, hasTextH2, hasTextMariaDB, isAdvanced, isPaged, isSorted);
     }
 
     /**
-     * Defines and registers a pair of named queries with the {@code EntityManagerFactory}.
+     * Defines and registers a pair of named queries with the
+     * {@code EntityManagerFactory}.
+     * 
      * @param m Query metadata.
      * @return An executable query pair.
      */
     private QueryPair defineNamedQueries(QueryMetaData m) {
-        // Question: do we need the recursive topic filter if a master entity is provided?
-        // One might be tempted to think that we would only need to apply a topic filter when retrieving the master
-        // entity list, and that retrieval of associated entities could be done simply via the <master>_<entity>
+        // Question: do we need the recursive topic filter if a master entity is
+        // provided?
+        // One might be tempted to think that we would only need to apply a topic filter
+        // when retrieving the master
+        // entity list, and that retrieval of associated entities could be done simply
+        // via the entity_link
         // association table.
         //
-        // However, a master entity person might be associated with multiple topics and multiple publications or
+        // However, a master entity person might be associated with multiple topics and
+        // multiple publications or
         // declarations, each of which may or may not pertain to the specified topic,
-        // so if a topic filter is specified, we would not want to include publications or declarations that do not
+        // so if a topic filter is specified, we would not want to include publications
+        // or declarations that do not
         // pertain to that topic.
         //
-        // Additionally, if NO topic was selected, we would expect to see ALL associated publications and declarations,
-        // whereas when a topic IS selected, we would expect to see ONLY those publications and declarations associated
+        // Additionally, if NO topic was selected, we would expect to see ALL associated
+        // publications and declarations,
+        // whereas when a topic IS selected, we would expect to see ONLY those
+        // publications and declarations associated
         // with that topic.
         //
-        // In other words, if a topicId is supplied, it must be used in the query regardless of whether a master entity
+        // In other words, if a topicId is supplied, it must be used in the query
+        // regardless of whether a master entity
         // is supplied.
         /*
-        The primary use for this query is to fetch all records of a particular entity kind, which match a set of
-        criteria including topic and master entity links, status and text matches. This is used by the filtered
-        claims, declarations, persons, publications and quotations top-level query fields.
-        A possible future use of this query might be to fetch all records of any entity kind, which match the same set
-        of criteria, with a view to implementing queries such as ILinkableEntity.fromEntities: [ILinkableEntity] and
-        ILinkableEntity.toEntities: [ILinkableEntity]. Such potentially heterogeneous results would require a native
-        query that joins the base "entity" table with all other tables "claim", "declaration", "person", "publication",
-        "quotation" and "topic". In this case we would have to deal the possibility of column name/type clashes.
-        
-        -- This is what the query template looks like conceptually when ALL filter fields are provided.
-        -- It includes all combinations of recursive & non-recursive, count & select queries, H2 & MariaDB databases.
-        
-        -- if (m.isRecursive) { commonTableExpr =
-        WITH RECURSIVE "sub_topic" ("id", "parent_id")
-        AS (
-            SELECT t."id", t."parent_id"
-            FROM "topic" t
-            -- if (m.hasStatus) {
-            JOIN "entity" e
-            ON e."id" = t."id"
-            -- }
-            WHERE t."id" = :topicId
-                -- if (m.hasStatus) {
-                AND e."status" IN (:status)
-                -- }
-            UNION ALL
-            SELECT t."id", t."parent_id"
-            FROM "topic" t
-            JOIN "sub_topic" st
-            ON st."id" = t."parent_id"
-            -- if (m.hasStatus) {
-            JOIN "entity" e
-            ON e."id" = t."id"
-            WHERE e."status" IN (:status)
-            -- }
-        )
-        -- }
-        
-        SELECT COUNT(*) | DISTINCT e."dtype", e."status", e."created", e."created_by_user_id", e."updated", e."updated_by_user_id", ee.*
-        FROM "entity" e
-        
-        -- if (m.hasTopic) { topJoinClause =
-        JOIN "entity_link" topic_el
-        ON
-            -- if (!m.isRecursive) {
-            topic_el."from_entity_id" = :topicId
-            -- }
-            AND topic_el."to_entity_id" = e."id"
-        -- if (m.isRecursive) {
-        JOIN "sub_topic" st
-        ON st."id" = topic_el."from_entity_id"
-        -- } else {
-        JOIN "entity" topic_e
-        ON
-            topic_e."id" = topic_el."from_entity_id"
-            AND topic_e."dtype" = 'TOP'
-            -- if (m.hasStatus) {
-            AND topic_e."status" IN (:status)
-            -- }
-        --  }
-        -- }
-        
-        -- if (m.hasFromEntityKind || m.hasFromEntityId) { meJoinClause =
-        JOIN "entity_link" master_el
-        ON
-            -- if (m.hasFromEntityId) {
-            master_el."from_entity_id" = :fromEntityId
-            -- }
-            AND master_el."to_entity_id" = e."id"
-        -- if (m.hasFromEntityKind) {
-        JOIN "entity" master_e
-        ON
-            master_e."id" = master_el."from_entity_id"
-            AND master_e."dtype" = :fromEntityKind
-        --  }
-        -- }
-        
-        -- if (m.hasTextH2) { ftJoinClause =
-        JOIN FT_SEARCH_DATA(:text, 0, 0) ft
-        ON
-            ft."TABLE" = '${m.toEntityName}'
-            AND ft."KEYS"[1] = e."id"
-        -- }
-        
-        -- if (m.hasToEntityKind) { toeJoinClause
-        JOIN "${m.toEntityName}" ee
-        ON ee."id" = e."id"
-        -- }
-        
-        if (m.hasTopic || m.hasFromEntityKind || m.hasFromEntityId || m.hasToEntityKind || m.hasToEntityId || m.hasStatus || m.hasTextMariaDB)
-        WHERE
-            -- if (m.hasToEntityId) {
-            e."id" = :toEntityId
-            -- }
-        
-            -- if (m.hasToEntityKind) {
-            AND e."dtype" = :toEntityKind
-            -- }
-        
-            -- if (m.hasStatus) {
-            AND e."status" IN (:status)
-            -- }
-        
-            -- if (m.hasTextMariaDB) {
-            AND MATCH (${fulltextEntityColumns}) AGAINST (:text IN BOOLEAN MODE)
-            --}
-        
-        -- if (m.isSorted)
-        ORDER BY
-            "${sortField}" ${sortOrder}, ...
-        ;
-        */
+         * The primary use for this query is to fetch all records of a particular entity
+         * kind, which match a set of
+         * criteria including topic and master entity links, status and text matches.
+         * This is used by the filtered
+         * claims, declarations, persons, publications and quotations top-level query
+         * fields.
+         * A possible future use of this query might be to fetch all records of any
+         * entity kind, which match the same set
+         * of criteria, with a view to implementing queries such as
+         * ILinkableEntity.fromEntities: [ILinkableEntity] and
+         * ILinkableEntity.toEntities: [ILinkableEntity]. Such potentially heterogeneous
+         * results would require a native
+         * query that joins the base "entity" table with all other tables "claim",
+         * "declaration", "person", "publication",
+         * "quotation" and "topic". In this case we would have to deal the possibility
+         * of column name/type clashes.
+         * 
+         * -- This is what the query template looks like conceptually when ALL filter
+         * fields are provided.
+         * -- It includes all combinations of recursive & non-recursive, count & select
+         * queries, H2 & MariaDB databases.
+         * 
+         * -- if (m.isRecursive) { commonTableExpr =
+         * WITH RECURSIVE "sub_topic" ("id", "parent_id")
+         * AS (
+         * SELECT t."id", t."parent_id"
+         * FROM "topic" t
+         * -- if (m.hasStatus) {
+         * JOIN "entity" e
+         * ON e."id" = t."id"
+         * -- }
+         * WHERE t."id" = :topicId
+         * -- if (m.hasStatus) {
+         * AND e."status" IN (:status)
+         * -- }
+         * UNION ALL
+         * SELECT t."id", t."parent_id"
+         * FROM "topic" t
+         * JOIN "sub_topic" st
+         * ON st."id" = t."parent_id"
+         * -- if (m.hasStatus) {
+         * JOIN "entity" e
+         * ON e."id" = t."id"
+         * WHERE e."status" IN (:status)
+         * -- }
+         * )
+         * -- }
+         * 
+         * SELECT COUNT(*) | DISTINCT e."dtype", e."status", e."created",
+         * e."created_by_user_id", e."updated", e."updated_by_user_id", ee.*
+         * FROM "entity" e
+         * 
+         * -- if (m.hasTopic) { topJoinClause =
+         * JOIN "entity_link" topic_el
+         * ON
+         * -- if (!m.isRecursive) {
+         * topic_el."from_entity_id" = :topicId
+         * -- }
+         * AND topic_el."to_entity_id" = e."id"
+         * -- if (m.isRecursive) {
+         * JOIN "sub_topic" st
+         * ON st."id" = topic_el."from_entity_id"
+         * -- } else {
+         * JOIN "entity" topic_e
+         * ON
+         * topic_e."id" = topic_el."from_entity_id"
+         * AND topic_e."dtype" = 'TOP'
+         * -- if (m.hasStatus) {
+         * AND topic_e."status" IN (:status)
+         * -- }
+         * -- }
+         * -- }
+         * 
+         * -- if (m.hasFromEntityKind || m.hasFromEntityId) { meJoinClause =
+         * JOIN "entity_link" master_el
+         * ON
+         * -- if (m.hasFromEntityId) {
+         * master_el."from_entity_id" = :fromEntityId
+         * -- }
+         * AND master_el."to_entity_id" = e."id"
+         * -- if (m.hasFromEntityKind) {
+         * JOIN "entity" master_e
+         * ON
+         * master_e."id" = master_el."from_entity_id"
+         * AND master_e."dtype" = :fromEntityKind
+         * -- }
+         * -- }
+         * 
+         * -- if (m.hasToEntityKind || m.hasToEntityId) { meJoinClause =
+         * JOIN "entity_link" master_el
+         * ON
+         * -- if (m.hasToEntityId) {
+         * master_el."to_entity_id" = :toEntityId
+         * -- }
+         * AND master_el."from_entity_id" = e."id"
+         * -- if (m.hasToEntityKind) {
+         * JOIN "entity" master_e
+         * ON
+         * master_e."id" = master_el."to_entity_id"
+         * AND master_e."dtype" = :toEntityKind
+         * -- }
+         * -- }
+         * 
+         * -- if (m.hasTextH2) { ftJoinClause =
+         * JOIN FT_SEARCH_DATA(:text, 0, 0) ft
+         * ON
+         * ft."TABLE" = '${m.toEntityName}'
+         * AND ft."KEYS"[1] = e."id"
+         * -- }
+         * 
+         * JOIN "${m.entityName}" ee
+         * ON ee."id" = e."id"
+         * 
+         * -- if (m.hasStatus || m.hasTextMariaDB)
+         * WHERE
+         * -- if (m.hasStatus) {
+         * AND e."status" IN (:status)
+         * -- }
+         * 
+         * -- if (m.hasTextMariaDB) {
+         * AND MATCH (${fulltextEntityColumns}) AGAINST (:text IN BOOLEAN MODE)
+         * --}
+         * 
+         * -- if (m.isSorted)
+         * ORDER BY
+         * "${sortField}" ${sortOrder}, ...
+         * ;
+         */
 
         String commonTableExpr;
         if (m.isRecursive) {
@@ -313,51 +347,52 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
                 cteStatusClause2.append(NL) //
                     .append("    WHERE e.\"status\" IN (:status)");
             }
-            commonTableExpr =
-                String.format(cteTemplate, cteJoinClause, cteStatusClause1, cteJoinClause, cteStatusClause2);
+            commonTableExpr = String.format(cteTemplate, cteJoinClause, cteStatusClause1, cteJoinClause,
+                cteStatusClause2);
         } else {
             commonTableExpr = "";
         }
 
         boolean needsAnd = false;
-        StringBuilder topJoinClause = new StringBuilder();
+        StringBuilder topicJoinClause = new StringBuilder();
         if (m.hasTopic) {
-            topJoinClause.append(NL) //
+            topicJoinClause.append(NL) //
                 .append("JOIN \"entity_link\" topic_el").append(NL) //
                 .append("ON");
             if (!m.isRecursive) {
-                topJoinClause.append(NL) //
+                topicJoinClause.append(NL) //
                     .append("    topic_el.\"from_entity_id\" = :topicId");
                 needsAnd = true;
             }
-            topJoinClause.append(NL) //
+            topicJoinClause.append(NL) //
                 .append("    ");
             if (needsAnd)
-                topJoinClause.append("AND ");
-            topJoinClause.append("topic_el.\"to_entity_id\" = e.\"id\"");
+                topicJoinClause.append("AND ");
+            topicJoinClause.append("topic_el.\"to_entity_id\" = e.\"id\"");
 
             if (m.isRecursive) {
-                topJoinClause.append(NL) //
+                topicJoinClause.append(NL) //
                     .append("JOIN \"sub_topic\" st").append(NL) //
                     .append("ON st.\"id\" = topic_el.\"from_entity_id\"");
             } else {
-                topJoinClause.append(NL) //
+                topicJoinClause.append(NL) //
                     .append("JOIN \"entity\" topic_e").append(NL) //
                     .append("ON").append(NL) //
                     .append("    topic_e.\"id\" = topic_el.\"from_entity_id\"").append(NL) //
                     .append("    AND topic_e.\"dtype\" = 'TOP'");
                 if (m.hasStatus) {
-                    topJoinClause.append(NL) //
+                    topicJoinClause.append(NL) //
                         .append("    AND topic_e.\"status\" IN (:status)");
                 }
             }
         }
 
+        // N.B. This code assumes that fromEntityKind/fromEntityId and toEntityKind/toEntityId are mutually exclusive.
         StringBuilder meJoinClause = new StringBuilder();
         if (m.hasFromEntityKind || m.hasFromEntityId) {
             meJoinClause.append(NL) //
-                .append("JOIN \"entity_link\" master_el").append(NL) //
-                .append("ON");
+                    .append("JOIN \"entity_link\" master_el").append(NL) //
+                    .append("ON");
             needsAnd = false;
             if (m.hasFromEntityId) {
                 meJoinClause.append(NL) //
@@ -376,6 +411,28 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
                     .append("    master_e.\"id\" = master_el.\"from_entity_id\"").append(NL) //
                     .append("    AND master_e.\"dtype\" = :fromEntityKind");
             }
+        } else if (m.hasToEntityKind || m.hasToEntityId) {
+            meJoinClause.append(NL) //
+                .append("JOIN \"entity_link\" master_el").append(NL) //
+                .append("ON");
+            needsAnd = false;
+            if (m.hasToEntityId) {
+                meJoinClause.append(NL) //
+                    .append("    master_el.\"to_entity_id\" = :toEntityId");
+                needsAnd = true;
+            }
+            meJoinClause.append(NL) //
+                .append("    ");
+            if (needsAnd)
+                meJoinClause.append("AND ");
+            meJoinClause.append("master_el.\"from_entity_id\" = e.\"id\"");
+            if (m.hasToEntityKind) {
+                meJoinClause.append(NL) //
+                    .append("JOIN \"entity\" master_e").append(NL) //
+                    .append("ON").append(NL) //
+                    .append("    master_e.\"id\" = master_el.\"to_entity_id\"").append(NL) //
+                    .append("    AND master_e.\"dtype\" = :toEntityKind");
+            }
         }
 
         StringBuilder ftJoinClause = new StringBuilder();
@@ -387,32 +444,15 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
                 .append("    AND ft.\"KEYS\"[1] = e.\"id\"");
         }
 
-        StringBuilder toeJoinClause = new StringBuilder();
-        if (m.hasToEntityKind) {
-            toeJoinClause.append(NL) //
-                .append("JOIN \"").append(m.toEntityName).append("\" ee").append(NL).append("ON ee.\"id\" = e.\"id\"");
-        }
+        StringBuilder eeJoinClause = new StringBuilder();
+        eeJoinClause.append(NL) //
+            .append("JOIN \"").append(m.entityName).append("\" ee").append(NL).append("ON ee.\"id\" = e.\"id\"");
 
         StringBuilder whereClause = new StringBuilder();
-        if (m.hasTopic || m.hasFromEntityKind || m.hasFromEntityId || m.hasToEntityKind || m.hasToEntityId
-            || m.hasStatus || m.hasTextMariaDB) {
-
+        if (m.hasStatus || m.hasTextMariaDB) {
             whereClause.append(NL) //
-                .append("WHERE");
+                    .append("WHERE");
             needsAnd = false;
-            if (m.hasToEntityId) {
-                whereClause.append(NL) //
-                    .append("    e.\"id\" = :toEntityId");
-                needsAnd = true;
-            }
-            if (m.hasToEntityKind) {
-                whereClause.append(NL) //
-                    .append("    ");
-                if (needsAnd)
-                    whereClause.append("AND ");
-                whereClause.append("e.\"dtype\" = :toEntityKind");
-                needsAnd = true;
-            }
             if (m.hasStatus) {
                 whereClause.append(NL) //
                     .append("    ");
@@ -446,14 +486,13 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
         // NOTE: since the COUNT query does not include an ORDER BY clause, multiple executions of the same SELECT query
         // with different ORDER BY clauses will result in the registration of multiple identical COUNT queries, each of
         // which will simply overwrite the previous definition. This is not a problem, but it is somewhat inefficient.
-        String countSql = String.format(template, commonTableExpr, "COUNT(*)", topJoinClause, meJoinClause,
-            ftJoinClause, toeJoinClause, whereClause, "");
+        String countSql = String.format(template, commonTableExpr, "COUNT(*)", topicJoinClause, meJoinClause,
+            ftJoinClause, eeJoinClause, whereClause, "");
         Query countQuery = defineNamedQuery(m.countQueryName, countSql, Long.class);
 
-        String columns =
-            "DISTINCT e.\"dtype\", e.\"status\", e.\"created\", e.\"created_by_user_id\", e.\"updated\", e.\"updated_by_user_id\", ee.*";
-        String selectSql = String.format(template, commonTableExpr, columns, topJoinClause, meJoinClause, ftJoinClause,
-            toeJoinClause, whereClause, orderByClause);
+        String columns = "DISTINCT e.\"dtype\", e.\"status\", e.\"created\", e.\"created_by_user_id\", e.\"updated\", e.\"updated_by_user_id\", ee.*";
+        String selectSql = String.format(template, commonTableExpr, columns, topicJoinClause, meJoinClause,
+            ftJoinClause, eeJoinClause, whereClause, orderByClause);
         Query selectQuery = defineNamedQuery(m.selectQueryName, selectSql, getEntityClass());
 
         return new QueryPair(countQuery, selectQuery);
@@ -494,7 +533,7 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
         if (m.isPaged)
             entityUtils.setQueryPagination(queries.selectQuery(), m.pageable);
 
-        long total = (Long)queries.countQuery().getSingleResult();
+        long total = (Long) queries.countQuery().getSingleResult();
         List<T> content = queries.selectQuery().getResultList();
         return new PageImpl<>(content, m.pageable, total);
     }

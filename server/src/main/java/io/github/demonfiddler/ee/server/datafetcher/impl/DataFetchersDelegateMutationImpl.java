@@ -23,6 +23,7 @@ import static io.github.demonfiddler.ee.common.util.StringUtils.countLines;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.data.repository.CrudRepository;
@@ -43,8 +44,10 @@ import io.github.demonfiddler.ee.server.model.ITrackedEntity;
 import io.github.demonfiddler.ee.server.model.Journal;
 import io.github.demonfiddler.ee.server.model.JournalInput;
 import io.github.demonfiddler.ee.server.model.EntityLinkInput;
+import io.github.demonfiddler.ee.server.model.Group;
+import io.github.demonfiddler.ee.server.model.GroupInput;
 import io.github.demonfiddler.ee.server.model.Log;
-import io.github.demonfiddler.ee.server.model.PermissionKind;
+import io.github.demonfiddler.ee.server.model.AuthorityKind;
 import io.github.demonfiddler.ee.server.model.Person;
 import io.github.demonfiddler.ee.server.model.PersonInput;
 import io.github.demonfiddler.ee.server.model.Publication;
@@ -63,6 +66,7 @@ import io.github.demonfiddler.ee.server.model.UserInput;
 import io.github.demonfiddler.ee.server.repository.ClaimRepository;
 import io.github.demonfiddler.ee.server.repository.DeclarationRepository;
 import io.github.demonfiddler.ee.server.repository.EntityLinkRepository;
+import io.github.demonfiddler.ee.server.repository.GroupRepository;
 import io.github.demonfiddler.ee.server.repository.JournalRepository;
 import io.github.demonfiddler.ee.server.repository.LinkableEntityRepository;
 import io.github.demonfiddler.ee.server.repository.LogRepository;
@@ -73,9 +77,11 @@ import io.github.demonfiddler.ee.server.repository.QuotationRepository;
 import io.github.demonfiddler.ee.server.repository.TopicRepository;
 import io.github.demonfiddler.ee.server.repository.TrackedEntityRepository;
 import io.github.demonfiddler.ee.server.repository.UserRepository;
+import io.github.demonfiddler.ee.server.util.CollectionUtils;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
 import io.github.demonfiddler.ee.server.util.SecurityUtils;
 import jakarta.annotation.Resource;
+import jakarta.persistence.EntityNotFoundException;
 
 @Component
 public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMutation {
@@ -106,6 +112,8 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     TrackedEntityRepository trackedEntityRepository;
     @Resource
     private UserRepository userRepository;
+    @Resource
+    private GroupRepository groupRepository;
     @Resource
     private EntityUtils entityUtils;
     @Resource
@@ -197,6 +205,28 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         return entity;
     }
 
+    private boolean addAuthorities(List<AuthorityKind> authorities, List<AuthorityKind> toAdd) {
+        boolean modified = false;
+        for (AuthorityKind authority : toAdd) {
+            if (!authorities.contains(authority)) {
+                authorities.add(authority);
+                modified = true;
+            }
+        }
+        return modified;
+    }
+
+    private boolean removeAuthorities(List<AuthorityKind> authorities, List<AuthorityKind> toRemove) {
+        boolean modified = false;
+        for (AuthorityKind authority : toRemove)
+            modified |= authorities.remove(authority);
+        return modified;
+    }
+
+    private EntityNotFoundException createEntityNotFoundException(String type, Long id) {
+        return new EntityNotFoundException(type + " not found with id: " + id);
+    }
+
     @Override
     @PreAuthorize("hasAuthority('CRE')")
     public Object createClaim(DataFetchingEnvironment dataFetchingEnvironment, ClaimInput input) {
@@ -216,11 +246,8 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @Override
     @PreAuthorize("hasAuthority('UPD')")
     public Object updateClaim(DataFetchingEnvironment dataFetchingEnvironment, ClaimInput input) {
-        Optional<Claim> claimOpt = claimRepository.findById(input.getId());
-        if (claimOpt.isEmpty())
-            return null;
-
-        Claim claim = claimOpt.get();
+        Claim claim = claimRepository.findById(input.getId())
+            .orElseThrow(() -> createEntityNotFoundException("Claim", input.getId()));
         claim.setDate(input.getDate());
         claim.setNotes(input.getNotes());
         claim.setText(input.getText());
@@ -264,11 +291,8 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @Override
     @PreAuthorize("hasAuthority('UPD')")
     public Object updateDeclaration(DataFetchingEnvironment dataFetchingEnvironment, DeclarationInput input) {
-        Optional<Declaration> declarationOpt = declarationRepository.findById(input.getId());
-        if (declarationOpt.isEmpty())
-            return null;
-
-        Declaration declaration = declarationOpt.get();
+        Declaration declaration = declarationRepository.findById(input.getId())
+            .orElseThrow(() -> createEntityNotFoundException("Declaration", input.getId()));
         declaration.setCountry(input.getCountry());
         declaration.setDate(input.getDate());
         declaration.setKind(input.getKind() == null ? null : input.getKind().name());
@@ -295,8 +319,10 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @Override
     @PreAuthorize("hasAuthority('LNK')")
     public Object createEntityLink(DataFetchingEnvironment dataFetchingEnvironment, EntityLinkInput input) {
-        AbstractLinkableEntity fromEntity = linkableEntityRepository.getReferenceById(input.getFromEntityId());
-        AbstractLinkableEntity toEntity = linkableEntityRepository.getReferenceById(input.getToEntityId());
+        AbstractLinkableEntity fromEntity = linkableEntityRepository.findById(input.getFromEntityId())
+            .orElseThrow(() -> createEntityNotFoundException("From ILinkableEntity", input.getFromEntityId()));
+        AbstractLinkableEntity toEntity = linkableEntityRepository.findById(input.getToEntityId())
+            .orElseThrow(() -> createEntityNotFoundException("To ILinkableEntity", input.getToEntityId()));
         EntityLink entityLink = EntityLink.builder() //
             .withFromEntity(fromEntity) //
             .withFromEntityLocations(input.getFromEntityLocations()) //
@@ -315,11 +341,8 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @Override
     @PreAuthorize("hasAuthority('LNK')")
     public Object updateEntityLink(DataFetchingEnvironment dataFetchingEnvironment, EntityLinkInput input) {
-        Optional<EntityLink> entityLinkOpt = entityLinkRepository.findById(input.getId());
-        if (entityLinkOpt.isEmpty())
-            return null;
-
-        EntityLink entityLink = entityLinkOpt.get();
+        EntityLink entityLink = entityLinkRepository.findById(input.getId())
+            .orElseThrow(() -> createEntityNotFoundException("EntityLink", input.getId()));
         AbstractLinkableEntity oldFromEntity = entityLink.getFromEntity();
         AbstractLinkableEntity oldToEntity = entityLink.getToEntity();
 
@@ -394,11 +417,8 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @Override
     @PreAuthorize("hasAuthority('UPD')")
     public Object updateJournal(DataFetchingEnvironment dataFetchingEnvironment, JournalInput input) {
-        Optional<Journal> journalOpt = journalRepository.findById(input.getId());
-        if (journalOpt.isEmpty())
-            return null;
-
-        Journal journal = journalOpt.get();
+        Journal journal = journalRepository.findById(input.getId())
+            .orElseThrow(() -> createEntityNotFoundException("Journal", input.getId()));
         journal.setAbbreviation(input.getAbbreviation());
         journal.setIssn(input.getIssn());
         journal.setNotes(input.getNotes());
@@ -456,11 +476,8 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @Override
     @PreAuthorize("hasAuthority('UPD')")
     public Object updatePerson(DataFetchingEnvironment dataFetchingEnvironment, PersonInput input) {
-        Optional<Person> personOpt = personRepository.findById(input.getId());
-        if (personOpt.isEmpty())
-            return null;
-
-        Person person = personOpt.get();
+        Person person = personRepository.findById(input.getId())
+            .orElseThrow(() -> createEntityNotFoundException("Person", input.getId()));
         person.setAlias(input.getAlias());
         person.setTitle(input.getTitle());
         person.setFirstName(input.getFirstName());
@@ -522,14 +539,13 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @Override
     @PreAuthorize("hasAuthority('UPD')")
     public Object updatePublication(DataFetchingEnvironment dataFetchingEnvironment, PublicationInput input) {
-        Optional<Publication> publicationOpt = publicationRepository.findById(input.getId());
-        if (publicationOpt.isEmpty())
-            return null;
-
         Journal journal = null;
-        if (input.getJournalId() != null)
-            journal = journalRepository.findById(input.getJournalId()).get();
-        Publication publication = publicationOpt.get();
+        if (input.getJournalId() != null) {
+            journal = journalRepository.findById(input.getJournalId())
+                .orElseThrow(() -> createEntityNotFoundException("Journal", input.getId()));
+        }
+        Publication publication = publicationRepository.findById(input.getId())
+            .orElseThrow(() -> createEntityNotFoundException("Publication", input.getId()));
         publication.setTitle(input.getTitle());
         publication.setJournal(journal);
         publication.setAuthors(input.getAuthorNames());
@@ -580,11 +596,8 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @Override
     @PreAuthorize("hasAuthority('UPD')")
     public Object updatePublisher(DataFetchingEnvironment dataFetchingEnvironment, PublisherInput input) {
-        Optional<Publisher> publisherOpt = publisherRepository.findById(input.getId());
-        if (publisherOpt.isEmpty())
-            return null;
-
-        Publisher publisher = publisherOpt.get();
+        Publisher publisher = publisherRepository.findById(input.getId())
+            .orElseThrow(() -> createEntityNotFoundException("Publisher", input.getId()));
         publisher.setCountry(input.getCountry());
         publisher.setJournalCount(input.getJournalCount());
         publisher.setLocation(input.getLocation());
@@ -627,11 +640,8 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @Override
     @PreAuthorize("hasAuthority('UPD')")
     public Object updateQuotation(DataFetchingEnvironment dataFetchingEnvironment, QuotationInput input) {
-        Optional<Quotation> quotationOpt = quotationRepository.findById(input.getId());
-        if (quotationOpt.isEmpty())
-            return null;
-
-        Quotation quotation = quotationOpt.get();
+        Quotation quotation = quotationRepository.findById(input.getId())
+            .orElseThrow(() -> createEntityNotFoundException("Quotation", input.getId()));
         quotation.setQuotee(input.getQuotee());
         quotation.setText(input.getText());
         quotation.setDate(input.getDate());
@@ -676,19 +686,17 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @Override
     @PreAuthorize("hasAuthority('UPD')")
     public Object updateTopic(DataFetchingEnvironment dataFetchingEnvironment, TopicInput input) {
-        Optional<Topic> quotationOpt = topicRepository.findById(input.getId());
-        if (quotationOpt.isEmpty())
-            return null;
-
-        Topic topic = quotationOpt.get();
+        Topic topic = topicRepository.findById(input.getId())
+            .orElseThrow(() -> createEntityNotFoundException("Topic", input.getId()));
         topic.setLabel(input.getLabel());
         topic.setDescription(input.getDescription());
         Long parentId = input.getParentId();
         if (parentId == null) {
             topic.setParent(null);
         } else {
-            Optional<Topic> parentOpt = topicRepository.findById(parentId);
-            topic.setParent(parentOpt.get());
+            Topic parentTopic = topicRepository.findById(parentId)
+                .orElseThrow(() -> createEntityNotFoundException("Topic", parentId));
+            topic.setParent(parentTopic);
         }
         setUpdatedFields(topic);
 
@@ -712,6 +720,8 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         user.setUsername(input.getUsername());
         user.setFirstName(input.getFirstName());
         user.setLastName(input.getLastName());
+        user.setEmail(input.getEmail());
+        user.setPassword(input.getPassword());
         setCreatedFields(user);
 
         user = userRepository.save(user);
@@ -724,14 +734,13 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @Override
     @PreAuthorize("hasAuthority('ADM')")
     public Object updateUser(DataFetchingEnvironment dataFetchingEnvironment, UserInput input) {
-        Optional<User> userOpt = userRepository.findById(input.getId());
-        if (userOpt.isEmpty())
-            return null;
-
-        User user = userOpt.get();
+        User user = userRepository.findById(input.getId())
+            .orElseThrow(() -> createEntityNotFoundException("User", input.getId()));
         user.setUsername(input.getUsername());
         user.setFirstName(input.getFirstName());
         user.setLastName(input.getLastName());
+        user.setEmail(input.getEmail());
+        user.setPassword(input.getPassword());
         setUpdatedFields(user);
 
         user = userRepository.save(user);
@@ -749,37 +758,144 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
 
     @Override
     @PreAuthorize("hasAuthority('ADM')")
-    public Object grantUserPermissions(DataFetchingEnvironment dataFetchingEnvironment, Long userId,
-        List<PermissionKind> permissions) {
+    public Object grantUserAuthorities(DataFetchingEnvironment dataFetchingEnvironment, Long userId,
+        List<AuthorityKind> authorities) {
 
-        int updateCount = userRepository.addUserPermissions(userId, permissions);
-        return updateCount == permissions.size();
+        User user = userRepository.findById(userId).orElseThrow(() -> createEntityNotFoundException("User", userId));
+        if (addAuthorities(user.getAuthorities(), authorities)) {
+            setUpdatedFields(user);
+            user = userRepository.save(user);
+            logUpdated(user);
+        }
+        return user;
     }
 
     @Override
     @PreAuthorize("hasAuthority('ADM')")
-    public Object revokeUserPermissions(DataFetchingEnvironment dataFetchingEnvironment, Long userId,
-        List<PermissionKind> permissions) {
+    public Object revokeUserAuthorities(DataFetchingEnvironment dataFetchingEnvironment, Long userId,
+        List<AuthorityKind> authorities) {
 
-        int removeCount = userRepository.removeUserPermissions(userId, permissions);
-        return removeCount == permissions.size();
+        User user = userRepository.findById(userId).orElseThrow(() -> createEntityNotFoundException("User", userId));
+        if (removeAuthorities(user.getAuthorities(), authorities)) {
+            setUpdatedFields(user);
+            user = userRepository.save(user);
+            logUpdated(user);
+        }
+        return user;
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('ADM')")
+    public Object createGroup(DataFetchingEnvironment dataFetchingEnvironment, GroupInput input) {
+        Group group = new Group();
+        group.setGroupname(input.getGroupname());
+        setCreatedFields(group);
+
+        group = groupRepository.save(group);
+
+        logCreated(group);
+
+        return group;
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('ADM')")
+    public Object updateGroup(DataFetchingEnvironment dataFetchingEnvironment, GroupInput input) {
+        Group group = groupRepository.findById(input.getId())
+            .orElseThrow(() -> createEntityNotFoundException("Group", input.getId()));
+        group.setGroupname(input.getGroupname());
+        setUpdatedFields(group);
+
+        group = groupRepository.save(group);
+
+        logUpdated(group);
+
+        return group;
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('ADM')")
+    public Object deleteGroup(DataFetchingEnvironment dataFetchingEnvironment, Long groupId) {
+        return delete(groupId, groupRepository);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('ADM')")
+    public Object addGroupMember(DataFetchingEnvironment dataFetchingEnvironment, Long groupId, Long userId) {
+        Group group = groupRepository.findById(groupId).orElseThrow(()
+            -> createEntityNotFoundException("Group", groupId));
+        User user = userRepository.findById(userId).orElseThrow(()
+            -> createEntityNotFoundException("User", userId));
+        List<User> members = group.getMembers();
+        boolean alreadyMember = CollectionUtils.contains(members, m -> Objects.equals(m.getId(), userId));
+        if (!alreadyMember) {
+            members.add(user);
+            setUpdatedFields(group);
+            group = groupRepository.save(group);
+            logUpdated(group);
+        }
+        return group;
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('ADM')")
+    public Object removeGroupMember(DataFetchingEnvironment dataFetchingEnvironment, Long groupId, Long userId) {
+        Group group = groupRepository.findById(groupId).orElseThrow(()
+            -> createEntityNotFoundException(null, groupId));
+        List<User> members = group.getMembers();
+        User member = CollectionUtils.find(members, m -> Objects.equals(m.getId(), userId));
+        if (member != null) {
+            members.remove(member);
+            setUpdatedFields(group);
+            group = groupRepository.save(group);
+            logUpdated(group);
+        }
+        return group;
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('ADM')")
+    public Object grantGroupAuthorities(DataFetchingEnvironment dataFetchingEnvironment, Long groupId,
+        List<AuthorityKind> authorities) {
+
+        Group group = groupRepository.findById(groupId)
+            .orElseThrow(() -> createEntityNotFoundException("Group", groupId));
+        if (addAuthorities(group.getAuthorities(), authorities)) {
+            setUpdatedFields(group);
+            group = groupRepository.save(group);
+            logUpdated(group);
+        }
+        return group;
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('ADM')")
+    public Object revokeGroupAuthorities(DataFetchingEnvironment dataFetchingEnvironment, Long groupId,
+        List<AuthorityKind> authorities) {
+
+        Group group = groupRepository.findById(groupId)
+            .orElseThrow(() -> createEntityNotFoundException("Group", groupId));
+        if (removeAuthorities(group.getAuthorities(), authorities)) {
+            setUpdatedFields(group);
+            group = groupRepository.save(group);
+            logUpdated(group);
+        }
+        return group;
     }
 
     @Override
     @PreAuthorize("hasAuthority('UPD')")
     public Object setEntityStatus(DataFetchingEnvironment dataFetchingEnvironment, Long entityId, StatusKind status) {
-
-        Optional<AbstractTrackedEntity> entityOpt = trackedEntityRepository.findById(entityId);
-        if (entityOpt.isPresent()) {
-            AbstractTrackedEntity entity = entityOpt.get();
-            entity.setStatus(status.name());
-            setUpdatedFields(entity);
-            logUpdated(entity);
-            trackedEntityRepository.save(entity);
-            return true;
-        } else {
+        // FIXME: should setEntityStatus() return the updated entity?
+        AbstractTrackedEntity entity = trackedEntityRepository.findById(entityId)
+            .orElseThrow(() -> createEntityNotFoundException("ITrackedEntity", entityId));
+        if (entity.getStatus().equals(status.name()))
             return false;
-        }
+        entity.setStatus(status.name());
+        setUpdatedFields(entity);
+        logUpdated(entity);
+        trackedEntityRepository.save(entity);
+        return true;
     }
 
 }

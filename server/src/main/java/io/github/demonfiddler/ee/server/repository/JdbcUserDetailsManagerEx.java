@@ -41,7 +41,7 @@ public class JdbcUserDetailsManagerEx extends JdbcUserDetailsManager {
         """;
 
 	private static final String DEF_GROUP_AUTHORITIES_BY_USERNAME_QUERY = """
-        SELECT g."id", g."group_name", ga."authority"
+        SELECT g."id", g."groupname", ga."authority"
         FROM "group" g
         JOIN "group_authority" ga
         ON ga."group_id" = g."id"
@@ -91,7 +91,7 @@ public class JdbcUserDetailsManagerEx extends JdbcUserDetailsManager {
         """;
 
     private static final String DEF_FIND_GROUPS_SQL = """
-        SELECT "group_name"
+        SELECT "groupname"
         FROM "group";
         """;
 
@@ -100,19 +100,19 @@ public class JdbcUserDetailsManagerEx extends JdbcUserDetailsManager {
         FROM "group_user" gu
         JOIN "group" g
         ON g."id" = gu."group_id"
-        WHERE g."group_name" = ?;
+        WHERE g."groupname" = ?;
         """;
 
     private static final String DEF_INSERT_GROUP_SQL = """
         INSERT INTO "group"
-        ("group_name")
+        ("groupname")
         VALUES (?);
         """;
 
     private static final String DEF_FIND_GROUP_ID_SQL = """
         SELECT "id"
         FROM "group"
-        WHERE "group_name" = ?;
+        WHERE "groupname" = ?;
         """;
 
     private static final String DEF_INSERT_GROUP_AUTHORITY_SQL = """
@@ -138,8 +138,8 @@ public class JdbcUserDetailsManagerEx extends JdbcUserDetailsManager {
 
     private static final String DEF_RENAME_GROUP_SQL = """
         UPDATE "group"
-        SET "group_name" = ?
-        WHERE "group_name" = ?;
+        SET "groupname" = ?
+        WHERE "groupname" = ?;
         """;
 
     private static final String DEF_INSERT_GROUP_MEMBER_SQL = """
@@ -154,11 +154,11 @@ public class JdbcUserDetailsManagerEx extends JdbcUserDetailsManager {
         """;
 
     private static final String DEF_GROUP_AUTHORITIES_QUERY_SQL = """
-        SELECT g."id", g."group_name", ga."authority"
+        SELECT g."id", g."groupname", ga."authority"
         FROM "group" g
         JOIN "group_authority" ga
         ON ga."group_id" = g."id"
-        WHERE g."group_name" = ?;
+        WHERE g."groupname" = ?;
         """;
 
     private static final String DEF_DELETE_GROUP_AUTHORITY_SQL = """
@@ -168,9 +168,10 @@ public class JdbcUserDetailsManagerEx extends JdbcUserDetailsManager {
 
     public JdbcUserDetailsManagerEx(DataSource dataSource) {
         super(dataSource);
-		setUsersByUsernameQuery(DEF_USERS_BY_USERNAME_QUERY);
-		setAuthoritiesByUsernameQuery(DEF_AUTHORITIES_BY_USERNAME_QUERY);
-		setGroupAuthoritiesByUsernameQuery(DEF_GROUP_AUTHORITIES_BY_USERNAME_QUERY);
+        // Override JdbcDaoImpl SQL statements
+        setUsersByUsernameQuery(DEF_USERS_BY_USERNAME_QUERY);
+        setAuthoritiesByUsernameQuery(DEF_AUTHORITIES_BY_USERNAME_QUERY);
+        setGroupAuthoritiesByUsernameQuery(DEF_GROUP_AUTHORITIES_BY_USERNAME_QUERY);
         setCreateUserSql(DEF_CREATE_USER_SQL);
         setDeleteUserSql(DEF_DELETE_USER_SQL);
         setUpdateUserSql(DEF_UPDATE_USER_SQL);

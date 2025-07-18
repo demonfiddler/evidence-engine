@@ -20,7 +20,7 @@
 'use client'
 
 // import type { Metadata } from "next"
-import { useCallback, useContext, useMemo, useState } from "react"
+import { useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { ShieldCheckIcon, UserIcon, UsersIcon } from '@heroicons/react/24/outline'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -30,8 +30,6 @@ import { useForm, FormProvider } from "react-hook-form"
 
 import { columns as groupColumns, columnVisibility as groupColumnVisibility } from "@/app/ui/tables/group-columns"
 import { columns as userColumns, columnVisibility as userColumnVisibility } from "@/app/ui/tables/user-columns"
-import rawGroupPage from "@/data/groups.json" assert {type: 'json'}
-import rawUserPage from "@/data/users.json" assert {type: 'json'}
 import IPage from "@/app/model/IPage";
 import Group from "@/app/model/Group";
 import User from "@/app/model/User";
@@ -44,7 +42,11 @@ import { UserFormFields, UserSchema } from "@/app/ui/validators/user";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
 import Authority from "@/app/model/Authority"
 import { AuthoritiesFormFields } from "@/app/ui/validators/authority"
-import { MutationAction, FormAction, SecurityFormAction } from "@/lib/utils"
+import { MutationAction, FormAction, SecurityFormAction, SearchSettings } from "@/lib/utils"
+import { TrackedEntityQueryFilter } from "@/app/model/schema"
+import { useQuery } from "@apollo/client"
+import { toast } from "sonner"
+import { QUERY_GROUPS, QUERY_USERS } from "@/lib/graphql-queries"
 
 // export const metadata: Metadata = {
 //   title: "Users & Groups",
@@ -117,11 +119,32 @@ function copyUserFromForm(user: User, formValue: UserFormFields) {
   user.authorities = copyAuthoritiesFromForm(formValue)
 }
 
+function createDummyPage(users?: User[]) : IPage<User> | undefined {
+  return users && {
+    content: users,
+    hasContent: !!users,
+    isEmpty: !users,
+    number: 0,
+    size: 0,
+    numberOfElements: users.length,
+    totalPages: users.length ? 1 : 0,
+    totalElements: users.length.toString(),
+    isFirst: true,
+    isLast: true,
+    hasNext: false,
+    hasPrevious: false,
+  }
+}
+
 export default function Security() {
   const selectedRecordsContext = useContext(SelectedRecordsContext)
+  const [userSearch, setUserSearch] = useState<SearchSettings>({} as SearchSettings)
+  const [groupSearch, setGroupSearch] = useState<SearchSettings>({} as SearchSettings)
   const [selectedUserId, setSelectedUserId] = useState<string | undefined>(selectedRecordsContext.User?.id)
   const [selectedGroupId, setSelectedGroupId] = useState<string | undefined>(selectedRecordsContext.Group?.id)
-  const userPageReducer = useCallback((draft: IPage<User>, action: MutationAction<FormAction, UserFormFields>) => {
+  const [userPagination, setUserPagination] = useState({ pageIndex: 0, pageSize: 10 });
+  const [groupPagination, setGroupPagination] = useState({ pageIndex: 0, pageSize: 10 });
+/*  const userPageReducer = useCallback((draft: IPage<User>, action: MutationAction<FormAction, UserFormFields>) => {
     const idx = draft.content.findIndex(c => c.id == selectedUserId)
     switch (action.command) {
       case "create":
@@ -146,9 +169,9 @@ export default function Security() {
           draft.content.splice(idx, 1)
         break
     }
-  }, [selectedUserId, setSelectedUserId])
-  const [userPage, userPageDispatch] = useImmerReducer(userPageReducer, rawUserPage as unknown as IPage<User>)
-  const groupPageReducer = useCallback((draft: IPage<Group>, action: MutationAction<SecurityFormAction, GroupFormFields>) => {
+  }, [selectedUserId, setSelectedUserId])*/
+  // const [userPage, userPageDispatch] = useImmerReducer(userPageReducer, rawUserPage as unknown as IPage<User>)
+/*  const groupPageReducer = useCallback((draft: IPage<Group>, action: MutationAction<SecurityFormAction, GroupFormFields>) => {
     const idx = draft.content.findIndex(c => c.id == selectedGroupId)
     switch (action.command) {
       case "create":
@@ -199,7 +222,7 @@ export default function Security() {
           if (draftGroup.members) {
             // Sanity check to avoid removing a nonexistent member
             const draftUserIdx = draftGroup.members.content.findIndex(user => user.id == selectedUserId)
-            console.log(`draftUserIdx = ${draftUserIdx}`)
+            // console.log(`draftUserIdx = ${draftUserIdx}`)
             if (draftUserIdx != -1) {
               // FIXME: some fields may be incorrect
               draftGroup.members.numberOfElements--
@@ -213,11 +236,104 @@ export default function Security() {
         }}
         break
     }
-  }, [selectedUserId, setSelectedUserId, getSelectedUser, selectedGroupId, setSelectedGroupId])
-  const [groupPage, groupPageDispatch] = useImmerReducer(groupPageReducer, rawGroupPage as unknown as IPage<Group>)
+  }, [selectedUserId, setSelectedUserId, getSelectedUser, selectedGroupId, setSelectedGroupId])*/
+  // const [groupPage, groupPageDispatch] = useImmerReducer(groupPageReducer, rawGroupPage as unknown as IPage<Group>)
+  const userFilter = useMemo(() => {
+    const filter: TrackedEntityQueryFilter = {
+      status: userSearch.status ? [userSearch.status] : undefined,
+      text: userSearch.text,
+    }
+    if (userSearch.text)
+      filter.advancedSearch = userSearch.advancedSearch
+    console.log(`Publishers effect: userFilter = ${JSON.stringify(filter)}`)
+    return filter
+  }, [userSearch])
+  const groupFilter = useMemo(() => {
+    const filter: TrackedEntityQueryFilter = {
+      status: groupSearch.status ? [groupSearch.status] : undefined,
+      text: groupSearch.text,
+    }
+    if (groupSearch.text)
+      filter.advancedSearch = groupSearch.advancedSearch
+    console.log(`Publishers effect: groupFilter = ${JSON.stringify(filter)}`)
+    return filter
+  }, [groupSearch])
+
+  const userPageSort = useMemo(() => {
+    const pageSort = {
+      pageNumber: userPagination.pageIndex,
+      pageSize: userPagination.pageSize
+    }
+    console.log(`Publishers effect: userPageSort = ${JSON.stringify(pageSort)}`)
+    return pageSort
+  }, [userPagination])
+  const groupPageSort = useMemo(() => {
+    const pageSort = {
+      pageNumber: groupPagination.pageIndex,
+      pageSize: groupPagination.pageSize
+    }
+    console.log(`Publishers effect: groupPageSort = ${JSON.stringify(pageSort)}`)
+    return pageSort
+  }, [groupPagination])
+
+  // const result = useQuery(
+  //   QUERY_USERS_GROUPS,
+  //   {
+  //     variables: {
+  //       userFilter,
+  //       userPageSort,
+  //       groupFilter,
+  //       groupPageSort,
+  //     },
+  //   }
+  // )
+
+  const userResult = useQuery(
+    QUERY_USERS,
+    {
+      variables: {
+        filter: userFilter,
+        pageSort: userPageSort,
+      },
+    }
+  )
+
+  const groupResult = useQuery(
+    QUERY_GROUPS,
+    {
+      variables: {
+        filter: groupFilter,
+        pageSort: groupPageSort,
+      },
+    }
+  )
+
+  // Whenever filter or pagination changes, ask Apollo to refetch
+
+  useEffect(() => {
+    // console.log(`Security effect: userSearch = ${JSON.stringify(userSearch)}`)
+    userResult.refetch({
+      filter: userFilter,
+      pageSort: userPageSort,
+    });
+  }, [userFilter, userPageSort]);
+
+  useEffect(() => {
+    // console.log(`Security effect: groupSearch = ${JSON.stringify(groupSearch)}`)
+    groupResult.refetch({
+      filter: groupFilter,
+      pageSort: groupPageSort,
+    });
+  }, [groupFilter, groupPageSort]);
+
+  // console.log(`result.loading = ${result.loading}, result.error = ${JSON.stringify(result.error)}, result.data = ${JSON.stringify(result.data)}`)
+  // console.log(`result.loading = ${result.loading}, result.error = ${JSON.stringify(result.error)}`)
+  const [showUsersOrMembers, setShowUsersOrMembers] = useState("users")
+  const userPage = userResult.data?.users as IPage<User>
+  const groupPage = groupResult.data?.groups as IPage<Group>
   const selectedUser = getSelectedUser(selectedUserId)
   const selectedGroup = getSelectedGroup(selectedGroupId)
-  const [showUsersOrMembers, setShowUsersOrMembers] = useState("users")
+  const userPageToShow = useMemo(() => showUsersOrMembers == "users" ? userPage : createDummyPage(selectedGroup?.members), [showUsersOrMembers, userPage, selectedGroup])
   const origUserFormValue = useMemo(() => copyUserToForm(selectedUser), [selectedUser])
   const userForm = useForm<UserFormFields>({
     resolver: standardSchemaResolver(UserSchema),
@@ -234,10 +350,15 @@ export default function Security() {
   const handleGroupFormAction = useCallback((command: SecurityFormAction, formValue: GroupFormFields) => {
     switch (command) {
       case "create":
-      case "update":
-      case "delete":
-        groupPageDispatch({ command: command, value: formValue })
+        // TODO: invoke mutation: createGroup
         break
+      case "update":
+        // TODO: invoke mutation: updateGroup
+        break
+      case "delete":
+        // TODO: invoke mutation: deleteGroup
+        break
+        // OLD: groupPageDispatch({ command: command, value: formValue })
       case "reset":
         groupForm.reset(origGroupFormValue)
         break
@@ -245,32 +366,37 @@ export default function Security() {
       case "remove":
         throw new Error(`Unsupported command: ${command}`)
     }
-  }, [groupForm, groupPageDispatch, selectedGroup])
+  }, [groupForm, /*groupPageDispatch,*/ selectedGroup])
 
   const handleUserFormAction = useCallback((command: SecurityFormAction, formValue: UserFormFields) => {
     switch (command) {
       case "create":
-      case "update":
-      case "delete":
-        userPageDispatch({ command: command, value: formValue })
+        // TODO: invoke mutation: createGroup
         break
+      case "update":
+        // TODO: invoke mutation: updateGroup
+        break
+      case "delete":
+        // TODO: invoke mutation: deleteGroup
+        break
+        // OLD: userPageDispatch({ command: command, value: formValue })
       case "reset":
         userForm.reset(origUserFormValue)
         break
       case "add":
       case "remove":
         // NOTE: we're only passing formValue to keep the compiler happy - the value isn't used.
-        groupPageDispatch({ command: command, value: groupForm.getValues() })
+        // OLD: groupPageDispatch({ command: command, value: groupForm.getValues() })
         break
     }
-  }, [userForm, userPageDispatch, selectedUser])
+  }, [userForm, /*userPageDispatch,*/ selectedUser])
 
   function getSelectedGroup(id?: string) {
-    return groupPage.content.find(r => r.id == id)
+    return groupPage?.content.find(r => r.id == id)
   }
 
   function getSelectedUser(id?: string) {
-    return userPage.content.find(r => r.id == id)
+    return userPage?.content.find(r => r.id == id)
   }
 
   const handleGroupSelectionChange = useCallback((id?: string) => {
@@ -285,6 +411,15 @@ export default function Security() {
     const user = getSelectedUser(id)
     userForm.reset(copyUserToForm(user))
   }, [setSelectedUserId, getSelectedUser, userForm])
+
+  if (userResult.error) {
+    toast.error(`Fetch error:\n\n${JSON.stringify(userResult.error)}`)
+    console.error(userResult.error)
+  }
+  if (groupResult.error) {
+    toast.error(`Fetch error:\n\n${JSON.stringify(groupResult.error)}`)
+    console.error(groupResult.error)
+  }
 
   return (
     <main className="flex flex-col items-start m-4 gap-4">
@@ -310,6 +445,11 @@ export default function Security() {
             defaultColumns={groupColumns}
             defaultColumnVisibility={groupColumnVisibility}
             page={groupPage}
+            loading={groupResult.loading}
+            pagination={groupPagination}
+            onPaginationChange={setGroupPagination}
+            search={groupSearch}
+            onSearchChange={setGroupSearch}
             onRowSelectionChange={handleGroupSelectionChange}
           />
           <FormProvider {...groupForm}>
@@ -351,7 +491,12 @@ export default function Security() {
               recordKind="User"
               defaultColumns={userColumns}
               defaultColumnVisibility={userColumnVisibility}
-              page={showUsersOrMembers == "users" ? userPage : selectedGroup?.members}
+              page={userPageToShow}
+              loading={userResult.loading}
+              pagination={userPagination}
+              onPaginationChange={setUserPagination}
+              search={userSearch}
+              onSearchChange={setUserSearch}
               onRowSelectionChange={handleUserSelectionChange}
             />
           </div>

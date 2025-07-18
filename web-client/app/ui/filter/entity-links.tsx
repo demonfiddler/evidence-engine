@@ -20,7 +20,7 @@
 'use client'
 
 import { toast } from "sonner"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useContext } from 'react'
 import DropdownTreeSelect, { TreeNode, TreeNodeProps } from 'react-dropdown-tree-select'
 import 'react-dropdown-tree-select/dist/styles.css'
@@ -37,38 +37,73 @@ import {
 } from "@/components/ui/collapsible"
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import Topic from "@/app/model/Topic"
-import rawTopics from "@/data/topics.json" assert {type: 'json'}
 import RecordKind from "@/app/model/RecordKind"
 import { MasterLinkContext, SelectedRecordsContext } from '@/lib/context'
 import { setTopicFields } from "@/lib/utils"
-
-const topics = rawTopics.content as unknown as Topic[]
-setTopicFields("", undefined, topics)
+import { useQuery } from "@apollo/client"
+import { QUERY_TOPIC_HIERARCHY } from "@/lib/graphql-queries"
 
 interface TopicTreeNode extends TreeNodeProps {
   topic: Topic
   description: string
 }
 
-export default function EntityLinks(
-) {
+export default function EntityLinks() {
   const [isOpen, setIsOpen] = useState(false)
   const masterLinkContext = useContext(MasterLinkContext)
   const selectedRecordsContext = useContext(SelectedRecordsContext)
   const [topicPlaceholder, setTopicPlaceholder] = useState(masterLinkContext.masterTopicId ? String.fromCharCode(160) : "-Choose topic-")
-  const [data, setData] = useState(getData(topics))
+  const result = useQuery(
+    QUERY_TOPIC_HIERARCHY,
+    {
+      variables: {
+        filter: {
+          parentId: -1,
+          recursive: false
+        },
+      },
+    }
+  )
+  const [treeData, setTreeData] = useState<TopicTreeNode[]>([])
+  const topics: Topic[] = []
+  useEffect(() => {
+    // console.log(`EntityLinks effect: result.data = ${result.data}`)
+    if (result.data) {
+      const inTopics = result.data?.topics.content ?? []
+      // console.log(`EntityLinks effect: inTopics = ${JSON.stringify(inTopics)}`)
+      setTopicFields("", undefined, inTopics, topics)
+      setTreeData(getTreeData())
+    }}, [result.data, masterLinkContext.masterTopicId]
+  )
 
-  function getData(topics: Topic[]): TopicTreeNode[] {
-    return topics.map(topic => {
-      return {
-        topic: topic,
-        value: topic.id?.toString() ?? '(no value)',
-        label: topic.label ?? '(no label)',
-        description: topic.description ?? '(no description)',
-        children: topic.children ? getData(topic.children) : undefined,
-        checked: topic?.id === masterLinkContext.masterTopicId
+  function getTreeData(): TopicTreeNode[] {
+    function getTreeDataRecursive(topics: Topic[]): TopicTreeNode[] {
+      return topics.map(topic => {
+        return {
+          topic: topic,
+          value: topic.id?.toString() ?? '(no value)',
+          label: topic.label ?? '(no label)',
+          description: topic.description ?? '(no description)',
+          children: topic.children ? getTreeDataRecursive(topic.children) : undefined,
+          checked: topic?.id == masterLinkContext.masterTopicId
+        }
+      })
+    }
+    function expandParents(nodes: TopicTreeNode[]): boolean {
+      for (let node of nodes) {
+        if (node.checked)
+          return true
+        if (node.children && expandParents(node.children as TopicTreeNode[])) {
+          node.expanded = true
+          return true
+        }
       }
-    })
+      return false
+    }
+    const treeData = getTreeDataRecursive(topics)
+    expandParents(treeData)
+    // console.log(`EntityLinks treeData = ${JSON.stringify(treeData)}`)
+    return treeData
   }
 
   function getMasterRecordLabel(): string {
@@ -101,9 +136,9 @@ export default function EntityLinks(
   }
 
   function handleTopicChange(currentNode: TreeNode, selectedNodes: TreeNode[]) {
-    let newData = getData(topics)
+    let newData = getTreeData()
     setChecked(newData, currentNode)
-    setData(newData)
+    setTreeData(newData)
 
     const description = currentNode.description.trim()
     const hasTopic = currentNode.checked
@@ -115,11 +150,11 @@ export default function EntityLinks(
     const topicId = currentNode.topic.id;
     const label = currentNode.topic.label;
     const verb = currentNode.checked ? "selected" : "deselected"
-    toast(`You ${verb} topic #${topicId} (${label} - ${description})`);
+    toast.success(`You ${verb} topic #${topicId} (${label} - ${description})`);
   }
 
   function handleMasterRecordKindChange(masterRecordKind: RecordKind) {
-    console.log(`EntityLink.handleMasterRecordKindChange(${masterRecordKind}): masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
+    // console.log(`EntityLink.handleMasterRecordKindChange(${masterRecordKind}): masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
     masterLinkContext.setMasterRecordKind(masterLinkContext, selectedRecordsContext, masterRecordKind)
   }
 
@@ -155,14 +190,15 @@ export default function EntityLinks(
               <DropdownTreeSelect
                 className="ee"
                 clearSearchOnChange={false}
-                data={data}
+                data={treeData}
                 onChange={handleTopicChange}
                 mode="radioSelect"
                 keepTreeOnSearch={true}
                 inlineSearchInput={true}
+                showPartiallySelected={true}
                 texts={{ placeholder: `${topicPlaceholder}` }}
               />
-              <Textarea placeholder="-Topic description here-" disabled={true} value={masterLinkContext.masterTopicDescription} />
+              <Textarea placeholder="-Topic description here-" disabled={true} value={masterLinkContext.masterTopicDescription ?? ''} />
               <p className="text-xs text-gray-500">{`Path: ${masterLinkContext.masterTopicPath ?? ""}`}</p>
             </div>
           </fieldset>

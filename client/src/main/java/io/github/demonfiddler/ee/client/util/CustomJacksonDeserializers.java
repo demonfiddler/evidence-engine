@@ -30,6 +30,7 @@ import graphql.schema.GraphQLScalarType;
 import io.github.demonfiddler.ee.client.Claim;
 import io.github.demonfiddler.ee.client.Declaration;
 import io.github.demonfiddler.ee.client.EntityLink;
+import io.github.demonfiddler.ee.client.Group;
 import io.github.demonfiddler.ee.client.Journal;
 import io.github.demonfiddler.ee.client.Log;
 import io.github.demonfiddler.ee.client.Person;
@@ -255,6 +256,15 @@ public class CustomJacksonDeserializers {
 		private static final long serialVersionUID = 1L;
 		public ListUser() {
 			super(null, true, User.class, null);
+		}
+
+	}
+
+	public static class ListGroup extends AbstractCustomJacksonDeserializer<List<Group>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListGroup() {
+			super(null, true, Group.class, null);
 		}
 
 	}

@@ -41,6 +41,9 @@ public enum EntityKind {
 		parameterValues = { "Declaration" })
 	DEC("DEC", "Declaration"), //$NON-NLS-1$
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Group" })
+	GRP("GRP", "Group"), //$NON-NLS-1$
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Journal" })
 	JOU("JOU", "Journal"), //$NON-NLS-1$
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },

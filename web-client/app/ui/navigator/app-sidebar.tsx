@@ -49,8 +49,7 @@ import {
   ShieldCheckIcon,
   UserIcon,
 } from '@heroicons/react/24/outline';
-import { useContext } from 'react';
-import { SecurityContext } from '@/lib/context';
+import useAuth from '@/hooks/use-auth';
 
 const appItems = [
   { title: 'Home', url: '/', icon: HomeIcon },
@@ -72,8 +71,8 @@ const adminItems = [
 ];
 
 export function AppSidebar() {
-  const securityContext = useContext(SecurityContext)
-  const allowAdmin = securityContext.authorities?.includes("ADM")
+  const {hasAuthority} = useAuth()
+  const allowAdmin = hasAuthority("ADM")
 
   return (
     <Sidebar>

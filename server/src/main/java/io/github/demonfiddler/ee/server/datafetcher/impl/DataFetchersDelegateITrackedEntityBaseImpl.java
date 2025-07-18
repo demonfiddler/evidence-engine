@@ -35,7 +35,7 @@ import io.github.demonfiddler.ee.server.model.ITrackedEntity;
 import io.github.demonfiddler.ee.server.model.LogPage;
 import io.github.demonfiddler.ee.server.model.LogQueryFilter;
 import io.github.demonfiddler.ee.server.model.PageableInput;
-import io.github.demonfiddler.ee.server.model.PermissionKind;
+import io.github.demonfiddler.ee.server.model.AuthorityKind;
 import io.github.demonfiddler.ee.server.model.StatusKind;
 import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.repository.LogRepository;
@@ -78,7 +78,7 @@ abstract class DataFetchersDelegateITrackedEntityBaseImpl<T extends ITrackedEnti
     public final Map<T, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<T> keys) {
 
-        return securityUtils.hasAuthority(PermissionKind.ADM) //
+        return securityUtils.hasAuthority(AuthorityKind.ADM) //
             ? entityUtils.getValuesMap(keys, ITrackedEntity::getCreatedByUser) //
             : Collections.emptyMap();
     }
@@ -86,7 +86,7 @@ abstract class DataFetchersDelegateITrackedEntityBaseImpl<T extends ITrackedEnti
     public final Map<T, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<T> keys) {
 
-        return securityUtils.hasAuthority(PermissionKind.ADM) //
+        return securityUtils.hasAuthority(AuthorityKind.ADM) //
             ? entityUtils.getValuesMap(keys, ITrackedEntity::getUpdatedByUser) : Collections.emptyMap();
     }
 

@@ -40,6 +40,7 @@ import com.graphql_java_generator.annotation.RequestType;
 import com.graphql_java_generator.client.GraphQLMutationReactiveExecutor;
 import com.graphql_java_generator.client.request.Builder;
 import com.graphql_java_generator.client.request.InputParameter;
+import com.graphql_java_generator.client.request.InputParameter.InputParameterType;
 import com.graphql_java_generator.client.request.ObjectResponse;
 import com.graphql_java_generator.customscalars.GraphQLScalarTypeDate;
 import com.graphql_java_generator.exception.GraphQLRequestExecutionException;
@@ -53,10 +54,12 @@ import io.github.demonfiddler.ee.client.DeclarationInput;
 import io.github.demonfiddler.ee.client.EntityKind;
 import io.github.demonfiddler.ee.client.EntityLink;
 import io.github.demonfiddler.ee.client.EntityLinkInput;
+import io.github.demonfiddler.ee.client.Group;
+import io.github.demonfiddler.ee.client.GroupInput;
 import io.github.demonfiddler.ee.client.Journal;
 import io.github.demonfiddler.ee.client.JournalInput;
 import io.github.demonfiddler.ee.client.Mutation;
-import io.github.demonfiddler.ee.client.PermissionKind;
+import io.github.demonfiddler.ee.client.AuthorityKind;
 import io.github.demonfiddler.ee.client.Person;
 import io.github.demonfiddler.ee.client.PersonInput;
 import io.github.demonfiddler.ee.client.Publication;
@@ -440,7 +443,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createClaim", graphQLTypeSimpleName = "Claim", javaClass = Claim.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Claim>> createClaimWithBindValues(String queryResponseDef, ClaimInput claim,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -495,7 +498,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createClaim", graphQLTypeSimpleName = "Claim", javaClass = Claim.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Claim>> createClaim(String queryResponseDef, ClaimInput claim, Object... paramsAndValues)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -553,7 +556,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createClaim", graphQLTypeSimpleName = "Claim", javaClass = Claim.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Claim>> createClaimWithBindValues(ObjectResponse objectResponse, ClaimInput claim,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -623,7 +626,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createClaim", graphQLTypeSimpleName = "Claim", javaClass = Claim.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Claim>> createClaim(ObjectResponse objectResponse, ClaimInput claim, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
@@ -727,7 +730,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updateClaim", graphQLTypeSimpleName = "Claim", javaClass = Claim.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Claim>> updateClaimWithBindValues(String queryResponseDef, ClaimInput claim,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -782,7 +785,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updateClaim", graphQLTypeSimpleName = "Claim", javaClass = Claim.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Claim>> updateClaim(String queryResponseDef, ClaimInput claim, Object... paramsAndValues)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -840,7 +843,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updateClaim", graphQLTypeSimpleName = "Claim", javaClass = Claim.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Claim>> updateClaimWithBindValues(ObjectResponse objectResponse, ClaimInput claim,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -910,7 +913,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updateClaim", graphQLTypeSimpleName = "Claim", javaClass = Claim.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Claim>> updateClaim(ObjectResponse objectResponse, ClaimInput claim, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
@@ -1014,7 +1017,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deleteClaim", graphQLTypeSimpleName = "Claim", javaClass = Claim.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Claim>> deleteClaimWithBindValues(String queryResponseDef, Long claimId,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -1069,7 +1072,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deleteClaim", graphQLTypeSimpleName = "Claim", javaClass = Claim.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Claim>> deleteClaim(String queryResponseDef, Long claimId, Object... paramsAndValues)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -1127,7 +1130,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deleteClaim", graphQLTypeSimpleName = "Claim", javaClass = Claim.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Claim>> deleteClaimWithBindValues(ObjectResponse objectResponse, Long claimId,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -1197,7 +1200,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deleteClaim", graphQLTypeSimpleName = "Claim", javaClass = Claim.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Claim>> deleteClaim(ObjectResponse objectResponse, Long claimId, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
@@ -1302,7 +1305,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "createDeclaration", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Declaration>> createDeclarationWithBindValues(String queryResponseDef,
 		DeclarationInput declaration, Map<String, Object> parameters)
@@ -1360,7 +1363,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "createDeclaration", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Declaration>> createDeclaration(String queryResponseDef, DeclarationInput declaration,
 		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -1424,7 +1427,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "createDeclaration", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Declaration>> createDeclarationWithBindValues(ObjectResponse objectResponse,
 		DeclarationInput declaration, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -1497,7 +1500,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "createDeclaration", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Declaration>> createDeclaration(ObjectResponse objectResponse, DeclarationInput declaration,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
@@ -1601,7 +1604,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "updateDeclaration", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Declaration>> updateDeclarationWithBindValues(String queryResponseDef,
 		DeclarationInput declaration, Map<String, Object> parameters)
@@ -1659,7 +1662,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "updateDeclaration", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Declaration>> updateDeclaration(String queryResponseDef, DeclarationInput declaration,
 		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -1723,7 +1726,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "updateDeclaration", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Declaration>> updateDeclarationWithBindValues(ObjectResponse objectResponse,
 		DeclarationInput declaration, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -1796,7 +1799,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "updateDeclaration", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Declaration>> updateDeclaration(ObjectResponse objectResponse, DeclarationInput declaration,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
@@ -1901,7 +1904,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deleteDeclaration", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Declaration>> deleteDeclarationWithBindValues(String queryResponseDef, Long declarationId,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -1958,7 +1961,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deleteDeclaration", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Declaration>> deleteDeclaration(String queryResponseDef, Long declarationId,
 		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -2022,7 +2025,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deleteDeclaration", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Declaration>> deleteDeclarationWithBindValues(ObjectResponse objectResponse,
 		Long declarationId, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -2095,7 +2098,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deleteDeclaration", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Declaration>> deleteDeclaration(ObjectResponse objectResponse, Long declarationId,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
@@ -2200,7 +2203,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "createEntityLink", graphQLTypeSimpleName = "EntityLink",
 		javaClass = EntityLink.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	public Mono<Optional<EntityLink>> createEntityLinkWithBindValues(String queryResponseDef, EntityLinkInput link,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -2257,7 +2260,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "createEntityLink", graphQLTypeSimpleName = "EntityLink",
 		javaClass = EntityLink.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	public Mono<Optional<EntityLink>> createEntityLink(String queryResponseDef, EntityLinkInput link,
 		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -2318,7 +2321,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "createEntityLink", graphQLTypeSimpleName = "EntityLink",
 		javaClass = EntityLink.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	public Mono<Optional<EntityLink>> createEntityLinkWithBindValues(ObjectResponse objectResponse,
 		EntityLinkInput entityLink, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -2333,7 +2336,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 		Map<String, Object> parametersLocal = (parameters != null) ? parameters : new HashMap<>();
 		parametersLocal.put("mutationCreateEntityLinkEntityLink", entityLink);
 
-		return objectResponse.execReactive(io.github.demonfiddler.ee.client.Mutation.class, parametersLocal)
+		return objectResponse.execReactive(Mutation.class, parametersLocal)
 			.map(t -> (t.getCreateEntityLink() == null) ? Optional.empty() : Optional.of(t.getCreateEntityLink()));
 	}
 
@@ -2390,7 +2393,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "createEntityLink", graphQLTypeSimpleName = "EntityLink",
 		javaClass = EntityLink.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	public Mono<Optional<EntityLink>> createEntityLink(ObjectResponse objectResponse, EntityLinkInput entityLink,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
@@ -2415,7 +2418,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 		Map<String, Object> parameters = this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues);
 		parameters.put("mutationCreateEntityLinkEntityLink", entityLink);
 
-		return objectResponse.execReactive(io.github.demonfiddler.ee.client.Mutation.class, parameters)
+		return objectResponse.execReactive(Mutation.class, parameters)
 			.map(t -> (t.getCreateEntityLink() == null) ? Optional.empty() : Optional.of(t.getCreateEntityLink()));
 	}
 
@@ -2495,7 +2498,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "updateEntityLink", graphQLTypeSimpleName = "EntityLink",
 		javaClass = EntityLink.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	public Mono<Optional<EntityLink>> updateEntityLinkWithBindValues(String queryResponseDef, EntityLinkInput entityLink,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -2552,7 +2555,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "updateEntityLink", graphQLTypeSimpleName = "EntityLink",
 		javaClass = EntityLink.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	public Mono<Optional<EntityLink>> updateEntityLink(String queryResponseDef, EntityLinkInput entityLink,
 		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -2615,7 +2618,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "updateEntityLink", graphQLTypeSimpleName = "EntityLink",
 		javaClass = EntityLink.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	public Mono<Optional<EntityLink>> updateEntityLinkWithBindValues(ObjectResponse objectResponse,
 		EntityLinkInput entityLink, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -2630,7 +2633,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 		Map<String, Object> parametersLocal = (parameters != null) ? parameters : new HashMap<>();
 		parametersLocal.put("mutationUpdateEntityLinkEntityLink", entityLink);
 
-		return objectResponse.execReactive(io.github.demonfiddler.ee.client.Mutation.class, parametersLocal)
+		return objectResponse.execReactive(Mutation.class, parametersLocal)
 			.map(t -> (t.getUpdateEntityLink() == null) ? Optional.empty() : Optional.of(t.getUpdateEntityLink()));
 	}
 
@@ -2688,7 +2691,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "updateEntityLink", graphQLTypeSimpleName = "EntityLink",
 		javaClass = EntityLink.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	public Mono<Optional<EntityLink>> updateEntityLink(ObjectResponse objectResponse, EntityLinkInput entityLink,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
@@ -2713,7 +2716,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 		Map<String, Object> parameters = this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues);
 		parameters.put("mutationUpdateEntityLinkEntityLink", entityLink);
 
-		return objectResponse.execReactive(io.github.demonfiddler.ee.client.Mutation.class, parameters)
+		return objectResponse.execReactive(Mutation.class, parameters)
 			.map(t -> (t.getUpdateEntityLink() == null) ? Optional.empty() : Optional.of(t.getUpdateEntityLink()));
 	}
 
@@ -2793,7 +2796,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "deleteEntityLink", graphQLTypeSimpleName = "EntityLink",
 		javaClass = EntityLink.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	public Mono<Optional<EntityLink>> deleteEntityLinkWithBindValues(String queryResponseDef, Long entityLinkId,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -2850,7 +2853,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "deleteEntityLink", graphQLTypeSimpleName = "EntityLink",
 		javaClass = EntityLink.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	public Mono<Optional<EntityLink>> deleteEntityLink(String queryResponseDef, Long entityLinkId,
 		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -2913,7 +2916,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "deleteEntityLink", graphQLTypeSimpleName = "EntityLink",
 		javaClass = EntityLink.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	public Mono<Optional<EntityLink>> deleteEntityLinkWithBindValues(ObjectResponse objectResponse, Long entityLinkId,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -2928,7 +2931,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 		Map<String, Object> parametersLocal = (parameters != null) ? parameters : new HashMap<>();
 		parametersLocal.put("mutationDeleteEntityLinkEntityLinkId", entityLinkId);
 
-		return objectResponse.execReactive(io.github.demonfiddler.ee.client.Mutation.class, parametersLocal)
+		return objectResponse.execReactive(Mutation.class, parametersLocal)
 			.map(t -> (t.getDeleteEntityLink() == null) ? Optional.empty() : Optional.of(t.getDeleteEntityLink()));
 	}
 
@@ -2984,7 +2987,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "deleteEntityLink", graphQLTypeSimpleName = "EntityLink",
 		javaClass = EntityLink.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	public Mono<Optional<EntityLink>> deleteEntityLink(ObjectResponse objectResponse, Long entityLinkId,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
@@ -3009,7 +3012,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 		Map<String, Object> parameters = this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues);
 		parameters.put("mutationDeleteEntityLinkEntityLinkId", entityLinkId);
 
-		return objectResponse.execReactive(io.github.demonfiddler.ee.client.Mutation.class, parameters)
+		return objectResponse.execReactive(Mutation.class, parameters)
 			.map(t -> (t.getDeleteEntityLink() == null) ? Optional.empty() : Optional.of(t.getDeleteEntityLink()));
 	}
 
@@ -3088,7 +3091,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createJournal", graphQLTypeSimpleName = "Journal", javaClass = Journal.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Journal>> createJournalWithBindValues(String queryResponseDef, JournalInput journal,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -3144,7 +3147,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createJournal", graphQLTypeSimpleName = "Journal", javaClass = Journal.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Journal>> createJournal(String queryResponseDef, JournalInput journal,
 		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -3204,7 +3207,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createJournal", graphQLTypeSimpleName = "Journal", javaClass = Journal.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Journal>> createJournalWithBindValues(ObjectResponse objectResponse, JournalInput journal,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -3273,7 +3276,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createJournal", graphQLTypeSimpleName = "Journal", javaClass = Journal.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Journal>> createJournal(ObjectResponse objectResponse, JournalInput journal,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
@@ -3377,7 +3380,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updateJournal", graphQLTypeSimpleName = "Journal", javaClass = Journal.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Journal>> updateJournalWithBindValues(String queryResponseDef, JournalInput journal,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -3433,7 +3436,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updateJournal", graphQLTypeSimpleName = "Journal", javaClass = Journal.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Journal>> updateJournal(String queryResponseDef, JournalInput journal,
 		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -3493,7 +3496,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updateJournal", graphQLTypeSimpleName = "Journal", javaClass = Journal.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Journal>> updateJournalWithBindValues(ObjectResponse objectResponse, JournalInput journal,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -3563,7 +3566,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updateJournal", graphQLTypeSimpleName = "Journal", javaClass = Journal.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Journal>> updateJournal(ObjectResponse objectResponse, JournalInput journal,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
@@ -3667,7 +3670,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deleteJournal", graphQLTypeSimpleName = "Journal", javaClass = Journal.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Journal>> deleteJournalWithBindValues(String queryResponseDef, Long journalId,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -3723,7 +3726,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deleteJournal", graphQLTypeSimpleName = "Journal", javaClass = Journal.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Journal>> deleteJournal(String queryResponseDef, Long journalId, Object... paramsAndValues)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -3784,7 +3787,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deleteJournal", graphQLTypeSimpleName = "Journal", javaClass = Journal.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Journal>> deleteJournalWithBindValues(ObjectResponse objectResponse, Long journalId,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -3854,7 +3857,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deleteJournal", graphQLTypeSimpleName = "Journal", javaClass = Journal.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Journal>> deleteJournal(ObjectResponse objectResponse, Long journalId,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
@@ -3958,7 +3961,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createPerson", graphQLTypeSimpleName = "Person", javaClass = Person.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Person>> createPersonWithBindValues(String queryResponseDef, PersonInput person,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -4013,7 +4016,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createPerson", graphQLTypeSimpleName = "Person", javaClass = Person.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Person>> createPerson(String queryResponseDef, PersonInput person, Object... paramsAndValues)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -4072,7 +4075,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createPerson", graphQLTypeSimpleName = "Person", javaClass = Person.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Person>> createPersonWithBindValues(ObjectResponse objectResponse, PersonInput person,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -4142,7 +4145,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createPerson", graphQLTypeSimpleName = "Person", javaClass = Person.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Person>> createPerson(ObjectResponse objectResponse, PersonInput person,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
@@ -4246,7 +4249,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updatePerson", graphQLTypeSimpleName = "Person", javaClass = Person.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Person>> updatePersonWithBindValues(String queryResponseDef, PersonInput person,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -4301,7 +4304,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updatePerson", graphQLTypeSimpleName = "Person", javaClass = Person.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Person>> updatePerson(String queryResponseDef, PersonInput person, Object... paramsAndValues)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -4360,7 +4363,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updatePerson", graphQLTypeSimpleName = "Person", javaClass = Person.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Person>> updatePersonWithBindValues(ObjectResponse objectResponse, PersonInput person,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -4430,7 +4433,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updatePerson", graphQLTypeSimpleName = "Person", javaClass = Person.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Person>> updatePerson(ObjectResponse objectResponse, PersonInput person,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
@@ -4534,7 +4537,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deletePerson", graphQLTypeSimpleName = "Person", javaClass = Person.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Person>> deletePersonWithBindValues(String queryResponseDef, Long personId,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -4589,7 +4592,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deletePerson", graphQLTypeSimpleName = "Person", javaClass = Person.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Person>> deletePerson(String queryResponseDef, Long personId, Object... paramsAndValues)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -4648,7 +4651,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deletePerson", graphQLTypeSimpleName = "Person", javaClass = Person.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Person>> deletePersonWithBindValues(ObjectResponse objectResponse, Long personId,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -4718,7 +4721,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deletePerson", graphQLTypeSimpleName = "Person", javaClass = Person.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Person>> deletePerson(ObjectResponse objectResponse, Long personId, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
@@ -4823,7 +4826,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "createPublication", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Publication>> createPublicationWithBindValues(String queryResponseDef,
 		PublicationInput publication, Map<String, Object> parameters)
@@ -4881,7 +4884,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "createPublication", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Publication>> createPublication(String queryResponseDef, PublicationInput publication,
 		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -4945,7 +4948,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "createPublication", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Publication>> createPublicationWithBindValues(ObjectResponse objectResponse,
 		PublicationInput publication, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -5018,7 +5021,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "createPublication", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Publication>> createPublication(ObjectResponse objectResponse, PublicationInput publication,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
@@ -5123,7 +5126,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "updatePublication", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Publication>> updatePublicationWithBindValues(String queryResponseDef,
 		PublicationInput publication, Map<String, Object> parameters)
@@ -5181,7 +5184,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "updatePublication", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Publication>> updatePublication(String queryResponseDef, PublicationInput publication,
 		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -5245,7 +5248,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "updatePublication", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Publication>> updatePublicationWithBindValues(ObjectResponse objectResponse,
 		PublicationInput publication, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -5318,7 +5321,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLNonScalar(fieldName = "updatePublication", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Publication>> updatePublication(ObjectResponse objectResponse, PublicationInput publication,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
@@ -5423,7 +5426,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deletePublication", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Publication>> deletePublicationWithBindValues(String queryResponseDef, Long publicationId,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -5480,7 +5483,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deletePublication", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Publication>> deletePublication(String queryResponseDef, Long publicationId,
 		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -5544,7 +5547,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deletePublication", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Publication>> deletePublicationWithBindValues(ObjectResponse objectResponse,
 		Long publicationId, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -5617,7 +5620,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deletePublication", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Publication>> deletePublication(ObjectResponse objectResponse, Long publicationId,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
@@ -5721,7 +5724,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createPublisher", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Publisher>> createPublisherWithBindValues(String queryResponseDef, PublisherInput publisher,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -5777,7 +5780,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createPublisher", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Publisher>> createPublisher(String queryResponseDef, PublisherInput publisher,
 		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -5838,7 +5841,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createPublisher", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Publisher>> createPublisherWithBindValues(ObjectResponse objectResponse,
 		PublisherInput publisher, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -5909,7 +5912,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createPublisher", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Publisher>> createPublisher(ObjectResponse objectResponse, PublisherInput publisher,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
@@ -6013,7 +6016,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updatePublisher", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Publisher>> updatePublisherWithBindValues(String queryResponseDef, PublisherInput publisher,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -6069,7 +6072,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updatePublisher", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Publisher>> updatePublisher(String queryResponseDef, PublisherInput publisher,
 		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -6130,7 +6133,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updatePublisher", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Publisher>> updatePublisherWithBindValues(ObjectResponse objectResponse,
 		PublisherInput publisher, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -6201,7 +6204,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updatePublisher", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Publisher>> updatePublisher(ObjectResponse objectResponse, PublisherInput publisher,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
@@ -6304,7 +6307,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deletePublisher", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Publisher>> deletePublisherWithBindValues(String queryResponseDef, Long publisherId,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -6360,7 +6363,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deletePublisher", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Publisher>> deletePublisher(String queryResponseDef, Long publisherId,
 		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -6422,7 +6425,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deletePublisher", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Publisher>> deletePublisherWithBindValues(ObjectResponse objectResponse, Long publisherId,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -6494,7 +6497,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deletePublisher", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Publisher>> deletePublisher(ObjectResponse objectResponse, Long publisherId,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
@@ -6598,7 +6601,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createQuotation", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Quotation>> createQuotationWithBindValues(String queryResponseDef, QuotationInput quotation,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -6654,7 +6657,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createQuotation", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Quotation>> createQuotation(String queryResponseDef, QuotationInput quotation,
 		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -6715,7 +6718,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createQuotation", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Quotation>> createQuotationWithBindValues(ObjectResponse objectResponse,
 		QuotationInput quotation, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -6786,7 +6789,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createQuotation", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Quotation>> createQuotation(ObjectResponse objectResponse, QuotationInput quotation,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
@@ -6890,7 +6893,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updateQuotation", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Quotation>> updateQuotationWithBindValues(String queryResponseDef, QuotationInput quotation,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -6946,7 +6949,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updateQuotation", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Quotation>> updateQuotation(String queryResponseDef, QuotationInput quotation,
 		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -7007,7 +7010,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updateQuotation", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Quotation>> updateQuotationWithBindValues(ObjectResponse objectResponse,
 		QuotationInput quotation, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -7078,7 +7081,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updateQuotation", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Quotation>> updateQuotation(ObjectResponse objectResponse, QuotationInput quotation,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
@@ -7182,7 +7185,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deleteQuotation", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Quotation>> deleteQuotationWithBindValues(String queryResponseDef, Long quotationId,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -7238,7 +7241,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deleteQuotation", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Quotation>> deleteQuotation(String queryResponseDef, Long quotationId,
 		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -7300,7 +7303,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deleteQuotation", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Quotation>> deleteQuotationWithBindValues(ObjectResponse objectResponse, Long quotationId,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -7372,7 +7375,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deleteQuotation", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Quotation>> deleteQuotation(ObjectResponse objectResponse, Long quotationId,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
@@ -7476,7 +7479,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createTopic", graphQLTypeSimpleName = "Topic", javaClass = Topic.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Topic>> createTopicWithBindValues(String queryResponseDef, TopicInput topic,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -7531,7 +7534,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createTopic", graphQLTypeSimpleName = "Topic", javaClass = Topic.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Topic>> createTopic(String queryResponseDef, TopicInput topic, Object... paramsAndValues)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -7589,7 +7592,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createTopic", graphQLTypeSimpleName = "Topic", javaClass = Topic.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Topic>> createTopicWithBindValues(ObjectResponse objectResponse, TopicInput topic,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -7659,7 +7662,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createTopic", graphQLTypeSimpleName = "Topic", javaClass = Topic.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Topic>> createTopic(ObjectResponse objectResponse, TopicInput topic, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
@@ -7763,7 +7766,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updateTopic", graphQLTypeSimpleName = "Topic", javaClass = Topic.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Topic>> updateTopicWithBindValues(String queryResponseDef, TopicInput topic,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -7818,7 +7821,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updateTopic", graphQLTypeSimpleName = "Topic", javaClass = Topic.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Topic>> updateTopic(String queryResponseDef, TopicInput topic, Object... paramsAndValues)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -7876,7 +7879,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updateTopic", graphQLTypeSimpleName = "Topic", javaClass = Topic.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Topic>> updateTopicWithBindValues(ObjectResponse objectResponse, TopicInput topic,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -7946,7 +7949,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updateTopic", graphQLTypeSimpleName = "Topic", javaClass = Topic.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Topic>> updateTopic(ObjectResponse objectResponse, TopicInput topic, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
@@ -8050,7 +8053,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deleteTopic", graphQLTypeSimpleName = "Topic", javaClass = Topic.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Topic>> deleteTopicWithBindValues(String queryResponseDef, Long topicId,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -8105,7 +8108,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deleteTopic", graphQLTypeSimpleName = "Topic", javaClass = Topic.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Topic>> deleteTopic(String queryResponseDef, Long topicId, Object... paramsAndValues)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -8163,7 +8166,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deleteTopic", graphQLTypeSimpleName = "Topic", javaClass = Topic.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Topic>> deleteTopicWithBindValues(ObjectResponse objectResponse, Long topicId,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -8233,7 +8236,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deleteTopic", graphQLTypeSimpleName = "Topic", javaClass = Topic.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Mono<Optional<Topic>> deleteTopic(ObjectResponse objectResponse, Long topicId, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
@@ -8341,7 +8344,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "setEntityStatus", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Boolean>> setEntityStatusWithBindValues(String queryResponseDef, EntityKind entityKind,
 		Long entityId, StatusKind status, Map<String, Object> parameters)
@@ -8400,7 +8403,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "setEntityStatus", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Boolean>> setEntityStatus(String queryResponseDef, Long entityId, StatusKind status,
 		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -8464,7 +8467,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "setEntityStatus", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Boolean>> setEntityStatusWithBindValues(ObjectResponse objectResponse, Long entityId,
 		StatusKind status, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -8537,7 +8540,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "setEntityStatus", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Mono<Optional<Boolean>> setEntityStatus(ObjectResponse objectResponse, Long entityId, StatusKind status,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
@@ -8646,7 +8649,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createUser", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<User>> createUserWithBindValues(String queryResponseDef, UserInput user,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -8701,7 +8704,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createUser", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<User>> createUser(String queryResponseDef, UserInput user, Object... paramsAndValues)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -8758,7 +8761,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createUser", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<User>> createUserWithBindValues(ObjectResponse objectResponse, UserInput user,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -8828,7 +8831,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "createUser", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<User>> createUser(ObjectResponse objectResponse, UserInput user, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
@@ -8932,7 +8935,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updateUser", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<User>> updateUserWithBindValues(String queryResponseDef, UserInput user,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -8987,7 +8990,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updateUser", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<User>> updateUser(String queryResponseDef, UserInput user, Object... paramsAndValues)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -9044,7 +9047,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updateUser", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<User>> updateUserWithBindValues(ObjectResponse objectResponse, UserInput user,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -9114,7 +9117,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "updateUser", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<User>> updateUser(ObjectResponse objectResponse, UserInput user, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
@@ -9218,7 +9221,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deleteUser", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<User>> deleteUserWithBindValues(String queryResponseDef, Long userId,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -9273,7 +9276,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deleteUser", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<User>> deleteUser(String queryResponseDef, Long userId, Object... paramsAndValues)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -9330,7 +9333,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deleteUser", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<User>> deleteUserWithBindValues(ObjectResponse objectResponse, Long userId,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -9400,7 +9403,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLScalar(fieldName = "deleteUser", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<User>> deleteUser(ObjectResponse objectResponse, Long userId, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
@@ -9458,7 +9461,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	}
 
 	/**
-	 * Grants permissions to a user. The specified permissions are added to any existing ones. This method executes a
+	 * Grants authorities to a user. The specified authorities are added to any existing ones. This method executes a
 	 * partial query against the GraphQL server. That is, the query that is one of the queries defined in the GraphQL
 	 * query object. The queryResponseDef contains the part of the query that <B><U>is after</U></B> the query
 	 * name.<BR/>
@@ -9476,10 +9479,10 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
 	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
 	 * 
-	 * 		Mono<User> mono = executor.grantUserPermissionsWithBindValues(
+	 * 		Mono<User> mono = executor.grantUserAuthoritiesWithBindValues(
 	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
-	 * 			userId, // A value for grantUserPermissions's userId input parameter
-	 * 			permissions, // A value for grantUserPermissions's permissions input parameter
+	 * 			userId, // A value for grantUserAuthorities's userId input parameter
+	 * 			authorities, // A value for grantUserAuthorities's authorities input parameter
 	 * 			params);
 	 * 		User field = mono.block();
 	 * 	}
@@ -9495,8 +9498,8 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
 	 * <I>parameters</I> argument to pass the list of values.<BR/>
 	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
-	 * @param userId Parameter for the grantUserPermissions field of Mutation, as defined in the GraphQL schema
-	 * @param permissions Parameter for the grantUserPermissions field of Mutation, as defined in the GraphQL schema
+	 * @param userId Parameter for the grantUserAuthorities field of Mutation, as defined in the GraphQL schema
+	 * @param authorities Parameter for the grantUserAuthorities field of Mutation, as defined in the GraphQL schema
 	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
 	 * variable in the defined query/mutation, this argument may be null or an empty {@link Map}
 	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
@@ -9504,21 +9507,21 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "grantUserPermissions", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLNonScalar(fieldName = "grantUserAuthorities", graphQLTypeSimpleName = "User", javaClass = User.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<User>> grantUserPermissionsWithBindValues(String queryResponseDef, Long userId,
-		List<PermissionKind> permissions, Map<String, Object> parameters)
+	public Mono<Optional<User>> grantUserAuthoritiesWithBindValues(String queryResponseDef, Long userId,
+		List<AuthorityKind> authorities, Map<String, Object> parameters)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
-		LOGGER.debug("Executing mutation 'grantUserPermissions': {} ", queryResponseDef);
+		LOGGER.debug("Executing mutation 'grantUserAuthorities': {} ", queryResponseDef);
 		ObjectResponse objectResponse =
-			getGrantUserPermissionsResponseBuilder().withQueryResponseDef(queryResponseDef).build();
-		return grantUserPermissionsWithBindValues(objectResponse, userId, permissions, parameters);
+			getGrantUserAuthoritiesResponseBuilder().withQueryResponseDef(queryResponseDef).build();
+		return grantUserAuthoritiesWithBindValues(objectResponse, userId, authorities, parameters);
 	}
 
 	/**
-	 * Grants permissions to a user. The specified permissions are added to any existing ones.<br/>
+	 * Grants authorities to a user. The specified authorities are added to any existing ones.<br/>
 	 * This method executes a partial query against the GraphQL server. That is, the query that is one of the queries
 	 * defined in the GraphQL query object. The queryResponseDef contains the part of the query that <B><U>is
 	 * after</U></B> the query name.<BR/>
@@ -9532,10 +9535,10 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * 	MutationExecutor executor;
 	 * 
 	 * 	void myMethod() {
-	 * 		Mono<User> mono = executor.grantUserPermissions(
+	 * 		Mono<User> mono = executor.grantUserAuthorities(
 	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
-	 * 			userId, // A value for grantUserPermissions's userId input parameter
-	 * 			permissions, // A value for grantUserPermissions's permissions input parameter
+	 * 			userId, // A value for grantUserAuthorities's userId input parameter
+	 * 			authorities, // A value for grantUserAuthorities's authorities input parameter
 	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
@@ -9554,8 +9557,8 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * <I>parameters</I> argument to pass the list of values.<BR/>
 	 * @param queryResponseDef The response definition of the query/mutation, in the native GraphQL format (see here
 	 * above)
-	 * @param userId Parameter for the grantUserPermissions field of Mutation, as defined in the GraphQL schema
-	 * @param permissions Parameter for the grantUserPermissions field of Mutation, as defined in the GraphQL schema
+	 * @param userId Parameter for the grantUserAuthorities field of Mutation, as defined in the GraphQL schema
+	 * @param authorities Parameter for the grantUserAuthorities field of Mutation, as defined in the GraphQL schema
 	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
 	 * variable in the defined query/mutation, this argument may be null or an empty {@link Map}
 	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
@@ -9563,22 +9566,22 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "grantUserPermissions", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLNonScalar(fieldName = "grantUserAuthorities", graphQLTypeSimpleName = "User", javaClass = User.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<User>> grantUserPermissions(String queryResponseDef, Long userId,
-		List<PermissionKind> permissions, Object... paramsAndValues)
+	public Mono<Optional<User>> grantUserAuthorities(String queryResponseDef, Long userId,
+		List<AuthorityKind> authorities, Object... paramsAndValues)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
-		LOGGER.debug("Executing mutation 'grantUserPermissions': {} ", queryResponseDef);
+		LOGGER.debug("Executing mutation 'grantUserAuthorities': {} ", queryResponseDef);
 		ObjectResponse objectResponse =
-			getGrantUserPermissionsResponseBuilder().withQueryResponseDef(queryResponseDef).build();
-		return grantUserPermissionsWithBindValues(objectResponse, userId, permissions,
+			getGrantUserAuthoritiesResponseBuilder().withQueryResponseDef(queryResponseDef).build();
+		return grantUserAuthoritiesWithBindValues(objectResponse, userId, authorities,
 			this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues));
 	}
 
 	/**
-	 * Grants permissions to a user. The specified permissions are added to any existing ones.<br/>
+	 * Grants authorities to a user. The specified authorities are added to any existing ones.<br/>
 	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
 	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
 	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
@@ -9597,16 +9600,16 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * 	@PostConstruct
 	 * 	public void setup() {
 	 * 		// Preparation of the query, so that it is prepared once then executed several times
-	 * 		preparedRequest = executor.getGrantUserPermissionsGraphQLRequest(
+	 * 		preparedRequest = executor.getGrantUserAuthoritiesGraphQLRequest(
 	 * 			"mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
 	 * 	}
 	 * 
 	 * 	void myMethod() {
-	 * 		Mono<User> mono = executor.grantUserPermissionsWithBindValues(preparedRequest, userId, // A value for
-	 * 																								// grantUserPermissions's
+	 * 		Mono<User> mono = executor.grantUserAuthoritiesWithBindValues(preparedRequest, userId, // A value for
+	 * 																								// grantUserAuthorities's
 	 * 																								// userId input
 	 * 																								// parameter
-	 * 			permissions, // A value for grantUserPermissions's permissions input parameter
+	 * 			authorities, // A value for grantUserAuthorities's authorities input parameter
 	 * 			params);
 	 * 		User field = mono.block();
 	 * 	}
@@ -9618,37 +9621,37 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * to return<br/>
 	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
 	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
-	 * {@link getGrantUserPermissionsGraphQLRequest(String)} method.
-	 * @param userId Parameter for the grantUserPermissions field of Mutation, as defined in the GraphQL schema
-	 * @param permissions Parameter for the grantUserPermissions field of Mutation, as defined in the GraphQL schema
+	 * {@link getGrantUserAuthoritiesGraphQLRequest(String)} method.
+	 * @param userId Parameter for the grantUserAuthorities field of Mutation, as defined in the GraphQL schema
+	 * @param authorities Parameter for the grantUserAuthorities field of Mutation, as defined in the GraphQL schema
 	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
 	 * variable in the defined query/mutation, this argument may be null or an empty {@link Map}
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "grantUserPermissions", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLNonScalar(fieldName = "grantUserAuthorities", graphQLTypeSimpleName = "User", javaClass = User.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<User>> grantUserPermissionsWithBindValues(ObjectResponse objectResponse, Long userId,
-		List<PermissionKind> permissions, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+	public Mono<Optional<User>> grantUserAuthoritiesWithBindValues(ObjectResponse objectResponse, Long userId,
+		List<AuthorityKind> authorities, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("Executing mutation 'grantUserPermissions' with parameters: {}, {} ", userId, permissions);
+			LOGGER.trace("Executing mutation 'grantUserAuthorities' with parameters: {}, {} ", userId, authorities);
 		} else if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Executing mutation 'grantUserPermissions'");
+			LOGGER.debug("Executing mutation 'grantUserAuthorities'");
 		}
 
 		// Given values for the BindVariables
 		Map<String, Object> parametersLocal = (parameters != null) ? parameters : new HashMap<>();
-		parametersLocal.put("mutationGrantUserPermissionsUserId", userId);
-		parametersLocal.put("mutationGrantUserPermissionsPermissions", permissions);
+		parametersLocal.put("mutationGrantUserAuthoritiesUserId", userId);
+		parametersLocal.put("mutationGrantUserAuthoritiesAuthorities", authorities);
 
 		return objectResponse.execReactive(Mutation.class, parametersLocal).map(
-			t -> (t.getGrantUserPermissions() == null) ? Optional.empty() : Optional.of(t.getGrantUserPermissions()));
+			t -> (t.getGrantUserAuthorities() == null) ? Optional.empty() : Optional.of(t.getGrantUserAuthorities()));
 	}
 
 	/**
-	 * Grants permissions to a user. The specified permissions are added to any existing ones.<br/>
+	 * Grants authorities to a user. The specified authorities are added to any existing ones.<br/>
 	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
 	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
 	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
@@ -9667,15 +9670,15 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * 	@PostConstruct
 	 * 	public void setup() {
 	 * 		// Preparation of the query, so that it is prepared once then executed several times
-	 * 		preparedRequest = executor.getGrantUserPermissionsGraphQLRequest(
+	 * 		preparedRequest = executor.getGrantUserAuthoritiesGraphQLRequest(
 	 * 			"mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
 	 * 	}
 	 * 
 	 * 	void myMethod() {
-	 * 		Mono<User> mono = executor.grantUserPermissions(preparedRequest, userId, // A value for
-	 * 																					// grantUserPermissions's
+	 * 		Mono<User> mono = executor.grantUserAuthorities(preparedRequest, userId, // A value for
+	 * 																					// grantUserAuthorities's
 	 * 																					// userId input parameter
-	 * 			permissions, // A value for grantUserPermissions's permissions input parameter
+	 * 			authorities, // A value for grantUserAuthorities's authorities input parameter
 	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
@@ -9689,9 +9692,9 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * to return<br/>
 	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
 	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
-	 * {@link getGrantUserPermissionsGraphQLRequest(String)} method.
-	 * @param userId Parameter for the grantUserPermissions field of Mutation, as defined in the GraphQL schema
-	 * @param permissions Parameter for the grantUserPermissions field of Mutation, as defined in the GraphQL schema
+	 * {@link getGrantUserAuthoritiesGraphQLRequest(String)} method.
+	 * @param userId Parameter for the grantUserAuthorities field of Mutation, as defined in the GraphQL schema
+	 * @param authorities Parameter for the grantUserAuthorities field of Mutation, as defined in the GraphQL schema
 	 * @param paramsAndValues This parameter contains all the name and values for the Bind Variables defined in the
 	 * objectResponse parameter, that must be sent to the server. Optional parameter may not have a value. They will be
 	 * ignored and not sent to the server. Mandatory parameter must be provided in this argument.<BR/>
@@ -9700,15 +9703,15 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "grantUserPermissions", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLNonScalar(fieldName = "grantUserAuthorities", graphQLTypeSimpleName = "User", javaClass = User.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<User>> grantUserPermissions(ObjectResponse objectResponse, Long userId,
-		List<PermissionKind> permissions, Object... paramsAndValues) throws GraphQLRequestExecutionException {
+	public Mono<Optional<User>> grantUserAuthorities(ObjectResponse objectResponse, Long userId,
+		List<AuthorityKind> authorities, Object... paramsAndValues) throws GraphQLRequestExecutionException {
 
 		if (LOGGER.isTraceEnabled()) {
 			StringBuilder sb = new StringBuilder();
-			sb.append("Executing mutation 'grantUserPermissions' with bind variables: ");
+			sb.append("Executing mutation 'grantUserAuthorities' with bind variables: ");
 			boolean addComma = false;
 			for (Object o : paramsAndValues) {
 				if (o != null) {
@@ -9720,35 +9723,35 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 			}
 			LOGGER.trace(sb.toString());
 		} else if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Executing mutation 'grantUserPermissions' (with bind variables)");
+			LOGGER.debug("Executing mutation 'grantUserAuthorities' (with bind variables)");
 		}
 
 		Map<String, Object> parameters = this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues);
-		parameters.put("mutationGrantUserPermissionsUserId", userId);
-		parameters.put("mutationGrantUserPermissionsPermissions", permissions);
+		parameters.put("mutationGrantUserAuthoritiesUserId", userId);
+		parameters.put("mutationGrantUserAuthoritiesAuthorities", authorities);
 
 		return objectResponse.execReactive(Mutation.class, parameters).map(
-			t -> (t.getGrantUserPermissions() == null) ? Optional.empty() : Optional.of(t.getGrantUserPermissions()));
+			t -> (t.getGrantUserAuthorities() == null) ? Optional.empty() : Optional.of(t.getGrantUserAuthorities()));
 	}
 
 	/**
-	 * Grants permissions to a user. The specified permissions are added to any existing ones.<br/>
-	 * Get the {@link Builder} for the User, as expected by the grantUserPermissions query/mutation.
+	 * Grants authorities to a user. The specified authorities are added to any existing ones.<br/>
+	 * Get the {@link Builder} for the User, as expected by the grantUserAuthorities query/mutation.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public Builder getGrantUserPermissionsResponseBuilder() throws GraphQLRequestPreparationException {
-		return new Builder(this.graphQlClient, GraphQLReactiveRequest.class, "grantUserPermissions",
+	public Builder getGrantUserAuthoritiesResponseBuilder() throws GraphQLRequestPreparationException {
+		return new Builder(this.graphQlClient, GraphQLReactiveRequest.class, "grantUserAuthorities",
 			RequestType.mutation,
-			InputParameter.newBindParameter("", "userId", "mutationGrantUserPermissionsUserId", MANDATORY, "ID", true,
+			InputParameter.newBindParameter("", "userId", "mutationGrantUserAuthoritiesUserId", MANDATORY, "ID", true,
 				0, false),
-			InputParameter.newBindParameter("", "permissions", "mutationGrantUserPermissionsPermissions", MANDATORY,
-				"PermissionKind", true, 1, true));
+			InputParameter.newBindParameter("", "authorities", "mutationGrantUserAuthoritiesAuthorities", MANDATORY,
+				"AuthorityKind", true, 1, true));
 	}
 
 	/**
-	 * Grants permissions to a user. The specified permissions are added to any existing ones.<br/>
-	 * Get the {@link GraphQLReactiveRequest} for the grantUserPermissions REACTIVE_EXECUTOR, created with the given
+	 * Grants authorities to a user. The specified authorities are added to any existing ones.<br/>
+	 * Get the {@link GraphQLReactiveRequest} for the grantUserAuthorities REACTIVE_EXECUTOR, created with the given
 	 * Partial request.
 	 * @param partialRequest The Partial GraphQL request, as explained in the
 	 * <A HREF="https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin client
@@ -9756,19 +9759,19 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public GraphQLReactiveRequest getGrantUserPermissionsGraphQLRequest(String partialRequest)
+	public GraphQLReactiveRequest getGrantUserAuthoritiesGraphQLRequest(String partialRequest)
 		throws GraphQLRequestPreparationException {
 
 		return new GraphQLReactiveRequest(this.graphQlClient, partialRequest, RequestType.mutation,
-			"grantUserPermissions",
-			InputParameter.newBindParameter("", "userId", "mutationGrantUserPermissionsUserId", MANDATORY, "ID", true,
+			"grantUserAuthorities",
+			InputParameter.newBindParameter("", "userId", "mutationGrantUserAuthoritiesUserId", MANDATORY, "ID", true,
 				0, false),
-			InputParameter.newBindParameter("", "permissions", "mutationGrantUserPermissionsPermissions", MANDATORY,
-				"PermissionKind", true, 1, true));
+			InputParameter.newBindParameter("", "authorities", "mutationGrantUserAuthoritiesAuthorities", MANDATORY,
+				"AuthorityKind", true, 1, true));
 	}
 
 	/**
-	 * Revokes permissions from a user. The specified permissions are removed from the user; other permissions remain
+	 * Revokes authorities from a user. The specified authorities are removed from the user; other authorities remain
 	 * intact. This method executes a partial query against the GraphQL server. That is, the query that is one of the
 	 * queries defined in the GraphQL query object. The queryResponseDef contains the part of the query that <B><U>is
 	 * after</U></B> the query name.<BR/>
@@ -9786,10 +9789,10 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
 	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
 	 * 
-	 * 		Mono<User> mono = executor.revokeUserPermissionsWithBindValues(
+	 * 		Mono<User> mono = executor.revokeUserAuthoritiesWithBindValues(
 	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
-	 * 			userId, // A value for revokeUserPermissions's userId input parameter
-	 * 			permissions, // A value for revokeUserPermissions's permissions input parameter
+	 * 			userId, // A value for revokeUserAuthorities's userId input parameter
+	 * 			authorities, // A value for revokeUserAuthorities's authorities input parameter
 	 * 			params);
 	 * 		User field = mono.block();
 	 * 	}
@@ -9805,8 +9808,8 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
 	 * <I>parameters</I> argument to pass the list of values.<BR/>
 	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
-	 * @param userId Parameter for the revokeUserPermissions field of Mutation, as defined in the GraphQL schema
-	 * @param permissions Parameter for the revokeUserPermissions field of Mutation, as defined in the GraphQL schema
+	 * @param userId Parameter for the revokeUserAuthorities field of Mutation, as defined in the GraphQL schema
+	 * @param authorities Parameter for the revokeUserAuthorities field of Mutation, as defined in the GraphQL schema
 	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
 	 * variable in the defined query/mutation, this argument may be null or an empty {@link Map}
 	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
@@ -9814,21 +9817,21 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "revokeUserPermissions", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLNonScalar(fieldName = "revokeUserAuthorities", graphQLTypeSimpleName = "User", javaClass = User.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<User>> revokeUserPermissionsWithBindValues(String queryResponseDef, Long userId,
-		List<PermissionKind> permissions, Map<String, Object> parameters)
+	public Mono<Optional<User>> revokeUserAuthoritiesWithBindValues(String queryResponseDef, Long userId,
+		List<AuthorityKind> authorities, Map<String, Object> parameters)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
-		LOGGER.debug("Executing mutation 'revokeUserPermissions': {} ", queryResponseDef);
+		LOGGER.debug("Executing mutation 'revokeUserAuthorities': {} ", queryResponseDef);
 		ObjectResponse objectResponse =
-			getRevokeUserPermissionsResponseBuilder().withQueryResponseDef(queryResponseDef).build();
-		return revokeUserPermissionsWithBindValues(objectResponse, userId, permissions, parameters);
+			getRevokeUserAuthoritiesResponseBuilder().withQueryResponseDef(queryResponseDef).build();
+		return revokeUserAuthoritiesWithBindValues(objectResponse, userId, authorities, parameters);
 	}
 
 	/**
-	 * Revokes permissions from a user. The specified permissions are removed from the user; other permissions remain
+	 * Revokes authorities from a user. The specified authorities are removed from the user; other authorities remain
 	 * intact.<br/>
 	 * This method executes a partial query against the GraphQL server. That is, the query that is one of the queries
 	 * defined in the GraphQL query object. The queryResponseDef contains the part of the query that <B><U>is
@@ -9843,10 +9846,10 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * 	MutationExecutor executor;
 	 * 
 	 * 	void myMethod() {
-	 * 		Mono<User> mono = executor.revokeUserPermissions(
+	 * 		Mono<User> mono = executor.revokeUserAuthorities(
 	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
-	 * 			userId, // A value for revokeUserPermissions's userId input parameter
-	 * 			permissions, // A value for revokeUserPermissions's permissions input parameter
+	 * 			userId, // A value for revokeUserAuthorities's userId input parameter
+	 * 			authorities, // A value for revokeUserAuthorities's authorities input parameter
 	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
@@ -9865,8 +9868,8 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * <I>parameters</I> argument to pass the list of values.<BR/>
 	 * @param queryResponseDef The response definition of the query/mutation, in the native GraphQL format (see here
 	 * above)
-	 * @param userId Parameter for the revokeUserPermissions field of Mutation, as defined in the GraphQL schema
-	 * @param permissions Parameter for the revokeUserPermissions field of Mutation, as defined in the GraphQL schema
+	 * @param userId Parameter for the revokeUserAuthorities field of Mutation, as defined in the GraphQL schema
+	 * @param authorities Parameter for the revokeUserAuthorities field of Mutation, as defined in the GraphQL schema
 	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
 	 * variable in the defined query/mutation, this argument may be null or an empty {@link Map}
 	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
@@ -9874,22 +9877,22 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "revokeUserPermissions", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLNonScalar(fieldName = "revokeUserAuthorities", graphQLTypeSimpleName = "User", javaClass = User.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<User>> revokeUserPermissions(String queryResponseDef, Long userId,
-		List<PermissionKind> permissions, Object... paramsAndValues)
+	public Mono<Optional<User>> revokeUserAuthorities(String queryResponseDef, Long userId,
+		List<AuthorityKind> authorities, Object... paramsAndValues)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
-		LOGGER.debug("Executing mutation 'revokeUserPermissions': {} ", queryResponseDef);
+		LOGGER.debug("Executing mutation 'revokeUserAuthorities': {} ", queryResponseDef);
 		ObjectResponse objectResponse =
-			getRevokeUserPermissionsResponseBuilder().withQueryResponseDef(queryResponseDef).build();
-		return revokeUserPermissionsWithBindValues(objectResponse, userId, permissions,
+			getRevokeUserAuthoritiesResponseBuilder().withQueryResponseDef(queryResponseDef).build();
+		return revokeUserAuthoritiesWithBindValues(objectResponse, userId, authorities,
 			this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues));
 	}
 
 	/**
-	 * Revokes permissions from a user. The specified permissions are removed from the user; other permissions remain
+	 * Revokes authorities from a user. The specified authorities are removed from the user; other authorities remain
 	 * intact.<br/>
 	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
 	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
@@ -9909,16 +9912,16 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * 	@PostConstruct
 	 * 	public void setup() {
 	 * 		// Preparation of the query, so that it is prepared once then executed several times
-	 * 		preparedRequest = executor.getRevokeUserPermissionsGraphQLRequest(
+	 * 		preparedRequest = executor.getRevokeUserAuthoritiesGraphQLRequest(
 	 * 			"mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
 	 * 	}
 	 * 
 	 * 	void myMethod() {
-	 * 		Mono<User> mono = executor.revokeUserPermissionsWithBindValues(preparedRequest, userId, // A value for
-	 * 																								// revokeUserPermissions's
+	 * 		Mono<User> mono = executor.revokeUserAuthoritiesWithBindValues(preparedRequest, userId, // A value for
+	 * 																								// revokeUserAuthorities's
 	 * 																								// userId input
 	 * 																								// parameter
-	 * 			permissions, // A value for revokeUserPermissions's permissions input parameter
+	 * 			authorities, // A value for revokeUserAuthorities's authorities input parameter
 	 * 			params);
 	 * 		User field = mono.block();
 	 * 	}
@@ -9930,37 +9933,37 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * to return<br/>
 	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
 	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
-	 * {@link getRevokeUserPermissionsGraphQLRequest(String)} method.
-	 * @param userId Parameter for the revokeUserPermissions field of Mutation, as defined in the GraphQL schema
-	 * @param permissions Parameter for the revokeUserPermissions field of Mutation, as defined in the GraphQL schema
+	 * {@link getRevokeUserAuthoritiesGraphQLRequest(String)} method.
+	 * @param userId Parameter for the revokeUserAuthorities field of Mutation, as defined in the GraphQL schema
+	 * @param authorities Parameter for the revokeUserAuthorities field of Mutation, as defined in the GraphQL schema
 	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
 	 * variable in the defined query/mutation, this argument may be null or an empty {@link Map}
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "revokeUserPermissions", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLNonScalar(fieldName = "revokeUserAuthorities", graphQLTypeSimpleName = "User", javaClass = User.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<User>> revokeUserPermissionsWithBindValues(ObjectResponse objectResponse, Long userId,
-		List<PermissionKind> permissions, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+	public Mono<Optional<User>> revokeUserAuthoritiesWithBindValues(ObjectResponse objectResponse, Long userId,
+		List<AuthorityKind> authorities, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("Executing mutation 'revokeUserPermissions' with parameters: {}, {} ", userId, permissions);
+			LOGGER.trace("Executing mutation 'revokeUserAuthorities' with parameters: {}, {} ", userId, authorities);
 		} else if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Executing mutation 'revokeUserPermissions'");
+			LOGGER.debug("Executing mutation 'revokeUserAuthorities'");
 		}
 
 		// Given values for the BindVariables
 		Map<String, Object> parametersLocal = (parameters != null) ? parameters : new HashMap<>();
-		parametersLocal.put("mutationRevokeUserPermissionsUserId", userId);
-		parametersLocal.put("mutationRevokeUserPermissionsPermissions", permissions);
+		parametersLocal.put("mutationRevokeUserAuthoritiesUserId", userId);
+		parametersLocal.put("mutationRevokeUserAuthoritiesAuthorities", authorities);
 
 		return objectResponse.execReactive(Mutation.class, parametersLocal).map(
-			t -> (t.getRevokeUserPermissions() == null) ? Optional.empty() : Optional.of(t.getRevokeUserPermissions()));
+			t -> (t.getRevokeUserAuthorities() == null) ? Optional.empty() : Optional.of(t.getRevokeUserAuthorities()));
 	}
 
 	/**
-	 * Revokes permissions from a user. The specified permissions are removed from the user; other permissions remain
+	 * Revokes authorities from a user. The specified authorities are removed from the user; other authorities remain
 	 * intact.<br/>
 	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
 	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
@@ -9980,15 +9983,15 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * 	@PostConstruct
 	 * 	public void setup() {
 	 * 		// Preparation of the query, so that it is prepared once then executed several times
-	 * 		preparedRequest = executor.getRevokeUserPermissionsGraphQLRequest(
+	 * 		preparedRequest = executor.getRevokeUserAuthoritiesGraphQLRequest(
 	 * 			"mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
 	 * 	}
 	 * 
 	 * 	void myMethod() {
-	 * 		Mono<User> mono = executor.revokeUserPermissions(preparedRequest, userId, // A value for
-	 * 																					// revokeUserPermissions's
+	 * 		Mono<User> mono = executor.revokeUserAuthorities(preparedRequest, userId, // A value for
+	 * 																					// revokeUserAuthorities's
 	 * 																					// userId input parameter
-	 * 			permissions, // A value for revokeUserPermissions's permissions input parameter
+	 * 			authorities, // A value for revokeUserAuthorities's authorities input parameter
 	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
@@ -10002,9 +10005,9 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * to return<br/>
 	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
 	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
-	 * {@link getRevokeUserPermissionsGraphQLRequest(String)} method.
-	 * @param userId Parameter for the revokeUserPermissions field of Mutation, as defined in the GraphQL schema
-	 * @param permissions Parameter for the revokeUserPermissions field of Mutation, as defined in the GraphQL schema
+	 * {@link getRevokeUserAuthoritiesGraphQLRequest(String)} method.
+	 * @param userId Parameter for the revokeUserAuthorities field of Mutation, as defined in the GraphQL schema
+	 * @param authorities Parameter for the revokeUserAuthorities field of Mutation, as defined in the GraphQL schema
 	 * @param paramsAndValues This parameter contains all the name and values for the Bind Variables defined in the
 	 * objectResponse parameter, that must be sent to the server. Optional parameter may not have a value. They will be
 	 * ignored and not sent to the server. Mandatory parameter must be provided in this argument.<BR/>
@@ -10013,15 +10016,15 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "revokeUserPermissions", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLNonScalar(fieldName = "revokeUserAuthorities", graphQLTypeSimpleName = "User", javaClass = User.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<User>> revokeUserPermissions(ObjectResponse objectResponse, Long userId,
-		List<PermissionKind> permissions, Object... paramsAndValues) throws GraphQLRequestExecutionException {
+	public Mono<Optional<User>> revokeUserAuthorities(ObjectResponse objectResponse, Long userId,
+		List<AuthorityKind> authorities, Object... paramsAndValues) throws GraphQLRequestExecutionException {
 
 		if (LOGGER.isTraceEnabled()) {
 			StringBuilder sb = new StringBuilder();
-			sb.append("Executing mutation 'revokeUserPermissions' with bind variables: ");
+			sb.append("Executing mutation 'revokeUserAuthorities' with bind variables: ");
 			boolean addComma = false;
 			for (Object o : paramsAndValues) {
 				if (o != null) {
@@ -10033,37 +10036,37 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 			}
 			LOGGER.trace(sb.toString());
 		} else if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Executing mutation 'revokeUserPermissions' (with bind variables)");
+			LOGGER.debug("Executing mutation 'revokeUserAuthorities' (with bind variables)");
 		}
 
 		Map<String, Object> parameters = this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues);
-		parameters.put("mutationRevokeUserPermissionsUserId", userId);
-		parameters.put("mutationRevokeUserPermissionsPermissions", permissions);
+		parameters.put("mutationRevokeUserAuthoritiesUserId", userId);
+		parameters.put("mutationRevokeUserAuthoritiesAuthorities", authorities);
 
 		return objectResponse.execReactive(Mutation.class, parameters).map(
-			t -> (t.getRevokeUserPermissions() == null) ? Optional.empty() : Optional.of(t.getRevokeUserPermissions()));
+			t -> (t.getRevokeUserAuthorities() == null) ? Optional.empty() : Optional.of(t.getRevokeUserAuthorities()));
 	}
 
 	/**
-	 * Revokes permissions from a user. The specified permissions are removed from the user; other permissions remain
+	 * Revokes authorities from a user. The specified authorities are removed from the user; other authorities remain
 	 * intact.<br/>
-	 * Get the {@link Builder} for the User, as expected by the revokeUserPermissions query/mutation.
+	 * Get the {@link Builder} for the User, as expected by the revokeUserAuthorities query/mutation.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public Builder getRevokeUserPermissionsResponseBuilder() throws GraphQLRequestPreparationException {
-		return new Builder(this.graphQlClient, GraphQLReactiveRequest.class, "revokeUserPermissions",
+	public Builder getRevokeUserAuthoritiesResponseBuilder() throws GraphQLRequestPreparationException {
+		return new Builder(this.graphQlClient, GraphQLReactiveRequest.class, "revokeUserAuthorities",
 			RequestType.mutation,
-			InputParameter.newBindParameter("", "userId", "mutationRevokeUserPermissionsUserId", MANDATORY, "ID", true,
+			InputParameter.newBindParameter("", "userId", "mutationRevokeUserAuthoritiesUserId", MANDATORY, "ID", true,
 				0, false),
-			InputParameter.newBindParameter("", "permissions", "mutationRevokeUserPermissionsPermissions", MANDATORY,
-				"PermissionKind", true, 1, true));
+			InputParameter.newBindParameter("", "authorities", "mutationRevokeUserAuthoritiesAuthorities", MANDATORY,
+				"AuthorityKind", true, 1, true));
 	}
 
 	/**
-	 * Revokes permissions from a user. The specified permissions are removed from the user; other permissions remain
+	 * Revokes authorities from a user. The specified authorities are removed from the user; other authorities remain
 	 * intact.<br/>
-	 * Get the {@link GraphQLReactiveRequest} for the revokeUserPermissions REACTIVE_EXECUTOR, created with the given
+	 * Get the {@link GraphQLReactiveRequest} for the revokeUserAuthorities REACTIVE_EXECUTOR, created with the given
 	 * Partial request.
 	 * @param partialRequest The Partial GraphQL request, as explained in the
 	 * <A HREF="https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin client
@@ -10071,17 +10074,2824 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
-	public GraphQLReactiveRequest getRevokeUserPermissionsGraphQLRequest(String partialRequest)
+	public GraphQLReactiveRequest getRevokeUserAuthoritiesGraphQLRequest(String partialRequest)
 		throws GraphQLRequestPreparationException {
 
 		return new GraphQLReactiveRequest(this.graphQlClient, partialRequest, RequestType.mutation,
-			"revokeUserPermissions",
-			InputParameter.newBindParameter("", "userId", "mutationRevokeUserPermissionsUserId", MANDATORY, "ID", true,
+			"revokeUserAuthorities",
+			InputParameter.newBindParameter("", "userId", "mutationRevokeUserAuthoritiesUserId", MANDATORY, "ID", true,
 				0, false),
-			InputParameter.newBindParameter("", "permissions", "mutationRevokeUserPermissionsPermissions", MANDATORY,
-				"PermissionKind", true, 1, true));
+			InputParameter.newBindParameter("", "authorities", "mutationRevokeUserAuthoritiesAuthorities", MANDATORY,
+				"AuthorityKind", true, 1, true));
 	}
 
+	/**
+	 * Creates a new group.
+	 *
+	 * This method executes a partial query against the GraphQL server. That is, the
+	 * query that is one of the queries
+	 * defined in the GraphQL query object. The queryResponseDef contains the part
+	 * of the query that <B><U>is
+	 * after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL
+	 * schema):
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Map<String, Object> params = new HashMap<>();
+	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
+	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
+	 * 
+	 * 		Mono<Group> mono = executor.createGroupWithBindValues(
+	 * 				"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 				group, // A value for createGroup's group input parameter
+	 * 				params);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * It offers a logging of the call (if in debug mode), or of the call and its
+	 * parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the
+	 * parameter(s) for the query/mutation. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the
+	 * expected fields of the {@link Character}
+	 * GraphQL type. It can be something like "{ id name }", if you want these
+	 * fields of this type. Please take a look
+	 * at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * 
+	 * @param queryResponseDef
+	 *                         The response definition of the query, in the native
+	 *                         GraphQL format (see here above)
+	 * @param group            Parameter for the createGroup field of Mutation, as
+	 *                         defined in the GraphQL schema
+	 * @param parameters
+	 *                         The list of values, for the bind variables defined in
+	 *                         the query/mutation. If there is no bind variable in
+	 *                         the
+	 *                         defined query/mutation, this argument may be null or
+	 *                         an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException
+	 *                                            When an error occurs during the
+	 *                                            request preparation, typically
+	 *                                            when building the
+	 *                                            {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException
+	 *                                            When an error occurs during the
+	 *                                            request execution, typically a
+	 *                                            network error, an error from the
+	 *                                            GraphQL server or if the server
+	 *                                            response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "createGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> createGroupWithBindValues(
+			String queryResponseDef,
+			GroupInput group,
+			Map<String, Object> parameters)
+			throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		LOGGER.debug("Executing mutation 'createGroup': {} ", queryResponseDef);
+		ObjectResponse objectResponse = getCreateGroupResponseBuilder().withQueryResponseDef(queryResponseDef).build();
+		return createGroupWithBindValues(objectResponse, group, parameters);
+	}
+
+	/**
+	 * Creates a new group.<br/>
+	 *
+	 * This method executes a partial query against the GraphQL server. That is, the
+	 * query that is one of the queries
+	 * defined in the GraphQL query object. The queryResponseDef contains the part
+	 * of the query that <B><U>is
+	 * after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL
+	 * schema):
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.createGroup(
+	 * 				"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 				group, // A value for createGroup's group input parameter
+	 * 				"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 				"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * It offers a logging of the call (if in debug mode), or of the call and its
+	 * parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the
+	 * parameter(s) for the query/mutation . The given queryResponseDef
+	 * describes the format of the response of the server response, that is the
+	 * expected fields of the {@link Character}
+	 * GraphQL type. It can be something like "{ id name }", if you want these
+	 * fields of this type. Please take a look
+	 * at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * 
+	 * @param queryResponseDef
+	 *                         The response definition of the query/mutation, in the
+	 *                         native GraphQL format (see here above)
+	 * @param group            Parameter for the createGroup field of Mutation, as
+	 *                         defined in the GraphQL schema
+	 * @param parameters
+	 *                         The list of values, for the bind variables defined in
+	 *                         the query/mutation. If there is no bind variable in
+	 *                         the
+	 *                         defined query/mutation, this argument may be null or
+	 *                         an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException
+	 *                                            When an error occurs during the
+	 *                                            request preparation, typically
+	 *                                            when building the
+	 *                                            {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException
+	 *                                            When an error occurs during the
+	 *                                            request execution, typically a
+	 *                                            network error, an error from the
+	 *                                            GraphQL server or if the server
+	 *                                            response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "createGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> createGroup(
+			String queryResponseDef,
+			GroupInput group,
+			Object... paramsAndValues)
+			throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		LOGGER.debug("Executing mutation 'createGroup': {} ", queryResponseDef);
+		ObjectResponse objectResponse = getCreateGroupResponseBuilder().withQueryResponseDef(queryResponseDef).build();
+		return createGroupWithBindValues(objectResponse, group,
+				this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues));
+	}
+
+	/**
+	 * Creates a new group.<br/>
+	 *
+	 * This method is expected by the graphql-java framework. It will be called when
+	 * this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if
+	 * in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed
+	 * 		// several times
+	 * 		preparedRequest = executor.getCreateGroupGraphQLRequest(
+	 * 				"mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.createGroupWithBindValues(
+	 * 				preparedRequest,
+	 * 				group, // A value for createGroup's group input parameter
+	 * 				params);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse
+	 *                       The definition of the response format, that describes
+	 *                       what the GraphQL server is expected to return<br/>
+	 *                       Note: the <code>ObjectResponse</code> type of this
+	 *                       parameter is defined for backward compatibility. In new
+	 *                       implementations,
+	 *                       the expected type is the generated GraphQLRequest POJO,
+	 *                       as returned by the
+	 *                       {@link getCreateGroupGraphQLRequest(String)} method.
+	 * @param group          Parameter for the createGroup field of Mutation, as
+	 *                       defined in the GraphQL schema
+	 * @param parameters
+	 *                       The list of values, for the bind variables defined in
+	 *                       the query/mutation. If there is no bind variable in the
+	 *                       defined query/mutation, this argument may be null or an
+	 *                       empty {@link Map}
+	 * @throws GraphQLRequestExecutionException
+	 *                                          When an error occurs during the
+	 *                                          request execution, typically a
+	 *                                          network error, an error from the
+	 *                                          GraphQL server or if the server
+	 *                                          response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "createGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> createGroupWithBindValues(
+			ObjectResponse objectResponse,
+			GroupInput group,
+			Map<String, Object> parameters)
+			throws GraphQLRequestExecutionException {
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Executing mutation 'createGroup' with parameters: {} ", group);
+		} else if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Executing mutation 'createGroup'");
+		}
+
+		// Given values for the BindVariables
+		Map<String, Object> parametersLocal = (parameters != null) ? parameters : new HashMap<>();
+		parametersLocal.put("mutationCreateGroupGroup", group);
+
+		return objectResponse //
+				.execReactive(Mutation.class, parametersLocal) //
+				.map(t -> (t.getCreateGroup() == null) ? Optional.empty() : Optional.of(t.getCreateGroup()));
+	}
+
+	/**
+	 * Creates a new group.<br/>
+	 *
+	 * This method is expected by the graphql-java framework. It will be called when
+	 * this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if
+	 * in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed
+	 * 		// several times
+	 * 		preparedRequest = executor.getCreateGroupGraphQLRequest(
+	 * 				"mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.createGroup(
+	 * 				preparedRequest,
+	 * 				group, // A value for createGroup's group input parameter
+	 * 				"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 				"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse
+	 *                        The definition of the response format, that describes
+	 *                        what the GraphQL server is expected to return<br/>
+	 *                        Note: the <code>ObjectResponse</code> type of this
+	 *                        parameter is defined for backward compatibility. In
+	 *                        new implementations,
+	 *                        the expected type is the generated GraphQLRequest
+	 *                        POJO, as returned by the
+	 *                        {@link getCreateGroupGraphQLRequest(String)} method.
+	 * @param group           Parameter for the createGroup field of Mutation, as
+	 *                        defined in the GraphQL schema
+	 * @param paramsAndValues
+	 *                        This parameter contains all the name and values for
+	 *                        the Bind Variables defined in the objectResponse
+	 *                        parameter, that must be sent to the server. Optional
+	 *                        parameter may not have a value. They will be
+	 *                        ignored and not sent to the server. Mandatory
+	 *                        parameter must be provided in this argument.<BR/>
+	 *                        This parameter contains an even number of parameters:
+	 *                        it must be a series of name and values :
+	 *                        (paramName1, paramValue1, paramName2, paramValue2...)
+	 * @throws GraphQLRequestExecutionException
+	 *                                          When an error occurs during the
+	 *                                          request execution, typically a
+	 *                                          network error, an error from the
+	 *                                          GraphQL server or if the server
+	 *                                          response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "createGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> createGroup(
+			ObjectResponse objectResponse,
+			GroupInput group,
+			Object... paramsAndValues)
+			throws GraphQLRequestExecutionException {
+		if (LOGGER.isTraceEnabled()) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Executing mutation 'createGroup' with bind variables: ");
+			boolean addComma = false;
+			for (Object o : paramsAndValues) {
+				if (o != null) {
+					sb.append(o.toString());
+					if (addComma)
+						sb.append(", ");
+					addComma = true;
+				}
+			}
+			LOGGER.trace(sb.toString());
+		} else if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Executing mutation 'createGroup' (with bind variables)");
+		}
+
+		Map<String, Object> parameters = this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues);
+		parameters.put("mutationCreateGroupGroup", group);
+
+		return objectResponse //
+				.execReactive(Mutation.class, parameters) //
+				.map(t -> (t.getCreateGroup() == null) ? Optional.empty() : Optional.of(t.getCreateGroup()));
+	}
+
+	/**
+	 * Creates a new group.<br/>
+	 *
+	 * Get the {@link Builder} for the Group, as expected by the createGroup
+	 * query/mutation.
+	 * 
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public Builder getCreateGroupResponseBuilder() throws GraphQLRequestPreparationException {
+		return new Builder(this.graphQlClient, GraphQLReactiveRequest.class, "createGroup", RequestType.mutation,
+				InputParameter.newBindParameter("", "group", "mutationCreateGroupGroup", InputParameterType.MANDATORY,
+						"GroupInput", true, 0, false));
+	}
+
+	/**
+	 * Creates a new group.<br/>
+	 * Get the {@link GraphQLReactiveRequest} for the createGroup REACTIVE_EXECUTOR,
+	 * created with the given Partial request.
+	 * 
+	 * @param partialRequest
+	 *                       The Partial GraphQL request, as explained in the
+	 *                       <A HREF=
+	 *                       "https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin
+	 *                       client documentation</A>
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public GraphQLReactiveRequest getCreateGroupGraphQLRequest(String partialRequest)
+			throws GraphQLRequestPreparationException {
+		return new GraphQLReactiveRequest(this.graphQlClient, partialRequest, RequestType.mutation, "createGroup",
+				InputParameter.newBindParameter("", "group", "mutationCreateGroupGroup", InputParameterType.MANDATORY,
+						"GroupInput", true, 0, false));
+	}
+
+	/**
+	 * Updates an existing group.
+	 *
+	 * This method executes a partial query against the GraphQL server. That is, the
+	 * query that is one of the queries
+	 * defined in the GraphQL query object. The queryResponseDef contains the part
+	 * of the query that <B><U>is
+	 * after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL
+	 * schema):
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Map<String, Object> params = new HashMap<>();
+	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
+	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
+	 * 
+	 * 		Mono<Group> mono = executor.updateGroupWithBindValues(
+	 * 				"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 				group, // A value for updateGroup's group input parameter
+	 * 				params);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * It offers a logging of the call (if in debug mode), or of the call and its
+	 * parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the
+	 * parameter(s) for the query/mutation. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the
+	 * expected fields of the {@link Character}
+	 * GraphQL type. It can be something like "{ id name }", if you want these
+	 * fields of this type. Please take a look
+	 * at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * 
+	 * @param queryResponseDef
+	 *                         The response definition of the query, in the native
+	 *                         GraphQL format (see here above)
+	 * @param group            Parameter for the updateGroup field of Mutation, as
+	 *                         defined in the GraphQL schema
+	 * @param parameters
+	 *                         The list of values, for the bind variables defined in
+	 *                         the query/mutation. If there is no bind variable in
+	 *                         the
+	 *                         defined query/mutation, this argument may be null or
+	 *                         an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException
+	 *                                            When an error occurs during the
+	 *                                            request preparation, typically
+	 *                                            when building the
+	 *                                            {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException
+	 *                                            When an error occurs during the
+	 *                                            request execution, typically a
+	 *                                            network error, an error from the
+	 *                                            GraphQL server or if the server
+	 *                                            response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "updateGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> updateGroupWithBindValues(
+			String queryResponseDef,
+			GroupInput group,
+			Map<String, Object> parameters)
+			throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		LOGGER.debug("Executing mutation 'updateGroup': {} ", queryResponseDef);
+		ObjectResponse objectResponse = getUpdateGroupResponseBuilder().withQueryResponseDef(queryResponseDef).build();
+		return updateGroupWithBindValues(objectResponse, group, parameters);
+	}
+
+	/**
+	 * Updates an existing group.<br/>
+	 *
+	 * This method executes a partial query against the GraphQL server. That is, the
+	 * query that is one of the queries
+	 * defined in the GraphQL query object. The queryResponseDef contains the part
+	 * of the query that <B><U>is
+	 * after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL
+	 * schema):
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.updateGroup(
+	 * 				"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 				group, // A value for updateGroup's group input parameter
+	 * 				"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 				"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * It offers a logging of the call (if in debug mode), or of the call and its
+	 * parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the
+	 * parameter(s) for the query/mutation . The given queryResponseDef
+	 * describes the format of the response of the server response, that is the
+	 * expected fields of the {@link Character}
+	 * GraphQL type. It can be something like "{ id name }", if you want these
+	 * fields of this type. Please take a look
+	 * at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * 
+	 * @param queryResponseDef
+	 *                         The response definition of the query/mutation, in the
+	 *                         native GraphQL format (see here above)
+	 * @param group            Parameter for the updateGroup field of Mutation, as
+	 *                         defined in the GraphQL schema
+	 * @param parameters
+	 *                         The list of values, for the bind variables defined in
+	 *                         the query/mutation. If there is no bind variable in
+	 *                         the
+	 *                         defined query/mutation, this argument may be null or
+	 *                         an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException
+	 *                                            When an error occurs during the
+	 *                                            request preparation, typically
+	 *                                            when building the
+	 *                                            {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException
+	 *                                            When an error occurs during the
+	 *                                            request execution, typically a
+	 *                                            network error, an error from the
+	 *                                            GraphQL server or if the server
+	 *                                            response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "updateGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> updateGroup(
+			String queryResponseDef,
+			GroupInput group,
+			Object... paramsAndValues)
+			throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		LOGGER.debug("Executing mutation 'updateGroup': {} ", queryResponseDef);
+		ObjectResponse objectResponse = getUpdateGroupResponseBuilder().withQueryResponseDef(queryResponseDef).build();
+		return updateGroupWithBindValues(objectResponse, group,
+				this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues));
+	}
+
+	/**
+	 * Updates an existing group.<br/>
+	 *
+	 * This method is expected by the graphql-java framework. It will be called when
+	 * this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if
+	 * in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed
+	 * 		// several times
+	 * 		preparedRequest = executor.getUpdateGroupGraphQLRequest(
+	 * 				"mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.updateGroupWithBindValues(
+	 * 				preparedRequest,
+	 * 				group, // A value for updateGroup's group input parameter
+	 * 				params);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse
+	 *                       The definition of the response format, that describes
+	 *                       what the GraphQL server is expected to return<br/>
+	 *                       Note: the <code>ObjectResponse</code> type of this
+	 *                       parameter is defined for backward compatibility. In new
+	 *                       implementations,
+	 *                       the expected type is the generated GraphQLRequest POJO,
+	 *                       as returned by the
+	 *                       {@link getUpdateGroupGraphQLRequest(String)} method.
+	 * @param group          Parameter for the updateGroup field of Mutation, as
+	 *                       defined in the GraphQL schema
+	 * @param parameters
+	 *                       The list of values, for the bind variables defined in
+	 *                       the query/mutation. If there is no bind variable in the
+	 *                       defined query/mutation, this argument may be null or an
+	 *                       empty {@link Map}
+	 * @throws GraphQLRequestExecutionException
+	 *                                          When an error occurs during the
+	 *                                          request execution, typically a
+	 *                                          network error, an error from the
+	 *                                          GraphQL server or if the server
+	 *                                          response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "updateGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> updateGroupWithBindValues(
+			ObjectResponse objectResponse,
+			GroupInput group,
+			Map<String, Object> parameters)
+			throws GraphQLRequestExecutionException {
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Executing mutation 'updateGroup' with parameters: {} ", group);
+		} else if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Executing mutation 'updateGroup'");
+		}
+
+		// Given values for the BindVariables
+		Map<String, Object> parametersLocal = (parameters != null) ? parameters : new HashMap<>();
+		parametersLocal.put("mutationUpdateGroupGroup", group);
+
+		return objectResponse //
+				.execReactive(Mutation.class, parametersLocal) //
+				.map(t -> (t.getUpdateGroup() == null) ? Optional.empty() : Optional.of(t.getUpdateGroup()));
+	}
+
+	/**
+	 * Updates an existing group.<br/>
+	 *
+	 * This method is expected by the graphql-java framework. It will be called when
+	 * this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if
+	 * in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed
+	 * 		// several times
+	 * 		preparedRequest = executor.getUpdateGroupGraphQLRequest(
+	 * 				"mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.updateGroup(
+	 * 				preparedRequest,
+	 * 				group, // A value for updateGroup's group input parameter
+	 * 				"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 				"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse
+	 *                        The definition of the response format, that describes
+	 *                        what the GraphQL server is expected to return<br/>
+	 *                        Note: the <code>ObjectResponse</code> type of this
+	 *                        parameter is defined for backward compatibility. In
+	 *                        new implementations,
+	 *                        the expected type is the generated GraphQLRequest
+	 *                        POJO, as returned by the
+	 *                        {@link getUpdateGroupGraphQLRequest(String)} method.
+	 * @param group           Parameter for the updateGroup field of Mutation, as
+	 *                        defined in the GraphQL schema
+	 * @param paramsAndValues
+	 *                        This parameter contains all the name and values for
+	 *                        the Bind Variables defined in the objectResponse
+	 *                        parameter, that must be sent to the server. Optional
+	 *                        parameter may not have a value. They will be
+	 *                        ignored and not sent to the server. Mandatory
+	 *                        parameter must be provided in this argument.<BR/>
+	 *                        This parameter contains an even number of parameters:
+	 *                        it must be a series of name and values :
+	 *                        (paramName1, paramValue1, paramName2, paramValue2...)
+	 * @throws GraphQLRequestExecutionException
+	 *                                          When an error occurs during the
+	 *                                          request execution, typically a
+	 *                                          network error, an error from the
+	 *                                          GraphQL server or if the server
+	 *                                          response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "updateGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> updateGroup(
+			ObjectResponse objectResponse,
+			GroupInput group,
+			Object... paramsAndValues)
+			throws GraphQLRequestExecutionException {
+		if (LOGGER.isTraceEnabled()) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Executing mutation 'updateGroup' with bind variables: ");
+			boolean addComma = false;
+			for (Object o : paramsAndValues) {
+				if (o != null) {
+					sb.append(o.toString());
+					if (addComma)
+						sb.append(", ");
+					addComma = true;
+				}
+			}
+			LOGGER.trace(sb.toString());
+		} else if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Executing mutation 'updateGroup' (with bind variables)");
+		}
+
+		Map<String, Object> parameters = this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues);
+		parameters.put("mutationUpdateGroupGroup", group);
+
+		return objectResponse //
+				.execReactive(Mutation.class, parameters) //
+				.map(t -> (t.getUpdateGroup() == null) ? Optional.empty() : Optional.of(t.getUpdateGroup()));
+	}
+
+	/**
+	 * Updates an existing group.<br/>
+	 *
+	 * Get the {@link Builder} for the Group, as expected by the updateGroup
+	 * query/mutation.
+	 * 
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public Builder getUpdateGroupResponseBuilder() throws GraphQLRequestPreparationException {
+		return new Builder(this.graphQlClient, GraphQLReactiveRequest.class, "updateGroup", RequestType.mutation,
+				InputParameter.newBindParameter("", "group", "mutationUpdateGroupGroup", InputParameterType.MANDATORY,
+						"GroupInput", true, 0, false));
+	}
+
+	/**
+	 * Updates an existing group.<br/>
+	 * Get the {@link GraphQLReactiveRequest} for the updateGroup REACTIVE_EXECUTOR,
+	 * created with the given Partial request.
+	 * 
+	 * @param partialRequest
+	 *                       The Partial GraphQL request, as explained in the
+	 *                       <A HREF=
+	 *                       "https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin
+	 *                       client documentation</A>
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public GraphQLReactiveRequest getUpdateGroupGraphQLRequest(String partialRequest)
+			throws GraphQLRequestPreparationException {
+		return new GraphQLReactiveRequest(this.graphQlClient, partialRequest, RequestType.mutation, "updateGroup",
+				InputParameter.newBindParameter("", "group", "mutationUpdateGroupGroup", InputParameterType.MANDATORY,
+						"GroupInput", true, 0, false));
+	}
+
+	/**
+	 * Deletes an existing group.
+	 *
+	 * This method executes a partial query against the GraphQL server. That is, the
+	 * query that is one of the queries
+	 * defined in the GraphQL query object. The queryResponseDef contains the part
+	 * of the query that <B><U>is
+	 * after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL
+	 * schema):
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Map<String, Object> params = new HashMap<>();
+	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
+	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
+	 * 
+	 * 		Mono<Group> mono = executor.deleteGroupWithBindValues(
+	 * 				"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 				groupId, // A value for deleteGroup's groupId input parameter
+	 * 				params);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * It offers a logging of the call (if in debug mode), or of the call and its
+	 * parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the
+	 * parameter(s) for the query/mutation. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the
+	 * expected fields of the {@link Character}
+	 * GraphQL type. It can be something like "{ id name }", if you want these
+	 * fields of this type. Please take a look
+	 * at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * 
+	 * @param queryResponseDef
+	 *                         The response definition of the query, in the native
+	 *                         GraphQL format (see here above)
+	 * @param groupId          Parameter for the deleteGroup field of Mutation, as
+	 *                         defined in the GraphQL schema
+	 * @param parameters
+	 *                         The list of values, for the bind variables defined in
+	 *                         the query/mutation. If there is no bind variable in
+	 *                         the
+	 *                         defined query/mutation, this argument may be null or
+	 *                         an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException
+	 *                                            When an error occurs during the
+	 *                                            request preparation, typically
+	 *                                            when building the
+	 *                                            {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException
+	 *                                            When an error occurs during the
+	 *                                            request execution, typically a
+	 *                                            network error, an error from the
+	 *                                            GraphQL server or if the server
+	 *                                            response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "deleteGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> deleteGroupWithBindValues(
+			String queryResponseDef,
+			String groupId,
+			Map<String, Object> parameters)
+			throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		LOGGER.debug("Executing mutation 'deleteGroup': {} ", queryResponseDef);
+		ObjectResponse objectResponse = getDeleteGroupResponseBuilder().withQueryResponseDef(queryResponseDef).build();
+		return deleteGroupWithBindValues(objectResponse, groupId, parameters);
+	}
+
+	/**
+	 * Deletes an existing group.<br/>
+	 *
+	 * This method executes a partial query against the GraphQL server. That is, the
+	 * query that is one of the queries
+	 * defined in the GraphQL query object. The queryResponseDef contains the part
+	 * of the query that <B><U>is
+	 * after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL
+	 * schema):
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.deleteGroup(
+	 * 				"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 				groupId, // A value for deleteGroup's groupId input parameter
+	 * 				"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 				"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * It offers a logging of the call (if in debug mode), or of the call and its
+	 * parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the
+	 * parameter(s) for the query/mutation . The given queryResponseDef
+	 * describes the format of the response of the server response, that is the
+	 * expected fields of the {@link Character}
+	 * GraphQL type. It can be something like "{ id name }", if you want these
+	 * fields of this type. Please take a look
+	 * at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * 
+	 * @param queryResponseDef
+	 *                         The response definition of the query/mutation, in the
+	 *                         native GraphQL format (see here above)
+	 * @param groupId          Parameter for the deleteGroup field of Mutation, as
+	 *                         defined in the GraphQL schema
+	 * @param parameters
+	 *                         The list of values, for the bind variables defined in
+	 *                         the query/mutation. If there is no bind variable in
+	 *                         the
+	 *                         defined query/mutation, this argument may be null or
+	 *                         an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException
+	 *                                            When an error occurs during the
+	 *                                            request preparation, typically
+	 *                                            when building the
+	 *                                            {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException
+	 *                                            When an error occurs during the
+	 *                                            request execution, typically a
+	 *                                            network error, an error from the
+	 *                                            GraphQL server or if the server
+	 *                                            response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "deleteGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> deleteGroup(
+			String queryResponseDef,
+			String groupId,
+			Object... paramsAndValues)
+			throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		LOGGER.debug("Executing mutation 'deleteGroup': {} ", queryResponseDef);
+		ObjectResponse objectResponse = getDeleteGroupResponseBuilder().withQueryResponseDef(queryResponseDef).build();
+		return deleteGroupWithBindValues(objectResponse, groupId,
+				this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues));
+	}
+
+	/**
+	 * Deletes an existing group.<br/>
+	 *
+	 * This method is expected by the graphql-java framework. It will be called when
+	 * this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if
+	 * in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed
+	 * 		// several times
+	 * 		preparedRequest = executor.getDeleteGroupGraphQLRequest(
+	 * 				"mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.deleteGroupWithBindValues(
+	 * 				preparedRequest,
+	 * 				groupId, // A value for deleteGroup's groupId input parameter
+	 * 				params);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse
+	 *                       The definition of the response format, that describes
+	 *                       what the GraphQL server is expected to return<br/>
+	 *                       Note: the <code>ObjectResponse</code> type of this
+	 *                       parameter is defined for backward compatibility. In new
+	 *                       implementations,
+	 *                       the expected type is the generated GraphQLRequest POJO,
+	 *                       as returned by the
+	 *                       {@link getDeleteGroupGraphQLRequest(String)} method.
+	 * @param groupId        Parameter for the deleteGroup field of Mutation, as
+	 *                       defined in the GraphQL schema
+	 * @param parameters
+	 *                       The list of values, for the bind variables defined in
+	 *                       the query/mutation. If there is no bind variable in the
+	 *                       defined query/mutation, this argument may be null or an
+	 *                       empty {@link Map}
+	 * @throws GraphQLRequestExecutionException
+	 *                                          When an error occurs during the
+	 *                                          request execution, typically a
+	 *                                          network error, an error from the
+	 *                                          GraphQL server or if the server
+	 *                                          response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "deleteGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> deleteGroupWithBindValues(
+			ObjectResponse objectResponse,
+			String groupId,
+			Map<String, Object> parameters)
+			throws GraphQLRequestExecutionException {
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Executing mutation 'deleteGroup' with parameters: {} ", groupId);
+		} else if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Executing mutation 'deleteGroup'");
+		}
+
+		// Given values for the BindVariables
+		Map<String, Object> parametersLocal = (parameters != null) ? parameters : new HashMap<>();
+		parametersLocal.put("mutationDeleteGroupGroupId", groupId);
+
+		return objectResponse //
+				.execReactive(Mutation.class, parametersLocal) //
+				.map(t -> (t.getDeleteGroup() == null) ? Optional.empty() : Optional.of(t.getDeleteGroup()));
+	}
+
+	/**
+	 * Deletes an existing group.<br/>
+	 *
+	 * This method is expected by the graphql-java framework. It will be called when
+	 * this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if
+	 * in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed
+	 * 		// several times
+	 * 		preparedRequest = executor.getDeleteGroupGraphQLRequest(
+	 * 				"mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.deleteGroup(
+	 * 				preparedRequest,
+	 * 				groupId, // A value for deleteGroup's groupId input parameter
+	 * 				"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 				"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse
+	 *                        The definition of the response format, that describes
+	 *                        what the GraphQL server is expected to return<br/>
+	 *                        Note: the <code>ObjectResponse</code> type of this
+	 *                        parameter is defined for backward compatibility. In
+	 *                        new implementations,
+	 *                        the expected type is the generated GraphQLRequest
+	 *                        POJO, as returned by the
+	 *                        {@link getDeleteGroupGraphQLRequest(String)} method.
+	 * @param groupId         Parameter for the deleteGroup field of Mutation, as
+	 *                        defined in the GraphQL schema
+	 * @param paramsAndValues
+	 *                        This parameter contains all the name and values for
+	 *                        the Bind Variables defined in the objectResponse
+	 *                        parameter, that must be sent to the server. Optional
+	 *                        parameter may not have a value. They will be
+	 *                        ignored and not sent to the server. Mandatory
+	 *                        parameter must be provided in this argument.<BR/>
+	 *                        This parameter contains an even number of parameters:
+	 *                        it must be a series of name and values :
+	 *                        (paramName1, paramValue1, paramName2, paramValue2...)
+	 * @throws GraphQLRequestExecutionException
+	 *                                          When an error occurs during the
+	 *                                          request execution, typically a
+	 *                                          network error, an error from the
+	 *                                          GraphQL server or if the server
+	 *                                          response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "deleteGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> deleteGroup(
+			ObjectResponse objectResponse,
+			String groupId,
+			Object... paramsAndValues)
+			throws GraphQLRequestExecutionException {
+		if (LOGGER.isTraceEnabled()) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Executing mutation 'deleteGroup' with bind variables: ");
+			boolean addComma = false;
+			for (Object o : paramsAndValues) {
+				if (o != null) {
+					sb.append(o.toString());
+					if (addComma)
+						sb.append(", ");
+					addComma = true;
+				}
+			}
+			LOGGER.trace(sb.toString());
+		} else if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Executing mutation 'deleteGroup' (with bind variables)");
+		}
+
+		Map<String, Object> parameters = this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues);
+		parameters.put("mutationDeleteGroupGroupId", groupId);
+
+		return objectResponse //
+				.execReactive(Mutation.class, parameters) //
+				.map(t -> (t.getDeleteGroup() == null) ? Optional.empty() : Optional.of(t.getDeleteGroup()));
+	}
+
+	/**
+	 * Deletes an existing group.<br/>
+	 *
+	 * Get the {@link Builder} for the Group, as expected by the deleteGroup
+	 * query/mutation.
+	 * 
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public Builder getDeleteGroupResponseBuilder() throws GraphQLRequestPreparationException {
+		return new Builder(this.graphQlClient, GraphQLReactiveRequest.class, "deleteGroup", RequestType.mutation,
+				InputParameter.newBindParameter("", "groupId", "mutationDeleteGroupGroupId",
+						InputParameterType.MANDATORY, "ID", true, 0, false));
+	}
+
+	/**
+	 * Deletes an existing group.<br/>
+	 * Get the {@link GraphQLReactiveRequest} for the deleteGroup REACTIVE_EXECUTOR,
+	 * created with the given Partial request.
+	 * 
+	 * @param partialRequest
+	 *                       The Partial GraphQL request, as explained in the
+	 *                       <A HREF=
+	 *                       "https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin
+	 *                       client documentation</A>
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public GraphQLReactiveRequest getDeleteGroupGraphQLRequest(String partialRequest)
+			throws GraphQLRequestPreparationException {
+		return new GraphQLReactiveRequest(this.graphQlClient, partialRequest, RequestType.mutation, "deleteGroup",
+				InputParameter.newBindParameter("", "groupId", "mutationDeleteGroupGroupId",
+						InputParameterType.MANDATORY, "ID", true, 0, false));
+	}
+
+	/**
+	 * Adds a user to a group.
+	 *
+	 * This method executes a partial query against the GraphQL server. That is, the
+	 * query that is one of the queries
+	 * defined in the GraphQL query object. The queryResponseDef contains the part
+	 * of the query that <B><U>is
+	 * after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL
+	 * schema):
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Map<String, Object> params = new HashMap<>();
+	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
+	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
+	 * 
+	 * 		Mono<Group> mono = executor.addGroupMemberWithBindValues(
+	 * 				"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 				groupId, // A value for addGroupMember's groupId input parameter
+	 * 				userId, // A value for addGroupMember's userId input parameter
+	 * 				params);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * It offers a logging of the call (if in debug mode), or of the call and its
+	 * parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the
+	 * parameter(s) for the query/mutation. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the
+	 * expected fields of the {@link Character}
+	 * GraphQL type. It can be something like "{ id name }", if you want these
+	 * fields of this type. Please take a look
+	 * at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * 
+	 * @param queryResponseDef
+	 *                         The response definition of the query, in the native
+	 *                         GraphQL format (see here above)
+	 * @param groupId          Parameter for the addGroupMember field of Mutation,
+	 *                         as defined in the GraphQL schema
+	 * @param userId           Parameter for the addGroupMember field of Mutation,
+	 *                         as defined in the GraphQL schema
+	 * @param parameters
+	 *                         The list of values, for the bind variables defined in
+	 *                         the query/mutation. If there is no bind variable in
+	 *                         the
+	 *                         defined query/mutation, this argument may be null or
+	 *                         an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException
+	 *                                            When an error occurs during the
+	 *                                            request preparation, typically
+	 *                                            when building the
+	 *                                            {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException
+	 *                                            When an error occurs during the
+	 *                                            request execution, typically a
+	 *                                            network error, an error from the
+	 *                                            GraphQL server or if the server
+	 *                                            response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "addGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> addGroupMemberWithBindValues(
+			String queryResponseDef,
+			String groupId,
+			String userId,
+			Map<String, Object> parameters)
+			throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		LOGGER.debug("Executing mutation 'addGroupMember': {} ", queryResponseDef);
+		ObjectResponse objectResponse = getAddGroupMemberResponseBuilder().withQueryResponseDef(queryResponseDef)
+				.build();
+		return addGroupMemberWithBindValues(objectResponse, groupId, userId, parameters);
+	}
+
+	/**
+	 * Adds a user to a group.<br/>
+	 *
+	 * This method executes a partial query against the GraphQL server. That is, the
+	 * query that is one of the queries
+	 * defined in the GraphQL query object. The queryResponseDef contains the part
+	 * of the query that <B><U>is
+	 * after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL
+	 * schema):
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.addGroupMember(
+	 * 				"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 				groupId, // A value for addGroupMember's groupId input parameter
+	 * 				userId, // A value for addGroupMember's userId input parameter
+	 * 				"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 				"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * It offers a logging of the call (if in debug mode), or of the call and its
+	 * parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the
+	 * parameter(s) for the query/mutation . The given queryResponseDef
+	 * describes the format of the response of the server response, that is the
+	 * expected fields of the {@link Character}
+	 * GraphQL type. It can be something like "{ id name }", if you want these
+	 * fields of this type. Please take a look
+	 * at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * 
+	 * @param queryResponseDef
+	 *                         The response definition of the query/mutation, in the
+	 *                         native GraphQL format (see here above)
+	 * @param groupId          Parameter for the addGroupMember field of Mutation,
+	 *                         as defined in the GraphQL schema
+	 * @param userId           Parameter for the addGroupMember field of Mutation,
+	 *                         as defined in the GraphQL schema
+	 * @param parameters
+	 *                         The list of values, for the bind variables defined in
+	 *                         the query/mutation. If there is no bind variable in
+	 *                         the
+	 *                         defined query/mutation, this argument may be null or
+	 *                         an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException
+	 *                                            When an error occurs during the
+	 *                                            request preparation, typically
+	 *                                            when building the
+	 *                                            {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException
+	 *                                            When an error occurs during the
+	 *                                            request execution, typically a
+	 *                                            network error, an error from the
+	 *                                            GraphQL server or if the server
+	 *                                            response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "addGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> addGroupMember(
+			String queryResponseDef,
+			String groupId,
+			String userId,
+			Object... paramsAndValues)
+			throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		LOGGER.debug("Executing mutation 'addGroupMember': {} ", queryResponseDef);
+		ObjectResponse objectResponse = getAddGroupMemberResponseBuilder().withQueryResponseDef(queryResponseDef)
+				.build();
+		return addGroupMemberWithBindValues(objectResponse, groupId, userId,
+				this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues));
+	}
+
+	/**
+	 * Adds a user to a group.<br/>
+	 *
+	 * This method is expected by the graphql-java framework. It will be called when
+	 * this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if
+	 * in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed
+	 * 		// several times
+	 * 		preparedRequest = executor.getAddGroupMemberGraphQLRequest(
+	 * 				"mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.addGroupMemberWithBindValues(
+	 * 				preparedRequest,
+	 * 				groupId, // A value for addGroupMember's groupId input parameter
+	 * 				userId, // A value for addGroupMember's userId input parameter
+	 * 				params);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse
+	 *                       The definition of the response format, that describes
+	 *                       what the GraphQL server is expected to return<br/>
+	 *                       Note: the <code>ObjectResponse</code> type of this
+	 *                       parameter is defined for backward compatibility. In new
+	 *                       implementations,
+	 *                       the expected type is the generated GraphQLRequest POJO,
+	 *                       as returned by the
+	 *                       {@link getAddGroupMemberGraphQLRequest(String)} method.
+	 * @param groupId        Parameter for the addGroupMember field of Mutation, as
+	 *                       defined in the GraphQL schema
+	 * @param userId         Parameter for the addGroupMember field of Mutation, as
+	 *                       defined in the GraphQL schema
+	 * @param parameters
+	 *                       The list of values, for the bind variables defined in
+	 *                       the query/mutation. If there is no bind variable in the
+	 *                       defined query/mutation, this argument may be null or an
+	 *                       empty {@link Map}
+	 * @throws GraphQLRequestExecutionException
+	 *                                          When an error occurs during the
+	 *                                          request execution, typically a
+	 *                                          network error, an error from the
+	 *                                          GraphQL server or if the server
+	 *                                          response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "addGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> addGroupMemberWithBindValues(
+			ObjectResponse objectResponse,
+			String groupId,
+			String userId,
+			Map<String, Object> parameters)
+			throws GraphQLRequestExecutionException {
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Executing mutation 'addGroupMember' with parameters: {}, {} ", groupId, userId);
+		} else if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Executing mutation 'addGroupMember'");
+		}
+
+		// Given values for the BindVariables
+		Map<String, Object> parametersLocal = (parameters != null) ? parameters : new HashMap<>();
+		parametersLocal.put("mutationAddGroupMemberGroupId", groupId);
+		parametersLocal.put("mutationAddGroupMemberUserId", userId);
+
+		return objectResponse //
+				.execReactive(Mutation.class, parametersLocal) //
+				.map(t -> (t.getAddGroupMember() == null) ? Optional.empty() : Optional.of(t.getAddGroupMember()));
+	}
+
+	/**
+	 * Adds a user to a group.<br/>
+	 *
+	 * This method is expected by the graphql-java framework. It will be called when
+	 * this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if
+	 * in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed
+	 * 		// several times
+	 * 		preparedRequest = executor.getAddGroupMemberGraphQLRequest(
+	 * 				"mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.addGroupMember(
+	 * 				preparedRequest,
+	 * 				groupId, // A value for addGroupMember's groupId input parameter
+	 * 				userId, // A value for addGroupMember's userId input parameter
+	 * 				"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 				"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse
+	 *                        The definition of the response format, that describes
+	 *                        what the GraphQL server is expected to return<br/>
+	 *                        Note: the <code>ObjectResponse</code> type of this
+	 *                        parameter is defined for backward compatibility. In
+	 *                        new implementations,
+	 *                        the expected type is the generated GraphQLRequest
+	 *                        POJO, as returned by the
+	 *                        {@link getAddGroupMemberGraphQLRequest(String)}
+	 *                        method.
+	 * @param groupId         Parameter for the addGroupMember field of Mutation, as
+	 *                        defined in the GraphQL schema
+	 * @param userId          Parameter for the addGroupMember field of Mutation, as
+	 *                        defined in the GraphQL schema
+	 * @param paramsAndValues
+	 *                        This parameter contains all the name and values for
+	 *                        the Bind Variables defined in the objectResponse
+	 *                        parameter, that must be sent to the server. Optional
+	 *                        parameter may not have a value. They will be
+	 *                        ignored and not sent to the server. Mandatory
+	 *                        parameter must be provided in this argument.<BR/>
+	 *                        This parameter contains an even number of parameters:
+	 *                        it must be a series of name and values :
+	 *                        (paramName1, paramValue1, paramName2, paramValue2...)
+	 * @throws GraphQLRequestExecutionException
+	 *                                          When an error occurs during the
+	 *                                          request execution, typically a
+	 *                                          network error, an error from the
+	 *                                          GraphQL server or if the server
+	 *                                          response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "addGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> addGroupMember(
+			ObjectResponse objectResponse,
+			String groupId,
+			String userId,
+			Object... paramsAndValues)
+			throws GraphQLRequestExecutionException {
+		if (LOGGER.isTraceEnabled()) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Executing mutation 'addGroupMember' with bind variables: ");
+			boolean addComma = false;
+			for (Object o : paramsAndValues) {
+				if (o != null) {
+					sb.append(o.toString());
+					if (addComma)
+						sb.append(", ");
+					addComma = true;
+				}
+			}
+			LOGGER.trace(sb.toString());
+		} else if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Executing mutation 'addGroupMember' (with bind variables)");
+		}
+
+		Map<String, Object> parameters = this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues);
+		parameters.put("mutationAddGroupMemberGroupId", groupId);
+		parameters.put("mutationAddGroupMemberUserId", userId);
+
+		return objectResponse //
+				.execReactive(Mutation.class, parameters) //
+				.map(t -> (t.getAddGroupMember() == null) ? Optional.empty() : Optional.of(t.getAddGroupMember()));
+	}
+
+	/**
+	 * Adds a user to a group.<br/>
+	 *
+	 * Get the {@link Builder} for the Group, as expected by the addGroupMember
+	 * query/mutation.
+	 * 
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public Builder getAddGroupMemberResponseBuilder() throws GraphQLRequestPreparationException {
+		return new Builder(this.graphQlClient, GraphQLReactiveRequest.class, "addGroupMember", RequestType.mutation,
+				InputParameter.newBindParameter("", "groupId", "mutationAddGroupMemberGroupId",
+						InputParameterType.MANDATORY, "ID", true, 0, false),
+				InputParameter.newBindParameter("", "userId", "mutationAddGroupMemberUserId",
+						InputParameterType.MANDATORY, "ID", true, 0, false));
+	}
+
+	/**
+	 * Adds a user to a group.<br/>
+	 * Get the {@link GraphQLReactiveRequest} for the addGroupMember
+	 * REACTIVE_EXECUTOR, created with the given Partial request.
+	 * 
+	 * @param partialRequest
+	 *                       The Partial GraphQL request, as explained in the
+	 *                       <A HREF=
+	 *                       "https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin
+	 *                       client documentation</A>
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public GraphQLReactiveRequest getAddGroupMemberGraphQLRequest(String partialRequest)
+			throws GraphQLRequestPreparationException {
+		return new GraphQLReactiveRequest(this.graphQlClient, partialRequest, RequestType.mutation, "addGroupMember",
+				InputParameter.newBindParameter("", "groupId", "mutationAddGroupMemberGroupId",
+						InputParameterType.MANDATORY, "ID", true, 0, false),
+				InputParameter.newBindParameter("", "userId", "mutationAddGroupMemberUserId",
+						InputParameterType.MANDATORY, "ID", true, 0, false));
+	}
+
+	/**
+	 * Removes a user from a group.
+	 *
+	 * This method executes a partial query against the GraphQL server. That is, the
+	 * query that is one of the queries
+	 * defined in the GraphQL query object. The queryResponseDef contains the part
+	 * of the query that <B><U>is
+	 * after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL
+	 * schema):
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Map<String, Object> params = new HashMap<>();
+	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
+	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
+	 * 
+	 * 		Mono<Group> mono = executor.removeGroupMemberWithBindValues(
+	 * 				"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 				groupId, // A value for removeGroupMember's groupId input parameter
+	 * 				userId, // A value for removeGroupMember's userId input parameter
+	 * 				params);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * It offers a logging of the call (if in debug mode), or of the call and its
+	 * parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the
+	 * parameter(s) for the query/mutation. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the
+	 * expected fields of the {@link Character}
+	 * GraphQL type. It can be something like "{ id name }", if you want these
+	 * fields of this type. Please take a look
+	 * at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * 
+	 * @param queryResponseDef
+	 *                         The response definition of the query, in the native
+	 *                         GraphQL format (see here above)
+	 * @param groupId          Parameter for the removeGroupMember field of
+	 *                         Mutation, as defined in the GraphQL schema
+	 * @param userId           Parameter for the removeGroupMember field of
+	 *                         Mutation, as defined in the GraphQL schema
+	 * @param parameters
+	 *                         The list of values, for the bind variables defined in
+	 *                         the query/mutation. If there is no bind variable in
+	 *                         the
+	 *                         defined query/mutation, this argument may be null or
+	 *                         an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException
+	 *                                            When an error occurs during the
+	 *                                            request preparation, typically
+	 *                                            when building the
+	 *                                            {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException
+	 *                                            When an error occurs during the
+	 *                                            request execution, typically a
+	 *                                            network error, an error from the
+	 *                                            GraphQL server or if the server
+	 *                                            response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "removeGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> removeGroupMemberWithBindValues(
+			String queryResponseDef,
+			String groupId,
+			String userId,
+			Map<String, Object> parameters)
+			throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		LOGGER.debug("Executing mutation 'removeGroupMember': {} ", queryResponseDef);
+		ObjectResponse objectResponse = getRemoveGroupMemberResponseBuilder().withQueryResponseDef(queryResponseDef)
+				.build();
+		return removeGroupMemberWithBindValues(objectResponse, groupId, userId, parameters);
+	}
+
+	/**
+	 * Removes a user from a group.<br/>
+	 *
+	 * This method executes a partial query against the GraphQL server. That is, the
+	 * query that is one of the queries
+	 * defined in the GraphQL query object. The queryResponseDef contains the part
+	 * of the query that <B><U>is
+	 * after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL
+	 * schema):
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.removeGroupMember(
+	 * 				"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 				groupId, // A value for removeGroupMember's groupId input parameter
+	 * 				userId, // A value for removeGroupMember's userId input parameter
+	 * 				"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 				"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * It offers a logging of the call (if in debug mode), or of the call and its
+	 * parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the
+	 * parameter(s) for the query/mutation . The given queryResponseDef
+	 * describes the format of the response of the server response, that is the
+	 * expected fields of the {@link Character}
+	 * GraphQL type. It can be something like "{ id name }", if you want these
+	 * fields of this type. Please take a look
+	 * at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * 
+	 * @param queryResponseDef
+	 *                         The response definition of the query/mutation, in the
+	 *                         native GraphQL format (see here above)
+	 * @param groupId          Parameter for the removeGroupMember field of
+	 *                         Mutation, as defined in the GraphQL schema
+	 * @param userId           Parameter for the removeGroupMember field of
+	 *                         Mutation, as defined in the GraphQL schema
+	 * @param parameters
+	 *                         The list of values, for the bind variables defined in
+	 *                         the query/mutation. If there is no bind variable in
+	 *                         the
+	 *                         defined query/mutation, this argument may be null or
+	 *                         an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException
+	 *                                            When an error occurs during the
+	 *                                            request preparation, typically
+	 *                                            when building the
+	 *                                            {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException
+	 *                                            When an error occurs during the
+	 *                                            request execution, typically a
+	 *                                            network error, an error from the
+	 *                                            GraphQL server or if the server
+	 *                                            response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "removeGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> removeGroupMember(
+			String queryResponseDef,
+			String groupId,
+			String userId,
+			Object... paramsAndValues)
+			throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		LOGGER.debug("Executing mutation 'removeGroupMember': {} ", queryResponseDef);
+		ObjectResponse objectResponse = getRemoveGroupMemberResponseBuilder().withQueryResponseDef(queryResponseDef)
+				.build();
+		return removeGroupMemberWithBindValues(objectResponse, groupId, userId,
+				this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues));
+	}
+
+	/**
+	 * Removes a user from a group.<br/>
+	 *
+	 * This method is expected by the graphql-java framework. It will be called when
+	 * this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if
+	 * in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed
+	 * 		// several times
+	 * 		preparedRequest = executor.getRemoveGroupMemberGraphQLRequest(
+	 * 				"mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.removeGroupMemberWithBindValues(
+	 * 				preparedRequest,
+	 * 				groupId, // A value for removeGroupMember's groupId input parameter
+	 * 				userId, // A value for removeGroupMember's userId input parameter
+	 * 				params);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse
+	 *                       The definition of the response format, that describes
+	 *                       what the GraphQL server is expected to return<br/>
+	 *                       Note: the <code>ObjectResponse</code> type of this
+	 *                       parameter is defined for backward compatibility. In new
+	 *                       implementations,
+	 *                       the expected type is the generated GraphQLRequest POJO,
+	 *                       as returned by the
+	 *                       {@link getRemoveGroupMemberGraphQLRequest(String)}
+	 *                       method.
+	 * @param groupId        Parameter for the removeGroupMember field of Mutation,
+	 *                       as defined in the GraphQL schema
+	 * @param userId         Parameter for the removeGroupMember field of Mutation,
+	 *                       as defined in the GraphQL schema
+	 * @param parameters
+	 *                       The list of values, for the bind variables defined in
+	 *                       the query/mutation. If there is no bind variable in the
+	 *                       defined query/mutation, this argument may be null or an
+	 *                       empty {@link Map}
+	 * @throws GraphQLRequestExecutionException
+	 *                                          When an error occurs during the
+	 *                                          request execution, typically a
+	 *                                          network error, an error from the
+	 *                                          GraphQL server or if the server
+	 *                                          response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "removeGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> removeGroupMemberWithBindValues(
+			ObjectResponse objectResponse,
+			String groupId,
+			String userId,
+			Map<String, Object> parameters)
+			throws GraphQLRequestExecutionException {
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Executing mutation 'removeGroupMember' with parameters: {}, {} ", groupId, userId);
+		} else if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Executing mutation 'removeGroupMember'");
+		}
+
+		// Given values for the BindVariables
+		Map<String, Object> parametersLocal = (parameters != null) ? parameters : new HashMap<>();
+		parametersLocal.put("mutationRemoveGroupMemberGroupId", groupId);
+		parametersLocal.put("mutationRemoveGroupMemberUserId", userId);
+
+		return objectResponse //
+				.execReactive(Mutation.class, parametersLocal) //
+				.map(t -> (t.getRemoveGroupMember() == null) ? Optional.empty()
+						: Optional.of(t.getRemoveGroupMember()));
+	}
+
+	/**
+	 * Removes a user from a group.<br/>
+	 *
+	 * This method is expected by the graphql-java framework. It will be called when
+	 * this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if
+	 * in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed
+	 * 		// several times
+	 * 		preparedRequest = executor.getRemoveGroupMemberGraphQLRequest(
+	 * 				"mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.removeGroupMember(
+	 * 				preparedRequest,
+	 * 				groupId, // A value for removeGroupMember's groupId input parameter
+	 * 				userId, // A value for removeGroupMember's userId input parameter
+	 * 				"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 				"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse
+	 *                        The definition of the response format, that describes
+	 *                        what the GraphQL server is expected to return<br/>
+	 *                        Note: the <code>ObjectResponse</code> type of this
+	 *                        parameter is defined for backward compatibility. In
+	 *                        new implementations,
+	 *                        the expected type is the generated GraphQLRequest
+	 *                        POJO, as returned by the
+	 *                        {@link getRemoveGroupMemberGraphQLRequest(String)}
+	 *                        method.
+	 * @param groupId         Parameter for the removeGroupMember field of Mutation,
+	 *                        as defined in the GraphQL schema
+	 * @param userId          Parameter for the removeGroupMember field of Mutation,
+	 *                        as defined in the GraphQL schema
+	 * @param paramsAndValues
+	 *                        This parameter contains all the name and values for
+	 *                        the Bind Variables defined in the objectResponse
+	 *                        parameter, that must be sent to the server. Optional
+	 *                        parameter may not have a value. They will be
+	 *                        ignored and not sent to the server. Mandatory
+	 *                        parameter must be provided in this argument.<BR/>
+	 *                        This parameter contains an even number of parameters:
+	 *                        it must be a series of name and values :
+	 *                        (paramName1, paramValue1, paramName2, paramValue2...)
+	 * @throws GraphQLRequestExecutionException
+	 *                                          When an error occurs during the
+	 *                                          request execution, typically a
+	 *                                          network error, an error from the
+	 *                                          GraphQL server or if the server
+	 *                                          response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "removeGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> removeGroupMember(
+			ObjectResponse objectResponse,
+			String groupId,
+			String userId,
+			Object... paramsAndValues)
+			throws GraphQLRequestExecutionException {
+		if (LOGGER.isTraceEnabled()) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Executing mutation 'removeGroupMember' with bind variables: ");
+			boolean addComma = false;
+			for (Object o : paramsAndValues) {
+				if (o != null) {
+					sb.append(o.toString());
+					if (addComma)
+						sb.append(", ");
+					addComma = true;
+				}
+			}
+			LOGGER.trace(sb.toString());
+		} else if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Executing mutation 'removeGroupMember' (with bind variables)");
+		}
+
+		Map<String, Object> parameters = this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues);
+		parameters.put("mutationRemoveGroupMemberGroupId", groupId);
+		parameters.put("mutationRemoveGroupMemberUserId", userId);
+
+		return objectResponse //
+				.execReactive(Mutation.class, parameters) //
+				.map(t -> (t.getRemoveGroupMember() == null) ? Optional.empty()
+						: Optional.of(t.getRemoveGroupMember()));
+	}
+
+	/**
+	 * Removes a user from a group.<br/>
+	 *
+	 * Get the {@link Builder} for the Group, as expected by the removeGroupMember
+	 * query/mutation.
+	 * 
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public Builder getRemoveGroupMemberResponseBuilder() throws GraphQLRequestPreparationException {
+		return new Builder(this.graphQlClient, GraphQLReactiveRequest.class, "removeGroupMember", RequestType.mutation,
+				InputParameter.newBindParameter("", "groupId", "mutationRemoveGroupMemberGroupId",
+						InputParameterType.MANDATORY, "ID", true, 0, false),
+				InputParameter.newBindParameter("", "userId", "mutationRemoveGroupMemberUserId",
+						InputParameterType.MANDATORY, "ID", true, 0, false));
+	}
+
+	/**
+	 * Removes a user from a group.<br/>
+	 * Get the {@link GraphQLReactiveRequest} for the removeGroupMember
+	 * REACTIVE_EXECUTOR, created with the given Partial request.
+	 * 
+	 * @param partialRequest
+	 *                       The Partial GraphQL request, as explained in the
+	 *                       <A HREF=
+	 *                       "https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin
+	 *                       client documentation</A>
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public GraphQLReactiveRequest getRemoveGroupMemberGraphQLRequest(String partialRequest)
+			throws GraphQLRequestPreparationException {
+		return new GraphQLReactiveRequest(this.graphQlClient, partialRequest, RequestType.mutation, "removeGroupMember",
+				InputParameter.newBindParameter("", "groupId", "mutationRemoveGroupMemberGroupId",
+						InputParameterType.MANDATORY, "ID", true, 0, false),
+				InputParameter.newBindParameter("", "userId", "mutationRemoveGroupMemberUserId",
+						InputParameterType.MANDATORY, "ID", true, 0, false));
+	}
+
+	/**
+	 * Grants authorities to a group. The specified authorities are added to any
+	 * existing ones.
+	 *
+	 * This method executes a partial query against the GraphQL server. That is, the
+	 * query that is one of the queries
+	 * defined in the GraphQL query object. The queryResponseDef contains the part
+	 * of the query that <B><U>is
+	 * after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL
+	 * schema):
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Map<String, Object> params = new HashMap<>();
+	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
+	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
+	 * 
+	 * 		Mono<Group> mono = executor.grantGroupAuthoritiesWithBindValues(
+	 * 				"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 				userId, // A value for grantGroupAuthorities's userId input parameter
+	 * 				authorities, // A value for grantGroupAuthorities's authorities input parameter
+	 * 				params);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * It offers a logging of the call (if in debug mode), or of the call and its
+	 * parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the
+	 * parameter(s) for the query/mutation. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the
+	 * expected fields of the {@link Character}
+	 * GraphQL type. It can be something like "{ id name }", if you want these
+	 * fields of this type. Please take a look
+	 * at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * 
+	 * @param queryResponseDef
+	 *                         The response definition of the query, in the native
+	 *                         GraphQL format (see here above)
+	 * @param groupId           Parameter for the grantGroupAuthorities field of
+	 *                         Mutation, as defined in the GraphQL schema
+	 * @param authorities      Parameter for the grantGroupAuthorities field of
+	 *                         Mutation, as defined in the GraphQL schema
+	 * @param parameters
+	 *                         The list of values, for the bind variables defined in
+	 *                         the query/mutation. If there is no bind variable in
+	 *                         the
+	 *                         defined query/mutation, this argument may be null or
+	 *                         an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException
+	 *                                            When an error occurs during the
+	 *                                            request preparation, typically
+	 *                                            when building the
+	 *                                            {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException
+	 *                                            When an error occurs during the
+	 *                                            request execution, typically a
+	 *                                            network error, an error from the
+	 *                                            GraphQL server or if the server
+	 *                                            response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "grantGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> grantGroupAuthoritiesWithBindValues(
+			String queryResponseDef,
+			String groupId,
+			List<AuthorityKind> authorities,
+			Map<String, Object> parameters)
+			throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		LOGGER.debug("Executing mutation 'grantGroupAuthorities': {} ", queryResponseDef);
+		ObjectResponse objectResponse = getGrantGroupAuthoritiesResponseBuilder().withQueryResponseDef(queryResponseDef)
+				.build();
+		return grantGroupAuthoritiesWithBindValues(objectResponse, groupId, authorities, parameters);
+	}
+
+	/**
+	 * Grants authorities to a group. The specified authorities are added to any
+	 * existing ones.<br/>
+	 *
+	 * This method executes a partial query against the GraphQL server. That is, the
+	 * query that is one of the queries
+	 * defined in the GraphQL query object. The queryResponseDef contains the part
+	 * of the query that <B><U>is
+	 * after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL
+	 * schema):
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.grantGroupAuthorities(
+	 * 				"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 				userId, // A value for grantGroupAuthorities's userId input parameter
+	 * 				authorities, // A value for grantGroupAuthorities's authorities input parameter
+	 * 				"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 				"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * It offers a logging of the call (if in debug mode), or of the call and its
+	 * parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the
+	 * parameter(s) for the query/mutation . The given queryResponseDef
+	 * describes the format of the response of the server response, that is the
+	 * expected fields of the {@link Character}
+	 * GraphQL type. It can be something like "{ id name }", if you want these
+	 * fields of this type. Please take a look
+	 * at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * 
+	 * @param queryResponseDef
+	 *                         The response definition of the query/mutation, in the
+	 *                         native GraphQL format (see here above)
+	 * @param groupId           Parameter for the grantGroupAuthorities field of
+	 *                         Mutation, as defined in the GraphQL schema
+	 * @param authorities      Parameter for the grantGroupAuthorities field of
+	 *                         Mutation, as defined in the GraphQL schema
+	 * @param parameters
+	 *                         The list of values, for the bind variables defined in
+	 *                         the query/mutation. If there is no bind variable in
+	 *                         the
+	 *                         defined query/mutation, this argument may be null or
+	 *                         an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException
+	 *                                            When an error occurs during the
+	 *                                            request preparation, typically
+	 *                                            when building the
+	 *                                            {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException
+	 *                                            When an error occurs during the
+	 *                                            request execution, typically a
+	 *                                            network error, an error from the
+	 *                                            GraphQL server or if the server
+	 *                                            response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "grantGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> grantGroupAuthorities(
+			String queryResponseDef,
+			String groupId,
+			List<AuthorityKind> authorities,
+			Object... paramsAndValues)
+			throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		LOGGER.debug("Executing mutation 'grantGroupAuthorities': {} ", queryResponseDef);
+		ObjectResponse objectResponse = getGrantGroupAuthoritiesResponseBuilder().withQueryResponseDef(queryResponseDef)
+				.build();
+		return grantGroupAuthoritiesWithBindValues(objectResponse, groupId, authorities,
+				this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues));
+	}
+
+	/**
+	 * Grants authorities to a group. The specified authorities are added to any
+	 * existing ones.<br/>
+	 *
+	 * This method is expected by the graphql-java framework. It will be called when
+	 * this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if
+	 * in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed
+	 * 		// several times
+	 * 		preparedRequest = executor.getGrantGroupAuthoritiesGraphQLRequest(
+	 * 				"mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.grantGroupAuthoritiesWithBindValues(
+	 * 				preparedRequest,
+	 * 				userId, // A value for grantGroupAuthorities's userId input parameter
+	 * 				authorities, // A value for grantGroupAuthorities's authorities input parameter
+	 * 				params);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse
+	 *                       The definition of the response format, that describes
+	 *                       what the GraphQL server is expected to return<br/>
+	 *                       Note: the <code>ObjectResponse</code> type of this
+	 *                       parameter is defined for backward compatibility. In new
+	 *                       implementations,
+	 *                       the expected type is the generated GraphQLRequest POJO,
+	 *                       as returned by the
+	 *                       {@link getGrantGroupAuthoritiesGraphQLRequest(String)}
+	 *                       method.
+	 * @param groupId         Parameter for the grantGroupAuthorities field of
+	 *                       Mutation, as defined in the GraphQL schema
+	 * @param authorities    Parameter for the grantGroupAuthorities field of
+	 *                       Mutation, as defined in the GraphQL schema
+	 * @param parameters
+	 *                       The list of values, for the bind variables defined in
+	 *                       the query/mutation. If there is no bind variable in the
+	 *                       defined query/mutation, this argument may be null or an
+	 *                       empty {@link Map}
+	 * @throws GraphQLRequestExecutionException
+	 *                                          When an error occurs during the
+	 *                                          request execution, typically a
+	 *                                          network error, an error from the
+	 *                                          GraphQL server or if the server
+	 *                                          response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "grantGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> grantGroupAuthoritiesWithBindValues(
+			ObjectResponse objectResponse,
+			String groupId,
+			List<AuthorityKind> authorities,
+			Map<String, Object> parameters)
+			throws GraphQLRequestExecutionException {
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Executing mutation 'grantGroupAuthorities' with parameters: {}, {} ", groupId, authorities);
+		} else if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Executing mutation 'grantGroupAuthorities'");
+		}
+
+		// Given values for the BindVariables
+		Map<String, Object> parametersLocal = (parameters != null) ? parameters : new HashMap<>();
+		parametersLocal.put("mutationGrantGroupAuthoritiesGroupId", groupId);
+		parametersLocal.put("mutationGrantGroupAuthoritiesAuthorities", authorities);
+
+		return objectResponse //
+				.execReactive(Mutation.class, parametersLocal) //
+				.map(t -> (t.getGrantGroupAuthorities() == null) ? Optional.empty()
+						: Optional.of(t.getGrantGroupAuthorities()));
+	}
+
+	/**
+	 * Grants authorities to a group. The specified authorities are added to any
+	 * existing ones.<br/>
+	 *
+	 * This method is expected by the graphql-java framework. It will be called when
+	 * this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if
+	 * in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed
+	 * 		// several times
+	 * 		preparedRequest = executor.getGrantGroupAuthoritiesGraphQLRequest(
+	 * 				"mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.grantGroupAuthorities(
+	 * 				preparedRequest,
+	 * 				userId, // A value for grantGroupAuthorities's userId input parameter
+	 * 				authorities, // A value for grantGroupAuthorities's authorities input parameter
+	 * 				"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 				"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse
+	 *                        The definition of the response format, that describes
+	 *                        what the GraphQL server is expected to return<br/>
+	 *                        Note: the <code>ObjectResponse</code> type of this
+	 *                        parameter is defined for backward compatibility. In
+	 *                        new implementations,
+	 *                        the expected type is the generated GraphQLRequest
+	 *                        POJO, as returned by the
+	 *                        {@link getGrantGroupAuthoritiesGraphQLRequest(String)}
+	 *                        method.
+	 * @param groupId          Parameter for the grantGroupAuthorities field of
+	 *                        Mutation, as defined in the GraphQL schema
+	 * @param authorities     Parameter for the grantGroupAuthorities field of
+	 *                        Mutation, as defined in the GraphQL schema
+	 * @param paramsAndValues
+	 *                        This parameter contains all the name and values for
+	 *                        the Bind Variables defined in the objectResponse
+	 *                        parameter, that must be sent to the server. Optional
+	 *                        parameter may not have a value. They will be
+	 *                        ignored and not sent to the server. Mandatory
+	 *                        parameter must be provided in this argument.<BR/>
+	 *                        This parameter contains an even number of parameters:
+	 *                        it must be a series of name and values :
+	 *                        (paramName1, paramValue1, paramName2, paramValue2...)
+	 * @throws GraphQLRequestExecutionException
+	 *                                          When an error occurs during the
+	 *                                          request execution, typically a
+	 *                                          network error, an error from the
+	 *                                          GraphQL server or if the server
+	 *                                          response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "grantGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> grantGroupAuthorities(
+			ObjectResponse objectResponse,
+			String groupId,
+			List<AuthorityKind> authorities,
+			Object... paramsAndValues)
+			throws GraphQLRequestExecutionException {
+		if (LOGGER.isTraceEnabled()) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Executing mutation 'grantGroupAuthorities' with bind variables: ");
+			boolean addComma = false;
+			for (Object o : paramsAndValues) {
+				if (o != null) {
+					sb.append(o.toString());
+					if (addComma)
+						sb.append(", ");
+					addComma = true;
+				}
+			}
+			LOGGER.trace(sb.toString());
+		} else if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Executing mutation 'grantGroupAuthorities' (with bind variables)");
+		}
+
+		Map<String, Object> parameters = this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues);
+		parameters.put("mutationGrantGroupAuthoritiesGroupId", groupId);
+		parameters.put("mutationGrantGroupAuthoritiesAuthorities", authorities);
+
+		return objectResponse //
+				.execReactive(Mutation.class, parameters) //
+				.map(t -> (t.getGrantGroupAuthorities() == null) ? Optional.empty()
+						: Optional.of(t.getGrantGroupAuthorities()));
+	}
+
+	/**
+	 * Grants authorities to a group. The specified authorities are added to any
+	 * existing ones.<br/>
+	 *
+	 * Get the {@link Builder} for the Group, as expected by the
+	 * grantGroupAuthorities query/mutation.
+	 * 
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public Builder getGrantGroupAuthoritiesResponseBuilder() throws GraphQLRequestPreparationException {
+		return new Builder(this.graphQlClient, GraphQLReactiveRequest.class, "grantGroupAuthorities",
+				RequestType.mutation,
+				InputParameter.newBindParameter("", "groupId", "mutationGrantGroupAuthoritiesGroupId",
+						InputParameterType.MANDATORY, "ID", true, 0, false),
+				InputParameter.newBindParameter("", "authorities", "mutationGrantGroupAuthoritiesAuthorities",
+						InputParameterType.MANDATORY, "AuthorityKind", true, 1, true));
+	}
+
+	/**
+	 * Grants authorities to a group. The specified authorities are added to any
+	 * existing ones.<br/>
+	 * Get the {@link GraphQLReactiveRequest} for the grantGroupAuthorities
+	 * REACTIVE_EXECUTOR, created with the given Partial request.
+	 * 
+	 * @param partialRequest
+	 *                       The Partial GraphQL request, as explained in the
+	 *                       <A HREF=
+	 *                       "https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin
+	 *                       client documentation</A>
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public GraphQLReactiveRequest getGrantGroupAuthoritiesGraphQLRequest(String partialRequest)
+			throws GraphQLRequestPreparationException {
+		return new GraphQLReactiveRequest(this.graphQlClient, partialRequest, RequestType.mutation,
+				"grantGroupAuthorities",
+				InputParameter.newBindParameter("", "groupId", "mutationGrantGroupAuthoritiesGroupId",
+						InputParameterType.MANDATORY, "ID", true, 0, false),
+				InputParameter.newBindParameter("", "authorities", "mutationGrantGroupAuthoritiesAuthorities",
+						InputParameterType.MANDATORY, "AuthorityKind", true, 1, true));
+	}
+
+	/**
+	 * Revokes authorities from a group. The specified authorities are removed from
+	 * the group; other authorities remain intact.
+	 *
+	 * This method executes a partial query against the GraphQL server. That is, the
+	 * query that is one of the queries
+	 * defined in the GraphQL query object. The queryResponseDef contains the part
+	 * of the query that <B><U>is
+	 * after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL
+	 * schema):
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Map<String, Object> params = new HashMap<>();
+	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
+	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
+	 * 
+	 * 		Mono<Group> mono = executor.revokeGroupAuthoritiesWithBindValues(
+	 * 				"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 				userId, // A value for revokeGroupAuthorities's userId input parameter
+	 * 				authorities, // A value for revokeGroupAuthorities's authorities input parameter
+	 * 				params);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * It offers a logging of the call (if in debug mode), or of the call and its
+	 * parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the
+	 * parameter(s) for the query/mutation. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the
+	 * expected fields of the {@link Character}
+	 * GraphQL type. It can be something like "{ id name }", if you want these
+	 * fields of this type. Please take a look
+	 * at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * 
+	 * @param queryResponseDef
+	 *                         The response definition of the query, in the native
+	 *                         GraphQL format (see here above)
+	 * @param groupId           Parameter for the revokeGroupAuthorities field of
+	 *                         Mutation, as defined in the GraphQL schema
+	 * @param authorities      Parameter for the revokeGroupAuthorities field of
+	 *                         Mutation, as defined in the GraphQL schema
+	 * @param parameters
+	 *                         The list of values, for the bind variables defined in
+	 *                         the query/mutation. If there is no bind variable in
+	 *                         the
+	 *                         defined query/mutation, this argument may be null or
+	 *                         an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException
+	 *                                            When an error occurs during the
+	 *                                            request preparation, typically
+	 *                                            when building the
+	 *                                            {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException
+	 *                                            When an error occurs during the
+	 *                                            request execution, typically a
+	 *                                            network error, an error from the
+	 *                                            GraphQL server or if the server
+	 *                                            response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "revokeGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> revokeGroupAuthoritiesWithBindValues(
+			String queryResponseDef,
+			String groupId,
+			List<AuthorityKind> authorities,
+			Map<String, Object> parameters)
+			throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		LOGGER.debug("Executing mutation 'revokeGroupAuthorities': {} ", queryResponseDef);
+		ObjectResponse objectResponse = getRevokeGroupAuthoritiesResponseBuilder()
+				.withQueryResponseDef(queryResponseDef).build();
+		return revokeGroupAuthoritiesWithBindValues(objectResponse, groupId, authorities, parameters);
+	}
+
+	/**
+	 * Revokes authorities from a group. The specified authorities are removed from
+	 * the group; other authorities remain intact.<br/>
+	 *
+	 * This method executes a partial query against the GraphQL server. That is, the
+	 * query that is one of the queries
+	 * defined in the GraphQL query object. The queryResponseDef contains the part
+	 * of the query that <B><U>is
+	 * after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL
+	 * schema):
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.revokeGroupAuthorities(
+	 * 				"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 				userId, // A value for revokeGroupAuthorities's userId input parameter
+	 * 				authorities, // A value for revokeGroupAuthorities's authorities input parameter
+	 * 				"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 				"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * It offers a logging of the call (if in debug mode), or of the call and its
+	 * parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the
+	 * parameter(s) for the query/mutation . The given queryResponseDef
+	 * describes the format of the response of the server response, that is the
+	 * expected fields of the {@link Character}
+	 * GraphQL type. It can be something like "{ id name }", if you want these
+	 * fields of this type. Please take a look
+	 * at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * 
+	 * @param queryResponseDef
+	 *                         The response definition of the query/mutation, in the
+	 *                         native GraphQL format (see here above)
+	 * @param groupId           Parameter for the revokeGroupAuthorities field of
+	 *                         Mutation, as defined in the GraphQL schema
+	 * @param authorities      Parameter for the revokeGroupAuthorities field of
+	 *                         Mutation, as defined in the GraphQL schema
+	 * @param parameters
+	 *                         The list of values, for the bind variables defined in
+	 *                         the query/mutation. If there is no bind variable in
+	 *                         the
+	 *                         defined query/mutation, this argument may be null or
+	 *                         an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException
+	 *                                            When an error occurs during the
+	 *                                            request preparation, typically
+	 *                                            when building the
+	 *                                            {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException
+	 *                                            When an error occurs during the
+	 *                                            request execution, typically a
+	 *                                            network error, an error from the
+	 *                                            GraphQL server or if the server
+	 *                                            response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "revokeGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> revokeGroupAuthorities(
+			String queryResponseDef,
+			String groupId,
+			List<AuthorityKind> authorities,
+			Object... paramsAndValues)
+			throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+		LOGGER.debug("Executing mutation 'revokeGroupAuthorities': {} ", queryResponseDef);
+		ObjectResponse objectResponse = getRevokeGroupAuthoritiesResponseBuilder()
+				.withQueryResponseDef(queryResponseDef).build();
+		return revokeGroupAuthoritiesWithBindValues(objectResponse, groupId, authorities,
+				this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues));
+	}
+
+	/**
+	 * Revokes authorities from a group. The specified authorities are removed from
+	 * the group; other authorities remain intact.<br/>
+	 *
+	 * This method is expected by the graphql-java framework. It will be called when
+	 * this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if
+	 * in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed
+	 * 		// several times
+	 * 		preparedRequest = executor.getRevokeGroupAuthoritiesGraphQLRequest(
+	 * 				"mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.revokeGroupAuthoritiesWithBindValues(
+	 * 				preparedRequest,
+	 * 				userId, // A value for revokeGroupAuthorities's userId input parameter
+	 * 				authorities, // A value for revokeGroupAuthorities's authorities input parameter
+	 * 				params);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse
+	 *                       The definition of the response format, that describes
+	 *                       what the GraphQL server is expected to return<br/>
+	 *                       Note: the <code>ObjectResponse</code> type of this
+	 *                       parameter is defined for backward compatibility. In new
+	 *                       implementations,
+	 *                       the expected type is the generated GraphQLRequest POJO,
+	 *                       as returned by the
+	 *                       {@link getRevokeGroupAuthoritiesGraphQLRequest(String)}
+	 *                       method.
+	 * @param groupId         Parameter for the revokeGroupAuthorities field of
+	 *                       Mutation, as defined in the GraphQL schema
+	 * @param authorities    Parameter for the revokeGroupAuthorities field of
+	 *                       Mutation, as defined in the GraphQL schema
+	 * @param parameters
+	 *                       The list of values, for the bind variables defined in
+	 *                       the query/mutation. If there is no bind variable in the
+	 *                       defined query/mutation, this argument may be null or an
+	 *                       empty {@link Map}
+	 * @throws GraphQLRequestExecutionException
+	 *                                          When an error occurs during the
+	 *                                          request execution, typically a
+	 *                                          network error, an error from the
+	 *                                          GraphQL server or if the server
+	 *                                          response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "revokeGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> revokeGroupAuthoritiesWithBindValues(
+			ObjectResponse objectResponse,
+			String groupId,
+			List<AuthorityKind> authorities,
+			Map<String, Object> parameters)
+			throws GraphQLRequestExecutionException {
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Executing mutation 'revokeGroupAuthorities' with parameters: {}, {} ", groupId, authorities);
+		} else if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Executing mutation 'revokeGroupAuthorities'");
+		}
+
+		// Given values for the BindVariables
+		Map<String, Object> parametersLocal = (parameters != null) ? parameters : new HashMap<>();
+		parametersLocal.put("mutationRevokeGroupAuthoritiesGroupId", groupId);
+		parametersLocal.put("mutationRevokeGroupAuthoritiesAuthorities", authorities);
+
+		return objectResponse //
+				.execReactive(Mutation.class, parametersLocal) //
+				.map(t -> (t.getRevokeGroupAuthorities() == null) ? Optional.empty()
+						: Optional.of(t.getRevokeGroupAuthorities()));
+	}
+
+	/**
+	 * Revokes authorities from a group. The specified authorities are removed from
+	 * the group; other authorities remain intact.<br/>
+	 *
+	 * This method is expected by the graphql-java framework. It will be called when
+	 * this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if
+	 * in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed
+	 * 		// several times
+	 * 		preparedRequest = executor.getRevokeGroupAuthoritiesGraphQLRequest(
+	 * 				"mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.revokeGroupAuthorities(
+	 * 				preparedRequest,
+	 * 				userId, // A value for revokeGroupAuthorities's userId input parameter
+	 * 				authorities, // A value for revokeGroupAuthorities's authorities input parameter
+	 * 				"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 				"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse
+	 *                        The definition of the response format, that describes
+	 *                        what the GraphQL server is expected to return<br/>
+	 *                        Note: the <code>ObjectResponse</code> type of this
+	 *                        parameter is defined for backward compatibility. In
+	 *                        new implementations,
+	 *                        the expected type is the generated GraphQLRequest
+	 *                        POJO, as returned by the
+	 *                        {@link getRevokeGroupAuthoritiesGraphQLRequest(String)}
+	 *                        method.
+	 * @param groupId          Parameter for the revokeGroupAuthorities field of
+	 *                        Mutation, as defined in the GraphQL schema
+	 * @param authorities     Parameter for the revokeGroupAuthorities field of
+	 *                        Mutation, as defined in the GraphQL schema
+	 * @param paramsAndValues
+	 *                        This parameter contains all the name and values for
+	 *                        the Bind Variables defined in the objectResponse
+	 *                        parameter, that must be sent to the server. Optional
+	 *                        parameter may not have a value. They will be
+	 *                        ignored and not sent to the server. Mandatory
+	 *                        parameter must be provided in this argument.<BR/>
+	 *                        This parameter contains an even number of parameters:
+	 *                        it must be a series of name and values :
+	 *                        (paramName1, paramValue1, paramName2, paramValue2...)
+	 * @throws GraphQLRequestExecutionException
+	 *                                          When an error occurs during the
+	 *                                          request execution, typically a
+	 *                                          network error, an error from the
+	 *                                          GraphQL server or if the server
+	 *                                          response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "revokeGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> revokeGroupAuthorities(
+			ObjectResponse objectResponse,
+			String groupId,
+			List<AuthorityKind> authorities,
+			Object... paramsAndValues)
+			throws GraphQLRequestExecutionException {
+		if (LOGGER.isTraceEnabled()) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Executing mutation 'revokeGroupAuthorities' with bind variables: ");
+			boolean addComma = false;
+			for (Object o : paramsAndValues) {
+				if (o != null) {
+					sb.append(o.toString());
+					if (addComma)
+						sb.append(", ");
+					addComma = true;
+				}
+			}
+			LOGGER.trace(sb.toString());
+		} else if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Executing mutation 'revokeGroupAuthorities' (with bind variables)");
+		}
+
+		Map<String, Object> parameters = this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues);
+		parameters.put("mutationRevokeGroupAuthoritiesGroupId", groupId);
+		parameters.put("mutationRevokeGroupAuthoritiesAuthorities", authorities);
+
+		return objectResponse //
+				.execReactive(Mutation.class, parameters) //
+				.map(t -> (t.getRevokeGroupAuthorities() == null) ? Optional.empty()
+						: Optional.of(t.getRevokeGroupAuthorities()));
+	}
+
+	/**
+	 * Revokes authorities from a group. The specified authorities are removed from
+	 * the group; other authorities remain intact.<br/>
+	 *
+	 * Get the {@link Builder} for the Group, as expected by the
+	 * revokeGroupAuthorities query/mutation.
+	 * 
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public Builder getRevokeGroupAuthoritiesResponseBuilder() throws GraphQLRequestPreparationException {
+		return new Builder(this.graphQlClient, GraphQLReactiveRequest.class, "revokeGroupAuthorities",
+				RequestType.mutation,
+				InputParameter.newBindParameter("", "groupId", "mutationRevokeGroupAuthoritiesGroupId",
+						InputParameterType.MANDATORY, "ID", true, 0, false),
+				InputParameter.newBindParameter("", "authorities", "mutationRevokeGroupAuthoritiesAuthorities",
+						InputParameterType.MANDATORY, "AuthorityKind", true, 1, true));
+	}
+
+	/**
+	 * Revokes authorities from a group. The specified authorities are removed from
+	 * the group; other authorities remain intact.<br/>
+	 * Get the {@link GraphQLReactiveRequest} for the revokeGroupAuthorities
+	 * REACTIVE_EXECUTOR, created with the given Partial request.
+	 * 
+	 * @param partialRequest
+	 *                       The Partial GraphQL request, as explained in the
+	 *                       <A HREF=
+	 *                       "https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin
+	 *                       client documentation</A>
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public GraphQLReactiveRequest getRevokeGroupAuthoritiesGraphQLRequest(String partialRequest)
+			throws GraphQLRequestPreparationException {
+
+		return new GraphQLReactiveRequest(this.graphQlClient, partialRequest, RequestType.mutation,
+			"revokeGroupAuthorities",
+			InputParameter.newBindParameter("", "groupId", "mutationRevokeGroupAuthoritiesGroupId",
+					InputParameterType.MANDATORY, "ID", true, 0, false),
+			InputParameter.newBindParameter("", "authorities", "mutationRevokeGroupAuthoritiesAuthorities",
+					InputParameterType.MANDATORY, "AuthorityKind", true, 1, true));
+	}
+	
 	/**
 	 * This method executes a partial query against the GraphQL server. That is, the query that is one of the queries
 	 * defined in the GraphQL query object. The queryResponseDef contains the part of the query that <B><U>is

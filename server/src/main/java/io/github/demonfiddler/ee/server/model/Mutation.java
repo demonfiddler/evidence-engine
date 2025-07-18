@@ -38,7 +38,7 @@ public class Mutation {
 	 */
 	@GraphQLNonScalar(fieldName = "createClaim", graphQLTypeSimpleName = "Claim", javaClass = Claim.class,
 		listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	Claim createClaim;
 
@@ -47,7 +47,7 @@ public class Mutation {
 	 */
 	@GraphQLNonScalar(fieldName = "updateClaim", graphQLTypeSimpleName = "Claim", javaClass = Claim.class,
 		listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	Claim updateClaim;
 
@@ -55,7 +55,7 @@ public class Mutation {
 	 * Deletes an existing claim.
 	 */
 	@GraphQLScalar(fieldName = "deleteClaim", graphQLTypeSimpleName = "Claim", javaClass = Claim.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	Claim deleteClaim;
 
@@ -64,7 +64,7 @@ public class Mutation {
 	 */
 	@GraphQLNonScalar(fieldName = "createDeclaration", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	Declaration createDeclaration;
 
@@ -73,7 +73,7 @@ public class Mutation {
 	 */
 	@GraphQLNonScalar(fieldName = "updateDeclaration", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	Declaration updateDeclaration;
 
@@ -82,7 +82,7 @@ public class Mutation {
 	 */
 	@GraphQLScalar(fieldName = "deleteDeclaration", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	Declaration deleteDeclaration;
 
@@ -91,7 +91,7 @@ public class Mutation {
 	 */
 	@GraphQLNonScalar(fieldName = "createEntityLink", graphQLTypeSimpleName = "EntityLink",
 		javaClass = EntityLink.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	EntityLink createEntityLink;
 
@@ -100,7 +100,7 @@ public class Mutation {
 	 */
 	@GraphQLNonScalar(fieldName = "updateEntityLink", graphQLTypeSimpleName = "EntityLink",
 		javaClass = EntityLink.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	EntityLink updateEntityLink;
 
@@ -109,7 +109,7 @@ public class Mutation {
 	 */
 	@GraphQLNonScalar(fieldName = "deleteEntityLink", graphQLTypeSimpleName = "EntityLink",
 		javaClass = EntityLink.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	EntityLink deleteEntityLink;
 
@@ -118,7 +118,7 @@ public class Mutation {
 	 */
 	@GraphQLNonScalar(fieldName = "createJournal", graphQLTypeSimpleName = "Journal", javaClass = Journal.class,
 		listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	Journal createJournal;
 
@@ -127,7 +127,7 @@ public class Mutation {
 	 */
 	@GraphQLNonScalar(fieldName = "updateJournal", graphQLTypeSimpleName = "Journal", javaClass = Journal.class,
 		listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	Journal updateJournal;
 
@@ -136,7 +136,7 @@ public class Mutation {
 	 */
 	@GraphQLScalar(fieldName = "deleteJournal", graphQLTypeSimpleName = "Journal", javaClass = Journal.class,
 		listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	Journal deleteJournal;
 
@@ -145,7 +145,7 @@ public class Mutation {
 	 */
 	@GraphQLNonScalar(fieldName = "createPerson", graphQLTypeSimpleName = "Person", javaClass = Person.class,
 		listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	Person createPerson;
 
@@ -154,7 +154,7 @@ public class Mutation {
 	 */
 	@GraphQLNonScalar(fieldName = "updatePerson", graphQLTypeSimpleName = "Person", javaClass = Person.class,
 		listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	Person updatePerson;
 
@@ -163,7 +163,7 @@ public class Mutation {
 	 */
 	@GraphQLScalar(fieldName = "deletePerson", graphQLTypeSimpleName = "Person", javaClass = Person.class,
 		listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	Person deletePerson;
 
@@ -172,7 +172,7 @@ public class Mutation {
 	 */
 	@GraphQLNonScalar(fieldName = "createPublication", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	Publication createPublication;
 
@@ -181,7 +181,7 @@ public class Mutation {
 	 */
 	@GraphQLNonScalar(fieldName = "updatePublication", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	Publication updatePublication;
 
@@ -190,7 +190,7 @@ public class Mutation {
 	 */
 	@GraphQLScalar(fieldName = "deletePublication", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	Publication deletePublication;
 
@@ -199,7 +199,7 @@ public class Mutation {
 	 */
 	@GraphQLNonScalar(fieldName = "createPublisher", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class,
 		listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	Publisher createPublisher;
 
@@ -208,7 +208,7 @@ public class Mutation {
 	 */
 	@GraphQLNonScalar(fieldName = "updatePublisher", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class,
 		listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	Publisher updatePublisher;
 
@@ -217,7 +217,7 @@ public class Mutation {
 	 */
 	@GraphQLScalar(fieldName = "deletePublisher", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class,
 		listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	Publisher deletePublisher;
 
@@ -226,7 +226,7 @@ public class Mutation {
 	 */
 	@GraphQLNonScalar(fieldName = "createQuotation", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class,
 		listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	Quotation createQuotation;
 
@@ -235,7 +235,7 @@ public class Mutation {
 	 */
 	@GraphQLNonScalar(fieldName = "updateQuotation", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class,
 		listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	Quotation updateQuotation;
 
@@ -244,7 +244,7 @@ public class Mutation {
 	 */
 	@GraphQLScalar(fieldName = "deleteQuotation", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class,
 		listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	Quotation deleteQuotation;
 
@@ -253,7 +253,7 @@ public class Mutation {
 	 */
 	@GraphQLNonScalar(fieldName = "createTopic", graphQLTypeSimpleName = "Topic", javaClass = Topic.class,
 		listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	Topic createTopic;
 
@@ -262,7 +262,7 @@ public class Mutation {
 	 */
 	@GraphQLNonScalar(fieldName = "updateTopic", graphQLTypeSimpleName = "Topic", javaClass = Topic.class,
 		listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	Topic updateTopic;
 
@@ -270,7 +270,7 @@ public class Mutation {
 	 * Deletes an existing topic.
 	 */
 	@GraphQLScalar(fieldName = "deleteTopic", graphQLTypeSimpleName = "Topic", javaClass = Topic.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	Topic deleteTopic;
 
@@ -279,7 +279,7 @@ public class Mutation {
 	 */
 	@GraphQLScalar(fieldName = "setEntityStatus", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class,
 		listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	Boolean setEntityStatus;
 
@@ -287,7 +287,7 @@ public class Mutation {
 	 * Creates a new user.
 	 */
 	@GraphQLNonScalar(fieldName = "createUser", graphQLTypeSimpleName = "User", javaClass = User.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	User createUser;
 
@@ -295,7 +295,7 @@ public class Mutation {
 	 * Updates an existing user.
 	 */
 	@GraphQLNonScalar(fieldName = "updateUser", graphQLTypeSimpleName = "User", javaClass = User.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	User updateUser;
 
@@ -303,33 +303,91 @@ public class Mutation {
 	 * Updates an existing user.
 	 */
 	@GraphQLScalar(fieldName = "deleteUser", graphQLTypeSimpleName = "User", javaClass = User.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	User deleteUser;
 
 	/**
-	 * Grants permissions to a user. The specified permissions are added to any existing ones.
+	 * Grants authorities to a user. The specified authorities are added to any existing ones.
 	 */
-	@GraphQLNonScalar(fieldName = "grantUserPermissions", graphQLTypeSimpleName = "User", javaClass = User.class,
+	@GraphQLNonScalar(fieldName = "grantUserAuthorities", graphQLTypeSimpleName = "User", javaClass = User.class,
 		listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	User grantUserPermissions;
+	User grantUserAuthorities;
 
 	/**
-	 * Revokes permissions from a user. The specified permissions are removed from the user; other permissions remain
+	 * Revokes authorities from a user. The specified authorities are removed from the user; other authorities remain
 	 * intact.
 	 */
-	@GraphQLNonScalar(fieldName = "revokeUserPermissions", graphQLTypeSimpleName = "User", javaClass = User.class,
+	@GraphQLNonScalar(fieldName = "revokeUserAuthorities", graphQLTypeSimpleName = "User", javaClass = User.class,
 		listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	User revokeUserPermissions;
+	User revokeUserAuthorities;
+
+	/**
+	 * Creates a new group.
+	 */
+	@GraphQLNonScalar(fieldName = "createGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	Group createGroup;
+
+	/**
+	 * Updates an existing group.
+	 */
+	@GraphQLNonScalar(fieldName = "updateGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	Group updateGroup;
+
+	/**
+	 * Deletes an existing group.
+	 */
+	@GraphQLNonScalar(fieldName = "deleteGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	Group deleteGroup;
+
+	/**
+	 * Adds a user to a group.
+	 */
+	@GraphQLNonScalar(fieldName = "addGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	Group addGroupMember;
+
+	/**
+	 * Removes a user from a group.
+	 */
+	@GraphQLNonScalar(fieldName = "removeGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	Group removeGroupMember;
+
+	/**
+	 * Grants authorities to a group. The specified authorities are added to any
+	 * existing ones.
+	 */
+	@GraphQLNonScalar(fieldName = "grantGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	Group grantGroupAuthorities;
+
+	/**
+	 * Revokes authorities from a group. The specified authorities are removed from
+	 * the group; other authorities remain intact.
+	 */
+	@GraphQLNonScalar(fieldName = "revokeGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	Group revokeGroupAuthorities;
 
 	/**
 	 * Creates a new claim.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public void setCreateClaim(Claim createClaim) {
 		this.createClaim = createClaim;
@@ -338,7 +396,7 @@ public class Mutation {
 	/**
 	 * Creates a new claim.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Claim getCreateClaim() {
 		return this.createClaim;
@@ -347,7 +405,7 @@ public class Mutation {
 	/**
 	 * Updates an existing claim.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public void setUpdateClaim(Claim updateClaim) {
 		this.updateClaim = updateClaim;
@@ -356,7 +414,7 @@ public class Mutation {
 	/**
 	 * Updates an existing claim.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Claim getUpdateClaim() {
 		return this.updateClaim;
@@ -365,7 +423,7 @@ public class Mutation {
 	/**
 	 * Deletes an existing claim.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public void setDeleteClaim(Claim deleteClaim) {
 		this.deleteClaim = deleteClaim;
@@ -374,7 +432,7 @@ public class Mutation {
 	/**
 	 * Deletes an existing claim.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Claim getDeleteClaim() {
 		return this.deleteClaim;
@@ -383,7 +441,7 @@ public class Mutation {
 	/**
 	 * Creates a new declaration.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public void setCreateDeclaration(Declaration createDeclaration) {
 		this.createDeclaration = createDeclaration;
@@ -392,7 +450,7 @@ public class Mutation {
 	/**
 	 * Creates a new declaration.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Declaration getCreateDeclaration() {
 		return this.createDeclaration;
@@ -401,7 +459,7 @@ public class Mutation {
 	/**
 	 * Updates an existing declaration.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public void setUpdateDeclaration(Declaration updateDeclaration) {
 		this.updateDeclaration = updateDeclaration;
@@ -410,7 +468,7 @@ public class Mutation {
 	/**
 	 * Updates an existing declaration.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Declaration getUpdateDeclaration() {
 		return this.updateDeclaration;
@@ -419,7 +477,7 @@ public class Mutation {
 	/**
 	 * Deletes an existing declaration.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public void setDeleteDeclaration(Declaration deleteDeclaration) {
 		this.deleteDeclaration = deleteDeclaration;
@@ -428,7 +486,7 @@ public class Mutation {
 	/**
 	 * Deletes an existing declaration.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Declaration getDeleteDeclaration() {
 		return this.deleteDeclaration;
@@ -437,7 +495,7 @@ public class Mutation {
 	/**
 	 * Creates an entity link.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	public void setCreateEntityLink(EntityLink createEntityLink) {
 		this.createEntityLink = createEntityLink;
@@ -446,7 +504,7 @@ public class Mutation {
 	/**
 	 * Creates an entity link.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	public EntityLink getCreateEntityLink() {
 		return this.createEntityLink;
@@ -455,7 +513,7 @@ public class Mutation {
 	/**
 	 * Updates an existing entity link.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	public void setUpdateEntityLink(EntityLink updateEntityLink) {
 		this.updateEntityLink = updateEntityLink;
@@ -464,7 +522,7 @@ public class Mutation {
 	/**
 	 * Updates an existing entity link.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	public EntityLink getUpdateEntityLink() {
 		return this.updateEntityLink;
@@ -473,7 +531,7 @@ public class Mutation {
 	/**
 	 * Deletes an entity link.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	public void setDeleteEntityLink(EntityLink deleteEntityLink) {
 		this.deleteEntityLink = deleteEntityLink;
@@ -482,7 +540,7 @@ public class Mutation {
 	/**
 	 * Deletes an entity link.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[LNK]" })
 	public EntityLink getDeleteEntityLink() {
 		return this.deleteEntityLink;
@@ -491,7 +549,7 @@ public class Mutation {
 	/**
 	 * Create a new journal.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public void setCreateJournal(Journal createJournal) {
 		this.createJournal = createJournal;
@@ -500,7 +558,7 @@ public class Mutation {
 	/**
 	 * Create a new journal.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Journal getCreateJournal() {
 		return this.createJournal;
@@ -509,7 +567,7 @@ public class Mutation {
 	/**
 	 * Updates an existing journal.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public void setUpdateJournal(Journal updateJournal) {
 		this.updateJournal = updateJournal;
@@ -518,7 +576,7 @@ public class Mutation {
 	/**
 	 * Updates an existing journal.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Journal getUpdateJournal() {
 		return this.updateJournal;
@@ -527,7 +585,7 @@ public class Mutation {
 	/**
 	 * Deletes an existing journal.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public void setDeleteJournal(Journal deleteJournal) {
 		this.deleteJournal = deleteJournal;
@@ -536,7 +594,7 @@ public class Mutation {
 	/**
 	 * Deletes an existing journal.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Journal getDeleteJournal() {
 		return this.deleteJournal;
@@ -545,7 +603,7 @@ public class Mutation {
 	/**
 	 * Creates a new person.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public void setCreatePerson(Person createPerson) {
 		this.createPerson = createPerson;
@@ -554,7 +612,7 @@ public class Mutation {
 	/**
 	 * Creates a new person.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Person getCreatePerson() {
 		return this.createPerson;
@@ -563,7 +621,7 @@ public class Mutation {
 	/**
 	 * Updates an existing person.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public void setUpdatePerson(Person updatePerson) {
 		this.updatePerson = updatePerson;
@@ -572,7 +630,7 @@ public class Mutation {
 	/**
 	 * Updates an existing person.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Person getUpdatePerson() {
 		return this.updatePerson;
@@ -581,7 +639,7 @@ public class Mutation {
 	/**
 	 * Deletes an existing person.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public void setDeletePerson(Person deletePerson) {
 		this.deletePerson = deletePerson;
@@ -590,7 +648,7 @@ public class Mutation {
 	/**
 	 * Deletes an existing person.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Person getDeletePerson() {
 		return this.deletePerson;
@@ -599,7 +657,7 @@ public class Mutation {
 	/**
 	 * Creates a new publication.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public void setCreatePublication(Publication createPublication) {
 		this.createPublication = createPublication;
@@ -608,7 +666,7 @@ public class Mutation {
 	/**
 	 * Creates a new publication.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Publication getCreatePublication() {
 		return this.createPublication;
@@ -617,7 +675,7 @@ public class Mutation {
 	/**
 	 * Updates an existing publication.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public void setUpdatePublication(Publication updatePublication) {
 		this.updatePublication = updatePublication;
@@ -626,7 +684,7 @@ public class Mutation {
 	/**
 	 * Updates an existing publication.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Publication getUpdatePublication() {
 		return this.updatePublication;
@@ -635,7 +693,7 @@ public class Mutation {
 	/**
 	 * Deletes an existing publication.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public void setDeletePublication(Publication deletePublication) {
 		this.deletePublication = deletePublication;
@@ -644,7 +702,7 @@ public class Mutation {
 	/**
 	 * Deletes an existing publication.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Publication getDeletePublication() {
 		return this.deletePublication;
@@ -653,7 +711,7 @@ public class Mutation {
 	/**
 	 * Creates a new publisher.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public void setCreatePublisher(Publisher createPublisher) {
 		this.createPublisher = createPublisher;
@@ -662,7 +720,7 @@ public class Mutation {
 	/**
 	 * Creates a new publisher.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Publisher getCreatePublisher() {
 		return this.createPublisher;
@@ -671,7 +729,7 @@ public class Mutation {
 	/**
 	 * Updates an existing publisher.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public void setUpdatePublisher(Publisher updatePublisher) {
 		this.updatePublisher = updatePublisher;
@@ -680,7 +738,7 @@ public class Mutation {
 	/**
 	 * Updates an existing publisher.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Publisher getUpdatePublisher() {
 		return this.updatePublisher;
@@ -689,7 +747,7 @@ public class Mutation {
 	/**
 	 * Deletes an existing publisher.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public void setDeletePublisher(Publisher deletePublisher) {
 		this.deletePublisher = deletePublisher;
@@ -698,7 +756,7 @@ public class Mutation {
 	/**
 	 * Deletes an existing publisher.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Publisher getDeletePublisher() {
 		return this.deletePublisher;
@@ -707,7 +765,7 @@ public class Mutation {
 	/**
 	 * Creates a new quotation.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public void setCreateQuotation(Quotation createQuotation) {
 		this.createQuotation = createQuotation;
@@ -716,7 +774,7 @@ public class Mutation {
 	/**
 	 * Creates a new quotation.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Quotation getCreateQuotation() {
 		return this.createQuotation;
@@ -725,7 +783,7 @@ public class Mutation {
 	/**
 	 * Updates an existing quotation.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public void setUpdateQuotation(Quotation updateQuotation) {
 		this.updateQuotation = updateQuotation;
@@ -734,7 +792,7 @@ public class Mutation {
 	/**
 	 * Updates an existing quotation.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Quotation getUpdateQuotation() {
 		return this.updateQuotation;
@@ -743,7 +801,7 @@ public class Mutation {
 	/**
 	 * Deletes an existing quotation.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public void setDeleteQuotation(Quotation deleteQuotation) {
 		this.deleteQuotation = deleteQuotation;
@@ -752,7 +810,7 @@ public class Mutation {
 	/**
 	 * Deletes an existing quotation.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Quotation getDeleteQuotation() {
 		return this.deleteQuotation;
@@ -761,7 +819,7 @@ public class Mutation {
 	/**
 	 * Creates a new topic.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public void setCreateTopic(Topic createTopic) {
 		this.createTopic = createTopic;
@@ -770,7 +828,7 @@ public class Mutation {
 	/**
 	 * Creates a new topic.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[CRE]" })
 	public Topic getCreateTopic() {
 		return this.createTopic;
@@ -779,7 +837,7 @@ public class Mutation {
 	/**
 	 * Updates an existing topic.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public void setUpdateTopic(Topic updateTopic) {
 		this.updateTopic = updateTopic;
@@ -788,7 +846,7 @@ public class Mutation {
 	/**
 	 * Updates an existing topic.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Topic getUpdateTopic() {
 		return this.updateTopic;
@@ -797,7 +855,7 @@ public class Mutation {
 	/**
 	 * Deletes an existing topic.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public void setDeleteTopic(Topic deleteTopic) {
 		this.deleteTopic = deleteTopic;
@@ -806,7 +864,7 @@ public class Mutation {
 	/**
 	 * Deletes an existing topic.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[DEL]" })
 	public Topic getDeleteTopic() {
 		return this.deleteTopic;
@@ -815,7 +873,7 @@ public class Mutation {
 	/**
 	 * Sets entity status.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public void setSetEntityStatus(Boolean setEntityStatus) {
 		this.setEntityStatus = setEntityStatus;
@@ -824,7 +882,7 @@ public class Mutation {
 	/**
 	 * Sets entity status.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
 	public Boolean getSetEntityStatus() {
 		return this.setEntityStatus;
@@ -833,7 +891,7 @@ public class Mutation {
 	/**
 	 * Creates a new user.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public void setCreateUser(User createUser) {
 		this.createUser = createUser;
@@ -842,7 +900,7 @@ public class Mutation {
 	/**
 	 * Creates a new user.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public User getCreateUser() {
 		return this.createUser;
@@ -851,7 +909,7 @@ public class Mutation {
 	/**
 	 * Updates an existing user.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public void setUpdateUser(User updateUser) {
 		this.updateUser = updateUser;
@@ -860,7 +918,7 @@ public class Mutation {
 	/**
 	 * Updates an existing user.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public User getUpdateUser() {
 		return this.updateUser;
@@ -869,7 +927,7 @@ public class Mutation {
 	/**
 	 * Deletes an existing user.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public void setDeleteUser(User deleteUser) {
 		this.deleteUser = deleteUser;
@@ -878,118 +936,262 @@ public class Mutation {
 	/**
 	 * Deletes an existing user.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public User getDeleteUser() {
 		return this.deleteUser;
 	}
 
 	/**
-	 * Grants permissions to a user. The specified permissions are added to any existing ones.
+	 * Grants authorities to a user. The specified authorities are added to any existing ones.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public void setGrantUserPermissions(User grantUserPermissions) {
-		this.grantUserPermissions = grantUserPermissions;
+	public void setGrantUserAuthorities(User grantUserAuthorities) {
+		this.grantUserAuthorities = grantUserAuthorities;
 	}
 
 	/**
-	 * Grants permissions to a user. The specified permissions are added to any existing ones.
+	 * Grants authorities to a user. The specified authorities are added to any existing ones.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public User getGrantUserPermissions() {
-		return this.grantUserPermissions;
+	public User getGrantUserAuthorities() {
+		return this.grantUserAuthorities;
 	}
 
 	/**
-	 * Revokes permissions from a user. The specified permissions are removed from the user; other permissions remain
+	 * Revokes authorities from a user. The specified authorities are removed from the user; other authorities remain
 	 * intact.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public void setRevokeUserPermissions(User revokeUserPermissions) {
-		this.revokeUserPermissions = revokeUserPermissions;
+	public void setRevokeUserAuthorities(User revokeUserAuthorities) {
+		this.revokeUserAuthorities = revokeUserAuthorities;
 	}
 
 	/**
-	 * Revokes permissions from a user. The specified permissions are removed from the user; other permissions remain
+	 * Revokes authorities from a user. The specified authorities are removed from the user; other authorities remain
 	 * intact.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public User getRevokeUserPermissions() {
-		return this.revokeUserPermissions;
+	public User getRevokeUserAuthorities() {
+		return this.revokeUserAuthorities;
+	}
+
+	/**
+	 * Creates a new group.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public void setCreateGroup(Group createGroup) {
+		this.createGroup = createGroup;
+	}
+
+	/**
+	 * Creates a new group.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Group getCreateGroup() {
+		return this.createGroup;
+	}
+
+	/**
+	 * Updates an existing group.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public void setUpdateGroup(Group updateGroup) {
+		this.updateGroup = updateGroup;
+	}
+
+	/**
+	 * Updates an existing group.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Group getUpdateGroup() {
+		return this.updateGroup;
+	}
+
+	/**
+	 * Deletes an existing group.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public void setDeleteGroup(Group deleteGroup) {
+		this.deleteGroup = deleteGroup;
+	}
+
+	/**
+	 * Deletes an existing group.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Group getDeleteGroup() {
+		return this.deleteGroup;
+	}
+
+	/**
+	 * Adds a user to a group.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public void setAddGroupMember(Group addGroupMember) {
+		this.addGroupMember = addGroupMember;
+	}
+
+	/**
+	 * Adds a user to a group.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Group getAddGroupMember() {
+		return this.addGroupMember;
+	}
+
+	/**
+	 * Removes a user from a group.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public void setRemoveGroupMember(Group removeGroupMember) {
+		this.removeGroupMember = removeGroupMember;
+	}
+
+	/**
+	 * Removes a user from a group.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Group getRemoveGroupMember() {
+		return this.removeGroupMember;
+	}
+
+	/**
+	 * Grants authorities to a group. The specified authorities are added to any
+	 * existing ones.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public void setGrantGroupAuthorities(Group grantGroupAuthorities) {
+		this.grantGroupAuthorities = grantGroupAuthorities;
+	}
+
+	/**
+	 * Grants authorities to a group. The specified authorities are added to any
+	 * existing ones.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Group getGrantGroupAuthorities() {
+		return this.grantGroupAuthorities;
+	}
+
+	/**
+	 * Revokes authorities from a group. The specified authorities are removed from
+	 * the group; other authorities remain intact.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public void setRevokeGroupAuthorities(Group revokeGroupAuthorities) {
+		this.revokeGroupAuthorities = revokeGroupAuthorities;
+	}
+
+	/**
+	 * Revokes authorities from a group. The specified authorities are removed from
+	 * the group; other authorities remain intact.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	public Group getRevokeGroupAuthorities() {
+		return this.revokeGroupAuthorities;
 	}
 
 	public String toString() {
 		return "Mutation {" //$NON-NLS-1$
-			+ "createClaim: " + this.createClaim //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updateClaim: " + this.updateClaim //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "deleteClaim: " + this.deleteClaim //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createDeclaration: " + this.createDeclaration //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updateDeclaration: " + this.updateDeclaration //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "deleteDeclaration: " + this.deleteDeclaration //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createEntityLink: " + this.createEntityLink //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updateEntityLink: " + this.updateEntityLink //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "deleteEntityLink: " + this.deleteEntityLink //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createJournal: " + this.createJournal //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updateJournal: " + this.updateJournal //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "deleteJournal: " + this.deleteJournal //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createPerson: " + this.createPerson //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updatePerson: " + this.updatePerson //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "deletePerson: " + this.deletePerson //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createPublication: " + this.createPublication //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updatePublication: " + this.updatePublication //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "deletePublication: " + this.deletePublication //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createPublisher: " + this.createPublisher //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updatePublisher: " + this.updatePublisher //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "deletePublisher: " + this.deletePublisher //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createQuotation: " + this.createQuotation //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updateQuotation: " + this.updateQuotation //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "deleteQuotation: " + this.deleteQuotation //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createTopic: " + this.createTopic //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updateTopic: " + this.updateTopic //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "deleteTopic: " + this.deleteTopic //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "setEntityStatus: " + this.setEntityStatus //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createUser: " + this.createUser //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updateUser: " + this.updateUser //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "deleteUser: " + this.deleteUser //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "grantUserPermissions: " + this.grantUserPermissions //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "revokeUserPermissions: " + this.revokeUserPermissions //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+				+ "createClaim: " + this.createClaim //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "updateClaim: " + this.updateClaim //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "deleteClaim: " + this.deleteClaim //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "createDeclaration: " + this.createDeclaration //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "updateDeclaration: " + this.updateDeclaration //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "deleteDeclaration: " + this.deleteDeclaration //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "createEntityLink: " + this.createEntityLink //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "updateEntityLink: " + this.updateEntityLink //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "deleteEntityLink: " + this.deleteEntityLink //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "createJournal: " + this.createJournal //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "updateJournal: " + this.updateJournal //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "deleteJournal: " + this.deleteJournal //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "createPerson: " + this.createPerson //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "updatePerson: " + this.updatePerson //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "deletePerson: " + this.deletePerson //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "createPublication: " + this.createPublication //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "updatePublication: " + this.updatePublication //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "deletePublication: " + this.deletePublication //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "createPublisher: " + this.createPublisher //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "updatePublisher: " + this.updatePublisher //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "deletePublisher: " + this.deletePublisher //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "createQuotation: " + this.createQuotation //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "updateQuotation: " + this.updateQuotation //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "deleteQuotation: " + this.deleteQuotation //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "createTopic: " + this.createTopic //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "updateTopic: " + this.updateTopic //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "deleteTopic: " + this.deleteTopic //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "setEntityStatus: " + this.setEntityStatus //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "createUser: " + this.createUser //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "updateUser: " + this.updateUser //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "deleteUser: " + this.deleteUser //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "grantUserAuthorities: " + this.grantUserAuthorities //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "revokeUserAuthorities: " + this.revokeUserAuthorities //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "createGroup: " + this.createGroup //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "updateGroup: " + this.updateGroup //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "deleteGroup: " + this.deleteGroup //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "addGroupMember: " + this.addGroupMember //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "removeGroupMember: " + this.removeGroupMember //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "grantGroupAuthorities: " + this.grantGroupAuthorities //$NON-NLS-1$
+				+ ", " //$NON-NLS-1$
+				+ "revokeGroupAuthorities: " + this.revokeGroupAuthorities //$NON-NLS-1$
+				+ "}"; //$NON-NLS-1$
 	}
 
 	public static Builder builder() {
@@ -1033,8 +1235,15 @@ public class Mutation {
 		private User createUser;
 		private User updateUser;
 		private User deleteUser;
-		private User grantUserPermissions;
-		private User revokeUserPermissions;
+		private User grantUserAuthorities;
+		private User revokeUserAuthorities;
+		private Group createGroup;
+		private Group updateGroup;
+		private Group deleteGroup;
+		private Group addGroupMember;
+		private Group removeGroupMember;
+		private Group grantGroupAuthorities;
+		private Group revokeGroupAuthorities;
 
 		/**
 		 * Creates a new claim.
@@ -1285,19 +1494,77 @@ public class Mutation {
 		}
 
 		/**
-		 * Grants permissions to a user. The specified permissions are added to any existing ones.
+		 * Grants authorities to a user. The specified authorities are added to any existing ones.
 		 */
-		public Builder withGrantUserPermissions(User grantUserPermissionsParam) {
-			this.grantUserPermissions = grantUserPermissionsParam;
+		public Builder withGrantUserAuthorities(User grantUserAuthoritiesParam) {
+			this.grantUserAuthorities = grantUserAuthoritiesParam;
 			return this;
 		}
 
 		/**
-		 * Revokes permissions from a user. The specified permissions are removed from the user; other permissions
+		 * Revokes authorities from a user. The specified authorities are removed from the user; other authorities
 		 * remain intact.
 		 */
-		public Builder withRevokeUserPermissions(User revokeUserPermissionsParam) {
-			this.revokeUserPermissions = revokeUserPermissionsParam;
+		public Builder withRevokeUserAuthorities(User revokeUserAuthoritiesParam) {
+			this.revokeUserAuthorities = revokeUserAuthoritiesParam;
+			return this;
+		}
+
+		/**
+		 * Creates a new group.
+		 */
+		public Builder withCreateGroup(Group createGroupParam) {
+			this.createGroup = createGroupParam;
+			return this;
+		}
+
+		/**
+		 * Updates an existing group.
+		 */
+		public Builder withUpdateGroup(Group updateGroupParam) {
+			this.updateGroup = updateGroupParam;
+			return this;
+		}
+
+		/**
+		 * Deletes an existing group.
+		 */
+		public Builder withDeleteGroup(Group deleteGroupParam) {
+			this.deleteGroup = deleteGroupParam;
+			return this;
+		}
+
+		/**
+		 * Adds a user to a group.
+		 */
+		public Builder withAddGroupMember(Group addGroupMemberParam) {
+			this.addGroupMember = addGroupMemberParam;
+			return this;
+		}
+
+		/**
+		 * Removes a user from a group.
+		 */
+		public Builder withRemoveGroupMember(Group removeGroupMemberParam) {
+			this.removeGroupMember = removeGroupMemberParam;
+			return this;
+		}
+
+		/**
+		 * Grants authorities to a group. The specified authorities are added to any
+		 * existing ones.
+		 */
+		public Builder withGrantGroupAuthorities(Group grantGroupAuthoritiesParam) {
+			this.grantGroupAuthorities = grantGroupAuthoritiesParam;
+			return this;
+		}
+
+		/**
+		 * Revokes authorities from a group. The specified authorities are removed from
+		 * the group; other authorities remain intact.
+		 */
+		public Builder withRevokeGroupAuthorities(Group revokeGroupAuthoritiesParam) {
+			this.revokeGroupAuthorities = revokeGroupAuthoritiesParam;
 			return this;
 		}
 
@@ -1334,8 +1601,15 @@ public class Mutation {
 			_object.setCreateUser(this.createUser);
 			_object.setUpdateUser(this.updateUser);
 			_object.setDeleteUser(this.deleteUser);
-			_object.setGrantUserPermissions(this.grantUserPermissions);
-			_object.setRevokeUserPermissions(this.revokeUserPermissions);
+			_object.setGrantUserAuthorities(this.grantUserAuthorities);
+			_object.setRevokeUserAuthorities(this.revokeUserAuthorities);
+			_object.setCreateGroup(this.createGroup);
+			_object.setUpdateGroup(this.updateGroup);
+			_object.setDeleteGroup(this.deleteGroup);
+			_object.setAddGroupMember(this.addGroupMember);
+			_object.setRemoveGroupMember(this.removeGroupMember);
+			_object.setGrantGroupAuthorities(this.grantGroupAuthorities);
+			_object.setRevokeGroupAuthorities(this.revokeGroupAuthorities);
 			return _object;
 		}
 

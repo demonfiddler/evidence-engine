@@ -98,7 +98,7 @@ public class DirectiveRegistryInitializer {
 		directive.setName("auth");
 		directive.setPackageName("io.github.demonfiddler.ee.client.util");
 		directive.getArguments()
-			.add(InputParameter.newHardCodedParameter("", "permission", null, "PermissionKind", false, 1, true));
+			.add(InputParameter.newHardCodedParameter("", "authority", null, "AuthorityKind", false, 1, true));
 		directive.getDirectiveLocations().add(DirectiveLocation.OBJECT);
 		directive.getDirectiveLocations().add(DirectiveLocation.FIELD_DEFINITION);
 		directiveRegistry.registerDirective(directive);

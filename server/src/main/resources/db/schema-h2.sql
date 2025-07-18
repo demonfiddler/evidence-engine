@@ -143,14 +143,14 @@ CREATE INDEX "log_entity" ON "log" ("entity_kind","entity_id");
 CREATE INDEX "log_linked_entity" ON "log" ("linked_entity_kind","linked_entity_id");
 CREATE INDEX "FK_log_transaction_kind" ON "log" ("transaction_kind");
 
-CREATE TABLE "permission_kind" (
-  "code" CHAR(3) NOT NULL COMMENT 'Unique permission code',
-  "label" VARCHAR(10) NOT NULL COMMENT 'Unique permission label',
-  "description" VARCHAR(50) NOT NULL COMMENT 'Description of the permission',
+CREATE TABLE "authority_kind" (
+  "code" CHAR(3) NOT NULL COMMENT 'Unique authority code',
+  "label" VARCHAR(10) NOT NULL COMMENT 'Unique authority label',
+  "description" VARCHAR(50) NOT NULL COMMENT 'Description of the authority',
   PRIMARY KEY ("code"),
   UNIQUE ("label")
 );
-CREATE UNIQUE INDEX "permission_kind_label" ON "permission_kind" ("label");
+CREATE UNIQUE INDEX "authority_kind_label" ON "authority_kind" ("label");
 
 CREATE TABLE "person" (
   "id" BIGINT NOT NULL COMMENT 'Unique person identifier',
@@ -284,19 +284,20 @@ CALL FT_CREATE_INDEX('PUBLIC', 'user', 'username,first_name,last_name,email,note
 
 -- Additional tables required by Spring Security
 CREATE TABLE "user_authority" (
+  "user_id" BIGINT NOT NULL COMMENT 'The user ID',
   "username" VARCHAR(50) NOT NULL COMMENT 'The login user name',
   "authority" CHAR(3) NOT NULL COMMENT 'The granted authority code',
-  UNIQUE ("username", "authority")
+  UNIQUE ("user_id", "username", "authority")
 );
-CREATE UNIQUE INDEX "user_authority" ON "user_authority" ("username", "authority");
+CREATE UNIQUE INDEX "user_authority" ON "user_authority" ("user_id", "username", "authority");
 
 CREATE TABLE "group" (
 	"id" BIGINT AUTO_INCREMENT NOT NULL COMMENT 'The unique system-assigned group identifier',
-	"group_name" VARCHAR(50) NOT NULL COMMENT 'The group name',
+	"groupname" VARCHAR(50) NOT NULL COMMENT 'The group name',
 	PRIMARY KEY ("id"),
-  UNIQUE ("group_name")
+  UNIQUE ("groupname")
 );
-CREATE UNIQUE INDEX "group_name" ON "group" ("group_name");
+CREATE UNIQUE INDEX "groupname" ON "group" ("groupname");
 
 CREATE TABLE "group_authority" (
   "group_id" BIGINT NOT NULL COMMENT 'ID of a group',
@@ -400,7 +401,7 @@ ALTER TABLE "group_authority"
 
 ALTER TABLE "group_authority"
   ADD FOREIGN KEY ("authority")
-  REFERENCES "permission_kind" ("code")
+  REFERENCES "authority_kind" ("code")
   ON UPDATE CASCADE;
 
 
@@ -540,6 +541,12 @@ ALTER TABLE "user"
 
 
 ALTER TABLE "user_authority"
+  ADD FOREIGN KEY ("user_id")
+  REFERENCES "user" ("id")
+  ON UPDATE CASCADE
+  ON DELETE CASCADE;
+
+ALTER TABLE "user_authority"
   ADD FOREIGN KEY ("username")
   REFERENCES "user" ("username")
   ON UPDATE CASCADE
@@ -547,6 +554,6 @@ ALTER TABLE "user_authority"
 
 ALTER TABLE "user_authority"
   ADD FOREIGN KEY ("authority")
-  REFERENCES "permission_kind" ("code")
+  REFERENCES "authority_kind" ("code")
   ON UPDATE CASCADE
   ON DELETE CASCADE;

@@ -20,21 +20,24 @@
 'use client'
 
 // import type { Metadata } from "next";
-import { useCallback, useContext, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { BuildingOfficeIcon } from '@heroicons/react/24/outline';
 
 import PublisherDetails from "@/app/ui/details/publisher-details";
 import DataTable from "@/app/ui/data-table/data-table";
 import { columns, columnVisibility } from "@/app/ui/tables/publisher-columns"
-import rawPage from "@/data/publishers.json" assert {type: 'json'}
 import IPage from "@/app/model/IPage";
 import Publisher from "@/app/model/Publisher";
 import { SelectedRecordsContext } from "@/lib/context";
 import { useImmerReducer } from "use-immer";
-import { MutationAction, FormAction, toInteger } from "@/lib/utils";
+import { MutationAction, FormAction, toInteger, SearchSettings } from "@/lib/utils";
 import { useForm, FormProvider } from "react-hook-form"
 import { PublisherSchema, PublisherFormFields } from "@/app/ui/validators/publisher";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
+import { TrackedEntityQueryFilter } from "@/app/model/schema";
+import { useQuery } from "@apollo/client";
+import { QUERY_PUBLISHERS } from "@/lib/graphql-queries";
+import { toast } from "sonner";
 
 // export const metadata: Metadata = {
 //   title: "Publishers",
@@ -61,8 +64,10 @@ function copyFromForm(publisher: Publisher, formValue: PublisherFormFields) {
 
 export default function Publishers() {
   const selectedRecordsContext = useContext(SelectedRecordsContext)
+  const [search, setSearch] = useState<SearchSettings>({advancedSearch: false, showOnlyLinkedRecords: false} as SearchSettings)
   const [selectedRecordId, setSelectedRecordId] = useState<string|undefined>(selectedRecordsContext.Publisher?.id)
-  const pageReducer = useCallback((draft: IPage<Publisher>, action: MutationAction<FormAction, PublisherFormFields>) => {
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+/*  const pageReducer = useCallback((draft: IPage<Publisher>, action: MutationAction<FormAction, PublisherFormFields>) => {
     const idx = draft.content.findIndex(c => c.id == selectedRecordId)
     switch (action.command) {
       case "create":
@@ -89,9 +94,52 @@ export default function Publishers() {
         }
         break
     }
-  }, [selectedRecordId, setSelectedRecordId])
-  const [page, pageDispatch] = useImmerReducer(pageReducer, rawPage as unknown as IPage<Publisher>)
-  const getSelectedRecord = useCallback((id?: string) => page.content.find(r => r.id == id), [page])
+  }, [selectedRecordId, setSelectedRecordId])*/
+  const filter = useMemo(() => {
+    const filter: TrackedEntityQueryFilter = {
+      status: search.status ? [search.status] : undefined,
+      text: search.text,
+    }
+    if (search.text)
+      filter.advancedSearch = search.advancedSearch
+    console.log(`Publishers effect: filter = ${JSON.stringify(filter)}`)
+    return filter
+  }, [search])
+
+  const pageSort = useMemo(() => {
+    const pageSort = {
+      pageNumber: pagination.pageIndex,
+      pageSize: pagination.pageSize
+    }
+    console.log(`Publishers effect: pageSort = ${JSON.stringify(pageSort)}`)
+    return pageSort
+  }, [pagination])
+
+  const result = useQuery(
+    QUERY_PUBLISHERS,
+    {
+      variables: {
+        filter,
+        pageSort
+      },
+    }
+  )
+
+  // Whenever filter or pagination changes, ask Apollo to refetch
+  useEffect(() => {
+    console.log(`Publishers effect: search = ${JSON.stringify(search)}`)
+    result.refetch({
+      filter,
+      pageSort
+    });
+  }, [filter, pageSort]);
+
+  // console.log(`result.loading = ${result.loading}, result.error = ${JSON.stringify(result.error)}, result.data = ${JSON.stringify(result.data)}`)
+  // console.log(`result.loading = ${result.loading}, result.error = ${JSON.stringify(result.error)}`)
+  const page = result.data?.publishers as IPage<Publisher>
+
+  // const [page, pageDispatch] = useImmerReducer(pageReducer, rawPage as unknown as IPage<Publisher>)
+  const getSelectedRecord = useCallback((id?: string) => page?.content.find(r => r.id == id), [page])
   const selectedRecord = getSelectedRecord(selectedRecordId)
   const origFormValue = useMemo(() => copyToForm(selectedRecord), [selectedRecord])
   const form = useForm<PublisherFormFields>({
@@ -103,15 +151,20 @@ export default function Publishers() {
   const handleFormAction = useCallback((command: FormAction, formValue: PublisherFormFields) => {
     switch (command) {
       case "create":
-      case "update":
-      case "delete":
-        pageDispatch({command: command, value: formValue})
+        // TODO: invoke mutation: createJournal
         break
+      case "update":
+        // TODO: invoke mutation: updateJournal
+        break
+      case "delete":
+        // TODO: invoke mutation: deleteJournal
+        break
+        // OLD: pageDispatch({command: command, value: formValue})
       case "reset":
         form.reset(origFormValue)
         break
     }
-  }, [form, pageDispatch, selectedRecord])
+  }, [form, /*pageDispatch, */selectedRecord])
 
   const handleRowSelectionChange = useCallback((recordId?: string) => {
     setSelectedRecordId(recordId)
@@ -123,6 +176,11 @@ export default function Publishers() {
       keepIsValid: false,
     })
   }, [setSelectedRecordId, getSelectedRecord, form])
+
+  if (result.error) {
+    toast.error(`Fetch error:\n\n${JSON.stringify(result.error)}`)
+    console.error(result.error)
+  }
 
   return (
     <main className="flex flex-col items-start m-4 gap-4">
@@ -136,6 +194,11 @@ export default function Publishers() {
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
+        loading={result.loading}
+        pagination={pagination}
+        onPaginationChange={setPagination}
+        search={search}
+        onSearchChange={setSearch}
         onRowSelectionChange={handleRowSelectionChange}
       />
       <FormProvider {...form}>

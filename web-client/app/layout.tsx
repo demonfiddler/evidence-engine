@@ -20,9 +20,9 @@
 'use client'
 
 if (process.env.NODE_ENV === 'development') {
-  console.log("layout.tsx: development mode detected")
+  // console.log("layout.tsx: development mode detected")
   const wdyr = require('../wdyr');
-  console.log(`wdyr = ${JSON.stringify(wdyr)}`)
+  // console.log(`wdyr = ${JSON.stringify(wdyr)}`)
 }
 
 import '@/app/ui/global.css'
@@ -37,6 +37,9 @@ import { useState } from 'react'
 import { useSessionStorage } from 'usehooks-ts'
 import Topic from './model/Topic'
 import User from './model/User'
+import { ApolloProvider } from '@apollo/client';
+import { apolloClient } from '@/lib/graphql-utils';
+import { AuthProvider } from '@/hooks/use-auth';
 
 // export const metadata: Metadata = {
 //   title: {
@@ -85,7 +88,7 @@ export default function RootLayout({
   }
 
   function setMasterTopic(mlCtx: MasterLinkContextType, topic?: Topic) {
-    console.log(`enter RootLayout.setMasterTopic(topicId: ${topic?.id}), mlCtx: ${JSON.stringify(mlCtx)}`)
+    // console.log(`enter RootLayout.setMasterTopic(topicId: ${topic?.id}), mlCtx: ${JSON.stringify(mlCtx)}`)
 
     const newCtxSs = {
       ...mlCtx,
@@ -102,11 +105,11 @@ export default function RootLayout({
     storeMasterLinkContext(newCtxSs)
     setMasterLinkContext(newCtx)
 
-    console.log(`\tRootLayout.setMasterTopic(topicId: ${topic?.id}), newCtx=${JSON.stringify(newCtx)}`)
+    // console.log(`\tRootLayout.setMasterTopic(topicId: ${topic?.id}), newCtx=${JSON.stringify(newCtx)}`)
   }
 
   function setMasterRecord(mlCtx: MasterLinkContextType, masterRecord?: ILinkableEntity) {
-    console.log(`enter RootLayout.setMasterRecord(masterRecordId: ${masterRecord?.id}), mlCtx: ${JSON.stringify(mlCtx)}`)
+    // console.log(`enter RootLayout.setMasterRecord(masterRecordId: ${masterRecord?.id}), mlCtx: ${JSON.stringify(mlCtx)}`)
 
     const newCtxSs = {
       ...mlCtx,
@@ -122,7 +125,7 @@ export default function RootLayout({
     storeMasterLinkContext(newCtxSs)
     setMasterLinkContext(newCtx)
 
-    console.log(`\tRootLayout.setMasterRecord(masterRecordId: ${masterRecord?.id}), newCtx=${JSON.stringify(newCtx)}`)
+    // console.log(`\tRootLayout.setMasterRecord(masterRecordId: ${masterRecord?.id}), newCtx=${JSON.stringify(newCtx)}`)
   }
 
   function setMasterRecordKind(mlCtx: MasterLinkContextType, srCtx: SelectedRecordsContextType, masterRecordKind: RecordKind) {
@@ -146,7 +149,7 @@ export default function RootLayout({
     storeMasterLinkContext(newCtxSs)
     setMasterLinkContext(newCtx)
 
-    console.log(`\tRootLayout.setMasterRecordKind(masterRecordKind: ${masterRecordKind}), newCtx=${JSON.stringify(newCtx)}`)
+    // console.log(`\tRootLayout.setMasterRecordKind(masterRecordKind: ${masterRecordKind}), newCtx=${JSON.stringify(newCtx)}`)
   }
 
   function setSelectedRecord(srCtx: SelectedRecordsContextType, recordKind: RecordKind, record?: ILinkableEntity) {
@@ -168,18 +171,21 @@ export default function RootLayout({
 
   // console.log(`RootLayout(): masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
   // console.log(`RootLayout(): selectedRecordsContext = ${JSON.stringify(selectedRecordsContext)}`)
+  // console.log(`RootLayout(): apolloClient.defaultOptions = ${JSON.stringify(apolloClient.defaultOptions)}`)
 
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
-        <SecurityContext value={securityContext}>
+        <AuthProvider>
           <MasterLinkContext value={masterLinkContext}>
             <SelectedRecordsContext value={selectedRecordsContext}>
-              {children}
-              <Toaster />
+              <ApolloProvider client={apolloClient}>
+                {children}
+              </ApolloProvider>
+              <Toaster position="top-center" expand />
             </SelectedRecordsContext>
           </MasterLinkContext>
-        </SecurityContext>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -34,12 +34,10 @@ import {
 
 export interface DataTableViewOptionsProps<TData> {
   table: Table<TData>
-  isLinkableEntity: boolean
 }
 
 export function DataTableViewOptions<TData>({
-  table,
-  isLinkableEntity
+  table
 }: DataTableViewOptionsProps<TData>) {
   return (
     <DropdownMenu>

@@ -178,14 +178,14 @@ CREATE TABLE IF NOT EXISTS "log" (
   CONSTRAINT "FK_log_linked_entity_kind" FOREIGN KEY ("linked_entity_kind") REFERENCES "entity_kind" ("code") ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='A log of all transactions';
 
--- Dumping structure for table evidence_engine.permission_kind
-CREATE TABLE IF NOT EXISTS "permission_kind" (
-  "code" char(3) NOT NULL COMMENT 'Unique permission code',
-  "label" varchar(10) NOT NULL COMMENT 'Unique permission label',
-  "description" varchar(50) NOT NULL COMMENT 'Description of the permission',
+-- Dumping structure for table evidence_engine.authority_kind
+CREATE TABLE IF NOT EXISTS "authority_kind" (
+  "code" char(3) NOT NULL COMMENT 'Unique authority code',
+  "label" varchar(10) NOT NULL COMMENT 'Unique authority label',
+  "description" varchar(50) NOT NULL COMMENT 'Description of the authority',
   PRIMARY KEY ("code"),
-  UNIQUE KEY "permission_kind_label" ("label") USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Access permissions that can be granted to users';
+  UNIQUE KEY "authority_kind_label" ("label") USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Access authorities that can be granted to users';
 
 -- Dumping structure for table evidence_engine.person
 CREATE TABLE IF NOT EXISTS "person" (
@@ -229,7 +229,7 @@ CREATE TABLE IF NOT EXISTS "publication" (
 	"location" VARCHAR(50) DEFAULT NULL COMMENT 'The location of the relevant section within the publication',
   "abstract" text DEFAULT NULL COMMENT 'Abstract from the article',
   "notes" text DEFAULT NULL COMMENT 'Added notes about the publication',
-  "peer_reviewed" bit(1) DEFAULT DEFAULT b'0' COMMENT 'Whether the article was peer-reviewed',
+  "peer_reviewed" bit(1) DEFAULT b'0' COMMENT 'Whether the article was peer-reviewed',
   "doi" varchar(255) DEFAULT NULL COMMENT 'Digital Object Identifier',
   "isbn" varchar(20) DEFAULT NULL COMMENT 'International Standard Book Number (printed publications only)',
   "url" varchar(200) DEFAULT NULL COMMENT 'URL of the publication',
@@ -336,18 +336,21 @@ CREATE TABLE IF NOT EXISTS "user" (
 
 -- Additional tables required by Spring Security
 CREATE TABLE IF NOT EXISTS "user_authority" (
+	"user_id" BIGINT(20) UNSIGNED NULL DEFAULT NULL COMMENT 'The user ID',
 	"username" VARCHAR(50) NOT NULL COMMENT 'The login user name',
 	"authority" CHAR(3) NOT NULL COMMENT 'The granted authority code',
-	UNIQUE KEY "user_authority" ("username", "authority"),
-	CONSTRAINT "FK_user_authority_user" FOREIGN KEY ("username") REFERENCES "user"("username") ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT "FK_user_authority_permission" FOREIGN KEY ("authority") REFERENCES "permission_kind" ("code") ON UPDATE CASCADE ON DELETE CASCADE
+	UNIQUE KEY "user_authority" ("user_id", "username", "authority"),
+	CONSTRAINT "FK_user_authority_user_id" FOREIGN KEY ("user_id") REFERENCES "user" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
+	CONSTRAINT "FK_user_authority_username" FOREIGN KEY ("username") REFERENCES "user" ("username") ON UPDATE CASCADE ON DELETE CASCADE
+  CONSTRAINT "FK_user_authority_authority" FOREIGN KEY ("authority") REFERENCES "authority_kind" ("code") ON UPDATE CASCADE ON DELETE CASCADE
 ) COMMENT='Holds authorities granted to users';
 
 CREATE TABLE IF NOT EXISTS "group" (
 	"id"  bigint(20) unsigned AUTO_INCREMENT NOT NULL COMMENT 'The unique system-assigned group identifier',
-	"group_name" VARCHAR(50) NOT NULL COMMENT 'The group name',
+	"groupname" VARCHAR(50) NOT NULL COMMENT 'The group name',
 	PRIMARY KEY ("id"),
-  UNIQUE KEY "group_group_name" ("group_name")
+  UNIQUE KEY "group_groupname" ("groupname"),
+  FULLTEXT KEY "group_fulltext" ("groupname")
 ) COMMENT='Holds groups to which users can belong';
 
 CREATE TABLE IF NOT EXISTS "group_authority" (
@@ -355,7 +358,7 @@ CREATE TABLE IF NOT EXISTS "group_authority" (
 	"authority" CHAR(3) NOT NULL COMMENT 'The granted authority code',
 	UNIQUE KEY "group_authority" ("group_id", "authority"),
 	CONSTRAINT "FK_group_authority_group" FOREIGN KEY ("group_id") REFERENCES "group" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT "FK_group_authority_permission" FOREIGN KEY ("authority") REFERENCES "permission_kind" ("code") ON UPDATE CASCADE
+  CONSTRAINT "FK_group_authority_authority" FOREIGN KEY ("authority") REFERENCES "authority_kind" ("code") ON UPDATE CASCADE
 ) COMMENT='Holds authorities granted to groups';
 
 CREATE TABLE IF NOT EXISTS "group_user" (

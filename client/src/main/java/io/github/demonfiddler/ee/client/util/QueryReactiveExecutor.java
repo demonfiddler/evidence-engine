@@ -53,6 +53,8 @@ import io.github.demonfiddler.ee.client.DeclarationPage;
 import io.github.demonfiddler.ee.client.EntityLink;
 import io.github.demonfiddler.ee.client.EntityLinkPage;
 import io.github.demonfiddler.ee.client.EntityLinkQueryFilter;
+import io.github.demonfiddler.ee.client.Group;
+import io.github.demonfiddler.ee.client.GroupPage;
 import io.github.demonfiddler.ee.client.Journal;
 import io.github.demonfiddler.ee.client.JournalPage;
 import io.github.demonfiddler.ee.client.LinkableEntityQueryFilter;
@@ -6250,7 +6252,7 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "users", graphQLTypeSimpleName = "UserPage", javaClass = UserPage.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<UserPage>> usersWithBindValues(String queryResponseDef, TrackedEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters)
@@ -6308,7 +6310,7 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "users", graphQLTypeSimpleName = "UserPage", javaClass = UserPage.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<UserPage>> users(String queryResponseDef, TrackedEntityQueryFilter filter,
 		PageableInput pageSort, Object... paramsAndValues)
@@ -6368,7 +6370,7 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "users", graphQLTypeSimpleName = "UserPage", javaClass = UserPage.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<UserPage>> usersWithBindValues(ObjectResponse objectResponse, TrackedEntityQueryFilter filter,
 		PageableInput pageSort, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -6441,7 +6443,7 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "users", graphQLTypeSimpleName = "UserPage", javaClass = UserPage.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<UserPage>> users(ObjectResponse objectResponse, TrackedEntityQueryFilter filter,
 		PageableInput pageSort, Object... paramsAndValues) throws GraphQLRequestExecutionException {
@@ -6549,7 +6551,7 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "userById", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<User>> userByIdWithBindValues(String queryResponseDef, Long id, Map<String, Object> parameters)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -6604,7 +6606,7 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "userById", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<User>> userById(String queryResponseDef, Long id, Object... paramsAndValues)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -6661,7 +6663,7 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "userById", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<User>> userByIdWithBindValues(ObjectResponse objectResponse, Long id,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -6729,7 +6731,7 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "userById", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<User>> userById(ObjectResponse objectResponse, Long id, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
@@ -6831,7 +6833,7 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "userByUsername", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<User>> userByUsernameWithBindValues(String queryResponseDef, String username,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -6887,7 +6889,7 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "userByUsername", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<User>> userByUsername(String queryResponseDef, String username, Object... paramsAndValues)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
@@ -6947,7 +6949,7 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "userByUsername", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<User>> userByUsernameWithBindValues(ObjectResponse objectResponse, String username,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
@@ -7018,7 +7020,7 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "userByUsername", graphQLTypeSimpleName = "User", javaClass = User.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<User>> userByUsername(ObjectResponse objectResponse, String username,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
@@ -7077,6 +7079,882 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 				false));
 	}
 
+//----------
+	/**
+	 * Returns a paged list of groups. This method executes a partial query against the GraphQL server. That is, the
+	 * query that is one of the queries defined in the GraphQL query object. The queryResponseDef contains the part of
+	 * the query that <B><U>is after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL schema):
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Map<String, Object> params = new HashMap<>();
+	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
+	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
+	 * 
+	 * 		Mono<GroupPage> mono = executor.groupsWithBindValues(
+	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 			filter, // A value for groups's filter input parameter
+	 * 			pageSort, // A value for groups's pageSort input parameter
+	 * 			params);
+	 * 		GroupPage field = mono.block();
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the parameter(s) for the query/mutation. The given
+	 * queryResponseDef describes the format of the response of the server response, that is the expected fields of the
+	 * {@link Character} GraphQL type. It can be something like "{ id name }", if you want these fields of this type.
+	 * Please take a look at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
+	 * @param filter Filters results.
+	 * @param pageSort Sorts and/or paginates results.
+	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
+	 * variable in the defined query/mutation, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
+	 * building the {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "groups", graphQLTypeSimpleName = "GroupPage", javaClass = GroupPage.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	public Mono<Optional<GroupPage>> groupsWithBindValues(String queryResponseDef, TrackedEntityQueryFilter filter,
+		PageableInput pageSort, Map<String, Object> parameters)
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
+		LOGGER.debug("Executing query 'groups': {} ", queryResponseDef);
+		ObjectResponse objectResponse = getGroupsResponseBuilder().withQueryResponseDef(queryResponseDef).build();
+		return groupsWithBindValues(objectResponse, filter, pageSort, parameters);
+	}
+
+	/**
+	 * Returns a paged list of groups.<br/>
+	 * This method executes a partial query against the GraphQL server. That is, the query that is one of the queries
+	 * defined in the GraphQL query object. The queryResponseDef contains the part of the query that <B><U>is
+	 * after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL schema):
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<GroupPage> mono = executor.groups(
+	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 			filter, // A value for groups's filter input parameter
+	 * 			pageSort, // A value for groups's pageSort input parameter
+	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 		GroupPage field = mono.block();
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the parameter(s) for the query/mutation . The
+	 * given queryResponseDef describes the format of the response of the server response, that is the expected fields
+	 * of the {@link Character} GraphQL type. It can be something like "{ id name }", if you want these fields of this
+	 * type. Please take a look at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * @param queryResponseDef The response definition of the query/mutation, in the native GraphQL format (see here
+	 * above)
+	 * @param filter Filters results.
+	 * @param pageSort Sorts and/or paginates results.
+	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
+	 * variable in the defined query/mutation, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
+	 * building the {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "groups", graphQLTypeSimpleName = "GroupPage", javaClass = GroupPage.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	public Mono<Optional<GroupPage>> groups(String queryResponseDef, TrackedEntityQueryFilter filter,
+		PageableInput pageSort, Object... paramsAndValues)
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
+		LOGGER.debug("Executing query 'groups': {} ", queryResponseDef);
+		ObjectResponse objectResponse = getGroupsResponseBuilder().withQueryResponseDef(queryResponseDef).build();
+		return groupsWithBindValues(objectResponse, filter, pageSort,
+			this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues));
+	}
+
+	/**
+	 * Returns a paged list of groups.<br/>
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed several times
+	 * 		preparedRequest = executor.getGroupsGraphQLRequest(
+	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<GroupPage> mono = executor.groupsWithBindValues(preparedRequest, filter, // A value for groups's filter
+	 * 																					// input parameter
+	 * 			pageSort, // A value for groups's pageSort input parameter
+	 * 			params);
+	 * 		GroupPage field = mono.block();
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
+	 * to return<br/>
+	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
+	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
+	 * {@link getGroupsGraphQLRequest(String)} method.
+	 * @param filter Filters results.
+	 * @param pageSort Sorts and/or paginates results.
+	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
+	 * variable in the defined query/mutation, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "groups", graphQLTypeSimpleName = "GroupPage", javaClass = GroupPage.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	public Mono<Optional<GroupPage>> groupsWithBindValues(ObjectResponse objectResponse, TrackedEntityQueryFilter filter,
+		PageableInput pageSort, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Executing query 'groups' with parameters: {}, {} ", filter, pageSort);
+		} else if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Executing query 'groups'");
+		}
+
+		// Given values for the BindVariables
+		Map<String, Object> parametersLocal = (parameters != null) ? parameters : new HashMap<>();
+		parametersLocal.put("queryGroupsFilter", filter);
+		parametersLocal.put("queryGroupsPageSort", pageSort);
+
+		return objectResponse.execReactive(Query.class, parametersLocal)
+			.map(t -> (t.getGroups() == null) ? Optional.empty() : Optional.of(t.getGroups()));
+	}
+
+	/**
+	 * Returns a paged list of groups.<br/>
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed several times
+	 * 		preparedRequest = executor.getGroupsGraphQLRequest(
+	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<GroupPage> mono = executor.groups(preparedRequest, filter, // A value for groups's filter input
+	 * 																		// parameter
+	 * 			pageSort, // A value for groups's pageSort input parameter
+	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 		GroupPage field = mono.block();
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
+	 * to return<br/>
+	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
+	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
+	 * {@link getGroupsGraphQLRequest(String)} method.
+	 * @param filter Filters results.
+	 * @param pageSort Sorts and/or paginates results.
+	 * @param paramsAndValues This parameter contains all the name and values for the Bind Variables defined in the
+	 * objectResponse parameter, that must be sent to the server. Optional parameter may not have a value. They will be
+	 * ignored and not sent to the server. Mandatory parameter must be provided in this argument.<BR/>
+	 * This parameter contains an even number of parameters: it must be a series of name and values : (paramName1,
+	 * paramValue1, paramName2, paramValue2...)
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "groups", graphQLTypeSimpleName = "GroupPage", javaClass = GroupPage.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	public Mono<Optional<GroupPage>> groups(ObjectResponse objectResponse, TrackedEntityQueryFilter filter,
+		PageableInput pageSort, Object... paramsAndValues) throws GraphQLRequestExecutionException {
+
+		if (LOGGER.isTraceEnabled()) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Executing query 'groups' with bind variables: ");
+			boolean addComma = false;
+			for (Object o : paramsAndValues) {
+				if (o != null) {
+					sb.append(o.toString());
+					if (addComma)
+						sb.append(", ");
+					addComma = true;
+				}
+			}
+			LOGGER.trace(sb.toString());
+		} else if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Executing query 'groups' (with bind variables)");
+		}
+
+		Map<String, Object> parameters = this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues);
+		parameters.put("queryGroupsFilter", filter);
+		parameters.put("queryGroupsPageSort", pageSort);
+
+		return objectResponse.execReactive(Query.class, parameters)
+			.map(t -> (t.getGroups() == null) ? Optional.empty() : Optional.of(t.getGroups()));
+	}
+
+	/**
+	 * Returns a paged list of groups.<br/>
+	 * Get the {@link Builder} for the GroupPage, as expected by the groups query/mutation.
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public Builder getGroupsResponseBuilder() throws GraphQLRequestPreparationException {
+		return new Builder(this.graphQlClient, GraphQLReactiveRequest.class, "groups", RequestType.query,
+			InputParameter.newBindParameter("", "filter", "queryGroupsFilter", OPTIONAL, "TrackedEntityQueryFilter",
+				false, 0, false),
+			InputParameter.newBindParameter("", "pageSort", "queryGroupsPageSort", OPTIONAL, "PageableInput", false, 0,
+				false));
+	}
+
+	/**
+	 * Returns a paged list of groups.<br/>
+	 * Get the {@link GraphQLReactiveRequest} for the groups REACTIVE_EXECUTOR, created with the given Partial request.
+	 * @param partialRequest The Partial GraphQL request, as explained in the
+	 * <A HREF="https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin client
+	 * documentation</A>
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public GraphQLReactiveRequest getGroupsGraphQLRequest(String partialRequest)
+		throws GraphQLRequestPreparationException {
+
+		return new GraphQLReactiveRequest(this.graphQlClient, partialRequest, RequestType.query, "groups",
+			InputParameter.newBindParameter("", "filter", "queryGroupsFilter", OPTIONAL, "TrackedEntityQueryFilter",
+				false, 0, false),
+			InputParameter.newBindParameter("", "pageSort", "queryGroupsPageSort", OPTIONAL, "PageableInput", false, 0,
+				false));
+	}
+
+	/**
+	 * Returns a group given its identifier. This method executes a partial query against the GraphQL server. That is,
+	 * the query that is one of the queries defined in the GraphQL query object. The queryResponseDef contains the part
+	 * of the query that <B><U>is after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL schema):
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Map<String, Object> params = new HashMap<>();
+	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
+	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
+	 * 
+	 * 		Mono<Group> mono = executor.groupByIdWithBindValues(
+	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 			id, // A value for groupById's id input parameter
+	 * 			params);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the parameter(s) for the query/mutation. The given
+	 * queryResponseDef describes the format of the response of the server response, that is the expected fields of the
+	 * {@link Character} GraphQL type. It can be something like "{ id name }", if you want these fields of this type.
+	 * Please take a look at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
+	 * @param id Parameter for the groupById field of Query, as defined in the GraphQL schema
+	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
+	 * variable in the defined query/mutation, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
+	 * building the {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "groupById", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> groupByIdWithBindValues(String queryResponseDef, Long id, Map<String, Object> parameters)
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
+		LOGGER.debug("Executing query 'groupById': {} ", queryResponseDef);
+		ObjectResponse objectResponse = getGroupByIdResponseBuilder().withQueryResponseDef(queryResponseDef).build();
+		return groupByIdWithBindValues(objectResponse, id, parameters);
+	}
+
+	/**
+	 * Returns a group given its identifier.<br/>
+	 * This method executes a partial query against the GraphQL server. That is, the query that is one of the queries
+	 * defined in the GraphQL query object. The queryResponseDef contains the part of the query that <B><U>is
+	 * after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL schema):
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.groupById(
+	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 			id, // A value for groupById's id input parameter
+	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the parameter(s) for the query/mutation . The
+	 * given queryResponseDef describes the format of the response of the server response, that is the expected fields
+	 * of the {@link Character} GraphQL type. It can be something like "{ id name }", if you want these fields of this
+	 * type. Please take a look at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * @param queryResponseDef The response definition of the query/mutation, in the native GraphQL format (see here
+	 * above)
+	 * @param id Parameter for the groupById field of Query, as defined in the GraphQL schema
+	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
+	 * variable in the defined query/mutation, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
+	 * building the {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "groupById", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> groupById(String queryResponseDef, Long id, Object... paramsAndValues)
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
+		LOGGER.debug("Executing query 'groupById': {} ", queryResponseDef);
+		ObjectResponse objectResponse = getGroupByIdResponseBuilder().withQueryResponseDef(queryResponseDef).build();
+		return groupByIdWithBindValues(objectResponse, id,
+			this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues));
+	}
+
+	/**
+	 * Returns a group given its identifier.<br/>
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed several times
+	 * 		preparedRequest = executor.getGroupByIdGraphQLRequest(
+	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.groupByIdWithBindValues(preparedRequest, id, // A value for groupById's id input
+	 * 																				// parameter
+	 * 			params);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
+	 * to return<br/>
+	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
+	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
+	 * {@link getGroupByIdGraphQLRequest(String)} method.
+	 * @param id Parameter for the groupById field of Query, as defined in the GraphQL schema
+	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
+	 * variable in the defined query/mutation, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "groupById", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> groupByIdWithBindValues(ObjectResponse objectResponse, Long id,
+		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Executing query 'groupById' with parameters: {} ", id);
+		} else if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Executing query 'groupById'");
+		}
+
+		// Given values for the BindVariables
+		Map<String, Object> parametersLocal = (parameters != null) ? parameters : new HashMap<>();
+		parametersLocal.put("queryGroupByIdId", id);
+
+		return objectResponse.execReactive(Query.class, parametersLocal)
+			.map(t -> (t.getGroupById() == null) ? Optional.empty() : Optional.of(t.getGroupById()));
+	}
+
+	/**
+	 * Returns a group given its identifier.<br/>
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed several times
+	 * 		preparedRequest = executor.getGroupByIdGraphQLRequest(
+	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.groupById(preparedRequest, id, // A value for groupById's id input parameter
+	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
+	 * to return<br/>
+	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
+	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
+	 * {@link getGroupByIdGraphQLRequest(String)} method.
+	 * @param id Parameter for the groupById field of Query, as defined in the GraphQL schema
+	 * @param paramsAndValues This parameter contains all the name and values for the Bind Variables defined in the
+	 * objectResponse parameter, that must be sent to the server. Optional parameter may not have a value. They will be
+	 * ignored and not sent to the server. Mandatory parameter must be provided in this argument.<BR/>
+	 * This parameter contains an even number of parameters: it must be a series of name and values : (paramName1,
+	 * paramValue1, paramName2, paramValue2...)
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "groupById", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> groupById(ObjectResponse objectResponse, Long id, Object... paramsAndValues)
+		throws GraphQLRequestExecutionException {
+
+		if (LOGGER.isTraceEnabled()) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Executing query 'groupById' with bind variables: ");
+			boolean addComma = false;
+			for (Object o : paramsAndValues) {
+				if (o != null) {
+					sb.append(o.toString());
+					if (addComma)
+						sb.append(", ");
+					addComma = true;
+				}
+			}
+			LOGGER.trace(sb.toString());
+		} else if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Executing query 'groupById' (with bind variables)");
+		}
+
+		Map<String, Object> parameters = this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues);
+		parameters.put("queryGroupByIdId", id);
+
+		return objectResponse.execReactive(Query.class, parameters)
+			.map(t -> (t.getGroupById() == null) ? Optional.empty() : Optional.of(t.getGroupById()));
+	}
+
+	/**
+	 * Returns a group given its identifier.<br/>
+	 * Get the {@link Builder} for the Group, as expected by the groupById query/mutation.
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public Builder getGroupByIdResponseBuilder() throws GraphQLRequestPreparationException {
+		return new Builder(this.graphQlClient, GraphQLReactiveRequest.class, "groupById", RequestType.query,
+			InputParameter.newBindParameter("", "id", "queryGroupByIdId", MANDATORY, "ID", true, 0, false));
+	}
+
+	/**
+	 * Returns a group given its identifier.<br/>
+	 * Get the {@link GraphQLReactiveRequest} for the groupById REACTIVE_EXECUTOR, created with the given Partial
+	 * request.
+	 * @param partialRequest The Partial GraphQL request, as explained in the
+	 * <A HREF="https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin client
+	 * documentation</A>
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public GraphQLReactiveRequest getGroupByIdGraphQLRequest(String partialRequest)
+		throws GraphQLRequestPreparationException {
+
+		return new GraphQLReactiveRequest(this.graphQlClient, partialRequest, RequestType.query, "groupById",
+			InputParameter.newBindParameter("", "id", "queryGroupByIdId", MANDATORY, "ID", true, 0, false));
+	}
+
+	/**
+	 * Returns a group given its groupname. This method executes a partial query against the GraphQL server. That is, the
+	 * query that is one of the queries defined in the GraphQL query object. The queryResponseDef contains the part of
+	 * the query that <B><U>is after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL schema):
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Map<String, Object> params = new HashMap<>();
+	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
+	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
+	 * 
+	 * 		Mono<Group> mono = executor.groupByGroupnameWithBindValues(
+	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 			groupname, // A value for groupByGroupname's groupname input parameter
+	 * 			params);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the parameter(s) for the query/mutation. The given
+	 * queryResponseDef describes the format of the response of the server response, that is the expected fields of the
+	 * {@link Character} GraphQL type. It can be something like "{ id name }", if you want these fields of this type.
+	 * Please take a look at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
+	 * @param groupname Parameter for the groupByGroupname field of Query, as defined in the GraphQL schema
+	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
+	 * variable in the defined query/mutation, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
+	 * building the {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "groupByGroupname", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> groupByGroupnameWithBindValues(String queryResponseDef, String groupname,
+		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
+		LOGGER.debug("Executing query 'groupByGroupname': {} ", queryResponseDef);
+		ObjectResponse objectResponse =
+			getGroupByGroupnameResponseBuilder().withQueryResponseDef(queryResponseDef).build();
+		return groupByGroupnameWithBindValues(objectResponse, groupname, parameters);
+	}
+
+	/**
+	 * Returns a group given its groupname.<br/>
+	 * This method executes a partial query against the GraphQL server. That is, the query that is one of the queries
+	 * defined in the GraphQL query object. The queryResponseDef contains the part of the query that <B><U>is
+	 * after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL schema):
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.groupByGroupname(
+	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 			groupname, // A value for groupByGroupname's groupname input parameter
+	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the parameter(s) for the query/mutation . The
+	 * given queryResponseDef describes the format of the response of the server response, that is the expected fields
+	 * of the {@link Character} GraphQL type. It can be something like "{ id name }", if you want these fields of this
+	 * type. Please take a look at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * @param queryResponseDef The response definition of the query/mutation, in the native GraphQL format (see here
+	 * above)
+	 * @param groupname Parameter for the groupByGroupname field of Query, as defined in the GraphQL schema
+	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
+	 * variable in the defined query/mutation, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
+	 * building the {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "groupByGroupname", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> groupByGroupname(String queryResponseDef, String groupname, Object... paramsAndValues)
+		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+
+		LOGGER.debug("Executing query 'groupByGroupname': {} ", queryResponseDef);
+		ObjectResponse objectResponse =
+			getGroupByGroupnameResponseBuilder().withQueryResponseDef(queryResponseDef).build();
+		return groupByGroupnameWithBindValues(objectResponse, groupname,
+			this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues));
+	}
+
+	/**
+	 * Returns a group given its groupname.<br/>
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed several times
+	 * 		preparedRequest = executor.getGroupByGroupnameGraphQLRequest(
+	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.groupByGroupnameWithBindValues(preparedRequest, groupname, // A value for
+	 * 																							// groupByGroupname's
+	 * 																							// groupname input
+	 * 																							// parameter
+	 * 			params);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
+	 * to return<br/>
+	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
+	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
+	 * {@link getGroupByGroupnameGraphQLRequest(String)} method.
+	 * @param groupname Parameter for the groupByGroupname field of Query, as defined in the GraphQL schema
+	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
+	 * variable in the defined query/mutation, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "groupByGroupname", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> groupByGroupnameWithBindValues(ObjectResponse objectResponse, String groupname,
+		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Executing query 'groupByGroupname' with parameters: {} ", groupname);
+		} else if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Executing query 'groupByGroupname'");
+		}
+
+		// Given values for the BindVariables
+		Map<String, Object> parametersLocal = (parameters != null) ? parameters : new HashMap<>();
+		parametersLocal.put("queryGroupByGroupnameGroupname", groupname);
+
+		return objectResponse.execReactive(Query.class, parametersLocal)
+			.map(t -> (t.getGroupByGroupname() == null) ? Optional.empty() : Optional.of(t.getGroupByGroupname()));
+	}
+
+	/**
+	 * Returns a group given its groupname.<br/>
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed several times
+	 * 		preparedRequest = executor.getGroupByGroupnameGraphQLRequest(
+	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<Group> mono = executor.groupByGroupname(preparedRequest, groupname, // A value for groupByGroupname's
+	 * 																				// groupname input
+	 * 			// parameter
+	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 		Group field = mono.block();
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
+	 * to return<br/>
+	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
+	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
+	 * {@link getGroupByGroupnameGraphQLRequest(String)} method.
+	 * @param groupname Parameter for the groupByGroupname field of Query, as defined in the GraphQL schema
+	 * @param paramsAndValues This parameter contains all the name and values for the Bind Variables defined in the
+	 * objectResponse parameter, that must be sent to the server. Optional parameter may not have a value. They will be
+	 * ignored and not sent to the server. Mandatory parameter must be provided in this argument.<BR/>
+	 * This parameter contains an even number of parameters: it must be a series of name and values : (paramName1,
+	 * paramValue1, paramName2, paramValue2...)
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "groupByGroupname", graphQLTypeSimpleName = "Group", javaClass = Group.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	public Mono<Optional<Group>> groupByGroupname(ObjectResponse objectResponse, String groupname,
+		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+
+		if (LOGGER.isTraceEnabled()) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Executing query 'groupByGroupname' with bind variables: ");
+			boolean addComma = false;
+			for (Object o : paramsAndValues) {
+				if (o != null) {
+					sb.append(o.toString());
+					if (addComma)
+						sb.append(", ");
+					addComma = true;
+				}
+			}
+			LOGGER.trace(sb.toString());
+		} else if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Executing query 'groupByGroupname' (with bind variables)");
+		}
+
+		Map<String, Object> parameters = this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues);
+		parameters.put("queryGroupByGroupnameGroupname", groupname);
+
+		return objectResponse.execReactive(Query.class, parameters)
+			.map(t -> (t.getGroupByGroupname() == null) ? Optional.empty() : Optional.of(t.getGroupByGroupname()));
+	}
+
+	/**
+	 * Returns a group given its groupname.<br/>
+	 * Get the {@link Builder} for the Group, as expected by the groupByGroupname query/mutation.
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public Builder getGroupByGroupnameResponseBuilder() throws GraphQLRequestPreparationException {
+		return new Builder(this.graphQlClient, GraphQLReactiveRequest.class, "groupByGroupname", RequestType.query,
+			InputParameter.newBindParameter("", "groupname", "queryGroupByGroupnameGroupname", MANDATORY, "String", true, 0,
+				false));
+	}
+
+	/**
+	 * Returns a group given its groupname.<br/>
+	 * Get the {@link GraphQLReactiveRequest} for the groupByGroupname REACTIVE_EXECUTOR, created with the given Partial
+	 * request.
+	 * @param partialRequest The Partial GraphQL request, as explained in the
+	 * <A HREF="https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin client
+	 * documentation</A>
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public GraphQLReactiveRequest getGroupByGroupnameGraphQLRequest(String partialRequest)
+		throws GraphQLRequestPreparationException {
+
+		return new GraphQLReactiveRequest(this.graphQlClient, partialRequest, RequestType.query, "groupByGroupname",
+			InputParameter.newBindParameter("", "groupname", "queryGroupByGroupnameGroupname", MANDATORY, "String", true, 0,
+				false));
+	}
+
+//----------
 	/**
 	 * This method executes a partial query against the GraphQL server. That is, the query that is one of the queries
 	 * defined in the GraphQL query object. The queryResponseDef contains the part of the query that <B><U>is

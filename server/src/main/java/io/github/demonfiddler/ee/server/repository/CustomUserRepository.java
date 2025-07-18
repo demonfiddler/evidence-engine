@@ -21,36 +21,20 @@ package io.github.demonfiddler.ee.server.repository;
 
 import java.util.List;
 
-import io.github.demonfiddler.ee.server.model.PermissionKind;
+import io.github.demonfiddler.ee.server.model.AuthorityKind;
 import io.github.demonfiddler.ee.server.model.TrackedEntityQueryFilter;
 import io.github.demonfiddler.ee.server.model.User;
 
 /**
- * A custom user repository that supports arbitrary filtering and user permission administration.
+ * A custom user repository that supports arbitrary filtering and user authority administration.
  */
 public interface CustomUserRepository extends CustomRepository<User, TrackedEntityQueryFilter> {
 
     /**
-     * Returns the permissions associated with the given user.
+     * Returns all authorities associated with the given user, including those inherited via group memberships.
      * @param userId The user ID.
-     * @return The user's permissions.
+     * @return The user's authorities.
      */
-    List<PermissionKind> findUserPermissions(Long userId);
-
-    /**
-     * Adds permissions to the specified user.
-     * @param userId The user ID.
-     * @param permissions The permissions to add.
-     * @return the count of permissions added.
-     */
-    int addUserPermissions(Long userId, List<PermissionKind> permissions);
-
-    /**
-     * Removes permissions from the specified user.
-     * @param userId The user ID.
-     * @param permissions The permissions to remove.
-     * @return the count of permissions removed.
-     */
-    int removeUserPermissions(Long userId, List<PermissionKind> permissions);
+    List<AuthorityKind> findAllUserAuthorities(Long userId);
 
 }

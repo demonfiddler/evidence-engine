@@ -280,6 +280,35 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 		listDepth = 0)
 	User userByUsername;
 
+	/**
+	 * Returns a paged list of groups.
+	 */
+	@JsonProperty("groups")
+	@GraphQLInputParameters(names = { "filter", "pageSort" }, types = { "TrackedEntityQueryFilter", "PageableInput" },
+		mandatories = { false, false }, listDepths = { 0, 0 }, itemsMandatory = { false, false })
+	@GraphQLNonScalar(fieldName = "groups", graphQLTypeSimpleName = "GroupPage", javaClass = GroupPage.class,
+		listDepth = 0)
+	GroupPage groups;
+
+	/**
+	 * Returns a group given its identifier.
+	 */
+	@JsonProperty("groupById")
+	@GraphQLInputParameters(names = { "id" }, types = { "ID" }, mandatories = { true }, listDepths = { 0 },
+		itemsMandatory = { false })
+	@GraphQLNonScalar(fieldName = "groupById", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
+	Group groupById;
+
+	/**
+	 * Returns a group given its groupname.
+	 */
+	@JsonProperty("groupByGroupname")
+	@GraphQLInputParameters(names = { "groupname" }, types = { "String" }, mandatories = { true }, listDepths = { 0 },
+		itemsMandatory = { false })
+	@GraphQLNonScalar(fieldName = "groupByGroupname", graphQLTypeSimpleName = "Group", javaClass = Group.class,
+		listDepth = 0)
+	Group groupByGroupname;
+
 	@JsonProperty("__schema")
 	@GraphQLNonScalar(fieldName = "__schema", graphQLTypeSimpleName = "__Schema", javaClass = __Schema.class,
 		listDepth = 0)
@@ -663,6 +692,54 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 		return this.userByUsername;
 	}
 
+	/**
+	 * Returns a paged list of groups.
+	 */
+	@JsonProperty("groups")
+	public void setGroups(GroupPage groups) {
+		this.groups = groups;
+	}
+
+	/**
+	 * Returns a paged list of groups.
+	 */
+	@JsonProperty("groups")
+	public GroupPage getGroups() {
+		return this.groups;
+	}
+
+	/**
+	 * Returns a group given its identifier.
+	 */
+	@JsonProperty("groupById")
+	public void setGroupById(Group groupById) {
+		this.groupById = groupById;
+	}
+
+	/**
+	 * Returns a group given its identifier.
+	 */
+	@JsonProperty("groupById")
+	public Group getGroupById() {
+		return this.groupById;
+	}
+
+	/**
+	 * Returns a group given its groupname.
+	 */
+	@JsonProperty("groupByGroupname")
+	public void setGroupByGroupname(Group groupByGroupname) {
+		this.groupByGroupname = groupByGroupname;
+	}
+
+	/**
+	 * Returns a group given its groupname.
+	 */
+	@JsonProperty("groupByGroupname")
+	public Group getGroupByGroupname() {
+		return this.groupByGroupname;
+	}
+
 	@JsonProperty("__schema")
 	public void set__schema(__Schema __schema) {
 		this.__schema = __schema;
@@ -731,6 +808,12 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 			+ ", " //
 			+ "userByUsername: " + this.userByUsername //
 			+ ", " //
+			+ "groups: " + this.groups //
+			+ ", " //
+			+ "groupById: " + this.groupById //
+			+ ", " //
+			+ "groupByGroupname: " + this.groupByGroupname //
+			+ ", " //
 			+ "__schema: " + this.__schema //
 			+ ", " //
 			+ "__type: " + this.__type //
@@ -772,6 +855,9 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 		private UserPage users;
 		private User userById;
 		private User userByUsername;
+		private GroupPage groups;
+		private Group groupById;
+		private Group groupByGroupname;
 		private __Schema __schema;
 		private __Type __type;
 
@@ -959,6 +1045,30 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 			return this;
 		}
 
+		/**
+		 * Returns a paged list of groups.
+		 */
+		public Builder withGroups(GroupPage groupsParam) {
+			this.groups = groupsParam;
+			return this;
+		}
+
+		/**
+		 * Returns a group given its identifier.
+		 */
+		public Builder withGroupById(Group groupByIdParam) {
+			this.groupById = groupByIdParam;
+			return this;
+		}
+
+		/**
+		 * Returns a group given its groupname.
+		 */
+		public Builder withGroupByGroupname(Group groupByGroupnameParam) {
+			this.groupByGroupname = groupByGroupnameParam;
+			return this;
+		}
+
 		public Builder with__schema(__Schema __schemaParam) {
 			this.__schema = __schemaParam;
 			return this;
@@ -994,6 +1104,9 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 			_object.setUsers(this.users);
 			_object.setUserById(this.userById);
 			_object.setUserByUsername(this.userByUsername);
+			_object.setGroups(this.groups);
+			_object.setGroupById(this.groupById);
+			_object.setGroupByGroupname(this.groupByGroupname);
 			_object.set__schema(this.__schema);
 			_object.set__type(this.__type);
 			return _object;

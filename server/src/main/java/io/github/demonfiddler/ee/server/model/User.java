@@ -19,16 +19,26 @@
 
 package io.github.demonfiddler.ee.server.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.graphql_java_generator.annotation.GraphQLDirective;
+import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrimaryKeyJoinColumn;
-import jakarta.persistence.Transient;
 
 /**
  * Describes a user of the system.
@@ -65,7 +75,7 @@ public class User extends AbstractTrackedEntity {
 	 * The user's email address.
 	 */
 	@GraphQLScalar(fieldName = "email", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	String email;
 
@@ -74,18 +84,32 @@ public class User extends AbstractTrackedEntity {
 	 * A hash of the user's password.
 	 */
 	@GraphQLScalar(fieldName = "password", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	String password;
 
 	/**
-	 * The permissions granted to the user.
+	 * The authorities granted to the user.
 	 */
-	@Transient
-	@GraphQLScalar(fieldName = "permissions", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 1)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	// @Transient
+	@GraphQLScalar(fieldName = "authorities", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 1)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	List<String> permissions;
+    @ElementCollection//(targetClass = AuthorityKind.class)
+    @CollectionTable(name = "user_authority", joinColumns = {
+		@JoinColumn(name = "user_id", referencedColumnName = "id"),
+		@JoinColumn(name = "username", referencedColumnName = "username")
+	})
+    @Column(name = "authority")
+    @Enumerated(EnumType.STRING)
+	List<AuthorityKind> authorities = new ArrayList<>();
+
+	// @Transient
+	@GraphQLNonScalar( fieldName = "groups", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 1)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, mappedBy = "members")
+	List<Group> groups = new ArrayList<>();
 
 	@Override
 	public String getEntityKind() {
@@ -137,7 +161,7 @@ public class User extends AbstractTrackedEntity {
 	/**
 	 * The user's email address.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public void setEmail(String email) {
 		this.email = email;
@@ -146,7 +170,7 @@ public class User extends AbstractTrackedEntity {
 	/**
 	 * The user's email address.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public String getEmail() {
 		return this.email;
@@ -156,7 +180,7 @@ public class User extends AbstractTrackedEntity {
 	/**
 	 * A hash of the user's password.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public void setPassword(String password) {
 		this.password = password;
@@ -166,28 +190,42 @@ public class User extends AbstractTrackedEntity {
 	/**
 	 * A hash of the user's password.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public String getPassword() {
 		return this.password;
 	}
 
 	/**
-	 * The permissions granted to the user.
+	 * The authorities granted to the user.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public void setPermissions(List<String> permissions) {
-		this.permissions = permissions;
+	public void setAuthorities(List<AuthorityKind> authorities) {
+		this.authorities = authorities;
 	}
 
 	/**
-	 * The permissions granted to the user.
+	 * The authorities granted to the user.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public List<String> getPermissions() {
-		return this.permissions;
+	public List<AuthorityKind> getAuthorities() {
+		return this.authorities;
+	}
+
+	/**
+	 * The groups of which the user is a member.
+	 */
+	public void setGroups(List<Group> groups) {
+		this.groups = groups;
+	}
+
+	/**
+	 * The groups of which the user is a member.
+	 */
+	public List<Group> getGroups() {
+		return this.groups;
 	}
 
 	public String toString() {
@@ -218,8 +256,69 @@ public class User extends AbstractTrackedEntity {
 			+ ", " //$NON-NLS-1$
 			+ "password: " + this.password //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
-			+ "permissions: " + this.permissions //$NON-NLS-1$
+			+ "authorities: " + this.authorities //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
+			+ "groups: " + this.groups //$NON-NLS-1$
 			+ "}"; //$NON-NLS-1$
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((username == null) ? 0 : username.hashCode());
+		result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
+		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
+		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		result = prime * result + ((password == null) ? 0 : password.hashCode());
+		result = prime * result + ((authorities == null) ? 0 : authorities.hashCode());
+		result = prime * result + ((groups == null) ? 0 : groups.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		User other = (User) obj;
+		if (username == null) {
+			if (other.username != null)
+				return false;
+		} else if (!username.equals(other.username))
+			return false;
+		if (firstName == null) {
+			if (other.firstName != null)
+				return false;
+		} else if (!firstName.equals(other.firstName))
+			return false;
+		if (lastName == null) {
+			if (other.lastName != null)
+				return false;
+		} else if (!lastName.equals(other.lastName))
+			return false;
+		if (email == null) {
+			if (other.email != null)
+				return false;
+		} else if (!email.equals(other.email))
+			return false;
+		if (password == null) {
+			if (other.password != null)
+				return false;
+		} else if (!password.equals(other.password))
+			return false;
+		if (authorities == null) {
+			if (other.authorities != null)
+				return false;
+		} else if (!authorities.equals(other.authorities))
+			return false;
+		if (groups == null) {
+			if (other.groups != null)
+				return false;
+		} else if (!groups.equals(other.groups))
+			return false;
+		return true;
 	}
 
 	public static Builder builder() {
@@ -237,7 +336,8 @@ public class User extends AbstractTrackedEntity {
 		private String lastName;
 		private String email;
 		private String password;
-		private List<String> permissions;
+		private List<AuthorityKind> authorities;
+		private List<Group> groups;
 
 		/**
 		 * The (mutable?) unique user name (user-assigned).
@@ -281,10 +381,18 @@ public class User extends AbstractTrackedEntity {
 		}
 
 		/**
-		 * The permissions granted to the user.
+		 * The authorities granted to the user.
 		 */
-		public Builder withPermissions(List<String> permissionsParam) {
-			this.permissions = permissionsParam;
+		public Builder withAuthorities(List<AuthorityKind> authoritiesParam) {
+			this.authorities = authoritiesParam;
+			return this;
+		}
+
+		/**
+		 * The groups of which the user is a member.
+		 */
+		public Builder withGroups(List<Group> groupsParam) {
+			this.groups = groupsParam;
 			return this;
 		}
 
@@ -296,7 +404,8 @@ public class User extends AbstractTrackedEntity {
 			_object.setLastName(this.lastName);
 			_object.setEmail(this.email);
 			_object.setPassword(this.password);
-			_object.setPermissions(this.permissions);
+			_object.setAuthorities(this.authorities);
+			_object.setGroups(this.groups);
 			return _object;
 		}
 

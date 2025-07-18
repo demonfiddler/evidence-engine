@@ -30,7 +30,6 @@ import {
   VisibilityState,
   flexRender,
   getCoreRowModel,
-  getExpandedRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
@@ -44,7 +43,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { CSSProperties, useCallback, useContext, useState } from "react"
+import { CSSProperties, Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from "react"
 import {
   DndContext,
   KeyboardSensor,
@@ -69,8 +68,10 @@ import DataTableFilter from "./data-table-filter"
 import IBaseEntity from "@/app/model/IBaseEntity"
 import { MasterLinkContext, SelectedRecordsContext } from "@/lib/context"
 import RecordKind from "@/app/model/RecordKind"
-import { cn, isLinkableEntity } from "@/lib/utils"
+import { cn, isLinkableEntity, PageSettings, SearchSettings } from "@/lib/utils"
 import DataTableColumnHeader from "./data-table-column-header"
+import Spinner from "../misc/spinner"
+import { getExpandedRowModelEx } from "./data-table-expanded-row-model"
 
 function DragAlongCell<TData>({ cell }: { cell: Cell<TData, unknown> }) {
   const { isDragging, setNodeRef, transform } = useSortable({
@@ -100,6 +101,11 @@ interface DataTableProps<TData, TValue> {
   defaultColumns: ColumnDef<TData, TValue>[]
   defaultColumnVisibility: VisibilityState
   page?: IPage<TData>
+  loading: boolean
+  pagination: PageSettings
+  onPaginationChange: Dispatch<SetStateAction<PageSettings>>
+  search: SearchSettings
+  onSearchChange: Dispatch<SetStateAction<SearchSettings>>
   getSubRows?: (row: TData) => TData[] | undefined
   onRowSelectionChange?: (recordId?: string) => void
 }
@@ -114,10 +120,15 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
   defaultColumns,
   defaultColumnVisibility,
   page,
+  loading,
+  pagination,
+  onPaginationChange,
+  search,
+  onSearchChange,
   getSubRows,
   onRowSelectionChange
 }: DataTableProps<TData, TValue>) {
-  console.log("DataTable: render")
+  // console.log("DataTable: render")
   const masterLinkContext = useContext(MasterLinkContext)
   const selectedRecordsContext = useContext(SelectedRecordsContext)
   const [columns] = useState<typeof defaultColumns>(() => [
@@ -129,7 +140,6 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
   const [columnOrder, setColumnOrder] = useState<string[]>(() => columns.map(c => c.id!))
   const selectedRecord = selectedRecordsContext[recordKind]
   const [rowSelection, setRowSelection] = useState(selectedRecord ? {[selectedRecord.id.toString()]: true} : {})
-  // const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 })
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const sensors = useSensors(
     useSensor(MouseSensor, {}),
@@ -177,70 +187,113 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
   }, [setRowSelection, findItem, masterLinkContext, selectedRecordsContext, recordKind, onRowSelectionChange])
 
   const table = useReactTable({
-    data: page?.content ?? [],
-    columns,
-    getRowId: originalRow => String(originalRow.id),
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(), // not required for manual/server-side pagination
-    manualPagination: false, // default is false
-    // pageCount: number, // obtain from IPage.totalPages
-    // rowCount: number, // obtain from IPage.totalElements
+    // aggregationFns: ,
+    // autoResetAll: boolean,
+    // autoResetExpanded: boolean,
     // autoResetPageIndex: false, // defaults to false if manualPagination == true
-    // onPaginationChange?: OnChangeFn<PaginationState>, // If provided, called when pagination state changes. Pass managed state back via tableOptions.state.pagination
-    paginateExpandedRows: false,
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(), // actually not needed for manual/server-side sorting
-    manualSorting: false, // set to false for server-side sorting, access as table.getState().sorting
-    enableMultiSort: true, // default is true
-    enableMultiRemove: true, // default is true
-    enableExpanding: true,
-    maxMultiSortColCount: 5, // default is unlimited
-    onColumnFiltersChange: setColumnFilters,
-    onColumnOrderChange: setColumnOrder,
     columnResizeMode: "onChange",
     columnResizeDirection: "ltr",
-    getFilteredRowModel: getFilteredRowModel(),
-    // filterFromLeafRows: false,
-    // maxLeafRowFilterDepth: 0,
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: rowSelectionChanged,
-    enableMultiRowSelection: false,
-    enableRowSelection: true,
-    enableSubRowSelection: false,
-    getExpandedRowModel: getExpandedRowModel(),
-    onExpandedChange: setExpanded,
-    getSubRows: getSubRows,
-    // getFacetedMinMaxValues: getFacetedMinMaxValues(),
-    // getFacetedRowModel: getFacetedRowModel(),
-    // getFacetedUniqueValues: getFacetedUniqueValues(),
-    // getFilteredRowModel: getFilteredRowModel(),
-    // manualFiltering: true,
-    // manualGrouping: true,
-    // getGroupedRowModel: getGroupedRowModel(),
-    // debugTable: true,
-    // debugHeaders: true,
-    // debugColumns: true,
+    columns,
+    data: page?.content ?? [],
+    // debugAll: boolean,
+    // debugCells: boolean,
+    // debugColumns: boolean,
+    // debugHeaders: boolean,
+    // debugRows: boolean,
+    // debugTable: boolean,
     // defaultColumn: {
     //   size: 150, //starting column size
     //   minSize: 10, //enforced during column resizing
     //   maxSize: 500, //enforced during column resizing
     // },
+    // enableColumnFilters: boolean,
+    // enableColumnPinning: boolean,
+    // enableColumnResizing: boolean,
+    enableExpanding: true,
+    // enableFilters: boolean,
+    // enableGlobalFilter: boolean,
+    // enableGrouping: boolean,
+    // enableHiding: boolean,
+    enableMultiSort: true, // default is true
+    enableMultiRemove: true, // default is true
+    enableMultiRowSelection: false,
+    // enableRowPinning: boolean,
+    enableRowSelection: true,
+    enableSubRowSelection: false,
+    // enableSorting: boolean,
+    // enableSortingRemoval: boolean,
+    // filterFns: Record<string, FilterFn<any>>,
+    // filterFromLeafRows: false,
+    // getColumnCanGlobalFilter: (column: Column<TData, unknown>) => boolean,
+    getCoreRowModel: getCoreRowModel(),
+    getExpandedRowModel: getExpandedRowModelEx(),//getExpandedRowModel(),
+    // getFacetedMinMaxValues: (table: Table<TData>, columnId: string) => () => undefined | [number, number]),
+    // getFacetedRowModel: ((table: Table<TData>, columnId: string) => () => RowModel<TData>),
+    // getFacetedUniqueValues: ((table: Table<TData>, columnId: string) => () => Map<any, number>),
+    getFilteredRowModel: getFilteredRowModel(),
+    // getGroupedRowModel: ((table: Table<any>) => () => RowModel<any>),
+    // getIsRowExpanded: ((row: Row<TData>) => boolean),
+    getPaginationRowModel: getPaginationRowModel(), // not required for manual/server-side pagination - OR IS IT?
+    getRowId: originalRow => originalRow.id ?? "",
+    // getRowCanExpand: getRowCanExpand?: ((row: Row<TData>) => boolean),
+    getSortedRowModel: getSortedRowModel(), // actually not needed for manual/server-side sorting
+    getSubRows: getSubRows,
+    // globalFilterFn: FilterFnOption<TData>,
+    // groupedColumnMode: false | "reorder" | "remove" | undefined,
     initialState: {
       columnPinning: {
         left: ['select'],
         right: ['action'],
       },
     },
+    // isMultiSortEvent: ((e: unknown) => boolean),
+    // keepPinnedRows: true,
+    // manualExpanding: false,
+    manualPagination: true,
+    // manualExpanding: false,
+    // manualFiltering: true,
+    // manualGrouping: true,
+    manualSorting: false, // set to false for server-side sorting, access as table.getState().sorting
+    // maxLeafRowFilterDepth: 0,
+    maxMultiSortColCount: 5, // default is unlimited
+    // mergeOptions: ((defaultOptions: TableOptions<TData>, options: Partial<TableOptions<TData>>) => TableOptions<TData>),
+    pageCount: page?.totalPages ?? -1,
+    paginateExpandedRows: false,
+    rowCount: Number.parseInt(page?.totalElements ?? "0"),
+    // onColumnPinningChange: OnChangeFn<ColumnPinningState>,
+    // onColumnSizingChange: OnChangeFn<ColumnSizingState>,
+    // onColumnSizingInfoChange: OnChangeFn<ColumnSizingInfoState>,
+    onExpandedChange: setExpanded,
+    // onGlobalFilterChange: OnChangeFn<any>,
+    // onGroupingChange: OnChangeFn<GroupingState>,
+    // onPaginationChange?: OnChangeFn<PaginationState>, // If provided, called when pagination state changes. Pass managed state back via tableOptions.state.pagination
+    // onRowPinningChange: OnChangeFn<RowPinningState>,
+    onRowSelectionChange: rowSelectionChanged,
+    // onStateChange: ((updater: Updater<TableState>) => void),
+    onColumnFiltersChange: setColumnFilters,
+    onColumnOrderChange: setColumnOrder,
+    onColumnVisibilityChange: setColumnVisibility,
+    onSortingChange: setSorting,
     state: {
-      sorting,
-      columnOrder,
       columnFilters,
+      columnOrder,
       columnVisibility,
-      rowSelection,
       expanded,
-      // pagination,
-    }
+      pagination,
+      rowSelection,
+      sorting,
+    },
   })
+
+  // console.log(`DataTable render: page = {totalPages: ${page?.totalPages}, totalElements: ${page?.totalElements}}`)
+  useEffect(() => {
+    // console.log(`DataTable useEffect: page = {totalPages: ${page?.totalPages}, totalElements: ${page?.totalElements}}`)
+    table.setOptions({
+      ...table.options,
+      pageCount: page?.totalPages ?? -1,
+      rowCount: Number.parseInt(page?.totalElements ?? "0")
+    })
+  }, [page?.totalPages, page?.totalElements]);
 
   // function computeTableMetrics() {
   //   let length = 0
@@ -254,7 +307,7 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
   // }
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
-    console.log(`DataTable.handleDragEnd: event=${JSON.stringify(event)}`)
+    // console.log(`DataTable.handleDragEnd: event=${JSON.stringify(event)}`)
     const { active, over } = event
     if (active && over && active.id !== over.id) {
       setColumnOrder(columnOrder => {
@@ -279,9 +332,15 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
       onDragEnd={handleDragEnd}
       sensors={sensors}
     >
-      <fieldset className={cn("p-2 border rounded-md shadow-lg", className)}>
+      <fieldset className={cn("relative p-2 border rounded-md shadow-lg", className)}>
+        <Spinner loading={loading} className="absolute inset-0 bg-black/20 z-50" />
         <div className="flex flex-col gap-2">
-          <DataTableFilter table={table} isLinkableEntity={isLinkableEntity(recordKind)} />
+          <DataTableFilter
+            table={table}
+            isLinkableEntity={isLinkableEntity(recordKind)}
+            search={search}
+            onSearchChange={onSearchChange}
+          />
           <Table className="table-fixed box-border" style={{width: `${table.getTotalSize()}px`}}>
             <colgroup>
               {table.getHeaderGroups().map(headerGroup => headerGroup.headers.map(header => (

@@ -24,7 +24,7 @@ import java.util.Optional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import io.github.demonfiddler.ee.server.model.PermissionKind;
+import io.github.demonfiddler.ee.server.model.AuthorityKind;
 import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.repository.UserRepository;
 import jakarta.annotation.Resource;
@@ -45,9 +45,9 @@ public class SecurityUtils {
         return userRepository.findByUsername(principal.getUsername());
     }
 
-    public boolean hasAuthority(PermissionKind permissionKind) {
+    public boolean hasAuthority(AuthorityKind authorityKind) {
         return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
-            .anyMatch(a -> a.getAuthority().equals(permissionKind.name()));
+            .anyMatch(a -> a.getAuthority().equals(authorityKind.name()));
     }
 
 }

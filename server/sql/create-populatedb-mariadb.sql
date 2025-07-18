@@ -381,6 +381,7 @@ INSERT IGNORE INTO `entity_kind` (`code`, `label`) VALUES
 	('CLA', 'Claim'),
 	('COU', 'Country'),
 	('DEC', 'Declaration'),
+	('GRP', 'Group'),
 	('LNK', 'EntityLink'),
 	('JOU', 'Journal'),
 	('PER', 'Person'),
@@ -411,13 +412,13 @@ CREATE TABLE IF NOT EXISTS `entity_link` (
 -- Dumping structure for table evidence_engine.group
 CREATE TABLE IF NOT EXISTS `group` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'The unique system-assigned group identifier',
-  `group_name` varchar(50) NOT NULL COMMENT 'The group name',
+  `groupname` varchar(50) NOT NULL COMMENT 'The group name',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `group_group_name` (`group_name`)
+  UNIQUE KEY `group_groupname` (`groupname`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Holds groups to which users can belong';
 
 -- Dumping data for table evidence_engine.group: ~3 rows (approximately)
-INSERT IGNORE INTO `group` (`id`, `group_name`) VALUES
+INSERT IGNORE INTO `group` (`id`, `groupname`) VALUES
 	(1, 'Administrators'),
 	(2, 'Editors'),
 	(3, 'Users');
@@ -427,9 +428,9 @@ CREATE TABLE IF NOT EXISTS `group_authority` (
   `group_id` bigint(20) unsigned NOT NULL COMMENT 'ID of a group',
   `authority` char(3) NOT NULL COMMENT 'The granted authority code',
   UNIQUE KEY `group_authority` (`group_id`,`authority`),
-  KEY `FK_group_authority_permission` (`authority`),
+  KEY `FK_group_authority_authority` (`authority`),
   CONSTRAINT `FK_group_authority_group` FOREIGN KEY (`group_id`) REFERENCES `group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_group_authority_permission` FOREIGN KEY (`authority`) REFERENCES `permission_kind` (`code`) ON UPDATE CASCADE
+  CONSTRAINT `FK_group_authority_authority` FOREIGN KEY (`authority`) REFERENCES `authority_kind` (`code`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Holds authorities granted to groups';
 
 -- Dumping data for table evidence_engine.group_authority: ~13 rows (approximately)
@@ -516,17 +517,17 @@ CREATE TABLE IF NOT EXISTS `log` (
 
 -- Dumping data for table evidence_engine.log: ~0 rows (approximately)
 
--- Dumping structure for table evidence_engine.permission_kind
-CREATE TABLE IF NOT EXISTS `permission_kind` (
-  `code` char(3) NOT NULL COMMENT 'Unique permission code',
-  `label` varchar(10) NOT NULL COMMENT 'Unique permission label',
-  `description` varchar(50) NOT NULL COMMENT 'Description of the permission',
+-- Dumping structure for table evidence_engine.authority_kind
+CREATE TABLE IF NOT EXISTS `authority_kind` (
+  `code` char(3) NOT NULL COMMENT 'Unique authority code',
+  `label` varchar(10) NOT NULL COMMENT 'Unique authority label',
+  `description` varchar(50) NOT NULL COMMENT 'Description of the authority',
   PRIMARY KEY (`code`),
-  UNIQUE KEY `permission_kind_label` (`label`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Access permissions that can be granted to users';
+  UNIQUE KEY `authority_kind_label` (`label`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Access authorities that can be granted to users';
 
--- Dumping data for table evidence_engine.permission_kind: ~7 rows (approximately)
-INSERT IGNORE INTO `permission_kind` (`code`, `label`, `description`) VALUES
+-- Dumping data for table evidence_engine.authority_kind: ~7 rows (approximately)
+INSERT IGNORE INTO `authority_kind` (`code`, `label`, `description`) VALUES
 	('ADM', 'Administer', 'Use administrative functions'),
 	('CRE', 'Create', 'Insert new record'),
 	('DEL', 'Delete', 'Delete existing record'),
@@ -790,8 +791,8 @@ CREATE TABLE IF NOT EXISTS `user_authority` (
   `username` varchar(50) NOT NULL COMMENT 'The login user name',
   `authority` char(3) NOT NULL COMMENT 'The granted authority code',
   UNIQUE KEY `user_authority` (`username`,`authority`),
-  KEY `FK_user_authority_permission` (`authority`),
-  CONSTRAINT `FK_user_authority_permission` FOREIGN KEY (`authority`) REFERENCES `permission_kind` (`code`) ON DELETE CASCADE ON UPDATE CASCADE,
+  KEY `FK_user_authority_authority` (`authority`),
+  CONSTRAINT `FK_user_authority_authority` FOREIGN KEY (`authority`) REFERENCES `authority_kind` (`code`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_user_authority_user` FOREIGN KEY (`username`) REFERENCES `user` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Holds authorities granted to users';
 

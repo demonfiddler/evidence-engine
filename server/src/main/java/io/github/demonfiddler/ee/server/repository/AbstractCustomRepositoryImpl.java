@@ -67,7 +67,7 @@ abstract class AbstractCustomRepositoryImpl {
     }
 
     /**
-     * Defines a JPA named native query.
+     * Defines a JPA named native query. N.B. This method requires external synchronisation.
      * @param queryName The query name.
      * @param sql The native SQL.
      * @param resultClass The class that the query returns.

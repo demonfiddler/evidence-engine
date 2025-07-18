@@ -50,7 +50,7 @@ import DetailActions, { createDetailState, DetailMode } from "./detail-actions"
 import { toast } from "sonner"
 import { authorities } from "./authority-ui"
 import { useCallback, useContext, useMemo, useState } from "react"
-import { SecurityContext } from "@/lib/context"
+import useAuth from "@/hooks/use-auth"
 import { useFormContext } from "react-hook-form"
 import { UserFormFields } from "../validators/user"
 
@@ -70,12 +70,12 @@ export default function UserDetails(
     onFormAction: (command: SecurityFormAction, formValue: UserFormFields) => void
   }) {
 
-  const securityContext = useContext(SecurityContext)
+  const {hasAuthority} = useAuth()
   const form = useFormContext<UserFormFields>()
   const [mode, setMode] = useState<DetailMode>("view")
   const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
 
-  const state = useMemo(() => createDetailState(securityContext, mode), [securityContext, mode])
+  const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
   const { updating } = state
 
   const showingUsers = showUsersOrMembers == "users"
@@ -88,12 +88,12 @@ export default function UserDetails(
     const groupLabel = getRecordLabel("Group", group)
     if (showingUsers) {
       if (confirm(`Add user ${userLabel} to ${groupLabel}?`)) {
-        toast(`Adding user ${userLabel} to ${groupLabel} ...`)
+        toast.info(`Adding user ${userLabel} to ${groupLabel} ...`)
         onFormAction("add", form.getValues())
       }
     } else {
       if (confirm(`Remove user ${userLabel} from ${groupLabel}?`)) {
-        toast(`Removing user ${userLabel} to ${groupLabel} ...`)
+        toast.warning(`Removing user ${userLabel} to ${groupLabel} ...`)
         onFormAction("remove", form.getValues())
       }
     }

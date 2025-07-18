@@ -45,8 +45,10 @@ import io.github.demonfiddler.ee.common.util.StringUtils;
 import io.github.demonfiddler.ee.server.model.Claim;
 import io.github.demonfiddler.ee.server.model.Country;
 import io.github.demonfiddler.ee.server.model.Declaration;
+// import io.github.demonfiddler.ee.server.model.Group;
 import io.github.demonfiddler.ee.server.model.EntityKind;
 import io.github.demonfiddler.ee.server.model.EntityLink;
+import io.github.demonfiddler.ee.server.model.Group;
 import io.github.demonfiddler.ee.server.model.IBaseEntity;
 import io.github.demonfiddler.ee.server.model.IBaseEntityPage;
 import io.github.demonfiddler.ee.server.model.ITrackedEntity;
@@ -80,6 +82,7 @@ public class EntityUtils {
 		ENTITY_KINDS.put(Claim.class, EntityKind.CLA);
 		ENTITY_KINDS.put(Country.class, EntityKind.COU);
 		ENTITY_KINDS.put(Declaration.class, EntityKind.DEC);
+		ENTITY_KINDS.put(Group.class, EntityKind.GRP);
 		ENTITY_KINDS.put(Journal.class, EntityKind.JOU);
 		ENTITY_KINDS.put(EntityLink.class, EntityKind.LNK);
 		ENTITY_KINDS.put(Person.class, EntityKind.PER);
@@ -92,6 +95,7 @@ public class EntityUtils {
 		ENTITY_NAMES.put(Claim.class, "claim");
 		ENTITY_NAMES.put(Country.class, "country");
 		ENTITY_NAMES.put(Declaration.class, "declaration");
+		ENTITY_NAMES.put(Group.class, "group");
 		ENTITY_NAMES.put(Journal.class, "journal");
 		ENTITY_NAMES.put(EntityLink.class, "entity_link");
 		ENTITY_NAMES.put(Person.class, "person");

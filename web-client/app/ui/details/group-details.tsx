@@ -34,22 +34,22 @@ import StandardDetails from "./standard-details"
 import { Checkbox } from "@/components/ui/checkbox"
 import DetailActions, { createDetailState, DetailMode } from "./detail-actions"
 import { FormAction } from "@/lib/utils"
-import { useContext, useMemo, useState } from "react"
-import { SecurityContext } from "@/lib/context"
+import { useMemo, useState } from "react"
 import { useFormContext } from "react-hook-form"
 import { authorities } from "./authority-ui"
 import { GroupFormFields } from "../validators/group"
+import useAuth from "@/hooks/use-auth"
 
 export default function GroupDetails(
   { record, onFormAction }:
   { record?: Group; onFormAction: (command: FormAction, formValue: GroupFormFields) => void }) {
 
-  const securityContext = useContext(SecurityContext)
+  const {hasAuthority} = useAuth()
   const form = useFormContext<GroupFormFields>()
   const [mode, setMode] = useState<DetailMode>("view")
   const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
 
-  const state = useMemo(() => createDetailState(securityContext, mode), [securityContext, mode])
+  const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
   const { updating } = state
 
   return (

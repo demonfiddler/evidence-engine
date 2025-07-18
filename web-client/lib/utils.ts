@@ -20,7 +20,6 @@
 import Claim from "@/app/model/Claim"
 import Declaration from "@/app/model/Declaration"
 import Group from "@/app/model/Group"
-import IPage from "@/app/model/IPage"
 import ITrackedEntity from "@/app/model/ITrackedEntity"
 import Journal from "@/app/model/Journal"
 import Log from "@/app/model/Log"
@@ -29,6 +28,7 @@ import Publication from "@/app/model/Publication"
 import Publisher from "@/app/model/Publisher"
 import Quotation from "@/app/model/Quotation"
 import RecordKind from "@/app/model/RecordKind"
+import { StatusKind } from "@/app/model/schema"
 import Topic from "@/app/model/Topic"
 import User from "@/app/model/User"
 import { clsx, type ClassValue } from "clsx"
@@ -114,12 +114,17 @@ export function getRecordLabel(recordKind: RecordKind | undefined, record?: ITra
   }
 }
 
-export function setTopicFields(path: string, parentId?: string, topics?: Topic[]) {
-  if (topics) {
-    for (let t of topics) {
-      t.path = (path.length > 0 ? path + " > " : path) + t.label;
-      t.parentId = parentId;
-      setTopicFields(t.path, t.id, t.children)
+export function setTopicFields(path: string, parentId?: string, inTopics?: Topic[], outTopics?: Topic[]) {
+  if (inTopics) {
+    for (let inTopic of inTopics) {
+      const outTopic = {
+        ...inTopic
+      }
+      outTopic.path = (path.length > 0 ? path + " > " : path) + inTopic.label
+      outTopic.parentId = parentId
+      outTopic.children = []
+      setTopicFields(outTopic.path, inTopic.id, inTopic.children, outTopic.children)
+      outTopics?.push(outTopic)
     }
   }
 }
@@ -137,7 +142,20 @@ type MutationAction<T, F> = {
   command: T
   value: F
 }
-export type { Action, MutationAction }
+
+type PageSettings = {
+  pageIndex: number
+  pageSize: number
+}
+
+type SearchSettings = {
+  status?: StatusKind
+  text?: string
+  advancedSearch: boolean
+  showOnlyLinkedRecords: boolean
+}
+
+export type { Action, MutationAction, PageSettings, SearchSettings }
 
 export function toDate(value?: string | Date | null) {
   return value instanceof Date

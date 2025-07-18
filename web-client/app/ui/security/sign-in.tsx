@@ -19,10 +19,10 @@
 
 'use client'
 
-import Authority from "@/app/model/Authority";
+import useAuth from "@/hooks/use-auth"
 import { Button } from "@/components/ui/button"
-import { ChangeEvent, useContext, useState } from "react";
-import { cn } from "@/lib/utils";
+import { useState } from "react"
+import { cn } from "@/lib/utils"
 import {
   Dialog,
   DialogContent,
@@ -33,9 +33,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { SecurityContext } from "@/lib/context";
-import { ShieldExclamationIcon, UserIcon } from '@heroicons/react/24/outline';
+import { ShieldExclamationIcon, UserIcon } from '@heroicons/react/24/outline'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,104 +44,154 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
- 
+import { FormProvider, useForm } from "react-hook-form"
+import { FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import z from "zod/v4"
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
+import { Checkbox } from "@/components/ui/checkbox"
+import Spinner from "../misc/spinner"
+import { toast } from "sonner"
+
+const SignInFormSchema = z.object({
+  username: z.string().min(3).max(50),
+  password: z.string().min(6).max(20),
+  rememberMe: z.boolean()
+})
+
+type SignInFormFields = z.infer<typeof SignInFormSchema>
+
+const graphqlEndpointUrl = new URL(process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL ?? '')
+
+function getUrl(path: string, query?: string, fragment?: string) {
+  const url = new URL(path, graphqlEndpointUrl)
+  if (query)
+    url.search = query
+  if (fragment)
+    url.hash = fragment
+  return url
+}
+
 export default function SignIn({className} : {className: string}) {
-  const securityContext = useContext(SecurityContext)
+  const {loading, user, login, logout} = useAuth()
   const [signInOpen, setSignInOpen] = useState(false)
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-
-  function authenticate() {
-    if (!["root", "admin", "creator", "editor", "linker", "user"].includes(username) || password != "password") {
-      setError("Invalid credentials - please try again.")
-      return
-    }
-    let a : Authority[]
-    switch (username) {
-      case "root":
-      case "admin":
-        a = ["ADM", "CRE", "DEL", "LNK", "REA", "UPD", "UPL"]
-        break;
-      case "creator":
-        a = ["CRE", "REA"]
-        break;
-      case "editor":
-        a = ["LNK", "REA", "UPD", "UPL"]
-        break;
-      case "linker":
-        a = ["LNK", "REA"]
-        break;
-      case "user":
-        a = ["REA"]
-        break;
-      default:
-        throw new Error(`Unknown username '${username}'`)
-    }
-    const user = {
-      username: username,
-      authorities: a
-    }
-    securityContext.setSecurityContext(securityContext, user)
-    setUsername("")
-    setPassword("")
-    setError("")
-    setSignInOpen(false)
-  }
-
-  function handleUsernameChange(e: ChangeEvent<HTMLInputElement>): void {
-    setUsername(e.target.value)
-  }
-
-  function handlePasswordChange(e: ChangeEvent<HTMLInputElement>): void {
-    setPassword(e.target.value)
-  }
+  const [formValue] = useState({
+    username: '',
+    password: '',
+    rememberMe: true
+  })
+  const [error, setError] = useState('')
+  const form = useForm<SignInFormFields>({
+    resolver: standardSchemaResolver(SignInFormSchema),
+    mode: "onChange",
+    values: formValue,
+  })
 
   function handleProfile(event: Event): void {
-    alert("handleProfile() not implemented.");
+    toast.warning("handleProfile() not yet implemented.");
   }
 
   function handleSettings(event: Event): void {
-    alert("handleSettings() not implemented.");
+    toast.warning("handleSettings() not yet implemented.");
   }
 
   function handleLogout(event: Event): void {
-    securityContext.setSecurityContext(securityContext)
+    logout()
+  }
+
+  function authenticate() {
+    const {username, password, rememberMe} = form.getValues()
+    login(username, password, rememberMe)
+      .then(
+        () => {setError(''); setSignInOpen(false)},
+        (reason) => setError(`Login failed: ${reason}`))
   }
 
   return (
     <div className={cn("flex flex-row items-center", className)}>
       <Dialog open={signInOpen} onOpenChange={setSignInOpen}>
         <DialogTrigger asChild>
-          <Button variant="ghost" className="text-md" disabled={!!securityContext.username}>{securityContext.username ?? "Sign in"}</Button>
+          <Button variant="ghost" className="text-md" disabled={!!user}>{user?.username ?? "Sign in"}</Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Sign in</DialogTitle>
-            <DialogDescription>
-              <ShieldExclamationIcon className="w-6 h-6 inline" />
-              &nbsp;Provide your credentials then click 'Sign in'.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid grid-cols-1 gap-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="username" className="text-right">Username</Label>
-              <Input id="username" className="col-span-3" value={username} onChange={handleUsernameChange} />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="password" className="text-right">Password</Label>
-              <Input id="password" type="password" className="col-span-3" value={password} onChange={handlePasswordChange} />
-            </div>
-            <p className="col-span-1 text-red-500">{error}</p>
-          </div>
-          <DialogFooter>
-            <Button disabled={!username || !password} onClick={authenticate}>Sign in</Button>
-          </DialogFooter>
+          <Spinner loading={loading} label="Signing in..." className="absolute inset-0 bg-black/20 z-50" />
+          <FormProvider {...form}>
+            <form method="post" action={getUrl("/login").toString()}>
+              <DialogHeader>
+                <DialogTitle>Sign in</DialogTitle>
+                <DialogDescription>
+                  <ShieldExclamationIcon className="w-6 h-6 inline" />
+                  &nbsp;Provide your credentials then click 'Sign in'.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 items-center gap-4">
+                  <FormField
+                    control={form.control}
+                    name="username"
+                    render={({field}) => (
+                      <FormItem>
+                        <FormLabel>Username</FormLabel>
+                        <Input
+                          id="username"
+                          className="col-span-3"
+                          {...field}
+                        />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="grid grid-cols-1 items-center gap-4">
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({field}) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <Input
+                          id="password"
+                          type="password"
+                          className="col-span-3"
+                          {...field}
+                        />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <FormField
+                  control={form.control}
+                  name="rememberMe"
+                  render={({field}) => (
+                    <FormItem>
+                      <FormLabel>Remember me on this computer</FormLabel>
+                        <Checkbox
+                          id="rememberMe"
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <p className="col-span-1 text-red-500">{error}</p>
+              </div>
+              <DialogFooter>
+                <Button
+                  type="button"
+                  disabled={!form.formState.isValid}
+                  onClick={authenticate}
+                >
+                  Sign in
+                </Button>
+              </DialogFooter>
+            </form>
+          </FormProvider>
         </DialogContent>
       </Dialog>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="w-8 h-8 flex items-center justify-center" disabled={!securityContext.username}>
+          <Button variant="ghost" className="w-8 h-8 flex items-center justify-center" disabled={!user}>
             <UserIcon className="size-6 stroke-2" />
           </Button>
         </DropdownMenuTrigger>

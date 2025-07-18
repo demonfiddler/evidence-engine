@@ -19,7 +19,7 @@
 
 package io.github.demonfiddler.ee.server.model;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
@@ -71,7 +71,7 @@ public class Topic extends AbstractLinkableEntity {
 	 */
 	@GraphQLNonScalar(fieldName = "children", graphQLTypeSimpleName = "Topic", javaClass = Topic.class, listDepth = 1)
 	@OneToMany(mappedBy = "parent", /*cascade=CascadeType.ALL,*/ fetch = FetchType.LAZY)
-	List<Topic> children = Collections.emptyList();
+	List<Topic> children = new ArrayList<>();
 
 	@Override
 	public String getEntityKind() {

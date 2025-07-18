@@ -23,7 +23,7 @@ __DirectiveLocation,io.github.demonfiddler.ee.client.__DirectiveLocation
 ISSN,java.lang.String
 TopicPage,io.github.demonfiddler.ee.client.TopicPage
 Publication,io.github.demonfiddler.ee.client.Publication
-PermissionKind,io.github.demonfiddler.ee.client.PermissionKind
+AuthorityKind,io.github.demonfiddler.ee.client.AuthorityKind
 ITrackedEntity,io.github.demonfiddler.ee.client.ITrackedEntity
 IBaseEntity,io.github.demonfiddler.ee.client.IBaseEntity
 SortInput,io.github.demonfiddler.ee.client.SortInput
@@ -40,6 +40,7 @@ EntityLinkInput,io.github.demonfiddler.ee.client.EntityLinkInput
 __TypeKind,io.github.demonfiddler.ee.client.__TypeKind
 LinkableEntityQueryFilter,io.github.demonfiddler.ee.client.LinkableEntityQueryFilter
 User,io.github.demonfiddler.ee.client.User
+Group,io.github.demonfiddler.ee.client.Group
 __Type,io.github.demonfiddler.ee.client.__Type
 LogPage,io.github.demonfiddler.ee.client.LogPage
 EntityLinkPage,io.github.demonfiddler.ee.client.EntityLinkPage
@@ -64,8 +65,10 @@ __Schema,io.github.demonfiddler.ee.client.__Schema
 DeclarationInput,io.github.demonfiddler.ee.client.DeclarationInput
 PersonPage,io.github.demonfiddler.ee.client.PersonPage
 UserInput,io.github.demonfiddler.ee.client.UserInput
+GroupInput,io.github.demonfiddler.ee.client.GroupInput
 Publisher,io.github.demonfiddler.ee.client.Publisher
 UserPage,io.github.demonfiddler.ee.client.UserPage
+GroupPage,io.github.demonfiddler.ee.client.GroupPage
 Date,java.time.LocalDate
 ILinkableEntity,io.github.demonfiddler.ee.client.ILinkableEntity
 EntityLink,io.github.demonfiddler.ee.client.EntityLink

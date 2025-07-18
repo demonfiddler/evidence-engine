@@ -20,7 +20,7 @@
 'use client'
 
 // import type { Metadata } from "next"
-import { useCallback, useContext, useMemo, useState } from "react"
+import { useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { useImmerReducer } from "use-immer"
 import { ChatBubbleBottomCenterTextIcon } from '@heroicons/react/24/outline'
 
@@ -28,14 +28,17 @@ import QuotationDetails from "@/app/ui/details/quotation-details"
 import DataTable from "@/app/ui/data-table/data-table"
 
 import { columns, columnVisibility } from "@/app/ui/tables/quotation-columns"
-import rawPage from "@/data/quotations.json" assert {type: 'json'}
 import IPage from "@/app/model/IPage"
 import Quotation from "@/app/model/Quotation"
-import { SelectedRecordsContext } from "@/lib/context"
+import { MasterLinkContext, SelectedRecordsContext } from "@/lib/context"
 import { useForm, FormProvider } from "react-hook-form"
 import { QuotationSchema, QuotationFormFields } from "@/app/ui/validators/quotation";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
-import { MutationAction, FormAction, toDate, toIsoString } from "@/lib/utils"
+import { MutationAction, FormAction, toDate, toIsoString, SearchSettings } from "@/lib/utils"
+import { useQuery } from "@apollo/client"
+import { QUERY_QUOTATIONS } from "@/lib/graphql-queries"
+import { LinkableEntityQueryFilter } from "@/app/model/schema"
+import { toast } from "sonner"
 
 // export const metadata: Metadata = {
 //   title: "Quotations",
@@ -63,9 +66,12 @@ function copyFromForm(quotation: Quotation, formValue: QuotationFormFields) {
 }
 
 export default function Quotations() {
+  const masterLinkContext = useContext(MasterLinkContext)
   const selectedRecordsContext = useContext(SelectedRecordsContext)
+  const [search, setSearch] = useState<SearchSettings>({advancedSearch: false, showOnlyLinkedRecords: false} as SearchSettings)
   const [selectedRecordId, setSelectedRecordId] = useState<string|undefined>(selectedRecordsContext.Quotation?.id)
-  const pageReducer = useCallback((draft: IPage<Quotation>, action: MutationAction<FormAction, QuotationFormFields>) => {
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+/*  const pageReducer = useCallback((draft: IPage<Quotation>, action: MutationAction<FormAction, QuotationFormFields>) => {
     const idx = draft.content.findIndex(c => c.id == selectedRecordId)
     switch (action.command) {
       case "create":
@@ -90,9 +96,70 @@ export default function Quotations() {
           draft.content.splice(idx, 1)
         break
     }
-  }, [selectedRecordId, setSelectedRecordId])
-  const [page, pageDispatch] = useImmerReducer(pageReducer, rawPage as unknown as IPage<Quotation>)
-  const getSelectedRecord = useCallback((id?: string) => page.content.find(r => r.id == id), [page])
+  }, [selectedRecordId, setSelectedRecordId])*/
+  const filter = useMemo(() => {
+    const filter: LinkableEntityQueryFilter = {
+      status: search.status ? [search.status] : undefined,
+      text: search.text,
+    }
+    if (search.text)
+      filter.advancedSearch = search.advancedSearch
+    if (search.showOnlyLinkedRecords) {
+      if (masterLinkContext.masterTopicId) {
+        filter.topicId = masterLinkContext.masterTopicId
+        filter.recursive = true
+      }
+      if (masterLinkContext.masterRecordId) {
+        switch (masterLinkContext.masterRecordKind) {
+          case "Claim":
+          case "Declaration":
+            filter.fromEntityId = masterLinkContext.masterRecordId
+            break
+          case "Person":
+          case "Publication":
+            filter.toEntityId = masterLinkContext.masterRecordId
+            break
+        }
+      }
+    }
+    console.log(`Quotations effect: filter = ${JSON.stringify(filter)}`)
+    return filter
+  }, [search, masterLinkContext])
+
+  const pageSort = useMemo(() => {
+    const pageSort = {
+      pageNumber: pagination.pageIndex,
+      pageSize: pagination.pageSize
+    }
+    console.log(`Quotations effect: pageSort = ${JSON.stringify(pageSort)}`)
+    return pageSort
+  }, [pagination])
+
+  const result = useQuery(
+    QUERY_QUOTATIONS,
+    {
+      variables: {
+        filter,
+        pageSort
+      },
+    }
+  )
+
+  // Whenever filter or pagination changes, ask Apollo to refetch
+  useEffect(() => {
+    console.log(`Quotations effect: search = ${JSON.stringify(search)}`)
+    result.refetch({
+      filter,
+      pageSort
+    });
+  }, [filter, pageSort]);
+
+  // console.log(`result.loading = ${result.loading}, result.error = ${JSON.stringify(result.error)}, result.data = ${JSON.stringify(result.data)}`)
+  // console.log(`result.loading = ${result.loading}, result.error = ${JSON.stringify(result.error)}`)
+  const page = result.data?.quotations as IPage<Quotation>
+
+  // const [page, pageDispatch] = useImmerReducer(pageReducer, rawPage as unknown as IPage<Quotation>)
+  const getSelectedRecord = useCallback((id?: string) => page?.content.find(r => r.id == id), [page])
   const selectedRecord = getSelectedRecord(selectedRecordId)
   const origFormValue = useMemo(() => copyToForm(selectedRecord), [selectedRecord])
   const form = useForm<QuotationFormFields>({
@@ -102,23 +169,34 @@ export default function Quotations() {
   })
 
   const handleFormAction = useCallback((command: FormAction, formValue: QuotationFormFields) => {
+    // console.log(`Quotations.handleFormAction: command = ${command}, mode = ${mode}`)
     switch (command) {
       case "create":
-      case "update":
-      case "delete":
-        pageDispatch({command: command, value: formValue})
+        // TODO: invoke mutation: createQuotation
         break
+      case "update":
+        // TODO: invoke mutation: updateQuotation
+        break
+      case "delete":
+        // TODO: invoke mutation: deleteQuotation
+        break
+        // OLD: pageDispatch({command: command, value: formValue})
       case "reset":
-        form.reset(copyToForm(selectedRecord))
+        form.reset(origFormValue)
         break
     }
-  }, [form, pageDispatch, selectedRecord])
+  }, [form, /*pageDispatch, */selectedRecord])
 
   const handleRowSelectionChange = useCallback((recordId?: string) => {
     setSelectedRecordId(recordId)
     const quotation = getSelectedRecord(recordId)
     form.reset(copyToForm(quotation))
   }, [setSelectedRecordId, getSelectedRecord, form])
+
+  if (result.error) {
+    toast.error(`Fetch error:\n\n${JSON.stringify(result.error)}`)
+    console.error(result.error)
+  }
 
   return (
     <main className="flex flex-col items-start m-4 gap-4">
@@ -132,11 +210,16 @@ export default function Quotations() {
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
+        loading={result.loading}
+        pagination={pagination}
+        onPaginationChange={setPagination}
+        search={search}
+        onSearchChange={setSearch}
         onRowSelectionChange={handleRowSelectionChange}
       />
       <FormProvider {...form}>
         <QuotationDetails record={selectedRecord} onFormAction={handleFormAction} />
       </FormProvider>
     </main>
-  );
+  )
 }

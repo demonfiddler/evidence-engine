@@ -25,7 +25,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.graphql_java_generator.annotation.GraphQLDirective;
 import com.graphql_java_generator.annotation.GraphQLInputParameters;
+import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
 
@@ -82,14 +84,23 @@ public class User extends AbstractTrackedEntity {
 	String password;
 
 	/**
-	 * The permissions granted to the user.
+	 * The authorities granted to the user.
 	 */
-	@JsonProperty("permissions")
+	@JsonProperty("authorities")
 	@JsonDeserialize(using = CustomJacksonDeserializers.ListString.class)
-	@GraphQLInputParameters(names = { "format" }, types = { "FormatKind" }, mandatories = { false }, listDepths = { 0 },
-		itemsMandatory = { false })
-	@GraphQLScalar(fieldName = "permissions", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 1)
-	List<String> permissions;
+	@GraphQLInputParameters(names = {"aggregation", "format"}, types = {"AggregationKind", "FormatKind"}, mandatories = {false, false}, listDepths = {0, 0}, itemsMandatory = {false, false})
+	@GraphQLScalar( fieldName = "authorities", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 1)
+	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	List<String> authorities;
+
+	/**
+	 * The groups of which the user is a member.
+	 */
+	@JsonProperty("groups")
+	@JsonDeserialize(using = CustomJacksonDeserializers.ListGroup.class)
+	@GraphQLNonScalar( fieldName = "groups", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 1)
+	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	List<Group> groups;
 
 	/**
 	 * The (mutable?) unique user name (user-assigned).
@@ -174,21 +185,34 @@ public class User extends AbstractTrackedEntity {
 	}
 
 	/**
-	 * The permissions granted to the user.
+	 * The authorities granted to the user.
 	 */
-	@JsonProperty("permissions")
-	public void setPermissions(List<String> permissions) {
-		this.permissions = permissions;
+	@JsonProperty("authorities")
+	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	public void setAuthorities(List<String> authorities) {
+		this.authorities = authorities;
 	}
 
 	/**
-	 * The permissions granted to the user.
+	 * The authorities granted to the user.
 	 */
-	@JsonProperty("permissions")
-	public List<String> getPermissions() {
-		return this.permissions;
+	@JsonProperty("authorities")
+	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	public List<String> getAuthorities() {
+		return this.authorities;
 	}
 
+	@JsonProperty("groups")
+	public void setGroups(List<Group> groups) {
+		this.groups = groups;
+	}
+
+	@JsonProperty("groups")
+	public List<Group> getGroups() {
+		return this.groups;
+	}
+
+	@Override
 	public String toString() {
 		return "User {" //
 			+ "id: " + this.id //
@@ -217,7 +241,9 @@ public class User extends AbstractTrackedEntity {
 			+ ", " //
 			+ "password: " + this.password //
 			+ ", " //
-			+ "permissions: " + this.permissions //
+			+ "authorities: " + this.authorities //
+			+ ", " //$NON-NLS-1$
+			+ "groups: " + this.groups //$NON-NLS-1$
 			+ ", " //
 			+ "__typename: " + this.__typename //
 			+ "}";
@@ -232,7 +258,8 @@ public class User extends AbstractTrackedEntity {
 		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
 		result = prime * result + ((password == null) ? 0 : password.hashCode());
-		result = prime * result + ((permissions == null) ? 0 : permissions.hashCode());
+		result = prime * result + ((authorities == null) ? 0 : authorities.hashCode());
+		result = prime * result + ((groups == null) ? 0 : groups.hashCode());
 		return result;
 	}
 
@@ -266,10 +293,15 @@ public class User extends AbstractTrackedEntity {
 				return false;
 		} else if (!password.equals(other.password))
 			return false;
-		if (permissions == null) {
-			if (other.permissions != null)
+		if (authorities == null) {
+			if (other.authorities != null)
 				return false;
-		} else if (!permissions.equals(other.permissions))
+		} else if (!authorities.equals(other.authorities))
+			return false;
+		if (groups == null) {
+			if (other.groups != null)
+				return false;
+		} else if (!groups.equals(other.groups))
 			return false;
 		return true;
 	}
@@ -289,7 +321,8 @@ public class User extends AbstractTrackedEntity {
 		private String lastName;
 		private String email;
 		private String password;
-		private List<String> permissions;
+		private List<String> authorities;
+		private List<Group> groups;
 
 		/**
 		 * The (mutable?) unique user name (user-assigned).
@@ -333,10 +366,18 @@ public class User extends AbstractTrackedEntity {
 		}
 
 		/**
-		 * The permissions granted to the user.
+		 * The authorities granted to the user.
 		 */
-		public Builder withPermissions(List<String> permissionsParam) {
-			this.permissions = permissionsParam;
+		public Builder withAuthorities(List<String> authoritiesParam) {
+			this.authorities = authoritiesParam;
+			return this;
+		}
+
+		/**
+		 * The groups of which the user is a member.
+		 */
+		public Builder withGroups(List<Group> groupsParam) {
+			this.groups = groupsParam;
 			return this;
 		}
 
@@ -348,7 +389,8 @@ public class User extends AbstractTrackedEntity {
 			_object.setLastName(this.lastName);
 			_object.setEmail(this.email);
 			_object.setPassword(this.password);
-			_object.setPermissions(this.permissions);
+			_object.setAuthorities(this.authorities);
+			_object.setGroups(this.groups);
 			return _object;
 		}
 

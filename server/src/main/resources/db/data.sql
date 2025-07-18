@@ -278,6 +278,7 @@ INSERT INTO "entity_kind" ("code", "label") VALUES
 	('CLA', 'Claim'),
 	('COU', 'Country'),
 	('DEC', 'Declaration'),
+	('GRP', 'Group'),
 	('JOU', 'Journal'),
 	('LNK', 'EntityLink'),
 	('PER', 'Person'),
@@ -287,7 +288,7 @@ INSERT INTO "entity_kind" ("code", "label") VALUES
 	('TOP', 'Topic'),
 	('USR', 'User');
 
-INSERT INTO "permission_kind" ("code", "label", "description") VALUES
+INSERT INTO "authority_kind" ("code", "label", "description") VALUES
 	('ADM', 'Administer', 'Use administrative functions'),
 	('CRE', 'Create', 'Insert new record'),
 	('DEL', 'Delete', 'Delete existing record'),
@@ -374,31 +375,32 @@ INSERT INTO "user" ("id", "username", "first_name", "last_name", "country_code",
 	(@root_id, 'root', 'Root', 'User', 'GB', '{bcrypt}$2a$10$xL02gfgl.dEJBRzsgics5.fglRXyl.iQBNjfyXhCU14UQf2MJUHFK');
 UPDATE "entity" SET "created_by_user_id" = @root_id WHERE "id" = @root_id;
 
-INSERT INTO "entity" ("dtype", "status", "created_by_user_id") VALUES ('USR', 'PUB', NULL);
+INSERT INTO "entity" ("dtype", "status", "created_by_user_id") VALUES ('USR', 'PUB', @root_id);
 SET @admin_id = @root_id + 1;
 INSERT INTO "user" ("id", "username", "first_name", "last_name", "country_code", "password") VALUES
 	(@admin_id, 'admin', 'Administrative', 'User', 'GB', '{bcrypt}$2a$10$y9JB/y3fdX7.PUsOEadAi.gErBWCd.8oGn8IEE0KWjURLZEJ20GQi');
-UPDATE "entity" SET "created_by_user_id" = @root_id WHERE "id" = @admin_id;
 
-INSERT INTO "entity" ("dtype", "status", "created_by_user_id") VALUES ('USR', 'PUB', NULL);
+INSERT INTO "entity" ("dtype", "status", "created_by_user_id") VALUES ('USR', 'PUB', @root_id);
 SET @editor_id = @admin_id + 1;
 INSERT INTO "user" ("id", "username", "first_name", "last_name", "country_code", "password") VALUES
 	(@editor_id, 'editor', 'Editing', 'User', 'GB', '{bcrypt}$2a$10$Yjve/6JOwx4vbmpCv7GXO.VAqSWaO8jgxjUXYh6H/fqaKq9WOaMbm');
-UPDATE "entity" SET "created_by_user_id" = @root_id WHERE "id" = @editor_id;
 
-INSERT INTO "entity" ("dtype", "status", "created_by_user_id") VALUES ('USR', 'PUB', NULL);
+INSERT INTO "entity" ("dtype", "status", "created_by_user_id") VALUES ('USR', 'PUB', @root_id);
 SET @user_id = @editor_id + 1;
 INSERT INTO "user" ("id", "username", "first_name", "last_name", "country_code", "password") VALUES
 	(@user_id, 'user', 'Ordinary', 'User', 'GB', '{bcrypt}$2a$10$Yjve/6JOwx4vbmpCv7GXO.VAqSWaO8jgxjUXYh6H/fqaKq9WOaMbm');
-UPDATE "entity" SET "created_by_user_id" = @root_id WHERE "id" = @user_id;
 
-INSERT INTO "group" ("group_name") VALUES
-	('Administrators'),
-	('Editors'),
-	('Users');
-SET @administrators_id = (SELECT "id" FROM "group" WHERE "group_name" = 'Administrators');
-SET @editors_id = (SELECT "id" FROM "group" WHERE "group_name" = 'Editors');
-SET @users_id = (SELECT "id" FROM "group" WHERE "group_name" = 'Users');
+INSERT INTO "entity" ("dtype", "status", "created_by_user_id") VALUES ('GRP', 'PUB', @root_id);
+SET @administrators_id = (SELECT "id" FROM "entity" WHERE "dtype" = 'GRP');
+INSERT INTO "group" ("id", "groupname") VALUES (@administrators_id, 'Administrators'),
+
+INSERT INTO "entity" ("dtype", "status", "created_by_user_id") VALUES ('GRP', 'PUB', @root_id);
+SET @editors_id = @administrators_id + 1
+INSERT INTO "group" ("id", "groupname") VALUES (@editors_id, 'Editors'),
+
+INSERT INTO "entity" ("dtype", "status", "created_by_user_id") VALUES ('GRP', 'PUB', @root_id);
+SET @users_id = @editors_id + 1
+INSERT INTO "group" ("id", "groupname") VALUES (@users_id, 'Users'),
 
 INSERT INTO "group_user" ("group_id", "username") VALUES
 	(@administrators_id,'root'),

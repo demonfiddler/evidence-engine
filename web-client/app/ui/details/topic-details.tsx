@@ -43,17 +43,13 @@ import StandardDetails from "./standard-details"
 import { FormAction } from "@/lib/utils"
 import DetailActions, { createDetailState, DetailMode } from "./detail-actions"
 import { useContext, useMemo, useState } from "react"
-import { SecurityContext } from "@/lib/context"
+import useAuth from "@/hooks/use-auth"
 import { useFormContext } from "react-hook-form"
 import { TopicFormFields } from "../validators/topic"
 
 function flatten(topics: Topic[], result: Topic[]) : Topic[] {
   for (let topic of topics) {
-    result.push({
-      id: topic.id,
-      parentId: topic.parentId,
-      path: topic.path
-    })
+    result.push(topic)
     if (topic.children)
       flatten(topic.children, result)
   }
@@ -64,18 +60,21 @@ export default function TopicDetails(
   { record, topics, onFormAction }:
   { record?: Topic; topics: Topic[], onFormAction: (command: FormAction, formValue: TopicFormFields) => void }) {
 
-  const securityContext = useContext(SecurityContext)
+  const {hasAuthority} = useAuth()
   const form = useFormContext()
   const [mode, setMode] = useState<DetailMode>("view")
   const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
 
-  const state = useMemo(() => createDetailState(securityContext, mode), [securityContext, mode])
+  const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
   const { updating } = state
 
-  const flatTopics = flatten(topics, [])
-  // FIXME: A topic can't be its own ancestor
-  const topicIdx = flatTopics.findIndex(t => t.id == record?.id)
-  flatTopics.splice(topicIdx, 1)
+  const flatTopics = useMemo(() => {
+    const flattened = flatten(topics, /*"", */[])
+    // FIXME: A topic can't be its own ancestor
+    const topicIdx = flattened.findIndex(t => t.id == record?.id)
+    flattened.splice(topicIdx, 1)
+    return flattened
+  }, [topics, record])
 
   return (
     <fieldset className="border shadow-lg rounded-md w-2/3">

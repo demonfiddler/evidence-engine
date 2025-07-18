@@ -40,7 +40,7 @@ import DetailActions, { createDetailState, DetailMode } from "./detail-actions";
 import { useContext, useMemo, useState } from "react";
 import { FormAction } from "@/lib/utils";
 import { useFormContext } from "react-hook-form"
-import { SecurityContext } from "@/lib/context";
+import useAuth from "@/hooks/use-auth"
 import { PersonFormFields } from "../validators/person";
 
 const countries = rawCountries as unknown as Country[]
@@ -50,11 +50,11 @@ export default function PersonDetails(
   { record?: Person; onFormAction: (command: FormAction, formValue: PersonFormFields) => void }) {
 
   const form = useFormContext()
-  const securityContext = useContext(SecurityContext)
+  const {hasAuthority} = useAuth()
   const [mode, setMode] = useState<DetailMode>("view")
   const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
 
-  const state = useMemo(() => createDetailState(securityContext, mode), [securityContext, mode])
+  const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
   const { updating } = state
 
   return (

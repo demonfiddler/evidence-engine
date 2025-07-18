@@ -18,7 +18,6 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 import Authority from "./Authority";
-import IPage from "./IPage";
 import ITrackedEntity from "./ITrackedEntity";
 import User from "./User";
 
@@ -30,5 +29,5 @@ export default interface Group extends ITrackedEntity {
   /** The authorities granted to the group. */
   authorities?: Authority[]
   /** The group members. */
-  members?: IPage<User>
+  members?: User[]
 }

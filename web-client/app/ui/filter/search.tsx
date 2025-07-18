@@ -21,36 +21,36 @@
 
 import { Input } from "@/components/ui/input";
 import { SearchIcon } from "@/app/ui/icons"
-import { ChangeEvent, KeyboardEvent, useState } from "react";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useDebounceValue } from "usehooks-ts";
+import { useEffect, useState } from "react";
 
-export default function Search() {
-  const [ value, setValue ] = useState("")
+export default function Search(
+  {value, onChangeValue} :
+  {value?: string, onChangeValue: (value?: string) => void}
+) {
+  const [text, setText] = useState(value)
+  const [debouncedText, setDebouncedText] = useDebounceValue(value, 500)
+  useEffect(() => onChangeValue(debouncedText), [debouncedText])
 
-  function clear() {
-    setValue("")
-  }
-
-  function onKeyDown(e: KeyboardEvent<HTMLInputElement>) {
-    if (e.code == "Escape")
-      clear();
-  }
-
-  function onChange(e : ChangeEvent<HTMLInputElement>) {
-    console.log(e.target.value)
-    setValue(e.target.value)
+  function onChangeText(s?: string) {
+    setText(s)
+    setDebouncedText(s)
   }
 
   return (
     <div className="flex flex-row items-center gap-2 px-2 pr-2 border rounded-md">
       <SearchIcon className="w-6 h-6" />
       <Input
-        type="search"
+        // type="search"
         className="grow border-0 border-transparent"
         placeholder="Search..."
         title="Case-insensitive match against all text fields"
-        value={value}
-        onKeyDown={onKeyDown}
-        onChange={onChange} />
+        value={text ?? ''}
+        onKeyDown={(e) => e.code == "Escape" && onChangeText(undefined)}
+        onChange={(e) => onChangeText(e.target.value ?? undefined)}
+      />
+      <XMarkIcon className="w-5 h-5" onClick={() => onChangeText(undefined)} />
     </div>
   )
 }

@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 import io.github.demonfiddler.ee.server.model.DeclarationKind;
 import io.github.demonfiddler.ee.server.model.EntityKind;
 import io.github.demonfiddler.ee.server.model.FormatKind;
-import io.github.demonfiddler.ee.server.model.PermissionKind;
+import io.github.demonfiddler.ee.server.model.AuthorityKind;
 import io.github.demonfiddler.ee.server.model.PublicationKind;
 import io.github.demonfiddler.ee.server.model.StatusKind;
 import io.github.demonfiddler.ee.server.model.TransactionKind;
@@ -41,7 +41,7 @@ public class FormatUtils {
 
     private static final Map<DeclarationKind, String> DECLARATION_KIND_LONG = new HashMap<>();
     private static final Map<EntityKind, String> ENTITY_KIND_LONG = new HashMap<>();
-    private static final Map<PermissionKind, String> PERMISSION_KIND_LONG = new HashMap<>();
+    private static final Map<AuthorityKind, String> AUTHORITY_KIND_LONG = new HashMap<>();
     private static final Map<PublicationKind, String> PUBLICATION_KIND_LONG = new HashMap<>();
     private static final Map<StatusKind, String> STATUS_KIND_LONG = new HashMap<>();
     private static final Map<TransactionKind, String> TRANSACTION_KIND_LONG = new HashMap<>();
@@ -54,6 +54,7 @@ public class FormatUtils {
         ENTITY_KIND_LONG.put(EntityKind.CLA, "Claim");
         ENTITY_KIND_LONG.put(EntityKind.COU, "Country");
         ENTITY_KIND_LONG.put(EntityKind.DEC, "Declaration");
+        ENTITY_KIND_LONG.put(EntityKind.GRP, "Group");
         ENTITY_KIND_LONG.put(EntityKind.JOU, "Journal");
         ENTITY_KIND_LONG.put(EntityKind.LNK, "EntityLink");
         ENTITY_KIND_LONG.put(EntityKind.PBR, "Publisher");
@@ -63,13 +64,13 @@ public class FormatUtils {
         ENTITY_KIND_LONG.put(EntityKind.TOP, "Topic");
         ENTITY_KIND_LONG.put(EntityKind.USR, "User");
 
-        PERMISSION_KIND_LONG.put(PermissionKind.ADM, "Use administrative functions");
-        PERMISSION_KIND_LONG.put(PermissionKind.CRE, "Insert new record");
-        PERMISSION_KIND_LONG.put(PermissionKind.DEL, "Delete existing record");
-        PERMISSION_KIND_LONG.put(PermissionKind.LNK, "Link/unlink existing records");
-        PERMISSION_KIND_LONG.put(PermissionKind.REA, "Read existing record");
-        PERMISSION_KIND_LONG.put(PermissionKind.UPD, "Update existing record");
-        PERMISSION_KIND_LONG.put(PermissionKind.UPL, "Manage uploaded files");
+        AUTHORITY_KIND_LONG.put(AuthorityKind.ADM, "Use administrative functions");
+        AUTHORITY_KIND_LONG.put(AuthorityKind.CRE, "Insert new record");
+        AUTHORITY_KIND_LONG.put(AuthorityKind.DEL, "Delete existing record");
+        AUTHORITY_KIND_LONG.put(AuthorityKind.LNK, "Link/unlink existing records");
+        AUTHORITY_KIND_LONG.put(AuthorityKind.REA, "Read existing record");
+        AUTHORITY_KIND_LONG.put(AuthorityKind.UPD, "Update existing record");
+        AUTHORITY_KIND_LONG.put(AuthorityKind.UPL, "Manage uploaded files");
 
         PUBLICATION_KIND_LONG.put(PublicationKind.ABST, "Abstract");
         PUBLICATION_KIND_LONG.put(PublicationKind.ADVS, "Audiovisual material");
@@ -170,12 +171,12 @@ public class FormatUtils {
         return formatEnum(kind, format, ENTITY_KIND_LONG);
     }
 
-    public String formatPermissionKind(PermissionKind kind, FormatKind format) {
-        return formatEnum(kind, format, PERMISSION_KIND_LONG);
+    public String formatAuthorityKind(AuthorityKind kind, FormatKind format) {
+        return formatEnum(kind, format, AUTHORITY_KIND_LONG);
     }
 
-    public List<String> formatPermissionKinds(List<PermissionKind> permissions, FormatKind format) {
-        return formatEnums(permissions, format, PERMISSION_KIND_LONG);
+    public List<String> formatAuthorityKinds(List<AuthorityKind> authorities, FormatKind format) {
+        return formatEnums(authorities, format, AUTHORITY_KIND_LONG);
     }
 
     public String formatPublicationKind(PublicationKind kind, FormatKind format) {

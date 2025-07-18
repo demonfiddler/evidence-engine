@@ -26,7 +26,7 @@ DROP TABLE "status_kind";
 DROP TABLE "declaration_kind";
 DROP TABLE "publication_kind";
 DROP TABLE "transaction_kind";
-DROP TABLE "permission_kind";
+DROP TABLE "authority_kind";
 DROP TABLE "persistent_login";
 DROP TABLE "group_authority";
 DROP TABLE "user_authority";

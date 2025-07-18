@@ -174,7 +174,7 @@ public class Query {
 	 */
 	@GraphQLNonScalar(fieldName = "users", graphQLTypeSimpleName = "UserPage", javaClass = UserPage.class,
 		listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	UserPage users;
 
@@ -182,7 +182,7 @@ public class Query {
 	 * Returns a user given its identifier.
 	 */
 	@GraphQLNonScalar(fieldName = "userById", graphQLTypeSimpleName = "User", javaClass = User.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	User userById;
 
@@ -191,9 +191,32 @@ public class Query {
 	 */
 	@GraphQLNonScalar(fieldName = "userByUsername", graphQLTypeSimpleName = "User", javaClass = User.class,
 		listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	User userByUsername;
+
+	/**
+	 * Returns a paged list of groups.
+	 */
+	@GraphQLNonScalar( fieldName = "groups", graphQLTypeSimpleName = "GroupPage", javaClass = GroupPage.class, listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	GroupPage groups;
+
+
+	/**
+	 * Returns a group given its identifier.
+	 */
+	@GraphQLNonScalar( fieldName = "groupById", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	Group groupById;
+
+
+	/**
+	 * Returns a group given its groupname.
+	 */
+	@GraphQLNonScalar( fieldName = "groupByGroupname", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	Group groupByGroupname;
 
 	/**
 	 * Returns a paged list of claims.
@@ -478,7 +501,7 @@ public class Query {
 	/**
 	 * Returns a paged list of users.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public void setUsers(UserPage users) {
 		this.users = users;
@@ -487,7 +510,7 @@ public class Query {
 	/**
 	 * Returns a paged list of users.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public UserPage getUsers() {
 		return this.users;
@@ -496,7 +519,7 @@ public class Query {
 	/**
 	 * Returns a user given its identifier.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public void setUserById(User userById) {
 		this.userById = userById;
@@ -505,7 +528,7 @@ public class Query {
 	/**
 	 * Returns a user given its identifier.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public User getUserById() {
 		return this.userById;
@@ -514,7 +537,7 @@ public class Query {
 	/**
 	 * Returns a user given its username.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public void setUserByUsername(User userByUsername) {
 		this.userByUsername = userByUsername;
@@ -523,10 +546,58 @@ public class Query {
 	/**
 	 * Returns a user given its username.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "permission" }, parameterTypes = { "[PermissionKind!]" },
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
 	public User getUserByUsername() {
 		return this.userByUsername;
+	}
+
+	/**
+	  * Returns a paged list of groups.
+ 	 */
+	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	public void setGroups(GroupPage groups) {
+		this.groups = groups;
+	}
+
+	/**
+	 * Returns a paged list of groups.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	public GroupPage getGroups() {
+		return this.groups;
+	}
+
+	/**
+	  * Returns a group given its identifier.
+ 	 */
+	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	public void setGroupById(Group groupById) {
+		this.groupById = groupById;
+	}
+
+	/**
+	 * Returns a group given its identifier.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	public Group getGroupById() {
+		return this.groupById;
+	}
+
+	/**
+	  * Returns a group given its groupname.
+ 	 */
+	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	public void setGroupByGroupname(Group groupByGroupname) {
+		this.groupByGroupname = groupByGroupname;
+	}
+
+	/**
+	 * Returns a group given its groupname.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	public Group getGroupByGroupname() {
+		return this.groupByGroupname;
 	}
 
 	public String toString() {
@@ -576,6 +647,12 @@ public class Query {
 			+ "userById: " + this.userById //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "userByUsername: " + this.userByUsername //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
+			+ "groups: " + this.groups //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
+			+ "groupById: " + this.groupById //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
+			+ "groupByGroupname: " + this.groupByGroupname //$NON-NLS-1$
 			+ "}"; //$NON-NLS-1$
 	}
 
@@ -612,6 +689,9 @@ public class Query {
 		private UserPage users;
 		private User userById;
 		private User userByUsername;
+		private GroupPage groups;
+		private Group groupById;
+		private Group groupByGroupname;
 
 		/**
 		 * Returns a paged list of claims.
@@ -798,6 +878,30 @@ public class Query {
 			return this;
 		}
 
+		/**
+	     * Returns a paged list of groups.
+	     */
+		public Builder withGroups(GroupPage groupsParam) {
+			this.groups = groupsParam;
+			return this;
+		}
+
+		/**
+	     * Returns a group given its identifier.
+	     */
+		public Builder withGroupById(Group groupByIdParam) {
+			this.groupById = groupByIdParam;
+			return this;
+		}
+
+		/**
+	     * Returns a group given its groupname.
+	     */
+		public Builder withGroupByGroupname(Group groupByGroupnameParam) {
+			this.groupByGroupname = groupByGroupnameParam;
+			return this;
+		}
+
 		public Query build() {
 			Query _object = new Query();
 			_object.setClaims(this.claims);
@@ -823,6 +927,9 @@ public class Query {
 			_object.setUsers(this.users);
 			_object.setUserById(this.userById);
 			_object.setUserByUsername(this.userByUsername);
+			_object.setGroups(this.groups);
+			_object.setGroupById(this.groupById);
+			_object.setGroupByGroupname(this.groupByGroupname);
 			return _object;
 		}
 

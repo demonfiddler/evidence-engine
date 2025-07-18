@@ -22,6 +22,8 @@ package io.github.demonfiddler.ee.server.datafetcher;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import com.graphql_java_generator.annotation.GraphQLDirective;
+
 import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.model.EntityLinkQueryFilter;
 import io.github.demonfiddler.ee.server.model.LogQueryFilter;
@@ -836,5 +838,185 @@ public interface DataFetchersDelegateQuery {
 	 * will take care of the {@link NoSuchElementException} exception.
 	 */
 	Object userByUsername(DataFetchingEnvironment dataFetchingEnvironment, String username);
+
+	/**
+	 * Description for the groups field: <br/>
+	 * Returns a paged list of groups.
+	 * <br/>
+	 *
+	 * This method loads the data for Query.groups. It may return whatever is
+	 * accepted by the Spring Controller, that is:
+	 * <ul>
+	 * <li>A resolved value of any type (typically, a GroupPage)</li>
+	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods
+	 * and for any DataFetcher as described in Reactive DataFetcher.
+	 * This would typically be a
+	 * Mono&lt;GroupPage&gt; or a
+	 * Flux&lt;GroupPage&gt;</li>
+	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
+	 * <li>java.util.concurrent.Callable to have the value(s) produced
+	 * asynchronously. For this to work, AnnotatedControllerConfigurer must be
+	 * configured with an Executor. This would typically by a
+	 * Callable&lt;GroupPage&gt;</li>
+	 * </ul>
+	 * As a complement to the spring-graphql documentation, you may also return:
+	 * <ul>
+	 * <li>A CompletableFuture<?>, for instance
+	 * CompletableFuture<GroupPage>. This
+	 * allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java
+	 * java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader
+	 * collects all the data to load, avoid to load several
+	 * times the same data, and allows parallel execution of the queries, if
+	 * multiple queries are to be run.</li>
+	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
+	 * </ul>
+	 * 
+	 * @param dataFetchingEnvironment
+	 *                                The GraphQL {@link DataFetchingEnvironment}.
+	 *                                It gives you access to the full GraphQL
+	 *                                context for this DataFetcher
+	 * @param filter
+	 *                                The input parameter sent in the query by the
+	 *                                GraphQL consumer, as defined in the GraphQL
+	 *                                schema.
+	 * @param pageSort
+	 *                                The input parameter sent in the query by the
+	 *                                GraphQL consumer, as defined in the GraphQL
+	 *                                schema.
+	 * @throws NoSuchElementException
+	 *                                This method may return a
+	 *                                {@link NoSuchElementException} exception. In
+	 *                                this case, the exception is trapped
+	 *                                by the calling method, and the return is
+	 *                                consider as null. This allows to use the
+	 *                                {@link Optional#get()} method directly,
+	 *                                without caring of
+	 *                                whether or not there is a value. The generated
+	 *                                code will take care of the
+	 *                                {@link NoSuchElementException} exception.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	Object groups(DataFetchingEnvironment dataFetchingEnvironment, TrackedEntityQueryFilter filter,
+		PageableInput pageSort);
+
+	/**
+	 * Description for the groupById field: <br/>
+	 * Returns a group given its identifier.
+	 * <br/>
+	 *
+	 * This method loads the data for Query.groupById. It may return whatever is
+	 * accepted by the Spring Controller, that is:
+	 * <ul>
+	 * <li>A resolved value of any type (typically, a
+	 * io.github.demonfiddler.ee.server.Group)</li>
+	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods
+	 * and for any DataFetcher as described in Reactive DataFetcher.
+	 * This would typically be a Mono&lt;io.github.demonfiddler.ee.server.Group&gt;
+	 * or a Flux&lt;io.github.demonfiddler.ee.server.Group&gt;</li>
+	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
+	 * <li>java.util.concurrent.Callable to have the value(s) produced
+	 * asynchronously. For this to work, AnnotatedControllerConfigurer must be
+	 * configured with an Executor. This would typically by a
+	 * Callable&lt;io.github.demonfiddler.ee.server.Group&gt;</li>
+	 * </ul>
+	 * As a complement to the spring-graphql documentation, you may also return:
+	 * <ul>
+	 * <li>A CompletableFuture<?>, for instance
+	 * CompletableFuture<io.github.demonfiddler.ee.server.Group>. This
+	 * allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java
+	 * java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader
+	 * collects all the data to load, avoid to load several
+	 * times the same data, and allows parallel execution of the queries, if
+	 * multiple queries are to be run.</li>
+	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
+	 * </ul>
+	 * 
+	 * @param dataFetchingEnvironment
+	 *                                The GraphQL {@link DataFetchingEnvironment}.
+	 *                                It gives you access to the full GraphQL
+	 *                                context for this DataFetcher
+	 * @param id
+	 *                                The input parameter sent in the query by the
+	 *                                GraphQL consumer, as defined in the GraphQL
+	 *                                schema.
+	 * @throws NoSuchElementException
+	 *                                This method may return a
+	 *                                {@link NoSuchElementException} exception. In
+	 *                                this case, the exception is trapped
+	 *                                by the calling method, and the return is
+	 *                                consider as null. This allows to use the
+	 *                                {@link Optional#get()} method directly,
+	 *                                without caring of
+	 *                                whether or not there is a value. The generated
+	 *                                code will take care of the
+	 *                                {@link NoSuchElementException} exception.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	Object groupById(DataFetchingEnvironment dataFetchingEnvironment, Long id);
+
+	/**
+	 * Description for the groupByGroupname field: <br/>
+	 * Returns a group given its groupname.
+	 * <br/>
+	 *
+	 * This method loads the data for Query.groupByGroupname. It may return whatever
+	 * is
+	 * accepted by the Spring Controller, that is:
+	 * <ul>
+	 * <li>A resolved value of any type (typically, a
+	 * io.github.demonfiddler.ee.server.Group)</li>
+	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods
+	 * and for any DataFetcher as described in Reactive DataFetcher.
+	 * This would typically be a Mono&lt;io.github.demonfiddler.ee.server.Group&gt;
+	 * or a Flux&lt;io.github.demonfiddler.ee.server.Group&gt;</li>
+	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
+	 * <li>java.util.concurrent.Callable to have the value(s) produced
+	 * asynchronously. For this to work, AnnotatedControllerConfigurer must be
+	 * configured with an Executor. This would typically by a
+	 * Callable&lt;io.github.demonfiddler.ee.server.Group&gt;</li>
+	 * </ul>
+	 * As a complement to the spring-graphql documentation, you may also return:
+	 * <ul>
+	 * <li>A CompletableFuture<?>, for instance
+	 * CompletableFuture<io.github.demonfiddler.ee.server.Group>. This
+	 * allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java
+	 * java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader
+	 * collects all the data to load, avoid to load several
+	 * times the same data, and allows parallel execution of the queries, if
+	 * multiple queries are to be run.</li>
+	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
+	 * </ul>
+	 * 
+	 * @param dataFetchingEnvironment
+	 *                                The GraphQL {@link DataFetchingEnvironment}.
+	 *                                It gives you access to the full GraphQL
+	 *                                context for this DataFetcher
+	 * @param groupname
+	 *                                The input parameter sent in the query by the
+	 *                                GraphQL consumer, as defined in the GraphQL
+	 *                                schema.
+	 * @throws NoSuchElementException
+	 *                                This method may return a
+	 *                                {@link NoSuchElementException} exception. In
+	 *                                this case, the exception is trapped
+	 *                                by the calling method, and the return is
+	 *                                consider as null. This allows to use the
+	 *                                {@link Optional#get()} method directly,
+	 *                                without caring of
+	 *                                whether or not there is a value. The generated
+	 *                                code will take care of the
+	 *                                {@link NoSuchElementException} exception.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	Object groupByGroupname(DataFetchingEnvironment dataFetchingEnvironment, String groupname);
 
 }

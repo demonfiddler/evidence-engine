@@ -38,9 +38,9 @@ import { CalendarIcon } from "@heroicons/react/24/outline"
 import StandardDetails from "./standard-details"
 import DetailActions, { createDetailState, DetailMode } from "./detail-actions"
 import {/* Dispatch, SetStateAction,*/ useContext, useMemo, useState } from "react"
-import { SecurityContext } from "@/lib/context"
 import { useFormContext } from "react-hook-form"
 import { ClaimFormFields } from "../validators/claim"
+import useAuth from "@/hooks/use-auth"
 
 export default function ClaimDetails(
   {
@@ -56,12 +56,12 @@ export default function ClaimDetails(
     onFormAction: (command: FormAction, formValue: ClaimFormFields) => void
   }) {
 
-  const securityContext = useContext(SecurityContext)
+  const {hasAuthority} = useAuth()
   const form = useFormContext()
   const [mode, setMode] = useState<DetailMode>("view")
   const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
 
-  const state = useMemo(() => createDetailState(securityContext, mode), [securityContext, mode])
+  const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
   const { updating } = state
 
   // console.log(`record = ${JSON.stringify(record)}`)

@@ -1,40 +1,42 @@
 fragment pageFields on IPage {
-    hasContent
-    isEmpty
-    number
-    size
-    numberOfElements
-    totalPages
-    totalElements
-    isFirst
-    isLast
-    hasNext
-    hasPrevious
+  hasContent
+  isEmpty
+  number
+  size
+  numberOfElements
+  totalPages
+  totalElements
+  isFirst
+  isLast
+  hasNext
+  hasPrevious
 }
 
 fragment trackedEntityFields on ITrackedEntity {
+  ... on IBaseEntity {
     id
-    entityKind
-    status
-    created
-    createdByUser {
-      username
-    }
-    updated
-    updatedByUser {
-      username
-    }
-    log
-    {
-      # ... pageFields
-      content {
-        timestamp
-        transactionKind
-        user {
-          username
-        }
+  }
+  entityKind
+  status
+  created
+  createdByUser {
+    username
+  }
+  updated
+  updatedByUser {
+    username
+  }
+  log
+  {
+    # ... pageFields
+    content {
+      timestamp
+      transactionKind
+      user {
+        username
       }
     }
+  }
 }
 
 fragment linkableEntityFields on ILinkableEntity {
@@ -67,9 +69,11 @@ fragment linkableEntityFields on ILinkableEntity {
   {
     ... pageFields
     content {
+      id
       toEntity {
         ... trackedEntityFields
       }
+      toEntityLocations
     }
   }
   toEntityLinks
@@ -101,9 +105,11 @@ fragment linkableEntityFields on ILinkableEntity {
   {
     ... pageFields
     content {
+      id
       fromEntity {
         ... trackedEntityFields
       }
+      fromEntityLocations
     }
   }
 }
@@ -276,7 +282,19 @@ fragment userFields on User {
   lastName
   email
   password
-  permissions
+  authorities(aggregation: ALL, format: SHORT)
+  # groups {
+  #   groupname
+  # }
+}
+
+fragment groupFields on Group {
+  groupname
+  authorities(format: SHORT)
+  members {
+    id
+    username
+  }
 }
 
 fragment polymorphicTrackedEntityFields on ITrackedEntity {

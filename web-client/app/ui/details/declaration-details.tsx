@@ -52,21 +52,21 @@ import StandardDetails from "./standard-details"
 import DetailActions, { createDetailState, DetailMode } from "./detail-actions"
 import Link from "next/link"
 import { useContext, useMemo, useState } from "react"
-import { SecurityContext } from "@/lib/context"
 import { useFormContext } from "react-hook-form"
 import { DeclarationFormFields } from "../validators/declaration"
+import useAuth from "@/hooks/use-auth"
 const countries = rawCountries as unknown as Country[]
 
 export default function DeclarationDetails(
   { record, onFormAction }:
   { record?: Declaration; onFormAction: (command: FormAction, formValue: DeclarationFormFields) => void }) {
 
-  const securityContext = useContext(SecurityContext)
+  const {hasAuthority} = useAuth()
   const form = useFormContext()
   const [mode, setMode] = useState<DetailMode>("view")
   const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
 
-  const state = useMemo(() => createDetailState(securityContext, mode), [securityContext, mode])
+  const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
   const { updating } = state
 
   // console.log(`DeclarationDetails: valid=${form.formState.isValid}, dirtyFields==${JSON.stringify(form.formState.dirtyFields)}, fieldState==${JSON.stringify(form.getFieldState("kind"))}, errors=${JSON.stringify(form.formState.errors)}`)
