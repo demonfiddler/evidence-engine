@@ -24,22 +24,60 @@ import ILinkableEntity from "@/app/model/ILinkableEntity";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { getRecordLabel } from "@/lib/utils";
 import RecordKind from "@/app/model/RecordKind";
 import { DetailState } from "./detail-actions";
 // import { useImmer } from 'use-immer';
 
+type RecordLink = {
+  entityLinkId: string
+  thisRecordIsToEntity: boolean
+  thisLocations: string
+  otherLocations: string
+  otherRecordLabel: string
+}
+
+function getRecordLinks(record?: ILinkableEntity, toLinks?: boolean, entityLinks?: EntityLink[], results?: RecordLink[]) : RecordLink[] {
+  if (entityLinks) {
+    if (!record || !results)
+      throw new Error("record, entityLinks and results must all be passed")
+    for (let entityLink of entityLinks) {
+      if (!entityLink.id)
+        continue
+      const otherRecord = toLinks ? entityLink.fromEntity : entityLink.toEntity
+      const displayableLink = {
+        entityLinkId: entityLink.id,
+        thisRecordIsToEntity: toLinks ?? false,
+        thisLocations: (toLinks ? entityLink.toEntityLocations : entityLink.fromEntityLocations) ?? '',
+        otherLocations: (toLinks ? entityLink.fromEntityLocations : entityLink.toEntityLocations) ?? '',
+        otherRecordLabel: getRecordLabel(otherRecord?.entityKind as RecordKind, otherRecord) ?? '',
+      }
+      if (!displayableLink.otherRecordLabel)
+        console.warn(displayableLink)
+      results.push(displayableLink)
+    }
+  } else {
+    results = []
+    if (record) {
+      getRecordLinks(record, false, record.fromEntityLinks?.content, results)
+      getRecordLinks(record, true, record.toEntityLinks?.content, results)
+    }
+  }
+  return results
+}
+
 export default function LinkingDetails(
     {record, state}:
     {record: ILinkableEntity | undefined, state: DetailState}
   ) {
-  const [ selectedLinkId, setSelectedLinkId ] = useState<string>()
+  const [ selectedLinkId, setSelectedLinkId ] = useState<string>('')
   const [ isEditing, setIsEditing ] = useState<boolean>(false)
-  const [ fromEntityLocations, setFromEntityLocations ] = useState<string>()
-  const [ toEntityLocations, setToEntityLocations ] = useState<string>()
+  const [ thisRecordLocations, setThisRecordLocations ] = useState<string>()
+  const [ otherRecordLocations, setOtherRecordLocations ] = useState<string>()
+  const recordLinks = useMemo(() => getRecordLinks(record), [record])
   const allowLinking = record && state.allowLink && !state.updating
 
   function handleLinkorCancel() {
@@ -75,43 +113,36 @@ export default function LinkingDetails(
   function handleSelectedLinkChange(linkId : string) {
     setSelectedLinkId(linkId)
     const selectedLink = getSelectedLink(linkId)
-    setFromEntityLocations(selectedLink?.fromEntityLocations)
-    setToEntityLocations(selectedLink?.toEntityLocations)
+    setThisRecordLocations(selectedLink?.thisLocations ?? '')
+    setOtherRecordLocations(selectedLink?.otherLocations ?? '')
   }
 
-  function getSelectedLink(linkId : string | undefined) : EntityLink | null  {
+  function getSelectedLink(linkId : string | undefined) : RecordLink | undefined  {
     linkId ??= selectedLinkId
     if (!linkId)
-      return null;
+      return undefined;
 
-    const links = record?.toEntityLinks?.content
-    if (links) {
-      for (let link of links) {
-        if (link.id == linkId)
-          return link
-      }
-    }
-    return null
+    return recordLinks.find(rl => rl.entityLinkId == linkId)
   }
+
+  useEffect(() => handleSelectedLinkChange(''), [record])
 
   return (
     <div className="w-full grid grid-cols-6 gap-2">
-      <Label htmlFor="master">Links from:</Label>
+      <Label htmlFor="master">{`Inbound links (${recordLinks.length}):`}</Label>
       <Select disabled={!record || isEditing} value={selectedLinkId} onValueChange={handleSelectedLinkChange}>
         <SelectTrigger className="col-span-4 w-full">
           <SelectValue placeholder={
-            record?.toEntityLinks?.content?.length ?? 0 > 0
+            recordLinks.length ?? 0 > 0
             ? "-Select an inbound link-"
             : "-No inbound links-"}
           />
         </SelectTrigger>
         <SelectContent>
           {
-            record?.toEntityLinks?.content?.map(link => {
-              const fromEntity = link.fromEntity;
-              const linkId = link.id?.toString() ?? ''
-              return fromEntity
-                ? <SelectItem key={linkId} value={linkId}>{`${getRecordLabel(fromEntity?.entityKind as RecordKind, fromEntity)}`}</SelectItem>
+            recordLinks.map(link => {
+              return link
+                ? <SelectItem key={link.entityLinkId} value={link.entityLinkId}>{link.otherRecordLabel}</SelectItem>
                 : null
             })
           }
@@ -124,15 +155,15 @@ export default function LinkingDetails(
       >
         {isEditing ? "Cancel" : "Link"}
       </Button>
-      <Label htmlFor="from-loc" className="col-start-1">From location(s):</Label>
+      <Label htmlFor="this-locations" className="col-start-1">Location(s) in this record:</Label>
       <Input
-        id="from-loc"
+        id="this-locations"
         type="text"
         className="col-span-4"
         disabled={!record}
         readOnly={!allowLinking || !isEditing}
-        value={fromEntityLocations}
-        onChange={e => setFromEntityLocations(e.target.value)}
+        value={thisRecordLocations}
+        onChange={e => setThisRecordLocations(e.target.value)}
       />
       <Button
         className="w-20 place-self-center bg-blue-500"
@@ -141,15 +172,15 @@ export default function LinkingDetails(
       >
         {isEditing ? 'Save' : 'Edit'}
       </Button>
-      <Label htmlFor="to-loc">To location(s):</Label>
+      <Label htmlFor="other-locations">Location(s) in other record:</Label>
       <Input
-        id="to-loc"
+        id="other-locations"
         type="text"
         className="col-span-4"
         disabled={!record}
         readOnly={!allowLinking || !isEditing}
-        value={toEntityLocations}
-        onChange={e => setToEntityLocations(e.target.value)}
+        value={otherRecordLocations}
+        onChange={e => setOtherRecordLocations(e.target.value)}
       />
       <Button
         className="w-20 place-self-center bg-blue-500"

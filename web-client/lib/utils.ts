@@ -73,6 +73,10 @@ export function getRecordLabel(recordKind: RecordKind | undefined, record?: ITra
       const declaration = record as Declaration
       return `${recordKind} #${record?.id}: ${declaration?.title}`
     }
+    case "Group": {
+      const group = record as Group
+      return `${recordKind} #${record?.id}: ${group?.groupname}`
+    }
     case "Journal": {
       const journal = record as Journal
       return `${recordKind} #${record?.id}: ${journal?.title}`
@@ -104,10 +108,6 @@ export function getRecordLabel(recordKind: RecordKind | undefined, record?: ITra
     case "User": {
       const user = record as User
       return `${recordKind} #${record?.id}: ${user?.firstName} ${user?.lastName} (${user?.username})`
-    }
-    case "Group": {
-      const group = record as Group
-      return `${recordKind} #${record?.id}: ${group?.groupname}`
     }
     default:
       throw new Error(`Unrecognised record kind: ${recordKind}`);
