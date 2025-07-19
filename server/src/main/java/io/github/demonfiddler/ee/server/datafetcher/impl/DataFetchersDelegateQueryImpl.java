@@ -59,6 +59,7 @@ import io.github.demonfiddler.ee.server.repository.QuotationRepository;
 import io.github.demonfiddler.ee.server.repository.TopicRepository;
 import io.github.demonfiddler.ee.server.repository.UserRepository;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 import jakarta.annotation.Resource;
 
 @Component
@@ -90,6 +91,8 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     private GroupRepository groupRepository;
     @Resource
     private EntityUtils entityUtils;
+    @Resource
+    private SecurityUtils securityUtils;
 
     @Override
     public Claim claimById(DataFetchingEnvironment dataFetchingEnvironment, Long id) {
@@ -226,6 +229,11 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     @Override
     public Object userByUsername(DataFetchingEnvironment dataFetchingEnvironment, String username) {
         return userRepository.findByUsername(username).get();
+    }
+
+    @Override
+    public Object currentUser(DataFetchingEnvironment dataFetchingEnvironment) {
+        return securityUtils.getCurrentUser();
     }
 
     @Override

@@ -1867,6 +1867,8 @@ type Query {
     userById(id: ID!): User @auth(authority: [ADM])
     "Returns a user given its username."
     userByUsername(username: String!): User @auth(authority: [ADM])
+    "Returns the currently logged-in user."
+    currentUser: User
 
     "Returns a paged list of groups."
     groups(

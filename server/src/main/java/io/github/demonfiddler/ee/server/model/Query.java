@@ -196,6 +196,12 @@ public class Query {
 	User userByUsername;
 
 	/**
+	 * Returns the currently logged-in user.
+	 */
+	@GraphQLNonScalar(fieldName = "currentUser", graphQLTypeSimpleName = "User", javaClass = User.class, listDepth = 0)
+	User currentUser;
+
+	/**
 	 * Returns a paged list of groups.
 	 */
 	@GraphQLNonScalar( fieldName = "groups", graphQLTypeSimpleName = "GroupPage", javaClass = GroupPage.class, listDepth = 0)
@@ -553,6 +559,20 @@ public class Query {
 	}
 
 	/**
+	 * Returns the currently logged- user.
+	 */
+	public void setCurrentUser(User currentUser) {
+		this.currentUser = currentUser;
+	}
+
+	/**
+	 * Returns the currently logged- user.
+	 */
+	public User getCurrentUser() {
+		return this.currentUser;
+	}
+
+	/**
 	  * Returns a paged list of groups.
  	 */
 	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
@@ -648,6 +668,8 @@ public class Query {
 			+ ", " //$NON-NLS-1$
 			+ "userByUsername: " + this.userByUsername //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
+			+ "currentUser: " + this.currentUser //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
 			+ "groups: " + this.groups //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "groupById: " + this.groupById //$NON-NLS-1$
@@ -689,6 +711,7 @@ public class Query {
 		private UserPage users;
 		private User userById;
 		private User userByUsername;
+		private User currentUser;
 		private GroupPage groups;
 		private Group groupById;
 		private Group groupByGroupname;
@@ -879,6 +902,14 @@ public class Query {
 		}
 
 		/**
+		 * Returns the currently logged-in user.
+		 */
+		public Builder withCurrentUser(User currentUserParam) {
+			this.currentUser = currentUserParam;
+			return this;
+		}
+
+		/**
 	     * Returns a paged list of groups.
 	     */
 		public Builder withGroups(GroupPage groupsParam) {
@@ -927,6 +958,7 @@ public class Query {
 			_object.setUsers(this.users);
 			_object.setUserById(this.userById);
 			_object.setUserByUsername(this.userByUsername);
+			_object.setCurrentUser(this.currentUser);
 			_object.setGroups(this.groups);
 			_object.setGroupById(this.groupById);
 			_object.setGroupByGroupname(this.groupByGroupname);

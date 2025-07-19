@@ -53,7 +53,7 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 async function fetchCsrfToken() {
-  const res = await fetch(loginUrl, { credentials: 'include' });
+  const res = await fetch(loginUrl, { credentials: 'omit' });
   const html = await res.text();
   const doc = new DOMParser().parseFromString(html, 'text/html');
   const _csrf = doc.evaluate('//input[@name="_csrf"]/@value', doc, null, XPathResult.STRING_TYPE, null).stringValue
@@ -66,38 +66,45 @@ async function login(username: string, password: string, rememberMe: boolean) {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ username, password, _csrf, "remember-me": rememberMe ? "on" : "" })
+    // redirect: "error",
+    body: new URLSearchParams({ username, password, _csrf, "remember-me": rememberMe ? "on" : "" }),
   });
-  if (!res.ok)
+  // As presently configured, POST to Spring Security login page redirects to the base URL, which doesn't exist.
+  if (!res.ok && res.status != 302 && res.status != 404)
     throw new Error('Login failed');
 }
 
 async function logout() {
-  await fetch(logoutUrl, {
+  const res = await fetch(logoutUrl, {
     method: "POST",
     mode: "cors",
     headers: new Headers({
       "Accept": "text/html,application/xhtml+xml,application/xml",
       "Origin": baseUrl
     }),
+    // redirect: "error",
     cache: "no-store",
     credentials: "include",
   })
   document.cookie = 'JSESSIONID=; Max-Age=0'
   document.cookie = 'remember-me=; Max-Age=0'
+  // As presently configured, POST to Spring Security login page redirects to the /login page, which does exist.
+  if (!res.ok && res.status != 302)
+    throw new Error('Logout failed');
 
   console.debug("Logged out");
 }
 
-async function fetchUser(username: string) {
+async function fetchUser() {
   const response = await fetch(graphQlUrl, {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
+    redirect: "error",
     body: JSON.stringify({
       query: `
-        query userByUsername($username: String!) {
-          userByUsername(username: $username) {
+        query {
+          currentUser {
             id
             username
             firstName
@@ -105,16 +112,13 @@ async function fetchUser(username: string) {
             authorities(aggregation: ALL, format: SHORT)
           }
         }
-      `,
-      variables: {
-        username
-      }
-    })
+      `
+    }),
   });
   const { data, error } = await response.json()
   if (error)
     throw new Error(error)
-  return data?.userByUsername
+  return data?.currentUser
 }
 
 interface AuthProviderProps {
@@ -123,21 +127,21 @@ interface AuthProviderProps {
 
 export function AuthProvider({children} : AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-//   const initialize = useCallback(async () => {
-//     try {
-//       const me = await fetchUser()
-//       setUser(me)
-//     } catch (e) {
-//       console.error(e)
-//       setUser(null)
-//     } finally {
-//       setLoading(false)
-//     }
-//   }, [])
+  const initialize = useCallback(async () => {
+    try {
+      const me = await fetchUser()
+      setUser(me)
+    } catch (e) {
+      console.error(e)
+      setUser(null)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
-//   useEffect(() => { initialize(); }, [initialize]);
+  useEffect(() => { initialize(); }, [initialize]);
 
   const hasAuthority = useCallback((authority: Authority) => user?.authorities?.includes(authority) ?? false, [user])
 
@@ -145,7 +149,7 @@ export function AuthProvider({children} : AuthProviderProps) {
     setLoading(true)
     try {
       await login(username, password, rememberMe)
-      const me = await fetchUser(username)
+      const me = await fetchUser()
       setUser(me)
     } finally {
       setLoading(false)
