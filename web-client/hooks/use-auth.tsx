@@ -52,6 +52,16 @@ export const AuthContext = createContext<AuthContextType>({
   logout: () => {throw new Error("No AuthProvider context")}
 });
 
+function checkResponse(response: Response, action: string) {
+  // As Spring Security is presently configured:
+  // - POST to /login redirects to the base URL, which doesn't exist.
+  // - POST to /logout redirects to the /login page, which does exist.
+  if (response.status != 0 && !response.ok && !response.redirected || !(response.status == 0 && response.type == "opaqueredirect")) {
+    console.log(`status = ${response.status}, statusText = ${response.statusText}, ok = ${response.ok}, redirected = ${response.redirected}, type = ${response.type}`)
+    throw new Error(`${action} failed: status = ${response.status}: ${response.statusText}`);
+  }
+}
+
 async function fetchCsrfToken() {
   const res = await fetch(loginUrl, { credentials: 'omit' });
   const html = await res.text();
@@ -62,36 +72,31 @@ async function fetchCsrfToken() {
 
 async function login(username: string, password: string, rememberMe: boolean) {
   const _csrf = await fetchCsrfToken();
-  const res = await fetch(loginUrl, {
+  const response = await fetch(loginUrl, {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    // redirect: "error",
+    redirect: "manual",
     body: new URLSearchParams({ username, password, _csrf, "remember-me": rememberMe ? "on" : "" }),
   });
-  // As presently configured, POST to Spring Security login page redirects to the base URL, which doesn't exist.
-  if (!res.ok && res.status != 302 && res.status != 404)
-    throw new Error('Login failed');
+  checkResponse(response, "Login")
 }
 
 async function logout() {
-  const res = await fetch(logoutUrl, {
+  const response = await fetch(logoutUrl, {
     method: "POST",
     mode: "cors",
     headers: new Headers({
       "Accept": "text/html,application/xhtml+xml,application/xml",
       "Origin": baseUrl
     }),
-    // redirect: "error",
+    redirect: "manual",
     cache: "no-store",
     credentials: "include",
   })
   document.cookie = 'JSESSIONID=; Max-Age=0'
   document.cookie = 'remember-me=; Max-Age=0'
-  // As presently configured, POST to Spring Security login page redirects to the /login page, which does exist.
-  if (!res.ok && res.status != 302)
-    throw new Error('Logout failed');
-
+  checkResponse(response, "Logout")
   console.debug("Logged out");
 }
 
@@ -100,7 +105,7 @@ async function fetchUser() {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
-    redirect: "error",
+    redirect: "manual",
     body: JSON.stringify({
       query: `
         query {
