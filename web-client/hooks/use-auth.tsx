@@ -123,6 +123,8 @@ async function fetchUser() {
   const { data, error } = await response.json()
   if (error)
     throw new Error(error)
+  if (!data?.currentUser)
+    throw new Error("Invalid credentials")
   return data?.currentUser
 }
 
