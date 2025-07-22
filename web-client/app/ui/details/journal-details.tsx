@@ -49,13 +49,13 @@ import { FormAction } from "@/lib/utils"
 import { useMemo, useState } from "react"
 import useAuth from "@/hooks/use-auth"
 import { useFormContext } from "react-hook-form"
-import { JournalFormFields } from "../validators/journal"
+import { JournalFieldValues } from "../validators/journal"
 
 const publishers = rawPublishers.content as unknown as Publisher[]
 
 export default function JournalDetails(
   { record, onFormAction }:
-  { record?: Journal; onFormAction: (command: FormAction, formValue: JournalFormFields) => void } ) {
+  { record?: Journal; onFormAction: (command: FormAction, fieldValues: JournalFieldValues) => void } ) {
 
   const {hasAuthority} = useAuth()
   const form = useFormContext()

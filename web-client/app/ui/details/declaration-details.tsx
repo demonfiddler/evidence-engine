@@ -53,13 +53,13 @@ import DetailActions, { createDetailState, DetailMode } from "./detail-actions"
 import Link from "next/link"
 import { useContext, useMemo, useState } from "react"
 import { useFormContext } from "react-hook-form"
-import { DeclarationFormFields } from "../validators/declaration"
+import { DeclarationFieldValues } from "../validators/declaration"
 import useAuth from "@/hooks/use-auth"
 const countries = rawCountries as unknown as Country[]
 
 export default function DeclarationDetails(
   { record, onFormAction }:
-  { record?: Declaration; onFormAction: (command: FormAction, formValue: DeclarationFormFields) => void }) {
+  { record?: Declaration; onFormAction: (command: FormAction, fieldValues: DeclarationFieldValues) => void }) {
 
   const {hasAuthority} = useAuth()
   const form = useFormContext()

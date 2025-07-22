@@ -75,8 +75,8 @@ export default function LinkingDetails(
   ) {
   const [ selectedLinkId, setSelectedLinkId ] = useState<string>('')
   const [ isEditing, setIsEditing ] = useState<boolean>(false)
-  const [ thisRecordLocations, setThisRecordLocations ] = useState<string>()
-  const [ otherRecordLocations, setOtherRecordLocations ] = useState<string>()
+  const [ thisRecordLocations, setThisRecordLocations ] = useState<string>('')
+  const [ otherRecordLocations, setOtherRecordLocations ] = useState<string>('')
   const recordLinks = useMemo(() => getRecordLinks(record), [record])
   const allowLinking = record && state.allowLink && !state.updating
 
@@ -130,7 +130,7 @@ export default function LinkingDetails(
   return (
     <div className="w-full grid grid-cols-6 gap-2">
       <Label htmlFor="master">{`Inbound links (${recordLinks.length}):`}</Label>
-      <Select disabled={!record || isEditing} value={selectedLinkId} onValueChange={handleSelectedLinkChange}>
+      <Select disabled={!record || isEditing} value={selectedLinkId ?? ''} onValueChange={handleSelectedLinkChange}>
         <SelectTrigger className="col-span-4 w-full">
           <SelectValue placeholder={
             recordLinks.length ?? 0 > 0

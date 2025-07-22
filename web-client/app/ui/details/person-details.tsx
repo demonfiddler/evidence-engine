@@ -41,13 +41,13 @@ import { useContext, useMemo, useState } from "react";
 import { FormAction } from "@/lib/utils";
 import { useFormContext } from "react-hook-form"
 import useAuth from "@/hooks/use-auth"
-import { PersonFormFields } from "../validators/person";
+import { PersonFieldValues } from "../validators/person";
 
 const countries = rawCountries as unknown as Country[]
 
 export default function PersonDetails(
   { record, onFormAction }:
-  { record?: Person; onFormAction: (command: FormAction, formValue: PersonFormFields) => void }) {
+  { record?: Person; onFormAction: (command: FormAction, fieldValues: PersonFieldValues) => void }) {
 
   const form = useFormContext()
   const {hasAuthority} = useAuth()

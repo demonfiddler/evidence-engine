@@ -52,7 +52,7 @@ import { authorities } from "./authority-ui"
 import { useCallback, useContext, useMemo, useState } from "react"
 import useAuth from "@/hooks/use-auth"
 import { useFormContext } from "react-hook-form"
-import { UserFormFields } from "../validators/user"
+import { UserFieldValues } from "../validators/user"
 
 const countries = rawCountries as unknown as Country[]
 
@@ -67,11 +67,11 @@ export default function UserDetails(
     user?: User,
     group?: Group,
     showUsersOrMembers: string,
-    onFormAction: (command: SecurityFormAction, formValue: UserFormFields) => void
+    onFormAction: (command: SecurityFormAction, fieldValues: UserFieldValues) => void
   }) {
 
   const {hasAuthority} = useAuth()
-  const form = useFormContext<UserFormFields>()
+  const form = useFormContext<UserFieldValues>()
   const [mode, setMode] = useState<DetailMode>("view")
   const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
 

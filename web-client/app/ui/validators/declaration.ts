@@ -1,5 +1,23 @@
+/*----------------------------------------------------------------------------------------------------------------------
+ * Evidence Engine: A system for managing evidence on arbitrary scientific topics.
+ * Comprises an SQL database, GraphQL public API, Java app server, Java and web clients.
+ * Copyright © 2024-25 Adrian Price. All rights reserved.
+ *
+ * This file is part of Evidence Engine.
+ *
+ * Evidence Engine is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * Evidence Engine is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
+ * If not, see <https://www.gnu.org/licenses/>. 
+ *--------------------------------------------------------------------------------------------------------------------*/
+
 import { z } from "zod/v4"
-// import { ILinkableEntity } from "./linkable-entity"
 
 export const DeclarationKindSchema = z.enum([
   "DECL",
@@ -7,7 +25,7 @@ export const DeclarationKindSchema = z.enum([
   "PETN",
 ])
 
-export const DeclarationSchema = /*ILinkableEntity.partial().extend*/z.object({
+export const DeclarationSchema = z.object({
   kind: DeclarationKindSchema,
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).or(z.date().max(Date.now(), {error: "Date cannot be in the future"})),
   title: z.string().min(10).max(100),
@@ -19,5 +37,5 @@ export const DeclarationSchema = /*ILinkableEntity.partial().extend*/z.object({
   notes: z.string().optional()
 })
 
-export type DeclarationFormFields = z.infer<typeof DeclarationSchema>
+export type DeclarationFieldValues = z.infer<typeof DeclarationSchema>
 export type DeclarationKind = z.infer<typeof DeclarationKindSchema>

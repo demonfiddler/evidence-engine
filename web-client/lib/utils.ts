@@ -118,11 +118,11 @@ export function setTopicFields(path: string, parentId?: string, inTopics?: Topic
   if (inTopics) {
     for (let inTopic of inTopics) {
       const outTopic = {
-        ...inTopic
+        ...inTopic,
+        children: [],
+        path: (path.length > 0 ? path + " > " : path) + inTopic.label,
+        parentId: parentId,
       }
-      outTopic.path = (path.length > 0 ? path + " > " : path) + inTopic.label
-      outTopic.parentId = parentId
-      outTopic.children = []
       setTopicFields(outTopic.path, inTopic.id, inTopic.children, outTopic.children)
       outTopics?.push(outTopic)
     }
@@ -156,6 +156,60 @@ type SearchSettings = {
 }
 
 export type { Action, MutationAction, PageSettings, SearchSettings }
+
+const TO_ENTITY_ID = "toEntityId"
+const FROM_ENTITY_ID = "fromEntityId"
+export type LinkFilterProperty = typeof TO_ENTITY_ID | typeof FROM_ENTITY_ID | undefined
+type MasterRecordLink = {[key in RecordKind]?: LinkFilterProperty}
+type RecordLinks = {[key in RecordKind]?: MasterRecordLink}
+const linkFilterIdProperties : RecordLinks = {
+  Claim: {
+    Declaration: TO_ENTITY_ID,
+    Person: TO_ENTITY_ID,
+    Publication: TO_ENTITY_ID,
+    Quotation: TO_ENTITY_ID,
+    Topic: TO_ENTITY_ID
+  },
+  Declaration: {
+    Claim: FROM_ENTITY_ID,
+    Person: TO_ENTITY_ID,
+    Quotation: TO_ENTITY_ID,
+    Topic: TO_ENTITY_ID
+  },
+  Person: {
+    Claim: FROM_ENTITY_ID,
+    Declaration: FROM_ENTITY_ID,
+    Person: FROM_ENTITY_ID,
+    Publication: FROM_ENTITY_ID,
+    Quotation: FROM_ENTITY_ID,
+    Topic: TO_ENTITY_ID
+  },
+  Publication: {
+    Claim: FROM_ENTITY_ID,
+    Person: TO_ENTITY_ID,
+    Quotation: FROM_ENTITY_ID,
+    Topic: TO_ENTITY_ID
+  },
+  Quotation: {
+    Claim: TO_ENTITY_ID,
+    Declaration: TO_ENTITY_ID,
+    Person: FROM_ENTITY_ID,
+    Publication: FROM_ENTITY_ID,
+    Topic: TO_ENTITY_ID
+  },
+  Topic: {
+    Claim: TO_ENTITY_ID,
+    Declaration: TO_ENTITY_ID,
+    Person: TO_ENTITY_ID,
+    Publication: TO_ENTITY_ID,
+    Quotation: TO_ENTITY_ID,
+    Topic: TO_ENTITY_ID
+  },
+}
+
+export function getLinkFilterIdProperty(recordKind: RecordKind, masterRecordKind: RecordKind) : LinkFilterProperty {
+  return linkFilterIdProperties?.[recordKind]?.[masterRecordKind]
+}
 
 export function toDate(value?: string | Date | null) {
   return value instanceof Date

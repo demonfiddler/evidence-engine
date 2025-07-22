@@ -38,6 +38,7 @@ fragment trackedEntityFields on ITrackedEntity {
   {
     # ...pageFields
     content {
+      id
       timestamp
       transactionKind
       user {
@@ -70,7 +71,7 @@ fragment trackedEntityFieldsPolymorphic on ITrackedEntity {
 `
 //alert("(3) graphql-queries.ts")
 
-export const FRAGMENT_LINKED_ENTITY = gql`
+export const FRAGMENT_LINKED_ENTITY_FIELDS = gql`
 fragment linkedEntityFields on ILinkableEntity {
   ... on IBaseEntity {
     id
@@ -310,7 +311,6 @@ fragment journalFields on Journal {
 `
 
 export const FRAGMENT_PUBLICATION_FIELDS = gql`
-${FRAGMENT_JOURNAL_FIELDS}
 fragment publicationFields on Publication {
   title
   authors
@@ -363,6 +363,7 @@ fragment topicFields on Topic {
 export const FRAGMENT_SUBTOPIC_FIELDS = gql`
 fragment subtopicFields on Topic {
   ...trackedEntityFields
+  ...linkableEntityFields
   label
   description
   # TODO: try experiment with recursive query:
@@ -373,7 +374,6 @@ fragment subtopicFields on Topic {
 `
 
 export const FRAGMENT_TOPIC_FIELDS_RECURSIVE = gql`
-${FRAGMENT_SUBTOPIC_FIELDS}
 fragment subtopicFieldsRecursive on Topic {
   children {
     ...subtopicFields
@@ -383,6 +383,24 @@ fragment subtopicFieldsRecursive on Topic {
         ...subtopicFields
         children {
           ...subtopicFields
+          children {
+            ...subtopicFields
+            children {
+              ...subtopicFields
+              children {
+                ...subtopicFields
+                children {
+                  ...subtopicFields
+                  children {
+                    ...subtopicFields
+                    children {
+                      ...subtopicFields
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -391,10 +409,6 @@ fragment subtopicFieldsRecursive on Topic {
 `
 
 export const FRAGMENT_TOPIC_HIERARCHY_FIELDS = gql`
-${FRAGMENT_PAGE_FIELDS}
-${FRAGMENT_TRACKED_ENTITY_FIELDS}
-${FRAGMENT_SUBTOPIC_FIELDS}
-${FRAGMENT_TOPIC_FIELDS_RECURSIVE}
 fragment topicHierarchyFields on Topic {
   ...subtopicFields
   ...subtopicFieldsRecursive
@@ -541,7 +555,7 @@ export const QUERY_CLAIMS = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
 ${FRAGMENT_LINKABLE_ENTITY_FIELDS}
-${FRAGMENT_LINKED_ENTITY}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
 ${FRAGMENT_CLAIM_FIELDS}
 query Claims($filter: LinkableEntityQueryFilter, $pageSort: PageableInput) {
   claims
@@ -564,6 +578,8 @@ query Claims($filter: LinkableEntityQueryFilter, $pageSort: PageableInput) {
 export const QUERY_DECLARATIONS = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
 ${FRAGMENT_DECLARATION_FIELDS}
 query Declarations($filter: LinkableEntityQueryFilter, $pageSort: PageableInput) {
   declarations
@@ -575,6 +591,7 @@ query Declarations($filter: LinkableEntityQueryFilter, $pageSort: PageableInput)
     ...pageFields
     content {
       ...trackedEntityFields
+      ...linkableEntityFields
       ...declarationFields
     }
   }
@@ -650,6 +667,8 @@ query Log($filter: LogQueryFilter, $pageSort: PageableInput) {
 export const QUERY_PERSONS = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
 ${FRAGMENT_PERSON_FIELDS}
 query Persons($filter: LinkableEntityQueryFilter, $pageSort: PageableInput) {
   persons
@@ -661,6 +680,7 @@ query Persons($filter: LinkableEntityQueryFilter, $pageSort: PageableInput) {
     ...pageFields
     content {
       ...trackedEntityFields
+      ...linkableEntityFields
       ...personFields
     }
   }
@@ -671,7 +691,10 @@ query Persons($filter: LinkableEntityQueryFilter, $pageSort: PageableInput) {
 export const QUERY_PUBLICATIONS = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
 ${FRAGMENT_PUBLICATION_FIELDS}
+${FRAGMENT_JOURNAL_FIELDS}
 query Publications($filter: LinkableEntityQueryFilter, $pageSort: PageableInput) {
   publications
   (
@@ -682,6 +705,7 @@ query Publications($filter: LinkableEntityQueryFilter, $pageSort: PageableInput)
     ...pageFields
     content {
       ...trackedEntityFields
+      ...linkableEntityFields
       ...publicationFields
     }
   }
@@ -713,6 +737,8 @@ query Publishers($filter: TrackedEntityQueryFilter, $pageSort: PageableInput) {
 export const QUERY_QUOTATIONS = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
 ${FRAGMENT_QUOTATION_FIELDS}
 query Quotations($filter: LinkableEntityQueryFilter, $pageSort: PageableInput) {
   quotations
@@ -724,6 +750,7 @@ query Quotations($filter: LinkableEntityQueryFilter, $pageSort: PageableInput) {
     ...pageFields
     content {
       ...trackedEntityFields
+      ...linkableEntityFields
       ...quotationFields
     }
   }
@@ -734,7 +761,8 @@ query Quotations($filter: LinkableEntityQueryFilter, $pageSort: PageableInput) {
 export const QUERY_TOPICS = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
-#${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
 ${FRAGMENT_TOPIC_FIELDS}
 query {
   topics
@@ -763,7 +791,7 @@ query {
     ...pageFields
     content {
       ...trackedEntityFields
-      # ...linkableEntityFields
+      ...linkableEntityFields
       ...topicFields
     }
   }
@@ -771,7 +799,13 @@ query {
 `
 
 export const QUERY_TOPIC_HIERARCHY = gql`
+${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TOPIC_HIERARCHY_FIELDS}
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
+${FRAGMENT_SUBTOPIC_FIELDS}
+${FRAGMENT_TOPIC_FIELDS_RECURSIVE}
 query TopicHierarchy($filter: TopicQueryFilter, $pageSort: PageableInput) {
   topics(
     filter: $filter,

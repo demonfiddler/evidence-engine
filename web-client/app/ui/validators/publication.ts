@@ -1,6 +1,23 @@
+/*----------------------------------------------------------------------------------------------------------------------
+ * Evidence Engine: A system for managing evidence on arbitrary scientific topics.
+ * Comprises an SQL database, GraphQL public API, Java app server, Java and web clients.
+ * Copyright © 2024-25 Adrian Price. All rights reserved.
+ *
+ * This file is part of Evidence Engine.
+ *
+ * Evidence Engine is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * Evidence Engine is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
+ * If not, see <https://www.gnu.org/licenses/>. 
+ *--------------------------------------------------------------------------------------------------------------------*/
+
 import { z } from "zod/v4"
-// import { Journal } from "./journal"
-// import { ILinkableEntity } from "./linkable-entity"
 
 export const PublicationKindSchema = z.enum([
   "ABST",
@@ -62,7 +79,7 @@ export const PublicationKindSchema = z.enum([
   "WEB"
 ])
 
-export const PublicationSchema = /*ILinkableEntity.partial().extend*/z.object({
+export const PublicationSchema = z.object({
   title: z.string().min(10).max(200),
   authors: z.string().min(10).max(2000),
   journalId: z.string().regex(/^\d*$/).optional(),
@@ -79,5 +96,5 @@ export const PublicationSchema = /*ILinkableEntity.partial().extend*/z.object({
   accessed: z.iso.date().or(z.date()).optional()
 })
 
-export type PublicationFormFields = z.infer<typeof PublicationSchema>
+export type PublicationFieldValues = z.infer<typeof PublicationSchema>
 export type PublicationKind = z.infer<typeof PublicationKindSchema>

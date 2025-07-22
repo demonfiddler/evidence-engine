@@ -19,7 +19,7 @@
 
 'use client'
 
-import { getRecordLabel } from "@/lib/utils";
+import { getRecordLabel, SearchSettings } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -33,8 +33,7 @@ import ITrackedEntity from "@/app/model/ITrackedEntity";
 import { Button } from "@/components/ui/button";
 import RecordKind from "@/app/model/RecordKind";
 import ListBulletIcon from "@heroicons/react/24/outline/ListBulletIcon";
-import { useContext, useState } from "react";
-import { SelectedRecordsContext } from "@/lib/context";
+import { useState } from "react";
 import Log from "@/app/model/Log";
 import { ownColumns as columns, columnVisibility } from "@/app/ui/tables/log-columns"
 import DataTable from "../data-table/data-table";
@@ -50,8 +49,8 @@ export default function LogDialog({
 }
 ) {
   const [open, setOpen] = useState(false)
-  const selectedRecordsContext = useContext(SelectedRecordsContext)
-  const [setSelectedRecordId] = useState(selectedRecordsContext.Log?.id)
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+  const [search, setSearch] = useState<SearchSettings>({advancedSearch: false, showOnlyLinkedRecords: false} as SearchSettings)
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -70,7 +69,12 @@ export default function LogDialog({
           recordKind="Log"
           defaultColumns={columns}
           defaultColumnVisibility={columnVisibility}
-          page={record?.log ?? emptyPage}
+          page={record?.log/* ?? emptyPage*/}
+          loading={false}
+          pagination={pagination}
+          onPaginationChange={setPagination}
+          search={search}
+          onSearchChange={setSearch}
         />
         <DialogFooter>
           <Button onClick={() => setOpen(false)}>Close</Button>

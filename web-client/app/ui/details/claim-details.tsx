@@ -39,7 +39,7 @@ import StandardDetails from "./standard-details"
 import DetailActions, { createDetailState, DetailMode } from "./detail-actions"
 import {/* Dispatch, SetStateAction,*/ useContext, useMemo, useState } from "react"
 import { useFormContext } from "react-hook-form"
-import { ClaimFormFields } from "../validators/claim"
+import { ClaimFieldValues } from "../validators/claim"
 import useAuth from "@/hooks/use-auth"
 
 export default function ClaimDetails(
@@ -53,7 +53,7 @@ export default function ClaimDetails(
     record?: Claim;
     // mode: DetailMode;
     // setMode: Dispatch<SetStateAction<DetailMode>>;
-    onFormAction: (command: FormAction, formValue: ClaimFormFields) => void
+    onFormAction: (command: FormAction, fieldValues: ClaimFieldValues) => void
   }) {
 
   const {hasAuthority} = useAuth()

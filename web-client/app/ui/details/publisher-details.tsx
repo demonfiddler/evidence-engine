@@ -48,13 +48,13 @@ import { FormAction } from "@/lib/utils";
 import { useContext, useMemo, useState } from "react";
 import useAuth from "@/hooks/use-auth"
 import { useFormContext } from "react-hook-form"
-import { PublisherFormFields } from "../validators/publisher";
+import { PublisherFieldValues } from "../validators/publisher";
 
 const countries = rawCountries as unknown as Country[]
 
 export default function PublisherDetails(
   { record, onFormAction }:
-  { record?: Publisher; onFormAction: (command: FormAction, formValue: PublisherFormFields) => void }) {
+  { record?: Publisher; onFormAction: (command: FormAction, fieldValues: PublisherFieldValues) => void }) {
 
   const {hasAuthority} = useAuth()
   const form = useFormContext()

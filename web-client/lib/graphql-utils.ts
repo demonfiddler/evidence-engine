@@ -66,6 +66,7 @@ export const apolloClient = new ApolloClient({
                 "DeclarationPage",
                 "GroupPage",
                 "JournalPage",
+                "LogPage",
                 "PersonPage",
                 "PublicationPage",
                 "PublisherPage",

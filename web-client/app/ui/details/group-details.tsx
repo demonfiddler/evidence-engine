@@ -37,15 +37,15 @@ import { FormAction } from "@/lib/utils"
 import { useMemo, useState } from "react"
 import { useFormContext } from "react-hook-form"
 import { authorities } from "./authority-ui"
-import { GroupFormFields } from "../validators/group"
+import { GroupFieldValues } from "../validators/group"
 import useAuth from "@/hooks/use-auth"
 
 export default function GroupDetails(
   { record, onFormAction }:
-  { record?: Group; onFormAction: (command: FormAction, formValue: GroupFormFields) => void }) {
+  { record?: Group; onFormAction: (command: FormAction, fieldValues: GroupFieldValues) => void }) {
 
   const {hasAuthority} = useAuth()
-  const form = useFormContext<GroupFormFields>()
+  const form = useFormContext<GroupFieldValues>()
   const [mode, setMode] = useState<DetailMode>("view")
   const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
 

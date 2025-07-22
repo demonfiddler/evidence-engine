@@ -45,7 +45,7 @@ import DetailActions, { createDetailState, DetailMode } from "./detail-actions"
 import { useContext, useMemo, useState } from "react"
 import useAuth from "@/hooks/use-auth"
 import { useFormContext } from "react-hook-form"
-import { TopicFormFields } from "../validators/topic"
+import { TopicFieldValues } from "../validators/topic"
 
 function flatten(topics: Topic[], result: Topic[]) : Topic[] {
   for (let topic of topics) {
@@ -58,7 +58,7 @@ function flatten(topics: Topic[], result: Topic[]) : Topic[] {
 
 export default function TopicDetails(
   { record, topics, onFormAction }:
-  { record?: Topic; topics: Topic[], onFormAction: (command: FormAction, formValue: TopicFormFields) => void }) {
+  { record?: Topic; topics: Topic[], onFormAction: (command: FormAction, fieldValues: TopicFieldValues) => void }) {
 
   const {hasAuthority} = useAuth()
   const form = useFormContext()

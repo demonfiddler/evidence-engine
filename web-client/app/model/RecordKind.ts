@@ -21,6 +21,7 @@ type RecordKind =
   "None" |
   "Claim" |
   "Declaration" |
+  "Group" |
   "Journal" |
   "Log" |
   "Person" |
@@ -28,7 +29,6 @@ type RecordKind =
   "Publisher" |
   "Quotation" |
   "Topic" |
-  "User" |
-  "Group"
+  "User"
 
 export default RecordKind

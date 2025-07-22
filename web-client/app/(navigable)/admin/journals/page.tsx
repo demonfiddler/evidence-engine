@@ -19,31 +19,16 @@
 
 'use client'
 
-// import type { Metadata } from "next";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { NewspaperIcon } from '@heroicons/react/24/outline';
-
 import JournalDetails from "@/app/ui/details/journal-details";
 import DataTable from "@/app/ui/data-table/data-table";
-
 import { columns, columnVisibility } from "@/app/ui/tables/journal-columns"
-import IPage from "@/app/model/IPage";
 import Journal from "@/app/model/Journal";
-import { SelectedRecordsContext } from "@/lib/context";
-import { useImmerReducer } from "use-immer";
-import { MutationAction, FormAction, SearchSettings } from "@/lib/utils";
-import { useForm, FormProvider } from "react-hook-form"
-import { JournalSchema, JournalFormFields } from "@/app/ui/validators/journal";
-import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
+import { FormProvider } from "react-hook-form"
+import { JournalSchema, JournalFieldValues } from "@/app/ui/validators/journal";
 import { QUERY_JOURNALS } from "@/lib/graphql-queries";
-import { useQuery } from "@apollo/client";
-import { TrackedEntityQueryFilter } from "@/app/model/schema";
-import { toast } from "sonner";
-
-// export const metadata: Metadata = {
-//   title: "Journals",
-//   description: "Evidenced journals of scientific fact",
-// };
+import usePageLogic from "@/hooks/use-page-logic";
+import { TrackedEntityQueryFilter } from '@/app/model/schema';
 
 function copyToForm(journal?: Journal) {
   return {
@@ -56,127 +41,34 @@ function copyToForm(journal?: Journal) {
   }
 }
 
-function copyFromForm(journal: Journal, formValue: JournalFormFields) {
-  journal.title = formValue.title ?? null,
-  journal.abbreviation = formValue.abbreviation ?? null,
-  journal.url = formValue.url ?? null,
-  journal.issn = formValue.issn ?? null,
-  journal.publisher = formValue.publisherId ? {id: formValue.publisherId} : null,
-  journal.notes = formValue.notes ?? null
+function copyFromForm(journal: Journal, fieldValues: JournalFieldValues) {
+  journal.title = fieldValues.title ?? null,
+  journal.abbreviation = fieldValues.abbreviation ?? null,
+  journal.url = fieldValues.url ?? null,
+  journal.issn = fieldValues.issn ?? null,
+  journal.publisher = fieldValues.publisherId ? {id: fieldValues.publisherId} : null,
+  journal.notes = fieldValues.notes ?? null
 }
 
 export default function Journals() {
-  const selectedRecordsContext = useContext(SelectedRecordsContext)
-  const [search, setSearch] = useState<SearchSettings>({/*advancedSearch: false, */showOnlyLinkedRecords: false} as SearchSettings)
-  const [selectedRecordId, setSelectedRecordId] = useState<string|undefined>(selectedRecordsContext.Journal?.id)
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
-/*  const pageReducer = useCallback((draft: IPage<Journal>, action: MutationAction<FormAction, JournalFormFields>) => {
-    const idx = draft.content.findIndex(c => c.id == selectedRecordId)
-    switch (action.command) {
-      case "create":
-        const journal : Journal = {
-          id: (Math.max(...draft.content.map(c => parseInt(c.id ?? ''))) + 1).toString(),
-          status: "Draft"
-        }
-        setSelectedRecordId(journal.id)
-        copyFromForm(journal, action.value)
-        draft.content.push(journal)
-        break
-      case "update":
-        if (idx != -1) {
-          const journal = draft.content[idx]
-          copyFromForm(journal, action.value)
-          draft.content.splice(idx, 1, journal)
-        }
-        break
-      case "delete":
-        // N.B. This is a hard delete that physically deletes the record. The server implements a soft delete.
-        if (idx != -1)
-          draft.content.splice(idx, 1)
-        break
-    }
-  }, [selectedRecordId, setSelectedRecordId])*/
-  const filter = useMemo(() => {
-    const filter: TrackedEntityQueryFilter = {
-      status: search.status ? [search.status] : undefined,
-      text: search.text,
-    }
-    if (search.text)
-      filter.advancedSearch = search.advancedSearch
-    console.log(`Journals effect: filter = ${JSON.stringify(filter)}`)
-    return filter
-  }, [search])
-
-  const pageSort = useMemo(() => {
-    const pageSort = {
-      pageNumber: pagination.pageIndex,
-      pageSize: pagination.pageSize
-    }
-    console.log(`Journals effect: pageSort = ${JSON.stringify(pageSort)}`)
-    return pageSort
-  }, [pagination])
-
-  const result = useQuery(
-    QUERY_JOURNALS,
-    {
-      variables: {
-        filter,
-        pageSort
-      },
-    }
-  )
-
-  // Whenever filter or pagination changes, ask Apollo to refetch
-  useEffect(() => {
-    console.log(`Journals effect: search = ${JSON.stringify(search)}`)
-    result.refetch({
-      filter,
-      pageSort
-    });
-  }, [filter, pageSort]);
-
-  // console.log(`result.loading = ${result.loading}, result.error = ${JSON.stringify(result.error)}, result.data = ${JSON.stringify(result.data)}`)
-  // console.log(`result.loading = ${result.loading}, result.error = ${JSON.stringify(result.error)}`)
-  const page = result.data?.journals as IPage<Journal>
-
-  // const [page, pageDispatch] = useImmerReducer(pageReducer, rawPage as unknown as IPage<Journal>)
-  const getSelectedRecord = useCallback((id?: string) => page?.content.find(r => r.id == id), [page])
-  const selectedRecord = getSelectedRecord(selectedRecordId)
-  const origFormValue = useMemo(() => copyToForm(selectedRecord), [selectedRecord])
-  const form = useForm<JournalFormFields>({
-    resolver: standardSchemaResolver(JournalSchema),
-    mode: "onChange",
-    values: origFormValue
+  const {
+    search,
+    setSearch,
+    pagination,
+    setPagination,
+    loading,
+    page,
+    selectedRecord,
+    handleRowSelectionChange,
+    form,
+    handleFormAction,
+  } = usePageLogic<Journal, TrackedEntityQueryFilter, JournalFieldValues>({
+    recordKind: "Journal",
+    schema: JournalSchema,
+    listQuery: QUERY_JOURNALS,
+    copyToForm,
+    copyFromForm,
   })
-
-  const handleFormAction = useCallback((command: FormAction, formValue: JournalFormFields) => {
-    switch (command) {
-      case "create":
-        // TODO: invoke mutation: createJournal
-        break
-      case "update":
-        // TODO: invoke mutation: updateJournal
-        break
-      case "delete":
-        // TODO: invoke mutation: deleteJournal
-        break
-        // OLD: pageDispatch({command: command, value: formValue})
-      case "reset":
-        form.reset(copyToForm(selectedRecord))
-        break
-    }
-  }, [form, /*pageDispatch, */selectedRecord])
-
-  const handleRowSelectionChange = useCallback((recordId?: string) => {
-    setSelectedRecordId(recordId)
-    const journal = getSelectedRecord(recordId)
-    form.reset(copyToForm(journal))
-  }, [setSelectedRecordId, getSelectedRecord, form])
-
-  if (result.error) {
-    toast.error(`Fetch error:\n\n${JSON.stringify(result.error)}`)
-    console.error(result.error)
-  }
 
   return (
     <main className="flex flex-col items-start m-4 gap-4">
@@ -190,7 +82,7 @@ export default function Journals() {
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
-        loading={result.loading}
+        loading={loading}
         pagination={pagination}
         onPaginationChange={setPagination}
         search={search}

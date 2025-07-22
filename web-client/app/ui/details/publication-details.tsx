@@ -55,7 +55,7 @@ import Link from "next/link";
 import { useContext, useMemo, useState } from "react";
 import useAuth from "@/hooks/use-auth"
 import { useFormContext } from "react-hook-form"
-import { PublicationFormFields } from "../validators/publication";
+import { PublicationFieldValues } from "../validators/publication";
 
 type PublicationKind = {
   kind: string
@@ -66,7 +66,7 @@ const publicationKinds = rawPublicationKinds as unknown as PublicationKind[]
 
 export default function PublicationDetails(
   { record, onFormAction }:
-  { record?: Publication; onFormAction: (command: FormAction, formValue: PublicationFormFields) => void }) {
+  { record?: Publication; onFormAction: (command: FormAction, fieldValues: PublicationFieldValues) => void }) {
 
   // console.log("PublicationDetails: render")
   const {hasAuthority} = useAuth()
