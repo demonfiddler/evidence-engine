@@ -215,7 +215,7 @@ public class CustomTopicRepositoryImpl extends AbstractCustomRepositoryImpl impl
             }
         }
         if (m.isSorted)
-            entityUtils.appendOrderByClause(orderByClause, m.pageable, "t.", true);
+            entityUtils.appendOrderByClause(orderByClause, m.pageable, "e.", "t.", true);
 
         String countSql = String.format(template, cteJoinClause, cteParentIdClause, cteStatusClause1, cteJoinClause,
             cteStatusClause2, "COUNT(*)", ftJoinClause, whereClause, "");

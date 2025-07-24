@@ -86,6 +86,8 @@ export default function Topics() {
     setSearch,
     pagination,
     setPagination,
+    sorting,
+    setSorting,
     loading,
     page,
     selectedRecord,
@@ -95,6 +97,8 @@ export default function Topics() {
   } = usePageLogic<Topic, TopicQueryFilter, TopicFieldValues>({
     recordKind: "Topic",
     schema: TopicSchema,
+    manualPagination: false,
+    manualSorting: false,
     listQuery: QUERY_TOPIC_HIERARCHY,
     copyToForm,
     copyFromForm,
@@ -116,8 +120,12 @@ export default function Topics() {
         defaultColumnVisibility={columnVisibility}
         page={page}
         loading={loading}
+        manualPagination={false}
         pagination={pagination}
         onPaginationChange={setPagination}
+        manualSorting={false}
+        sorting={sorting}
+        onSortingChange={setSorting}
         search={search}
         onSearchChange={setSearch}
         onRowSelectionChange={handleRowSelectionChange}

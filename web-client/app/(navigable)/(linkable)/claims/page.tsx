@@ -52,6 +52,8 @@ export default function Claims() {
     setSearch,
     pagination,
     setPagination,
+    sorting,
+    setSorting,
     loading,
     page,
     selectedRecord,
@@ -61,6 +63,8 @@ export default function Claims() {
   } = usePageLogic<Claim, LinkableEntityQueryFilter, ClaimFieldValues>({
     recordKind: "Claim",
     schema: ClaimSchema,
+    manualPagination: true,
+    manualSorting: true,
     listQuery: QUERY_CLAIMS,
     copyToForm,
     copyFromForm,
@@ -79,8 +83,12 @@ export default function Claims() {
         defaultColumnVisibility={columnVisibility}
         page={page}
         loading={loading}
+        manualPagination={true}
         pagination={pagination}
         onPaginationChange={setPagination}
+        manualSorting={true}
+        sorting={sorting}
+        onSortingChange={setSorting}
         search={search}
         onSearchChange={setSearch}
         onRowSelectionChange={handleRowSelectionChange}

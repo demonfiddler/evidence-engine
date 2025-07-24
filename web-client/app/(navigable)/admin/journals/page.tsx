@@ -56,6 +56,8 @@ export default function Journals() {
     setSearch,
     pagination,
     setPagination,
+    sorting,
+    setSorting,
     loading,
     page,
     selectedRecord,
@@ -65,6 +67,8 @@ export default function Journals() {
   } = usePageLogic<Journal, TrackedEntityQueryFilter, JournalFieldValues>({
     recordKind: "Journal",
     schema: JournalSchema,
+    manualPagination: true,
+    manualSorting: true,
     listQuery: QUERY_JOURNALS,
     copyToForm,
     copyFromForm,
@@ -83,8 +87,12 @@ export default function Journals() {
         defaultColumnVisibility={columnVisibility}
         page={page}
         loading={loading}
+        manualPagination={true}
         pagination={pagination}
         onPaginationChange={setPagination}
+        manualSorting={true}
+        sorting={sorting}
+        onSortingChange={setSorting}
         search={search}
         onSearchChange={setSearch}
         onRowSelectionChange={handleRowSelectionChange}

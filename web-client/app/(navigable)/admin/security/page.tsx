@@ -118,7 +118,7 @@ function createDummyPage(users?: User[]) : IPage<User> | undefined {
     size: 0,
     numberOfElements: users.length,
     totalPages: users.length ? 1 : 0,
-    totalElements: users.length.toString(),
+    totalElements: users.length,
     isFirst: true,
     isLast: true,
     hasNext: false,
@@ -132,6 +132,8 @@ export default function Security() {
     setSearch: setUserSearch,
     pagination: userPagination,
     setPagination: setUserPagination,
+    sorting: userSorting,
+    setSorting: setUserSorting,
     loading: userLoading,
     page: userPage,
     selectedRecord: selectedUser,
@@ -141,6 +143,8 @@ export default function Security() {
   } = usePageLogic<User, TrackedEntityQueryFilter, UserFieldValues>({
     recordKind: "User",
     schema: UserSchema,
+    manualPagination: false,
+    manualSorting: false,
     listQuery: QUERY_USERS,
     copyToForm: copyUserToForm,
     copyFromForm: copyUserFromForm,
@@ -150,6 +154,8 @@ export default function Security() {
     setSearch: setGroupSearch,
     pagination: groupPagination,
     setPagination: setGroupPagination,
+    sorting: groupSorting,
+    setSorting: setGroupSorting,
     loading: groupLoading,
     page: groupPage,
     selectedRecord: selectedGroup,
@@ -159,6 +165,8 @@ export default function Security() {
   } = usePageLogic<Group, TrackedEntityQueryFilter, GroupFieldValues>({
     recordKind: "Group",
     schema: GroupSchema,
+    manualPagination: false,
+    manualSorting: false,
     listQuery: QUERY_GROUPS,
     copyToForm: copyGroupToForm,
     copyFromForm: copyGroupFromForm,
@@ -208,8 +216,12 @@ export default function Security() {
             defaultColumnVisibility={groupColumnVisibility}
             page={groupPage}
             loading={groupLoading}
+            manualPagination={false}
             pagination={groupPagination}
             onPaginationChange={setGroupPagination}
+            manualSorting={false}
+            sorting={userSorting}
+            onSortingChange={setUserSorting}
             search={groupSearch}
             onSearchChange={setGroupSearch}
             onRowSelectionChange={handleGroupSelectionChange}
@@ -255,8 +267,12 @@ export default function Security() {
               defaultColumnVisibility={userColumnVisibility}
               page={userPageToShow}
               loading={userLoading}
+              manualPagination={false}
               pagination={userPagination}
               onPaginationChange={setUserPagination}
+              manualSorting={false}
+              sorting={groupSorting}
+              onSortingChange={setGroupSorting}
               search={userSearch}
               onSearchChange={setUserSearch}
               onRowSelectionChange={handleUserSelectionChange}

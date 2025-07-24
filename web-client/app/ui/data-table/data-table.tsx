@@ -102,10 +102,14 @@ interface DataTableProps<TData, TValue> {
   defaultColumnVisibility: VisibilityState
   page?: IPage<TData>
   loading: boolean
-  pagination: PageSettings
-  onPaginationChange: Dispatch<SetStateAction<PageSettings>>
   search: SearchSettings
   onSearchChange: Dispatch<SetStateAction<SearchSettings>>
+  manualPagination: boolean
+  pagination: PageSettings
+  onPaginationChange: Dispatch<SetStateAction<PageSettings>>
+  manualSorting: boolean
+  sorting: SortingState,
+  onSortingChange: Dispatch<SetStateAction<SortingState>>,
   getSubRows?: (row: TData) => TData[] | undefined
   onRowSelectionChange?: (recordId?: string) => void
 }
@@ -121,10 +125,14 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
   defaultColumnVisibility,
   page,
   loading,
-  pagination,
-  onPaginationChange,
   search,
   onSearchChange,
+  manualPagination,
+  pagination,
+  onPaginationChange,
+  manualSorting,
+  sorting,
+  onSortingChange,
   getSubRows,
   onRowSelectionChange
 }: DataTableProps<TData, TValue>) {
@@ -134,7 +142,7 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
   const [columns] = useState<typeof defaultColumns>(() => [
     ...defaultColumns,
   ])
-  const [sorting, setSorting] = useState<SortingState>([])
+  // const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({...defaultColumnVisibility})
   const [columnOrder, setColumnOrder] = useState<string[]>(() => columns.map(c => c.id!))
@@ -190,7 +198,7 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
     // aggregationFns: ,
     // autoResetAll: boolean,
     // autoResetExpanded: boolean,
-    // autoResetPageIndex: false, // defaults to false if manualPagination == true
+    // autoResetPageIndex: false, // must be false (the default) if manualPagination == true
     columnResizeMode: "onChange",
     columnResizeDirection: "ltr",
     columns,
@@ -201,6 +209,7 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
     // debugHeaders: boolean,
     // debugRows: boolean,
     // debugTable: boolean,
+    // debugTable: true,
     // defaultColumn: {
     //   size: 150, //starting column size
     //   minSize: 10, //enforced during column resizing
@@ -233,11 +242,11 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     // getGroupedRowModel: ((table: Table<any>) => () => RowModel<any>),
     // getIsRowExpanded: ((row: Row<TData>) => boolean),
-    getPaginationRowModel: getPaginationRowModel(), // not required for manual/server-side pagination - OR IS IT?
+    getPaginationRowModel: manualPagination ? undefined: getPaginationRowModel(), // not needed for manual/server-side pagination
     getRowId: originalRow => originalRow.id ?? "",
     // getRowCanExpand: getRowCanExpand?: ((row: Row<TData>) => boolean),
-    getSortedRowModel: getSortedRowModel(), // actually not needed for manual/server-side sorting
-    getSubRows: getSubRows,
+    getSortedRowModel: manualSorting ? undefined: getSortedRowModel(), // not needed for manual/server-side sorting
+    getSubRows,
     // globalFilterFn: FilterFnOption<TData>,
     // groupedColumnMode: false | "reorder" | "remove" | undefined,
     initialState: {
@@ -249,51 +258,52 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
     // isMultiSortEvent: ((e: unknown) => boolean),
     // keepPinnedRows: true,
     // manualExpanding: false,
-    manualPagination: true,
     // manualExpanding: false,
     // manualFiltering: true,
     // manualGrouping: true,
-    manualSorting: false, // set to false for server-side sorting, access as table.getState().sorting
+    manualPagination, // set to true for server-side pagination
+    manualSorting, // set to true for server-side sorting, access as table.getState().sorting
     // maxLeafRowFilterDepth: 0,
     maxMultiSortColCount: 5, // default is unlimited
     // mergeOptions: ((defaultOptions: TableOptions<TData>, options: Partial<TableOptions<TData>>) => TableOptions<TData>),
-    pageCount: page?.totalPages ?? -1,
+    // pageCount: page?.totalPages ?? -1, // can now pass in `rowCount` instead of pageCount and `pageCount` will be calculated internally (new in v8.13.0)
     paginateExpandedRows: false,
-    rowCount: Number.parseInt(page?.totalElements ?? "0"),
+    rowCount: manualPagination ? page?.totalElements : undefined,
     // onColumnPinningChange: OnChangeFn<ColumnPinningState>,
     // onColumnSizingChange: OnChangeFn<ColumnSizingState>,
     // onColumnSizingInfoChange: OnChangeFn<ColumnSizingInfoState>,
     onExpandedChange: setExpanded,
     // onGlobalFilterChange: OnChangeFn<any>,
     // onGroupingChange: OnChangeFn<GroupingState>,
-    // onPaginationChange?: OnChangeFn<PaginationState>, // If provided, called when pagination state changes. Pass managed state back via tableOptions.state.pagination
+    onPaginationChange, // OnChangeFn<PaginationState>, // If provided, called when pagination state changes. Pass managed state back via tableOptions.state.pagination
     // onRowPinningChange: OnChangeFn<RowPinningState>,
     onRowSelectionChange: rowSelectionChanged,
     // onStateChange: ((updater: Updater<TableState>) => void),
     onColumnFiltersChange: setColumnFilters,
     onColumnOrderChange: setColumnOrder,
     onColumnVisibilityChange: setColumnVisibility,
-    onSortingChange: setSorting,
+    onSortingChange,
     state: {
       columnFilters,
       columnOrder,
       columnVisibility,
       expanded,
       pagination,
-      rowSelection,
       sorting,
+      rowSelection,
     },
   })
 
   // console.log(`DataTable render: page = {totalPages: ${page?.totalPages}, totalElements: ${page?.totalElements}}`)
-  useEffect(() => {
-    // console.log(`DataTable useEffect: page = {totalPages: ${page?.totalPages}, totalElements: ${page?.totalElements}}`)
-    table.setOptions({
-      ...table.options,
-      pageCount: page?.totalPages ?? -1,
-      rowCount: Number.parseInt(page?.totalElements ?? "0")
-    })
-  }, [page?.totalPages, page?.totalElements]);
+  if (manualPagination) {
+    useEffect(() => {
+      // console.log(`DataTable useEffect: page = {totalPages: ${page?.totalPages}, totalElements: ${page?.totalElements}}`)
+      table.setOptions({
+        ...table.options,
+        rowCount: page?.totalElements ?? 0, // Number.parseInt(page?.totalElements ?? "0")
+      })
+    }, [page?.totalElements]);
+  }
 
   // function computeTableMetrics() {
   //   let length = 0

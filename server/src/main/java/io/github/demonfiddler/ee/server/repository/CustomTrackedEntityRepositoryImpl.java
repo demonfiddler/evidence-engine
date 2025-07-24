@@ -186,7 +186,7 @@ public abstract class CustomTrackedEntityRepositoryImpl<T extends ITrackedEntity
         selectBuf.insert(0,
             "SELECT e.\"dtype\", e.\"status\", e.\"created\", e.\"created_by_user_id\", e.\"updated\", e.\"updated_by_user_id\", ee.*");
         if (m.isSorted)
-            entityUtils.appendOrderByClause(selectBuf, m.pageable, "ee.", true);
+            entityUtils.appendOrderByClause(selectBuf, m.pageable, "e.", "ee.", true);
         selectBuf.append(';');
 
         // NOTE: since the COUNT query does not include an ORDER BY clause, multiple executions of the same SELECT query

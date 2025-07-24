@@ -20,7 +20,7 @@
 import IPage from "@/app/model/IPage";
 import ITrackedEntity from "@/app/model/ITrackedEntity";
 import RecordKind from "@/app/model/RecordKind";
-import { LinkableEntityQueryFilter, TrackedEntityQueryFilter } from "@/app/model/schema";
+import { LinkableEntityQueryFilter, PageableInput, TrackedEntityQueryFilter } from "@/app/model/schema";
 import { MasterLinkContext, SelectedRecordsContext } from "@/lib/context";
 import { FormAction, getLinkFilterIdProperty, SearchSettings } from "@/lib/utils";
 import { DocumentNode, useQuery } from "@apollo/client";
@@ -30,39 +30,58 @@ import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useMemo, 
 import { FieldValues, useForm, UseFormReturn } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod/v4";
+import { ColumnFiltersState, PaginationState, SortingState } from "@tanstack/react-table";
 
-type PaginationType = { pageIndex: number, pageSize: number }
-type PageConfiguration<T extends ITrackedEntity, F extends TrackedEntityQueryFilter, V extends FieldValues> = {
+export type PageConfiguration<T extends ITrackedEntity, F extends TrackedEntityQueryFilter, V extends FieldValues> = {
   recordKind: RecordKind // TODO: do we need to constrain this to trackable/linkable types?
-  schema: z.ZodObject<any>
+  schema?: z.ZodObject<any>
+  manualPagination: boolean
+  manualSorting: boolean
   listQuery: DocumentNode
   copyToForm: (record?: T) => V
-  copyFromForm: (record: T, fieldValues: V) => void
+  copyFromForm?: (record: T, fieldValues: V) => void
   prepareFilter?: (filter: F) => void
   preparePage?: (page?: IPage<T>) => IPage<T> | undefined
   findRecord?: (records?: T[], id?: string | null) => T | undefined
 }
-export type PageLogic<T extends ITrackedEntity, F extends FieldValues> = {
+
+export type PageLogic<T extends ITrackedEntity, V extends FieldValues> = {
   search: SearchSettings
   setSearch: Dispatch<SetStateAction<SearchSettings>>
-  pagination: PaginationType
-  setPagination: Dispatch<SetStateAction<PaginationType>>
+  pagination: PaginationState
+  setPagination: Dispatch<SetStateAction<PaginationState>>
+  sorting: SortingState,
+  setSorting: Dispatch<SetStateAction<SortingState>>,
   loading: boolean
   page?: IPage<T>
   selectedRecord?: T
   handleRowSelectionChange: (recordId?: string) => void
-  form: UseFormReturn<F, any, F>
-  handleFormAction: (command: FormAction, formFields: F) => void
+  form: UseFormReturn<V, any, V>
+  handleFormAction: (command: FormAction, formFields: V) => void
 }
 
-export default function usePageLogic<T extends ITrackedEntity, F extends TrackedEntityQueryFilter, V extends FieldValues>
-  (config : PageConfiguration<T, F, V>) : PageLogic<T, V> {
+export default function usePageLogic<T extends ITrackedEntity, F extends TrackedEntityQueryFilter, V extends FieldValues> (
+    {
+      recordKind,
+      schema,
+      manualPagination,
+      manualSorting,
+      listQuery,
+      copyToForm,
+      copyFromForm,
+      prepareFilter,
+      preparePage,
+      findRecord,
+    }
+    : PageConfiguration<T, F, V>
+  ) : PageLogic<T, V> {
 
   const masterLinkContext = useContext(MasterLinkContext)
   const selectedRecordsContext = useContext(SelectedRecordsContext)
   const [search, setSearch] = useState<SearchSettings>({advancedSearch: false, showOnlyLinkedRecords: false} as SearchSettings)
-  const [selectedRecordId, setSelectedRecordId] = useState<string|undefined>(selectedRecordsContext[config.recordKind]?.id)
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+  const [selectedRecordId, setSelectedRecordId] = useState<string|undefined>(selectedRecordsContext[recordKind]?.id)
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
+  const [sorting, setSorting] = useState<SortingState>([])
 
   const filter = useMemo(() => {
     const filter = {
@@ -78,27 +97,39 @@ export default function usePageLogic<T extends ITrackedEntity, F extends Tracked
         mlFilter.recursive = true
       }
       if (masterLinkContext.masterRecordId) {
-        const linkFilterIdProperty = getLinkFilterIdProperty(config.recordKind, masterLinkContext.masterRecordKind)
+        const linkFilterIdProperty = getLinkFilterIdProperty(recordKind, masterLinkContext.masterRecordKind)
         if (linkFilterIdProperty)
           mlFilter[linkFilterIdProperty] = masterLinkContext.masterRecordId
       }
     }
-    config.prepareFilter?.(filter)
-    console.log(`${config.recordKind}s effect: filter = ${JSON.stringify(filter)}`)
+    prepareFilter?.(filter)
+    console.log(`${recordKind}s effect: filter = ${JSON.stringify(filter)}`)
     return filter
   }, [search, masterLinkContext])
 
   const pageSort = useMemo(() => {
-    const pageSort = {
-      pageNumber: pagination.pageIndex,
-      pageSize: pagination.pageSize
+    const pageSort : PageableInput = manualPagination && pagination
+      ? {
+        pageNumber: pagination.pageIndex,
+        pageSize: pagination.pageSize,
+        sort: manualSorting ? sorting ? { orders: [] } : undefined : undefined,
+      }
+      : {}
+    if (manualSorting && sorting) {
+      pageSort.sort ??= { orders: [] }
+      for (let s of sorting) {
+        pageSort.sort?.orders.push({
+          property: s.id,
+          direction: s.desc ? "DESC" : undefined
+        })
+      }
     }
-    console.log(`${config.recordKind}s effect: pageSort = ${JSON.stringify(pageSort)}`)
+    console.log(`${recordKind}s effect: pageSort = ${JSON.stringify(pageSort)}`)
     return pageSort
-  }, [pagination])
+  }, [manualPagination && pagination, manualSorting && sorting])
 
   const result = useQuery(
-    config.listQuery,
+    listQuery,
     {
       variables: {
         filter,
@@ -109,12 +140,12 @@ export default function usePageLogic<T extends ITrackedEntity, F extends Tracked
 
   // Whenever filter or pagination changes, ask Apollo to refetch
   useEffect(() => {
-    console.log(`${config.recordKind}s effect: search = ${JSON.stringify(search)}`)
+    // console.log(`${recordKind}s effect: search = ${JSON.stringify(search)}`)
     result.refetch({
       filter,
       pageSort
     });
-  }, [filter, pageSort]);
+  }, [filter, manualPagination && pageSort]);
 
   if (result.error) {
     toast.error(`Fetch error:\n\n${JSON.stringify(result.error)}`)
@@ -149,7 +180,7 @@ export default function usePageLogic<T extends ITrackedEntity, F extends Tracked
   // }, [selectedRecordId, setSelectedRecordId])
 
   const queryName = useMemo(() => {
-    const opDef = config.listQuery.definitions.find(
+    const opDef = listQuery.definitions.find(
       d => d.kind == Kind.OPERATION_DEFINITION && d.operation == OperationTypeNode.QUERY) as OperationDefinitionNode | undefined
     const fieldNode = opDef?.selectionSet.selections[0] as FieldNode | undefined
     const queryName = fieldNode?.name.value
@@ -158,18 +189,18 @@ export default function usePageLogic<T extends ITrackedEntity, F extends Tracked
     return queryName
   }, [])
   const rawPage = result.data?.[queryName] as unknown as IPage<T> | undefined
-  const page = useMemo(() => config.preparePage?.(rawPage) ?? rawPage, [config.preparePage, rawPage])
+  const page = useMemo(() => preparePage?.(rawPage) ?? rawPage, [preparePage, rawPage])
 
   // const [page, pageDispatch] = useImmerReducer(pageReducer, rawPage as unknown as IPage<Claim>)
   const getSelectedRecord = useCallback((id?: string) => {
-    return config.findRecord
-      ? config.findRecord(page?.content, id)
+    return findRecord
+      ? findRecord(page?.content, id)
       : page?.content.find(r => r.id == id)
   }, [page])
   const selectedRecord = /*mode == "create" ? newRecord :*/ getSelectedRecord(selectedRecordId)
-  const origFormValue = useMemo(() => config.copyToForm(selectedRecord), [config.copyToForm, selectedRecord])
+  const origFormValue = useMemo(() => copyToForm(selectedRecord), [copyToForm, selectedRecord])
   const form = useForm<V>({
-    resolver: standardSchemaResolver(config.schema),
+    resolver: schema && standardSchemaResolver(schema),
     mode: "onChange",
     values: origFormValue,
   })
@@ -194,7 +225,7 @@ export default function usePageLogic<T extends ITrackedEntity, F extends Tracked
         //     status: "Draft"
         //   })
         // }
-        form.reset(origFormValue)
+        form?.reset(origFormValue)
         break
     }
   }, [form, /*pageDispatch, */selectedRecord])
@@ -202,7 +233,7 @@ export default function usePageLogic<T extends ITrackedEntity, F extends Tracked
   const handleRowSelectionChange = useCallback((recordId?: string) => {
     setSelectedRecordId(recordId)
     const record = getSelectedRecord(recordId)
-    form.reset(config.copyToForm(record))
+    form?.reset(copyToForm(record))
   }, [setSelectedRecordId, getSelectedRecord, form])
 
   // console.log(`${settings.recordKind}s() page: ${JSON.stringify(page)})`)
@@ -212,6 +243,8 @@ export default function usePageLogic<T extends ITrackedEntity, F extends Tracked
       setSearch,
       pagination,
       setPagination,
+      sorting,
+      setSorting,
       loading: result.loading,
       page,
       selectedRecord,
@@ -223,6 +256,8 @@ export default function usePageLogic<T extends ITrackedEntity, F extends Tracked
       setSearch,
       pagination,
       setPagination,
+      sorting,
+      setSorting,
       result.loading,
       page,
       selectedRecord,

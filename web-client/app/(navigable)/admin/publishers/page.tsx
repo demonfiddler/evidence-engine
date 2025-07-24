@@ -55,6 +55,8 @@ export default function Publishers() {
     setSearch,
     pagination,
     setPagination,
+    sorting,
+    setSorting,
     loading,
     page,
     selectedRecord,
@@ -64,6 +66,8 @@ export default function Publishers() {
   } = usePageLogic<Publisher, TrackedEntityQueryFilter, PublisherFieldValues>({
     recordKind: "Publisher",
     schema: PublisherSchema,
+    manualPagination: true,
+    manualSorting: true,
     listQuery: QUERY_PUBLISHERS,
     copyToForm,
     copyFromForm,
@@ -82,8 +86,12 @@ export default function Publishers() {
         defaultColumnVisibility={columnVisibility}
         page={page}
         loading={loading}
+        manualPagination={true}
         pagination={pagination}
         onPaginationChange={setPagination}
+        manualSorting={true}
+        sorting={sorting}
+        onSortingChange={setSorting}
         search={search}
         onSearchChange={setSearch}
         onRowSelectionChange={handleRowSelectionChange}

@@ -29,7 +29,7 @@ export const columns: ColumnDef<ITrackedEntity>[] = [
     id: "status",
     accessorKey: "status",
     enableSorting: true,
-    size: 108,
+    size: 130,
     header: "Status",
   },
   {
@@ -56,7 +56,7 @@ export const columns: ColumnDef<ITrackedEntity>[] = [
     id: "createdByUsername",
     accessorKey: "createdByUser.username",
     enableSorting: true,
-    size: 140,
+    size: 152,
     header: "Created by",
   },
   {
@@ -83,7 +83,7 @@ export const columns: ColumnDef<ITrackedEntity>[] = [
     id: "updatedByUsername",
     accessorKey: "updatedByUser.username",
     enableSorting: true,
-    size: 140,
+    size: 156,
     header: "Updated by",
   },
 ]

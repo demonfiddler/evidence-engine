@@ -64,6 +64,8 @@ export default function Declarations() {
     setSearch,
     pagination,
     setPagination,
+    sorting,
+    setSorting,
     loading,
     page,
     selectedRecord,
@@ -73,6 +75,8 @@ export default function Declarations() {
   } = usePageLogic<Declaration, LinkableEntityQueryFilter, DeclarationFieldValues>({
     recordKind: "Declaration",
     schema: DeclarationSchema,
+    manualPagination: true,
+    manualSorting: true,
     listQuery: QUERY_DECLARATIONS,
     copyToForm,
     copyFromForm,
@@ -91,8 +95,12 @@ export default function Declarations() {
         defaultColumnVisibility={columnVisibility}
         page={page}
         loading={loading}
+        manualPagination={true}
         pagination={pagination}
         onPaginationChange={setPagination}
+        manualSorting={true}
+        sorting={sorting}
+        onSortingChange={setSorting}
         search={search}
         onSearchChange={setSearch}
         onRowSelectionChange={handleRowSelectionChange}

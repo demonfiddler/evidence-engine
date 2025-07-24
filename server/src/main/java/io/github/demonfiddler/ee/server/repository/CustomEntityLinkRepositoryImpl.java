@@ -259,7 +259,7 @@ public class CustomEntityLinkRepositoryImpl extends AbstractCustomRepositoryImpl
             }
         }
         if (m.isSorted)
-            entityUtils.appendOrderByClause(orderByClause, m.pageable, "el.", true);
+            entityUtils.appendOrderByClause(orderByClause, m.pageable, "e.", "el.", true);
 
         String template = """
             SELECT %s

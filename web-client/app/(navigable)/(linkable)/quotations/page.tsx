@@ -57,6 +57,8 @@ export default function Quotations() {
     setSearch,
     pagination,
     setPagination,
+    sorting,
+    setSorting,
     loading,
     page,
     selectedRecord,
@@ -66,6 +68,8 @@ export default function Quotations() {
   } = usePageLogic<Quotation, LinkableEntityQueryFilter, QuotationFieldValues>({
     recordKind: "Quotation",
     schema: QuotationSchema,
+    manualPagination: true,
+    manualSorting: true,
     listQuery: QUERY_QUOTATIONS,
     copyToForm,
     copyFromForm,
@@ -84,8 +88,12 @@ export default function Quotations() {
         defaultColumnVisibility={columnVisibility}
         page={page}
         loading={loading}
+        manualPagination={true}
         pagination={pagination}
         onPaginationChange={setPagination}
+        manualSorting={true}
+        sorting={sorting}
+        onSortingChange={setSorting}
         search={search}
         onSearchChange={setSearch}
         onRowSelectionChange={handleRowSelectionChange}

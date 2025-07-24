@@ -35,7 +35,7 @@ export const columns: ColumnDef<Group>[] = [
     accessorKey: "groupname",
     enableHiding: false,
     enableSorting: true,
-    size: 150,
+    size: 164,
     header: "Group Name",
   },
   {

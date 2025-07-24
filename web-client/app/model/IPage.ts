@@ -24,7 +24,7 @@ export default interface IPage<T> {
   size: number
   numberOfElements: number
   totalPages: number
-  totalElements: string
+  totalElements: number
   isFirst: boolean
   isLast: boolean
   hasNext: boolean

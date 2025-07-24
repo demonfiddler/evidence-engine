@@ -73,6 +73,8 @@ export default function Publications() {
     setSearch,
     pagination,
     setPagination,
+    sorting,
+    setSorting,
     loading,
     page,
     selectedRecord,
@@ -82,6 +84,8 @@ export default function Publications() {
   } = usePageLogic<Publication, LinkableEntityQueryFilter, PublicationFieldValues>({
     recordKind: "Publication",
     schema: PublicationSchema,
+    manualPagination: true,
+    manualSorting: true,
     listQuery: QUERY_PUBLICATIONS,
     copyToForm,
     copyFromForm,
@@ -100,8 +104,12 @@ export default function Publications() {
         defaultColumnVisibility={columnVisibility}
         page={page}
         loading={loading}
+        manualPagination={true}
         pagination={pagination}
         onPaginationChange={setPagination}
+        manualSorting={true}
+        sorting={sorting}
+        onSortingChange={setSorting}
         search={search}
         onSearchChange={setSearch}
         onRowSelectionChange={handleRowSelectionChange}

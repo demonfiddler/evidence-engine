@@ -19,7 +19,6 @@
 
 'use client'
 
-// import type { Metadata } from "next";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { ListBulletIcon } from '@heroicons/react/24/outline';
 
@@ -35,55 +34,52 @@ import { useQuery } from "@apollo/client";
 import { QUERY_LOG } from "@/lib/graphql-queries";
 import { toast } from "sonner";
 import { LogQueryFilter } from "@/app/model/schema";
-
-// export const metadata: Metadata = {
-//   title: "Logs",
-//   description: "Record change log",
-// };
+import { SortingState } from "@tanstack/react-table";
+// import usePageLogic from "@/hooks/use-page-logic";
 
 export default function Logs() {
-  // const page = rawPage as unknown as IPage<Log>
   const selectedRecordsContext = useContext(SelectedRecordsContext)
   const [search, setSearch] = useState<SearchSettings>({showOnlyLinkedRecords: false} as SearchSettings)
   const [selectedRecordId, setSelectedRecordId] = useState<string|undefined>(selectedRecordsContext.Log?.id)
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
-  const filter = useMemo(() => {
-    const filter: LogQueryFilter = {
-      // status: search.status ? [search.status] : undefined,
-      // text: search.text,
-    }
-    // if (search.text)
-    //   filter.advancedSearch = search.advancedSearch
-    console.log(`Logs effect: filter = ${JSON.stringify(filter)}`)
-    return filter
-  }, [search])
-  const pageSort = useMemo(() => {
-    const pageSort = {
-      pageNumber: pagination.pageIndex,
-      pageSize: pagination.pageSize
-    }
-    console.log(`Logs effect: pageSort = ${JSON.stringify(pageSort)}`)
-    return pageSort
-  }, [pagination])
+  const [sorting, setSorting] = /*manualSorting ? */useState<SortingState>([]) // : []
+  // const filter = useMemo(() => {
+  //   const filter: LogQueryFilter = {
+  //     // status: search.status ? [search.status] : undefined,
+  //     // text: search.text,
+  //   }
+  //   // if (search.text)
+  //   //   filter.advancedSearch = search.advancedSearch
+  //   console.log(`Logs effect: filter = ${JSON.stringify(filter)}`)
+  //   return filter
+  // }, [search])
+  // const pageSort = useMemo(() => {
+  //   const pageSort = {
+  //     // pageNumber: pagination.pageIndex,
+  //     // pageSize: pagination.pageSize
+  //   }
+  //   console.log(`Logs effect: pageSort = ${JSON.stringify(pageSort)}`)
+  //   return pageSort
+  // }, [/*pagination*/])
 
   const result = useQuery(
-    QUERY_LOG,
+    QUERY_LOG/*,
     {
       variables: {
         filter,
         pageSort
       },
-    }
+    }*/
   )
 
   // Whenever filter or pagination changes, ask Apollo to refetch
-  useEffect(() => {
+  /*useEffect(() => {
     console.log(`Log effect: search = ${JSON.stringify(search)}`)
     result.refetch({
       filter,
       pageSort
     });
-  }, [/*filter, */pageSort]);
+  }, [filter, pageSort]);*/
 
   // console.log(`result.loading = ${result.loading}, result.error = ${JSON.stringify(result.error)}, result.data = ${JSON.stringify(result.data)}`)
   // console.log(`result.loading = ${result.loading}, result.error = ${JSON.stringify(result.error)}`)
@@ -95,6 +91,20 @@ export default function Logs() {
     toast.error(`Fetch error:\n\n${JSON.stringify(result.error)}`)
     console.error(result.error)
   }
+  // const {
+  //   search,
+  //   setSearch,
+  //   pagination,
+  //   setPagination,
+  //   loading,
+  //   page,
+  //   selectedRecord,
+  //   handleRowSelectionChange,
+  // } = usePageLogic<Log, LogQueryFilter, LogFieldValues>({
+  //   recordKind: "Log",
+  //   manualPagination: true,
+  //   listQuery: QUERY_LOG,
+  // })
 
   return (
     <main className="flex flex-col items-start m-4 gap-4">
@@ -109,11 +119,15 @@ export default function Logs() {
         defaultColumnVisibility={columnVisibility}
         page={page}
         loading={result.loading}
+        manualPagination={false}
         pagination={pagination}
         onPaginationChange={setPagination}
+        manualSorting={false}
+        sorting={sorting}
+        onSortingChange={setSorting}
         search={search}
         onSearchChange={setSearch}
-        onRowSelectionChange={setSelectedRecordId}
+        onRowSelectionChange={setSelectedRecordId/*handleRowSelectionChange*/}
       />
       <LogDetails record={selectedRecord} />
     </main>

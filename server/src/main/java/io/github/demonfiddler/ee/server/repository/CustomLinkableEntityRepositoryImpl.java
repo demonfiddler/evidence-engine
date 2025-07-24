@@ -476,7 +476,7 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
 
         StringBuilder orderByClause = new StringBuilder();
         if (m.isSorted)
-            entityUtils.appendOrderByClause(orderByClause, m.pageable, "ee.", true);
+            entityUtils.appendOrderByClause(orderByClause, m.pageable, "e.", "ee.", true);
 
         String template = """
             %sSELECT %s

@@ -20,6 +20,7 @@
 package io.github.demonfiddler.ee.server.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +78,8 @@ public class EntityUtils {
 	public static final CharSequence NL = System.getProperty("line.separator");
 	private static final BidiMap<Class<?>, EntityKind> ENTITY_KINDS = new DualHashBidiMap<>();
 	private static final BidiMap<Class<?>, String> ENTITY_NAMES = new DualHashBidiMap<>();
+	private static final Collection<String> BASE_TABLE_FIELDS =
+		List.of("id", "dtype", "status", "created", "createdByUserId", "updated", "updatedByUserId");
 
 	static {
 		ENTITY_KINDS.put(Claim.class, EntityKind.CLA);
@@ -354,11 +357,15 @@ public class EntityUtils {
 	 * Appends an ORDER BY clause to a string buffer.
 	 * @param sql The SQL buffer.
 	 * @param pageable Paginator with sorting information.
-	 * @param qualifier The qualifier with which to prefix field references (e.g. {@code "e."}). For unprefixed, pass an
-	 * empty string.
+	 * @param baseTableQualifier The qualifier with which to prefix field references in base tables
+	 * (e.g. {@code "e."}). For unprefixed, pass an empty string.
+	 * @param joinedTableQualifier The qualifier with which to prefix field references in joined tables
+	 * (e.g. {@code "ee."}). For unprefixed, pass an empty string.
 	 * @param multiline Whether to place the ORDER BY and each sort term on a separate line.
 	 */
-	public void appendOrderByClause(StringBuilder sql, Pageable pageable, String qualifier, boolean multiline) {
+	public void appendOrderByClause(StringBuilder sql, Pageable pageable, String baseTableQualifier,
+		String joinedTableQualifier, boolean multiline) {
+
 		if (pageable.getSort().isSorted()) {
 			if (multiline)
 				sql.append(NL);
@@ -371,6 +378,7 @@ public class EntityUtils {
 				sql.append(' ');
 			boolean needsComma = false;
 			for (Order order : pageable.getSort().toList()) {
+				String qualifier = isBaseTableField(order.getProperty()) ? baseTableQualifier : joinedTableQualifier;
 				String property = toDbColumnName(order.getProperty());
 				if (needsComma) {
 					sql.append(',');
@@ -471,6 +479,10 @@ public class EntityUtils {
 				buf.append(c);
 		}
 		return buf.toString();
+	}
+
+	private boolean isBaseTableField(String fieldName) {
+		return BASE_TABLE_FIELDS.contains(fieldName);
 	}
 
 }

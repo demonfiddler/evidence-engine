@@ -35,7 +35,7 @@ export const columns: ColumnDef<User>[] = [
     accessorKey: "username",
     enableHiding: false,
     enableSorting: true,
-    size: 132,
+    size: 150,
     header: "Username",
   },
   {
@@ -43,7 +43,7 @@ export const columns: ColumnDef<User>[] = [
     accessorKey: "firstName",
     enableHiding: true,
     enableSorting: true,
-    size: 132,
+    size: 152,
     header: "First Name",
   },
   {
@@ -51,7 +51,7 @@ export const columns: ColumnDef<User>[] = [
     accessorKey: "lastName",
     enableHiding: true,
     enableSorting: true,
-    size: 132,
+    size: 152,
     header: "Last Name",
   },
   {

@@ -71,6 +71,8 @@ export default function Persons() {
     setSearch,
     pagination,
     setPagination,
+    sorting,
+    setSorting,
     loading,
     page,
     selectedRecord,
@@ -80,6 +82,8 @@ export default function Persons() {
   } = usePageLogic<Person, LinkableEntityQueryFilter, PersonFieldValues>({
     recordKind: "Person",
     schema: PersonSchema,
+    manualPagination: true,
+    manualSorting: true,
     listQuery: QUERY_PERSONS,
     copyToForm,
     copyFromForm,
@@ -98,8 +102,12 @@ export default function Persons() {
         defaultColumnVisibility={columnVisibility}
         page={page}
         loading={loading}
+        manualPagination={true}
         pagination={pagination}
         onPaginationChange={setPagination}
+        manualSorting={true}
+        sorting={sorting}
+        onSortingChange={setSorting}
         search={search}
         onSearchChange={setSearch}
         onRowSelectionChange={handleRowSelectionChange}
