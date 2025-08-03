@@ -34,6 +34,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
+import { ChangeEvent, useCallback, useEffect, useState } from "react"
+import { useDebounceValue } from "usehooks-ts"
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>
@@ -42,6 +45,20 @@ interface DataTablePaginationProps<TData> {
 export function DataTablePaginator<TData>({
   table,
 }: DataTablePaginationProps<TData>) {
+  const pn = (table.getState().pagination?.pageIndex ?? 0) + 1
+  const [pageNumber, setPageNumber] = useState(pn)
+  const [debouncedPageNumber, setDebouncedPageNumber] = useDebounceValue(pn, 500)
+  useEffect(() => {
+    table.setPagination({pageIndex: debouncedPageNumber - 1, pageSize: table.getState().pagination?.pageSize})
+  }, [debouncedPageNumber])
+  const handlePageChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const pageNumber = Number.parseInt(e.target.value)
+    if (pageNumber > 0 && pageNumber <= table.getPageCount()) {
+      setPageNumber(pageNumber)
+      setDebouncedPageNumber(pageNumber)
+    }
+  }, [pageNumber])
+
   return (
     <div className="flex items-center justify-between">
       <div className="flex-1 text-sm text-muted-foreground">
@@ -70,7 +87,17 @@ export function DataTablePaginator<TData>({
           </Select>
         </div>
         <div className="flex items-center justify-center text-sm font-medium">
-          <p>Page {table.getState().pagination?.pageIndex + 1} of{" "} {table.getPageCount()} <span>(showing {table.getRowModel().rows.length.toLocaleString()} of{" "} {table.getRowCount().toLocaleString()} items)</span></p>
+          <p>Page&nbsp;
+          <Input
+            className="w-12 inline"
+            type="number"
+            min={1}
+            max={table.getPageCount()}
+            value={pageNumber}
+            onChange={handlePageChange}
+          />
+          &nbsp;of&nbsp;{table.getPageCount()} <span>(showing {table.getRowModel().rows.length.toLocaleString()}
+          &nbsp;of&nbsp;{table.getRowCount().toLocaleString()} items)</span></p>
         </div>
         <div className="flex items-center space-x-2">
           <Button
