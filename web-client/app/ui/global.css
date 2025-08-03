@@ -63,6 +63,20 @@ input[type='number']::-webkit-outer-spin-button {
   margin-right:2px !important;
 }
 
+.ee.react-dropdown-tree-select .toggle.collapsed:after{
+  content:url(/chevron-down.svg);
+  display:inline-block;
+  width: calc(var(--spacing) * 4) !important;
+  height: calc(var(--spacing) * 4) !important;
+}
+
+.ee.react-dropdown-tree-select .toggle.expanded:after{
+  content:url(/chevron-up.svg);
+  display:inline-block;
+  width: calc(var(--spacing) * 4) !important;
+  height: calc(var(--spacing) * 4) !important;
+}
+
 .ee .dropdown {
   width: fit-content
 }
