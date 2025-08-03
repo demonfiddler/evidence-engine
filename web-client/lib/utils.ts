@@ -33,6 +33,8 @@ import Topic from "@/app/model/Topic"
 import User from "@/app/model/User"
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { READ_CLAIMS, READ_DECLARATIONS, READ_GROUPS, READ_JOURNALS, READ_LOGS, READ_PERSONS, READ_PUBLICATIONS, READ_PUBLISHERS, READ_QUOTATIONS, READ_TOPIC_HIERARCHY, READ_USERS } from "./graphql-queries"
+import { DocumentNode } from "graphql"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -120,32 +122,13 @@ export function setTopicFields(path: string, parentId?: string, inTopics?: Topic
       const outTopic = {
         ...inTopic,
         children: [],
-        path: (path.length > 0 ? path + " > " : path) + inTopic.label,
+        path: (path.length > 0 ? path + " > " : "") + inTopic.label,
         parentId: parentId,
       }
       setTopicFields(outTopic.path, inTopic.id, inTopic.children, outTopic.children)
       outTopics?.push(outTopic)
     }
   }
-}
-
-export type FormAction = "create" | "update" | "delete" | "reset"
-export type SecurityFormAction = FormAction | "add" | "remove"
-
-type Action = {
-  recordId: string
-  command: string
-  value: any
-}
-
-type MutationAction<T, F> = {
-  command: T
-  value: F
-}
-
-type PageSettings = {
-  pageIndex: number
-  pageSize: number
 }
 
 type SearchSettings = {
@@ -155,10 +138,10 @@ type SearchSettings = {
   showOnlyLinkedRecords: boolean
 }
 
-export type { Action, MutationAction, PageSettings, SearchSettings }
+export type { SearchSettings }
 
-const TO_ENTITY_ID = "toEntityId"
-const FROM_ENTITY_ID = "fromEntityId"
+export const TO_ENTITY_ID = "toEntityId"
+export const FROM_ENTITY_ID = "fromEntityId"
 export type LinkFilterProperty = typeof TO_ENTITY_ID | typeof FROM_ENTITY_ID | undefined
 type MasterRecordLink = {[key in RecordKind]?: LinkFilterProperty}
 type RecordLinks = {[key in RecordKind]?: MasterRecordLink}
@@ -207,8 +190,33 @@ const linkFilterIdProperties : RecordLinks = {
   },
 }
 
-export function getLinkFilterIdProperty(recordKind: RecordKind, masterRecordKind: RecordKind) : LinkFilterProperty {
-  return linkFilterIdProperties?.[recordKind]?.[masterRecordKind]
+/**
+ * Returns the 'other' entity property in an entity link.
+ * @param thisRecordKind The record kind of 'this record'.
+ * @param otherRecordKind The record kind of the 'other record'.
+ * @returns The name of the 'other record' property.
+ */
+export function getLinkFilterIdProperty(thisRecordKind: RecordKind, otherRecordKind: RecordKind) : LinkFilterProperty {
+  return linkFilterIdProperties?.[thisRecordKind]?.[otherRecordKind]
+}
+
+const readQueryByRecordKind = {
+  None: undefined,
+  Claim: READ_CLAIMS,
+  Declaration: READ_DECLARATIONS,
+  Group: READ_GROUPS,
+  Journal: READ_JOURNALS,
+  Log: READ_LOGS,
+  Person: READ_PERSONS,
+  Publication: READ_PUBLICATIONS,
+  Publisher: READ_PUBLISHERS,
+  Quotation: READ_QUOTATIONS,
+  Topic: READ_TOPIC_HIERARCHY,
+  User: READ_USERS,
+}
+
+export function getReadQuery(recordKind: RecordKind) : DocumentNode | undefined {
+  return readQueryByRecordKind[recordKind]
 }
 
 export function toDate(value?: string | Date | null) {
@@ -219,12 +227,21 @@ export function toDate(value?: string | Date | null) {
       : ''
 }
 
-export function toIsoString(value?: string | Date) {
+export function toIsoDateTimeString(value?: string | Date) {
   return value instanceof Date
     ? value.toISOString()
     : value && typeof value == "string"
       ? value
       : null
+}
+
+export function toIsoDateString(value?: string | Date) {
+  let dateStr = value instanceof Date
+    ? value.toISOString()
+    : value && typeof value == "string"
+      ? value
+      : null
+  return dateStr?.slice(0, 10) || null
 }
 
 export function toInteger(s?: string | number) {

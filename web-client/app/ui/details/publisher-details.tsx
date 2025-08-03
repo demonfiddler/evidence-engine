@@ -19,8 +19,8 @@
 
 'use client'
 
-import Publisher from "@/app/model/Publisher";
-import { Input } from "@/components/ui/input";
+import Publisher from "@/app/model/Publisher"
+import { Input } from "@/components/ui/input"
 import {
   Form,
   FormControl,
@@ -39,29 +39,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import StandardDetails from "./standard-details";
+import StandardDetails from "./standard-details"
 import rawCountries from "@/data/countries.json" assert {type: 'json'}
-import Country from "@/app/model/Country";
-import DetailActions, { createDetailState, DetailMode } from "./detail-actions";
-import Link from "next/link";
-import { FormAction } from "@/lib/utils";
-import { useContext, useMemo, useState } from "react";
-import useAuth from "@/hooks/use-auth"
+import Country from "@/app/model/Country"
+import DetailActions, { DetailMode, DetailState } from "./detail-actions"
+import Link from "next/link"
+import { Dispatch, SetStateAction, useState } from "react"
 import { useFormContext } from "react-hook-form"
-import { PublisherFieldValues } from "../validators/publisher";
+import { PublisherFieldValues } from "../validators/publisher"
+import { FormActionHandler } from "@/hooks/use-page-logic"
 
 const countries = rawCountries as unknown as Country[]
 
 export default function PublisherDetails(
-  { record, onFormAction }:
-  { record?: Publisher; onFormAction: (command: FormAction, fieldValues: PublisherFieldValues) => void }) {
+  {
+    record,
+    state,
+    setMode,
+    onFormAction
+  } : {
+    record?: Publisher
+    state: DetailState
+    setMode: Dispatch<SetStateAction<DetailMode>>
+    onFormAction: FormActionHandler<PublisherFieldValues>
+  }) {
 
-  const {hasAuthority} = useAuth()
   const form = useFormContext()
-  const [mode, setMode] = useState<DetailMode>("view")
   const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
-
-  const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
   const { updating } = state
 
   return (
@@ -71,7 +75,13 @@ export default function PublisherDetails(
       <Form {...form}>
         <form>
           <FormDescription>
-            <span className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Publisher #${record?.id}` : "-Select a publisher in the list above to see its details-"}</span>
+            <span className="pt-2 pb-4">
+              &nbsp;&nbsp;{record
+              ? state.mode == "create"
+                ? "Details for new Publisher"
+                : `Details for selected Publisher #${record?.id}`
+              : "-Select a Publisher in the list above to see its details-"
+            }</span>
           </FormDescription>
           <div className="grid grid-cols-3 ml-2 mr-2 mt-4 mb-4 gap-4">
             <FormField
@@ -83,8 +93,7 @@ export default function PublisherDetails(
                   <FormControl>
                     <Input
                       id="name"
-                      className=""
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />
@@ -115,13 +124,13 @@ export default function PublisherDetails(
               control={form.control}
               name="location"
               render={({field}) => (
-                <FormItem className="">
+                <FormItem>
                   <FormLabel>Location</FormLabel>
                   <FormControl>
                     <Input
                       id="location"
                       className="col-span-2"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />
@@ -149,7 +158,7 @@ export default function PublisherDetails(
                     onValueChange={field.onChange}
                   >
                     <FormControl>
-                      <SelectTrigger id="country" className="w-full" disabled={!record}>
+                      <SelectTrigger id="country" className="w-full" disabled={!record && !updating}>
                         <SelectValue placeholder="Specify country" />
                       </SelectTrigger>
                     </FormControl>
@@ -190,16 +199,15 @@ export default function PublisherDetails(
                       updating
                       ? <Input
                           id="url"
-                          className=""
                           {...field}
                         />
-                      : <Link className="" href={record?.url ?? ''} target="_blank">{record?.url ?? ''}</Link>
+                      : <Link href={record?.url ?? ''} target="_blank">{record?.url ?? ''}</Link>
                     }
                   </FormControl>
                   {
                     showFieldHelp
                     ? <FormDescription>
-                        The publishers's online web address
+                        The publisher's online web address
                       </FormDescription>
                     : null
                   }
@@ -211,14 +219,14 @@ export default function PublisherDetails(
               control={form.control}
               name="journalCount"
               render={({field}) => (
-                <FormItem className="">
+                <FormItem>
                   <FormLabel>Journal count</FormLabel>
                   <FormControl>
                     <Input
                       id="journalCount"
                       type="number"
                       className="col-span-1"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />

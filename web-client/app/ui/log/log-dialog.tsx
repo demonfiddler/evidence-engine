@@ -19,7 +19,7 @@
 
 'use client'
 
-import { getRecordLabel, SearchSettings } from "@/lib/utils";
+import { cn, getRecordLabel, SearchSettings } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -37,25 +37,37 @@ import { useState } from "react";
 import Log from "@/app/model/Log";
 import { ownColumns as columns, columnVisibility } from "@/app/ui/tables/log-columns"
 import DataTable from "../data-table/data-table";
-import rawEmptyPage from "@/data/empty-page.json" assert {type: 'json'}
-import IPage from "@/app/model/IPage";
-
-const emptyPage = rawEmptyPage as unknown as IPage<Log>
+import { SortingState } from "@tanstack/react-table";
+import { DetailState } from "../details/detail-actions";
 
 export default function LogDialog({
-  className, disabled, recordKind, record
-}: {
-  className?: string, disabled: boolean, recordKind: RecordKind, record?: ITrackedEntity,
-}
-) {
+  className,
+  disabled,
+  recordKind,
+  record,
+  state,
+  title,
+} : {
+  className?: string
+  disabled: boolean
+  recordKind: RecordKind
+  record?: ITrackedEntity
+  state: DetailState
+  title: string
+}) {
   const [open, setOpen] = useState(false)
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [search, setSearch] = useState<SearchSettings>({advancedSearch: false, showOnlyLinkedRecords: false} as SearchSettings)
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+  const [sorting, setSorting] = useState<SortingState>([])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild className="col-start-6 place-items-center">
-        <Button className="w-20 place-self-center bg-blue-500 text-md" disabled={disabled}>Show log</Button>
+      <DialogTrigger asChild className={className}>
+        <Button
+          className="w-20 place-self-center bg-blue-500 text-md"
+          disabled={disabled}
+          title={title}
+        >Show log</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -69,10 +81,15 @@ export default function LogDialog({
           recordKind="Log"
           defaultColumns={columns}
           defaultColumnVisibility={columnVisibility}
-          page={record?.log/* ?? emptyPage*/}
+          page={record?.log}
+          state={state}
           loading={false}
+          manualPagination={false}
           pagination={pagination}
           onPaginationChange={setPagination}
+          manualSorting={false}
+          sorting={sorting}
+          onSortingChange={setSorting}
           search={search}
           onSearchChange={setSearch}
         />

@@ -34,26 +34,31 @@ import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Textarea } from "@/components/ui/textarea"
-import { cn, formatDate, FormAction } from "@/lib/utils"
+import { cn, formatDate } from "@/lib/utils"
 import { CalendarIcon } from "@heroicons/react/24/outline"
 import StandardDetails from "./standard-details"
-import DetailActions, { createDetailState, DetailMode } from "./detail-actions"
+import DetailActions, { DetailMode, DetailState } from "./detail-actions"
 import Link from "next/link"
-import { useContext, useMemo, useState } from "react"
-import useAuth from "@/hooks/use-auth"
+import { Dispatch, SetStateAction, useState } from "react"
 import { useFormContext } from "react-hook-form"
 import { QuotationFieldValues } from "../validators/quotation"
+import { FormActionHandler } from "@/hooks/use-page-logic"
 
 export default function QuotationDetails(
-  { record, onFormAction }:
-  { record?: Quotation; onFormAction: (command: FormAction, fieldValues: QuotationFieldValues) => void } ) {
+  {
+    record,
+    state,
+    setMode,
+    onFormAction
+  } : {
+    record?: Quotation
+    state: DetailState
+    setMode: Dispatch<SetStateAction<DetailMode>>
+    onFormAction: FormActionHandler<QuotationFieldValues>
+  }) {
 
-  const {hasAuthority} = useAuth()
   const form = useFormContext()
-  const [mode, setMode] = useState<DetailMode>("view")
   const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
-
-  const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
   const { updating } = state
 
   return (
@@ -63,20 +68,25 @@ export default function QuotationDetails(
       <Form {...form}>
         <form>
           <FormDescription>
-            <span className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Quotation #${record?.id}` : "-Select a quotation in the list above to see its details-"}</span>
+            <span className="pt-2 pb-4">
+              &nbsp;&nbsp;{record
+              ? state.mode == "create"
+                ? "Details for new Quotation"
+                : `Details for selected Quotation #${record?.id}`
+              : "-Select a Quotation in the list above to see its details-"
+            }</span>
           </FormDescription>
           <div className="grid grid-cols-3 ml-2 mr-2 mt-4 mb-4 gap-4 items-center">
             <FormField
               control={form.control}
               name="quotee"
               render={({field}) => (
-                <FormItem className="">
+                <FormItem>
                   <FormLabel>Quotee</FormLabel>
                   <FormControl>
                     <Input
                       id="quotee"
-                      className=""
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       placeholder="quotee"
                       {...field}
@@ -89,7 +99,7 @@ export default function QuotationDetails(
                         </FormDescription>
                       : null
                     }
-                  <FormMessage className="" />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -97,7 +107,7 @@ export default function QuotationDetails(
               control={form.control}
               name="date"
               render={({field}) => (
-                <FormItem className="">
+                <FormItem>
                   <FormLabel>Date</FormLabel>
                   <Popover>
                     <PopoverTrigger id="date" asChild>
@@ -132,7 +142,7 @@ export default function QuotationDetails(
                       </FormDescription>
                     : null
                   }
-                  <FormMessage className="" />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -157,7 +167,7 @@ export default function QuotationDetails(
                     <Textarea
                       id="text"
                       className="col-span-4 h-40 overflow-y-auto"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />
@@ -169,7 +179,7 @@ export default function QuotationDetails(
                       </FormDescription>
                     : null
                   }
-                  <FormMessage className="" />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -182,7 +192,7 @@ export default function QuotationDetails(
                   <FormControl>
                     <Input
                       className="col-span-4"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       placeholder="source"
                       {...field}
@@ -195,7 +205,7 @@ export default function QuotationDetails(
                       </FormDescription>
                     : null
                   }
-                  <FormMessage className="" />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -224,7 +234,7 @@ export default function QuotationDetails(
                       </FormDescription>
                     : null
                   }
-                  <FormMessage className="" />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -238,7 +248,7 @@ export default function QuotationDetails(
                     <Textarea
                       id="notes"
                       className="col-span-4 h-40 overflow-y-auto"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />
@@ -250,7 +260,7 @@ export default function QuotationDetails(
                       </FormDescription>
                     : null
                   }
-                  <FormMessage className="" />
+                  <FormMessage />
                 </FormItem>
               )}
             />

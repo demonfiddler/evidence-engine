@@ -40,12 +40,11 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import StandardDetails from "./standard-details"
-import { FormAction } from "@/lib/utils"
-import DetailActions, { createDetailState, DetailMode } from "./detail-actions"
-import { useContext, useMemo, useState } from "react"
-import useAuth from "@/hooks/use-auth"
+import DetailActions, { DetailMode, DetailState } from "./detail-actions"
+import { Dispatch, SetStateAction, useMemo, useState } from "react"
 import { useFormContext } from "react-hook-form"
 import { TopicFieldValues } from "../validators/topic"
+import { FormActionHandler } from "@/hooks/use-page-logic"
 
 function flatten(topics: Topic[], result: Topic[]) : Topic[] {
   for (let topic of topics) {
@@ -57,15 +56,22 @@ function flatten(topics: Topic[], result: Topic[]) : Topic[] {
 }
 
 export default function TopicDetails(
-  { record, topics, onFormAction }:
-  { record?: Topic; topics: Topic[], onFormAction: (command: FormAction, fieldValues: TopicFieldValues) => void }) {
+  {
+    record,
+    topics,
+    state,
+    setMode,
+    onFormAction
+  } : {
+    record?: Topic
+    topics: Topic[]
+    state: DetailState
+    setMode: Dispatch<SetStateAction<DetailMode>>
+    onFormAction: FormActionHandler<TopicFieldValues>
+  }) {
 
-  const {hasAuthority} = useAuth()
   const form = useFormContext()
-  const [mode, setMode] = useState<DetailMode>("view")
   const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
-
-  const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
   const { updating } = state
 
   const flatTopics = useMemo(() => {
@@ -83,7 +89,13 @@ export default function TopicDetails(
       <Form {...form}>
         <form>
           <FormDescription>
-            <span className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Topic #${record?.id}` : "-Select a topic in the list above to see its details-"}</span>
+            <span className="pt-2 pb-4">
+              &nbsp;&nbsp;{record
+              ? state.mode == "create"
+                ? "Details for new Topic"
+                : `Details for selected Topic #${record?.id}`
+              : "-Select a Topic in the list above to see its details-"
+            }</span>
           </FormDescription>
           <div className="grid grid-cols-5 ml-2 mr-2 mt-4 mb-4 gap-4 items-center">
             <FormField
@@ -123,7 +135,7 @@ export default function TopicDetails(
                     onValueChange={field.onChange}
                   >
                     <FormControl>
-                      <SelectTrigger id="parentId" className="col-span-4" disabled={!record}>
+                      <SelectTrigger id="parentId" className="col-span-4" disabled={!record && !updating}>
                         <SelectValue className="col-span-4 w-full" placeholder="Specify parent" />
                       </SelectTrigger>
                     </FormControl>
@@ -186,8 +198,7 @@ export default function TopicDetails(
                   <FormControl>
                     <Input
                       id="label"
-                      className=""
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       placeholder="label"
                       {...field}
@@ -213,8 +224,7 @@ export default function TopicDetails(
                   <FormControl>
                     <Input
                       id="description"
-                      className=""
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       placeholder="description"
                       {...field}

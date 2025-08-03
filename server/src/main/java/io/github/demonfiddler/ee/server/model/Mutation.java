@@ -1464,7 +1464,7 @@ public class Mutation {
 		/**
 		 * Sets entity status.
 		 */
-		public Builder withSetEntityStatus(java.lang.Boolean setEntityStatusParam) {
+		public Builder withSetEntityStatus(Boolean setEntityStatusParam) {
 			this.setEntityStatus = setEntityStatusParam;
 			return this;
 		}

@@ -333,8 +333,8 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	 * Sets entity status.
 	 */
 	@JsonProperty("setEntityStatus")
-	@GraphQLInputParameters(names = { "entityKind", "entityId", "status" },
-		types = { "EntityKind", "Long", "StatusKind" }, mandatories = { true, true, true }, listDepths = { 0, 0, 0 },
+	@GraphQLInputParameters(names = { "entityId", "status" },
+		types = { "ID", "StatusKind" }, mandatories = { true, true, true }, listDepths = { 0, 0, 0 },
 		itemsMandatory = { false, false, false })
 	@GraphQLScalar(fieldName = "setEntityStatus", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class,
 		listDepth = 0)

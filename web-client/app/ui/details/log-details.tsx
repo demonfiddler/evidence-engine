@@ -33,17 +33,17 @@ export default function LogDetails({record}: {record: Log | undefined}) {
         <Label htmlFor="timestamp" className="col-start-1">Timestamp:</Label>
         <Input id="timestamp" className="col-span-1" disabled={!record} readOnly={true} value={formatDate(record?.timestamp) ?? ''} />
         <Label htmlFor="transactionKind" className="col-start-1">Transaction kind:</Label>
-        <Input id="transactionKind" className="" disabled={!record} readOnly={true} value={record?.transactionKind ?? ''} />
-        <Label htmlFor="username" className="">Username:</Label>
-        <Input id="username" className="" disabled={!record} readOnly={true} value={record?.user?.username ?? ''} />
+        <Input id="transactionKind" disabled={!record} readOnly={true} value={record?.transactionKind ?? ''} />
+        <Label htmlFor="username">Username:</Label>
+        <Input id="username" disabled={!record} readOnly={true} value={record?.user?.username ?? ''} />
         <Label htmlFor="entityKind" className="col-start-1">Record kind:</Label>
-        <Input id="entityKind" className="" disabled={!record} readOnly={true} value={record?.entityKind ?? ''} />
-        <Label htmlFor="linkedEntityKind" className="">Linked record kind:</Label>
-        <Input id="linkedEntityKind" className="" disabled={!record} readOnly={true} value={record?.linkedEntityKind ?? ''} />
-        <Label htmlFor="entityId" className="">Record ID:</Label>
-        <Input id="entityId" className="" disabled={!record} readOnly={true} value={record?.entityId?.toString() ?? ''} />
-        <Label htmlFor="linkedEntityId" className="">Linked record ID:</Label>
-        <Input id="linkedEntityId" className="" disabled={!record} readOnly={true} value={record?.linkedEntityId?.toString() ?? ''} />
+        <Input id="entityKind" disabled={!record} readOnly={true} value={record?.entityKind ?? ''} />
+        <Label htmlFor="linkedEntityKind">Linked record kind:</Label>
+        <Input id="linkedEntityKind" disabled={!record} readOnly={true} value={record?.linkedEntityKind ?? ''} />
+        <Label htmlFor="entityId">Record ID:</Label>
+        <Input id="entityId" disabled={!record} readOnly={true} value={record?.entityId?.toString() ?? ''} />
+        <Label htmlFor="linkedEntityId">Linked record ID:</Label>
+        <Input id="linkedEntityId" disabled={!record} readOnly={true} value={record?.linkedEntityId?.toString() ?? ''} />
       </div>
     </fieldset>
   )

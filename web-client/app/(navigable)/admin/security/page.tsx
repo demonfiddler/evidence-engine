@@ -37,12 +37,55 @@ import { GroupFieldValues, GroupSchema } from "@/app/ui/validators/group";
 import { UserFieldValues, UserSchema } from "@/app/ui/validators/user";
 import Authority from "@/app/model/Authority"
 import { AuthoritiesFieldValues } from "@/app/ui/validators/authority"
-import { SecurityFormAction } from "@/lib/utils"
-import { QUERY_GROUPS, QUERY_USERS } from "@/lib/graphql-queries"
+import {
+  CREATE_GROUP,
+  CREATE_USER,
+  DELETE_GROUP,
+  DELETE_USER,
+  READ_GROUPS,
+  READ_USERS,
+  UPDATE_GROUP,
+  UPDATE_USER,
+  ADD_GROUP_MEMBER,
+  REMOVE_GROUP_MEMBER,
+} from "@/lib/graphql-queries"
 import usePageLogic from "@/hooks/use-page-logic"
-import { TrackedEntityQueryFilter } from "@/app/model/schema"
+import { GroupInput, TrackedEntityQueryFilter, UserInput } from "@/app/model/schema"
+import { useMutation } from "@apollo/client"
 
-function copyAuthoritiesFromForm(formValue: AuthoritiesFieldValues) {
+function createAuthoritiesFieldValues(authorities?: Authority[]) {
+  return {
+    adm: authorities?.includes("ADM") ?? false,
+    cre: authorities?.includes("CRE") ?? false,
+    del: authorities?.includes("DEL") ?? false,
+    lnk: authorities?.includes("LNK") ?? false,
+    rea: authorities?.includes("REA") ?? false,
+    upd: authorities?.includes("UPD") ?? false,
+    upl: authorities?.includes("UPL") ?? false,
+  }
+}
+
+function createGroupFieldValues(group?: Group) : GroupFieldValues {
+  return {
+    groupname: group?.groupname ?? '',
+    ...createAuthoritiesFieldValues(group?.authorities)
+  }
+}
+
+function createUserFieldValues(user?: User) : UserFieldValues {
+  return {
+    username: user?.username ?? '',
+    password: user?.password ?? '',
+    firstName: user?.firstName ?? '',
+    lastName: user?.lastName ?? '',
+    email: user?.email ?? '',
+    country: user?.country ?? '',
+    notes: user?.notes ?? '',
+    ...createAuthoritiesFieldValues(user?.authorities)
+  }
+}
+
+function createAuthorities(formValue: AuthoritiesFieldValues) {
   const authorities: Authority[] = []
   if (formValue.adm)
     authorities.push("ADM")
@@ -61,52 +104,26 @@ function copyAuthoritiesFromForm(formValue: AuthoritiesFieldValues) {
   return authorities
 }
 
-function copyAuthoritiesToForm(authorities?: Authority[]) {
+function createGroupInput(fieldValues: GroupFieldValues, id?: string) : GroupInput {
   return {
-    adm: authorities?.includes("ADM") ?? false,
-    cre: authorities?.includes("CRE") ?? false,
-    del: authorities?.includes("DEL") ?? false,
-    lnk: authorities?.includes("LNK") ?? false,
-    rea: authorities?.includes("REA") ?? false,
-    upd: authorities?.includes("UPD") ?? false,
-    upl: authorities?.includes("UPL") ?? false,
+    id,
+    groupname: fieldValues.groupname,
+    authorities: createAuthorities(fieldValues),
   }
 }
 
-function copyGroupToForm(group?: Group) {
+function createUserInput(fieldValues: UserFieldValues, id?: string) : UserInput {
   return {
-    groupname: group?.groupname ?? '',
-    ...copyAuthoritiesToForm(group?.authorities)
+    id,
+    username: fieldValues.username,
+    password: fieldValues.password || null,
+    firstName: fieldValues.firstName,
+    lastName: fieldValues.lastName,
+    email: fieldValues.email,
+    country: fieldValues.country || null,
+    notes: fieldValues.notes || null,
+    authorities: createAuthorities(fieldValues),
   }
-}
-
-function copyUserToForm(user?: User) {
-  return {
-    username: user?.username ?? '',
-    password: user?.password ?? '',
-    firstName: user?.firstName ?? '',
-    lastName: user?.lastName ?? '',
-    email: user?.email ?? '',
-    country: user?.country ?? '',
-    // notes: user?.notes ?? '',
-    ...copyAuthoritiesToForm(user?.authorities)
-  }
-}
-
-function copyGroupFromForm(group: Group, fieldValues: GroupFieldValues) {
-  group.groupname = fieldValues.groupname,
-  group.authorities = copyAuthoritiesFromForm(fieldValues)
-}
-
-function copyUserFromForm(user: User, fieldValues: UserFieldValues) {
-  user.username = fieldValues.username
-  user.password = fieldValues.password
-  user.firstName = fieldValues.firstName ?? null
-  user.lastName = fieldValues.lastName ?? null
-  user.email = fieldValues.email ?? null
-  user.country = fieldValues.country ?? null
-  // user.notes = fieldValues.notes ?? null
-  user.authorities = copyAuthoritiesFromForm(fieldValues)
 }
 
 function createDummyPage(users?: User[]) : IPage<User> | undefined {
@@ -138,16 +155,21 @@ export default function Security() {
     page: userPage,
     selectedRecord: selectedUser,
     handleRowSelectionChange: handleUserSelectionChange,
+    state: userState,
+    setMode: setUserMode,
     form: userForm,
     handleFormAction: handleUserFormAction,
-  } = usePageLogic<User, TrackedEntityQueryFilter, UserFieldValues>({
+  } = usePageLogic<User, UserFieldValues, UserInput, TrackedEntityQueryFilter>({
     recordKind: "User",
     schema: UserSchema,
     manualPagination: false,
     manualSorting: false,
-    listQuery: QUERY_USERS,
-    copyToForm: copyUserToForm,
-    copyFromForm: copyUserFromForm,
+    readQuery: READ_USERS,
+    createMutation: CREATE_USER,
+    updateMutation: UPDATE_USER,
+    deleteMutation: DELETE_USER,
+    createFieldValues: createUserFieldValues,
+    createInput: createUserInput,
   })
   const {
     search: groupSearch,
@@ -160,23 +182,34 @@ export default function Security() {
     page: groupPage,
     selectedRecord: selectedGroup,
     handleRowSelectionChange: handleGroupSelectionChange,
+    state: groupState,
+    setMode: setGroupMode,
     form: groupForm,
     handleFormAction: handleGroupFormAction,
-  } = usePageLogic<Group, TrackedEntityQueryFilter, GroupFieldValues>({
+  } = usePageLogic<Group, GroupFieldValues, GroupInput, TrackedEntityQueryFilter>({
     recordKind: "Group",
     schema: GroupSchema,
     manualPagination: false,
     manualSorting: false,
-    listQuery: QUERY_GROUPS,
-    copyToForm: copyGroupToForm,
-    copyFromForm: copyGroupFromForm,
+    readQuery: READ_GROUPS,
+    createMutation: CREATE_GROUP,
+    updateMutation: UPDATE_GROUP,
+    deleteMutation: DELETE_GROUP,
+    createFieldValues: createGroupFieldValues,
+    createInput: createGroupInput,
   })
+
+  const [addGroupMemberOp/*, addGroupMemberResult*/] = useMutation(ADD_GROUP_MEMBER, { refetchQueries: [READ_GROUPS] })
+  const [removeGroupMemberOp/*, removeGroupMemberResult*/] = useMutation(REMOVE_GROUP_MEMBER, { refetchQueries: [READ_GROUPS] })
+
   const [showUsersOrMembers, setShowUsersOrMembers] = useState("users")
   const userPageToShow = useMemo(() => {
       return showUsersOrMembers == "users" ? userPage : createDummyPage(selectedGroup?.members)
     }, [showUsersOrMembers, userPage, selectedGroup])
-  const handleUserFormActionEx = useCallback((command: SecurityFormAction, userFieldValues: UserFieldValues) => {
+
+  const handleUserFormActionEx = useCallback((command: string, userFieldValues?: UserFieldValues) => {
     switch (command) {
+      case "new":
       case "create":
       case "update":
       case "delete":
@@ -184,12 +217,27 @@ export default function Security() {
         handleUserFormAction(command, userFieldValues)
         break
       case "add":
+        if (selectedGroup && selectedUser) {
+          addGroupMemberOp({
+            variables: {
+              groupId: selectedGroup.id,
+              userId: selectedUser.id,
+            }
+          })
+        }
+        break
       case "remove":
-        // NOTE: we're only passing userFieldValues to keep the compiler happy - the value isn't used.
-        // OLD: groupPageDispatch({ command: command, value: userFieldValues })
+        if (selectedGroup && selectedUser) {
+          removeGroupMemberOp({
+            variables: {
+              groupId: selectedGroup.id,
+              userId: selectedUser.id,
+            }
+          })
+        }
         break
     }
-  }, [userForm, /*userPageDispatch,*/ selectedUser])
+  }, [selectedGroup, selectedUser, addGroupMemberOp, removeGroupMemberOp])
 
   return (
     <main className="flex flex-col items-start m-4 gap-4">
@@ -215,6 +263,7 @@ export default function Security() {
             defaultColumns={groupColumns}
             defaultColumnVisibility={groupColumnVisibility}
             page={groupPage}
+            state={groupState}
             loading={groupLoading}
             manualPagination={false}
             pagination={groupPagination}
@@ -227,7 +276,12 @@ export default function Security() {
             onRowSelectionChange={handleGroupSelectionChange}
           />
           <FormProvider {...groupForm}>
-            <GroupDetails record={selectedGroup} onFormAction={handleGroupFormAction} />
+            <GroupDetails
+              record={selectedGroup}
+              state={groupState}
+              setMode={setGroupMode}
+              onFormAction={handleGroupFormAction}
+            />
           </FormProvider>
         </TabsContent>
         <TabsContent className="grid grid-cols-1 gap-4" value="users">
@@ -266,6 +320,7 @@ export default function Security() {
               defaultColumns={userColumns}
               defaultColumnVisibility={userColumnVisibility}
               page={userPageToShow}
+              state={userState}
               loading={userLoading}
               manualPagination={false}
               pagination={userPagination}
@@ -283,6 +338,8 @@ export default function Security() {
               user={selectedUser}
               group={selectedGroup}
               showUsersOrMembers={showUsersOrMembers}
+              state={userState}
+              setMode={setUserMode}
               onFormAction={handleUserFormActionEx}
             />
           </FormProvider>

@@ -41,7 +41,7 @@ import RecordKind from "@/app/model/RecordKind"
 import { MasterLinkContext, SelectedRecordsContext } from '@/lib/context'
 import { setTopicFields } from "@/lib/utils"
 import { useQuery } from "@apollo/client"
-import { QUERY_TOPIC_HIERARCHY } from "@/lib/graphql-queries"
+import { READ_TOPIC_HIERARCHY } from "@/lib/graphql-queries"
 
 interface TopicTreeNode extends TreeNodeProps {
   topic: Topic
@@ -54,7 +54,7 @@ export default function EntityLinks() {
   const selectedRecordsContext = useContext(SelectedRecordsContext)
   const [topicPlaceholder, setTopicPlaceholder] = useState(masterLinkContext.masterTopicId ? String.fromCharCode(160) : "-Choose topic-")
   const result = useQuery(
-    QUERY_TOPIC_HIERARCHY,
+    READ_TOPIC_HIERARCHY,
     {
       variables: {
         filter: {
@@ -169,7 +169,7 @@ export default function EntityLinks() {
     >
       <div>
         <div className="flex flex-row items-center space-x-4 px-4">
-          <h4 className="">
+          <h4>
             Filter by Links
           </h4>
           <CollapsibleTrigger className="justify-self-end" asChild>

@@ -77,7 +77,7 @@ export default function DataTableFilter<TData>({
           value={search.status ?? ''}
           onValueChange={handleStatusChange}
         >
-          <SelectTrigger id="kind" className="">
+          <SelectTrigger id="kind">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>

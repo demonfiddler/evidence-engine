@@ -31,7 +31,7 @@ import Log from "@/app/model/Log";
 import { SelectedRecordsContext } from "@/lib/context";
 import { SearchSettings } from "@/lib/utils";
 import { useQuery } from "@apollo/client";
-import { QUERY_LOG } from "@/lib/graphql-queries";
+import { READ_LOGS } from "@/lib/graphql-queries";
 import { toast } from "sonner";
 import { LogQueryFilter } from "@/app/model/schema";
 import { SortingState } from "@tanstack/react-table";
@@ -63,7 +63,7 @@ export default function Logs() {
   // }, [/*pagination*/])
 
   const result = useQuery(
-    QUERY_LOG/*,
+    READ_LOGS/*,
     {
       variables: {
         filter,

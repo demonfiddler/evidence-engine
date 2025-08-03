@@ -24,6 +24,7 @@ import {
   ColumnDef,
   ColumnFiltersState,
   ExpandedState,
+  PaginationState,
   RowSelectionState,
   SortingState,
   Updater,
@@ -62,16 +63,17 @@ import {
 } from '@dnd-kit/sortable'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { DataTablePagination } from "./data-table-pagination"
+import { DataTablePaginator } from "./data-table-paginator"
 import type IPage from "@/app/model/IPage"
 import DataTableFilter from "./data-table-filter"
 import IBaseEntity from "@/app/model/IBaseEntity"
 import { MasterLinkContext, SelectedRecordsContext } from "@/lib/context"
 import RecordKind from "@/app/model/RecordKind"
-import { cn, isLinkableEntity, PageSettings, SearchSettings } from "@/lib/utils"
+import { cn, isLinkableEntity, SearchSettings } from "@/lib/utils"
 import DataTableColumnHeader from "./data-table-column-header"
 import Spinner from "../misc/spinner"
 import { getExpandedRowModelEx } from "./data-table-expanded-row-model"
+import { DetailState } from "../details/detail-actions"
 
 function DragAlongCell<TData>({ cell }: { cell: Cell<TData, unknown> }) {
   const { isDragging, setNodeRef, transform } = useSortable({
@@ -100,13 +102,14 @@ interface DataTableProps<TData, TValue> {
   recordKind: RecordKind
   defaultColumns: ColumnDef<TData, TValue>[]
   defaultColumnVisibility: VisibilityState
-  page?: IPage<TData>
+  page: IPage<TData> | undefined
+  state?: DetailState
   loading: boolean
   search: SearchSettings
   onSearchChange: Dispatch<SetStateAction<SearchSettings>>
   manualPagination: boolean
-  pagination: PageSettings
-  onPaginationChange: Dispatch<SetStateAction<PageSettings>>
+  pagination: PaginationState
+  onPaginationChange: Dispatch<SetStateAction<PaginationState>>
   manualSorting: boolean
   sorting: SortingState,
   onSortingChange: Dispatch<SetStateAction<SortingState>>,
@@ -124,6 +127,7 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
   defaultColumns,
   defaultColumnVisibility,
   page,
+  state,
   loading,
   search,
   onSearchChange,
@@ -161,20 +165,15 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
     for (let row of data) {
       if (row.id == rowId)
         return row
-      if (getSubRows) {
-        const subRows = getSubRows(row)
-        if (subRows) {
-          const found = findItem(rowId, subRows)
-          if (found)
-            return found
-        }
-      }
+      const found = findItem(rowId, getSubRows?.(row))
+      if (found)
+        return found
     }
   }, [getSubRows])
 
   const rowSelectionChanged = useCallback((selection: Updater<RowSelectionState>) => {
     // console.log(`enter DataTable.rowSelectionChanged, masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
-    console.log(`DataTable.rowSelectionChanged: selection=${JSON.stringify(selection)}`)
+    // console.log(`DataTable.rowSelectionChanged: selection=${JSON.stringify(selection)}`)
     setRowSelection(selection)
 
     let selectedRecord
@@ -408,7 +407,7 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
               )}
             </TableBody>
           </Table>
-          <DataTablePagination table={table} />
+          <DataTablePaginator table={table} />
         </div>
       </fieldset>
     </DndContext>

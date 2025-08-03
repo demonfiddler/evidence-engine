@@ -19,6 +19,8 @@
 
 package io.github.demonfiddler.ee.client;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -52,6 +54,14 @@ public class GroupInput extends AbstractBaseEntityInput {
 	@JsonProperty("groupname")
 	@GraphQLScalar(fieldName = "groupname", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
 	String groupname;
+
+	/**
+	 * The authorities to grant to the group.
+	 */
+	@JsonProperty("authorities")
+	@GraphQLScalar( fieldName = "authorities", graphQLTypeSimpleName = "AuthorityKind", javaClass = AuthorityKind.class,
+		listDepth = 1)
+	List<AuthorityKind> authorities;
 
 	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
@@ -89,11 +99,29 @@ public class GroupInput extends AbstractBaseEntityInput {
 		return this.groupname;
 	}
 
+	/**
+     * The authorities to grant to the user.
+ 	 */
+	@JsonProperty("authorities")
+	public void setAuthorities(List<AuthorityKind> authorities) {
+		this.authorities = authorities;
+	}
+
+	/**
+	 * The authorities to grant to the user.
+	 */
+	@JsonProperty("authorities")
+	public List<AuthorityKind> getAuthorities() {
+		return this.authorities;
+	}
+
 	public String toString() {
 		return "GroupInput {" //
 			+ "id: " + this.id //
 			+ ", " //
 			+ "groupname: " + this.groupname //
+			+ ", " //
+			+ "authorities: " + this.authorities //
 			+ "}";
 	}
 
@@ -108,6 +136,7 @@ public class GroupInput extends AbstractBaseEntityInput {
 	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, GroupInput> {
 
 		private String groupname;
+		private List<AuthorityKind> authorities;
 
 		/**
 		 * The (mutable?) unique group name (user-assigned).
@@ -117,10 +146,19 @@ public class GroupInput extends AbstractBaseEntityInput {
 			return this;
 		}
 
+		/**
+		 * The authorities to grant to the group.
+		 */
+		public Builder withAuthorities(List<AuthorityKind> authoritiesParam) {
+			this.authorities = authoritiesParam;
+			return this;
+		}
+
 		@Override
 		public GroupInput build() {
 			GroupInput _object = build(new GroupInput());
 			_object.setGroupname(this.groupname);
+			_object.setAuthorities(this.authorities);
 			return _object;
 		}
 

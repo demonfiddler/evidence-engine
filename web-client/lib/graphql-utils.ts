@@ -17,12 +17,19 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { ApolloClient, createHttpLink, DocumentNode, InMemoryCache } from '@apollo/client';
+import { FieldNode, Kind, OperationDefinitionNode, OperationTypeNode } from 'graphql';
 
 // console.log(`process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL=${process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL}, process.env.NEXT_PUBLIC_WEB_CLIENT_URL=${process.env.NEXT_PUBLIC_WEB_CLIENT_URL}`)
 
+const link = createHttpLink({
+  uri: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL,
+  credentials: 'include'
+});
+
 export const apolloClient = new ApolloClient({
-    uri: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL,
+    // uri: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL,
+    link,
     cache: new InMemoryCache({
         possibleTypes: {
             IBaseEntity: [
@@ -80,4 +87,28 @@ export const apolloClient = new ApolloClient({
             // __TYPENAME: {...}
         }
     }),
-});
+})
+
+/**
+ * Introspects a GraphQL operation to determine the result field and variable names.
+ * @param node The GraphQL document to introspect.
+ * @param operationKind The operation kind to look for.
+ * @returns An array containing the name of the first selection node, followed by the names of all bind variables for
+ * the operation. The array is empty if no `node` was supplied.
+ * @throws `Error` if `node` is specified but no matching operation could be found.
+ */
+export function introspect(node: DocumentNode | undefined, operationKind: OperationTypeNode) : string[] {
+  if (!node)
+    return []
+  const opDef = node?.definitions.find(
+    d => d.kind == Kind.OPERATION_DEFINITION && d.operation == operationKind) as OperationDefinitionNode | undefined
+  const fieldNode = opDef?.selectionSet.selections[0] as FieldNode | undefined
+  const fieldName = fieldNode?.alias?.value ?? fieldNode?.name.value
+  if (!fieldName)
+    throw new Error("Unable to determine field name")
+  const result = [fieldName]
+  const varnames = opDef?.variableDefinitions?.map(n => n.variable.name.value)
+  if (varnames)
+    result.push(...varnames)
+  return result
+}

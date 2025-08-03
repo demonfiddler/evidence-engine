@@ -722,6 +722,9 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         user.setLastName(input.getLastName());
         user.setEmail(input.getEmail());
         user.setPassword(input.getPassword());
+        user.setCountry(input.getCountry());
+        user.setNotes(input.getNotes());
+        user.setAuthorities(input.getAuthorities());
         setCreatedFields(user);
 
         user = userRepository.save(user);
@@ -741,6 +744,9 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         user.setLastName(input.getLastName());
         user.setEmail(input.getEmail());
         user.setPassword(input.getPassword());
+        user.setCountry(input.getCountry());
+        user.setNotes(input.getNotes());
+        user.setAuthorities(input.getAuthorities());
         setUpdatedFields(user);
 
         user = userRepository.save(user);
@@ -789,6 +795,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     public Object createGroup(DataFetchingEnvironment dataFetchingEnvironment, GroupInput input) {
         Group group = new Group();
         group.setGroupname(input.getGroupname());
+        group.setAuthorities(input.getAuthorities());
         setCreatedFields(group);
 
         group = groupRepository.save(group);
@@ -804,6 +811,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         Group group = groupRepository.findById(input.getId())
             .orElseThrow(() -> createEntityNotFoundException("Group", input.getId()));
         group.setGroupname(input.getGroupname());
+        group.setAuthorities(input.getAuthorities());
         setUpdatedFields(group);
 
         group = groupRepository.save(group);
@@ -817,6 +825,36 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @PreAuthorize("hasAuthority('ADM')")
     public Object deleteGroup(DataFetchingEnvironment dataFetchingEnvironment, Long groupId) {
         return delete(groupId, groupRepository);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('ADM')")
+    public Object grantGroupAuthorities(DataFetchingEnvironment dataFetchingEnvironment, Long groupId,
+        List<AuthorityKind> authorities) {
+
+        Group group = groupRepository.findById(groupId)
+            .orElseThrow(() -> createEntityNotFoundException("Group", groupId));
+        if (addAuthorities(group.getAuthorities(), authorities)) {
+            setUpdatedFields(group);
+            group = groupRepository.save(group);
+            logUpdated(group);
+        }
+        return group;
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('ADM')")
+    public Object revokeGroupAuthorities(DataFetchingEnvironment dataFetchingEnvironment, Long groupId,
+        List<AuthorityKind> authorities) {
+
+        Group group = groupRepository.findById(groupId)
+            .orElseThrow(() -> createEntityNotFoundException("Group", groupId));
+        if (removeAuthorities(group.getAuthorities(), authorities)) {
+            setUpdatedFields(group);
+            group = groupRepository.save(group);
+            logUpdated(group);
+        }
+        return group;
     }
 
     @Override
@@ -846,36 +884,6 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         User member = CollectionUtils.find(members, m -> Objects.equals(m.getId(), userId));
         if (member != null) {
             members.remove(member);
-            setUpdatedFields(group);
-            group = groupRepository.save(group);
-            logUpdated(group);
-        }
-        return group;
-    }
-
-    @Override
-    @PreAuthorize("hasAuthority('ADM')")
-    public Object grantGroupAuthorities(DataFetchingEnvironment dataFetchingEnvironment, Long groupId,
-        List<AuthorityKind> authorities) {
-
-        Group group = groupRepository.findById(groupId)
-            .orElseThrow(() -> createEntityNotFoundException("Group", groupId));
-        if (addAuthorities(group.getAuthorities(), authorities)) {
-            setUpdatedFields(group);
-            group = groupRepository.save(group);
-            logUpdated(group);
-        }
-        return group;
-    }
-
-    @Override
-    @PreAuthorize("hasAuthority('ADM')")
-    public Object revokeGroupAuthorities(DataFetchingEnvironment dataFetchingEnvironment, Long groupId,
-        List<AuthorityKind> authorities) {
-
-        Group group = groupRepository.findById(groupId)
-            .orElseThrow(() -> createEntityNotFoundException("Group", groupId));
-        if (removeAuthorities(group.getAuthorities(), authorities)) {
             setUpdatedFields(group);
             group = groupRepository.save(group);
             logUpdated(group);

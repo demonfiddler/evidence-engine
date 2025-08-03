@@ -26,7 +26,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Textarea } from "@/components/ui/textarea"
-import { cn, formatDate, FormAction } from "@/lib/utils"
+import { cn, formatDate } from "@/lib/utils"
 import {
   Form,
   FormControl,
@@ -49,24 +49,30 @@ import { CalendarIcon } from "@heroicons/react/24/outline"
 import Country from "@/app/model/Country"
 import rawCountries from "@/data/countries.json" assert {type: 'json'}
 import StandardDetails from "./standard-details"
-import DetailActions, { createDetailState, DetailMode } from "./detail-actions"
+import DetailActions, { DetailMode, DetailState } from "./detail-actions"
 import Link from "next/link"
-import { useContext, useMemo, useState } from "react"
+import { Dispatch, SetStateAction, useState } from "react"
 import { useFormContext } from "react-hook-form"
 import { DeclarationFieldValues } from "../validators/declaration"
-import useAuth from "@/hooks/use-auth"
+import { FormActionHandler } from "@/hooks/use-page-logic"
 const countries = rawCountries as unknown as Country[]
 
 export default function DeclarationDetails(
-  { record, onFormAction }:
-  { record?: Declaration; onFormAction: (command: FormAction, fieldValues: DeclarationFieldValues) => void }) {
+  {
+    record,
+    state,
+    setMode,
+    onFormAction
+  }:
+  {
+    record?: Declaration
+    state: DetailState
+    setMode: Dispatch<SetStateAction<DetailMode>>
+    onFormAction: FormActionHandler<DeclarationFieldValues>
+  }) {
 
-  const {hasAuthority} = useAuth()
   const form = useFormContext()
-  const [mode, setMode] = useState<DetailMode>("view")
   const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
-
-  const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
   const { updating } = state
 
   // console.log(`DeclarationDetails: valid=${form.formState.isValid}, dirtyFields==${JSON.stringify(form.formState.dirtyFields)}, fieldState==${JSON.stringify(form.getFieldState("kind"))}, errors=${JSON.stringify(form.formState.errors)}`)
@@ -78,7 +84,13 @@ export default function DeclarationDetails(
       <Form {...form}>
         <form>
           <FormDescription>
-            <span className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Declaration #${record?.id}` : "-Select a declaration in the list above to see its details-"}</span>
+            <span className="pt-2 pb-4">
+              &nbsp;&nbsp;{record
+              ? state.mode == "create"
+                ? "Details for new Declaration"
+                : `Details for selected Declaration #${record?.id}`
+              : "-Select a Declaration in the list above to see its details-"
+            }</span>
           </FormDescription>
           <div className="grid grid-cols-3 ml-2 mr-2 mt-4 mb-4 gap-4 items-start">
             <FormField
@@ -92,7 +104,7 @@ export default function DeclarationDetails(
                       <FormControl>
                         <Button
                           variant={"outline"}
-                          disabled={!updating}
+                          disabled={!record && !updating}
                           className={cn("w-full justify-start text-left font-normal",
                             (!record || !record.date) && "text-muted-foreground")}
                         >
@@ -132,12 +144,12 @@ export default function DeclarationDetails(
                 <FormItem>
                   <FormLabel>Kind</FormLabel>
                   <Select
-                    disabled={!updating}
+                    disabled={!record && !updating}
                     value={field.value}
                     onValueChange={field.onChange}
                   >
                     <FormControl>
-                      <SelectTrigger id="kind" className="w-full" disabled={!record}>
+                      <SelectTrigger id="kind" className="w-full" disabled={!record && !updating}>
                         <SelectValue placeholder="Specify kind" />
                       </SelectTrigger>
                     </FormControl>
@@ -181,7 +193,7 @@ export default function DeclarationDetails(
                   <FormControl>
                     <Input
                       id="title"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />
@@ -234,7 +246,7 @@ export default function DeclarationDetails(
                   <FormControl>
                     <Checkbox
                       id="cached"
-                      disabled={!updating}
+                      disabled={!record && !updating}
                       checked={field.value}
                       onCheckedChange={field.onChange}
                     />
@@ -257,12 +269,12 @@ export default function DeclarationDetails(
                 <FormItem>
                   <FormLabel>Country</FormLabel>
                   <Select
-                    disabled={!updating}
+                    disabled={!record && !updating}
                     value={field.value}
                     onValueChange={field.onChange}
                   >
                     <FormControl>
-                      <SelectTrigger id="country" className="w-full" disabled={!record}>
+                      <SelectTrigger id="country" className="w-full" disabled={!record && !updating}>
                         <SelectValue placeholder="Specify country" />
                       </SelectTrigger>
                     </FormControl>
@@ -295,7 +307,7 @@ export default function DeclarationDetails(
                     <Textarea
                       id="signatories"
                       className="h-40 overflow-y-auto"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />
@@ -321,7 +333,7 @@ export default function DeclarationDetails(
                     <Input
                       type="number"
                       id="signatoryCount"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       placeholder="count"
                       {...field}
@@ -348,7 +360,7 @@ export default function DeclarationDetails(
                     <Textarea
                       id="notes"
                       className="h-40 overflow-y-auto"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />

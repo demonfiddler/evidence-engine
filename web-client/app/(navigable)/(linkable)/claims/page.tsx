@@ -25,14 +25,14 @@ import ClaimDetails from "@/app/ui/details/claim-details"
 import DataTable from "@/app/ui/data-table/data-table"
 import { columns, columnVisibility } from "@/app/ui/tables/claim-columns"
 import Claim from "@/app/model/Claim";
-import { toDate, toIsoString } from "@/lib/utils"
+import { toDate, toIsoDateString } from "@/lib/utils"
 import { FormProvider } from "react-hook-form"
 import { ClaimSchema, ClaimFieldValues } from "@/app/ui/validators/claim";
-import { QUERY_CLAIMS } from "@/lib/graphql-queries"
+import { CREATE_CLAIM, DELETE_CLAIM, READ_CLAIMS, UPDATE_CLAIM } from "@/lib/graphql-queries"
 import usePageLogic from "@/hooks/use-page-logic"
-import { LinkableEntityQueryFilter } from "@/app/model/schema"
+import { ClaimInput, LinkableEntityQueryFilter } from "@/app/model/schema"
 
-function copyToForm(claim?: Claim) {
+function createFieldValues(claim?: Claim) : ClaimFieldValues {
   return {
     text: claim?.text ?? '',
     date: toDate(claim?.date) ?? '',
@@ -40,10 +40,13 @@ function copyToForm(claim?: Claim) {
   }
 }
 
-function copyFromForm(claim: Claim, fieldValues: ClaimFieldValues) {
-  claim.text = fieldValues.text
-  claim.date = toIsoString(fieldValues.date)
-  claim.notes = fieldValues.notes ?? null
+function createInput(fieldValues: ClaimFieldValues, id?: string) : ClaimInput {
+  return {
+    id,
+    text: fieldValues.text,
+    date: toIsoDateString(fieldValues.date) || null,
+    notes: fieldValues.notes || null,
+  }
 }
 
 export default function Claims() {
@@ -58,16 +61,21 @@ export default function Claims() {
     page,
     selectedRecord,
     handleRowSelectionChange,
+    state,
+    setMode,
     form,
     handleFormAction,
-  } = usePageLogic<Claim, LinkableEntityQueryFilter, ClaimFieldValues>({
+  } = usePageLogic<Claim, ClaimFieldValues, ClaimInput, LinkableEntityQueryFilter>({
     recordKind: "Claim",
     schema: ClaimSchema,
     manualPagination: true,
     manualSorting: true,
-    listQuery: QUERY_CLAIMS,
-    copyToForm,
-    copyFromForm,
+    readQuery: READ_CLAIMS,
+    createMutation: CREATE_CLAIM,
+    updateMutation: UPDATE_CLAIM,
+    deleteMutation: DELETE_CLAIM,
+    createFieldValues,
+    createInput,
   })
 
   return (
@@ -82,6 +90,7 @@ export default function Claims() {
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
+        state={state}
         loading={loading}
         manualPagination={true}
         pagination={pagination}
@@ -96,8 +105,8 @@ export default function Claims() {
       <FormProvider {...form}>
         <ClaimDetails
           record={selectedRecord}
-          // mode={mode}
-          // setMode={setMode}
+          state={state}
+          setMode={setMode}
           onFormAction={handleFormAction}
         />
       </FormProvider>

@@ -25,26 +25,41 @@ import { Label } from "@/components/ui/label";
 import LogDialog from "../log/log-dialog";
 import RecordKind from "@/app/model/RecordKind";
 import { DetailState } from "./detail-actions";
+import { getRecordLabel } from "@/lib/utils";
 
 export default function TrackingDetails(
-  {recordKind, record, state}:
-  {recordKind: RecordKind, record: ITrackedEntity | undefined, state: DetailState}) {
+  {
+    recordKind,
+    record,
+    state
+  } : {
+    recordKind: RecordKind
+    record: ITrackedEntity | undefined
+    state: DetailState
+  }) {
 
   return (
-    <div className="w-full grid grid-cols-6 mb-2 gap-2">
+    <div className="w-full grid grid-cols-5 mb-2 gap-2">
       <Label htmlFor="db-id">Database ID:</Label>
       <Input id="db-id" type="text" readOnly={true} disabled={!record} value={String(record?.id ?? '')} />
       <Label htmlFor="status">Status:</Label>
-      <Input id="status" type="text" className="" readOnly={true} disabled={!record} value={record?.status ?? ''} />
-      <LogDialog recordKind={recordKind} record={record} className="col-start-6" disabled={!record || !state.allowRead || state.creating} />
+      <Input id="status" type="text" readOnly={true} disabled={!record} value={record?.status ?? ''} />
+      <LogDialog
+        recordKind={recordKind}
+        record={record}
+        className="col-start-5 place-items-center"
+        disabled={!record || !state.allowRead || state.mode == "create"}
+        state={state}
+        title={`Show log for '${getRecordLabel(recordKind, record)}'`}
+      />
       <Label htmlFor="created" className="col-start-1">Created on:</Label>
       <Input id="created" type="text" readOnly={true} disabled={!record} value={String(record?.created ?? '')} />
       <Label htmlFor="created-by">Created by:</Label>
-      <Input id="created-by" type="text" className="" readOnly={true} disabled={!record} value={record?.createdByUser?.username ?? ''} />
+      <Input id="created-by" type="text" readOnly={true} disabled={!record} value={record?.createdByUser?.username ?? ''} />
       <Label htmlFor="updated" className="col-start-1">Updated on:</Label>
       <Input id="updated" type="text" readOnly={true} disabled={!record} value={String(record?.updated ?? '')} />
       <Label htmlFor="updated-by">Updated by:</Label>
-      <Input id="updated-by" type="text" className="" readOnly={true} disabled={!record} value={record?.updatedByUser?.username ?? ''} />
+      <Input id="updated-by" type="text" readOnly={true} disabled={!record} value={record?.updatedByUser?.username ?? ''} />
     </div>
   )
 }

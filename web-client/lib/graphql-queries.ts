@@ -2,7 +2,7 @@ import { gql } from "@apollo/client"
 
 //alert("ENTER graphql-queries.ts")
 
-export const FRAGMENT_PAGE_FIELDS = gql`
+const FRAGMENT_PAGE_FIELDS = gql`
 fragment pageFields on IPage {
     hasContent
     isEmpty
@@ -19,7 +19,7 @@ fragment pageFields on IPage {
 `
 //alert("(1) graphql-queries.ts")
 
-export const FRAGMENT_TRACKED_ENTITY_FIELDS = gql`
+const FRAGMENT_TRACKED_ENTITY_FIELDS = gql`
 fragment trackedEntityFields on ITrackedEntity {
   ...on IBaseEntity {
     id
@@ -52,7 +52,7 @@ fragment trackedEntityFields on ITrackedEntity {
 `
 //alert("(2) graphql-queries.ts")
 
-export const FRAGMENT_TRACKED_ENTITY_FIELDS_POLYMORPHIC = gql`
+const FRAGMENT_TRACKED_ENTITY_FIELDS_POLYMORPHIC = gql`
 fragment trackedEntityFieldsPolymorphic on ITrackedEntity {
   ...trackedEntityFields
   ...on EntityLink {
@@ -71,7 +71,7 @@ fragment trackedEntityFieldsPolymorphic on ITrackedEntity {
 `
 //alert("(3) graphql-queries.ts")
 
-export const FRAGMENT_LINKED_ENTITY_FIELDS = gql`
+const FRAGMENT_LINKED_ENTITY_FIELDS = gql`
 fragment linkedEntityFields on ILinkableEntity {
   ... on IBaseEntity {
     id
@@ -103,7 +103,7 @@ fragment linkedEntityFields on ILinkableEntity {
 }
 `
 
-export const FRAGMENT_LINKABLE_ENTITY_FIELDS = gql`
+const FRAGMENT_LINKABLE_ENTITY_FIELDS = gql`
 fragment linkableEntityFields on ILinkableEntity {
   fromEntityLinks
   # (
@@ -183,7 +183,7 @@ fragment linkableEntityFields on ILinkableEntity {
 `
 //alert("(4) graphql-queries.ts")
 
-export const FRAGMENT_LINKABLE_ENTITY_FIELDS_POLYMORPHIC = gql`
+const FRAGMENT_LINKABLE_ENTITY_FIELDS_POLYMORPHIC = gql`
 fragment linkableEntityFieldsPolymorphic on ILinkableEntity {
   ...trackedEntityFields
   ...linkableEntityFields
@@ -206,7 +206,7 @@ fragment linkableEntityFieldsPolymorphic on ILinkableEntity {
 `
 //alert("(5) graphql-queries.ts")
 
-export const FRAGMENT_CLAIM_FIELDS = gql`
+const FRAGMENT_CLAIM_FIELDS = gql`
 fragment claimFields on Claim {
   date
   text
@@ -215,7 +215,7 @@ fragment claimFields on Claim {
 `
 //alert("(6) graphql-queries.ts")
 
-export const FRAGMENT_DECLARATION_FIELDS = gql`
+const FRAGMENT_DECLARATION_FIELDS = gql`
 fragment declarationFields on Declaration {
   kind(format: SHORT)
   title
@@ -230,17 +230,15 @@ fragment declarationFields on Declaration {
 `
 //alert("(7) graphql-queries.ts")
 
-export const FRAGMENT_ENTITY_LINK_FIELDS = gql`
+const FRAGMENT_ENTITY_LINK_FIELDS = gql`
 fragment entityLinkFields on EntityLink {
   fromEntity {
     ...trackedEntityFields
-    # ...linkableEntityFields
-    ...linkableEntityFieldsPolymorphic
+    ...linkableEntityFields
   }
   toEntity {
     ...trackedEntityFields
-    # ...linkableEntityFields
-    ...linkableEntityFieldsPolymorphic
+    ...linkableEntityFields
   }
   fromEntityLocations
   toEntityLocations
@@ -250,7 +248,7 @@ fragment entityLinkFields on EntityLink {
 
 //alert("(9) graphql-queries.ts")
 
-export const FRAGMENT_LOG_FIELDS = gql`
+const FRAGMENT_LOG_FIELDS = gql`
 fragment logFields on Log {
   id
   timestamp
@@ -266,7 +264,7 @@ fragment logFields on Log {
 `
 //alert("(10) graphql-queries.ts")
 
-export const FRAGMENT_PERSON_FIELDS = gql`
+const FRAGMENT_PERSON_FIELDS = gql`
 fragment personFields on Person {
   title
   firstName
@@ -277,7 +275,7 @@ fragment personFields on Person {
   alias
   qualifications
   notes
-  country
+  country(format: ALPHA_2)
   rating
   checked
   published
@@ -287,16 +285,17 @@ fragment personFields on Person {
 
 //alert("(12) graphql-queries.ts")
 
-export const FRAGMENT_PUBLISHER_FIELDS = gql`
+const FRAGMENT_PUBLISHER_FIELDS = gql`
 fragment publisherFields on Publisher {
   name
   location
-  country
+  country(format: ALPHA_2)
   url
+  journalCount
 }
 `
 
-export const FRAGMENT_JOURNAL_FIELDS = gql`
+const FRAGMENT_JOURNAL_FIELDS = gql`
 ${FRAGMENT_PUBLISHER_FIELDS}
 fragment journalFields on Journal {
   title
@@ -310,7 +309,7 @@ fragment journalFields on Journal {
 }
 `
 
-export const FRAGMENT_PUBLICATION_FIELDS = gql`
+const FRAGMENT_PUBLICATION_FIELDS = gql`
 fragment publicationFields on Publication {
   title
   authors
@@ -332,7 +331,7 @@ fragment publicationFields on Publication {
 `
 //alert("(13) graphql-queries.ts")
 
-export const FRAGMENT_QUOTATION_FIELDS = gql`
+const FRAGMENT_QUOTATION_FIELDS = gql`
 fragment quotationFields on Quotation {
   text
   quotee
@@ -344,7 +343,7 @@ fragment quotationFields on Quotation {
 `
 //alert("(14) graphql-queries.ts")
 
-export const FRAGMENT_TOPIC_FIELDS = gql`
+const FRAGMENT_TOPIC_FIELDS = gql`
 fragment topicFields on Topic {
   id
   label
@@ -360,7 +359,7 @@ fragment topicFields on Topic {
 }
 `
 
-export const FRAGMENT_SUBTOPIC_FIELDS = gql`
+const FRAGMENT_SUBTOPIC_FIELDS = gql`
 fragment subtopicFields on Topic {
   ...trackedEntityFields
   ...linkableEntityFields
@@ -373,7 +372,7 @@ fragment subtopicFields on Topic {
 }
 `
 
-export const FRAGMENT_TOPIC_FIELDS_RECURSIVE = gql`
+const FRAGMENT_TOPIC_FIELDS_RECURSIVE = gql`
 fragment subtopicFieldsRecursive on Topic {
   children {
     ...subtopicFields
@@ -408,7 +407,7 @@ fragment subtopicFieldsRecursive on Topic {
 }
 `
 
-export const FRAGMENT_TOPIC_HIERARCHY_FIELDS = gql`
+const FRAGMENT_TOPIC_HIERARCHY_FIELDS = gql`
 fragment topicHierarchyFields on Topic {
   ...subtopicFields
   ...subtopicFieldsRecursive
@@ -416,7 +415,7 @@ fragment topicHierarchyFields on Topic {
 `
 //alert("(15) graphql-queries.ts")
 
-export const FRAGMENT_USER_FIELDS = gql`
+const FRAGMENT_USER_FIELDS = gql`
 fragment userFields on User {
   # id
   username
@@ -424,6 +423,8 @@ fragment userFields on User {
   lastName
   email
   password
+  country(format: ALPHA_2)
+  notes
   authorities(aggregation:OWN, format:SHORT)
   # groups {
   #   ...trackedEntityFields
@@ -432,7 +433,7 @@ fragment userFields on User {
 }
 `
 
-export const FRAGMENT_GROUP_FIELDS = gql`
+const FRAGMENT_GROUP_FIELDS = gql`
 fragment groupFields on Group {
   groupname
   authorities(format:SHORT)
@@ -445,7 +446,7 @@ fragment groupFields on Group {
 
 //alert("(16) graphql-queries.ts")
 /*
-export const QUERY_CLAIM_BY_ID = gql`
+export const READ_CLAIM_BY_ID = gql`
 query {
   claimById(id: 4){
     ...trackedEntityFields
@@ -456,7 +457,7 @@ query {
 `
 //alert("(17) graphql-queries.ts")
 
-export const QUERY_DECLARATION_BY_ID = gql`
+export const READ_DECLARATION_BY_ID = gql`
 query {
   declarationById(id: 3){
     ...trackedEntityFields
@@ -467,7 +468,7 @@ query {
 `
 //alert("(18) graphql-queries.ts")
 
-export const QUERY_ENTITY_LINK_BY_ID = gql`
+export const READ_ENTITY_LINK_BY_ID = gql`
 query {
   entityLinkById(id: 1) {
     ...trackedEntityFields
@@ -477,7 +478,7 @@ query {
 `
 //alert("(19) graphql-queries.ts")
 
-export const QUERY_JOURNAL_BY_ID = gql`
+export const READ_JOURNAL_BY_ID = gql`
 query {
   journalById(id: 24) {
     ...trackedEntityFields
@@ -487,7 +488,7 @@ query {
 `
 //alert("(20) graphql-queries.ts")
 
-export const QUERY_PERSON_BY_ID = gql`
+export const READ_PERSON_BY_ID = gql`
 query {
   personById() {
     ...trackedEntityFields
@@ -498,7 +499,7 @@ query {
 `
 //alert("(21) graphql-queries.ts")
 
-export const QUERY_PUBLICATION_BY_ID = gql`
+export const READ_PUBLICATION_BY_ID = gql`
 query {
   publicationById() {
     ...trackedEntityFields
@@ -508,7 +509,7 @@ query {
 `
 //alert("(22) graphql-queries.ts")
 
-export const QUERY_PUBLISHER_BY_ID = gql`
+export const READ_PUBLISHER_BY_ID = gql`
 query {
   publisherById(id: 23757) {
     ...trackedEntityFields
@@ -518,7 +519,7 @@ query {
 `
 //alert("(23) graphql-queries.ts")
 
-export const QUERY_QUOTATION_BY_ID = gql`
+export const READ_QUOTATION_BY_ID = gql`
 query {
   quotationById(id: 1) {
     ...trackedEntityFields
@@ -529,7 +530,7 @@ query {
 `
 //alert("(24) graphql-queries.ts")
 
-export const QUERY_TOPIC_BY_ID = gql`
+export const READ_TOPIC_BY_ID = gql`
 query {
   topicById(id: 1) {
     ...trackedEntityFields
@@ -540,7 +541,7 @@ query {
 `
 //alert("(25) graphql-queries.ts")
 
-export const QUERY_USER_BY_ID = gql`
+export const READ_USER_BY_ID = gql`
 query {
   userById(id: 0) {
     ...trackedEntityFields
@@ -551,7 +552,7 @@ query {
 //alert("(26) graphql-queries.ts")
 */
 
-export const QUERY_CLAIMS = gql`
+export const READ_CLAIMS = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
 ${FRAGMENT_LINKABLE_ENTITY_FIELDS}
@@ -573,9 +574,50 @@ query Claims($filter: LinkableEntityQueryFilter, $pageSort: PageableInput) {
   }
 }
 `
-//alert("(27) graphql-queries.ts")
 
-export const QUERY_DECLARATIONS = gql`
+export const CREATE_CLAIM = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
+${FRAGMENT_CLAIM_FIELDS}
+mutation CreateClaim($input: ClaimInput!) {
+  createClaim(claim: $input) {
+    ...trackedEntityFields
+    ...linkableEntityFields
+    ...claimFields
+  }
+}
+`
+
+export const UPDATE_CLAIM = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
+${FRAGMENT_CLAIM_FIELDS}
+mutation UpdateClaim($input: ClaimInput!) {
+  updateClaim(claim: $input) {
+    ...trackedEntityFields
+    ...linkableEntityFields
+    ...claimFields
+  }
+}
+`
+
+export const DELETE_CLAIM = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
+${FRAGMENT_CLAIM_FIELDS}
+mutation DeleteClaim($id: ID!) {
+  deleteClaim(claimId: $id) {
+    ...trackedEntityFields
+    ...linkableEntityFields
+    ...claimFields
+  }
+}
+`
+
+export const READ_DECLARATIONS = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
 ${FRAGMENT_LINKABLE_ENTITY_FIELDS}
@@ -597,12 +639,54 @@ query Declarations($filter: LinkableEntityQueryFilter, $pageSort: PageableInput)
   }
 }
 `
-//alert("(28) graphql-queries.ts")
 
-export const QUERY_ENTITY_LINKS = gql`
-#${FRAGMENT_PAGE_FIELDS}
+export const CREATE_DECLARATION = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
+${FRAGMENT_DECLARATION_FIELDS}
+mutation CreateDeclaration($input: DeclarationInput!) {
+  createDeclaration(declaration: $input) {
+    ...trackedEntityFields
+    ...linkableEntityFields
+    ...declarationFields
+  }
+}
+`
+
+export const UPDATE_DECLARATION = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
+${FRAGMENT_DECLARATION_FIELDS}
+mutation UpdateDeclaration($input: DeclarationInput!) {
+  updateDeclaration(declaration: $input) {
+    ...trackedEntityFields
+    ...linkableEntityFields
+    ...declarationFields
+  }
+}
+`
+
+export const DELETE_DECLARATION = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
+${FRAGMENT_DECLARATION_FIELDS}
+mutation DeleteDeclaration($id: ID!) {
+  deleteDeclaration(declarationId: $id) {
+    ...trackedEntityFields
+    ...linkableEntityFields
+    ...declarationFields
+  }
+}
+`
+
+export const READ_ENTITY_LINKS = gql`
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
 ${FRAGMENT_ENTITY_LINK_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
 query {
   entityLinks
   # (
@@ -622,9 +706,50 @@ query {
   }
 }
 `
-//alert("(29) graphql-queries.ts")
 
-export const QUERY_JOURNALS = gql`
+export const CREATE_ENTITY_LINK = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_ENTITY_LINK_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
+mutation CreateEntityLink($input: EntityLinkInput!) {
+  createEntityLink(entityLink: $input)
+  {
+    ...trackedEntityFields
+    ...entityLinkFields
+  }
+}
+`
+
+export const UPDATE_ENTITY_LINK = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_ENTITY_LINK_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
+mutation UpdateEntityLink($input: EntityLinkInput!) {
+  updateEntityLink(entityLink: $input)
+  {
+    ...trackedEntityFields
+    ...entityLinkFields
+  }
+}
+`
+
+export const DELETE_ENTITY_LINK = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_ENTITY_LINK_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
+mutation DeleteEntityLink($entityLinkId: ID!) {
+  deleteEntityLink(entityLinkId: $entityLinkId)
+  {
+    ...trackedEntityFields
+    ...entityLinkFields
+  }
+}
+`
+
+export const READ_JOURNALS = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
 ${FRAGMENT_JOURNAL_FIELDS}
@@ -643,9 +768,41 @@ query Journals($filter: TrackedEntityQueryFilter, $pageSort: PageableInput) {
   }
 }
 `
-//alert("(30) graphql-queries.ts")
 
-export const QUERY_LOG = gql`
+export const CREATE_JOURNAL = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_JOURNAL_FIELDS}
+mutation CreateJournal($input: JournalInput!) {
+  createJournal(journal: $input) {
+    ...trackedEntityFields
+    ...journalFields
+  }
+}
+`
+
+export const UPDATE_JOURNAL = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_JOURNAL_FIELDS}
+mutation UpdateJournal($input: JournalInput!) {
+  updateJournal(journal: $input) {
+    ...trackedEntityFields
+    ...journalFields
+  }
+}
+`
+
+export const DELETE_JOURNAL = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_JOURNAL_FIELDS}
+mutation DeleteJournal($id: ID!) {
+  deleteJournal(journalId: $id) {
+    ...trackedEntityFields
+    ...journalFields
+  }
+}
+`
+
+export const READ_LOGS = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_LOG_FIELDS}
 query Log($filter: LogQueryFilter, $pageSort: PageableInput) {
@@ -664,7 +821,7 @@ query Log($filter: LogQueryFilter, $pageSort: PageableInput) {
 `
 //alert("(31) graphql-queries.ts")
 
-export const QUERY_PERSONS = gql`
+export const READ_PERSONS = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
 ${FRAGMENT_LINKABLE_ENTITY_FIELDS}
@@ -686,9 +843,50 @@ query Persons($filter: LinkableEntityQueryFilter, $pageSort: PageableInput) {
   }
 }
 `
-//alert("(32) graphql-queries.ts")
 
-export const QUERY_PUBLICATIONS = gql`
+export const CREATE_PERSON = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
+${FRAGMENT_PERSON_FIELDS}
+mutation CreatePerson($input: PersonInput!) {
+  createPerson(person: $input) {
+    ...trackedEntityFields
+    ...linkableEntityFields
+    ...personFields
+  }
+}
+`
+
+export const UPDATE_PERSON = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
+${FRAGMENT_PERSON_FIELDS}
+mutation UpdatePerson($input: PersonInput!) {
+  updatePerson(person: $input) {
+    ...trackedEntityFields
+    ...linkableEntityFields
+    ...personFields
+  }
+}
+`
+
+export const DELETE_PERSON = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
+${FRAGMENT_PERSON_FIELDS}
+mutation DeletePerson($id: ID!) {
+  deletePerson(personId: $id) {
+    ...trackedEntityFields
+    ...linkableEntityFields
+    ...personFields
+  }
+}
+`
+
+export const READ_PUBLICATIONS = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
 ${FRAGMENT_LINKABLE_ENTITY_FIELDS}
@@ -711,9 +909,50 @@ query Publications($filter: LinkableEntityQueryFilter, $pageSort: PageableInput)
   }
 }
 `
-//alert("(33) graphql-queries.ts")
 
-export const QUERY_PUBLISHERS = gql`
+export const CREATE_PUBLICATION = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
+${FRAGMENT_PUBLICATION_FIELDS}
+mutation CreatePublication($input: PublicationInput!) {
+  createPublication(publication: $input) {
+    ...trackedEntityFields
+    ...linkableEntityFields
+    ...publicationFields
+  }
+}
+`
+
+export const UPDATE_PUBLICATION = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
+${FRAGMENT_PUBLICATION_FIELDS}
+mutation UpdatePublication($input: PublicationInput!) {
+  updatePublication(publication: $input) {
+    ...trackedEntityFields
+    ...linkableEntityFields
+    ...publicationFields
+  }
+}
+`
+
+export const DELETE_PUBLICATION = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
+${FRAGMENT_PUBLICATION_FIELDS}
+mutation DeletePublication($id: ID!) {
+  deletePublication(publicationId: $id) {
+    ...trackedEntityFields
+    ...linkableEntityFields
+    ...publicationFields
+  }
+}
+`
+
+export const READ_PUBLISHERS = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
 ${FRAGMENT_PUBLISHER_FIELDS}
@@ -732,9 +971,41 @@ query Publishers($filter: TrackedEntityQueryFilter, $pageSort: PageableInput) {
   }
 }
 `
-//alert("(34) graphql-queries.ts")
 
-export const QUERY_QUOTATIONS = gql`
+export const CREATE_PUBLISHER = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_PUBLISHER_FIELDS}
+mutation CreatePublisher($input: PublisherInput!) {
+  createPublisher(publisher: $input) {
+    ...trackedEntityFields
+    ...publisherFields
+  }
+}
+`
+
+export const UPDATE_PUBLISHER = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_PUBLISHER_FIELDS}
+mutation UpdatePublisher($input: PublisherInput!) {
+  updatePublisher(publisher: $input) {
+    ...trackedEntityFields
+    ...publisherFields
+  }
+}
+`
+
+export const DELETE_PUBLISHER = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_PUBLISHER_FIELDS}
+mutation DeletePublisher($id: ID!) {
+  deletePublisher(publisherId: $id) {
+    ...trackedEntityFields
+    ...publisherFields
+  }
+}
+`
+
+export const READ_QUOTATIONS = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
 ${FRAGMENT_LINKABLE_ENTITY_FIELDS}
@@ -756,9 +1027,50 @@ query Quotations($filter: LinkableEntityQueryFilter, $pageSort: PageableInput) {
   }
 }
 `
-//alert("(35) graphql-queries.ts")
 
-export const QUERY_TOPICS = gql`
+export const CREATE_QUOTATION = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
+${FRAGMENT_QUOTATION_FIELDS}
+mutation CreateQuotation($input: QuotationInput!) {
+  createQuotation(quotation: $input) {
+    ...trackedEntityFields
+    ...linkableEntityFields
+    ...quotationFields
+  }
+}
+`
+
+export const UPDATE_QUOTATION = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
+${FRAGMENT_QUOTATION_FIELDS}
+mutation UpdateQuotation($input: QuotationInput!) {
+  updateQuotation(quotation: $input) {
+    ...trackedEntityFields
+    ...linkableEntityFields
+    ...quotationFields
+  }
+}
+`
+
+export const DELETE_QUOTATION = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
+${FRAGMENT_QUOTATION_FIELDS}
+mutation DeleteQuotation($id: ID!) {
+  deleteQuotation(quotationId: $id) {
+    ...trackedEntityFields
+    ...linkableEntityFields
+    ...quotationFields
+  }
+}
+`
+
+export const READ_TOPICS = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
 ${FRAGMENT_LINKABLE_ENTITY_FIELDS}
@@ -798,7 +1110,7 @@ query {
 }
 `
 
-export const QUERY_TOPIC_HIERARCHY = gql`
+export const READ_TOPIC_HIERARCHY = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TOPIC_HIERARCHY_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
@@ -817,9 +1129,51 @@ query TopicHierarchy($filter: TopicQueryFilter, $pageSort: PageableInput) {
     }
   }
 }
-`//alert("(36) graphql-queries.ts")
+`
 
-export const QUERY_USERS = gql`
+export const CREATE_TOPIC = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
+${FRAGMENT_TOPIC_FIELDS}
+mutation CreateTopic($input: TopicInput!) {
+  createTopic(topic: $input) {
+    ...trackedEntityFields
+    ...linkableEntityFields
+    ...topicFields
+  }
+}
+`
+
+export const UPDATE_TOPIC = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
+${FRAGMENT_TOPIC_FIELDS}
+mutation UpdateTopic($input: TopicInput!) {
+  updateTopic(topic: $input) {
+    ...trackedEntityFields
+    ...linkableEntityFields
+    ...topicFields
+  }
+}
+`
+
+export const DELETE_TOPIC = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
+${FRAGMENT_TOPIC_FIELDS}
+mutation DeleteTopic($id: ID!) {
+  deleteTopic(topicId: $id) {
+    ...trackedEntityFields
+    ...linkableEntityFields
+    ...topicFields
+  }
+}
+`
+
+export const READ_USERS = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
 ${FRAGMENT_USER_FIELDS}
@@ -840,7 +1194,62 @@ query Users(
 }
 `
 
-export const QUERY_GROUPS = gql`
+export const CREATE_USER = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_USER_FIELDS}
+mutation CreateUser($input: UserInput!) {
+  createUser(user: $input) {
+    ...trackedEntityFields
+    ...userFields
+  }
+}
+`
+
+export const UPDATE_USER = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_USER_FIELDS}
+mutation UpdateUser($input: UserInput!) {
+  updateUser(user: $input) {
+    ...trackedEntityFields
+    ...userFields
+  }
+}
+`
+
+export const DELETE_USER = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_USER_FIELDS}
+mutation DeleteUser($id: ID!) {
+  deleteUser(userId: $id) {
+    ...trackedEntityFields
+    ...userFields
+  }
+}
+`
+
+export const GRANT_USER_AUTHORITIES = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_USER_FIELDS}
+mutation GrantUserAuthorities($userId: ID!, $authorities: [AuthorityKind!]!) {
+  grantUserAuthorities(userId: $userId, authorities: $authorities) {
+    ...trackedEntityFields
+    ...userFields
+  }
+}
+`
+
+export const REVOKE_USER_AUTHORITIES = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_USER_FIELDS}
+mutation RevokeUserAuthorities($userId: ID!, $authorities: [AuthorityKind!]!) {
+  revokeUserAuthorities(userId: $userId, authorities: $authorities) {
+    ...trackedEntityFields
+    ...userFields
+  }
+}
+`
+
+export const READ_GROUPS = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
 ${FRAGMENT_USER_FIELDS}
@@ -863,198 +1272,86 @@ query Groups(
 }
 `
 
-/*
-export const QUERY_USERS_GROUPS = gql`
-${FRAGMENT_PAGE_FIELDS}
+export const CREATE_GROUP = gql`
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
 ${FRAGMENT_USER_FIELDS}
 ${FRAGMENT_GROUP_FIELDS}
-query UsersAndGroups(
-    $userFilter: TrackedEntityQueryFilter,
-    $userPageSort: PageableInput,
-    $groupFilter: TrackedEntityQueryFilter,
-    $groupPageSort: PageableInput
-  ) {
-  groups(
-    filter: $groupFilter
-    pageSort: $groupPageSort
-  )
-  {
-    ...pageFields
-    content {
-      # ...trackedEntityFields
-      # ...on IBaseEntity {
-        id
-      # }
-      entityKind
-      status
-      created
-      createdByUser {
-        username
-      }
-      updated
-      updatedByUser {
-        username
-      }
-      log
-      {
-        # ...pageFields
-        content {
-          timestamp
-          transactionKind
-          user {
-            username
-          }
-          linkedEntityKind
-          linkedEntityId
-        }
-      }
-      ...groupFields
-    }
-  }
-  users(
-    filter: $userFilter
-    pageSort: $userPageSort
-  )
-  {
-    ...pageFields
-    content {
-      # ...trackedEntityFields
-      # ...on IBaseEntity {
-        id
-      # }
-      entityKind
-      status
-      created
-      createdByUser {
-        username
-      }
-      updated
-      updatedByUser {
-        username
-      }
-      log
-      {
-        # ...pageFields
-        content {
-          timestamp
-          transactionKind
-          user {
-            username
-          }
-          linkedEntityKind
-          linkedEntityId
-        }
-      }
-      ...userFields
-    }
+mutation CreateGroup($input: GroupInput!) {
+  createGroup(group: $input) {
+    ...trackedEntityFields
+    ...groupFields
   }
 }
 `
-*/
 
-/*
-export const QUERY_ALL = gql`
-${FRAGMENT_PAGE_FIELDS}
+export const UPDATE_GROUP = gql`
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
-${FRAGMENT_LINKABLE_ENTITY_FIELDS}
-${FRAGMENT_CLAIM_FIELDS}
-${FRAGMENT_DECLARATION_FIELDS}
-${FRAGMENT_ENTITY_LINK_FIELDS}
-${FRAGMENT_JOURNAL_FIELDS}
-${FRAGMENT_PERSON_FIELDS}
-${FRAGMENT_PUBLICATION_FIELDS}
-${FRAGMENT_PUBLISHER_FIELDS}
-${FRAGMENT_QUOTATION_FIELDS}
-${FRAGMENT_TOPIC_FIELDS}
 ${FRAGMENT_USER_FIELDS}
-query {
-  claims
-  {
-    content {
-      ...trackedEntityFields
-      # ...linkableEntityFields
-      ...claimFields
-    }
+${FRAGMENT_GROUP_FIELDS}
+mutation UpdateGroup($input: GroupInput!) {
+  updateGroup(group: $input) {
+    ...trackedEntityFields
+    ...groupFields
   }
+}
+`
 
-  declarations
-  {
-    content {
-      ...trackedEntityFields
-      # ...linkableEntityFields
-      ...declarationFields
-    }
+export const DELETE_GROUP = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_USER_FIELDS}
+${FRAGMENT_GROUP_FIELDS}
+mutation DeleteGroup($id: ID!) {
+  deleteGroup(groupId: $id) {
+    ...trackedEntityFields
+    ...groupFields
   }
+}
+`
 
-  entityLinks
-  {
-    content {
-      ...trackedEntityFields
-      ...entityLinkFields
-    }
+export const ADD_GROUP_MEMBER = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_USER_FIELDS}
+${FRAGMENT_GROUP_FIELDS}
+mutation AddGroupMember($groupId: ID!, $userId: ID!) {
+  addGroupMember(groupId: $groupId, userId: $userId) {
+    ...trackedEntityFields
+    ...groupFields
   }
+}
+`
 
-  journals
-  {
-    content {
-      ...trackedEntityFields
-      ...journalFields
-    }
+export const REMOVE_GROUP_MEMBER = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_USER_FIELDS}
+${FRAGMENT_GROUP_FIELDS}
+mutation RemoveGroupMember($groupId: ID!, $userId: ID!) {
+  removeGroupMember(groupId: $groupId, userId: $userId) {
+    ...trackedEntityFields
+    ...groupFields
   }
+}
+`
 
-  persons
-  {
-    content {
-      ...trackedEntityFields
-      # ...linkableEntityFields
-      ...personFields
-    }
+export const GRANT_GROUP_AUTHORITIES = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_USER_FIELDS}
+${FRAGMENT_GROUP_FIELDS}
+mutation GrantGroupAuthorities($groupId: ID!, $authorities: [AuthorityKind!]!) {
+  grantGroupAuthorities(groupId: $groupId, authorities: $authorities) {
+    ...trackedEntityFields
+    ...groupFields
   }
+}
+`
 
-  publications
-  {
-    content {
-      ...trackedEntityFields
-      # ...linkableEntityFields
-      ...publicationFields
-    }
+export const REVOKE_GROUP_AUTHORITIES = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_USER_FIELDS}
+${FRAGMENT_GROUP_FIELDS}
+mutation RevokeGroupAuthorities($groupId: ID!, $authorities: [AuthorityKind!]!) {
+  revokeGroupAuthorities(groupId: $groupId, authorities: $authorities) {
+    ...trackedEntityFields
+    ...groupFields
   }
-
-  publishers
-  {
-    content {
-      ...trackedEntityFields
-      ...publisherFields
-    }
-  }
-
-  quotations
-  {
-    content {
-      ...trackedEntityFields
-      # ...linkableEntityFields
-      ...quotationFields
-    }
-  }
-
-  topics
-  {
-    content {
-      ...trackedEntityFields
-      # ...linkableEntityFields
-      ...topicFields
-    }
-  }
-
-  users
-  {
-    content {
-      ...trackedEntityFields
-      ...userFields
-    }
-  }
-}`
-*/
-
-//alert("EXIT graphql-queries.ts")
+}
+`

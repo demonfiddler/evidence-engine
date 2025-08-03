@@ -155,7 +155,7 @@ CREATE UNIQUE INDEX "authority_kind_label" ON "authority_kind" ("label");
 CREATE TABLE "person" (
   "id" BIGINT NOT NULL COMMENT 'Unique person identifier',
   "title" VARCHAR(10) DEFAULT NULL COMMENT 'Person''s title, e.g., Prof., Dr.',
-  "first_name" VARCHAR(80) DEFAULT NULL COMMENT 'Person''s first names and/or initials',
+  "first_name" VARCHAR(80) NOT NULL COMMENT 'Person''s first names and/or initials',
   "nickname" VARCHAR(40) DEFAULT NULL COMMENT 'Nickname by which commonly known',
   "prefix" VARCHAR(20) DEFAULT NULL COMMENT 'Prefix to last name, e.g., van, de',
   "last_name" VARCHAR(40) NOT NULL COMMENT 'Person''s last name,  without prefix or suffix',

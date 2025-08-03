@@ -45,14 +45,15 @@ import { Checkbox } from "@/components/ui/checkbox"
 import Country from "@/app/model/Country"
 import rawCountries from "@/data/countries.json" assert {type: 'json'}
 import Group from "@/app/model/Group"
-import { getRecordLabel, SecurityFormAction } from "@/lib/utils"
-import DetailActions, { createDetailState, DetailMode } from "./detail-actions"
+import { getRecordLabel } from "@/lib/utils"
+import DetailActions, { DetailMode, DetailState } from "./detail-actions"
 import { toast } from "sonner"
 import { authorities } from "./authority-ui"
-import { useCallback, useContext, useMemo, useState } from "react"
-import useAuth from "@/hooks/use-auth"
+import { Dispatch, SetStateAction, useCallback, useState } from "react"
 import { useFormContext } from "react-hook-form"
 import { UserFieldValues } from "../validators/user"
+import { FormActionHandler } from "@/hooks/use-page-logic"
+import { Textarea } from "@/components/ui/textarea"
 
 const countries = rawCountries as unknown as Country[]
 
@@ -61,40 +62,38 @@ export default function UserDetails(
     user,
     group,
     showUsersOrMembers,
+    state,
+    setMode,
     onFormAction
   }:
   {
-    user?: User,
-    group?: Group,
-    showUsersOrMembers: string,
-    onFormAction: (command: SecurityFormAction, fieldValues: UserFieldValues) => void
+    user?: User
+    group?: Group
+    showUsersOrMembers: string
+    state: DetailState
+    setMode: Dispatch<SetStateAction<DetailMode>>
+    onFormAction: FormActionHandler<UserFieldValues>
   }) {
 
-  const {hasAuthority} = useAuth()
   const form = useFormContext<UserFieldValues>()
-  const [mode, setMode] = useState<DetailMode>("view")
   const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
 
-  const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
   const { updating } = state
-
-  const showingUsers = showUsersOrMembers == "users"
-  // if (!showingUsers)
-  //   state.disableNewCancelButton = state.disableEditSaveButton = state.disableDeleteButton = true
+  const userInGroup = (group?.members?.findIndex(m => m.id == user?.id) ?? -1) != -1
 
   // TODO: the Add button/function should not be enabled if the user is already a member of the group.
   const handleAddOrRemove = useCallback(() => {
     const userLabel = getRecordLabel("User", user)
     const groupLabel = getRecordLabel("Group", group)
-    if (showingUsers) {
-      if (confirm(`Add user ${userLabel} to ${groupLabel}?`)) {
-        toast.info(`Adding user ${userLabel} to ${groupLabel} ...`)
-        onFormAction("add", form.getValues())
-      }
-    } else {
+    if (userInGroup) {
       if (confirm(`Remove user ${userLabel} from ${groupLabel}?`)) {
         toast.warning(`Removing user ${userLabel} to ${groupLabel} ...`)
         onFormAction("remove", form.getValues())
+      }
+    } else {
+      if (confirm(`Add user ${userLabel} to ${groupLabel}?`)) {
+        toast.info(`Adding user ${userLabel} to ${groupLabel} ...`)
+        onFormAction("add", form.getValues())
       }
     }
   }, [user, group, onFormAction, form])
@@ -106,19 +105,25 @@ export default function UserDetails(
       <Form {...form}>
         <form>
           <FormDescription>
-            <span className="pt-2 pb-4">&nbsp;&nbsp;{user ? `Details for selected User #${user?.id}` : "-Select a user in the list above to see its details-"}</span>
+            <span className="pt-2 pb-4">
+              &nbsp;&nbsp;{user
+              ? state.mode == "create"
+                ? "Details for new User"
+                : `Details for selected User #${user?.id}`
+              : "-Select a User in the list above to see its details-"
+            }</span>
           </FormDescription>
           <div className="grid grid-cols-3 ml-2 mr-2 mt-4 mb-4 gap-4 items-center">
             <FormField
               control={form.control}
               name="username"
               render={({field}) => (
-                <FormItem className="">
+                <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
                     <Input
                       id="username"
-                      disabled={!user}
+                      disabled={!user && !updating}
                       readOnly={!updating}
                       placeholder="username"
                       {...field}
@@ -140,29 +145,31 @@ export default function UserDetails(
               className="col-start-3 w-20 place-self-center bg-blue-500"
               disabled={!user || !group || updating}
               title={
-                showingUsers
-                  ? `Add selected User to ${getRecordLabel("Group", group)}`
-                  : `Remove selected user from  ${getRecordLabel("Group", group)}`
+                user && group
+                ? userInGroup
+                  ? `Remove selected user from  ${getRecordLabel("Group", group)}`
+                  : `Add selected User to ${getRecordLabel("Group", group)}`
+                : ''
               }
               onClick={handleAddOrRemove}
             >
               {
-                showingUsers
-                  ? "Add"
-                  : "Remove"
+                userInGroup
+                ? "Remove"
+                : "Add"
               }
             </Button>
             <FormField
               control={form.control}
               name="firstName"
               render={({field}) => (
-                <FormItem className="">
+                <FormItem>
                   <FormLabel>First name</FormLabel>
                   <FormControl>
                     <Input
                       id="firstName"
                       className="col-span-2"
-                      disabled={!user}
+                      disabled={!user && !updating}
                       readOnly={!updating}
                       placeholder="first name"
                       {...field}
@@ -183,13 +190,12 @@ export default function UserDetails(
               control={form.control}
               name="lastName"
               render={({field}) => (
-                <FormItem className="">
+                <FormItem>
                   <FormLabel>Last name</FormLabel>
                   <FormControl>
                     <Input
                       id="lastName"
-                      className=""
-                      disabled={!user}
+                      disabled={!user && !updating}
                       readOnly={!updating}
                       placeholder="last name"
                       {...field}
@@ -228,7 +234,7 @@ export default function UserDetails(
                     <Input
                       id="email"
                       type="email"
-                      disabled={!user}
+                      disabled={!user && !updating}
                       readOnly={!updating}
                       placeholder="email"
                       {...field}
@@ -255,7 +261,7 @@ export default function UserDetails(
                     <Input
                       id="password"
                       // type="password"
-                      disabled={!user}
+                      disabled={!user && !updating}
                       readOnly={!updating}
                       placeholder="password"
                       {...field}
@@ -279,12 +285,12 @@ export default function UserDetails(
                 <FormItem className="col-start-1">
                   <FormLabel>Country</FormLabel>
                   <Select
-                    disabled={!updating}
+                    disabled={!user && !updating}
                     value={field.value}
                     onValueChange={field.onChange}
                   >
                     <FormControl>
-                      <SelectTrigger id="country" className="w-full" disabled={!user}>
+                      <SelectTrigger id="country" className="w-full" disabled={!user && !updating}>
                         <SelectValue placeholder="Specify country" />
                       </SelectTrigger>
                     </FormControl>
@@ -314,7 +320,33 @@ export default function UserDetails(
                 </FormItem>
               )}
             />
-            <fieldset className="col-start-1 col-span-2 grid grid-cols-7 border rounded-md p-4 gap-4 w-full" disabled={!user}>
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({field}) => (
+                <FormItem className="col-start-1 col-span-2">
+                  <FormLabel>Notes</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      id="notes"
+                      className="h-40 overflow-y-auto"
+                      disabled={!user && !updating}
+                      readOnly={!updating}
+                      {...field}
+                    />
+                  </FormControl>
+                  {
+                    showFieldHelp
+                    ? <FormDescription>
+                        Added notes on the user.
+                      </FormDescription>
+                    : null
+                  }
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <fieldset className="col-start-1 col-span-2 grid grid-cols-7 border rounded-md p-4 gap-4 w-full" disabled={!user && !updating}>
               <legend>&nbsp;Authorities&nbsp;</legend>
               {
                 authorities.map(auth => (

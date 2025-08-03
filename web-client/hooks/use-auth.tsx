@@ -124,6 +124,7 @@ async function fetchUser() {
   if (error)
     throw new Error(error)
   if (!data?.currentUser)
+    // FIXME: don't throw this error for anonymous users.
     throw new Error("Invalid credentials")
   return data?.currentUser
 }

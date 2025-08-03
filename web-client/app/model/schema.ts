@@ -17,6 +17,10 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+import { DeclarationKind } from "../ui/validators/declaration"
+import { PublicationKind } from "../ui/validators/publication"
+import Authority from "./Authority"
+
 type DirectionKind = "ASC" | "DESC"
 type EntityKind = "CLA" | "COU" | "DEC" | "GRP" | "JOU" | "LNK" | "PER" | "PUB" | "PBR" | "QUO" | "TOP" | "USR"
 type NullHandlingKind = "NATIVE" | "NULLS_FIRST" | "NULLS_LAST"
@@ -65,8 +69,119 @@ export type SortInput = {
 }
 
 export type OrderInput = {
-    property: string
-    direction?: DirectionKind // = ASC
-    ignoreCase?: boolean // = true (MariaDB default collation is case-insensitive)
-    nullHandling?: NullHandlingKind // = NATIVE
+  property: string
+  direction?: DirectionKind // = ASC
+  ignoreCase?: boolean // = true (MariaDB default collation is case-insensitive)
+  nullHandling?: NullHandlingKind // = NATIVE
+}
+
+export interface BaseEntityInput {
+  id?: string
+}
+
+export interface ClaimInput extends BaseEntityInput {
+  text: string
+  date: Date | string | null
+  notes: string | null
+}
+
+export interface DeclarationInput extends BaseEntityInput {
+  kind: DeclarationKind
+  title: string
+  date: Date | string
+  country: string | null // TODO: use Country type
+  url: string | null
+  signatories: string | null
+  notes: string | null
+}
+
+export interface EntityLinkInput extends BaseEntityInput {
+  fromEntityId: string
+  fromEntityLocations: string | null
+  toEntityId: string
+  toEntityLocations: string | null
+}
+
+export interface JournalInput extends BaseEntityInput {
+  title: string
+  abbreviation: string | null
+  url: string | null
+  issn: string | null
+  publisherId: string | null
+  notes: string | null
+}
+
+export interface PersonInput extends BaseEntityInput {
+  title: string | null
+  firstName: string
+  nickname: string | null
+  prefix: string | null
+  lastName: string
+  suffix: string | null
+  alias: string | null
+  notes: string | null
+  qualifications: string | null
+  country: string | null // TODO: use Country type
+  rating: number | null
+  checked: boolean
+  published: boolean
+}
+
+export interface PublicationInput extends BaseEntityInput {
+  authorNames: string | null // TODO: rename to authors
+  // authorIds: string[] | null // TODO: remove from schema.graphql
+  title: string
+  journalId: string | null
+  kind: PublicationKind
+  date: Date | string | null
+  year: number | null
+  abstract: string | null
+  notes: string | null
+  peerReviewed: boolean
+  doi: string | null
+  isbn: string | null
+  url: string | null
+  accessed: Date | string | null
+  cached: boolean
+}
+
+export interface PublisherInput extends BaseEntityInput {
+  name: string
+  location: string | null
+  country: string | null // TODO: use Country type
+  url: string | null
+  journalCount: number | null
+}
+
+export interface QuotationInput extends BaseEntityInput {
+  text: string
+  quotee: string
+  date: Date | string | null
+  source: string | null
+  url: string | null
+  notes: string | null
+}
+
+export interface TopicInput extends BaseEntityInput {
+  label: string
+  description: string | null
+  parentId: string | null
+}
+
+export interface SecurityPrincipalInput extends BaseEntityInput {
+  authorities: Authority[]
+}
+
+export interface UserInput extends SecurityPrincipalInput {
+  username: string
+  firstName: string
+  lastName: string
+  email: string
+  password: string | null
+  country: string | null
+  notes: string | null
+}
+
+export interface GroupInput extends SecurityPrincipalInput {
+  groupname: string
 }

@@ -21,7 +21,8 @@ import { z } from "zod/v4"
 
 export const ClaimSchema = z.object({
   text: z.string().min(15).max(500),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).or(z.date().max(Date.now(), {error: "Claim date cannot be in the future"})),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).or(z.date()
+    .max(Date.now(), {error: "Claim date cannot be in the future"})).optional(),
   notes: z.string().optional()
 })
 

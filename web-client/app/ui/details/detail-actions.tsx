@@ -24,12 +24,11 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { cn, getRecordLabel, FormAction } from "@/lib/utils";
+import { cn, getRecordLabel } from "@/lib/utils";
 import ITrackedEntity from "@/app/model/ITrackedEntity";
 import RecordKind from "@/app/model/RecordKind";
-import { SecurityContextType } from "@/lib/context"
-import { UseFormReturn } from "react-hook-form";
-import Authority from "@/app/model/Authority";
+import { FieldValues, UseFormReturn } from "react-hook-form";
+import { FormActionHandler } from "@/hooks/use-page-logic";
 
 export type ClickHandler = () => void
 
@@ -43,41 +42,10 @@ export type DetailState = {
   allowDelete: boolean
   allowLink: boolean
   allowRead: boolean
-  editing: boolean
   updating: boolean
-  creating: boolean
 }
 
-export function createDetailState(
-  hasAuthority: (authority: Authority) => boolean,
-  mode: DetailMode
-): DetailState {
-
-  const allowCreate = hasAuthority("CRE")
-  const allowEdit = hasAuthority("UPD")
-  const allowDelete = hasAuthority("DEL")
-  const allowUpdate = allowCreate || allowEdit
-  const allowLink = hasAuthority("LNK")
-  const allowRead = hasAuthority("REA")
-  const creating = mode == "create"
-  const editing = mode == "edit"
-  const updating = mode == "create" || mode == "edit"
-
-  return {
-    mode,
-    allowCreate,
-    allowEdit,
-    allowDelete,
-    allowUpdate,
-    allowLink,
-    allowRead,
-    creating,
-    editing,
-    updating,
-  }
-}
-
-export default function DetailActions<T extends ITrackedEntity, S>(
+export default function DetailActions<T extends ITrackedEntity, V extends FieldValues>(
   {
     className,
     recordKind,
@@ -98,7 +66,7 @@ export default function DetailActions<T extends ITrackedEntity, S>(
     setMode: Dispatch<SetStateAction<DetailMode>>
     showFieldHelp: boolean
     setShowFieldHelp: any
-    onFormAction: (command: FormAction, value: S) => void
+    onFormAction: FormActionHandler<V>
   }) {
 
   // console.log("DetailActions: render")
@@ -107,54 +75,65 @@ export default function DetailActions<T extends ITrackedEntity, S>(
   const handleNewOrCancel = useCallback(() => {
     // console.log(`ENTER handleNewOrCancel(), state = ${JSON.stringify(state)}, isDirty = ${JSON.stringify(form.formState.isDirty)}, isValid = ${JSON.stringify(form.formState.isValid)}`)
     if (state.updating) {
+      // 'Cancel' logic
       if (form.formState.isDirty) {
-        if (!confirm(`Discard changes to ${recordLabel}?`))
+        const itemLabel = state.mode == "create" ? `new ${recordKind}` : recordLabel
+        if (!confirm(`Confirm discard changes to ${itemLabel}?`))
           return
         toast.info(`Cancelling ${state.mode}...`)
       }
-      onFormAction("reset", form.getValues())
+      onFormAction("reset")
       setMode("view")
     } else {
+      // 'New' logic
       toast.info(`Creating new ${recordKind}...`)
+      // const emptyFieldValues = Object.fromEntries(Object.keys(form.getValues()).map(k => [k, '']))
+      // onFormAction("reset", emptyFieldValues as V)
+      onFormAction("new")
       setMode("create")
-      onFormAction("reset", {} as S)
-      // form.reset({}, {keepValues: false, keepDefaultValues:false})
     }
   }, [state, form, recordLabel, onFormAction, setMode])
 
   const handleEditOrSave = useCallback(() => {
     // console.log(`ENTER handleEditOrSave(), state = ${JSON.stringify(state)}, isDirty = ${JSON.stringify(form.formState.isDirty)}, isValid = ${JSON.stringify(form.formState.isValid)}`)
-    if (state.editing) {
-      if (form.formState.isDirty) {
-        if (form.formState.isValid) {
-          toast.info(`Saving updated ${recordKind}...`)
-          onFormAction("update", form.getValues())
+    switch (state.mode) {
+      case "create":
+        // 'Create' logic
+        if (form.formState.isDirty) {
+          if (form.formState.isValid) {
+            toast.info(`Saving new ${recordKind}...`)
+            onFormAction("create", form.getValues())
+            // NOTE: completion callback will reset mode to "view"
+          }
+        } else {
           setMode("view")
         }
-      } else {
-        setMode("view")
-      }
-    } else if (state.creating) {
-      if (form.formState.isDirty) {
-        if (form.formState.isValid) {
-          toast.info(`Saving new ${recordKind}...`)
-          onFormAction("create", form.getValues())
+        break
+      case "edit":
+        // 'Save' logic
+        if (form.formState.isDirty) {
+          if (form.formState.isValid) {
+            toast.info(`Saving updated ${recordKind}...`)
+            onFormAction("update", form.getValues())
+            // NOTE: completion callback will reset mode to "view"
+          }
+        } else {
           setMode("view")
         }
-      } else {
-        setMode("view")
-      }
-    } else {
-      toast.info(`Editing ${recordKind} details...`)
-      form.trigger()
-      setMode("edit")
+        break
+      default:
+        // 'Edit' logic
+        toast.info(`Editing ${recordKind} details...`)
+        form.trigger()
+        setMode("edit")
+        break
     }
   }, [state, form, onFormAction, setMode])
 
   const handleDelete = useCallback(() => {
-    if (confirm(`Delete ${recordLabel}?`)) {
+    if (confirm(`Confirm delete ${recordLabel}?`)) {
       toast.warning(`Deleting ${recordLabel}...`)
-      onFormAction("delete", form.getValues())
+      onFormAction("delete")
       setMode("view")
     }
   }, [recordLabel, onFormAction, form, setMode])
@@ -178,7 +157,10 @@ export default function DetailActions<T extends ITrackedEntity, S>(
         type="button"
         onClick={handleEditOrSave}
         className="col-start-6 w-20 place-self-center bg-blue-500"
-        disabled={!record || !state.updating && !state.allowEdit || state.updating && !form.formState.isValid}
+        disabled={
+          !state.updating && (!state.allowEdit || !record) ||
+          state.updating && (!form.formState.isDirty || !form.formState.isValid)
+        }
         title={
           state.updating
           ? `Save changes to ${recordLabel}`

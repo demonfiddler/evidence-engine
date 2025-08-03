@@ -43,25 +43,30 @@ import Journal from "@/app/model/Journal"
 import Publisher from "@/app/model/Publisher"
 import rawPublishers from "@/data/publishers.json" assert {type: 'json'}
 import StandardDetails from "./standard-details"
-import DetailActions, { createDetailState, DetailMode } from "./detail-actions"
+import DetailActions, { DetailMode, DetailState } from "./detail-actions"
 import Link from "next/link"
-import { FormAction } from "@/lib/utils"
-import { useMemo, useState } from "react"
-import useAuth from "@/hooks/use-auth"
+import { Dispatch, SetStateAction, useState } from "react"
 import { useFormContext } from "react-hook-form"
 import { JournalFieldValues } from "../validators/journal"
+import { FormActionHandler } from "@/hooks/use-page-logic"
 
 const publishers = rawPublishers.content as unknown as Publisher[]
 
 export default function JournalDetails(
-  { record, onFormAction }:
-  { record?: Journal; onFormAction: (command: FormAction, fieldValues: JournalFieldValues) => void } ) {
+  {
+    record,
+    state,
+    setMode,
+    onFormAction
+  } : {
+    record?: Journal
+    state: DetailState
+    setMode: Dispatch<SetStateAction<DetailMode>>
+    onFormAction: FormActionHandler<JournalFieldValues>
+  }) {
 
-  const {hasAuthority} = useAuth()
   const form = useFormContext()
-  const [mode, setMode] = useState<DetailMode>("view")
   const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
-  const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
   const { updating } = state
 
   return (
@@ -71,7 +76,13 @@ export default function JournalDetails(
       <Form {...form}>
         <form>
           <FormDescription>
-            <span className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Journal #${record?.id}` : "-Select a journal in the list above to see its details-"}</span>
+            <span className="pt-2 pb-4">
+              &nbsp;&nbsp;{record
+              ? state.mode == "create"
+                ? "Details for new Journal"
+                : `Details for selected Journal #${record?.id}`
+              : "-Select a Journal in the list above to see its details-"
+            }</span>
           </FormDescription>
           <div className="grid grid-cols-3 ml-2 mr-2 mt-4 mb-4 gap-4">
             <FormField
@@ -83,8 +94,7 @@ export default function JournalDetails(
                   <FormControl>
                     <Input
                       id="title"
-                      className=""
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />
@@ -120,8 +130,7 @@ export default function JournalDetails(
                   <FormControl>
                     <Input
                       id="abbreviation"
-                      className=""
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />
@@ -147,7 +156,7 @@ export default function JournalDetails(
                     <Input
                       id="issn"
                       className="col-span-1"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />
@@ -170,12 +179,12 @@ export default function JournalDetails(
                 <FormItem className="col-span-2">
                   <FormLabel>Publisher</FormLabel>
                   <Select
-                    disabled={!updating}
+                    disabled={!record && !updating}
                     value={field.value}
                     onValueChange={field.onChange}
                   >
                     <FormControl>
-                      <SelectTrigger id="publisherId" className="w-full" disabled={!record}>
+                      <SelectTrigger id="publisherId" className="w-full" disabled={!record && !updating}>
                         <SelectValue className="w-full" placeholder="Specify publisher" />
                       </SelectTrigger>
                     </FormControl>
@@ -217,10 +226,9 @@ export default function JournalDetails(
                       ? <Input
                           id="url"
                           // type="url"
-                          className=""
                           {...field}
                         />
-                      : <Link className="" href={record?.url ?? ''} target="_blank">{record?.url ?? ''}</Link>
+                      : <Link href={record?.url ?? ''} target="_blank">{record?.url ?? ''}</Link>
                     }
                   </FormControl>
                   {
@@ -244,7 +252,7 @@ export default function JournalDetails(
                     <Textarea
                       id="notes"
                       className="col-span-4 h-40 overflow-y-auto"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />

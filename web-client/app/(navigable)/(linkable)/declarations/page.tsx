@@ -26,13 +26,13 @@ import DataTable from "@/app/ui/data-table/data-table";
 import { columns, columnVisibility } from "@/app/ui/tables/declaration-columns"
 import Declaration from "@/app/model/Declaration";
 import { DeclarationSchema, DeclarationFieldValues, DeclarationKind } from "@/app/ui/validators/declaration";
-import { toDate, toInteger, toIsoString } from "@/lib/utils";
+import { toDate, toIsoDateString } from "@/lib/utils";
 import { FormProvider } from "react-hook-form";
-import { QUERY_DECLARATIONS } from "@/lib/graphql-queries";
+import { CREATE_DECLARATION, DELETE_DECLARATION, READ_DECLARATIONS, UPDATE_DECLARATION } from "@/lib/graphql-queries";
 import usePageLogic from "@/hooks/use-page-logic";
-import { LinkableEntityQueryFilter } from '@/app/model/schema';
+import { DeclarationInput, LinkableEntityQueryFilter } from '@/app/model/schema';
 
-function copyToForm(declaration?: Declaration) {
+function createFieldValues(declaration?: Declaration) : DeclarationFieldValues {
   return {
     kind: declaration?.kind as DeclarationKind ?? '',
     date: toDate(declaration?.date),
@@ -46,16 +46,19 @@ function copyToForm(declaration?: Declaration) {
   }
 }
 
-function copyFromForm(declaration: Declaration, fieldValues: DeclarationFieldValues) {
-  declaration.kind = fieldValues.kind
-  declaration.title = fieldValues.title
-  declaration.date = toIsoString(fieldValues.date)
-  declaration.country = fieldValues.country ?? null
-  declaration.url = fieldValues.url ?? null
-  declaration.cached = !!fieldValues.cached
-  declaration.signatories = fieldValues.signatories ?? null
-  declaration.signatoryCount = toInteger(fieldValues.signatoryCount)
-  declaration.notes = fieldValues.notes ?? null
+function createInput(fieldValues: DeclarationFieldValues, id?: string) : DeclarationInput {
+  return {
+    id,
+    kind: fieldValues.kind,
+    title: fieldValues.title,
+    date: toIsoDateString(fieldValues.date) ?? new Date(), // NOTE: the default value shouldn't apply in practice
+    country: fieldValues.country || null,
+    url: fieldValues.url || null,
+    // cached: !!fieldValues.cached,
+    signatories: fieldValues.signatories || null,
+    // signatoryCount: toInteger(fieldValues.signatoryCount),
+    notes: fieldValues.notes || null,
+  }
 }
 
 export default function Declarations() {
@@ -70,16 +73,21 @@ export default function Declarations() {
     page,
     selectedRecord,
     handleRowSelectionChange,
+    state,
+    setMode,
     form,
     handleFormAction,
-  } = usePageLogic<Declaration, LinkableEntityQueryFilter, DeclarationFieldValues>({
+  } = usePageLogic<Declaration, DeclarationFieldValues, DeclarationInput, LinkableEntityQueryFilter>({
     recordKind: "Declaration",
     schema: DeclarationSchema,
     manualPagination: true,
     manualSorting: true,
-    listQuery: QUERY_DECLARATIONS,
-    copyToForm,
-    copyFromForm,
+    readQuery: READ_DECLARATIONS,
+    createMutation: CREATE_DECLARATION,
+    updateMutation: UPDATE_DECLARATION,
+    deleteMutation: DELETE_DECLARATION,
+    createFieldValues,
+    createInput,
   })
 
   return (
@@ -94,6 +102,7 @@ export default function Declarations() {
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
+        state={state}
         loading={loading}
         manualPagination={true}
         pagination={pagination}
@@ -106,7 +115,11 @@ export default function Declarations() {
         onRowSelectionChange={handleRowSelectionChange}
       />
       <FormProvider {...form}>
-        <DeclarationDetails record={selectedRecord} onFormAction={handleFormAction} />
+        <DeclarationDetails
+          record={selectedRecord}
+          state={state}
+          setMode={setMode}
+          onFormAction={handleFormAction} />
       </FormProvider>
     </main>
   );

@@ -17,14 +17,10 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import SecurityPrincipal from "./SecurityPrincipal";
-import User from "./User";
+import Authority from "./Authority";
+import ITrackedEntity from "./ITrackedEntity";
 
-export default interface Group extends SecurityPrincipal {
-  /** The unique group name. */
-  groupname?: string
-  // /** The group description. */
-  // description?: string
-  /** The group members. */
-  members?: User[]
+export default interface SecurityPrincipal extends ITrackedEntity {
+  /** The authorities granted to the security principal. */
+  authorities?: Authority[]
 }

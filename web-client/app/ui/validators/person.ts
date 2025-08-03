@@ -21,7 +21,7 @@ import { z } from "zod/v4"
 
 export const PersonSchema = z.object({
   title: z.string().max(10).optional(),
-  firstName: z.string().max(80).optional(),
+  firstName: z.string().max(80),
   nickname: z.string().max(40).optional(),
   prefix: z.string().max(20).optional(),
   lastName: z.string().min(1).max(40),

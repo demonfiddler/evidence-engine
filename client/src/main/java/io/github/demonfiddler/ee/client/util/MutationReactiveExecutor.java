@@ -51,7 +51,6 @@ import io.github.demonfiddler.ee.client.Claim;
 import io.github.demonfiddler.ee.client.ClaimInput;
 import io.github.demonfiddler.ee.client.Declaration;
 import io.github.demonfiddler.ee.client.DeclarationInput;
-import io.github.demonfiddler.ee.client.EntityKind;
 import io.github.demonfiddler.ee.client.EntityLink;
 import io.github.demonfiddler.ee.client.EntityLinkInput;
 import io.github.demonfiddler.ee.client.Group;
@@ -8315,7 +8314,6 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * 
 	 * 		Mono<Boolean> mono = executor.setEntityStatusWithBindValues(
 	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
-	 * 			entityKind, // A value for setEntityStatus's entityKind input parameter
 	 * 			entityId, // A value for setEntityStatus's entityId input parameter
 	 * 			status, // A value for setEntityStatus's status input parameter
 	 * 			params);
@@ -8333,7 +8331,6 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
 	 * <I>parameters</I> argument to pass the list of values.<BR/>
 	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
-	 * @param entityKind Parameter for the setEntityStatus field of Mutation, as defined in the GraphQL schema
 	 * @param entityId Parameter for the setEntityStatus field of Mutation, as defined in the GraphQL schema
 	 * @param status Parameter for the setEntityStatus field of Mutation, as defined in the GraphQL schema
 	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
@@ -8346,8 +8343,8 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLScalar(fieldName = "setEntityStatus", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
-	public Mono<Optional<Boolean>> setEntityStatusWithBindValues(String queryResponseDef, EntityKind entityKind,
-		Long entityId, StatusKind status, Map<String, Object> parameters)
+	public Mono<Optional<Boolean>> setEntityStatusWithBindValues(String queryResponseDef, Long entityId,
+		StatusKind status, Map<String, Object> parameters)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
 		LOGGER.debug("Executing mutation 'setEntityStatus': {} ", queryResponseDef);
@@ -8512,8 +8509,8 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * 	}
 	 * 
 	 * 	void myMethod() {
-	 * 		Mono<Boolean> mono = executor.setEntityStatus(preparedRequest, entityId, // A value for setEntityStatus's
-	 * 																					// entityId input parameter
+	 * 		Mono<Boolean> mono = executor.setEntityStatus(preparedRequest,
+	 *          entityId, // A value for setEntityStatus's entityId input parameter
 	 * 			status, // A value for setEntityStatus's status input parameter
 	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
@@ -8578,7 +8575,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	public Builder getSetEntityStatusResponseBuilder() throws GraphQLRequestPreparationException {
 		return new Builder(this.graphQlClient, GraphQLReactiveRequest.class, "setEntityStatus", RequestType.mutation,
-			InputParameter.newBindParameter("", "entityId", "mutationSetEntityStatusEntityId", MANDATORY, "Long", true,
+			InputParameter.newBindParameter("", "entityId", "mutationSetEntityStatusEntityId", MANDATORY, "ID", true,
 				0, false),
 			InputParameter.newBindParameter("", "status", "mutationSetEntityStatusStatus", MANDATORY, "StatusKind",
 				true, 0, false));
@@ -8598,7 +8595,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 		throws GraphQLRequestPreparationException {
 
 		return new GraphQLReactiveRequest(this.graphQlClient, partialRequest, RequestType.mutation, "setEntityStatus",
-			InputParameter.newBindParameter("", "entityId", "mutationSetEntityStatusEntityId", MANDATORY, "Long", true,
+			InputParameter.newBindParameter("", "entityId", "mutationSetEntityStatusEntityId", MANDATORY, "ID", true,
 				0, false),
 			InputParameter.newBindParameter("", "status", "mutationSetEntityStatusStatus", MANDATORY, "StatusKind",
 				true, 0, false));

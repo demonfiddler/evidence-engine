@@ -150,6 +150,8 @@ Resource & Member column entry key:
 |||~```TYPEController```|+```PROPERTY()```|||
 |||~```DataFetchersDelegateTYPE```|+```PROPERTY()```||Only for structured or parameterised properties.|
 |||~```DataFetchersDelegateTYPEImpl```|+```PROPERTY()```||Only for structured or parameterised properties.|
+|||~[```DataFetchersDelegateMutationImpl```](server/src/main/java/io/github/demonfiddler/ee/server/datafetcher/impl/DataFetchersDelegateMutationImpl.java)|~```createTYPE()```||Handle new property.|
+||||~```updateTYPE()```||Handle new property.|
 |[Query](#adding-a-query)|client|~[```Query```](client/src/main/java/io/github/demonfiddler/ee/client/Query.java)|+```QUERY```|||
 ||||+```setQUERY()```|||
 ||||+```getQUERY()```|||

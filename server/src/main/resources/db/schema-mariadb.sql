@@ -191,7 +191,7 @@ CREATE TABLE IF NOT EXISTS "authority_kind" (
 CREATE TABLE IF NOT EXISTS "person" (
   "id"  bigint(20) unsigned NOT NULL COMMENT 'Unique person identifier',
   "title" varchar(10) DEFAULT NULL COMMENT 'Person''s title, e.g., Prof., Dr.',
-  "first_name" varchar(80) DEFAULT NULL COMMENT 'Person''s first names and/or initials',
+  "first_name" varchar(80) NOT NULL COMMENT 'Person''s first names and/or initials',
   "nickname" varchar(40) DEFAULT NULL COMMENT 'Nickname by which commonly known',
   "prefix" varchar(20) DEFAULT NULL COMMENT 'Prefix to last name, e.g., van, de',
   "last_name" varchar(40) NOT NULL COMMENT 'Person''s last name,  without prefix or suffix',

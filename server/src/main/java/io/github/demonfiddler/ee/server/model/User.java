@@ -89,6 +89,19 @@ public class User extends AbstractTrackedEntity {
 	String password;
 
 	/**
+	 * The user's country of residence.
+	 */
+	@GraphQLScalar( fieldName = "country", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+    @Column(name = "country_code")
+	String country;
+
+	/**
+	 * Added notes about the user.
+	 */
+	@GraphQLScalar( fieldName = "notes", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String notes;
+
+	/**
 	 * The authorities granted to the user.
 	 */
 	// @Transient
@@ -197,6 +210,42 @@ public class User extends AbstractTrackedEntity {
 	}
 
 	/**
+	 * The user's country of residence.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	/**
+	 * The user's country of residence.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	public String getCountry() {
+		return this.country;
+	}
+
+	/**
+	 * Added notes about the user.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	/**
+	 * Added notes about the user.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	public String getNotes() {
+		return this.notes;
+	}
+
+	/**
 	 * The authorities granted to the user.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
@@ -256,6 +305,10 @@ public class User extends AbstractTrackedEntity {
 			+ ", " //$NON-NLS-1$
 			+ "password: " + this.password //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
+			+ "country: " + this.country //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
+			+ "notes: " + this.notes //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
 			+ "authorities: " + this.authorities //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "groups: " + this.groups //$NON-NLS-1$
@@ -271,6 +324,8 @@ public class User extends AbstractTrackedEntity {
 		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
 		result = prime * result + ((password == null) ? 0 : password.hashCode());
+		result = prime * result + ((country == null) ? 0 : country.hashCode());
+		result = prime * result + ((notes == null) ? 0 : notes.hashCode());
 		result = prime * result + ((authorities == null) ? 0 : authorities.hashCode());
 		result = prime * result + ((groups == null) ? 0 : groups.hashCode());
 		return result;
@@ -308,6 +363,16 @@ public class User extends AbstractTrackedEntity {
 				return false;
 		} else if (!password.equals(other.password))
 			return false;
+		if (country == null) {
+			if (other.country != null)
+				return false;
+		} else if (!country.equals(other.country))
+			return false;
+		if (notes == null) {
+			if (other.notes != null)
+				return false;
+		} else if (!notes.equals(other.notes))
+			return false;
 		if (authorities == null) {
 			if (other.authorities != null)
 				return false;
@@ -336,6 +401,8 @@ public class User extends AbstractTrackedEntity {
 		private String lastName;
 		private String email;
 		private String password;
+		private String country;
+		private String notes;
 		private List<AuthorityKind> authorities;
 		private List<Group> groups;
 
@@ -381,6 +448,22 @@ public class User extends AbstractTrackedEntity {
 		}
 
 		/**
+		 * The user's country of residence.
+		 */
+		public Builder withCountry(String countryParam) {
+			this.country = countryParam;
+			return this;
+		}
+
+		/**
+		 * Added notes about the user.
+		 */
+		public Builder withNotes(String notesParam) {
+			this.notes = notesParam;
+			return this;
+		}
+
+		/**
 		 * The authorities granted to the user.
 		 */
 		public Builder withAuthorities(List<AuthorityKind> authoritiesParam) {
@@ -404,6 +487,8 @@ public class User extends AbstractTrackedEntity {
 			_object.setLastName(this.lastName);
 			_object.setEmail(this.email);
 			_object.setPassword(this.password);
+			_object.setCountry(this.country);
+			_object.setNotes(this.notes);
 			_object.setAuthorities(this.authorities);
 			_object.setGroups(this.groups);
 			return _object;

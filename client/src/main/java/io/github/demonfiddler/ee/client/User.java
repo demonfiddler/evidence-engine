@@ -84,6 +84,22 @@ public class User extends AbstractTrackedEntity {
 	String password;
 
 	/**
+	 * The user's country of residence.
+	 */
+	@JsonProperty("country")
+	@GraphQLInputParameters(names = {"format"}, types = {"CountryFormatKind"}, mandatories = {false}, listDepths = {0},
+		itemsMandatory = {false})
+	@GraphQLScalar( fieldName = "country", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String country;
+
+	/**
+	 * Added notes about the user.
+	 */
+	@JsonProperty("notes")
+	@GraphQLScalar( fieldName = "notes", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String notes;
+
+	/**
 	 * The authorities granted to the user.
 	 */
 	@JsonProperty("authorities")
@@ -185,6 +201,38 @@ public class User extends AbstractTrackedEntity {
 	}
 
 	/**
+	 * The user's country of residence.
+	 */
+	@JsonProperty("country")
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	/**
+	 * The user's country of residence.
+	 */
+	@JsonProperty("country")
+	public String getCountry() {
+		return this.country;
+	}
+
+	/**
+	 * Added notes about the user.
+	 */
+	@JsonProperty("notes")
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	/**
+	 * Added notes about the user.
+	 */
+	@JsonProperty("notes")
+	public String getNotes() {
+		return this.notes;
+	}
+
+	/**
 	 * The authorities granted to the user.
 	 */
 	@JsonProperty("authorities")
@@ -240,6 +288,10 @@ public class User extends AbstractTrackedEntity {
 			+ "email: " + this.email //
 			+ ", " //
 			+ "password: " + this.password //
+			+ ", " //$NON-NLS-1$
+			+ "country: " + this.country //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
+			+ "notes: " + this.notes //$NON-NLS-1$
 			+ ", " //
 			+ "authorities: " + this.authorities //
 			+ ", " //$NON-NLS-1$
@@ -258,6 +310,8 @@ public class User extends AbstractTrackedEntity {
 		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
 		result = prime * result + ((password == null) ? 0 : password.hashCode());
+		result = prime * result + ((country == null) ? 0 : country.hashCode());
+		result = prime * result + ((notes == null) ? 0 : notes.hashCode());
 		result = prime * result + ((authorities == null) ? 0 : authorities.hashCode());
 		result = prime * result + ((groups == null) ? 0 : groups.hashCode());
 		return result;
@@ -293,6 +347,16 @@ public class User extends AbstractTrackedEntity {
 				return false;
 		} else if (!password.equals(other.password))
 			return false;
+		if (country == null) {
+			if (other.country != null)
+				return false;
+		} else if (!country.equals(other.country))
+			return false;
+		if (notes == null) {
+			if (other.notes != null)
+				return false;
+		} else if (!notes.equals(other.notes))
+			return false;
 		if (authorities == null) {
 			if (other.authorities != null)
 				return false;
@@ -321,6 +385,8 @@ public class User extends AbstractTrackedEntity {
 		private String lastName;
 		private String email;
 		private String password;
+		private String country;
+		private String notes;
 		private List<String> authorities;
 		private List<Group> groups;
 
@@ -366,6 +432,22 @@ public class User extends AbstractTrackedEntity {
 		}
 
 		/**
+		 * The user's country of residence.
+		 */
+		public Builder withCountry(String countryParam) {
+			this.country = countryParam;
+			return this;
+		}
+
+		/**
+		 * Added notes about the user.
+		 */
+		public Builder withNotes(String notesParam) {
+			this.notes = notesParam;
+			return this;
+		}
+
+		/**
 		 * The authorities granted to the user.
 		 */
 		public Builder withAuthorities(List<String> authoritiesParam) {
@@ -389,6 +471,8 @@ public class User extends AbstractTrackedEntity {
 			_object.setLastName(this.lastName);
 			_object.setEmail(this.email);
 			_object.setPassword(this.password);
+			_object.setCountry(this.country);
+			_object.setNotes(this.notes);
 			_object.setAuthorities(this.authorities);
 			_object.setGroups(this.groups);
 			return _object;

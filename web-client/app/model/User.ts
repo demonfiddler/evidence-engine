@@ -17,11 +17,10 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import Authority from "./Authority";
 import Group from "./Group";
-import ITrackedEntity from "./ITrackedEntity";
+import SecurityPrincipal from "./SecurityPrincipal";
 
-export default interface User extends ITrackedEntity {
+export default interface User extends SecurityPrincipal {
   /** The (mutable?) unique user name (user-assigned). */
   username?: string
   /** The user's first name. */
@@ -32,10 +31,10 @@ export default interface User extends ITrackedEntity {
   email?: string | null
   /** The user's country of habitation. */
   country?: string | null
+  /** Added notes on the user. */
+  notes?: string | null
   /** A hash of the user's password. */
   password?: string
-  /** The authorities granted to the user. */
-  authorities?: Authority[]
   /** The groups of which the user is a member. */
   groups?: Group[]
 }

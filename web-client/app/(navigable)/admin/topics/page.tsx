@@ -28,11 +28,11 @@ import Topic from "@/app/model/Topic";
 import { setTopicFields, } from "@/lib/utils";
 import { FormProvider } from "react-hook-form"
 import { TopicFieldValues, TopicSchema } from "@/app/ui/validators/topic";
-import { QUERY_TOPIC_HIERARCHY } from "@/lib/graphql-queries";
+import { CREATE_TOPIC, DELETE_TOPIC, READ_TOPIC_HIERARCHY, UPDATE_TOPIC } from "@/lib/graphql-queries";
 import usePageLogic from "@/hooks/use-page-logic";
-import { TopicQueryFilter } from '@/app/model/schema';
+import { TopicInput, TopicQueryFilter } from '@/app/model/schema';
 
-function copyToForm(topic?: Topic) {
+function createFieldValues(topic?: Topic) : TopicFieldValues {
   return {
     path: topic?.path ?? '',
     label: topic?.label ?? '',
@@ -41,11 +41,13 @@ function copyToForm(topic?: Topic) {
   }
 }
 
-function copyFromForm(topic: Topic, fieldValues: TopicFieldValues) {
-  topic.path = fieldValues.path ?? null
-  topic.label = fieldValues.label
-  topic.description = fieldValues.description ?? null
-  topic.parentId = fieldValues.parentId ?? null
+function createInput(fieldValues: TopicFieldValues, id?: string) : TopicInput {
+  return {
+    id,
+    label: fieldValues.label,
+    description: fieldValues.description || null,
+    parentId: fieldValues.parentId || null,
+  }
 }
 
 function prepareFilter(filter: TopicQueryFilter) {
@@ -92,16 +94,21 @@ export default function Topics() {
     page,
     selectedRecord,
     handleRowSelectionChange,
+    state,
+    setMode,
     form,
     handleFormAction,
-  } = usePageLogic<Topic, TopicQueryFilter, TopicFieldValues>({
+  } = usePageLogic<Topic, TopicFieldValues, TopicInput, TopicQueryFilter>({
     recordKind: "Topic",
     schema: TopicSchema,
     manualPagination: false,
     manualSorting: false,
-    listQuery: QUERY_TOPIC_HIERARCHY,
-    copyToForm,
-    copyFromForm,
+    readQuery: READ_TOPIC_HIERARCHY,
+    createMutation: CREATE_TOPIC,
+    updateMutation: UPDATE_TOPIC,
+    deleteMutation: DELETE_TOPIC,
+    createFieldValues: createFieldValues,
+    createInput,
     prepareFilter,
     preparePage,
     findRecord,
@@ -119,6 +126,7 @@ export default function Topics() {
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
+        state={state}
         loading={loading}
         manualPagination={false}
         pagination={pagination}
@@ -132,7 +140,12 @@ export default function Topics() {
         getSubRows={(row) => row.children}
       />
       <FormProvider {...form}>
-        <TopicDetails record={selectedRecord} topics={page?.content ?? []} onFormAction={handleFormAction} />
+        <TopicDetails
+          record={selectedRecord}
+          state={state}
+          setMode={setMode}
+          topics={page?.content ?? []} onFormAction={handleFormAction}
+        />
       </FormProvider>
     </main>
   )

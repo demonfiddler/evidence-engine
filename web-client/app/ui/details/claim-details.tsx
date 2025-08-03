@@ -33,35 +33,30 @@ import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Textarea } from "@/components/ui/textarea"
-import { cn, formatDate, FormAction } from "@/lib/utils"
+import { cn, formatDate } from "@/lib/utils"
 import { CalendarIcon } from "@heroicons/react/24/outline"
 import StandardDetails from "./standard-details"
-import DetailActions, { createDetailState, DetailMode } from "./detail-actions"
-import {/* Dispatch, SetStateAction,*/ useContext, useMemo, useState } from "react"
+import DetailActions, { DetailMode, DetailState } from "./detail-actions"
+import { Dispatch, SetStateAction, useState } from "react"
 import { useFormContext } from "react-hook-form"
 import { ClaimFieldValues } from "../validators/claim"
-import useAuth from "@/hooks/use-auth"
+import { FormActionHandler } from "@/hooks/use-page-logic"
 
 export default function ClaimDetails(
   {
     record,
-    // mode,
-    // setMode,
+    state,
+    setMode,
     onFormAction
-  }:
-  {
-    record?: Claim;
-    // mode: DetailMode;
-    // setMode: Dispatch<SetStateAction<DetailMode>>;
-    onFormAction: (command: FormAction, fieldValues: ClaimFieldValues) => void
+  } : {
+    record?: Claim
+    state: DetailState
+    setMode: Dispatch<SetStateAction<DetailMode>>
+    onFormAction: FormActionHandler<ClaimFieldValues>
   }) {
 
-  const {hasAuthority} = useAuth()
   const form = useFormContext()
-  const [mode, setMode] = useState<DetailMode>("view")
   const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
-
-  const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
   const { updating } = state
 
   // console.log(`record = ${JSON.stringify(record)}`)
@@ -76,21 +71,27 @@ export default function ClaimDetails(
       <Form {...form}>
         <form>
           <FormDescription>
-            <span className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Claim #${record?.id}` : "-Select a claim in the list above to see its details-"}</span>
+            <span className="pt-2 pb-4">
+              &nbsp;&nbsp;{record
+              ? state.mode == "create"
+                ? "Details for new Claim"
+                : `Details for selected Claim #${record?.id}`
+              : "-Select a Claim in the list above to see its details-"
+            }</span>
           </FormDescription>
-          <div className="grid grid-cols-3 ml-2 mr-2 mt-4 mb-4 gap-4">
+          <div className="grid grid-cols-5 ml-2 mr-2 mt-4 mb-4 gap-4">
             <FormField
               control={form.control}
               name="date"
               render={({field}) => (
-                <FormItem className="">
+                <FormItem>
                   <FormLabel>Date</FormLabel>
                   <Popover>
                     <PopoverTrigger id="date" asChild>
                       <FormControl>
                         <Button
                           variant={"outline"}
-                          disabled={!updating}
+                          disabled={!record && !updating}
                           className={cn("w-full justify-start text-left font-normal",
                             (!record || !record.date) && "text-muted-foreground")}>
                           <CalendarIcon />
@@ -118,12 +119,12 @@ export default function ClaimDetails(
                       </FormDescription>
                     : null
                   }
-                  <FormMessage className="" />
+                  <FormMessage />
                 </FormItem>
               )}
             />
             <DetailActions
-              className="col-start-3 row-span-3"
+              className="col-start-5 row-span-3"
               recordKind="Claim"
               record={record}
               form={form}
@@ -137,13 +138,13 @@ export default function ClaimDetails(
               control={form.control}
               name="text"
               render={({field}) => (
-                <FormItem className="col-span-2">
+                <FormItem className="col-span-4">
                   <FormLabel>Text</FormLabel>
                   <FormControl>
                     <Textarea
                       id="text"
                       className="h-40 overflow-y-auto"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />
@@ -155,7 +156,7 @@ export default function ClaimDetails(
                       </FormDescription>
                     : null
                   }
-                  <FormMessage className="" />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -163,13 +164,13 @@ export default function ClaimDetails(
               control={form.control}
               name="notes"
               render={({field}) => (
-                <FormItem className="col-span-2">
+                <FormItem className="col-span-4">
                   <FormLabel>Notes</FormLabel>
                   <FormControl>
                     <Textarea
                       id="notes"
                       className="h-40 overflow-y-auto"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />
@@ -181,7 +182,7 @@ export default function ClaimDetails(
                       </FormDescription>
                     : null
                   }
-                  <FormMessage className="" />
+                  <FormMessage />
                 </FormItem>
               )}
             />

@@ -32,8 +32,10 @@ import io.github.demonfiddler.ee.server.model.FormatKind;
 import io.github.demonfiddler.ee.server.model.Group;
 import io.github.demonfiddler.ee.server.model.AggregationKind;
 import io.github.demonfiddler.ee.server.model.AuthorityKind;
+import io.github.demonfiddler.ee.server.model.CountryFormatKind;
 import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.repository.UserRepository;
+import io.github.demonfiddler.ee.server.util.CountryUtils;
 import jakarta.annotation.Resource;
 
 @Component
@@ -41,11 +43,18 @@ public class DataFetchersDelegateUserImpl extends DataFetchersDelegateITrackedEn
     implements DataFetchersDelegateUser {
 
     @Resource
+    private CountryUtils countryUtils;
+    @Resource
     private UserRepository userRepository;
 
     @Override
     public List<User> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {
         return userRepository.findAllById(keys);
+    }
+
+    @Override
+    public Object country(DataFetchingEnvironment dataFetchingEnvironment, User origin, CountryFormatKind format) {
+        return countryUtils.formatCountry(origin.getCountry(), format);
     }
 
     @Override

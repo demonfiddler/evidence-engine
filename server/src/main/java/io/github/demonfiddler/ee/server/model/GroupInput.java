@@ -19,6 +19,8 @@
 
 package io.github.demonfiddler.ee.server.model;
 
+import java.util.List;
+
 import com.graphql_java_generator.annotation.GraphQLInputType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
 
@@ -38,6 +40,12 @@ public class GroupInput extends AbstractBaseEntityInput {
 	String groupname;
 
 	/**
+	 * The authorities to grant to the group.
+	 */
+	@GraphQLScalar( fieldName = "authorities", graphQLTypeSimpleName = "AuthorityKind", javaClass = AuthorityKind.class, listDepth = 1)
+	List<AuthorityKind> authorities;
+
+	/**
 	 * The (mutable?) unique group name (user-assigned).
 	 */
 	public void setGroupname(String groupname) {
@@ -51,11 +59,27 @@ public class GroupInput extends AbstractBaseEntityInput {
 		return this.groupname;
 	}
 
+	/**
+	 * The authorities to grant to the group.
+	 */
+	public void setAuthorities(List<AuthorityKind> authorities) {
+		this.authorities = authorities;
+	}
+
+	/**
+	 * The authorities to grant to the group.
+	 */
+	public List<AuthorityKind> getAuthorities() {
+		return this.authorities;
+	}
+
 	public String toString() {
 		return "GroupInput {" //$NON-NLS-1$
 			+ "id: " + this.id //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "groupname: " + this.groupname //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
+			+ "authorities: " + this.authorities //$NON-NLS-1$
 			+ "}"; //$NON-NLS-1$
 	}
 
@@ -70,6 +94,7 @@ public class GroupInput extends AbstractBaseEntityInput {
 	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, GroupInput> {
 
 		private String groupname;
+		private List<AuthorityKind> authorities;
 
 		/**
 		 * The (mutable?) unique group name (user-assigned).
@@ -79,10 +104,19 @@ public class GroupInput extends AbstractBaseEntityInput {
 			return this;
 		}
 
+		/**
+		 * The authorities to grant to the group.
+		 */
+		public Builder withAuthorities(List<AuthorityKind> authoritiesParam) {
+			this.authorities = authoritiesParam;
+			return this;
+		}
+
 		@Override
 		public GroupInput build() {
 			GroupInput _object = build(new GroupInput());
 			_object.setGroupname(this.groupname);
+			_object.setAuthorities(this.authorities);
 			return _object;
 		}
 

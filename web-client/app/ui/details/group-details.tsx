@@ -32,24 +32,32 @@ import Group from "@/app/model/Group"
 import { Input } from "@/components/ui/input"
 import StandardDetails from "./standard-details"
 import { Checkbox } from "@/components/ui/checkbox"
-import DetailActions, { createDetailState, DetailMode } from "./detail-actions"
-import { FormAction } from "@/lib/utils"
-import { useMemo, useState } from "react"
+import DetailActions, { DetailMode, DetailState } from "./detail-actions"
+import { Dispatch, SetStateAction, useState } from "react"
 import { useFormContext } from "react-hook-form"
 import { authorities } from "./authority-ui"
 import { GroupFieldValues } from "../validators/group"
-import useAuth from "@/hooks/use-auth"
+import { FormActionHandler } from "@/hooks/use-page-logic"
 
 export default function GroupDetails(
-  { record, onFormAction }:
-  { record?: Group; onFormAction: (command: FormAction, fieldValues: GroupFieldValues) => void }) {
+  {
+    record,
+    state,
+    setMode,
+    onFormAction
+  } : {
+    record?: Group
+    state: DetailState
+    setMode: Dispatch<SetStateAction<DetailMode>>
+    onFormAction: FormActionHandler<GroupFieldValues>
+  }) {
 
-  const {hasAuthority} = useAuth()
+  // const {hasAuthority} = useAuth()
   const form = useFormContext<GroupFieldValues>()
-  const [mode, setMode] = useState<DetailMode>("view")
+  // const [mode, setMode] = useState<DetailMode>("view")
   const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
 
-  const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
+  // const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
   const { updating } = state
 
   return (
@@ -59,19 +67,25 @@ export default function GroupDetails(
       <Form {...form}>
         <form>
           <FormDescription>
-            <span className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Group #${record?.id}` : "-Select a group in the list above to see its details-"}</span>
+            <span className="pt-2 pb-4">
+              &nbsp;&nbsp;{record
+              ? state.mode == "create"
+                ? "Details for new Group"
+                : `Details for selected Group #${record?.id}`
+              : "-Select a Group in the list above to see its details-"
+            }</span>
           </FormDescription>
           <div className="grid grid-cols-2 ml-2 mr-2 mt-4 mb-4 gap-4 items-center">
             <FormField
               control={form.control}
               name="groupname"
               render={({field}) => (
-                <FormItem className="">
+                <FormItem>
                   <FormLabel>Group name</FormLabel>
                   <FormControl>
                     <Input
                       id="groupname"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       placeholder="groupname"
                       {...field}
@@ -99,7 +113,7 @@ export default function GroupDetails(
               setShowFieldHelp={setShowFieldHelp}
               onFormAction={onFormAction}
             />
-            <fieldset className="grid grid-cols-7 border rounded-md p-4 gap-4 w-full" disabled={!record}>
+            <fieldset className="grid grid-cols-7 border rounded-md p-4 gap-4 w-full" disabled={!record && !updating}>
               <legend>&nbsp;Authorities&nbsp;</legend>
               {
                 authorities.map(auth => (

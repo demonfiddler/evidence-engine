@@ -19,6 +19,8 @@
 
 package io.github.demonfiddler.ee.server.model;
 
+import java.util.List;
+
 import com.graphql_java_generator.annotation.GraphQLInputType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
 
@@ -61,6 +63,27 @@ public class UserInput extends AbstractBaseEntityInput {
 	@GraphQLScalar(fieldName = "password", graphQLTypeSimpleName = "String", javaClass = String.class,
 		listDepth = 0)
 	String password;
+
+	/**
+	 * The user's country of residence (ISO-3166-1 alpha-2 code).
+	 */
+	@GraphQLScalar( fieldName = "country", graphQLTypeSimpleName = "String", javaClass = String.class,
+		listDepth = 0)
+	String country;
+
+	/**
+	 * Added notes about the user.
+	 */
+	@GraphQLScalar( fieldName = "notes", graphQLTypeSimpleName = "String", javaClass = String.class,
+		listDepth = 0)
+	String notes;
+
+	/**
+	 * The authorities to grant to the user.
+	 */
+	@GraphQLScalar( fieldName = "authorities", graphQLTypeSimpleName = "AuthorityKind", javaClass = AuthorityKind.class,
+		listDepth = 1)
+	List<AuthorityKind> authorities;
 
 	/**
 	 * The (mutable?) unique user name (user-assigned).
@@ -132,6 +155,48 @@ public class UserInput extends AbstractBaseEntityInput {
 		return this.password;
 	}
 
+	/**
+	 * The user's country of residence (ISO-3166-1 alpha-2 code).
+	 */
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	/**
+	 * The user's country of residence (ISO-3166-1 alpha-2 code).
+	 */
+	public String getCountry() {
+		return this.country;
+	}
+
+	/**
+	 * Added notes about the user.
+	 */
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	/**
+	 * Added notes about the user.
+	 */
+	public String getNotes() {
+		return this.notes;
+	}
+
+	/**
+ 	 * The authorities to grant to the user.
+ 	 */
+	public void setAuthorities(List<AuthorityKind> authorities) {
+		this.authorities = authorities;
+	}
+
+	/**
+	 * The authorities to grant to the user.
+	 */
+	public List<AuthorityKind> getAuthorities() {
+		return this.authorities;
+	}
+
 	public String toString() {
 		return "UserInput {" //$NON-NLS-1$
 			+ "id: " + this.id //$NON-NLS-1$
@@ -145,6 +210,12 @@ public class UserInput extends AbstractBaseEntityInput {
 			+ "email: " + this.email //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "password: " + this.password //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
+			+ "country: " + this.country //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
+			+ "notes: " + this.notes //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
+			+ "authorities: " + this.authorities //$NON-NLS-1$
 			+ "}"; //$NON-NLS-1$
 	}
 
@@ -163,6 +234,9 @@ public class UserInput extends AbstractBaseEntityInput {
 		private String lastName;
 		private String email;
 		private String password;
+		private String country;
+		private String notes;
+		private List<AuthorityKind> authorities;
 
 		/**
 		 * The (mutable?) unique user name (user-assigned).
@@ -204,6 +278,30 @@ public class UserInput extends AbstractBaseEntityInput {
 			return this;
 		}
 
+		/**
+		 * The user's country of residence (ISO-3166-1 alpha-2 code).
+		 */
+		public Builder withCountry(String countryParam) {
+			this.country = countryParam;
+			return this;
+		}
+
+		/**
+		 * Added notes about the user.
+		 */
+		public Builder withNotes(String notesParam) {
+			this.notes = notesParam;
+			return this;
+		}
+
+		/**
+		 * The authorities to grant to the user.
+		 */
+		public Builder withAuthorities(List<AuthorityKind> authoritiesParam) {
+			this.authorities = authoritiesParam;
+			return this;
+		}
+
 		@Override
 		public UserInput build() {
 			UserInput _object = build(new UserInput());
@@ -212,6 +310,9 @@ public class UserInput extends AbstractBaseEntityInput {
 			_object.setLastName(this.lastName);
 			_object.setEmail(this.email);
 			_object.setPassword(this.password);
+			_object.setCountry(this.country);
+			_object.setNotes(this.notes);
+			_object.setAuthorities(this.authorities);
 			return _object;
 		}
 

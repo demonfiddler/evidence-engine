@@ -48,7 +48,6 @@ public class DataFetchersDelegatePersonImpl extends DataFetchersDelegateILinkabl
 
     @Override
     public Object country(DataFetchingEnvironment dataFetchingEnvironment, Person origin, CountryFormatKind format) {
-
         return countryUtils.formatCountry(origin.getCountry(), format);
     }
 

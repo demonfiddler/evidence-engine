@@ -24,14 +24,14 @@ import PublicationDetails from "@/app/ui/details/publication-details";
 import DataTable from "@/app/ui/data-table/data-table";
 import { columns, columnVisibility } from "@/app/ui/tables/publication-columns"
 import Publication from "@/app/model/Publication";
-import { toDate, toInteger, toIsoString } from "@/lib/utils";
+import { toDate, toInteger, toIsoDateString } from "@/lib/utils";
 import { FormProvider } from "react-hook-form"
 import { PublicationFieldValues, PublicationKind, PublicationSchema as PublicationSchema } from "@/app/ui/validators/publication";
-import { QUERY_PUBLICATIONS } from "@/lib/graphql-queries";
+import { CREATE_PUBLICATION, DELETE_PUBLICATION, READ_PUBLICATIONS, UPDATE_PUBLICATION } from "@/lib/graphql-queries";
 import usePageLogic from "@/hooks/use-page-logic";
-import { LinkableEntityQueryFilter } from '@/app/model/schema';
+import { LinkableEntityQueryFilter, PublicationInput } from '@/app/model/schema';
 
-function copyToForm(publication?: Publication) {
+function createFieldValues(publication?: Publication) : PublicationFieldValues {
   return {
     title: publication?.title ?? '',
     authors: publication?.authors ?? '',
@@ -50,21 +50,24 @@ function copyToForm(publication?: Publication) {
   }
 }
 
-function copyFromForm(publication: Publication, fieldValues: PublicationFieldValues) {
-  publication.title = fieldValues.title ?? null
-  publication.authors = fieldValues.authors ?? null
-  publication.journal = { id: fieldValues.journalId }
-  publication.kind = fieldValues.kind as unknown as PublicationKind ?? null
-  publication.date = toIsoString(fieldValues.date) ?? null
-  publication.year = toInteger(fieldValues.year) ?? null
-  publication.abstract = fieldValues.abstract ?? null
-  publication.notes = fieldValues.notes ?? null
-  publication.peerReviewed = !!fieldValues.peerReviewed
-  publication.doi = fieldValues.doi ?? null
-  publication.isbn = fieldValues.isbn ?? null
-  publication.url = fieldValues.url ?? null
-  publication.cached = !!fieldValues.cached
-  publication.accessed = fieldValues.accessed
+function createInput(fieldValues: PublicationFieldValues, id?: string) : PublicationInput {
+  return {
+    id,
+    title: fieldValues.title,
+    authorNames: fieldValues.authors,
+    journalId: fieldValues.journalId || null,
+    kind: fieldValues.kind,
+    date: toIsoDateString(fieldValues.date),
+    year: toInteger(fieldValues.year),
+    abstract: fieldValues.abstract || null,
+    notes: fieldValues.notes || null,
+    peerReviewed: fieldValues.peerReviewed,
+    doi: fieldValues.doi || null,
+    isbn: fieldValues.isbn || null,
+    url: fieldValues.url || null,
+    cached: fieldValues.cached,
+    accessed: fieldValues.accessed || null,
+  }
 }
 
 export default function Publications() {
@@ -79,16 +82,21 @@ export default function Publications() {
     page,
     selectedRecord,
     handleRowSelectionChange,
+    state,
+    setMode,
     form,
     handleFormAction,
-  } = usePageLogic<Publication, LinkableEntityQueryFilter, PublicationFieldValues>({
+  } = usePageLogic<Publication, PublicationFieldValues, PublicationInput, LinkableEntityQueryFilter>({
     recordKind: "Publication",
     schema: PublicationSchema,
     manualPagination: true,
     manualSorting: true,
-    listQuery: QUERY_PUBLICATIONS,
-    copyToForm,
-    copyFromForm,
+    readQuery: READ_PUBLICATIONS,
+    createMutation: CREATE_PUBLICATION,
+    updateMutation: UPDATE_PUBLICATION,
+    deleteMutation: DELETE_PUBLICATION,
+    createFieldValues,
+    createInput,
   })
 
   return (
@@ -103,6 +111,7 @@ export default function Publications() {
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
+        state={state}
         loading={loading}
         manualPagination={true}
         pagination={pagination}
@@ -115,7 +124,12 @@ export default function Publications() {
         onRowSelectionChange={handleRowSelectionChange}
       />
       <FormProvider {...form}>
-        <PublicationDetails record={selectedRecord} onFormAction={handleFormAction} />
+        <PublicationDetails
+          record={selectedRecord}
+          state={state}
+          setMode={setMode}
+          onFormAction={handleFormAction}
+        />
       </FormProvider>
     </main>
   );

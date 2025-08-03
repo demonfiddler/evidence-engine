@@ -26,12 +26,12 @@ import { columns, columnVisibility } from "@/app/ui/tables/quotation-columns"
 import Quotation from "@/app/model/Quotation"
 import { FormProvider } from "react-hook-form"
 import { QuotationSchema, QuotationFieldValues } from "@/app/ui/validators/quotation";
-import { QUERY_QUOTATIONS } from "@/lib/graphql-queries"
+import { CREATE_QUOTATION, DELETE_QUOTATION, READ_QUOTATIONS, UPDATE_QUOTATION } from "@/lib/graphql-queries"
 import usePageLogic from "@/hooks/use-page-logic"
-import { toDate, toIsoString } from '@/lib/utils'
-import { LinkableEntityQueryFilter } from '@/app/model/schema'
+import { toDate, toIsoDateString } from '@/lib/utils'
+import { LinkableEntityQueryFilter, QuotationInput } from '@/app/model/schema'
 
-function copyToForm(quotation?: Quotation) {
+function createFieldValues(quotation?: Quotation) {
   return {
     text: quotation?.text ?? '',
     quotee: quotation?.quotee ?? '',
@@ -42,13 +42,16 @@ function copyToForm(quotation?: Quotation) {
   }
 }
 
-function copyFromForm(quotation: Quotation, fieldValues: QuotationFieldValues) {
-  quotation.text = fieldValues.text
-  quotation.quotee = fieldValues.quotee
-  quotation.date = toIsoString(fieldValues.date) ?? null
-  quotation.source = fieldValues.source ?? null
-  quotation.url = fieldValues.url ?? null
-  quotation.notes = fieldValues.notes ?? null
+function createInput(fieldValues: QuotationFieldValues, id?: string) : QuotationInput {
+  return {
+    id,
+    text: fieldValues.text,
+    quotee: fieldValues.quotee,
+    date: toIsoDateString(fieldValues.date),
+    source: fieldValues.source || null,
+    url: fieldValues.url || null,
+    notes: fieldValues.notes || null,
+  }
 }
 
 export default function Quotations() {
@@ -63,16 +66,21 @@ export default function Quotations() {
     page,
     selectedRecord,
     handleRowSelectionChange,
+    state,
+    setMode,
     form,
     handleFormAction,
-  } = usePageLogic<Quotation, LinkableEntityQueryFilter, QuotationFieldValues>({
+  } = usePageLogic<Quotation, QuotationFieldValues, QuotationInput, LinkableEntityQueryFilter>({
     recordKind: "Quotation",
     schema: QuotationSchema,
     manualPagination: true,
     manualSorting: true,
-    listQuery: QUERY_QUOTATIONS,
-    copyToForm,
-    copyFromForm,
+    readQuery: READ_QUOTATIONS,
+    createMutation: CREATE_QUOTATION,
+    updateMutation: UPDATE_QUOTATION,
+    deleteMutation: DELETE_QUOTATION,
+    createFieldValues,
+    createInput,
   })
 
   return (
@@ -87,6 +95,7 @@ export default function Quotations() {
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
+        state={state}
         loading={loading}
         manualPagination={true}
         pagination={pagination}
@@ -99,7 +108,12 @@ export default function Quotations() {
         onRowSelectionChange={handleRowSelectionChange}
       />
       <FormProvider {...form}>
-        <QuotationDetails record={selectedRecord} onFormAction={handleFormAction} />
+        <QuotationDetails
+          record={selectedRecord}
+          state={state}
+          setMode={setMode}
+          onFormAction={handleFormAction}
+        />
       </FormProvider>
     </main>
   )

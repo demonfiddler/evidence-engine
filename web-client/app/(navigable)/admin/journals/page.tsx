@@ -26,11 +26,11 @@ import { columns, columnVisibility } from "@/app/ui/tables/journal-columns"
 import Journal from "@/app/model/Journal";
 import { FormProvider } from "react-hook-form"
 import { JournalSchema, JournalFieldValues } from "@/app/ui/validators/journal";
-import { QUERY_JOURNALS } from "@/lib/graphql-queries";
+import { CREATE_JOURNAL, DELETE_JOURNAL, READ_JOURNALS, UPDATE_JOURNAL } from "@/lib/graphql-queries";
 import usePageLogic from "@/hooks/use-page-logic";
-import { TrackedEntityQueryFilter } from '@/app/model/schema';
+import { JournalInput, TrackedEntityQueryFilter } from '@/app/model/schema';
 
-function copyToForm(journal?: Journal) {
+function createFieldValues(journal?: Journal) : JournalFieldValues {
   return {
     title: journal?.title ?? '',
     abbreviation: journal?.abbreviation ?? '',
@@ -41,13 +41,16 @@ function copyToForm(journal?: Journal) {
   }
 }
 
-function copyFromForm(journal: Journal, fieldValues: JournalFieldValues) {
-  journal.title = fieldValues.title ?? null,
-  journal.abbreviation = fieldValues.abbreviation ?? null,
-  journal.url = fieldValues.url ?? null,
-  journal.issn = fieldValues.issn ?? null,
-  journal.publisher = fieldValues.publisherId ? {id: fieldValues.publisherId} : null,
-  journal.notes = fieldValues.notes ?? null
+function createInput(fieldValues: JournalFieldValues, id?: string) : JournalInput {
+  return {
+    id,
+    title: fieldValues.title,
+    abbreviation: fieldValues.abbreviation || null,
+    url: fieldValues.url || null,
+    issn: fieldValues.issn || null,
+    publisherId: fieldValues.publisherId || null,
+    notes: fieldValues.notes || null
+  }
 }
 
 export default function Journals() {
@@ -62,16 +65,21 @@ export default function Journals() {
     page,
     selectedRecord,
     handleRowSelectionChange,
+    state,
+    setMode,
     form,
     handleFormAction,
-  } = usePageLogic<Journal, TrackedEntityQueryFilter, JournalFieldValues>({
+  } = usePageLogic<Journal, JournalFieldValues, JournalInput, TrackedEntityQueryFilter>({
     recordKind: "Journal",
     schema: JournalSchema,
     manualPagination: true,
     manualSorting: true,
-    listQuery: QUERY_JOURNALS,
-    copyToForm,
-    copyFromForm,
+    readQuery: READ_JOURNALS,
+    createMutation: CREATE_JOURNAL,
+    updateMutation: UPDATE_JOURNAL,
+    deleteMutation: DELETE_JOURNAL,
+    createFieldValues,
+    createInput,
   })
 
   return (
@@ -86,6 +94,7 @@ export default function Journals() {
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
+        state={state}
         loading={loading}
         manualPagination={true}
         pagination={pagination}
@@ -98,7 +107,12 @@ export default function Journals() {
         onRowSelectionChange={handleRowSelectionChange}
       />
       <FormProvider {...form}>
-        <JournalDetails record={selectedRecord} onFormAction={handleFormAction} />
+        <JournalDetails
+          record={selectedRecord}
+          state={state}
+          setMode={setMode}
+          onFormAction={handleFormAction}
+        />
       </FormProvider>
     </main>
   );

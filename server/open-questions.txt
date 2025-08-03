@@ -1,7 +1,18 @@
+Class Fields
+------------
+review use of undefined vs. null
+*.date/accessed: should date fields be of type date client- and server-side, even though they are strings on the wire?
+Claim.date: should this be required?
+Declaration.date: should this be required?
+Declaration.cached: is not user-updatable
+Declaration.signatoryCount: should this be calculated in the server but displayed RO in the UI?
+Person.rating: should this be nullable?
 Publication[Input].date|.year: do we need both?
 PublicationInput.authorNames|.authorIds: do we need both?
 EntityLink.from|toLocations (entity_link.from_|to_locations): does this have any meaning for Claim, Declaration, Person or Quotation?
     - Could be a URI fragment, or a page number, or a range.
+User.country: needs codegen & UI
+User.notes: needs codegen & UI
 
 Whether to enforce a topic link at entity creation time?
 
@@ -101,7 +112,7 @@ Implement a server-side interface hierarchy thus [DONE]:
     IPage
         IBaseEntityPage<T extends IBaseEntity>
 
-Implement a server-side class hierarchy thus:
+Implement a server-side class hierarchy thus [DONE]:
     Log
     AbstractTrackedEntity implements ITrackedEntity
         EntityLink
@@ -171,7 +182,7 @@ Think about inheritance for:
 
 User Management
 ---------------
-Need to re-implement the GraphQL user management API, to use the Spring Security permission model.
+Need to re-implement the GraphQL user management API, to use the Spring Security permission model [DONE].
 
 Crashes/Hangs
 -------------

@@ -27,11 +27,11 @@ import Person from "@/app/model/Person";
 import { toInteger } from "@/lib/utils";
 import { FormProvider } from "react-hook-form"
 import { PersonFieldValues, PersonSchema as PersonSchema } from "@/app/ui/validators/person";
-import { QUERY_PERSONS } from "@/lib/graphql-queries";
+import { CREATE_PERSON, DELETE_PERSON, READ_PERSONS, UPDATE_PERSON } from "@/lib/graphql-queries";
 import usePageLogic from "@/hooks/use-page-logic";
-import { LinkableEntityQueryFilter } from '@/app/model/schema';
+import { LinkableEntityQueryFilter, PersonInput } from '@/app/model/schema';
 
-function copyToForm(person?: Person) {
+function createFieldValues(person?: Person) : PersonFieldValues {
   return {
     title: person?.title ?? '',
     firstName: person?.firstName ?? '',
@@ -49,20 +49,23 @@ function copyToForm(person?: Person) {
   }
 }
 
-function copyFromForm(person: Person, fieldValues: PersonFieldValues) {
-  person.title = fieldValues.title ?? null,
-  person.firstName = fieldValues.firstName ?? null,
-  person.nickname = fieldValues.nickname ?? null,
-  person.prefix = fieldValues.prefix ?? null,
-  person.lastName = fieldValues.lastName ?? null,
-  person.suffix = fieldValues.suffix ?? null,
-  person.alias = fieldValues.alias ?? null,
-  person.notes = fieldValues.notes ?? null,
-  person.qualifications = fieldValues.qualifications ?? null,
-  person.country = fieldValues.country ?? null,
-  person.rating = toInteger(fieldValues.rating) ?? 0,
-  person.checked = fieldValues.checked ?? false,
-  person.published = fieldValues.published ?? false
+function createInput(fieldValues: PersonFieldValues, id?: string) : PersonInput {
+  return {
+    id,
+    title: fieldValues.title || null,
+    firstName: fieldValues.firstName,
+    nickname: fieldValues.nickname || null,
+    prefix: fieldValues.prefix || null,
+    lastName: fieldValues.lastName,
+    suffix: fieldValues.suffix || null,
+    alias: fieldValues.alias || null,
+    notes: fieldValues.notes || null,
+    qualifications: fieldValues.qualifications || null,
+    country: fieldValues.country || null,
+    rating: toInteger(fieldValues.rating) ?? 0,
+    checked: fieldValues.checked ?? false,
+    published: fieldValues.published ?? false
+  }
 }
 
 export default function Persons() {
@@ -77,16 +80,21 @@ export default function Persons() {
     page,
     selectedRecord,
     handleRowSelectionChange,
+    state,
+    setMode,
     form,
     handleFormAction,
-  } = usePageLogic<Person, LinkableEntityQueryFilter, PersonFieldValues>({
+  } = usePageLogic<Person, PersonFieldValues, PersonInput, LinkableEntityQueryFilter>({
     recordKind: "Person",
     schema: PersonSchema,
     manualPagination: true,
     manualSorting: true,
-    listQuery: QUERY_PERSONS,
-    copyToForm,
-    copyFromForm,
+    readQuery: READ_PERSONS,
+    createMutation: CREATE_PERSON,
+    updateMutation: UPDATE_PERSON,
+    deleteMutation: DELETE_PERSON,
+    createFieldValues,
+    createInput,
   })
 
   return (
@@ -101,6 +109,7 @@ export default function Persons() {
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
+        state={state}
         loading={loading}
         manualPagination={true}
         pagination={pagination}
@@ -113,8 +122,13 @@ export default function Persons() {
         onRowSelectionChange={handleRowSelectionChange}
       />
       <FormProvider {...form}>
-        <PersonDetails record={selectedRecord} onFormAction={handleFormAction} />
+        <PersonDetails
+          record={selectedRecord}
+          state={state}
+          setMode={setMode}
+          onFormAction={handleFormAction}
+        />
       </FormProvider>
     </main>
-  );
+  )
 }

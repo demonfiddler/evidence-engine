@@ -34,7 +34,7 @@ import { Calendar } from "@/components/ui/calendar"
 import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
-import { cn, formatDate, FormAction } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import { CalendarIcon } from "@heroicons/react/24/outline";
 import { Input } from "@/components/ui/input";
 import {
@@ -50,12 +50,12 @@ import rawJournals from "@/data/journals.json" assert {type: 'json'}
 import rawPublicationKinds from "@/data/publication-kinds.json" assert {type: 'json'}
 import Journal from "@/app/model/Journal";
 import StandardDetails from "./standard-details";
-import DetailActions, { createDetailState, DetailMode } from "./detail-actions";
+import DetailActions, { DetailMode, DetailState } from "./detail-actions";
 import Link from "next/link";
-import { useContext, useMemo, useState } from "react";
-import useAuth from "@/hooks/use-auth"
+import { Dispatch, SetStateAction, useState } from "react";
 import { useFormContext } from "react-hook-form"
 import { PublicationFieldValues } from "../validators/publication";
+import { FormActionHandler } from "@/hooks/use-page-logic";
 
 type PublicationKind = {
   kind: string
@@ -65,16 +65,20 @@ const journals = rawJournals.content as unknown as Journal[]
 const publicationKinds = rawPublicationKinds as unknown as PublicationKind[]
 
 export default function PublicationDetails(
-  { record, onFormAction }:
-  { record?: Publication; onFormAction: (command: FormAction, fieldValues: PublicationFieldValues) => void }) {
+  {
+    record,
+    state,
+    setMode,
+    onFormAction
+  } : {
+    record?: Publication
+    state: DetailState
+    setMode: Dispatch<SetStateAction<DetailMode>>
+    onFormAction: FormActionHandler<PublicationFieldValues>
+  }) {
 
-  // console.log("PublicationDetails: render")
-  const {hasAuthority} = useAuth()
   const form = useFormContext()
-  const [mode, setMode] = useState<DetailMode>("view")
   const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
-
-  const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
   const { updating } = state
 
   // console.log(`PublicationDetails: valid=${form.formState.isValid}, dirtyFields==${JSON.stringify(form.formState.dirtyFields)}, fieldState==${JSON.stringify(form.getFieldState("kind"))}, errors=${JSON.stringify(form.formState.errors)}`)
@@ -86,7 +90,13 @@ export default function PublicationDetails(
       <Form {...form}>
         <form>
           <FormDescription>
-            <span className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Publication #${record?.id}` : "-Select a publication in the list above to see its details-"}</span>
+            <span className="pt-2 pb-4">
+              &nbsp;&nbsp;{record
+              ? state.mode == "create"
+                ? "Details for new Publication"
+                : `Details for selected Publication #${record?.id}`
+              : "-Select a Publication in the list above to see its details-"
+            }</span>
           </FormDescription>
           <div className="grid grid-cols-4 ml-2 mr-2 mt-4 mb-4 gap-4 items-start">
             <FormField
@@ -98,8 +108,7 @@ export default function PublicationDetails(
                   <FormControl>
                     <Input
                       id="title"
-                      className=""
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />
@@ -138,7 +147,7 @@ export default function PublicationDetails(
                     onValueChange={field.onChange}
                   >
                     <FormControl>
-                      <SelectTrigger id="kind" className="w-full" disabled={!record}>
+                      <SelectTrigger id="kind" className="w-full" disabled={!record && !updating}>
                         <SelectValue placeholder="Specify kind" />
                       </SelectTrigger>
                     </FormControl>
@@ -178,7 +187,7 @@ export default function PublicationDetails(
                     onValueChange={field.onChange}
                   >
                     <FormControl>
-                      <SelectTrigger id="journal" className="w-full" disabled={!record}>
+                      <SelectTrigger id="journal" className="w-full" disabled={!record && !updating}>
                         <SelectValue className="w-full" placeholder="Specify journal" />
                       </SelectTrigger>
                     </FormControl>
@@ -211,13 +220,13 @@ export default function PublicationDetails(
               control={form.control}
               name="authors"
               render={({field}) => (
-                <FormItem className="">
+                <FormItem>
                   <FormLabel>Authors</FormLabel>
                   <FormControl>
                     <Textarea
                       id="authors"
                       className=" h-40 overflow-y-auto"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />
@@ -272,7 +281,7 @@ export default function PublicationDetails(
                       </FormDescription>
                     : null
                   }
-                  <FormMessage className="" />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -286,8 +295,7 @@ export default function PublicationDetails(
                     <Input
                       id="year"
                       type="number"
-                      className=""
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />
@@ -335,12 +343,12 @@ export default function PublicationDetails(
               control={form.control}
               name="isbn"
               render={({field}) => (
-                <FormItem className="">
+                <FormItem>
                   <FormLabel>ISBN</FormLabel>
                   <FormControl>
                     <Input
                       id="isbn"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />
@@ -368,10 +376,9 @@ export default function PublicationDetails(
                       ? <Input
                           id="url"
                           type="url"
-                          className=""
                           {...field}
                         />
-                      : <Link className="" href={record?.url ?? ''} target="_blank">{record?.url ?? ''}</Link>
+                      : <Link href={record?.url ?? ''} target="_blank">{record?.url ?? ''}</Link>
                     }
                   </FormControl>
                   {
@@ -424,7 +431,7 @@ export default function PublicationDetails(
                       </FormDescription>
                     : null
                   }
-                  <FormMessage className="" />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -489,7 +496,7 @@ export default function PublicationDetails(
                     <Textarea
                       id="abstract"
                       className="h-40 overflow-y-auto"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />
@@ -515,7 +522,7 @@ export default function PublicationDetails(
                     <Textarea
                       id="notes"
                       className="col-span-4 h-40 overflow-y-auto"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />

@@ -177,14 +177,14 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
         <AuthProvider>
-          <MasterLinkContext value={masterLinkContext}>
-            <SelectedRecordsContext value={selectedRecordsContext}>
-              <ApolloProvider client={apolloClient}>
+          <ApolloProvider client={apolloClient}>
+            <MasterLinkContext value={masterLinkContext}>
+              <SelectedRecordsContext value={selectedRecordsContext}>
+                <Toaster position="top-center" expand />
                 {children}
-              </ApolloProvider>
-              <Toaster position="top-center" expand />
-            </SelectedRecordsContext>
-          </MasterLinkContext>
+              </SelectedRecordsContext>
+            </MasterLinkContext>
+          </ApolloProvider>
         </AuthProvider>
       </body>
     </html>

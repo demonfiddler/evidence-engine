@@ -889,13 +889,13 @@ input PersonInput {
     "The person's title(s)."
     title: String
     "The person's first name(s)."
-    firstName: String
+    firstName: String!
     "The person's nickname."
     nickname: String
     "The prefix to the person's last name."
     prefix: String
     "The person's last name."
-    lastName: String
+    lastName: String!
     "The suffix to the person's name."
     suffix: String
     "Alias name."
@@ -1036,11 +1036,11 @@ input PublicationInput {
     "The identifier(s) of the author(s) of the publication."
     authorIds: [ID!]
     "The publication title."
-    title: String
+    title: String!
     "The journal in which the publication appeared."
     journalId: Long
     "The publication type."
-    kind: PublicationKind
+    kind: PublicationKind!
     "The publication date."
     date: Date
     "The publication year."
@@ -1057,10 +1057,10 @@ input PublicationInput {
     isbn: String
     "The URL for the publication online."
     url: URL
-    "Flag to indicate that url content is cached on this application server."
-    cached: Boolean
     "The date the publication was accessed when compiling the database."
     accessed: Date
+    "Flag to indicate that url content is cached on this application server."
+    cached: Boolean
 }
 
 "Enumeration of publication type codes, per TY field of the RIS specification."
@@ -1262,7 +1262,7 @@ input PublisherInput {
     "The unique publisher identifier."
     id: ID
     "The publisher name."
-    name: String
+    name: String!
     "The publisher location."
     location: String
     "The ISO-3166-1 alpha-2 code for the publisher's country."
@@ -1615,6 +1615,13 @@ type User implements IBaseEntity & ITrackedEntity @auth {
     # TODO: consider whether to reveal this through the GraphQL API.
     "A hash of the user's password."
     password: String @auth(authority: [ADM])
+    "The user's country of residence."
+    country(
+        "How to format the result."
+        format: CountryFormatKind = COMMON_NAME
+    ): String
+    "Added notes about the user."
+    notes: String
     "The authorities granted to the user."
     authorities(
         "How to aggregate authorities."
@@ -1641,6 +1648,12 @@ input UserInput {
     # TODO: consider whether to reveal this through the GraphQL API.
     "A hash of the user's password."
     password: String
+    "The user's country of residence (ISO-3166-1 alpha-2 code)."
+    country: String
+    "Added notes about the user."
+    notes: String
+    "The authorities to grant to the user."
+    authorities: [AuthorityKind!]!
 }
 
 "Returns paginated user query results."
@@ -1719,6 +1732,8 @@ input GroupInput {
     id: ID
     "The (mutable?) unique group name (user-assigned)."
     groupname: String!
+    "The authorities to grant to the group."
+    authorities: [AuthorityKind!]!
 }
 
 "Returns paginated group query results."
@@ -1904,7 +1919,7 @@ type Mutation {
     "Updates an existing entity link."
     updateEntityLink(entityLink: EntityLinkInput!): EntityLink @auth(authority: [LNK])
     "Deletes an entity link."
-    deleteEntityLink(entityLinkId: Long!) : EntityLink @auth(authority: [LNK])
+    deleteEntityLink(entityLinkId: ID!) : EntityLink @auth(authority: [LNK])
 
     "Create a new journal."
     createJournal(journal: JournalInput!): Journal @auth(authority: [CRE])
@@ -1949,7 +1964,7 @@ type Mutation {
     deleteTopic(topicId: ID!): Topic @auth(authority: [DEL])
 
     "Sets entity status."
-    setEntityStatus(entityId: Long!, status: StatusKind!) : Boolean @auth(authority: [UPD])
+    setEntityStatus(entityId: ID!, status: StatusKind!) : Boolean @auth(authority: [UPD])
 
     "Creates a new user."
     createUser(user: UserInput!): User @auth(authority: [ADM])

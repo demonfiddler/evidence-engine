@@ -61,7 +61,7 @@ export default function StandardDetails(
           showLinkingDetails
           ? <>
               <hr />
-              <LinkingDetails record={record as ILinkableEntity} state={state} />
+              <LinkingDetails recordKind={recordKind} record={record as ILinkableEntity} state={state} />
             </>
           : <></>
         }

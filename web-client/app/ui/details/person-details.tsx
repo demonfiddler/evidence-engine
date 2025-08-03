@@ -36,25 +36,30 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import rawCountries from "@/data/countries.json" assert {type: 'json'}
 import Country from "@/app/model/Country"
 import StandardDetails from "./standard-details";
-import DetailActions, { createDetailState, DetailMode } from "./detail-actions";
-import { useContext, useMemo, useState } from "react";
-import { FormAction } from "@/lib/utils";
+import DetailActions, { DetailMode, DetailState } from "./detail-actions";
+import { Dispatch, SetStateAction, useState } from "react";
 import { useFormContext } from "react-hook-form"
-import useAuth from "@/hooks/use-auth"
 import { PersonFieldValues } from "../validators/person";
+import { FormActionHandler } from "@/hooks/use-page-logic";
 
 const countries = rawCountries as unknown as Country[]
 
 export default function PersonDetails(
-  { record, onFormAction }:
-  { record?: Person; onFormAction: (command: FormAction, fieldValues: PersonFieldValues) => void }) {
+  {
+    record,
+    state,
+    setMode,
+    onFormAction
+  }:
+  {
+    record?: Person
+    state: DetailState
+    setMode: Dispatch<SetStateAction<DetailMode>>
+    onFormAction: FormActionHandler<PersonFieldValues>
+  }) {
 
   const form = useFormContext()
-  const {hasAuthority} = useAuth()
-  const [mode, setMode] = useState<DetailMode>("view")
   const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
-
-  const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
   const { updating } = state
 
   return (
@@ -64,19 +69,25 @@ export default function PersonDetails(
       <Form {...form}>
         <form>
           <FormDescription>
-            <span className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Person #${record?.id}` : "-Select a person in the list above to see his/her details-"}</span>
+            <span className="pt-2 pb-4">
+              &nbsp;&nbsp;{record
+                ? state.mode == "create"
+                  ? "Details for new Person"
+                  : `Details for selected Person #${record?.id}`
+                : "-Select a Person in the list above to see his/her details-"
+            }</span>
           </FormDescription>
           <div className="grid grid-cols-5 ml-2 mr-2 mt-4 mb-4 gap-2">
             <FormField
               control={form.control}
               name="title"
               render={({field}) => (
-                <FormItem className="">
+                <FormItem>
                   <FormLabel>Title</FormLabel>
                   <FormControl>
                     <Input
                       id="title"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       placeholder="title"
                       {...field}
@@ -97,12 +108,12 @@ export default function PersonDetails(
               control={form.control}
               name="firstName"
               render={({field}) => (
-                <FormItem className="">
+                <FormItem>
                   <FormLabel>First name(s)</FormLabel>
                   <FormControl>
                     <Input
                       id="firstName"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />
@@ -122,12 +133,12 @@ export default function PersonDetails(
               control={form.control}
               name="nickname"
               render={({field}) => (
-                <FormItem className="">
+                <FormItem>
                   <FormLabel>Nickname</FormLabel>
                   <FormControl>
                     <Input
                       id="nickname"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />
@@ -163,7 +174,7 @@ export default function PersonDetails(
                   <FormControl>
                     <Input
                       id="prefix"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />
@@ -183,12 +194,12 @@ export default function PersonDetails(
               control={form.control}
               name="lastName"
               render={({field}) => (
-                <FormItem className="">
+                <FormItem>
                   <FormLabel>Last name</FormLabel>
                   <FormControl>
                     <Input
                       id="lastName"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />
@@ -208,12 +219,12 @@ export default function PersonDetails(
               control={form.control}
               name="suffix"
               render={({field}) => (
-                <FormItem className="">
+                <FormItem>
                   <FormLabel>Suffix</FormLabel>
                   <FormControl>
                     <Input
                       id="suffix"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />
@@ -233,13 +244,13 @@ export default function PersonDetails(
               control={form.control}
               name="alias"
               render={({field}) => (
-                <FormItem className="">
+                <FormItem>
                   <FormLabel>Alias</FormLabel>
                   <FormControl>
                     <Input
                       id="alias"
                       className="col-span-2"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />
@@ -265,7 +276,7 @@ export default function PersonDetails(
                     <Textarea
                       id="notes"
                       className="h-40 overflow-y-auto"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />
@@ -291,7 +302,7 @@ export default function PersonDetails(
                     <Textarea
                       id="qualifications"
                       className="h-40 overflow-y-auto"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
                     />
@@ -319,7 +330,7 @@ export default function PersonDetails(
                     onValueChange={field.onChange}
                   >
                     <FormControl>
-                      <SelectTrigger id="country" className="w-full" disabled={!record}>
+                      <SelectTrigger id="country" className="w-full" disabled={!record && !updating}>
                         <SelectValue placeholder="Specify country" />
                       </SelectTrigger>
                     </FormControl>
@@ -352,7 +363,7 @@ export default function PersonDetails(
                     <Input
                       id="rating"
                       type="number"
-                      disabled={!record}
+                      disabled={!record && !updating}
                       readOnly={!updating}
                       placeholder="rating"
                       {...field}

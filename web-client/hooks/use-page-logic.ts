@@ -20,26 +20,38 @@
 import IPage from "@/app/model/IPage";
 import ITrackedEntity from "@/app/model/ITrackedEntity";
 import RecordKind from "@/app/model/RecordKind";
-import { LinkableEntityQueryFilter, PageableInput, TrackedEntityQueryFilter } from "@/app/model/schema";
+import { BaseEntityInput, LinkableEntityQueryFilter, PageableInput, TrackedEntityQueryFilter } from "@/app/model/schema";
 import { MasterLinkContext, SelectedRecordsContext } from "@/lib/context";
-import { FormAction, getLinkFilterIdProperty, SearchSettings } from "@/lib/utils";
-import { DocumentNode, useQuery } from "@apollo/client";
-import { FieldNode, Kind, OperationDefinitionNode, OperationTypeNode } from "graphql/language";
+import { getLinkFilterIdProperty, SearchSettings } from "@/lib/utils";
+import { DocumentNode, useMutation, useQuery } from "@apollo/client";
+import { OperationTypeNode } from "graphql/language";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { FieldValues, useForm, UseFormReturn } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod/v4";
-import { ColumnFiltersState, PaginationState, SortingState } from "@tanstack/react-table";
+import { PaginationState, SortingState } from "@tanstack/react-table";
+import type { Draft } from "immer";
+import { useImmerReducer } from "use-immer";
+import IBaseEntity from "@/app/model/IBaseEntity";
+import { DetailMode, DetailState } from "@/app/ui/details/detail-actions";
+import Authority from "@/app/model/Authority";
+import useAuth from "./use-auth";
+import { introspect } from "@/lib/graphql-utils";
 
-export type PageConfiguration<T extends ITrackedEntity, F extends TrackedEntityQueryFilter, V extends FieldValues> = {
+export type FormActionHandler<V extends FieldValues> = (command: string, fieldValues?: V) => void
+
+export type PageConfiguration<T extends ITrackedEntity, V extends FieldValues, I extends BaseEntityInput, F extends TrackedEntityQueryFilter> = {
   recordKind: RecordKind // TODO: do we need to constrain this to trackable/linkable types?
   schema?: z.ZodObject<any>
   manualPagination: boolean
   manualSorting: boolean
-  listQuery: DocumentNode
-  copyToForm: (record?: T) => V
-  copyFromForm?: (record: T, fieldValues: V) => void
+  readQuery: DocumentNode
+  createMutation?: DocumentNode
+  updateMutation?: DocumentNode
+  deleteMutation?: DocumentNode
+  createFieldValues: (record?: T) => V
+  createInput?: (fieldValues: V, id?: string) => I
   prepareFilter?: (filter: F) => void
   preparePage?: (page?: IPage<T>) => IPage<T> | undefined
   findRecord?: (records?: T[], id?: string | null) => T | undefined
@@ -56,32 +68,107 @@ export type PageLogic<T extends ITrackedEntity, V extends FieldValues> = {
   page?: IPage<T>
   selectedRecord?: T
   handleRowSelectionChange: (recordId?: string) => void
+  state: DetailState
+  setMode: Dispatch<SetStateAction<DetailMode>>
   form: UseFormReturn<V, any, V>
-  handleFormAction: (command: FormAction, formFields: V) => void
+  handleFormAction: FormActionHandler<V>
 }
 
-export default function usePageLogic<T extends ITrackedEntity, F extends TrackedEntityQueryFilter, V extends FieldValues> (
+type ReducerArg<T> = {
+  command: string
+  page: IPage<T>
+  record?: T
+}
+
+function createDetailState(
+  hasAuthority: (authority: Authority) => boolean,
+  mode: DetailMode
+): DetailState {
+
+  const allowCreate = hasAuthority("CRE")
+  const allowEdit = hasAuthority("UPD")
+  const allowDelete = hasAuthority("DEL")
+  const allowUpdate = allowCreate || allowEdit
+  const allowLink = hasAuthority("LNK")
+  const allowRead = hasAuthority("REA")
+  const updating = mode == "create" || mode == "edit"
+
+  return {
+    mode,
+    allowCreate,
+    allowEdit,
+    allowDelete,
+    allowUpdate,
+    allowLink,
+    allowRead,
+    updating,
+  }
+}
+
+const defaultFindRecord = <T extends IBaseEntity>(records?: T[], id?: string | null) => records?.find(r => r?.id === id)
+
+const dummyPage = {
+  hasContent: false,
+  isEmpty: true,
+  number: 0,
+  size: 0,
+  numberOfElements: 0,
+  totalPages: 0,
+  totalElements: 0,
+  isFirst: true,
+  isLast: true,
+  hasNext: false,
+  hasPrevious: false,
+  content: [],
+}
+
+// function recomputePageFields<T extends IBaseEntity>(page: IPage<T>) {
+//   page.hasContent = page.content.length != 0
+//   page.isEmpty = page.content.length == 0
+//   // page.number = 0,
+//   // page.size = 0,
+//   page.numberOfElements = page.content.length,
+//   // page.totalPages = 0,
+//   page.totalElements = 0,
+//   // page.isFirst = true,
+//   // page.isLast = true,
+//   // page.hasNext = false,
+//   // page.hasPrevious = false,
+// }
+
+export default function usePageLogic<
+    T extends ITrackedEntity,
+    V extends FieldValues,
+    I extends BaseEntityInput,
+    F extends TrackedEntityQueryFilter
+  >(
     {
       recordKind,
       schema,
       manualPagination,
       manualSorting,
-      listQuery,
-      copyToForm,
-      copyFromForm,
+      readQuery,
+      createMutation,
+      updateMutation,
+      deleteMutation,
+      createFieldValues,
+      createInput,
       prepareFilter,
       preparePage,
       findRecord,
     }
-    : PageConfiguration<T, F, V>
+    : PageConfiguration<T, V, I, F>
   ) : PageLogic<T, V> {
 
+  const {hasAuthority} = useAuth()
   const masterLinkContext = useContext(MasterLinkContext)
   const selectedRecordsContext = useContext(SelectedRecordsContext)
   const [search, setSearch] = useState<SearchSettings>({advancedSearch: false, showOnlyLinkedRecords: false} as SearchSettings)
   const [selectedRecordId, setSelectedRecordId] = useState<string|undefined>(selectedRecordsContext[recordKind]?.id)
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
   const [sorting, setSorting] = useState<SortingState>([])
+  const [mode, setMode] = useState<DetailMode>("view")
+  const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
 
   const filter = useMemo(() => {
     const filter = {
@@ -128,8 +215,13 @@ export default function usePageLogic<T extends ITrackedEntity, F extends Tracked
     return pageSort
   }, [manualPagination && pagination, manualSorting && sorting])
 
-  const result = useQuery(
-    listQuery,
+  const [readFieldName] = useMemo(() => introspect(readQuery, OperationTypeNode.QUERY), [readQuery])
+  const [createFieldName, createVarName] = useMemo(() => introspect(createMutation, OperationTypeNode.MUTATION), [createMutation])
+  const [updateFieldName, updateVarName] = useMemo(() => introspect(updateMutation, OperationTypeNode.MUTATION), [updateMutation])
+  const [deleteFieldName, deleteVarName] = useMemo(() => introspect(deleteMutation, OperationTypeNode.MUTATION), [deleteMutation])
+
+  const readResult = useQuery(
+    readQuery,
     {
       variables: {
         filter,
@@ -137,106 +229,148 @@ export default function usePageLogic<T extends ITrackedEntity, F extends Tracked
       },
     }
   )
+  const [createOp, createResult] = createMutation ? useMutation(createMutation, { refetchQueries: [readQuery] }) : []
+  const [updateOp, updateResult] = updateMutation ? useMutation(updateMutation, { refetchQueries: [readQuery] }) : []
+  const [deleteOp, deleteResult] = deleteMutation ? useMutation(deleteMutation, { refetchQueries: [readQuery] }) : []
+
+  const loading = (readResult.loading || createResult?.loading || updateResult?.loading || deleteResult?.loading) ?? false
+  const error = readResult.error || createResult?.error || updateResult?.error || deleteResult?.error
+
+  if (error) {
+    // TODO: display user-friendly error notification
+    toast.error(`Operation failed:\n\n${error.message}`)
+    console.error(error)
+  }
+
+  let rawPage = (readFieldName ? readResult.data?.[readFieldName] : undefined) as unknown as IPage<T> | undefined
+  rawPage = useMemo(() => preparePage?.(rawPage) ?? rawPage, [preparePage, rawPage])
+
+  const reducer = useCallback((draft: Draft<IPage<T>>, action: ReducerArg<T>) => {
+    // TODO: if provided, call getSubRows as passed to DataTable to find the array and index to update/delete.
+    // TODO: refactor to allow a custom reducer to be passed in (needed for the hierarchical Topics page).
+    const idx = action.page?.content.findIndex(r => r.id === action.record?.id) ?? -1
+    // N.B. the following 'as Draft<T>' typecasts are needed to silence the TypeScript error
+    // "Argument of type 'T' is not assignable to parameter of type 'Draft<T> ts(2345)'.
+    // However, this approach is only valid because the record will not be further mutated.
+    switch (action.command) {
+      case "init":
+        if (action.page)
+          Object.assign(draft, action.page)
+        break;
+      case "create":
+        draft.content.push(action.record as Draft<T>)
+        // recomputePageFields(draft)
+        break
+      case "update":
+        if (idx != -1 && action.record)
+          draft.content.splice(idx, 1, action.record as Draft<T>)
+        break
+      case "delete":
+        if (idx != -1 && action.record) {
+          // On status mismatch, remove the record from the page content.
+          if (search.status && search.status !== action.record?.status) {
+            draft.content.splice(idx, 1)
+          } else {
+            // Otherwise, replace the record.
+            draft.content.splice(idx, 1, action.record as Draft<T>)
+            // Alternatively:
+            // Object.assign(draft.content[idx], action.record)
+          }
+        }
+        break
+    }
+  }, [search.status])
+  const [page, dispatch] = useImmerReducer<IPage<T>, ReducerArg<T>>(reducer, rawPage ?? dummyPage)
+  const getSelectedRecord = useCallback((id?: string) => {
+    return (findRecord ?? defaultFindRecord)(page?.content, id)
+  }, [findRecord, page])
+  const selectedRecord = getSelectedRecord(selectedRecordId)
+
+  const origFieldValues = useMemo(() => createFieldValues(selectedRecord), [createFieldValues, selectedRecord])
+  const form = useForm<V>({
+    resolver: schema && standardSchemaResolver(schema),
+    mode: "onChange",
+    values: origFieldValues,
+  })
+  const handleFormAction = useCallback((command: string, fieldValues?: V) => {
+    // console.log(`.handleFormAction: command = ${command}, mode = ${mode}`)
+    // TODO: update Apollo cache?
+    switch (command) {
+      case "new":
+        form?.reset(createFieldValues())
+        break
+      case "create":
+        if (fieldValues) {
+          createOp?.({
+            variables: {
+              [createVarName]: createInput?.(fieldValues)
+            },
+            onCompleted: (data, clientOptions) => {
+              const record = data[createFieldName]
+              setSelectedRecordId(record.id)
+              // FIXME: this doesn't set the selection in the data table.
+              selectedRecordsContext.setSelectedRecord(selectedRecordsContext, recordKind, record)
+              setMode("view")
+            },
+          })
+        }
+        break
+      case "update":
+        if (fieldValues) {
+          updateOp?.({
+            variables: {
+              [updateVarName]: createInput?.(fieldValues, selectedRecordId)
+            },
+            onCompleted: () => {
+              setMode("view")
+            },
+          })
+        }
+        break
+      case "delete":
+        deleteOp?.({
+          variables: {
+            [deleteVarName]: selectedRecordId
+          }
+        })
+      case "reset":
+        form?.reset(fieldValues ?? origFieldValues)
+        break
+      default:
+        console.error(`Unknown command '${command}'`)
+    }
+    // Dependencies assume (reasonably) that createOp, updateOp, deleteOp, createVarName, updateVarName, deleteVarName
+    // will never change during the page lifetime.
+  }, [selectedRecordId, form, origFieldValues, createInput])
+
+  const handleRowSelectionChange = useCallback((recordId?: string) => {
+    if (mode !== "view") {
+      toast.warning("Cannot change selection while editing a record. Use the Cancel or Save button in the details panel below.")
+      setSelectedRecordId(selectedRecordId)
+      return
+    }
+    setSelectedRecordId(recordId)
+    const record = getSelectedRecord(recordId)
+    form?.reset(createFieldValues(record))
+  }, [form, mode, setSelectedRecordId, getSelectedRecord])
 
   // Whenever filter or pagination changes, ask Apollo to refetch
   useEffect(() => {
     // console.log(`${recordKind}s effect: search = ${JSON.stringify(search)}`)
-    result.refetch({
+    readResult.refetch({
       filter,
       pageSort
     });
   }, [filter, manualPagination && pageSort]);
 
-  if (result.error) {
-    toast.error(`Fetch error:\n\n${JSON.stringify(result.error)}`)
-    console.error(result.error)
-  }
-
-  // const pageReducer = useCallback((draft: IPage<Declaration>, action: MutationAction<FormAction, DeclarationFormFields>) => {
-  //   const idx = draft.content.findIndex(c => c.id == selectedRecordId)
-  //   switch (action.command) {
-  //     case "create":
-  //       const declaration : Declaration = {
-  //         id: (Math.max(...draft.content.map(c => parseInt(c.id ?? ''))) + 1).toString(),
-  //         status: "Draft"
-  //       }
-  //       setSelectedRecordId(declaration.id)
-  //       copyFromForm(declaration, action.value)
-  //       draft.content.push(declaration)
-  //       break
-  //     case "update":
-  //       if (idx != -1) {
-  //         const declaration = draft.content[idx]
-  //         copyFromForm(declaration, action.value)
-  //         draft.content.splice(idx, 1, declaration)
-  //       }
-  //       break
-  //     case "delete":
-  //       // N.B. This is a hard delete that physically deletes the record. The server implements a soft delete.
-  //       if (idx != -1)
-  //         draft.content.splice(idx, 1)
-  //       break
-  //   }
-  // }, [selectedRecordId, setSelectedRecordId])
-
-  const queryName = useMemo(() => {
-    const opDef = listQuery.definitions.find(
-      d => d.kind == Kind.OPERATION_DEFINITION && d.operation == OperationTypeNode.QUERY) as OperationDefinitionNode | undefined
-    const fieldNode = opDef?.selectionSet.selections[0] as FieldNode | undefined
-    const queryName = fieldNode?.name.value
-    if (!queryName)
-      throw new Error("Unable to determine query name")
-    return queryName
-  }, [])
-  const rawPage = result.data?.[queryName] as unknown as IPage<T> | undefined
-  const page = useMemo(() => preparePage?.(rawPage) ?? rawPage, [preparePage, rawPage])
-
-  // const [page, pageDispatch] = useImmerReducer(pageReducer, rawPage as unknown as IPage<Claim>)
-  const getSelectedRecord = useCallback((id?: string) => {
-    return findRecord
-      ? findRecord(page?.content, id)
-      : page?.content.find(r => r.id == id)
-  }, [page])
-  const selectedRecord = /*mode == "create" ? newRecord :*/ getSelectedRecord(selectedRecordId)
-  const origFormValue = useMemo(() => copyToForm(selectedRecord), [copyToForm, selectedRecord])
-  const form = useForm<V>({
-    resolver: schema && standardSchemaResolver(schema),
-    mode: "onChange",
-    values: origFormValue,
-  })
-
-  const handleFormAction = useCallback((command: FormAction, fieldValues: V) => {
-    // console.log(`Claims.handleFormAction: command = ${command}, mode = ${mode}`)
-    switch (command) {
-      case "create":
-        // TODO: invoke mutation: createXxx
-        break
-      case "update":
-        // TODO: invoke mutation: updateXxx
-        break
-      case "delete":
-        // TODO: invoke mutation: deleteXxx
-        break
-        // OLD: pageDispatch({command: command, value: fieldValues})
-      case "reset":
-        // if (mode == "create") {
-        //   setNewRecord({
-        //     id: (Math.max(...page.content.map(c => parseInt(c.id ?? ''))) + 1).toString(),
-        //     status: "Draft"
-        //   })
-        // }
-        form?.reset(origFormValue)
-        break
-    }
-  }, [form, /*pageDispatch, */selectedRecord])
-
-  const handleRowSelectionChange = useCallback((recordId?: string) => {
-    setSelectedRecordId(recordId)
-    const record = getSelectedRecord(recordId)
-    form?.reset(copyToForm(record))
-  }, [setSelectedRecordId, getSelectedRecord, form])
+  // When a new page is available, dispatch the reducer.
+  useEffect(() => {
+    if (rawPage)
+      dispatch({command: "init", page: rawPage});
+  }, [rawPage, dispatch]);
 
   // console.log(`${settings.recordKind}s() page: ${JSON.stringify(page)})`)
+
   const pageLogic = useMemo<PageLogic<T, V>>(() => {
     return {
       search,
@@ -245,10 +379,12 @@ export default function usePageLogic<T extends ITrackedEntity, F extends Tracked
       setPagination,
       sorting,
       setSorting,
-      loading: result.loading,
+      loading,
       page,
       selectedRecord,
       handleRowSelectionChange,
+      state,
+      setMode,
       form,
       handleFormAction,
     }}, [
@@ -258,10 +394,12 @@ export default function usePageLogic<T extends ITrackedEntity, F extends Tracked
       setPagination,
       sorting,
       setSorting,
-      result.loading,
+      readResult.loading,
       page,
       selectedRecord,
       handleRowSelectionChange,
+      state,
+      setMode,
       form,
       handleFormAction,
   ])

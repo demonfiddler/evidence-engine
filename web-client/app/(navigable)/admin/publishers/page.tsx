@@ -27,26 +27,29 @@ import Publisher from "@/app/model/Publisher";
 import { toInteger } from "@/lib/utils";
 import { FormProvider } from "react-hook-form"
 import { PublisherSchema, PublisherFieldValues } from "@/app/ui/validators/publisher";
-import { QUERY_PUBLISHERS } from "@/lib/graphql-queries";
+import { CREATE_PUBLISHER, DELETE_PUBLISHER, READ_PUBLISHERS, UPDATE_PUBLISHER } from "@/lib/graphql-queries";
 import usePageLogic from "@/hooks/use-page-logic";
-import { TrackedEntityQueryFilter } from '@/app/model/schema';
+import { PublisherInput, TrackedEntityQueryFilter } from '@/app/model/schema';
 
-function copyToForm(publisher?: Publisher) {
+function createFieldValues(publisher?: Publisher) : PublisherFieldValues {
   return {
     name: publisher?.name ?? '',
     location: publisher?.location ?? '',
     country: publisher?.country ?? '',
     url: publisher?.url ?? '',
-    journalCount: publisher?.journalCount,
+    journalCount: publisher?.journalCount ?? '',
   }
 }
 
-function copyFromForm(publisher: Publisher, fieldValues: PublisherFieldValues) {
-    publisher.name = fieldValues.name
-    publisher.location = fieldValues.location ?? null
-    publisher.country = fieldValues.country ?? null
-    publisher.url = fieldValues.url ?? null
-    publisher.journalCount = toInteger(fieldValues.journalCount) ?? 0
+function createInput(fieldValues: PublisherFieldValues, id?: string) : PublisherInput {
+  return {
+    id,
+    name: fieldValues.name,
+    location: fieldValues.location || null,
+    country: fieldValues.country || null,
+    url: fieldValues.url || null,
+    journalCount: toInteger(fieldValues.journalCount),
+  }
 }
 
 export default function Publishers() {
@@ -61,16 +64,21 @@ export default function Publishers() {
     page,
     selectedRecord,
     handleRowSelectionChange,
+    state,
+    setMode,
     form,
     handleFormAction,
-  } = usePageLogic<Publisher, TrackedEntityQueryFilter, PublisherFieldValues>({
+  } = usePageLogic<Publisher, PublisherFieldValues, PublisherInput, TrackedEntityQueryFilter>({
     recordKind: "Publisher",
     schema: PublisherSchema,
     manualPagination: true,
     manualSorting: true,
-    listQuery: QUERY_PUBLISHERS,
-    copyToForm,
-    copyFromForm,
+    readQuery: READ_PUBLISHERS,
+    createMutation: CREATE_PUBLISHER,
+    updateMutation: UPDATE_PUBLISHER,
+    deleteMutation: DELETE_PUBLISHER,
+    createFieldValues,
+    createInput,
   })
 
   return (
@@ -85,6 +93,7 @@ export default function Publishers() {
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
+        state={state}
         loading={loading}
         manualPagination={true}
         pagination={pagination}
@@ -97,7 +106,12 @@ export default function Publishers() {
         onRowSelectionChange={handleRowSelectionChange}
       />
       <FormProvider {...form}>
-        <PublisherDetails record={selectedRecord} onFormAction={handleFormAction} />
+        <PublisherDetails
+          record={selectedRecord}
+          state={state}
+          setMode={setMode}
+          onFormAction={handleFormAction}
+        />
       </FormProvider>
     </main>
   );

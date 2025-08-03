@@ -50,7 +50,7 @@ export default function NavigableLayout({
       <AppSidebar />
       <main className="flex flex-col">
         <header className="grid grid-cols-3 items-center w-screen h-12 rounded-md text-white bg-blue-500">
-          <SidebarTrigger className="" title="Toggle sidebar (Ctrl+B)" />
+          <SidebarTrigger title="Toggle sidebar (Ctrl+B)" />
           <p className="justify-self-center">Evidence Engine</p>
           <SignIn className="justify-self-end" />
         </header>
