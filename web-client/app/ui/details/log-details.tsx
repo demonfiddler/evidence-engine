@@ -22,7 +22,7 @@
 import Log from "@/app/model/Log";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { formatDate } from "@/lib/utils";
+import { formatDateTime } from "@/lib/utils";
 
 export default function LogDetails({record}: {record: Log | undefined}) {
   return (
@@ -31,7 +31,7 @@ export default function LogDetails({record}: {record: Log | undefined}) {
       <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Log #${record?.id}` : "-Select a log entry in the list above to see its details-"}</p>
       <div className="grid grid-cols-4 ml-2 mr-2 mb-2 gap-2">
         <Label htmlFor="timestamp" className="col-start-1">Timestamp:</Label>
-        <Input id="timestamp" className="col-span-1" disabled={!record} readOnly={true} value={formatDate(record?.timestamp) ?? ''} />
+        <Input id="timestamp" className="col-span-1" disabled={!record} readOnly={true} value={formatDateTime(record?.timestamp) ?? ''} />
         <Label htmlFor="transactionKind" className="col-start-1">Transaction kind:</Label>
         <Input id="transactionKind" disabled={!record} readOnly={true} value={record?.transactionKind ?? ''} />
         <Label htmlFor="username">Username:</Label>

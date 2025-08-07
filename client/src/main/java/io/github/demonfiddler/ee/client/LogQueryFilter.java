@@ -57,7 +57,7 @@ public class LogQueryFilter extends AbstractGraphQLObject {
 	 */
 	@JsonProperty("entityId")
 	@JsonSerialize(using = CustomJacksonSerializers.Long.class)
-	@GraphQLScalar(fieldName = "entityId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
+	@GraphQLScalar(fieldName = "entityId", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
 	Long entityId;
 
 	/**
@@ -65,7 +65,7 @@ public class LogQueryFilter extends AbstractGraphQLObject {
 	 */
 	@JsonProperty("userId")
 	@JsonSerialize(using = CustomJacksonSerializers.Long.class)
-	@GraphQLScalar(fieldName = "userId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
+	@GraphQLScalar(fieldName = "userId", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
 	Long userId;
 
 	/**

@@ -78,10 +78,10 @@ export default function PublicationDetails(
   }) {
 
   const form = useFormContext()
+  const [dateOpen, setDateOpen] = useState(false)
+  const [accessedOpen, setAccessedOpen] = useState(false)
   const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
   const { updating } = state
-
-  // console.log(`PublicationDetails: valid=${form.formState.isValid}, dirtyFields==${JSON.stringify(form.formState.dirtyFields)}, fieldState==${JSON.stringify(form.getFieldState("kind"))}, errors=${JSON.stringify(form.formState.errors)}`)
 
   return (
     <fieldset className="border shadow-lg rounded-md w-2/3">
@@ -248,7 +248,7 @@ export default function PublicationDetails(
               render={({field}) => (
                 <FormItem>
                   <FormLabel>Publication date</FormLabel>
-                  <Popover>
+                  <Popover open={dateOpen} onOpenChange={setDateOpen}>
                     <PopoverTrigger id="date" asChild>
                       <FormControl>
                         <Button
@@ -268,9 +268,13 @@ export default function PublicationDetails(
                     <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
                         mode="single"
+                        captionLayout="dropdown"
+                        weekStartsOn={1}
                         selected={field.value}
-                        onSelect={field.onChange}
-                        initialFocus
+                        onSelect={(e) => {
+                          setDateOpen(false)
+                          field.onChange(e)
+                        }}
                       />
                     </PopoverContent>
                   </Popover>
@@ -398,7 +402,7 @@ export default function PublicationDetails(
               render={({field}) => (
                 <FormItem>
                   <FormLabel>Accessed</FormLabel>
-                  <Popover>
+                  <Popover open={accessedOpen} onOpenChange={setAccessedOpen}>
                     <PopoverTrigger id="accessed" asChild>
                       <FormControl>
                         <Button
@@ -418,9 +422,13 @@ export default function PublicationDetails(
                     <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
                         mode="single"
+                        captionLayout="dropdown"
+                        weekStartsOn={1}
                         selected={field.value}
-                        onSelect={field.onChange}
-                        initialFocus
+                        onSelect={(e) => {
+                          setAccessedOpen(false)
+                          field.onChange(e)
+                        }}
                       />
                     </PopoverContent>
                   </Popover>

@@ -48,6 +48,14 @@ export function formatDate(date: Date | string | null | undefined, format?: stri
   return ""
 }
 
+export function formatDateTime(date: Date | string | null | undefined, format?: string) {
+  if (typeof date == "string")
+    date = new Date(date)
+  if (date && typeof date == "object")
+    return `${date.toDateString()} ${date.toLocaleTimeString()}`
+  return ""
+}
+
 export function isLinkableEntity(recordKind: RecordKind) {
   switch (recordKind) {
     case "Claim":
@@ -145,7 +153,7 @@ export const FROM_ENTITY_ID = "fromEntityId"
 export type LinkFilterProperty = typeof TO_ENTITY_ID | typeof FROM_ENTITY_ID | undefined
 type MasterRecordLink = {[key in RecordKind]?: LinkFilterProperty}
 type RecordLinks = {[key in RecordKind]?: MasterRecordLink}
-const linkFilterIdProperties : RecordLinks = {
+const otherRecordLinkIdProperties : RecordLinks = {
   Claim: {
     Declaration: TO_ENTITY_ID,
     Person: TO_ENTITY_ID,
@@ -196,8 +204,8 @@ const linkFilterIdProperties : RecordLinks = {
  * @param otherRecordKind The record kind of the 'other record'.
  * @returns The name of the 'other record' property.
  */
-export function getLinkFilterIdProperty(thisRecordKind: RecordKind, otherRecordKind: RecordKind) : LinkFilterProperty {
-  return linkFilterIdProperties?.[thisRecordKind]?.[otherRecordKind]
+export function getOtherRecordLinkIdProperty(thisRecordKind: RecordKind, otherRecordKind: RecordKind) : LinkFilterProperty {
+  return otherRecordLinkIdProperties?.[thisRecordKind]?.[otherRecordKind]
 }
 
 const readQueryByRecordKind = {

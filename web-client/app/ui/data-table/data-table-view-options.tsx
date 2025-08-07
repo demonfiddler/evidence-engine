@@ -31,14 +31,23 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
+import RecordKind from "@/app/model/RecordKind"
+import { Dispatch, SetStateAction } from "react"
 
-export interface DataTableViewOptionsProps<TData> {
-  table: Table<TData>
+export interface DataTableViewOptionsProps<T> {
+  table: Table<T>
 }
 
-export function DataTableViewOptions<TData>({
+export interface DataTableFilterProps<T, F> extends DataTableViewOptionsProps<T> {
+  recordKind: RecordKind
+  recordId: string | undefined
+  isLinkableEntity: boolean
+  onFilterChange: Dispatch<SetStateAction<F>>
+}
+
+export function DataTableViewOptions<T>({
   table
-}: DataTableViewOptionsProps<TData>) {
+}: DataTableViewOptionsProps<T>) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

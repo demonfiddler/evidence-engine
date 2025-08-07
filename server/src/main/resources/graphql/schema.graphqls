@@ -747,9 +747,9 @@ input LogQueryFilter {
     "Restrict to specific entity kind."
     entityKind: EntityKind
     "Restrict to specific entity ID."
-    entityId: Long
+    entityId: ID
     "Restrict to transactions performed by a specific user."
-    userId: Long
+    userId: ID
     "Restrict to specific transaction kinds."
     transactionKinds: [TransactionKind!]
     "Timestamp of first log entry to include."
@@ -1508,7 +1508,7 @@ input TopicInput {
 "Parameters to filter a topic query."
 input TopicQueryFilter {
     "The parent topic identifier. Specify to get sub-topics, use -1 for top-level topics."
-    parentId: Long
+    parentId: ID
     "Whether to return all sub-topics, recursively."
     recursive: Boolean = false
     "Return only topics with these status codes (default: ALL)."

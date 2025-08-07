@@ -48,7 +48,7 @@ public class TopicQueryFilter extends /*TrackedEntityQueryFilter*/AbstractGraphQ
 	 */
 	@JsonProperty("parentId")
 	@JsonSerialize(using = CustomJacksonSerializers.Long.class)
-	@GraphQLScalar(fieldName = "parentId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
+	@GraphQLScalar(fieldName = "parentId", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
 	Long parentId;
 
 	/**

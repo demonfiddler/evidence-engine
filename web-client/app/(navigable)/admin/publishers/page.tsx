@@ -30,6 +30,7 @@ import { PublisherSchema, PublisherFieldValues } from "@/app/ui/validators/publi
 import { CREATE_PUBLISHER, DELETE_PUBLISHER, READ_PUBLISHERS, UPDATE_PUBLISHER } from "@/lib/graphql-queries";
 import usePageLogic from "@/hooks/use-page-logic";
 import { PublisherInput, TrackedEntityQueryFilter } from '@/app/model/schema';
+import LinkableEntityTableFilter from '@/app/ui/data-table/linkable-entity-table-filter';
 
 function createFieldValues(publisher?: Publisher) : PublisherFieldValues {
   return {
@@ -54,8 +55,7 @@ function createInput(fieldValues: PublisherFieldValues, id?: string) : Publisher
 
 export default function Publishers() {
   const {
-    search,
-    setSearch,
+    setFilter,
     pagination,
     setPagination,
     sorting,
@@ -88,21 +88,21 @@ export default function Publishers() {
         &nbsp;
         <h1>Publishers</h1>
       </div>
-      <DataTable<Publisher, unknown>
+      <DataTable<Publisher, unknown, TrackedEntityQueryFilter>
         recordKind="Publisher"
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
         state={state}
         loading={loading}
+        filterComponent={LinkableEntityTableFilter}
+        onFilterChange={setFilter}
         manualPagination={true}
         pagination={pagination}
         onPaginationChange={setPagination}
         manualSorting={true}
         sorting={sorting}
         onSortingChange={setSorting}
-        search={search}
-        onSearchChange={setSearch}
         onRowSelectionChange={handleRowSelectionChange}
       />
       <FormProvider {...form}>

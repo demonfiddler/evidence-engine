@@ -21,60 +21,72 @@
 
 import { Checkbox } from "@/components/ui/checkbox";
 import Search from "../filter/search";
-import { DataTableViewOptions, DataTableViewOptionsProps } from "./data-table-view-options";
-import { SearchSettings } from "@/lib/utils";
-import { Dispatch, SetStateAction } from "react";
+import { DataTableFilterProps, DataTableViewOptions } from "./data-table-view-options";
+import { getOtherRecordLinkIdProperty } from "@/lib/utils";
+import { useCallback, useContext, useState } from "react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-//import { Label } from "@/components/ui/label";
-import { StatusKind } from "@/app/model/schema";
+import { LinkableEntityQueryFilter } from "@/app/model/schema";
+import { MasterLinkContext } from "@/lib/context";
 
-type DataTableFilterProps<TData> = DataTableViewOptionsProps<TData> & {
-  isLinkableEntity: boolean
-  search: SearchSettings
-  onSearchChange: Dispatch<SetStateAction<SearchSettings>>
-}
-
-export default function DataTableFilter<TData>({
+export default function LinkableEntityTableFilter<T, F>({
   table,
+  recordKind,
   isLinkableEntity,
-  search,
-  onSearchChange
-}: DataTableFilterProps<TData>) {
+  onFilterChange
+}: DataTableFilterProps<T, F>) {
+  const masterLinkContext = useContext(MasterLinkContext)
+  const [status, setStatus] = useState('')
+  const [text, setText] = useState('')
+  const [advanced, setAdvanced] = useState(false)
+  const [showOnlyLinkedRecords, setShowOnlyLinkedRecords] = useState(false)
 
-  function handleStatusChange(status: string) {
-    onSearchChange({
-      ...search,
-      status: (status && status != "ALL") ? status as StatusKind : undefined
-    })
-  }
+  const updateFilter = useCallback((status: string, text: string, advanced: boolean, showOnlyLinkedRecords: boolean) => {
+    const filter = {
+      status: status || undefined,
+      text: text || undefined,
+      advancedSearch: advanced || undefined
+    } as F
+    if (isLinkableEntity && showOnlyLinkedRecords) {
+      const leFilter = filter as LinkableEntityQueryFilter
+      if (masterLinkContext.masterTopicId) {
+        leFilter.topicId = masterLinkContext.masterTopicId
+        leFilter.recursive = true
+      }
+      if (masterLinkContext.masterRecordId) {
+        const otherRecordIdProperty = getOtherRecordLinkIdProperty(recordKind, masterLinkContext.masterRecordKind)
+        if (otherRecordIdProperty)
+          leFilter[otherRecordIdProperty] = masterLinkContext.masterRecordId
+      }
+    }
+    onFilterChange(filter)
+  }, [showOnlyLinkedRecords, masterLinkContext, onFilterChange])
 
-  function handleTextChange(text?: string) {
-    onSearchChange({
-      ...search,
-      text: text ?? undefined
-    })
-  }
+  const handleStatusChange = useCallback((status: string) => {
+    status = status === "ALL" ? '' : status
+    setStatus(status)
+    updateFilter(status, text, advanced, showOnlyLinkedRecords)
+  }, [setStatus, updateFilter, text, advanced, showOnlyLinkedRecords])
 
-  function handleAdvancedSearchChange(advancedSearch: boolean) {
-    onSearchChange({
-      ...search,
-      advancedSearch
-    })
-  }
+  const handleTextChange = useCallback((text: string) => {
+    setText(text)
+    updateFilter(status, text, advanced, showOnlyLinkedRecords)
+  }, [setText, updateFilter, status, advanced, showOnlyLinkedRecords])
 
-  function handleShowOnlyLinkedRecordsChange(showOnlyLinkedRecords: boolean) {
-    onSearchChange({
-      ...search,
-      showOnlyLinkedRecords
-    })
-  }
+  const handleAdvancedSearchChange = useCallback((advanced: boolean) => {
+    setAdvanced(advanced)
+    updateFilter(status, text, advanced, showOnlyLinkedRecords)
+  }, [setAdvanced, updateFilter, status, text, showOnlyLinkedRecords])
+
+  const handleShowOnlyLinkedRecordsChange = useCallback((showOnlyLinkedRecords: boolean) => {
+    setShowOnlyLinkedRecords(showOnlyLinkedRecords)
+    updateFilter(status, text, advanced, showOnlyLinkedRecords)
+  }, [setShowOnlyLinkedRecords, updateFilter, status, text, advanced])
 
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2">
-        {/* <Label>Status:</Label> */}
         <Select
-          value={search.status ?? ''}
+          value={status ?? ''}
           onValueChange={handleStatusChange}
         >
           <SelectTrigger id="kind">
@@ -84,7 +96,7 @@ export default function DataTableFilter<TData>({
             <SelectGroup>
               <SelectLabel>Status Kinds</SelectLabel>
               {
-                search.status
+                status
                 ? <SelectItem value="ALL">-Clear-</SelectItem>
                 : null
               }
@@ -95,12 +107,12 @@ export default function DataTableFilter<TData>({
             </SelectGroup>
           </SelectContent>
         </Select>
-        <Search value={search.text} onChangeValue={handleTextChange} />
+        <Search value={text} onChangeValue={handleTextChange} />
         {/* See https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode */}
         <Checkbox
           id="advanced"
           title="Use advanced text search syntax"
-          checked={search.advancedSearch}
+          checked={advanced}
           onCheckedChange={handleAdvancedSearchChange}
         />
         <label htmlFor="advanced">Advanced</label>
@@ -110,7 +122,7 @@ export default function DataTableFilter<TData>({
               <Checkbox
                 id="linkedOnly"
                 title="Only show records linked to the current master record(s)"
-                checked={search.showOnlyLinkedRecords}
+                checked={showOnlyLinkedRecords}
                 onCheckedChange={handleShowOnlyLinkedRecordsChange}
               />
               <label htmlFor="linkedOnly" className="flex-none">Show only linked records</label>

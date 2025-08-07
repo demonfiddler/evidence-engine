@@ -31,6 +31,7 @@ import { TopicFieldValues, TopicSchema } from "@/app/ui/validators/topic";
 import { CREATE_TOPIC, DELETE_TOPIC, READ_TOPIC_HIERARCHY, UPDATE_TOPIC } from "@/lib/graphql-queries";
 import usePageLogic from "@/hooks/use-page-logic";
 import { TopicInput, TopicQueryFilter } from '@/app/model/schema';
+import TopicTableFilter from '@/app/ui/data-table/topic-table-filter';
 
 function createFieldValues(topic?: Topic) : TopicFieldValues {
   return {
@@ -48,11 +49,6 @@ function createInput(fieldValues: TopicFieldValues, id?: string) : TopicInput {
     description: fieldValues.description || null,
     parentId: fieldValues.parentId || null,
   }
-}
-
-function prepareFilter(filter: TopicQueryFilter) {
-  filter.parentId = "-1"
-  filter.recursive = false
 }
 
 function preparePage(rawPage?: IPage<Topic>) {
@@ -84,8 +80,7 @@ function findRecord(topics?: Topic[], topicId?: string | null) : Topic | undefin
 
 export default function Topics() {
   const {
-    search,
-    setSearch,
+    setFilter,
     pagination,
     setPagination,
     sorting,
@@ -109,7 +104,6 @@ export default function Topics() {
     deleteMutation: DELETE_TOPIC,
     createFieldValues: createFieldValues,
     createInput,
-    prepareFilter,
     preparePage,
     findRecord,
   })
@@ -121,21 +115,21 @@ export default function Topics() {
         &nbsp;
         <h1>Topics</h1>
       </div>
-      <DataTable<Topic, unknown>
+      <DataTable<Topic, unknown, TopicQueryFilter>
         recordKind="Topic"
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
         state={state}
         loading={loading}
+        filterComponent={TopicTableFilter}
+        onFilterChange={setFilter}
         manualPagination={false}
         pagination={pagination}
         onPaginationChange={setPagination}
         manualSorting={false}
         sorting={sorting}
         onSortingChange={setSorting}
-        search={search}
-        onSearchChange={setSearch}
         onRowSelectionChange={handleRowSelectionChange}
         getSubRows={(row) => row.children}
       />

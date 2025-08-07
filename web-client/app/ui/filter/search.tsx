@@ -27,13 +27,13 @@ import { useEffect, useState } from "react";
 
 export default function Search(
   {value, onChangeValue} :
-  {value?: string, onChangeValue: (value?: string) => void}
+  {value: string, onChangeValue: (value: string) => void}
 ) {
   const [text, setText] = useState(value)
   const [debouncedText, setDebouncedText] = useDebounceValue(value, 500)
   useEffect(() => onChangeValue(debouncedText), [debouncedText])
 
-  function onChangeText(s?: string) {
+  function onChangeText(s: string) {
     setText(s)
     setDebouncedText(s)
   }
@@ -47,10 +47,10 @@ export default function Search(
         placeholder="Search..."
         title="Case-insensitive match against all text fields"
         value={text ?? ''}
-        onKeyDown={(e) => e.code == "Escape" && onChangeText(undefined)}
-        onChange={(e) => onChangeText(e.target.value ?? undefined)}
+        onKeyDown={(e) => e.code == "Escape" && onChangeText('')}
+        onChange={(e) => onChangeText(e.target.value ?? '')}
       />
-      <XMarkIcon className="w-5 h-5" onClick={() => onChangeText(undefined)} />
+      <XMarkIcon className="w-5 h-5" onClick={() => onChangeText('')} />
     </div>
   )
 }

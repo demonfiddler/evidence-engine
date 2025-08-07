@@ -34,7 +34,7 @@ public class TopicQueryFilter extends TrackedEntityQueryFilter {
 	/**
 	 * The parent topic identifier. Specify to get sub-topics, leave blank for top-level topics.
 	 */
-	@GraphQLScalar(fieldName = "parentId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
+	@GraphQLScalar(fieldName = "parentId", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
 	Long parentId;
 
 	/**

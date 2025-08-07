@@ -138,13 +138,13 @@ public class CustomLogRepositoryImpl extends AbstractCustomRepositoryImpl implem
         if (m.hasFrom) {
             if (needsAnd)
                 selectBuf.append(" AND");
-            selectBuf.append(" \"from\" >= :from");
+            selectBuf.append(" \"timestamp\" >= :from");
             needsAnd = true;
         }
         if (m.hasTo) {
             if (needsAnd)
                 selectBuf.append(" AND");
-            selectBuf.append(" \"to\" <= :to");
+            selectBuf.append(" \"timestamp\" <= :to");
             needsAnd = true;
         }
         StringBuffer countBuf = new StringBuffer(selectBuf);
@@ -192,9 +192,9 @@ public class CustomLogRepositoryImpl extends AbstractCustomRepositoryImpl implem
         if (m.hasTransactionKinds)
             params.put("transactionKinds", m.filter.getTransactionKinds().stream().map(t -> t.name()).toList());
         if (m.hasFrom)
-            params.put("from", m.filter.getFrom().toInstant().toEpochMilli());
+            params.put("from", m.filter.getFrom());
         if (m.hasTo)
-            params.put("to", m.filter.getTo().toInstant().toEpochMilli());
+            params.put("to", m.filter.getTo());
         entityUtils.setQueryParameters(queries, params);
         if (m.isPaged)
             entityUtils.setQueryPagination(queries.selectQuery(), m.pageable);

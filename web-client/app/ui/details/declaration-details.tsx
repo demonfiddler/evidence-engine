@@ -72,10 +72,9 @@ export default function DeclarationDetails(
   }) {
 
   const form = useFormContext()
+  const [open, setOpen] = useState(false)
   const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
   const { updating } = state
-
-  // console.log(`DeclarationDetails: valid=${form.formState.isValid}, dirtyFields==${JSON.stringify(form.formState.dirtyFields)}, fieldState==${JSON.stringify(form.getFieldState("kind"))}, errors=${JSON.stringify(form.formState.errors)}`)
 
   return (
     <fieldset className="border shadow-lg rounded-md w-2/3">
@@ -99,7 +98,7 @@ export default function DeclarationDetails(
               render={({field}) => (
                 <FormItem>
                   <FormLabel>Date</FormLabel>
-                  <Popover>
+                  <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger id="date" asChild>
                       <FormControl>
                         <Button
@@ -120,9 +119,13 @@ export default function DeclarationDetails(
                     <PopoverContent className="col-span-2 w-auto p-0" align="start">
                       <Calendar
                         mode="single"
+                        captionLayout="dropdown"
+                        weekStartsOn={1}
                         selected={field.value}
-                        onSelect={field.onChange}
-                        initialFocus
+                        onSelect={(e) => {
+                          setOpen(false)
+                          field.onChange(e)
+                        }}
                       />
                     </PopoverContent>
                   </Popover>

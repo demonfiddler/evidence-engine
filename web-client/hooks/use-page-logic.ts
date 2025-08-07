@@ -20,9 +20,8 @@
 import IPage from "@/app/model/IPage";
 import ITrackedEntity from "@/app/model/ITrackedEntity";
 import RecordKind from "@/app/model/RecordKind";
-import { BaseEntityInput, LinkableEntityQueryFilter, PageableInput, TrackedEntityQueryFilter } from "@/app/model/schema";
-import { MasterLinkContext, SelectedRecordsContext } from "@/lib/context";
-import { getLinkFilterIdProperty, SearchSettings } from "@/lib/utils";
+import { BaseEntityInput, PageableInput } from "@/app/model/schema";
+import { SelectedRecordsContext } from "@/lib/context";
 import { DocumentNode, useMutation, useQuery } from "@apollo/client";
 import { OperationTypeNode } from "graphql/language";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
@@ -31,8 +30,8 @@ import { FieldValues, useForm, UseFormReturn } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod/v4";
 import { PaginationState, SortingState } from "@tanstack/react-table";
-import type { Draft } from "immer";
-import { useImmerReducer } from "use-immer";
+// import type { Draft } from "immer";
+// import { useImmerReducer } from "use-immer";
 import IBaseEntity from "@/app/model/IBaseEntity";
 import { DetailMode, DetailState } from "@/app/ui/details/detail-actions";
 import Authority from "@/app/model/Authority";
@@ -41,8 +40,8 @@ import { introspect } from "@/lib/graphql-utils";
 
 export type FormActionHandler<V extends FieldValues> = (command: string, fieldValues?: V) => void
 
-export type PageConfiguration<T extends ITrackedEntity, V extends FieldValues, I extends BaseEntityInput, F extends TrackedEntityQueryFilter> = {
-  recordKind: RecordKind // TODO: do we need to constrain this to trackable/linkable types?
+export type PageConfiguration<T extends ITrackedEntity, V extends FieldValues, I extends BaseEntityInput> = {
+  recordKind: RecordKind
   schema?: z.ZodObject<any>
   manualPagination: boolean
   manualSorting: boolean
@@ -52,14 +51,12 @@ export type PageConfiguration<T extends ITrackedEntity, V extends FieldValues, I
   deleteMutation?: DocumentNode
   createFieldValues: (record?: T) => V
   createInput?: (fieldValues: V, id?: string) => I
-  prepareFilter?: (filter: F) => void
   preparePage?: (page?: IPage<T>) => IPage<T> | undefined
   findRecord?: (records?: T[], id?: string | null) => T | undefined
 }
 
-export type PageLogic<T extends ITrackedEntity, V extends FieldValues> = {
-  search: SearchSettings
-  setSearch: Dispatch<SetStateAction<SearchSettings>>
+export type PageLogic<T extends ITrackedEntity, V extends FieldValues, F> = {
+  setFilter: Dispatch<SetStateAction<F>>
   pagination: PaginationState
   setPagination: Dispatch<SetStateAction<PaginationState>>
   sorting: SortingState,
@@ -74,11 +71,11 @@ export type PageLogic<T extends ITrackedEntity, V extends FieldValues> = {
   handleFormAction: FormActionHandler<V>
 }
 
-type ReducerArg<T> = {
-  command: string
-  page: IPage<T>
-  record?: T
-}
+// type ReducerArg<T> = {
+//   command: string
+//   page: IPage<T>
+//   record?: T
+// }
 
 function createDetailState(
   hasAuthority: (authority: Authority) => boolean,
@@ -107,20 +104,20 @@ function createDetailState(
 
 const defaultFindRecord = <T extends IBaseEntity>(records?: T[], id?: string | null) => records?.find(r => r?.id === id)
 
-const dummyPage = {
-  hasContent: false,
-  isEmpty: true,
-  number: 0,
-  size: 0,
-  numberOfElements: 0,
-  totalPages: 0,
-  totalElements: 0,
-  isFirst: true,
-  isLast: true,
-  hasNext: false,
-  hasPrevious: false,
-  content: [],
-}
+// const dummyPage = {
+//   hasContent: false,
+//   isEmpty: true,
+//   number: 0,
+//   size: 0,
+//   numberOfElements: 0,
+//   totalPages: 0,
+//   totalElements: 0,
+//   isFirst: true,
+//   isLast: true,
+//   hasNext: false,
+//   hasPrevious: false,
+//   content: [],
+// }
 
 // function recomputePageFields<T extends IBaseEntity>(page: IPage<T>) {
 //   page.hasContent = page.content.length != 0
@@ -137,73 +134,70 @@ const dummyPage = {
 // }
 
 export default function usePageLogic<
-    T extends ITrackedEntity,
+    T extends IBaseEntity,
     V extends FieldValues,
     I extends BaseEntityInput,
-    F extends TrackedEntityQueryFilter
-  >(
-    {
-      recordKind,
-      schema,
-      manualPagination,
-      manualSorting,
-      readQuery,
-      createMutation,
-      updateMutation,
-      deleteMutation,
-      createFieldValues,
-      createInput,
-      prepareFilter,
-      preparePage,
-      findRecord,
-    }
-    : PageConfiguration<T, V, I, F>
-  ) : PageLogic<T, V> {
+    F
+  >({
+    recordKind,
+    schema,
+    manualPagination,
+    manualSorting,
+    readQuery,
+    createMutation,
+    updateMutation,
+    deleteMutation,
+    createFieldValues,
+    createInput,
+    preparePage,
+    findRecord,
+  }
+  : PageConfiguration<T, V, I>
+  ) : PageLogic<T, V, F> {
 
   const {hasAuthority} = useAuth()
-  const masterLinkContext = useContext(MasterLinkContext)
   const selectedRecordsContext = useContext(SelectedRecordsContext)
-  const [search, setSearch] = useState<SearchSettings>({advancedSearch: false, showOnlyLinkedRecords: false} as SearchSettings)
   const [selectedRecordId, setSelectedRecordId] = useState<string|undefined>(selectedRecordsContext[recordKind]?.id)
+  const [filter, setFilter] = useState<F>({} as F)
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
   const [sorting, setSorting] = useState<SortingState>([])
   const [mode, setMode] = useState<DetailMode>("view")
   const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
 
-  const filter = useMemo(() => {
-    const filter = {
-      status: search.status ? [search.status] : undefined,
-      text: search.text ?? undefined,
-    } as F
-    if (filter.text)
-      filter.advancedSearch = search.advancedSearch
-    if (search.showOnlyLinkedRecords) {
-      const mlFilter = filter as LinkableEntityQueryFilter
-      if (masterLinkContext.masterTopicId) {
-        mlFilter.topicId = masterLinkContext.masterTopicId
-        mlFilter.recursive = true
-      }
-      if (masterLinkContext.masterRecordId) {
-        const linkFilterIdProperty = getLinkFilterIdProperty(recordKind, masterLinkContext.masterRecordKind)
-        if (linkFilterIdProperty)
-          mlFilter[linkFilterIdProperty] = masterLinkContext.masterRecordId
-      }
-    }
-    prepareFilter?.(filter)
-    console.log(`${recordKind}s effect: filter = ${JSON.stringify(filter)}`)
-    return filter
-  }, [search, masterLinkContext])
+  // const filter = useMemo(() => {
+  //   const filter = {
+  //     status: search.status ? [search.status] : undefined,
+  //     text: search.text ?? undefined,
+  //   } as F
+  //   if (filter.text)
+  //     filter.advancedSearch = search.advancedSearch
+  //   if (search.showOnlyLinkedRecords) {
+  //     const mlFilter = filter as LinkableEntityQueryFilter
+  //     if (masterLinkContext.masterTopicId) {
+  //       mlFilter.topicId = masterLinkContext.masterTopicId
+  //       mlFilter.recursive = true
+  //     }
+  //     if (masterLinkContext.masterRecordId) {
+  //       const linkFilterIdProperty = getLinkFilterIdProperty(recordKind, masterLinkContext.masterRecordKind)
+  //       if (linkFilterIdProperty)
+  //         mlFilter[linkFilterIdProperty] = masterLinkContext.masterRecordId
+  //     }
+  //   }
+  //   prepareFilter?.(filter)
+  //   console.log(`${recordKind}s effect: filter = ${JSON.stringify(filter)}`)
+  //   return filter
+  // }, [search, masterLinkContext])
 
   const pageSort = useMemo(() => {
     const pageSort : PageableInput = manualPagination && pagination
       ? {
         pageNumber: pagination.pageIndex,
         pageSize: pagination.pageSize,
-        sort: manualSorting ? sorting ? { orders: [] } : undefined : undefined,
+        // sort: manualSorting ? sorting ? { orders: [] } : undefined : undefined,
       }
       : {}
-    if (manualSorting && sorting) {
-      pageSort.sort ??= { orders: [] }
+    if (manualSorting && sorting.length > 0) {
+      pageSort.sort = { orders: [] }
       for (let s of sorting) {
         pageSort.sort?.orders.push({
           property: s.id,
@@ -211,7 +205,7 @@ export default function usePageLogic<
         })
       }
     }
-    console.log(`${recordKind}s effect: pageSort = ${JSON.stringify(pageSort)}`)
+    // console.log(`${recordKind}s effect: pageSort = ${JSON.stringify(pageSort)}`)
     return pageSort
   }, [manualPagination && pagination, manualSorting && sorting])
 
@@ -229,6 +223,14 @@ export default function usePageLogic<
       },
     }
   )
+  // Whenever filter or pagination changes, ask Apollo to refetch
+  useEffect(() => {
+    readResult.refetch({
+      filter,
+      pageSort
+    });
+  }, [filter, manualPagination && pageSort]);
+
   const [createOp, createResult] = createMutation ? useMutation(createMutation, { refetchQueries: [readQuery] }) : []
   const [updateOp, updateResult] = updateMutation ? useMutation(updateMutation, { refetchQueries: [readQuery] }) : []
   const [deleteOp, deleteResult] = deleteMutation ? useMutation(deleteMutation, { refetchQueries: [readQuery] }) : []
@@ -242,9 +244,13 @@ export default function usePageLogic<
     console.error(error)
   }
 
-  let rawPage = (readFieldName ? readResult.data?.[readFieldName] : undefined) as unknown as IPage<T> | undefined
-  rawPage = useMemo(() => preparePage?.(rawPage) ?? rawPage, [preparePage, rawPage])
+  let rawPage = readResult.loading
+    ? readResult.previousData?.[readFieldName]
+    : (readFieldName ? readResult.data?.[readFieldName] : undefined) as unknown as IPage<T> | undefined
+  const page = useMemo(() => preparePage?.(rawPage) ?? rawPage, [preparePage, rawPage])
 
+  // TODO: re-enable reducer logic to avoid query re-execution on completion of a mutation
+  /*
   const reducer = useCallback((draft: Draft<IPage<T>>, action: ReducerArg<T>) => {
     // TODO: if provided, call getSubRows as passed to DataTable to find the array and index to update/delete.
     // TODO: refactor to allow a custom reducer to be passed in (needed for the hierarchical Topics page).
@@ -281,6 +287,8 @@ export default function usePageLogic<
     }
   }, [search.status])
   const [page, dispatch] = useImmerReducer<IPage<T>, ReducerArg<T>>(reducer, rawPage ?? dummyPage)
+  */
+
   const getSelectedRecord = useCallback((id?: string) => {
     return (findRecord ?? defaultFindRecord)(page?.content, id)
   }, [findRecord, page])
@@ -293,7 +301,6 @@ export default function usePageLogic<
     values: origFieldValues,
   })
   const handleFormAction = useCallback((command: string, fieldValues?: V) => {
-    // console.log(`.handleFormAction: command = ${command}, mode = ${mode}`)
     // TODO: update Apollo cache?
     switch (command) {
       case "new":
@@ -354,27 +361,20 @@ export default function usePageLogic<
     form?.reset(createFieldValues(record))
   }, [form, mode, setSelectedRecordId, getSelectedRecord])
 
-  // Whenever filter or pagination changes, ask Apollo to refetch
-  useEffect(() => {
-    // console.log(`${recordKind}s effect: search = ${JSON.stringify(search)}`)
-    readResult.refetch({
-      filter,
-      pageSort
-    });
-  }, [filter, manualPagination && pageSort]);
-
+  // TODO: re-enable reducer logic to avoid query re-execution on completion of a mutation
+  /*
   // When a new page is available, dispatch the reducer.
   useEffect(() => {
     if (rawPage)
       dispatch({command: "init", page: rawPage});
   }, [rawPage, dispatch]);
+  */
 
   // console.log(`${settings.recordKind}s() page: ${JSON.stringify(page)})`)
 
-  const pageLogic = useMemo<PageLogic<T, V>>(() => {
+  const pageLogic = useMemo<PageLogic<T, V, F>>(() => {
     return {
-      search,
-      setSearch,
+      setFilter,
       pagination,
       setPagination,
       sorting,
@@ -388,8 +388,7 @@ export default function usePageLogic<
       form,
       handleFormAction,
     }}, [
-      search,
-      setSearch,
+      setFilter,
       pagination,
       setPagination,
       sorting,

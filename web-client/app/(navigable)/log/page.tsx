@@ -19,92 +19,48 @@
 
 'use client'
 
-import { useContext, useEffect, useMemo, useState } from "react";
 import { ListBulletIcon } from '@heroicons/react/24/outline';
-
 import LogDetails from "@/app/ui/details/log-details";
 import DataTable from "@/app/ui/data-table/data-table";
-
 import { columns, columnVisibility } from "@/app/ui/tables/log-columns"
-import IPage from "@/app/model/IPage";
 import Log from "@/app/model/Log";
-import { SelectedRecordsContext } from "@/lib/context";
-import { SearchSettings } from "@/lib/utils";
-import { useQuery } from "@apollo/client";
+import { toDate } from "@/lib/utils";
 import { READ_LOGS } from "@/lib/graphql-queries";
-import { toast } from "sonner";
-import { LogQueryFilter } from "@/app/model/schema";
-import { SortingState } from "@tanstack/react-table";
-// import usePageLogic from "@/hooks/use-page-logic";
+import LogTableFilter from "@/app/ui/data-table/log-table-filter"
+import { LogInput, LogQueryFilter } from "@/app/model/schema";
+import usePageLogic from "@/hooks/use-page-logic";
+import { LogFieldValues } from '@/app/ui/validators/log';
+
+function createFieldValues(record?: Log) : LogFieldValues {
+  return {
+    timestamp: toDate(record?.timestamp) ?? '',
+    transactionKind: record?.transactionKind ?? '',
+    username: record?.user?.username ?? '',
+    entityKind: record?.entityKind ?? '',
+    linkedEntityKind: record?.linkedEntityKind ?? '',
+    entityId: record?.entityId ?? '',
+    linkedEntityId: record?.linkedEntityId ?? '',
+  }
+}
 
 export default function Logs() {
-  const selectedRecordsContext = useContext(SelectedRecordsContext)
-  const [search, setSearch] = useState<SearchSettings>({showOnlyLinkedRecords: false} as SearchSettings)
-  const [selectedRecordId, setSelectedRecordId] = useState<string|undefined>(selectedRecordsContext.Log?.id)
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
-  const [sorting, setSorting] = /*manualSorting ? */useState<SortingState>([]) // : []
-  // const filter = useMemo(() => {
-  //   const filter: LogQueryFilter = {
-  //     // status: search.status ? [search.status] : undefined,
-  //     // text: search.text,
-  //   }
-  //   // if (search.text)
-  //   //   filter.advancedSearch = search.advancedSearch
-  //   console.log(`Logs effect: filter = ${JSON.stringify(filter)}`)
-  //   return filter
-  // }, [search])
-  // const pageSort = useMemo(() => {
-  //   const pageSort = {
-  //     // pageNumber: pagination.pageIndex,
-  //     // pageSize: pagination.pageSize
-  //   }
-  //   console.log(`Logs effect: pageSort = ${JSON.stringify(pageSort)}`)
-  //   return pageSort
-  // }, [/*pagination*/])
-
-  const result = useQuery(
-    READ_LOGS/*,
-    {
-      variables: {
-        filter,
-        pageSort
-      },
-    }*/
-  )
-
-  // Whenever filter or pagination changes, ask Apollo to refetch
-  /*useEffect(() => {
-    console.log(`Log effect: search = ${JSON.stringify(search)}`)
-    result.refetch({
-      filter,
-      pageSort
-    });
-  }, [filter, pageSort]);*/
-
-  // console.log(`result.loading = ${result.loading}, result.error = ${JSON.stringify(result.error)}, result.data = ${JSON.stringify(result.data)}`)
-  // console.log(`result.loading = ${result.loading}, result.error = ${JSON.stringify(result.error)}`)
-  const page = result.data?.log as IPage<Log>
-
-  const selectedRecord = page?.content.find(r => r.id == selectedRecordId)
-
-  if (result.error) {
-    toast.error(`Fetch error:\n\n${JSON.stringify(result.error)}`)
-    console.error(result.error)
-  }
-  // const {
-  //   search,
-  //   setSearch,
-  //   pagination,
-  //   setPagination,
-  //   loading,
-  //   page,
-  //   selectedRecord,
-  //   handleRowSelectionChange,
-  // } = usePageLogic<Log, LogQueryFilter, LogFieldValues>({
-  //   recordKind: "Log",
-  //   manualPagination: true,
-  //   listQuery: QUERY_LOG,
-  // })
+  const {
+    setFilter,
+    pagination,
+    setPagination,
+    sorting,
+    setSorting,
+    loading,
+    page,
+    selectedRecord,
+    handleRowSelectionChange,
+  } = usePageLogic<Log, LogFieldValues, LogInput, LogQueryFilter>({
+    recordKind: "Log",
+    manualPagination: true,
+    manualSorting: true,
+    readQuery: READ_LOGS,
+    createFieldValues,
+  })
 
   return (
     <main className="flex flex-col items-start m-4 gap-4">
@@ -113,21 +69,21 @@ export default function Logs() {
         &nbsp;
         <h1>Logs</h1>
       </div>
-      <DataTable<Log, unknown>
+      <DataTable<Log, unknown, LogQueryFilter>
         recordKind="Log"
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
-        loading={result.loading}
-        manualPagination={false}
+        loading={loading}
+        filterComponent={LogTableFilter}
+        onFilterChange={setFilter}
+        manualPagination={true}
         pagination={pagination}
         onPaginationChange={setPagination}
-        manualSorting={false}
+        manualSorting={true}
         sorting={sorting}
         onSortingChange={setSorting}
-        search={search}
-        onSearchChange={setSearch}
-        onRowSelectionChange={setSelectedRecordId/*handleRowSelectionChange*/}
+        onRowSelectionChange={handleRowSelectionChange}
       />
       <LogDetails record={selectedRecord} />
     </main>

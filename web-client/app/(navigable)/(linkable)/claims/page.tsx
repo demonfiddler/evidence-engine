@@ -31,6 +31,7 @@ import { ClaimSchema, ClaimFieldValues } from "@/app/ui/validators/claim";
 import { CREATE_CLAIM, DELETE_CLAIM, READ_CLAIMS, UPDATE_CLAIM } from "@/lib/graphql-queries"
 import usePageLogic from "@/hooks/use-page-logic"
 import { ClaimInput, LinkableEntityQueryFilter } from "@/app/model/schema"
+import LinkableEntityTableFilter from "@/app/ui/data-table/linkable-entity-table-filter"
 
 function createFieldValues(claim?: Claim) : ClaimFieldValues {
   return {
@@ -51,8 +52,7 @@ function createInput(fieldValues: ClaimFieldValues, id?: string) : ClaimInput {
 
 export default function Claims() {
   const {
-    search,
-    setSearch,
+    setFilter,
     pagination,
     setPagination,
     sorting,
@@ -85,21 +85,21 @@ export default function Claims() {
         &nbsp;
         <h1>Claims</h1>
       </div>
-      <DataTable<Claim, unknown>
+      <DataTable<Claim, unknown, LinkableEntityQueryFilter>
         recordKind="Claim"
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
         state={state}
         loading={loading}
+        filterComponent={LinkableEntityTableFilter}
+        onFilterChange={setFilter}
         manualPagination={true}
         pagination={pagination}
         onPaginationChange={setPagination}
         manualSorting={true}
         sorting={sorting}
         onSortingChange={setSorting}
-        search={search}
-        onSearchChange={setSearch}
         onRowSelectionChange={handleRowSelectionChange}
       />
       <FormProvider {...form}>

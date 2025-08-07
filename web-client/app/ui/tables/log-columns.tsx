@@ -23,7 +23,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import Log from "@/app/model/Log"
 import { columns as baseEntityColumns, columnVisibility as baseEntityColumnVisibility } from "./base-entity-columns"
 import { actionColumn as rawActionColumn, selectColumn as rawSelectColumn } from "./extra-columns"
-import { formatDate } from "@/lib/utils"
+import { formatDateTime } from "@/lib/utils"
 import User from "@/app/model/User"
 
 const actionColumn = rawActionColumn as ColumnDef<Log>
@@ -41,7 +41,7 @@ const ownColumns1: ColumnDef<Log>[] = [
     // enableColumnFilter: false,
     header: "Timestamp",
     cell: ({ row, cell }) => (
-      <div key={cell.id} className="font-medium">{formatDate(row.getValue("timestamp"))}</div>
+      <div key={cell.id} className="font-medium">{formatDateTime(row.getValue("timestamp"))}</div>
     )
   },
   {
@@ -60,7 +60,7 @@ const ownColumns1: ColumnDef<Log>[] = [
     accessorKey: "transactionKind",
     enableHiding: true,
     enableSorting: true,
-    size: 150,
+    size: 160,
     header: "Transaction",
   }
 ]
@@ -100,7 +100,7 @@ export const columns: ColumnDef<Log>[] = [
     accessorKey: "entityKind",
     enableHiding: true,
     enableSorting: true,
-    size: 150,
+    size: 164,
     header: "Record Kind",
   },
   {
@@ -108,7 +108,7 @@ export const columns: ColumnDef<Log>[] = [
     accessorKey: "entityId",
     enableHiding: true,
     enableSorting: true,
-    size: 120,
+    size: 150,
     header: "Record ID",
     meta: {
       className: "text-right"

@@ -52,6 +52,7 @@ import {
 import usePageLogic from "@/hooks/use-page-logic"
 import { GroupInput, TrackedEntityQueryFilter, UserInput } from "@/app/model/schema"
 import { useMutation } from "@apollo/client"
+import LinkableEntityTableFilter from "@/app/ui/data-table/linkable-entity-table-filter"
 
 function createAuthoritiesFieldValues(authorities?: Authority[]) {
   return {
@@ -145,8 +146,7 @@ function createDummyPage(users?: User[]) : IPage<User> | undefined {
 
 export default function Security() {
   const {
-    search: userSearch,
-    setSearch: setUserSearch,
+    setFilter: setUserFilter,
     pagination: userPagination,
     setPagination: setUserPagination,
     sorting: userSorting,
@@ -172,8 +172,7 @@ export default function Security() {
     createInput: createUserInput,
   })
   const {
-    search: groupSearch,
-    setSearch: setGroupSearch,
+    setFilter: setGroupFilter,
     pagination: groupPagination,
     setPagination: setGroupPagination,
     sorting: groupSorting,
@@ -257,7 +256,7 @@ export default function Security() {
             &nbsp;
             <h2>Groups</h2>
           </div>
-          <DataTable<Group, unknown>
+          <DataTable<Group, unknown, TrackedEntityQueryFilter>
             className="size-fit min-w-[700px]"
             recordKind="Group"
             defaultColumns={groupColumns}
@@ -265,14 +264,14 @@ export default function Security() {
             page={groupPage}
             state={groupState}
             loading={groupLoading}
+            filterComponent={LinkableEntityTableFilter}
+            onFilterChange={setGroupFilter}
             manualPagination={false}
             pagination={groupPagination}
             onPaginationChange={setGroupPagination}
             manualSorting={false}
             sorting={userSorting}
             onSortingChange={setUserSorting}
-            search={groupSearch}
-            onSearchChange={setGroupSearch}
             onRowSelectionChange={handleGroupSelectionChange}
           />
           <FormProvider {...groupForm}>
@@ -314,7 +313,7 @@ export default function Security() {
                 </RadioGroup>
               </div>
             </div>
-            <DataTable<User, unknown>
+            <DataTable<User, unknown, TrackedEntityQueryFilter>
               className="size-fit"
               recordKind="User"
               defaultColumns={userColumns}
@@ -322,14 +321,14 @@ export default function Security() {
               page={userPageToShow}
               state={userState}
               loading={userLoading}
+              filterComponent={LinkableEntityTableFilter}
+              onFilterChange={setUserFilter}
               manualPagination={false}
               pagination={userPagination}
               onPaginationChange={setUserPagination}
               manualSorting={false}
               sorting={groupSorting}
               onSortingChange={setGroupSorting}
-              search={userSearch}
-              onSearchChange={setUserSearch}
               onRowSelectionChange={handleUserSelectionChange}
             />
           </div>
@@ -346,5 +345,5 @@ export default function Security() {
         </TabsContent>
       </Tabs>
     </main>
-  );
+  )
 }

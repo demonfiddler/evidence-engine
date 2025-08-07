@@ -29,6 +29,7 @@ import { JournalSchema, JournalFieldValues } from "@/app/ui/validators/journal";
 import { CREATE_JOURNAL, DELETE_JOURNAL, READ_JOURNALS, UPDATE_JOURNAL } from "@/lib/graphql-queries";
 import usePageLogic from "@/hooks/use-page-logic";
 import { JournalInput, TrackedEntityQueryFilter } from '@/app/model/schema';
+import LinkableEntityTableFilter from '@/app/ui/data-table/linkable-entity-table-filter';
 
 function createFieldValues(journal?: Journal) : JournalFieldValues {
   return {
@@ -55,8 +56,7 @@ function createInput(fieldValues: JournalFieldValues, id?: string) : JournalInpu
 
 export default function Journals() {
   const {
-    search,
-    setSearch,
+    setFilter,
     pagination,
     setPagination,
     sorting,
@@ -89,21 +89,21 @@ export default function Journals() {
         &nbsp;
         <h1>Journals</h1>
       </div>
-      <DataTable<Journal, unknown>
+      <DataTable<Journal, unknown, TrackedEntityQueryFilter>
         recordKind="Journal"
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
         state={state}
         loading={loading}
+        filterComponent={LinkableEntityTableFilter}
+        onFilterChange={setFilter}
         manualPagination={true}
         pagination={pagination}
         onPaginationChange={setPagination}
         manualSorting={true}
         sorting={sorting}
         onSortingChange={setSorting}
-        search={search}
-        onSearchChange={setSearch}
         onRowSelectionChange={handleRowSelectionChange}
       />
       <FormProvider {...form}>

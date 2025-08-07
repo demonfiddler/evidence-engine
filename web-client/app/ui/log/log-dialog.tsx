@@ -19,7 +19,7 @@
 
 'use client'
 
-import { cn, getRecordLabel, SearchSettings } from "@/lib/utils";
+import { getRecordLabel, toDate } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -37,8 +37,24 @@ import { useState } from "react";
 import Log from "@/app/model/Log";
 import { ownColumns as columns, columnVisibility } from "@/app/ui/tables/log-columns"
 import DataTable from "../data-table/data-table";
-import { SortingState } from "@tanstack/react-table";
 import { DetailState } from "../details/detail-actions";
+import { LogInput, LogQueryFilter } from "@/app/model/schema";
+import usePageLogic from "@/hooks/use-page-logic";
+import { READ_LOGS } from "@/lib/graphql-queries";
+import { LogFieldValues } from "../validators/log";
+import LogDialogFilter from "../data-table/log-dialog-filter";
+
+function createFieldValues(record?: Log) : LogFieldValues {
+  return {
+    timestamp: toDate(record?.timestamp) ?? '',
+    transactionKind: record?.transactionKind ?? '',
+    username: record?.user?.username ?? '',
+    entityKind: record?.entityKind ?? '',
+    linkedEntityKind: record?.linkedEntityKind ?? '',
+    entityId: record?.entityId ?? '',
+    linkedEntityId: record?.linkedEntityId ?? '',
+  }
+}
 
 export default function LogDialog({
   className,
@@ -56,9 +72,24 @@ export default function LogDialog({
   title: string
 }) {
   const [open, setOpen] = useState(false)
-  const [search, setSearch] = useState<SearchSettings>({advancedSearch: false, showOnlyLinkedRecords: false} as SearchSettings)
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
-  const [sorting, setSorting] = useState<SortingState>([])
+
+  const {
+    setFilter,
+    pagination,
+    setPagination,
+    sorting,
+    setSorting,
+    loading,
+    page,
+    // selectedRecord,
+    // handleRowSelectionChange,
+  } = usePageLogic<Log, LogFieldValues, LogInput, LogQueryFilter>({
+    recordKind: "Log",
+    manualPagination: true,
+    manualSorting: true,
+    readQuery: READ_LOGS,
+    createFieldValues,
+  })
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -77,21 +108,21 @@ export default function LogDialog({
             &nbsp;{`${getRecordLabel(recordKind, record)}`}.
           </DialogDescription>
         </DialogHeader>
-        <DataTable<Log, unknown>
+        <DataTable<Log, unknown, LogQueryFilter>
           recordKind="Log"
           defaultColumns={columns}
           defaultColumnVisibility={columnVisibility}
-          page={record?.log}
+          page={page}
           state={state}
-          loading={false}
-          manualPagination={false}
+          loading={loading}
+          filterComponent={LogDialogFilter}
+          onFilterChange={setFilter}
+          manualPagination={true}
           pagination={pagination}
           onPaginationChange={setPagination}
-          manualSorting={false}
+          manualSorting={true}
           sorting={sorting}
           onSortingChange={setSorting}
-          search={search}
-          onSearchChange={setSearch}
         />
         <DialogFooter>
           <Button onClick={() => setOpen(false)}>Close</Button>

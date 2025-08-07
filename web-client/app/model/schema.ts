@@ -111,6 +111,9 @@ export interface JournalInput extends BaseEntityInput {
   notes: string | null
 }
 
+export interface LogInput extends BaseEntityInput {
+}
+
 export interface PersonInput extends BaseEntityInput {
   title: string | null
   firstName: string

@@ -17,37 +17,32 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import { z } from "zod/v4"
-import { EntityKind } from "./tracked-entity"
-import { ID } from "./id"
+'use client'
 
-const TransactionKind = z.enum([
-  "CRE",
-  "DEL",
-  "LNK",
-  "UNL",
-  "UPD",
-])
+import { Input } from "@/components/ui/input";
+import { ComponentProps, useEffect, useState } from "react";
+import { useDebounceValue } from "usehooks-ts";
 
-export const LogSchema = z.object({
-  timestamp: z.iso.datetime().optional(),
-  transactionKind: TransactionKind.optional(),
-  username: z.string(),
-  entityKind: EntityKind.optional(),
-  entityId: ID.optional(),
-  linkedEntityKind: EntityKind.optional(),
-  linkedEntityId: ID.optional(),
-})
+export default function InputEx(
+  {onChangeValue, value, ...props} :
+  {onChangeValue: (value: string | number | readonly string[] | undefined) => void} & ComponentProps<"input">
+) {
+  const [text, setText] = useState(value)
+  const [debouncedValue, setDebouncedValue] = useDebounceValue(value, 500)
+  useEffect(() => setText(value), [value])
+  useEffect(() => onChangeValue(debouncedValue), [debouncedValue])
 
-// export type LogFieldValues = z.infer<typeof LogSchema>
+  function onChangeText(s: string) {
+    setText(s)
+    setDebouncedValue(s)
+  }
 
-// For now, just use a hand-coded FieldValues, since we never update log entries.
-export type LogFieldValues = {
-  timestamp: Date | string
-  transactionKind: string
-  username: string
-  entityKind: string
-  linkedEntityKind: string
-  entityId: string
-  linkedEntityId: string
+  return (
+    <Input
+      value={text}
+      onKeyDown={(e) => e.code == "Escape" && onChangeText('')}
+      onChange={(e) => onChangeText(e.target.value ?? '')}
+      {...props}
+    />
+  )
 }

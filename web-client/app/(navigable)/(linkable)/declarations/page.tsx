@@ -31,6 +31,7 @@ import { FormProvider } from "react-hook-form";
 import { CREATE_DECLARATION, DELETE_DECLARATION, READ_DECLARATIONS, UPDATE_DECLARATION } from "@/lib/graphql-queries";
 import usePageLogic from "@/hooks/use-page-logic";
 import { DeclarationInput, LinkableEntityQueryFilter } from '@/app/model/schema';
+import LinkableEntityTableFilter from '@/app/ui/data-table/linkable-entity-table-filter';
 
 function createFieldValues(declaration?: Declaration) : DeclarationFieldValues {
   return {
@@ -63,8 +64,7 @@ function createInput(fieldValues: DeclarationFieldValues, id?: string) : Declara
 
 export default function Declarations() {
   const {
-    search,
-    setSearch,
+    setFilter,
     pagination,
     setPagination,
     sorting,
@@ -97,21 +97,21 @@ export default function Declarations() {
         &nbsp;
         <h1>Declarations</h1>
       </div>
-      <DataTable<Declaration, unknown>
+      <DataTable<Declaration, unknown, LinkableEntityQueryFilter>
         recordKind="Declaration"
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
         state={state}
         loading={loading}
+        filterComponent={LinkableEntityTableFilter}
+        onFilterChange={setFilter}
         manualPagination={true}
         pagination={pagination}
         onPaginationChange={setPagination}
         manualSorting={true}
         sorting={sorting}
         onSortingChange={setSorting}
-        search={search}
-        onSearchChange={setSearch}
         onRowSelectionChange={handleRowSelectionChange}
       />
       <FormProvider {...form}>

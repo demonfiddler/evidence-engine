@@ -58,6 +58,7 @@ export default function QuotationDetails(
   }) {
 
   const form = useFormContext()
+  const [open, setOpen] = useState(false)
   const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
   const { updating } = state
 
@@ -109,7 +110,7 @@ export default function QuotationDetails(
               render={({field}) => (
                 <FormItem>
                   <FormLabel>Date</FormLabel>
-                  <Popover>
+                  <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger id="date" asChild>
                       <FormControl>
                         <Button
@@ -129,9 +130,13 @@ export default function QuotationDetails(
                     <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
                         mode="single"
+                        captionLayout="dropdown"
+                        weekStartsOn={1}
                         selected={field.value}
-                        onSelect={field.onChange}
-                        initialFocus
+                        onSelect={(e) => {
+                          setOpen(false)
+                          field.onChange(e)
+                        }}
                       />
                     </PopoverContent>
                   </Popover>

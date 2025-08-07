@@ -34,9 +34,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { ChangeEvent, useCallback, useEffect, useState } from "react"
-import { useDebounceValue } from "usehooks-ts"
+import { useCallback, useEffect, useState } from "react"
+import InputEx from "../misc/input-ex"
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>
@@ -47,17 +46,16 @@ export function DataTablePaginator<TData>({
 }: DataTablePaginationProps<TData>) {
   const pn = (table.getState().pagination?.pageIndex ?? 0) + 1
   const [pageNumber, setPageNumber] = useState(pn)
-  const [debouncedPageNumber, setDebouncedPageNumber] = useDebounceValue(pn, 500)
   useEffect(() => {
-    table.setPagination({pageIndex: debouncedPageNumber - 1, pageSize: table.getState().pagination?.pageSize})
-  }, [debouncedPageNumber])
-  const handlePageChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    const pageNumber = Number.parseInt(e.target.value)
+    setPageNumber(pn)
+  }, [pn])
+  const handlePageChange = useCallback((value: string | number | readonly string[] | undefined) => {
+    const pageNumber = typeof value ==="number" ? value : Number.parseInt(value?.toString() ?? "0")
     if (pageNumber > 0 && pageNumber <= table.getPageCount()) {
       setPageNumber(pageNumber)
-      setDebouncedPageNumber(pageNumber)
+      table.setPagination({pageIndex: pageNumber - 1, pageSize: table.getState().pagination?.pageSize})
     }
-  }, [pageNumber])
+  }, [setPageNumber, table])
 
   return (
     <div className="flex items-center justify-between">
@@ -88,13 +86,13 @@ export function DataTablePaginator<TData>({
         </div>
         <div className="flex items-center justify-center text-sm font-medium">
           <p>Page&nbsp;
-          <Input
-            className="w-12 inline"
+          <InputEx
+            className="w-14 inline text-right"
             type="number"
             min={1}
             max={table.getPageCount()}
             value={pageNumber}
-            onChange={handlePageChange}
+            onChangeValue={handlePageChange}
           />
           &nbsp;of&nbsp;{table.getPageCount()} <span>(showing {table.getRowModel().rows.length.toLocaleString()}
           &nbsp;of&nbsp;{table.getRowCount().toLocaleString()} items)</span></p>

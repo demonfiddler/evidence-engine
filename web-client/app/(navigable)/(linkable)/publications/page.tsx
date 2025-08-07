@@ -30,6 +30,7 @@ import { PublicationFieldValues, PublicationKind, PublicationSchema as Publicati
 import { CREATE_PUBLICATION, DELETE_PUBLICATION, READ_PUBLICATIONS, UPDATE_PUBLICATION } from "@/lib/graphql-queries";
 import usePageLogic from "@/hooks/use-page-logic";
 import { LinkableEntityQueryFilter, PublicationInput } from '@/app/model/schema';
+import LinkableEntityTableFilter from '@/app/ui/data-table/linkable-entity-table-filter';
 
 function createFieldValues(publication?: Publication) : PublicationFieldValues {
   return {
@@ -72,8 +73,7 @@ function createInput(fieldValues: PublicationFieldValues, id?: string) : Publica
 
 export default function Publications() {
   const {
-    search,
-    setSearch,
+    setFilter,
     pagination,
     setPagination,
     sorting,
@@ -106,21 +106,21 @@ export default function Publications() {
         &nbsp;
         <h1>Publications</h1>
       </div>
-      <DataTable<Publication, unknown>
+      <DataTable<Publication, unknown, LinkableEntityQueryFilter>
         recordKind="Publication"
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
         state={state}
         loading={loading}
+        filterComponent={LinkableEntityTableFilter}
+        onFilterChange={setFilter}
         manualPagination={true}
         pagination={pagination}
         onPaginationChange={setPagination}
         manualSorting={true}
         sorting={sorting}
         onSortingChange={setSorting}
-        search={search}
-        onSearchChange={setSearch}
         onRowSelectionChange={handleRowSelectionChange}
       />
       <FormProvider {...form}>

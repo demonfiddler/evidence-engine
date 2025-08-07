@@ -27,7 +27,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { FROM_ENTITY_ID, getLinkFilterIdProperty, getReadQuery, getRecordLabel } from "@/lib/utils";
+import { FROM_ENTITY_ID, getOtherRecordLinkIdProperty, getReadQuery, getRecordLabel } from "@/lib/utils";
 import RecordKind from "@/app/model/RecordKind";
 import { DetailState } from "./detail-actions";
 import { CREATE_ENTITY_LINK, DELETE_ENTITY_LINK, READ_ENTITY_LINKS, UPDATE_ENTITY_LINK } from "@/lib/graphql-queries";
@@ -97,7 +97,6 @@ export default function LinkingDetails(
   const recordLinks = useMemo(() => getRecordLinks(record), [record])
   const selectedLink = getSelectedLink(selectedLinkId)
   const allowLinking = record && state.allowLink && !state.updating
-  const recordLabel = mode == "create" ? `new ${recordKind}` : getRecordLabel(recordKind, record)
 
   function createInput(recordLink: RecordLink) {
     return recordLink.thisRecordIsToEntity
@@ -135,9 +134,6 @@ export default function LinkingDetails(
       toast.info(`Unlinking '${selectedLink?.otherRecordLabel}'...`)
       deleteOp({
         variables: {entityLinkId: selectedLinkId},
-        // onCompleted: (data, clientOptions) => {
-        //   // TODO: what, if anything?
-        // },
         onError: (error, clientOptions) => {
           toast.error(error.message)
         },
@@ -153,7 +149,7 @@ export default function LinkingDetails(
       const otherRecordId = masterLinkContext.masterRecordId
       const otherRecordLabel = masterLinkContext.masterRecordLabel
       if (thisRecordId && otherRecordId && otherRecordLabel) {
-        const otherRecordIdProperty = getLinkFilterIdProperty(recordKind, masterLinkContext.masterRecordKind)
+        const otherRecordIdProperty = getOtherRecordLinkIdProperty(recordKind, masterLinkContext.masterRecordKind)
         if (otherRecordIdProperty) {
           const thisRecordIsToEntity = otherRecordIdProperty === FROM_ENTITY_ID
           createOp({

@@ -30,6 +30,7 @@ import { PersonFieldValues, PersonSchema as PersonSchema } from "@/app/ui/valida
 import { CREATE_PERSON, DELETE_PERSON, READ_PERSONS, UPDATE_PERSON } from "@/lib/graphql-queries";
 import usePageLogic from "@/hooks/use-page-logic";
 import { LinkableEntityQueryFilter, PersonInput } from '@/app/model/schema';
+import LinkableEntityTableFilter from '@/app/ui/data-table/linkable-entity-table-filter';
 
 function createFieldValues(person?: Person) : PersonFieldValues {
   return {
@@ -70,8 +71,7 @@ function createInput(fieldValues: PersonFieldValues, id?: string) : PersonInput 
 
 export default function Persons() {
   const {
-    search,
-    setSearch,
+    setFilter,
     pagination,
     setPagination,
     sorting,
@@ -104,21 +104,21 @@ export default function Persons() {
         &nbsp;
         <h1>Persons</h1>
       </div>
-      <DataTable<Person, unknown>
+      <DataTable<Person, unknown, LinkableEntityQueryFilter>
         recordKind="Person"
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
         state={state}
         loading={loading}
+        filterComponent={LinkableEntityTableFilter}
+        onFilterChange={setFilter}
         manualPagination={true}
         pagination={pagination}
         onPaginationChange={setPagination}
         manualSorting={true}
         sorting={sorting}
         onSortingChange={setSorting}
-        search={search}
-        onSearchChange={setSearch}
         onRowSelectionChange={handleRowSelectionChange}
       />
       <FormProvider {...form}>

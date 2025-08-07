@@ -41,7 +41,7 @@ public class EntityLinkQueryFilter extends TrackedEntityQueryFilter {
 	/**
 	 * The 'linked-from' entity identifier, if a master list is designated.
 	 */
-	@GraphQLScalar(fieldName = "fromEntityId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
+	@GraphQLScalar(fieldName = "fromEntityId", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
 	Long fromEntityId;
 
 	/**
@@ -54,7 +54,7 @@ public class EntityLinkQueryFilter extends TrackedEntityQueryFilter {
 	/**
 	 * The 'linked-to' entity identifier, if a master list is designated.
 	 */
-	@GraphQLScalar(fieldName = "toEntityId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
+	@GraphQLScalar(fieldName = "toEntityId", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
 	Long toEntityId;
 
 	/**

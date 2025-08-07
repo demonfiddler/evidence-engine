@@ -30,6 +30,7 @@ import { CREATE_QUOTATION, DELETE_QUOTATION, READ_QUOTATIONS, UPDATE_QUOTATION }
 import usePageLogic from "@/hooks/use-page-logic"
 import { toDate, toIsoDateString } from '@/lib/utils'
 import { LinkableEntityQueryFilter, QuotationInput } from '@/app/model/schema'
+import LinkableEntityTableFilter from '@/app/ui/data-table/linkable-entity-table-filter'
 
 function createFieldValues(quotation?: Quotation) {
   return {
@@ -56,8 +57,7 @@ function createInput(fieldValues: QuotationFieldValues, id?: string) : Quotation
 
 export default function Quotations() {
   const {
-    search,
-    setSearch,
+    setFilter,
     pagination,
     setPagination,
     sorting,
@@ -90,21 +90,21 @@ export default function Quotations() {
         &nbsp;
         <h1>Quotations</h1>
       </div>
-      <DataTable<Quotation, unknown>
+      <DataTable<Quotation, unknown, LinkableEntityQueryFilter>
         recordKind="Quotation"
         defaultColumns={columns}
         defaultColumnVisibility={columnVisibility}
         page={page}
         state={state}
         loading={loading}
+        filterComponent={LinkableEntityTableFilter}
+        onFilterChange={setFilter}
         manualPagination={true}
         pagination={pagination}
         onPaginationChange={setPagination}
         manualSorting={true}
         sorting={sorting}
         onSortingChange={setSorting}
-        search={search}
-        onSearchChange={setSearch}
         onRowSelectionChange={handleRowSelectionChange}
       />
       <FormProvider {...form}>
