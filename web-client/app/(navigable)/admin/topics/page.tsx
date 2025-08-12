@@ -19,19 +19,19 @@
 
 'use client'
 
-import { Bars3BottomRightIcon } from '@heroicons/react/24/outline';
-import TopicDetails from "@/app/ui/details/topic-details";
+import { Bars3BottomRightIcon } from '@heroicons/react/24/outline'
+import TopicDetails from "@/app/ui/details/topic-details"
 import DataTable from "@/app/ui/data-table/data-table";
-import { columns, columnVisibility } from "@/app/ui/tables/topic-columns"
-import IPage from "@/app/model/IPage";
-import Topic from "@/app/model/Topic";
-import { setTopicFields, } from "@/lib/utils";
+import { columns } from "@/app/ui/tables/topic-columns"
+import IPage from "@/app/model/IPage"
+import Topic from "@/app/model/Topic"
+import { setTopicFields, } from "@/lib/utils"
 import { FormProvider } from "react-hook-form"
-import { TopicFieldValues, TopicSchema } from "@/app/ui/validators/topic";
-import { CREATE_TOPIC, DELETE_TOPIC, READ_TOPIC_HIERARCHY, UPDATE_TOPIC } from "@/lib/graphql-queries";
-import usePageLogic from "@/hooks/use-page-logic";
-import { TopicInput, TopicQueryFilter } from '@/app/model/schema';
-import TopicTableFilter from '@/app/ui/data-table/topic-table-filter';
+import { TopicFieldValues, TopicSchema } from "@/app/ui/validators/topic"
+import { CREATE_TOPIC, DELETE_TOPIC, READ_TOPIC_HIERARCHY, UPDATE_TOPIC } from "@/lib/graphql-queries"
+import usePageLogic from "@/hooks/use-page-logic"
+import { TopicInput, TopicQueryFilter } from '@/app/model/schema'
+import TopicTableFilter from '@/app/ui/data-table/topic-table-filter'
 
 function createFieldValues(topic?: Topic) : TopicFieldValues {
   return {
@@ -80,11 +80,6 @@ function findRecord(topics?: Topic[], topicId?: string | null) : Topic | undefin
 
 export default function Topics() {
   const {
-    setFilter,
-    pagination,
-    setPagination,
-    sorting,
-    setSorting,
     loading,
     page,
     selectedRecord,
@@ -108,6 +103,9 @@ export default function Topics() {
     findRecord,
   })
 
+  // const {storeAppState} = useContext(GlobalContext)
+  // useEffect(() => {return () => storeAppState()}, [])
+
   return (
     <main className="flex flex-col items-start m-4 gap-4">
       <div className="flex flex-row items-center">
@@ -115,21 +113,15 @@ export default function Topics() {
         &nbsp;
         <h1>Topics</h1>
       </div>
-      <DataTable<Topic, unknown, TopicQueryFilter>
+      <DataTable<Topic, unknown>
         recordKind="Topic"
         defaultColumns={columns}
-        defaultColumnVisibility={columnVisibility}
         page={page}
         state={state}
         loading={loading}
         filterComponent={TopicTableFilter}
-        onFilterChange={setFilter}
         manualPagination={false}
-        pagination={pagination}
-        onPaginationChange={setPagination}
         manualSorting={false}
-        sorting={sorting}
-        onSortingChange={setSorting}
         onRowSelectionChange={handleRowSelectionChange}
         getSubRows={(row) => row.children}
       />

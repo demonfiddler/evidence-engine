@@ -23,7 +23,7 @@ import { ExclamationCircleIcon } from "@heroicons/react/24/outline"
 
 import ClaimDetails from "@/app/ui/details/claim-details"
 import DataTable from "@/app/ui/data-table/data-table"
-import { columns, columnVisibility } from "@/app/ui/tables/claim-columns"
+import { columns } from "@/app/ui/tables/claim-columns"
 import Claim from "@/app/model/Claim";
 import { toDate, toIsoDateString } from "@/lib/utils"
 import { FormProvider } from "react-hook-form"
@@ -52,11 +52,6 @@ function createInput(fieldValues: ClaimFieldValues, id?: string) : ClaimInput {
 
 export default function Claims() {
   const {
-    setFilter,
-    pagination,
-    setPagination,
-    sorting,
-    setSorting,
     loading,
     page,
     selectedRecord,
@@ -78,6 +73,15 @@ export default function Claims() {
     createInput,
   })
 
+  // const {storeAppState} = useContext(GlobalContext)
+  // // When component is unmounted, flush application state to session storage.
+  // useEffect(() => {
+  //   return () => {
+  //     console.log("Claims effect cleanup")
+  //     storeAppState()
+  //   }
+  // }, [])
+
   return (
     <main className="flex flex-col items-start m-4 gap-4">
       <div className="flex flex-row items-center">
@@ -85,21 +89,15 @@ export default function Claims() {
         &nbsp;
         <h1>Claims</h1>
       </div>
-      <DataTable<Claim, unknown, LinkableEntityQueryFilter>
+      <DataTable<Claim, unknown>
         recordKind="Claim"
         defaultColumns={columns}
-        defaultColumnVisibility={columnVisibility}
         page={page}
         state={state}
         loading={loading}
         filterComponent={LinkableEntityTableFilter}
-        onFilterChange={setFilter}
         manualPagination={true}
-        pagination={pagination}
-        onPaginationChange={setPagination}
         manualSorting={true}
-        sorting={sorting}
-        onSortingChange={setSorting}
         onRowSelectionChange={handleRowSelectionChange}
       />
       <FormProvider {...form}>

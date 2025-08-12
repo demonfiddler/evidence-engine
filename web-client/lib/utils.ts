@@ -35,6 +35,7 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { READ_CLAIMS, READ_DECLARATIONS, READ_GROUPS, READ_JOURNALS, READ_LOGS, READ_PERSONS, READ_PUBLICATIONS, READ_PUBLISHERS, READ_QUOTATIONS, READ_TOPIC_HIERARCHY, READ_USERS } from "./graphql-queries"
 import { DocumentNode } from "graphql"
+import { Updater } from "@tanstack/react-table"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -261,4 +262,10 @@ export function toInteger(s?: string | number) {
     default:
       return null
   }
+}
+
+export function getValue<T>(updaterOrValue: Updater<T>, old: T) {
+  return typeof updaterOrValue == "function"
+    ? (updaterOrValue as (old: T) => T)(old)
+    : updaterOrValue as T
 }

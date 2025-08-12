@@ -45,11 +45,6 @@ function createFieldValues(record?: Log) : LogFieldValues {
 
 export default function Logs() {
   const {
-    setFilter,
-    pagination,
-    setPagination,
-    sorting,
-    setSorting,
     loading,
     page,
     selectedRecord,
@@ -69,20 +64,14 @@ export default function Logs() {
         &nbsp;
         <h1>Logs</h1>
       </div>
-      <DataTable<Log, unknown, LogQueryFilter>
+      <DataTable<Log, unknown>
         recordKind="Log"
         defaultColumns={columns}
-        defaultColumnVisibility={columnVisibility}
         page={page}
         loading={loading}
         filterComponent={LogTableFilter}
-        onFilterChange={setFilter}
         manualPagination={true}
-        pagination={pagination}
-        onPaginationChange={setPagination}
         manualSorting={true}
-        sorting={sorting}
-        onSortingChange={setSorting}
         onRowSelectionChange={handleRowSelectionChange}
       />
       <LogDetails record={selectedRecord} />

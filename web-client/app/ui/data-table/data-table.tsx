@@ -22,7 +22,9 @@
 import {
   Cell,
   ColumnDef,
-  ColumnFiltersState,
+  // ColumnFiltersState,
+  ColumnOrderState,
+  ColumnSizingState,
   ExpandedState,
   PaginationState,
   RowSelectionState,
@@ -44,7 +46,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { CSSProperties, Dispatch, JSX, SetStateAction, useCallback, useContext, useEffect, useState } from "react"
+import { CSSProperties, JSX, useCallback, useContext, useEffect, useState } from "react"
 import {
   DndContext,
   KeyboardSensor,
@@ -66,9 +68,9 @@ import { CSS } from '@dnd-kit/utilities'
 import { DataTablePaginator } from "./data-table-paginator"
 import type IPage from "@/app/model/IPage"
 import IBaseEntity from "@/app/model/IBaseEntity"
-import { MasterLinkContext, SelectedRecordsContext } from "@/lib/context"
+import { ColumnState, GlobalContext, QueryState } from "@/lib/context"
 import RecordKind from "@/app/model/RecordKind"
-import { cn, isLinkableEntity } from "@/lib/utils"
+import { cn, getValue, isLinkableEntity } from "@/lib/utils"
 import DataTableColumnHeader from "./data-table-column-header"
 import Spinner from "../misc/spinner"
 import { getExpandedRowModelEx } from "./data-table-expanded-row-model"
@@ -97,59 +99,79 @@ function DragAlongCell<TData>({ cell }: { cell: Cell<TData, unknown> }) {
   )
 }
 
-interface DataTableProps<TData, TValue, TFilter> {
+interface DataTableProps<TData, TValue> {
   className?: string
   recordKind: RecordKind
   defaultColumns: ColumnDef<TData, TValue>[]
-  defaultColumnVisibility: VisibilityState
   page: IPage<TData> | undefined
   state?: DetailState
   loading: boolean
-  filterComponent: ({ table, recordKind, isLinkableEntity, onFilterChange }: DataTableFilterProps<TData, TFilter>) => JSX.Element,
-  onFilterChange: Dispatch<SetStateAction<TFilter>>
+  filterComponent: ({ table, recordKind, isLinkableEntity, auxRecordId }: DataTableFilterProps<TData>) => JSX.Element,
   manualPagination: boolean
-  pagination: PaginationState
-  onPaginationChange: Dispatch<SetStateAction<PaginationState>>
   manualSorting: boolean
-  sorting: SortingState,
-  onSortingChange: Dispatch<SetStateAction<SortingState>>,
   getSubRows?: (row: TData) => TData[] | undefined
   onRowSelectionChange?: (recordId?: string) => void
+  auxRecordId?: string
 }
 
 interface ColumnMetaData {
   className?: string
 }
 
-export default function DataTable<TData extends IBaseEntity, TValue, TFilter>({
+export default function DataTable<TData extends IBaseEntity, TValue>({
   className,
   recordKind,
   defaultColumns,
-  defaultColumnVisibility,
   page,
   state,
   loading,
   filterComponent: DataTableFilter,
-  onFilterChange,
   manualPagination,
-  pagination,
-  onPaginationChange,
   manualSorting,
-  sorting,
-  onSortingChange,
   getSubRows,
-  onRowSelectionChange
-}: DataTableProps<TData, TValue, TFilter>) {
-  const masterLinkContext = useContext(MasterLinkContext)
-  const selectedRecordsContext = useContext(SelectedRecordsContext)
+  onRowSelectionChange,
+  auxRecordId,
+}: DataTableProps<TData, TValue>) {
+  const {
+    selectedRecords,
+    columns : columnsMap,
+    queries,
+    setMasterRecord,
+    setSelectedRecord,
+    setColumnOrder,
+    setColumnSizing,
+    setColumnVisibility,
+    setSorting,
+    setPagination,
+  } = useContext(GlobalContext)
   const [columns] = useState<typeof defaultColumns>(() => [
     ...defaultColumns,
   ])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({...defaultColumnVisibility})
-  const [columnOrder, setColumnOrder] = useState<string[]>(() => columns.map(c => c.id!))
-  const selectedRecord = selectedRecordsContext[recordKind]
-  const [rowSelection, setRowSelection] = useState(selectedRecord ? {[selectedRecord.id.toString()]: true} : {})
+  const {sorting, pagination} = queries[recordKind] as QueryState<any>
+  const {visibility : columnVisibility, order : columnOrder, sizing : columnSizing} = columnsMap[recordKind] as ColumnState
+  const onColumnOrderChange = useCallback((updaterOrValue: Updater<ColumnOrderState>) => {
+    const order = getValue(updaterOrValue, columnOrder)
+    setColumnOrder(recordKind, order)
+  }, [columnOrder, setColumnOrder])
+  const onColumnSizingChange = useCallback((updaterOrValue: Updater<ColumnSizingState>) => {
+    const sizing = getValue(updaterOrValue, columnSizing)
+    setColumnSizing(recordKind, sizing)
+  }, [columnSizing, setColumnSizing])
+  const onColumnVisibilityChange = useCallback((updaterOrValue: Updater<VisibilityState>) => {
+    const visibility = getValue(updaterOrValue, columnVisibility)
+    setColumnVisibility(recordKind, visibility)
+  }, [columnVisibility, setColumnVisibility])
+  const onSortingChange = useCallback((updaterOrValue: Updater<SortingState>) => {
+    const newSorting = getValue(updaterOrValue, sorting)
+    setSorting(recordKind, newSorting)
+  }, [sorting, setSorting])
+  const onPaginationChange = useCallback((updaterOrValue: Updater<PaginationState>) => {
+    const newPagination = getValue(updaterOrValue, pagination)
+    setPagination(recordKind, newPagination)
+  }, [pagination, setPagination])
+
+  const selectedRecord = selectedRecords[recordKind]
+  const [rowSelection, setRowSelection] = useState(selectedRecord ? {[selectedRecord.id]: true} : {})
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const sensors = useSensors(
     useSensor(MouseSensor, {}),
@@ -168,7 +190,7 @@ export default function DataTable<TData extends IBaseEntity, TValue, TFilter>({
     }
   }, [getSubRows])
 
-  const rowSelectionChanged = useCallback((selection: Updater<RowSelectionState>) => {
+  const handleRowSelectionChange = useCallback((selection: Updater<RowSelectionState>) => {
     setRowSelection(selection)
 
     let selectedRecord
@@ -179,12 +201,10 @@ export default function DataTable<TData extends IBaseEntity, TValue, TFilter>({
       if (selected)
         selectedRecord = findItem(id, page?.content)
     }
-    if (masterLinkContext.masterRecordKind == recordKind)
-      masterLinkContext.setMasterRecord(masterLinkContext, selectedRecord)
-    selectedRecordsContext.setSelectedRecord(selectedRecordsContext, recordKind, selectedRecord)
+    setSelectedRecord(recordKind, selectedRecord)
     if (onRowSelectionChange)
       onRowSelectionChange(selectedRecord?.id)
-  }, [setRowSelection, findItem, masterLinkContext, selectedRecordsContext, recordKind, onRowSelectionChange])
+  }, [setRowSelection, findItem, setMasterRecord, setSelectedRecord, recordKind, onRowSelectionChange])
 
   const table = useReactTable({
     // aggregationFns: ,
@@ -195,7 +215,7 @@ export default function DataTable<TData extends IBaseEntity, TValue, TFilter>({
     columnResizeDirection: "ltr",
     columns,
     data: page?.content ?? [],
-    // debugAll: boolean,
+    // debugAll: true,
     // debugCells: boolean,
     // debugColumns: boolean,
     // debugHeaders: boolean,
@@ -262,26 +282,27 @@ export default function DataTable<TData extends IBaseEntity, TValue, TFilter>({
     paginateExpandedRows: false,
     rowCount: manualPagination ? page?.totalElements : undefined,
     // onColumnPinningChange: OnChangeFn<ColumnPinningState>,
-    // onColumnSizingChange: OnChangeFn<ColumnSizingState>,
+    onColumnSizingChange, //: OnChangeFn<ColumnSizingState>,
     // onColumnSizingInfoChange: OnChangeFn<ColumnSizingInfoState>,
     onExpandedChange: setExpanded,
     // onGlobalFilterChange: OnChangeFn<any>,
     // onGroupingChange: OnChangeFn<GroupingState>,
     onPaginationChange, // OnChangeFn<PaginationState>, // If provided, called when pagination state changes. Pass managed state back via tableOptions.state.pagination
     // onRowPinningChange: OnChangeFn<RowPinningState>,
-    onRowSelectionChange: rowSelectionChanged,
+    onRowSelectionChange: handleRowSelectionChange,
     // onStateChange: ((updater: Updater<TableState>) => void),
-    onColumnFiltersChange: setColumnFilters,
-    onColumnOrderChange: setColumnOrder,
-    onColumnVisibilityChange: setColumnVisibility,
+    // onColumnFiltersChange: setColumnFilters,
+    onColumnOrderChange,
+    onColumnVisibilityChange,
     onSortingChange,
     state: {
-      columnFilters,
+      // columnFilters,
       columnOrder,
       columnVisibility,
+      columnSizing,
       expanded,
-      pagination,
       sorting,
+      pagination,
       rowSelection,
     },
   })
@@ -290,7 +311,7 @@ export default function DataTable<TData extends IBaseEntity, TValue, TFilter>({
     useEffect(() => {
       table.setOptions({
         ...table.options,
-        rowCount: page?.totalElements ?? 0, // Number.parseInt(page?.totalElements ?? "0")
+        rowCount: page?.totalElements ?? 0,
       })
     }, [page?.totalElements]);
   }
@@ -309,13 +330,13 @@ export default function DataTable<TData extends IBaseEntity, TValue, TFilter>({
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event
     if (active && over && active.id !== over.id) {
-      setColumnOrder(columnOrder => {
+      onColumnOrderChange((columnOrder) => {
         const oldIndex = columnOrder.indexOf(active.id as string)
         const newIndex = columnOrder.indexOf(over.id as string)
         return arrayMove(columnOrder, oldIndex, newIndex)
       })
     }
-  }, [setColumnOrder, columnOrder])
+  }, [onColumnOrderChange, columnOrder])
 
   return (
     // NOTE: This provider creates div elements, so don't nest inside of <table> elements
@@ -333,7 +354,7 @@ export default function DataTable<TData extends IBaseEntity, TValue, TFilter>({
             recordKind={recordKind}
             recordId={selectedRecord?.id}
             isLinkableEntity={isLinkableEntity(recordKind)}
-            onFilterChange={onFilterChange}
+            auxRecordId={auxRecordId}
           />
           <Table className="table-fixed box-border" style={{width: `${table.getTotalSize()}px`}}>
             <colgroup>

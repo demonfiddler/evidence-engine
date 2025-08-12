@@ -22,7 +22,7 @@
 import { BeakerIcon } from '@heroicons/react/24/outline';
 import PublicationDetails from "@/app/ui/details/publication-details";
 import DataTable from "@/app/ui/data-table/data-table";
-import { columns, columnVisibility } from "@/app/ui/tables/publication-columns"
+import { columns } from "@/app/ui/tables/publication-columns"
 import Publication from "@/app/model/Publication";
 import { toDate, toInteger, toIsoDateString } from "@/lib/utils";
 import { FormProvider } from "react-hook-form"
@@ -73,11 +73,6 @@ function createInput(fieldValues: PublicationFieldValues, id?: string) : Publica
 
 export default function Publications() {
   const {
-    setFilter,
-    pagination,
-    setPagination,
-    sorting,
-    setSorting,
     loading,
     page,
     selectedRecord,
@@ -99,6 +94,9 @@ export default function Publications() {
     createInput,
   })
 
+  // const {storeAppState} = useContext(GlobalContext)
+  // useEffect(() => {return () => storeAppState()}, [])
+
   return (
     <main className="flex flex-col items-start m-4 gap-4">
       <div className="flex flex-row items-center">
@@ -106,21 +104,15 @@ export default function Publications() {
         &nbsp;
         <h1>Publications</h1>
       </div>
-      <DataTable<Publication, unknown, LinkableEntityQueryFilter>
+      <DataTable<Publication, unknown>
         recordKind="Publication"
         defaultColumns={columns}
-        defaultColumnVisibility={columnVisibility}
         page={page}
         state={state}
         loading={loading}
         filterComponent={LinkableEntityTableFilter}
-        onFilterChange={setFilter}
         manualPagination={true}
-        pagination={pagination}
-        onPaginationChange={setPagination}
         manualSorting={true}
-        sorting={sorting}
-        onSortingChange={setSorting}
         onRowSelectionChange={handleRowSelectionChange}
       />
       <FormProvider {...form}>

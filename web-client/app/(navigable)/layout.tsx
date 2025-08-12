@@ -21,32 +21,21 @@
 
 import "@/app/globals.css";
 import '@/app/ui/global.css';
-// import type { Metadata } from "next";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/app/ui//navigator/app-sidebar"
 import SignIn from "../ui/security/sign-in";
+import { GlobalContext } from "@/lib/context";
+import { useContext } from "react";
 
-// export const metadata: Metadata = {
-//   title: {
-//     template: '%s | Evidence Engine',
-//     default: 'Evidence Engine',
-//   },
-//   description: "Scientific evidence curated by campaign-resources.org",
-//   // metadataBase: new URL(process.env.webClientUrl);
-// };
-
-/*
-<ApolloProvider client={apolloClient}>
-{children}
-</ApolloProvider>
-*/
 export default function NavigableLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const {sidebarOpen, setSidebarOpen} = useContext(GlobalContext)
+
   return (
-    <SidebarProvider>
+    <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
       <AppSidebar />
       <main className="flex flex-col">
         <header className="grid grid-cols-3 items-center w-screen h-12 rounded-md text-white bg-blue-500">

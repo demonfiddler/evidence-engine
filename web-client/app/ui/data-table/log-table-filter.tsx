@@ -21,7 +21,7 @@ import Log from "@/app/model/Log";
 import { DataTableFilterProps, DataTableViewOptions } from "./data-table-view-options";
 import { LogQueryFilter } from "@/app/model/schema";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import { formatDate } from "@/lib/utils";
 import { READ_USERS } from "@/lib/graphql-queries";
 import { useQuery } from "@apollo/client";
@@ -34,21 +34,26 @@ import { Button } from "@/components/ui/button";
 import { CalendarIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import Spinner from "../misc/spinner";
 import InputEx from "../misc/input-ex";
+import { GlobalContext, QueryState } from "@/lib/context";
 
 export default function LogTableFilter(
   {
     table,
-    onFilterChange
-  } : DataTableFilterProps<Log, LogQueryFilter>) {
+  } : DataTableFilterProps<Log>) {
 
-  const [from, setFrom] = useState<Date|undefined>()
+  const {queries, setFilter} = useContext(GlobalContext)
+  const onFilterChange = useCallback((filter: any) => {
+    setFilter("Log", filter)
+  }, [setFilter])
+  const {filter} = queries["Log"] as QueryState<LogQueryFilter>
+  const [from, setFrom] = useState<Date|undefined>(filter.from)
   const [fromOpen, setFromOpen] = useState(false)
-  const [to, setTo] = useState<Date|undefined>()
+  const [to, setTo] = useState<Date|undefined>(filter.to)
   const [toOpen, setToOpen] = useState(false)
-  const [userId, setUserId] = useState('')
-  const [transactionKind, setTransactionKind] = useState('')
-  const [entityKind, setEntityKind] = useState('')
-  const [entityId, setEntityId] = useState('')
+  const [userId, setUserId] = useState(filter.userId ?? '')
+  const [transactionKind, setTransactionKind] = useState(filter.transactionKinds?.[0] ?? '')
+  const [entityKind, setEntityKind] = useState(filter.entityKind ?? '')
+  const [entityId, setEntityId] = useState(filter.entityId ?? '')
 
   const updateFilter = useCallback((
     entityKind: string,

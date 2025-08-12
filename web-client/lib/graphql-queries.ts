@@ -34,20 +34,20 @@ fragment trackedEntityFields on ITrackedEntity {
   updatedByUser {
     username
   }
-  log
-  {
-    # ...pageFields
-    content {
-      id
-      timestamp
-      transactionKind
-      user {
-        username
-      }
-      linkedEntityKind
-      linkedEntityId
-    }
-  }
+  # log
+  # {
+  #   # ...pageFields
+  #   content {
+  #     id
+  #     timestamp
+  #     transactionKind
+  #     user {
+  #       username
+  #     }
+  #     linkedEntityKind
+  #     linkedEntityId
+  #   }
+  # }
 }
 `
 //alert("(2) graphql-queries.ts")

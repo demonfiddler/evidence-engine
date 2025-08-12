@@ -22,7 +22,7 @@
 import { ChatBubbleBottomCenterTextIcon } from '@heroicons/react/24/outline'
 import QuotationDetails from "@/app/ui/details/quotation-details"
 import DataTable from "@/app/ui/data-table/data-table"
-import { columns, columnVisibility } from "@/app/ui/tables/quotation-columns"
+import { columns } from "@/app/ui/tables/quotation-columns"
 import Quotation from "@/app/model/Quotation"
 import { FormProvider } from "react-hook-form"
 import { QuotationSchema, QuotationFieldValues } from "@/app/ui/validators/quotation";
@@ -57,11 +57,6 @@ function createInput(fieldValues: QuotationFieldValues, id?: string) : Quotation
 
 export default function Quotations() {
   const {
-    setFilter,
-    pagination,
-    setPagination,
-    sorting,
-    setSorting,
     loading,
     page,
     selectedRecord,
@@ -83,6 +78,9 @@ export default function Quotations() {
     createInput,
   })
 
+  // const {storeAppState} = useContext(GlobalContext)
+  // useEffect(() => {return () => storeAppState()}, [])
+
   return (
     <main className="flex flex-col items-start m-4 gap-4">
       <div className="flex flex-row items-center">
@@ -90,21 +88,15 @@ export default function Quotations() {
         &nbsp;
         <h1>Quotations</h1>
       </div>
-      <DataTable<Quotation, unknown, LinkableEntityQueryFilter>
+      <DataTable<Quotation, unknown>
         recordKind="Quotation"
         defaultColumns={columns}
-        defaultColumnVisibility={columnVisibility}
         page={page}
         state={state}
         loading={loading}
         filterComponent={LinkableEntityTableFilter}
-        onFilterChange={setFilter}
         manualPagination={true}
-        pagination={pagination}
-        onPaginationChange={setPagination}
         manualSorting={true}
-        sorting={sorting}
-        onSortingChange={setSorting}
         onRowSelectionChange={handleRowSelectionChange}
       />
       <FormProvider {...form}>

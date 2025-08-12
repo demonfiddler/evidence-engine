@@ -23,43 +23,64 @@ import { Checkbox } from "@/components/ui/checkbox";
 import Search from "../filter/search";
 import { DataTableFilterProps, DataTableViewOptions } from "./data-table-view-options";
 import { getOtherRecordLinkIdProperty } from "@/lib/utils";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LinkableEntityQueryFilter } from "@/app/model/schema";
-import { MasterLinkContext } from "@/lib/context";
+import { GlobalContext, QueryState } from "@/lib/context";
+import { Button } from "@/components/ui/button";
 
-export default function LinkableEntityTableFilter<T, F>({
+export default function LinkableEntityTableFilter<TData, TFilter>({
   table,
   recordKind,
   isLinkableEntity,
-  onFilterChange
-}: DataTableFilterProps<T, F>) {
-  const masterLinkContext = useContext(MasterLinkContext)
-  const [status, setStatus] = useState('')
-  const [text, setText] = useState('')
-  const [advanced, setAdvanced] = useState(false)
-  const [showOnlyLinkedRecords, setShowOnlyLinkedRecords] = useState(false)
+}: DataTableFilterProps<TData>) {
+
+  const {
+    masterTopicId,
+    masterRecordKind,
+    masterRecordId,
+    queries,
+    setFilter,
+    setShowOnlyLinkedRecords
+  } = useContext(GlobalContext)
+  const onFilterChange = useCallback((filter: any) => {
+    setFilter(recordKind, filter)
+  }, [setFilter])
+  // This was an experiment in remembering the selected link, but it got too complicated.
+  // const onShowOnlyLinkedRecordsChange = useCallback((filter: any) => {
+  //   setShowOnlyLinkedRecords(recordKind, filter)
+  // }, [setShowOnlyLinkedRecords])
+  const queryState = queries[recordKind] as QueryState<LinkableEntityQueryFilter>
+  const {filter} = queryState
+  const showOnlyLinkedRecords = queryState.showOnlyLinkedRecords ?? false
+  const [status, setStatus] = useState(filter.status?.[0] ?? '')
+  const [text, setText] = useState(filter.text ?? '')
+  const [advanced, setAdvanced] = useState(filter.advancedSearch ?? false)
+  // const [showOnlyLinkedRecords, setShowOnlyLinkedRecords] = useState(false)
 
   const updateFilter = useCallback((status: string, text: string, advanced: boolean, showOnlyLinkedRecords: boolean) => {
     const filter = {
-      status: status || undefined,
+      status: status ? [status] : undefined,
       text: text || undefined,
-      advancedSearch: advanced || undefined
-    } as F
+      advancedSearch: text && advanced || undefined
+    } as TFilter
     if (isLinkableEntity && showOnlyLinkedRecords) {
       const leFilter = filter as LinkableEntityQueryFilter
-      if (masterLinkContext.masterTopicId) {
-        leFilter.topicId = masterLinkContext.masterTopicId
+      if (masterTopicId) {
+        leFilter.topicId = masterTopicId
         leFilter.recursive = true
       }
-      if (masterLinkContext.masterRecordId) {
-        const otherRecordIdProperty = getOtherRecordLinkIdProperty(recordKind, masterLinkContext.masterRecordKind)
+      if (masterRecordId) {
+        const otherRecordIdProperty = getOtherRecordLinkIdProperty(recordKind, masterRecordKind)
         if (otherRecordIdProperty)
-          leFilter[otherRecordIdProperty] = masterLinkContext.masterRecordId
+          leFilter[otherRecordIdProperty] = masterRecordId
       }
     }
     onFilterChange(filter)
-  }, [showOnlyLinkedRecords, masterLinkContext, onFilterChange])
+  }, [showOnlyLinkedRecords, masterTopicId, masterRecordKind, masterRecordId, onFilterChange])
+  useEffect(() => {
+    updateFilter(status, text, advanced, showOnlyLinkedRecords)
+  }, [masterTopicId, masterRecordKind, masterRecordId, showOnlyLinkedRecords])
 
   const handleStatusChange = useCallback((status: string) => {
     status = status === "ALL" ? '' : status
@@ -78,9 +99,17 @@ export default function LinkableEntityTableFilter<T, F>({
   }, [setAdvanced, updateFilter, status, text, showOnlyLinkedRecords])
 
   const handleShowOnlyLinkedRecordsChange = useCallback((showOnlyLinkedRecords: boolean) => {
-    setShowOnlyLinkedRecords(showOnlyLinkedRecords)
+    setShowOnlyLinkedRecords(recordKind, showOnlyLinkedRecords)
     updateFilter(status, text, advanced, showOnlyLinkedRecords)
   }, [setShowOnlyLinkedRecords, updateFilter, status, text, advanced])
+
+  const handleReset = useCallback(() => {
+    setStatus('')
+    setText('')
+    setAdvanced(false)
+    setShowOnlyLinkedRecords(recordKind, false)
+    updateFilter('', '', false, false)
+  }, [setStatus, setText, setAdvanced, setShowOnlyLinkedRecords, updateFilter])
 
   return (
     <div className="flex flex-col gap-2">
@@ -129,6 +158,7 @@ export default function LinkableEntityTableFilter<T, F>({
             </>
           : null
         }
+        <Button variant="outline" title="Clear all filters" onClick={handleReset}>Reset</Button>
         <DataTableViewOptions table={table} />
       </div>
     </div>

@@ -22,24 +22,26 @@
 import ILinkableEntity from "@/app/model/ILinkableEntity";
 import TrackingDetails from "./tracking-details";
 import LinkingDetails from "./linking-details";
-import { useState } from "react";
+import { useContext } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import ITrackedEntity from "@/app/model/ITrackedEntity";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 import RecordKind from "@/app/model/RecordKind";
 import { DetailState } from "./detail-actions";
+import { GlobalContext } from "@/lib/context";
 
 export default function StandardDetails(
   {recordKind, record, state, showLinkingDetails}:
   {recordKind: RecordKind, record: ITrackedEntity | undefined, state: DetailState, showLinkingDetails: boolean}
 ) {
-  const [isOpen, setIsOpen] = useState(false)
+
+  const {trackingDetailsOpen, setTrackingDetailsOpen} = useContext(GlobalContext)
 
   return (
     <Collapsible
-      open={isOpen}
-      onOpenChange={setIsOpen}
+      open={trackingDetailsOpen}
+      onOpenChange={setTrackingDetailsOpen}
       className="ml-2 mr-2 space-y-2"
     >
       <span>
@@ -48,7 +50,7 @@ export default function StandardDetails(
       <CollapsibleTrigger asChild>
         <Button variant="ghost" size="sm">
           {
-            isOpen
+            trackingDetailsOpen
             ? <ChevronUpIcon className="h-4 w-4" />
             : <ChevronDownIcon className="h-4 w-4" />
           }

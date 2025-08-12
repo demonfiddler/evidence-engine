@@ -35,7 +35,7 @@ import RecordKind from "@/app/model/RecordKind";
 import ListBulletIcon from "@heroicons/react/24/outline/ListBulletIcon";
 import { useState } from "react";
 import Log from "@/app/model/Log";
-import { ownColumns as columns, columnVisibility } from "@/app/ui/tables/log-columns"
+import { ownColumns as columns } from "@/app/ui/tables/log-columns"
 import DataTable from "../data-table/data-table";
 import { DetailState } from "../details/detail-actions";
 import { LogInput, LogQueryFilter } from "@/app/model/schema";
@@ -67,22 +67,15 @@ export default function LogDialog({
   className?: string
   disabled: boolean
   recordKind: RecordKind
-  record?: ITrackedEntity
+  record: ITrackedEntity
   state: DetailState
   title: string
 }) {
   const [open, setOpen] = useState(false)
 
   const {
-    setFilter,
-    pagination,
-    setPagination,
-    sorting,
-    setSorting,
     loading,
     page,
-    // selectedRecord,
-    // handleRowSelectionChange,
   } = usePageLogic<Log, LogFieldValues, LogInput, LogQueryFilter>({
     recordKind: "Log",
     manualPagination: true,
@@ -108,21 +101,16 @@ export default function LogDialog({
             &nbsp;{`${getRecordLabel(recordKind, record)}`}.
           </DialogDescription>
         </DialogHeader>
-        <DataTable<Log, unknown, LogQueryFilter>
+        <DataTable<Log, unknown>
           recordKind="Log"
           defaultColumns={columns}
-          defaultColumnVisibility={columnVisibility}
           page={page}
           state={state}
           loading={loading}
           filterComponent={LogDialogFilter}
-          onFilterChange={setFilter}
           manualPagination={true}
-          pagination={pagination}
-          onPaginationChange={setPagination}
           manualSorting={true}
-          sorting={sorting}
-          onSortingChange={setSorting}
+          auxRecordId={record?.id}
         />
         <DialogFooter>
           <Button onClick={() => setOpen(false)}>Close</Button>

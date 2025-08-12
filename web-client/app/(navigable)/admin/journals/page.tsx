@@ -19,17 +19,17 @@
 
 'use client'
 
-import { NewspaperIcon } from '@heroicons/react/24/outline';
-import JournalDetails from "@/app/ui/details/journal-details";
-import DataTable from "@/app/ui/data-table/data-table";
-import { columns, columnVisibility } from "@/app/ui/tables/journal-columns"
-import Journal from "@/app/model/Journal";
+import { NewspaperIcon } from '@heroicons/react/24/outline'
+import JournalDetails from "@/app/ui/details/journal-details"
+import DataTable from "@/app/ui/data-table/data-table"
+import { columns } from "@/app/ui/tables/journal-columns"
+import Journal from "@/app/model/Journal"
 import { FormProvider } from "react-hook-form"
-import { JournalSchema, JournalFieldValues } from "@/app/ui/validators/journal";
-import { CREATE_JOURNAL, DELETE_JOURNAL, READ_JOURNALS, UPDATE_JOURNAL } from "@/lib/graphql-queries";
-import usePageLogic from "@/hooks/use-page-logic";
-import { JournalInput, TrackedEntityQueryFilter } from '@/app/model/schema';
-import LinkableEntityTableFilter from '@/app/ui/data-table/linkable-entity-table-filter';
+import { JournalSchema, JournalFieldValues } from "@/app/ui/validators/journal"
+import { CREATE_JOURNAL, DELETE_JOURNAL, READ_JOURNALS, UPDATE_JOURNAL } from "@/lib/graphql-queries"
+import usePageLogic from "@/hooks/use-page-logic"
+import { JournalInput, TrackedEntityQueryFilter } from '@/app/model/schema'
+import LinkableEntityTableFilter from '@/app/ui/data-table/linkable-entity-table-filter'
 
 function createFieldValues(journal?: Journal) : JournalFieldValues {
   return {
@@ -56,11 +56,6 @@ function createInput(fieldValues: JournalFieldValues, id?: string) : JournalInpu
 
 export default function Journals() {
   const {
-    setFilter,
-    pagination,
-    setPagination,
-    sorting,
-    setSorting,
     loading,
     page,
     selectedRecord,
@@ -82,6 +77,9 @@ export default function Journals() {
     createInput,
   })
 
+  // const {storeAppState} = useContext(GlobalContext)
+  // useEffect(() => {return () => storeAppState()}, [])
+
   return (
     <main className="flex flex-col items-start m-4 gap-4">
       <div className="flex flex-row items-center">
@@ -89,21 +87,15 @@ export default function Journals() {
         &nbsp;
         <h1>Journals</h1>
       </div>
-      <DataTable<Journal, unknown, TrackedEntityQueryFilter>
+      <DataTable<Journal, unknown>
         recordKind="Journal"
         defaultColumns={columns}
-        defaultColumnVisibility={columnVisibility}
         page={page}
         state={state}
         loading={loading}
         filterComponent={LinkableEntityTableFilter}
-        onFilterChange={setFilter}
         manualPagination={true}
-        pagination={pagination}
-        onPaginationChange={setPagination}
         manualSorting={true}
-        sorting={sorting}
-        onSortingChange={setSorting}
         onRowSelectionChange={handleRowSelectionChange}
       />
       <FormProvider {...form}>

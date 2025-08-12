@@ -21,7 +21,7 @@ import IPage from "@/app/model/IPage";
 import ITrackedEntity from "@/app/model/ITrackedEntity";
 import RecordKind from "@/app/model/RecordKind";
 import { BaseEntityInput, PageableInput } from "@/app/model/schema";
-import { SelectedRecordsContext } from "@/lib/context";
+import { GlobalContext, QueryState } from "@/lib/context";
 import { DocumentNode, useMutation, useQuery } from "@apollo/client";
 import { OperationTypeNode } from "graphql/language";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
@@ -29,18 +29,15 @@ import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useMemo, 
 import { FieldValues, useForm, UseFormReturn } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod/v4";
-import { PaginationState, SortingState } from "@tanstack/react-table";
-// import type { Draft } from "immer";
-// import { useImmerReducer } from "use-immer";
 import IBaseEntity from "@/app/model/IBaseEntity";
 import { DetailMode, DetailState } from "@/app/ui/details/detail-actions";
 import Authority from "@/app/model/Authority";
 import useAuth from "./use-auth";
 import { introspect } from "@/lib/graphql-utils";
 
-export type FormActionHandler<V extends FieldValues> = (command: string, fieldValues?: V) => void
+export type FormActionHandler<TFieldValues extends FieldValues> = (command: string, fieldValues?: TFieldValues) => void
 
-export type PageConfiguration<T extends ITrackedEntity, V extends FieldValues, I extends BaseEntityInput> = {
+export type PageConfiguration<TData extends ITrackedEntity, TFieldValues extends FieldValues, TInput extends BaseEntityInput> = {
   recordKind: RecordKind
   schema?: z.ZodObject<any>
   manualPagination: boolean
@@ -49,26 +46,21 @@ export type PageConfiguration<T extends ITrackedEntity, V extends FieldValues, I
   createMutation?: DocumentNode
   updateMutation?: DocumentNode
   deleteMutation?: DocumentNode
-  createFieldValues: (record?: T) => V
-  createInput?: (fieldValues: V, id?: string) => I
-  preparePage?: (page?: IPage<T>) => IPage<T> | undefined
-  findRecord?: (records?: T[], id?: string | null) => T | undefined
+  createFieldValues: (record?: TData) => TFieldValues
+  createInput?: (fieldValues: TFieldValues, id?: string) => TInput
+  preparePage?: (page?: IPage<TData>) => IPage<TData> | undefined
+  findRecord?: (records?: TData[], id?: string | null) => TData | undefined
 }
 
-export type PageLogic<T extends ITrackedEntity, V extends FieldValues, F> = {
-  setFilter: Dispatch<SetStateAction<F>>
-  pagination: PaginationState
-  setPagination: Dispatch<SetStateAction<PaginationState>>
-  sorting: SortingState,
-  setSorting: Dispatch<SetStateAction<SortingState>>,
+export type PageLogic<TData extends ITrackedEntity, TFieldValues extends FieldValues, TFilter> = {
   loading: boolean
-  page?: IPage<T>
-  selectedRecord?: T
+  page?: IPage<TData>
+  selectedRecord?: TData
   handleRowSelectionChange: (recordId?: string) => void
   state: DetailState
   setMode: Dispatch<SetStateAction<DetailMode>>
-  form: UseFormReturn<V, any, V>
-  handleFormAction: FormActionHandler<V>
+  form: UseFormReturn<TFieldValues, any, TFieldValues>
+  handleFormAction: FormActionHandler<TFieldValues>
 }
 
 // type ReducerArg<T> = {
@@ -104,21 +96,6 @@ function createDetailState(
 
 const defaultFindRecord = <T extends IBaseEntity>(records?: T[], id?: string | null) => records?.find(r => r?.id === id)
 
-// const dummyPage = {
-//   hasContent: false,
-//   isEmpty: true,
-//   number: 0,
-//   size: 0,
-//   numberOfElements: 0,
-//   totalPages: 0,
-//   totalElements: 0,
-//   isFirst: true,
-//   isLast: true,
-//   hasNext: false,
-//   hasPrevious: false,
-//   content: [],
-// }
-
 // function recomputePageFields<T extends IBaseEntity>(page: IPage<T>) {
 //   page.hasContent = page.content.length != 0
 //   page.isEmpty = page.content.length == 0
@@ -134,10 +111,10 @@ const defaultFindRecord = <T extends IBaseEntity>(records?: T[], id?: string | n
 // }
 
 export default function usePageLogic<
-    T extends IBaseEntity,
-    V extends FieldValues,
-    I extends BaseEntityInput,
-    F
+    TData extends IBaseEntity,
+    TFieldValues extends FieldValues,
+    TInput extends BaseEntityInput,
+    TFilter
   >({
     recordKind,
     schema,
@@ -152,53 +129,27 @@ export default function usePageLogic<
     preparePage,
     findRecord,
   }
-  : PageConfiguration<T, V, I>
-  ) : PageLogic<T, V, F> {
+  : PageConfiguration<TData, TFieldValues, TInput>
+  ) : PageLogic<TData, TFieldValues, TFilter> {
 
   const {hasAuthority} = useAuth()
-  const selectedRecordsContext = useContext(SelectedRecordsContext)
-  const [selectedRecordId, setSelectedRecordId] = useState<string|undefined>(selectedRecordsContext[recordKind]?.id)
-  const [filter, setFilter] = useState<F>({} as F)
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
-  const [sorting, setSorting] = useState<SortingState>([])
+  const globalContext = useContext(GlobalContext)
+  const selectedRecordId = globalContext.selectedRecords[recordKind]?.id
+  const {filter, sorting: sort, pagination } = globalContext.queries[recordKind] as QueryState<TFilter>
   const [mode, setMode] = useState<DetailMode>("view")
   const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
-
-  // const filter = useMemo(() => {
-  //   const filter = {
-  //     status: search.status ? [search.status] : undefined,
-  //     text: search.text ?? undefined,
-  //   } as F
-  //   if (filter.text)
-  //     filter.advancedSearch = search.advancedSearch
-  //   if (search.showOnlyLinkedRecords) {
-  //     const mlFilter = filter as LinkableEntityQueryFilter
-  //     if (masterLinkContext.masterTopicId) {
-  //       mlFilter.topicId = masterLinkContext.masterTopicId
-  //       mlFilter.recursive = true
-  //     }
-  //     if (masterLinkContext.masterRecordId) {
-  //       const linkFilterIdProperty = getLinkFilterIdProperty(recordKind, masterLinkContext.masterRecordKind)
-  //       if (linkFilterIdProperty)
-  //         mlFilter[linkFilterIdProperty] = masterLinkContext.masterRecordId
-  //     }
-  //   }
-  //   prepareFilter?.(filter)
-  //   console.log(`${recordKind}s effect: filter = ${JSON.stringify(filter)}`)
-  //   return filter
-  // }, [search, masterLinkContext])
+  const setSelectedRecord = useCallback((record?: TData) => globalContext.setSelectedRecord(recordKind, record), [globalContext])
 
   const pageSort = useMemo(() => {
     const pageSort : PageableInput = manualPagination && pagination
       ? {
         pageNumber: pagination.pageIndex,
         pageSize: pagination.pageSize,
-        // sort: manualSorting ? sorting ? { orders: [] } : undefined : undefined,
       }
       : {}
-    if (manualSorting && sorting.length > 0) {
+    if (manualSorting && sort.length > 0) {
       pageSort.sort = { orders: [] }
-      for (let s of sorting) {
+      for (let s of sort) {
         pageSort.sort?.orders.push({
           property: s.id,
           direction: s.desc ? "DESC" : undefined
@@ -207,7 +158,7 @@ export default function usePageLogic<
     }
     // console.log(`${recordKind}s effect: pageSort = ${JSON.stringify(pageSort)}`)
     return pageSort
-  }, [manualPagination && pagination, manualSorting && sorting])
+  }, [manualPagination && pagination, manualSorting && sort])
 
   const [readFieldName] = useMemo(() => introspect(readQuery, OperationTypeNode.QUERY), [readQuery])
   const [createFieldName, createVarName] = useMemo(() => introspect(createMutation, OperationTypeNode.MUTATION), [createMutation])
@@ -246,7 +197,7 @@ export default function usePageLogic<
 
   let rawPage = readResult.loading
     ? readResult.previousData?.[readFieldName]
-    : (readFieldName ? readResult.data?.[readFieldName] : undefined) as unknown as IPage<T> | undefined
+    : (readFieldName ? readResult.data?.[readFieldName] : undefined) as unknown as IPage<TData> | undefined
   const page = useMemo(() => preparePage?.(rawPage) ?? rawPage, [preparePage, rawPage])
 
   // TODO: re-enable reducer logic to avoid query re-execution on completion of a mutation
@@ -289,18 +240,18 @@ export default function usePageLogic<
   const [page, dispatch] = useImmerReducer<IPage<T>, ReducerArg<T>>(reducer, rawPage ?? dummyPage)
   */
 
-  const getSelectedRecord = useCallback((id?: string) => {
+  const getRecord = useCallback((id?: string) => {
     return (findRecord ?? defaultFindRecord)(page?.content, id)
   }, [findRecord, page])
-  const selectedRecord = getSelectedRecord(selectedRecordId)
+  const selectedRecord = getRecord(selectedRecordId)
 
   const origFieldValues = useMemo(() => createFieldValues(selectedRecord), [createFieldValues, selectedRecord])
-  const form = useForm<V>({
+  const form = useForm<TFieldValues>({
     resolver: schema && standardSchemaResolver(schema),
     mode: "onChange",
     values: origFieldValues,
   })
-  const handleFormAction = useCallback((command: string, fieldValues?: V) => {
+  const handleFormAction = useCallback((command: string, fieldValues?: TFieldValues) => {
     // TODO: update Apollo cache?
     switch (command) {
       case "new":
@@ -314,9 +265,8 @@ export default function usePageLogic<
             },
             onCompleted: (data, clientOptions) => {
               const record = data[createFieldName]
-              setSelectedRecordId(record.id)
               // FIXME: this doesn't set the selection in the data table.
-              selectedRecordsContext.setSelectedRecord(selectedRecordsContext, recordKind, record)
+              setSelectedRecord(record)
               setMode("view")
             },
           })
@@ -353,13 +303,13 @@ export default function usePageLogic<
   const handleRowSelectionChange = useCallback((recordId?: string) => {
     if (mode !== "view") {
       toast.warning("Cannot change selection while editing a record. Use the Cancel or Save button in the details panel below.")
-      setSelectedRecordId(selectedRecordId)
+      // setSelectedRecordId(selectedRecordId)
       return
     }
-    setSelectedRecordId(recordId)
-    const record = getSelectedRecord(recordId)
+    const record = getRecord(recordId)
+    setSelectedRecord(record)
     form?.reset(createFieldValues(record))
-  }, [form, mode, setSelectedRecordId, getSelectedRecord])
+  }, [form, mode, getRecord, setSelectedRecord])
 
   // TODO: re-enable reducer logic to avoid query re-execution on completion of a mutation
   /*
@@ -372,13 +322,8 @@ export default function usePageLogic<
 
   // console.log(`${settings.recordKind}s() page: ${JSON.stringify(page)})`)
 
-  const pageLogic = useMemo<PageLogic<T, V, F>>(() => {
+  const pageLogic = useMemo<PageLogic<TData, TFieldValues, TFilter>>(() => {
     return {
-      setFilter,
-      pagination,
-      setPagination,
-      sorting,
-      setSorting,
       loading,
       page,
       selectedRecord,
@@ -388,11 +333,6 @@ export default function usePageLogic<
       form,
       handleFormAction,
     }}, [
-      setFilter,
-      pagination,
-      setPagination,
-      sorting,
-      setSorting,
       readResult.loading,
       page,
       selectedRecord,

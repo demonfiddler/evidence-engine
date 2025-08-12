@@ -20,7 +20,6 @@
 'use client'
 
 import { ColumnDef } from "@tanstack/react-table"
-import DataTableColumnHeader from "@/app/ui/data-table/data-table-column-header"
 import Claim from "@/app/model/Claim"
 import { columns as trackedEntityColumns, columnVisibility as trackedEntityColumnVisibility } from "./tracked-entity-columns"
 import { actionColumn as rawActionColumn, selectColumn as rawSelectColumn } from "./extra-columns"

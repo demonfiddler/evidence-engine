@@ -22,22 +22,29 @@ import { TopicQueryFilter } from "@/app/model/schema";
 import { Checkbox } from "@/components/ui/checkbox";
 import Search from "../filter/search";
 import { DataTableFilterProps, DataTableViewOptions } from "./data-table-view-options";
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { GlobalContext, QueryState } from "@/lib/context";
+import { Button } from "@/components/ui/button";
 
 export default function TopicTableFilter({
   table,
-  onFilterChange
-}: DataTableFilterProps<Topic, TopicQueryFilter>) {
-  const [status, setStatus] = useState('')
-  const [text, setText] = useState('')
-  const [advanced, setAdvanced] = useState(false)
+}: DataTableFilterProps<Topic>) {
+
+  const {queries, setFilter} = useContext(GlobalContext)
+  const onFilterChange = useCallback((filter: any) => {
+    setFilter("Topic", filter)
+  }, [setFilter])
+  const {filter} = queries["Topic"] as QueryState<TopicQueryFilter>
+  const [status, setStatus] = useState(filter.status?.[0] ?? '')
+  const [text, setText] = useState(filter.text ?? '')
+  const [advanced, setAdvanced] = useState(filter.advancedSearch ?? false)
 
   const updateFilter = useCallback((status: string, text: string, advanced: boolean) => {
     const filter = {
-      status: status || undefined,
+      status: status ? [status] : undefined,
       text: text || undefined,
-      advancedSearch: advanced || undefined,
+      advancedSearch: text && advanced || undefined,
       parentId: "-1"
     } as TopicQueryFilter
     onFilterChange(filter)
@@ -58,6 +65,13 @@ export default function TopicTableFilter({
     setAdvanced(advanced)
     updateFilter(status, text, advanced)
   }, [setAdvanced, updateFilter, status, text])
+
+  const handleReset = useCallback(() => {
+    setStatus('')
+    setText('')
+    setAdvanced(false)
+    updateFilter('', '', false)
+  }, [setStatus, setText, setAdvanced, updateFilter])
 
   return (
     <div className="flex flex-col gap-2">
@@ -93,6 +107,7 @@ export default function TopicTableFilter({
           onCheckedChange={handleAdvancedSearchChange}
         />
         <label htmlFor="advanced">Advanced</label>
+        <Button variant="outline" title="Clear all filters" onClick={handleReset}>Reset</Button>
         <DataTableViewOptions table={table} />
       </div>
     </div>

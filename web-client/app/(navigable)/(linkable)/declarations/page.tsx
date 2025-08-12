@@ -19,19 +19,18 @@
 
 'use client'
 
-import { EnvelopeOpenIcon } from '@heroicons/react/24/outline';
-
-import DeclarationDetails from "@/app/ui/details/declaration-details";
-import DataTable from "@/app/ui/data-table/data-table";
-import { columns, columnVisibility } from "@/app/ui/tables/declaration-columns"
-import Declaration from "@/app/model/Declaration";
-import { DeclarationSchema, DeclarationFieldValues, DeclarationKind } from "@/app/ui/validators/declaration";
-import { toDate, toIsoDateString } from "@/lib/utils";
-import { FormProvider } from "react-hook-form";
-import { CREATE_DECLARATION, DELETE_DECLARATION, READ_DECLARATIONS, UPDATE_DECLARATION } from "@/lib/graphql-queries";
-import usePageLogic from "@/hooks/use-page-logic";
-import { DeclarationInput, LinkableEntityQueryFilter } from '@/app/model/schema';
-import LinkableEntityTableFilter from '@/app/ui/data-table/linkable-entity-table-filter';
+import { EnvelopeOpenIcon } from '@heroicons/react/24/outline'
+import DeclarationDetails from "@/app/ui/details/declaration-details"
+import DataTable from "@/app/ui/data-table/data-table"
+import { columns } from "@/app/ui/tables/declaration-columns"
+import Declaration from "@/app/model/Declaration"
+import { DeclarationSchema, DeclarationFieldValues, DeclarationKind } from "@/app/ui/validators/declaration"
+import { toDate, toIsoDateString } from "@/lib/utils"
+import { FormProvider } from "react-hook-form"
+import { CREATE_DECLARATION, DELETE_DECLARATION, READ_DECLARATIONS, UPDATE_DECLARATION } from "@/lib/graphql-queries"
+import usePageLogic from "@/hooks/use-page-logic"
+import { DeclarationInput, LinkableEntityQueryFilter } from '@/app/model/schema'
+import LinkableEntityTableFilter from '@/app/ui/data-table/linkable-entity-table-filter'
 
 function createFieldValues(declaration?: Declaration) : DeclarationFieldValues {
   return {
@@ -64,11 +63,6 @@ function createInput(fieldValues: DeclarationFieldValues, id?: string) : Declara
 
 export default function Declarations() {
   const {
-    setFilter,
-    pagination,
-    setPagination,
-    sorting,
-    setSorting,
     loading,
     page,
     selectedRecord,
@@ -90,6 +84,9 @@ export default function Declarations() {
     createInput,
   })
 
+  // const {storeAppState} = useContext(GlobalContext)
+  // useEffect(() => {return () => storeAppState()}, [])
+
   return (
     <main className="flex flex-col items-start m-4 gap-4">
       <div className="flex flex-row items-center">
@@ -97,21 +94,15 @@ export default function Declarations() {
         &nbsp;
         <h1>Declarations</h1>
       </div>
-      <DataTable<Declaration, unknown, LinkableEntityQueryFilter>
+      <DataTable<Declaration, unknown>
         recordKind="Declaration"
         defaultColumns={columns}
-        defaultColumnVisibility={columnVisibility}
         page={page}
         state={state}
         loading={loading}
         filterComponent={LinkableEntityTableFilter}
-        onFilterChange={setFilter}
         manualPagination={true}
-        pagination={pagination}
-        onPaginationChange={setPagination}
         manualSorting={true}
-        sorting={sorting}
-        onSortingChange={setSorting}
         onRowSelectionChange={handleRowSelectionChange}
       />
       <FormProvider {...form}>
@@ -122,5 +113,5 @@ export default function Declarations() {
           onFormAction={handleFormAction} />
       </FormProvider>
     </main>
-  );
+  )
 }

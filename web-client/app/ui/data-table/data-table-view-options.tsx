@@ -22,7 +22,6 @@
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
 import { Table } from "@tanstack/react-table"
 import { Settings2 } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -32,17 +31,16 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 import RecordKind from "@/app/model/RecordKind"
-import { Dispatch, SetStateAction } from "react"
 
 export interface DataTableViewOptionsProps<T> {
   table: Table<T>
 }
 
-export interface DataTableFilterProps<T, F> extends DataTableViewOptionsProps<T> {
+export interface DataTableFilterProps<T> extends DataTableViewOptionsProps<T> {
   recordKind: RecordKind
   recordId: string | undefined
   isLinkableEntity: boolean
-  onFilterChange: Dispatch<SetStateAction<F>>
+  auxRecordId?: string
 }
 
 export function DataTableViewOptions<T>({

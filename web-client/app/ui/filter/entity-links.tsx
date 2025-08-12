@@ -20,7 +20,7 @@
 'use client'
 
 import { toast } from "sonner"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useContext } from 'react'
 import DropdownTreeSelect, { TreeNode, TreeNodeProps } from 'react-dropdown-tree-select'
 import 'react-dropdown-tree-select/dist/styles.css'
@@ -38,7 +38,7 @@ import {
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import Topic from "@/app/model/Topic"
 import RecordKind from "@/app/model/RecordKind"
-import { MasterLinkContext, SelectedRecordsContext } from '@/lib/context'
+import { GlobalContext } from '@/lib/context'
 import { setTopicFields } from "@/lib/utils"
 import { useQuery } from "@apollo/client"
 import { READ_TOPIC_HIERARCHY } from "@/lib/graphql-queries"
@@ -48,11 +48,62 @@ interface TopicTreeNode extends TreeNodeProps {
   description: string
 }
 
+function getTreeData(topics: Topic[], masterTopicId?: string): TopicTreeNode[] {
+  function getTreeDataRecursive(topics: Topic[]): TopicTreeNode[] {
+    return topics.map(topic => {
+      return {
+        topic: topic,
+        value: topic.id?.toString() ?? '(no value)',
+        label: topic.label ?? '(no label)',
+        description: topic.description ?? '(no description)',
+        children: topic.children ? getTreeDataRecursive(topic.children) : undefined,
+        checked: topic?.id == masterTopicId
+      }
+    })
+  }
+  function expandParents(nodes: TopicTreeNode[]): boolean {
+    for (let node of nodes) {
+      if (node.checked)
+        return true
+      if (node.children && expandParents(node.children as TopicTreeNode[])) {
+        node.expanded = true
+        return true
+      }
+    }
+    return false
+  }
+  const treeData = getTreeDataRecursive(topics)
+  expandParents(treeData)
+  // console.log(`EntityLinks treeData = ${JSON.stringify(treeData)}`)
+  return treeData
+}
+
+function setChecked(data: TreeNode[], currentNode: TreeNode): boolean {
+  for (let i = 0; i < data.length; i++) {
+    if (data[i].value == currentNode.value) {
+      data[i].checked = currentNode.checked
+      return true
+    }
+    if (data[i].children && setChecked(data[i].children, currentNode))
+      return true
+  }
+  return false
+}
+
 export default function EntityLinks() {
-  const [isOpen, setIsOpen] = useState(false)
-  const masterLinkContext = useContext(MasterLinkContext)
-  const selectedRecordsContext = useContext(SelectedRecordsContext)
-  const [topicPlaceholder, setTopicPlaceholder] = useState(masterLinkContext.masterTopicId ? String.fromCharCode(160) : "-Choose topic-")
+  const {
+    linkFilterOpen,
+    masterTopicId,
+    masterTopicDescription,
+    masterTopicPath,
+    masterRecordKind,
+    masterRecordId,
+    masterRecordLabel,
+    setLinkFilterOpen,
+    setMasterTopic,
+    setMasterRecordKind,
+  } = useContext(GlobalContext)
+  const [topicPlaceholder, setTopicPlaceholder] = useState(masterTopicId ? String.fromCharCode(160) : "-Choose topic-")
   const result = useQuery(
     READ_TOPIC_HIERARCHY,
     {
@@ -65,87 +116,46 @@ export default function EntityLinks() {
     }
   )
   const [treeData, setTreeData] = useState<TopicTreeNode[]>([])
-  const topics: Topic[] = []
-  useEffect(() => {
-    // console.log(`EntityLinks effect: result.data = ${result.data}`)
+  const topics = useMemo(() => {
+    const outTopics: Topic[] = []
     if (result.data) {
-      const inTopics = result.data?.topics.content ?? []
-      // console.log(`EntityLinks effect: inTopics = ${JSON.stringify(inTopics)}`)
-      setTopicFields("", undefined, inTopics, topics)
-      setTreeData(getTreeData())
-    }}, [result.data, masterLinkContext.masterTopicId]
-  )
+      const inTopics = result.data.topics.content ?? []
+      setTopicFields("", undefined, inTopics, outTopics)
+    }
+    return outTopics
+  }, [result.data])
 
-  function getTreeData(): TopicTreeNode[] {
-    function getTreeDataRecursive(topics: Topic[]): TopicTreeNode[] {
-      return topics.map(topic => {
-        return {
-          topic: topic,
-          value: topic.id?.toString() ?? '(no value)',
-          label: topic.label ?? '(no label)',
-          description: topic.description ?? '(no description)',
-          children: topic.children ? getTreeDataRecursive(topic.children) : undefined,
-          checked: topic?.id == masterLinkContext.masterTopicId
-        }
-      })
-    }
-    function expandParents(nodes: TopicTreeNode[]): boolean {
-      for (let node of nodes) {
-        if (node.checked)
-          return true
-        if (node.children && expandParents(node.children as TopicTreeNode[])) {
-          node.expanded = true
-          return true
-        }
-      }
-      return false
-    }
-    const treeData = getTreeDataRecursive(topics)
-    expandParents(treeData)
-    // console.log(`EntityLinks treeData = ${JSON.stringify(treeData)}`)
-    return treeData
-  }
+  useEffect(() => {
+    setTreeData(getTreeData(topics, masterTopicId))
+  }, [topics, masterTopicId])
 
   function getMasterRecordLabel(): string {
-    if (masterLinkContext.masterRecordKind == "None")
+    if (masterRecordKind == "None")
       return '- None -'
-    if (!masterLinkContext.masterRecordLabel)
-      return `- Select a ${masterLinkContext.masterRecordKind} in the ${masterLinkContext.masterRecordKind}s page -`
-    return masterLinkContext.masterRecordLabel
+    if (!masterRecordLabel)
+      return `- Select a ${masterRecordKind} in the ${masterRecordKind}s page -`
+    return masterRecordLabel
   }
 
   function getMasterRecordUri(): string {
     let uri = ""
-    if (masterLinkContext.masterRecordKind != "None")
-      uri = `/${masterLinkContext.masterRecordKind?.toLowerCase()}s`
-    if (masterLinkContext.masterRecordId)
-      uri += `?id=${masterLinkContext.masterRecordId}`
+    if (masterRecordKind != "None")
+      uri = `/${masterRecordKind?.toLowerCase()}s`
+    if (masterRecordId)
+      uri += `?id=${masterRecordId}`
     return uri
   }
 
-  function setChecked(data: TreeNode[], currentNode: TreeNode): boolean {
-    for (let i = 0; i < data.length; i++) {
-      if (data[i].value == currentNode.value) {
-        data[i].checked = currentNode.checked
-        return true
-      }
-      if (data[i].children && setChecked(data[i].children, currentNode))
-        return true
-    }
-    return false
-  }
-
   function handleTopicChange(currentNode: TreeNode, selectedNodes: TreeNode[]) {
-    let newData = getTreeData()
+    const topic = selectedNodes.length != 0 ? selectedNodes[0].topic : undefined
+    let newData = getTreeData(topics, topic?.id)
     setChecked(newData, currentNode)
     setTreeData(newData)
 
     const description = currentNode.description.trim()
     const hasTopic = currentNode.checked
     setTopicPlaceholder(hasTopic ? String.fromCharCode(160) : "-Choose topic-")
-    const topic = hasTopic ? currentNode.topic : undefined
-    console.log(`EntityLinks.handleTopicChange(): topicId = ${topic?.id} masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
-    masterLinkContext.setMasterTopic(masterLinkContext, topic)
+    setMasterTopic(topic)
 
     const topicId = currentNode.topic.id;
     const label = currentNode.topic.label;
@@ -153,9 +163,8 @@ export default function EntityLinks() {
     toast.success(`You ${verb} topic #${topicId} (${label} - ${description})`);
   }
 
-  function handleMasterRecordKindChange(masterRecordKind: RecordKind) {
-    // console.log(`EntityLink.handleMasterRecordKindChange(${masterRecordKind}): masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
-    masterLinkContext.setMasterRecordKind(masterLinkContext, selectedRecordsContext, masterRecordKind)
+  function handleMasterRecordKindChange(recordKind: RecordKind) {
+    setMasterRecordKind(recordKind)
   }
 
   // console.log(`EntityLinks(): masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
@@ -164,8 +173,8 @@ export default function EntityLinks() {
   return (
     <Collapsible
       className="border shadow-lg rounded-md w-fit"
-      open={isOpen}
-      onOpenChange={setIsOpen}
+      open={linkFilterOpen}
+      onOpenChange={setLinkFilterOpen}
     >
       <div>
         <div className="flex flex-row items-center space-x-4 px-4">
@@ -175,7 +184,7 @@ export default function EntityLinks() {
           <CollapsibleTrigger className="justify-self-end" asChild>
             <Button variant="ghost" size="default">
               {
-                isOpen
+                linkFilterOpen
                 ? <ChevronUpIcon className="h-4 w-4" />
                 : <ChevronDownIcon className="h-4 w-4" />
               }
@@ -198,8 +207,8 @@ export default function EntityLinks() {
                 showPartiallySelected={true}
                 texts={{ placeholder: `${topicPlaceholder}` }}
               />
-              <Textarea placeholder="-Topic description here-" disabled={true} value={masterLinkContext.masterTopicDescription ?? ''} />
-              <p className="text-xs text-gray-500">{`Path: ${masterLinkContext.masterTopicPath ?? ""}`}</p>
+              <Textarea placeholder="-Topic description here-" disabled={true} value={masterTopicDescription ?? ''} />
+              <p className="text-xs text-gray-500">{`Path: ${masterTopicPath ?? ""}`}</p>
             </div>
           </fieldset>
           <fieldset className="border rounded-md">
@@ -207,7 +216,7 @@ export default function EntityLinks() {
             <div className="flex flex-col m-2 gap-2">
               <RadioGroup
                 className="flex flex-row"
-                value={masterLinkContext.masterRecordKind}
+                value={masterRecordKind}
                 onValueChange={handleMasterRecordKindChange}>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="None" id="option-one" />
@@ -238,13 +247,13 @@ export default function EntityLinks() {
                 <Label htmlFor="masterRecord">Master record:</Label>
                 <Input id="masterRecord" readOnly={true} placeholder="-Master record description here-" value={getMasterRecordLabel()} />
                 <Link href={getMasterRecordUri()}>
-                  <Button className="bg-blue-500" disabled={masterLinkContext.masterRecordKind == "None"}>Go to</Button>
+                  <Button className="bg-blue-500" disabled={masterRecordKind == "None"}>Go to</Button>
                 </Link>
               </div>
               <Label className="text-xs text-gray-500">{
-                masterLinkContext.masterRecordKind == "None"
+                masterRecordKind == "None"
                   ? "None selected: all lists behave independently"
-                  : `Other lists show only records linked with the selected master ${masterLinkContext.masterRecordKind}`
+                  : `Other lists show only records linked with the selected master ${masterRecordKind}`
               }</Label>
             </div>
           </fieldset>

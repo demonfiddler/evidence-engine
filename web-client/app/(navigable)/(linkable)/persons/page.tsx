@@ -22,7 +22,7 @@
 import { UserIcon } from '@heroicons/react/24/outline';
 import PersonDetails from "@/app/ui/details/person-details";
 import DataTable from "@/app/ui/data-table/data-table";
-import { columns, columnVisibility } from "@/app/ui/tables/person-columns"
+import { columns } from "@/app/ui/tables/person-columns"
 import Person from "@/app/model/Person";
 import { toInteger } from "@/lib/utils";
 import { FormProvider } from "react-hook-form"
@@ -71,11 +71,6 @@ function createInput(fieldValues: PersonFieldValues, id?: string) : PersonInput 
 
 export default function Persons() {
   const {
-    setFilter,
-    pagination,
-    setPagination,
-    sorting,
-    setSorting,
     loading,
     page,
     selectedRecord,
@@ -97,6 +92,9 @@ export default function Persons() {
     createInput,
   })
 
+  // const {storeAppState} = useContext(GlobalContext)
+  // useEffect(() => {return () => storeAppState()}, [])
+
   return (
     <main className="flex flex-col items-start m-4 gap-4">
       <div className="flex flex-row items-center">
@@ -104,21 +102,15 @@ export default function Persons() {
         &nbsp;
         <h1>Persons</h1>
       </div>
-      <DataTable<Person, unknown, LinkableEntityQueryFilter>
+      <DataTable<Person, unknown>
         recordKind="Person"
         defaultColumns={columns}
-        defaultColumnVisibility={columnVisibility}
         page={page}
         state={state}
         loading={loading}
         filterComponent={LinkableEntityTableFilter}
-        onFilterChange={setFilter}
         manualPagination={true}
-        pagination={pagination}
-        onPaginationChange={setPagination}
         manualSorting={true}
-        sorting={sorting}
-        onSortingChange={setSorting}
         onRowSelectionChange={handleRowSelectionChange}
       />
       <FormProvider {...form}>

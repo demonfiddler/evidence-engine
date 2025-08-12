@@ -19,18 +19,18 @@
 
 'use client'
 
-import { BuildingOfficeIcon } from '@heroicons/react/24/outline';
-import PublisherDetails from "@/app/ui/details/publisher-details";
-import DataTable from "@/app/ui/data-table/data-table";
-import { columns, columnVisibility } from "@/app/ui/tables/publisher-columns"
-import Publisher from "@/app/model/Publisher";
-import { toInteger } from "@/lib/utils";
+import { BuildingOfficeIcon } from '@heroicons/react/24/outline'
+import PublisherDetails from "@/app/ui/details/publisher-details"
+import DataTable from "@/app/ui/data-table/data-table"
+import { columns } from "@/app/ui/tables/publisher-columns"
+import Publisher from "@/app/model/Publisher"
+import { toInteger } from "@/lib/utils"
 import { FormProvider } from "react-hook-form"
-import { PublisherSchema, PublisherFieldValues } from "@/app/ui/validators/publisher";
-import { CREATE_PUBLISHER, DELETE_PUBLISHER, READ_PUBLISHERS, UPDATE_PUBLISHER } from "@/lib/graphql-queries";
-import usePageLogic from "@/hooks/use-page-logic";
-import { PublisherInput, TrackedEntityQueryFilter } from '@/app/model/schema';
-import LinkableEntityTableFilter from '@/app/ui/data-table/linkable-entity-table-filter';
+import { PublisherSchema, PublisherFieldValues } from "@/app/ui/validators/publisher"
+import { CREATE_PUBLISHER, DELETE_PUBLISHER, READ_PUBLISHERS, UPDATE_PUBLISHER } from "@/lib/graphql-queries"
+import usePageLogic from "@/hooks/use-page-logic"
+import { PublisherInput, TrackedEntityQueryFilter } from '@/app/model/schema'
+import LinkableEntityTableFilter from '@/app/ui/data-table/linkable-entity-table-filter'
 
 function createFieldValues(publisher?: Publisher) : PublisherFieldValues {
   return {
@@ -55,11 +55,6 @@ function createInput(fieldValues: PublisherFieldValues, id?: string) : Publisher
 
 export default function Publishers() {
   const {
-    setFilter,
-    pagination,
-    setPagination,
-    sorting,
-    setSorting,
     loading,
     page,
     selectedRecord,
@@ -81,6 +76,9 @@ export default function Publishers() {
     createInput,
   })
 
+  // const {storeAppState} = useContext(GlobalContext)
+  // useEffect(() => {return () => storeAppState()}, [])
+
   return (
     <main className="flex flex-col items-start m-4 gap-4">
       <div className="flex flex-row items-center">
@@ -88,21 +86,15 @@ export default function Publishers() {
         &nbsp;
         <h1>Publishers</h1>
       </div>
-      <DataTable<Publisher, unknown, TrackedEntityQueryFilter>
+      <DataTable<Publisher, unknown>
         recordKind="Publisher"
         defaultColumns={columns}
-        defaultColumnVisibility={columnVisibility}
         page={page}
         state={state}
         loading={loading}
         filterComponent={LinkableEntityTableFilter}
-        onFilterChange={setFilter}
         manualPagination={true}
-        pagination={pagination}
-        onPaginationChange={setPagination}
         manualSorting={true}
-        sorting={sorting}
-        onSortingChange={setSorting}
         onRowSelectionChange={handleRowSelectionChange}
       />
       <FormProvider {...form}>

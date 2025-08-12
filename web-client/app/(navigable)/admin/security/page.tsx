@@ -19,22 +19,22 @@
 
 'use client'
 
-import { useCallback, useMemo, useState } from "react"
+import { FormEvent, useCallback, useContext, useMemo } from "react"
 import { ShieldCheckIcon, UserIcon, UsersIcon } from '@heroicons/react/24/outline'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { FormProvider } from "react-hook-form"
-import { columns as groupColumns, columnVisibility as groupColumnVisibility } from "@/app/ui/tables/group-columns"
-import { columns as userColumns, columnVisibility as userColumnVisibility } from "@/app/ui/tables/user-columns"
-import IPage from "@/app/model/IPage";
-import Group from "@/app/model/Group";
-import User from "@/app/model/User";
+import { columns as groupColumns } from "@/app/ui/tables/group-columns"
+import { columns as userColumns } from "@/app/ui/tables/user-columns"
+import IPage from "@/app/model/IPage"
+import Group from "@/app/model/Group"
+import User from "@/app/model/User"
 import DataTable from "@/app/ui/data-table/data-table"
 import GroupDetails from "@/app/ui/details/group-details"
-import UserDetails from "@/app/ui/details/user-details";
-import { GroupFieldValues, GroupSchema } from "@/app/ui/validators/group";
-import { UserFieldValues, UserSchema } from "@/app/ui/validators/user";
+import UserDetails from "@/app/ui/details/user-details"
+import { GroupFieldValues, GroupSchema } from "@/app/ui/validators/group"
+import { UserFieldValues, UserSchema } from "@/app/ui/validators/user"
 import Authority from "@/app/model/Authority"
 import { AuthoritiesFieldValues } from "@/app/ui/validators/authority"
 import {
@@ -53,6 +53,7 @@ import usePageLogic from "@/hooks/use-page-logic"
 import { GroupInput, TrackedEntityQueryFilter, UserInput } from "@/app/model/schema"
 import { useMutation } from "@apollo/client"
 import LinkableEntityTableFilter from "@/app/ui/data-table/linkable-entity-table-filter"
+import { GlobalContext, QueryState, SecurityPageTabState, UsersPageRadioState } from "@/lib/context"
 
 function createAuthoritiesFieldValues(authorities?: Authority[]) {
   return {
@@ -146,11 +147,6 @@ function createDummyPage(users?: User[]) : IPage<User> | undefined {
 
 export default function Security() {
   const {
-    setFilter: setUserFilter,
-    pagination: userPagination,
-    setPagination: setUserPagination,
-    sorting: userSorting,
-    setSorting: setUserSorting,
     loading: userLoading,
     page: userPage,
     selectedRecord: selectedUser,
@@ -172,11 +168,6 @@ export default function Security() {
     createInput: createUserInput,
   })
   const {
-    setFilter: setGroupFilter,
-    pagination: groupPagination,
-    setPagination: setGroupPagination,
-    sorting: groupSorting,
-    setSorting: setGroupSorting,
     loading: groupLoading,
     page: groupPage,
     selectedRecord: selectedGroup,
@@ -198,10 +189,22 @@ export default function Security() {
     createInput: createGroupInput,
   })
 
+  const {queries, setActiveTab, setShowUsersOrMembers} = useContext(GlobalContext)
+  const groupQueryState = queries["Group"]
+  const userQueryState = queries["User"]
+  const activeTab = groupQueryState?.activeTab ?? "groups"
+  const showUsersOrMembers = userQueryState?.showUsersOrMembers ?? "users"
+
+  const onActiveTabChange = useCallback((activeTab: string) => {
+    setActiveTab(activeTab as SecurityPageTabState)
+  }, [setActiveTab])
+
+  // const {storeAppState} = useContext(GlobalContext)
+  // useEffect(() => {return () => storeAppState()}, [])
+
   const [addGroupMemberOp/*, addGroupMemberResult*/] = useMutation(ADD_GROUP_MEMBER, { refetchQueries: [READ_GROUPS] })
   const [removeGroupMemberOp/*, removeGroupMemberResult*/] = useMutation(REMOVE_GROUP_MEMBER, { refetchQueries: [READ_GROUPS] })
 
-  const [showUsersOrMembers, setShowUsersOrMembers] = useState("users")
   const userPageToShow = useMemo(() => {
       return showUsersOrMembers == "users" ? userPage : createDummyPage(selectedGroup?.members)
     }, [showUsersOrMembers, userPage, selectedGroup])
@@ -245,7 +248,7 @@ export default function Security() {
         &nbsp;
         <h1>Security</h1>
       </div>
-      <Tabs defaultValue="groups">
+      <Tabs defaultValue="groups" value={activeTab} onValueChange={onActiveTabChange}>
         <TabsList>
           <TabsTrigger value="groups">Groups</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
@@ -256,22 +259,16 @@ export default function Security() {
             &nbsp;
             <h2>Groups</h2>
           </div>
-          <DataTable<Group, unknown, TrackedEntityQueryFilter>
+          <DataTable<Group, unknown>
             className="size-fit min-w-[700px]"
             recordKind="Group"
             defaultColumns={groupColumns}
-            defaultColumnVisibility={groupColumnVisibility}
             page={groupPage}
             state={groupState}
             loading={groupLoading}
             filterComponent={LinkableEntityTableFilter}
-            onFilterChange={setGroupFilter}
             manualPagination={false}
-            pagination={groupPagination}
-            onPaginationChange={setGroupPagination}
             manualSorting={false}
-            sorting={userSorting}
-            onSortingChange={setUserSorting}
             onRowSelectionChange={handleGroupSelectionChange}
           />
           <FormProvider {...groupForm}>
@@ -313,22 +310,16 @@ export default function Security() {
                 </RadioGroup>
               </div>
             </div>
-            <DataTable<User, unknown, TrackedEntityQueryFilter>
+            <DataTable<User, unknown>
               className="size-fit"
               recordKind="User"
               defaultColumns={userColumns}
-              defaultColumnVisibility={userColumnVisibility}
               page={userPageToShow}
               state={userState}
               loading={userLoading}
               filterComponent={LinkableEntityTableFilter}
-              onFilterChange={setUserFilter}
               manualPagination={false}
-              pagination={userPagination}
-              onPaginationChange={setUserPagination}
               manualSorting={false}
-              sorting={groupSorting}
-              onSortingChange={setGroupSorting}
               onRowSelectionChange={handleUserSelectionChange}
             />
           </div>

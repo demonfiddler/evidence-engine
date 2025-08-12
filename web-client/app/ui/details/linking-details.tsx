@@ -32,7 +32,7 @@ import RecordKind from "@/app/model/RecordKind";
 import { DetailState } from "./detail-actions";
 import { CREATE_ENTITY_LINK, DELETE_ENTITY_LINK, READ_ENTITY_LINKS, UPDATE_ENTITY_LINK } from "@/lib/graphql-queries";
 import { useMutation } from "@apollo/client";
-import { MasterLinkContext } from "@/lib/context";
+import { GlobalContext } from "@/lib/context";
 
 type RecordLink = {
   entityLinkId?: string
@@ -85,7 +85,8 @@ export default function LinkingDetails(
     record: ILinkableEntity | undefined
     state: DetailState
   }) {
-  const masterLinkContext = useContext(MasterLinkContext)
+  const { masterRecordKind, masterRecordId, masterRecordLabel, /*queries, setSelectedLinkId*/ } = useContext(GlobalContext)
+  // const selectedLinkId = queries[recordKind]?.selectedLinkId ?? ''
   const [ selectedLinkId, setSelectedLinkId ] = useState('')
   const [ mode, setMode ] = useState("view")
   const [ thisRecordLocations, setThisRecordLocations ] = useState<string>('')
@@ -124,7 +125,7 @@ export default function LinkingDetails(
         setMode("view")
       }
     } else {
-      toast.info(`Linking '${masterLinkContext.masterRecordLabel}'. Enter link locations then Save.`)
+      toast.info(`Linking '${masterRecordLabel}'. Enter link locations then Save.`)
       setMode("create")
     }
   }
@@ -146,10 +147,10 @@ export default function LinkingDetails(
   function handleSaveOrEdit() {
     if (mode === "create") {
       const thisRecordId = record?.id
-      const otherRecordId = masterLinkContext.masterRecordId
-      const otherRecordLabel = masterLinkContext.masterRecordLabel
+      const otherRecordId = masterRecordId
+      const otherRecordLabel = masterRecordLabel
       if (thisRecordId && otherRecordId && otherRecordLabel) {
-        const otherRecordIdProperty = getOtherRecordLinkIdProperty(recordKind, masterLinkContext.masterRecordKind)
+        const otherRecordIdProperty = getOtherRecordLinkIdProperty(recordKind, masterRecordKind)
         if (otherRecordIdProperty) {
           const thisRecordIsToEntity = otherRecordIdProperty === FROM_ENTITY_ID
           createOp({
@@ -203,6 +204,7 @@ export default function LinkingDetails(
     if (linkId === "CLEAR")
       linkId = ''
     setSelectedLinkId(linkId)
+    // setSelectedLinkId(recordKind, linkId || undefined)
     refreshLocations(linkId)
   }
 
@@ -248,16 +250,16 @@ export default function LinkingDetails(
           !allowLinking ||
           mode === "view" && (
             !!selectedLinkId ||
-            masterLinkContext.masterRecordKind === "None" ||
-            masterLinkContext.masterRecordKind === recordKind ||
-            !masterLinkContext.masterRecordId ||
-            recordLinks.findIndex(r => r.otherRecordId == masterLinkContext.masterRecordId) != -1
+            masterRecordKind === "None" ||
+            masterRecordKind === recordKind ||
+            !masterRecordId ||
+            recordLinks.findIndex(r => r.otherRecordId == masterRecordId) != -1
           )
         }
         onClick={handleLinkorCancel}
         title={
           mode === "view"
-          ? `Create record link with '${masterLinkContext.masterRecordLabel}'`
+          ? `Create record link with '${masterRecordLabel}'`
           : mode === "create"
             ? "Save changes to new record link"
             : `Save changes to record link '${selectedLink?.otherRecordLabel}'`

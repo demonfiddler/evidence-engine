@@ -48,14 +48,15 @@ export function DataTablePaginator<TData>({
   const [pageNumber, setPageNumber] = useState(pn)
   useEffect(() => {
     setPageNumber(pn)
-  }, [pn])
-  const handlePageChange = useCallback((value: string | number | readonly string[] | undefined) => {
-    const pageNumber = typeof value ==="number" ? value : Number.parseInt(value?.toString() ?? "0")
-    if (pageNumber > 0 && pageNumber <= table.getPageCount()) {
-      setPageNumber(pageNumber)
-      table.setPagination({pageIndex: pageNumber - 1, pageSize: table.getState().pagination?.pageSize})
+  }, [setPageNumber, pn])
+  const handlePageNumberChange = useCallback((value: string | number | readonly string[] | undefined) => {
+    const newpn = typeof value ==="number" ? value : Number.parseInt(value?.toString() ?? "0")
+    if (newpn !== pageNumber && newpn > 0 && newpn <= table.getPageCount()) {
+      const pageIndex = newpn - 1
+      setPageNumber(newpn)
+      table.setPageIndex(pageIndex)
     }
-  }, [setPageNumber, table])
+  }, [pageNumber, table, setPageNumber])
 
   return (
     <div className="flex items-center justify-between">
@@ -92,7 +93,7 @@ export function DataTablePaginator<TData>({
             min={1}
             max={table.getPageCount()}
             value={pageNumber}
-            onChangeValue={handlePageChange}
+            onChangeValue={handlePageNumberChange}
           />
           &nbsp;of&nbsp;{table.getPageCount()} <span>(showing {table.getRowModel().rows.length.toLocaleString()}
           &nbsp;of&nbsp;{table.getRowCount().toLocaleString()} items)</span></p>
