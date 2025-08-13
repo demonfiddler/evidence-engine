@@ -68,11 +68,11 @@ export default function ClaimDetails(
         <form>
           <FormDescription>
             <span className="pt-2 pb-4">
-              &nbsp;&nbsp;{record
-              ? state.mode == "create"
-                ? "Details for new Claim"
-                : `Details for selected Claim #${record?.id}`
-              : "-Select a Claim in the list above to see its details-"
+              &nbsp;&nbsp;{state.mode == "create"
+              ? "Details for new Claim"
+              : record
+                ? `Details for selected Claim #${record?.id}`
+                : "-Select a Claim in the list above to see its details-"
             }</span>
           </FormDescription>
           <div className="grid grid-cols-5 ml-2 mr-2 mt-4 mb-4 gap-4">

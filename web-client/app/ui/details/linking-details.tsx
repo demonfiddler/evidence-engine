@@ -27,7 +27,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { FROM_ENTITY_ID, getOtherRecordLinkIdProperty, getReadQuery, getRecordLabel } from "@/lib/utils";
+import { getRecordLinkProperties, getReadQuery, getRecordLabel, TO_ENTITY_ID } from "@/lib/utils";
 import RecordKind from "@/app/model/RecordKind";
 import { DetailState } from "./detail-actions";
 import { CREATE_ENTITY_LINK, DELETE_ENTITY_LINK, READ_ENTITY_LINKS, UPDATE_ENTITY_LINK } from "@/lib/graphql-queries";
@@ -150,9 +150,9 @@ export default function LinkingDetails(
       const otherRecordId = masterRecordId
       const otherRecordLabel = masterRecordLabel
       if (thisRecordId && otherRecordId && otherRecordLabel) {
-        const otherRecordIdProperty = getOtherRecordLinkIdProperty(recordKind, masterRecordKind)
-        if (otherRecordIdProperty) {
-          const thisRecordIsToEntity = otherRecordIdProperty === FROM_ENTITY_ID
+        const [thisRecordIdProperty] = getRecordLinkProperties(recordKind, masterRecordKind)
+        if (thisRecordIdProperty) {
+          const thisRecordIsToEntity = thisRecordIdProperty === TO_ENTITY_ID
           createOp({
             variables: {
               input: createInput({

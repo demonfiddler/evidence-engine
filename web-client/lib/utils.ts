@@ -140,73 +140,76 @@ export function setTopicFields(path: string, parentId?: string, inTopics?: Topic
   }
 }
 
-type SearchSettings = {
-  status?: StatusKind
-  text?: string
-  advancedSearch: boolean
-  showOnlyLinkedRecords: boolean
-}
-
-export type { SearchSettings }
-
-export const TO_ENTITY_ID = "toEntityId"
 export const FROM_ENTITY_ID = "fromEntityId"
-export type LinkFilterProperty = typeof TO_ENTITY_ID | typeof FROM_ENTITY_ID | undefined
-type MasterRecordLink = {[key in RecordKind]?: LinkFilterProperty}
+export const TO_ENTITY_ID = "toEntityId"
+export const FROM_ENTITY_LOCATIONS = "fromEntityLocations"
+export const TO_ENTITY_LOCATIONS = "toEntityLocations"
+const NONE = [] as string[]
+const FROM_TO = [FROM_ENTITY_ID, TO_ENTITY_ID, FROM_ENTITY_LOCATIONS, TO_ENTITY_LOCATIONS]
+const TO_FROM = [TO_ENTITY_ID, FROM_ENTITY_ID, TO_ENTITY_LOCATIONS, FROM_ENTITY_LOCATIONS]
+type MasterRecordLink = {[key in RecordKind]?: string[]}
 type RecordLinks = {[key in RecordKind]?: MasterRecordLink}
-const otherRecordLinkIdProperties : RecordLinks = {
+const recordLinkProperties : RecordLinks = {
   Claim: {
-    Declaration: TO_ENTITY_ID,
-    Person: TO_ENTITY_ID,
-    Publication: TO_ENTITY_ID,
-    Quotation: TO_ENTITY_ID,
-    Topic: TO_ENTITY_ID
+    Claim: NONE,
+    Declaration: FROM_TO,
+    Person: FROM_TO,
+    Publication: FROM_TO,
+    Quotation: FROM_TO,
+    Topic: TO_FROM
   },
   Declaration: {
-    Claim: FROM_ENTITY_ID,
-    Person: TO_ENTITY_ID,
-    Quotation: TO_ENTITY_ID,
-    Topic: TO_ENTITY_ID
+    Claim: TO_FROM,
+    Declaration: NONE,
+    Person: FROM_TO,
+    Publication: NONE,
+    Quotation: FROM_TO,
+    Topic: TO_FROM
   },
   Person: {
-    Claim: FROM_ENTITY_ID,
-    Declaration: FROM_ENTITY_ID,
-    Person: FROM_ENTITY_ID,
-    Publication: FROM_ENTITY_ID,
-    Quotation: FROM_ENTITY_ID,
-    Topic: TO_ENTITY_ID
+    Claim: TO_FROM,
+    Declaration: TO_FROM,
+    Person: NONE,
+    Publication: TO_FROM,
+    Quotation: TO_FROM,
+    Topic: TO_FROM
   },
   Publication: {
-    Claim: FROM_ENTITY_ID,
-    Person: TO_ENTITY_ID,
-    Quotation: FROM_ENTITY_ID,
-    Topic: TO_ENTITY_ID
+    Claim: TO_FROM,
+    Declaration: NONE,
+    Person: FROM_TO,
+    Publication: NONE,
+    Quotation: TO_FROM,
+    Topic: TO_FROM
   },
   Quotation: {
-    Claim: TO_ENTITY_ID,
-    Declaration: TO_ENTITY_ID,
-    Person: FROM_ENTITY_ID,
-    Publication: FROM_ENTITY_ID,
-    Topic: TO_ENTITY_ID
+    Claim: TO_FROM,
+    Declaration: TO_FROM,
+    Person: FROM_TO,
+    Publication: FROM_TO,
+    Quotation: NONE,
+    Topic: TO_FROM
   },
   Topic: {
-    Claim: TO_ENTITY_ID,
-    Declaration: TO_ENTITY_ID,
-    Person: TO_ENTITY_ID,
-    Publication: TO_ENTITY_ID,
-    Quotation: TO_ENTITY_ID,
-    Topic: TO_ENTITY_ID
+    Claim: FROM_TO,
+    Declaration: FROM_TO,
+    Person: FROM_TO,
+    Publication: FROM_TO,
+    Quotation: FROM_TO,
+    Topic: FROM_TO
   },
 }
 
 /**
- * Returns the 'other' entity property in an entity link.
+ * Returns the to/from entity link properties.
  * @param thisRecordKind The record kind of 'this record'.
  * @param otherRecordKind The record kind of the 'other record'.
- * @returns The name of the 'other record' property.
+ * @returns A four-element array containing the property names
+ * `[thisRecordIdProperty, otherRecordIdProperty, thisLocationsProperty, otherLocationsProperty]`,
+ * or an empty array if no such link is supported.
  */
-export function getOtherRecordLinkIdProperty(thisRecordKind: RecordKind, otherRecordKind: RecordKind) : LinkFilterProperty {
-  return otherRecordLinkIdProperties?.[thisRecordKind]?.[otherRecordKind]
+export function getRecordLinkProperties(thisRecordKind: RecordKind, otherRecordKind: RecordKind) : readonly string[] {
+  return recordLinkProperties?.[thisRecordKind]?.[otherRecordKind] ?? NONE
 }
 
 const readQueryByRecordKind = {

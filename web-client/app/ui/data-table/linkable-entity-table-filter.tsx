@@ -22,7 +22,7 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import Search from "../filter/search";
 import { DataTableFilterProps, DataTableViewOptions } from "./data-table-view-options";
-import { getOtherRecordLinkIdProperty } from "@/lib/utils";
+import { getRecordLinkProperties } from "@/lib/utils";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LinkableEntityQueryFilter } from "@/app/model/schema";
@@ -71,9 +71,9 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
         leFilter.recursive = true
       }
       if (masterRecordId) {
-        const otherRecordIdProperty = getOtherRecordLinkIdProperty(recordKind, masterRecordKind)
+        const [, otherRecordIdProperty] = getRecordLinkProperties(recordKind, masterRecordKind)
         if (otherRecordIdProperty)
-          leFilter[otherRecordIdProperty] = masterRecordId
+          leFilter[otherRecordIdProperty] = masterRecordId // TODO: fix this TypeScript error
       }
     }
     onFilterChange(filter)

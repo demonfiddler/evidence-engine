@@ -34,8 +34,11 @@ import { DetailMode, DetailState } from "@/app/ui/details/detail-actions";
 import Authority from "@/app/model/Authority";
 import useAuth from "./use-auth";
 import { introspect } from "@/lib/graphql-utils";
+import { CREATE_ENTITY_LINK } from "@/lib/graphql-queries";
+import { getRecordLinkProperties } from "@/lib/utils";
 
-export type FormActionHandler<TFieldValues extends FieldValues> = (command: string, fieldValues?: TFieldValues) => void
+export type Options = {[key: string]: any}
+export type FormActionHandler<TFieldValues extends FieldValues> = (command: string, fieldValues?: TFieldValues, options?: Options) => void
 
 export type PageConfiguration<TData extends ITrackedEntity, TFieldValues extends FieldValues, TInput extends BaseEntityInput> = {
   recordKind: RecordKind
@@ -134,8 +137,9 @@ export default function usePageLogic<
 
   const {hasAuthority} = useAuth()
   const globalContext = useContext(GlobalContext)
-  const selectedRecordId = globalContext.selectedRecords[recordKind]?.id
-  const {filter, sorting: sort, pagination } = globalContext.queries[recordKind] as QueryState<TFilter>
+  const {selectedRecords, queries, masterTopicId, masterRecordKind, masterRecordId} = globalContext
+  const selectedRecordId = selectedRecords[recordKind]?.id
+  const {filter, sorting: sort, pagination } = queries[recordKind] as QueryState<TFilter>
   const [mode, setMode] = useState<DetailMode>("view")
   const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
   const setSelectedRecord = useCallback((record?: TData) => globalContext.setSelectedRecord(recordKind, record), [globalContext])
@@ -185,9 +189,10 @@ export default function usePageLogic<
   const [createOp, createResult] = createMutation ? useMutation(createMutation, { refetchQueries: [readQuery] }) : []
   const [updateOp, updateResult] = updateMutation ? useMutation(updateMutation, { refetchQueries: [readQuery] }) : []
   const [deleteOp, deleteResult] = deleteMutation ? useMutation(deleteMutation, { refetchQueries: [readQuery] }) : []
+  const [linkOp, linkResult] = useMutation(CREATE_ENTITY_LINK, { refetchQueries: [readQuery] })
 
-  const loading = (readResult.loading || createResult?.loading || updateResult?.loading || deleteResult?.loading) ?? false
-  const error = readResult.error || createResult?.error || updateResult?.error || deleteResult?.error
+  const loading = (readResult.loading || createResult?.loading || updateResult?.loading || deleteResult?.loading || linkResult?.loading) ?? false
+  const error = readResult.error || createResult?.error || updateResult?.error || deleteResult?.error || linkResult?.error
 
   if (error) {
     // TODO: display user-friendly error notification
@@ -251,11 +256,12 @@ export default function usePageLogic<
     mode: "onChange",
     values: origFieldValues,
   })
-  const handleFormAction = useCallback((command: string, fieldValues?: TFieldValues) => {
+  const handleFormAction = useCallback((command: string, fieldValues?: TFieldValues, options?: Options) => {
     // TODO: update Apollo cache?
     switch (command) {
       case "new":
         form?.reset(createFieldValues())
+        setSelectedRecord()
         break
       case "create":
         if (fieldValues) {
@@ -263,10 +269,54 @@ export default function usePageLogic<
             variables: {
               [createVarName]: createInput?.(fieldValues)
             },
-            onCompleted: (data, clientOptions) => {
-              const record = data[createFieldName]
+            onCompleted: (data) => {
+              const newRecord = data[createFieldName]
+              if (options) {
+                const {
+                  linkMasterTopic,
+                  thisRecordLocationsForTopic,
+                  linkMasterRecord,
+                  thisRecordLocationsForMaster,
+                  otherRecordLocationsForMaster,
+                } = options
+                const topicLinkInput = linkMasterTopic && masterTopicId
+                  ? {
+                      fromEntityId: masterTopicId,
+                      fromEntityLocations: null,
+                      toEntityId: newRecord.id,
+                      toEntityLocations: thisRecordLocationsForTopic || null,
+                    }
+                  : undefined
+                let masterRecordLinkInput
+                if (linkMasterRecord && masterRecordId) {
+                  const [
+                    thisRecordIdProperty,
+                    otherRecordIdProperty,
+                    thisLocationsProperty,
+                    otherLocationsProperty,
+                  ] = getRecordLinkProperties(recordKind, masterRecordKind)
+                  masterRecordLinkInput = {
+                    [thisRecordIdProperty]: newRecord.id,
+                    [otherRecordIdProperty]: masterRecordId,
+                    [thisLocationsProperty]: thisRecordLocationsForMaster || null,
+                    [otherLocationsProperty]: otherRecordLocationsForMaster || null,
+                  }
+                } else {
+                  masterRecordLinkInput = undefined
+                }
+                if (topicLinkInput) {
+                  const linkOpPromise = linkOp({variables: {input: topicLinkInput}})
+                  if (masterRecordLinkInput) {
+                    linkOpPromise.then(() => {
+                      linkOp({variables: {input: masterRecordLinkInput}})
+                    })
+                  }
+                } else if (masterRecordLinkInput) {
+                  linkOp({variables: {input: masterRecordLinkInput}})
+                }
+              }
               // FIXME: this doesn't set the selection in the data table.
-              setSelectedRecord(record)
+              setSelectedRecord(newRecord)
               setMode("view")
             },
           })
@@ -298,7 +348,7 @@ export default function usePageLogic<
     }
     // Dependencies assume (reasonably) that createOp, updateOp, deleteOp, createVarName, updateVarName, deleteVarName
     // will never change during the page lifetime.
-  }, [selectedRecordId, form, origFieldValues, createInput])
+  }, [selectedRecordId, form, origFieldValues, masterTopicId, masterRecordKind, masterRecordId, createInput])
 
   const handleRowSelectionChange = useCallback((recordId?: string) => {
     if (mode !== "view") {

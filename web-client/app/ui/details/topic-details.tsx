@@ -90,11 +90,11 @@ export default function TopicDetails(
         <form>
           <FormDescription>
             <span className="pt-2 pb-4">
-              &nbsp;&nbsp;{record
-              ? state.mode == "create"
+              &nbsp;&nbsp;{state.mode == "create"
                 ? "Details for new Topic"
-                : `Details for selected Topic #${record?.id}`
-              : "-Select a Topic in the list above to see its details-"
+                : record
+                  ? `Details for selected Topic #${record?.id}`
+                  : "-Select a Topic in the list above to see its details-"
             }</span>
           </FormDescription>
           <div className="grid grid-cols-5 ml-2 mr-2 mt-4 mb-4 gap-4 items-center">

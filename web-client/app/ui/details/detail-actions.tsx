@@ -19,7 +19,7 @@
 
 'use client'
 
-import { Dispatch, SetStateAction, useCallback } from "react"
+import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label"
@@ -29,6 +29,9 @@ import ITrackedEntity from "@/app/model/ITrackedEntity";
 import RecordKind from "@/app/model/RecordKind";
 import { FieldValues, UseFormReturn } from "react-hook-form";
 import { FormActionHandler } from "@/hooks/use-page-logic";
+import { Checkbox } from "@/components/ui/checkbox";
+import { GlobalContext } from "@/lib/context";
+import { Input } from "@/components/ui/input";
 
 export type ClickHandler = () => void
 
@@ -69,8 +72,50 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
     onFormAction: FormActionHandler<V>
   }) {
 
-  // console.log("DetailActions: render")
+  const {masterTopicId, masterTopicPath, masterRecordKind, masterRecordId, masterRecordLabel} = useContext(GlobalContext)
+
+  // For now, we only support linking as a convenience during record creation.
+  const allowTopicLink = !!masterTopicId && ["Claim", "Declaration", "Publication", "Person", "Quotation"].includes(recordKind)
+  const allowMasterRecordLink = !!masterRecordId && masterRecordKind != recordKind
+  const [linkMasterTopic, setLinkMasterTopic] = useState(allowTopicLink)
+  const [linkMasterRecord, setLinkMasterRecord] = useState(allowMasterRecordLink)
+  const [thisRecordLocationsForTopic, setThisRecordLocationsForTopic] = useState('')
+  const [thisRecordLocationsForMaster, setThisRecordLocationsForMaster] = useState('')
+  const [otherRecordLocationsForMaster, setOtherRecordLocationsForMaster] = useState('')
+  useEffect(() => {
+    if (linkMasterTopic != allowTopicLink)
+      setLinkMasterTopic(allowTopicLink)
+  }, [allowTopicLink])
+  useEffect(() => {
+    if (linkMasterRecord != allowMasterRecordLink)
+      setLinkMasterRecord(allowMasterRecordLink)
+    if (!linkMasterRecord) {
+      if (thisRecordLocationsForMaster)
+        setThisRecordLocationsForMaster('')
+      if (otherRecordLocationsForMaster)
+        setOtherRecordLocationsForMaster('')
+    }
+  }, [allowMasterRecordLink])
+  useEffect(() => {
+    if (!linkMasterTopic && thisRecordLocationsForTopic)
+      setThisRecordLocationsForTopic('')
+    if (!linkMasterRecord) {
+      if (thisRecordLocationsForMaster)
+        setThisRecordLocationsForMaster('')
+      if (otherRecordLocationsForMaster)
+        setOtherRecordLocationsForMaster('')
+    }
+  }, [linkMasterTopic, linkMasterRecord])
+  useEffect(() => {
+    if (state.mode == "view") {
+      setThisRecordLocationsForTopic('')
+      setThisRecordLocationsForMaster('')
+      setOtherRecordLocationsForMaster('')
+    }
+  }, [state.mode])
+
   const recordLabel = getRecordLabel(recordKind, record)
+  const isLinkableEntity = ["Claim", "Declaration", "Person", "Publication", "Quotation"].includes(recordKind)
 
   const handleNewOrCancel = useCallback(() => {
     // console.log(`ENTER handleNewOrCancel(), state = ${JSON.stringify(state)}, isDirty = ${JSON.stringify(form.formState.isDirty)}, isValid = ${JSON.stringify(form.formState.isValid)}`)
@@ -87,8 +132,6 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
     } else {
       // 'New' logic
       toast.info(`Creating new ${recordKind}...`)
-      // const emptyFieldValues = Object.fromEntries(Object.keys(form.getValues()).map(k => [k, '']))
-      // onFormAction("reset", emptyFieldValues as V)
       onFormAction("new")
       setMode("create")
     }
@@ -102,8 +145,17 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
         if (form.formState.isDirty) {
           if (form.formState.isValid) {
             toast.info(`Saving new ${recordKind}...`)
-            onFormAction("create", form.getValues())
-            // NOTE: completion callback will reset mode to "view"
+            const options = linkMasterTopic || linkMasterRecord
+              ? {
+                linkMasterTopic,
+                thisRecordLocationsForTopic,
+                linkMasterRecord,
+                thisRecordLocationsForMaster,
+                otherRecordLocationsForMaster,
+              }
+              : undefined
+            onFormAction("create", form.getValues(), options)
+            // NOTE: allow completion callback to reset mode to "view"
           }
         } else {
           setMode("view")
@@ -115,7 +167,7 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
           if (form.formState.isValid) {
             toast.info(`Saving updated ${recordKind}...`)
             onFormAction("update", form.getValues())
-            // NOTE: completion callback will reset mode to "view"
+            // NOTE: allow completion callback to reset mode to "view"
           }
         } else {
           setMode("view")
@@ -128,7 +180,17 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
         setMode("edit")
         break
     }
-  }, [state, form, onFormAction, setMode])
+  }, [
+    state,
+    form,
+    linkMasterTopic,
+    thisRecordLocationsForTopic,
+    linkMasterRecord,
+    thisRecordLocationsForMaster,
+    otherRecordLocationsForMaster,
+    onFormAction,
+    setMode,
+  ])
 
   const handleDelete = useCallback(() => {
     if (confirm(`Confirm delete ${recordLabel}?`)) {
@@ -178,6 +240,52 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
       >
         Delete
       </Button>
+      <fieldset className={cn("border rounded-md p-2 flex flex-col gap-2", isLinkableEntity && state.mode === "create"? "" : "hidden")}>
+        <legend>&nbsp;Create Master Links&nbsp;</legend>
+        <div className="flex gap-2" title={`Link new record to master topic '${masterTopicPath}'`}>
+          <Checkbox
+            id="link-topic"
+            disabled={!allowTopicLink}
+            checked={linkMasterTopic}
+            onCheckedChange={(cs) => setLinkMasterTopic(!!cs)}/>
+          <Label className="col-span-3" htmlFor="link-topic">To master topic</Label>
+        </div>
+        <Label htmlFor="this-locations" className="col-start-1">Location(s) in this record:</Label>
+        <Input
+          id="this-locations-topic"
+          type="text"
+          disabled={!linkMasterTopic}
+          title={`Locations in the new new ${recordKind} that refer to Topic '${masterTopicPath}'`}
+          value={thisRecordLocationsForTopic}
+          onChange={e => setThisRecordLocationsForTopic(e.target.value)}
+        />
+        <div className="flex gap-2" title={`Link new record to master record '${masterRecordLabel}'`}>
+          <Checkbox
+            id="link-mr"
+            disabled={!allowMasterRecordLink}
+            checked={linkMasterRecord}
+            onCheckedChange={(cs) => setLinkMasterRecord(!!cs)}/>
+          <Label className="col-span-3" htmlFor="link-mr">To master record</Label>
+        </div>
+        <Label htmlFor="this-locations" className="col-start-1">Location(s) in this record:</Label>
+        <Input
+          id="this-locations-master"
+          type="text"
+          title={`Locations in the new ${recordKind} that refer to '${masterRecordLabel}'`}
+          disabled={!linkMasterRecord}
+          value={thisRecordLocationsForMaster}
+          onChange={e => setThisRecordLocationsForMaster(e.target.value)}
+        />
+        <Label htmlFor="other-locations">Location(s) in other record:</Label>
+        <Input
+          id="other-locations-master"
+          type="text"
+          title={`Locations in '${masterRecordLabel}' that refer to the new ${recordKind}`}
+          disabled={!linkMasterRecord}
+          value={otherRecordLocationsForMaster}
+          onChange={e => setOtherRecordLocationsForMaster(e.target.value)}
+        />
+      </fieldset>
       <Label htmlFor="field-help">Field Help</Label>
       <Switch
         id="field-help"
