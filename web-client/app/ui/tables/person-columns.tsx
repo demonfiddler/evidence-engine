@@ -36,7 +36,7 @@ export const columns: ColumnDef<Person>[] = [
     accessorKey: "title",
     enableHiding: true,
     enableSorting: true,
-    size: 90,
+    size: 120,
     // enableColumnFilter: false,
     header: "Title",
   },
@@ -45,7 +45,7 @@ export const columns: ColumnDef<Person>[] = [
     accessorKey: "firstName",
     enableHiding: true,
     enableSorting: true,
-    size: 150,
+    size: 170,
     header: "First Name(s)",
   },
   {
@@ -53,7 +53,7 @@ export const columns: ColumnDef<Person>[] = [
     accessorKey: "nickname",
     enableHiding: true,
     enableSorting: true,
-    size: 150,
+    size: 156,
     header: "Nickname",
   },
   {
@@ -61,7 +61,7 @@ export const columns: ColumnDef<Person>[] = [
     accessorKey: "prefix",
     enableHiding: true,
     enableSorting: true,
-    size: 100,
+    size: 120,
     header: "Prefix",
   },
   {
@@ -69,7 +69,7 @@ export const columns: ColumnDef<Person>[] = [
     accessorKey: "lastName",
     enableHiding: true,
     enableSorting: true,
-    size: 150,
+    size: 162,
     header: "Last Name",
   },
   {
@@ -77,7 +77,7 @@ export const columns: ColumnDef<Person>[] = [
     accessorKey: "suffix",
     enableHiding: true,
     enableSorting: true,
-    size: 100,
+    size: 120,
     header: "Suffix",
   },
   {
@@ -109,7 +109,7 @@ export const columns: ColumnDef<Person>[] = [
     accessorKey: "country",
     enableHiding: true,
     enableSorting: true,
-    size: 150,
+    size: 142,
     header: "Country",
   },
   {
@@ -117,7 +117,7 @@ export const columns: ColumnDef<Person>[] = [
     accessorKey: "rating",
     enableHiding: true,
     enableSorting: true,
-    size: 100,
+    size: 124,
     header: "Rating",
     meta: {
       className: "text-center"
@@ -128,7 +128,7 @@ export const columns: ColumnDef<Person>[] = [
     accessorKey: "checked",
     enableHiding: true,
     enableSorting: true,
-    size: 128,
+    size: 136,
     header: "Checked",
     cell: ({row, cell}) => (
       <Checkbox
@@ -146,7 +146,7 @@ export const columns: ColumnDef<Person>[] = [
     accessorKey: "published",
     enableHiding: true,
     enableSorting: true,
-    size: 128,
+    size: 146,
     header: "Published",
     cell: ({row, cell}) => (
       <Checkbox

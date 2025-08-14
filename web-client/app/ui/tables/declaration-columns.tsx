@@ -65,7 +65,7 @@ export const columns: ColumnDef<Declaration>[] = [
     accessorKey: "country",
     enableHiding: true,
     enableSorting: true,
-    size: 150,
+    size: 142,
     header: "Country",
   },
   {
@@ -84,7 +84,7 @@ export const columns: ColumnDef<Declaration>[] = [
     accessorKey: "cached",
     enableHiding: true,
     enableSorting: true,
-    size: 116,
+    size: 132,
     header: "Cached",
     cell: ({row, cell}) => (
       <Checkbox
@@ -110,7 +110,7 @@ export const columns: ColumnDef<Declaration>[] = [
     accessorKey: "signatoryCount",
     enableHiding: true,
     enableSorting: true,
-    size: 140,
+    size: 148,
     header: "Sig. Count",
     meta: {
       className: "text-right"

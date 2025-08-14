@@ -67,7 +67,7 @@ export const columns: ColumnDef<User>[] = [
     accessorKey: "country",
     enableHiding: true,
     enableSorting: true,
-    size: 150,
+    size: 142,
     header: "Country",
   },
   {

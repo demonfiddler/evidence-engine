@@ -69,7 +69,7 @@ export const columns: ColumnDef<Publication>[] = [
     accessorKey: "year",
     enableHiding: true,
     enableSorting: true,
-    size: 90,
+    size: 120,
     header: "Year",
     meta: {
       className: "text-right"

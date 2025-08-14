@@ -52,7 +52,7 @@ export const columns: ColumnDef<Publisher>[] = [
     accessorKey: "country",
     enableHiding: true,
     enableSorting: true,
-    size: 150,
+    size: 142,
     header: "Country",
   },
   {
