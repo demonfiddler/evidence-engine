@@ -30,7 +30,7 @@ import { FormProvider } from "react-hook-form"
 import { CREATE_DECLARATION, DELETE_DECLARATION, READ_DECLARATIONS, UPDATE_DECLARATION } from "@/lib/graphql-queries"
 import usePageLogic from "@/hooks/use-page-logic"
 import { DeclarationInput, LinkableEntityQueryFilter } from '@/app/model/schema'
-import LinkableEntityTableFilter from '@/app/ui/data-table/linkable-entity-table-filter'
+import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter'
 
 function createFieldValues(declaration?: Declaration) : DeclarationFieldValues {
   return {

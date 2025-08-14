@@ -52,7 +52,7 @@ import {
 import usePageLogic from "@/hooks/use-page-logic"
 import { GroupInput, TrackedEntityQueryFilter, UserInput } from "@/app/model/schema"
 import { useMutation } from "@apollo/client"
-import LinkableEntityTableFilter from "@/app/ui/data-table/linkable-entity-table-filter"
+import LinkableEntityTableFilter from "@/app/ui/filter/linkable-entity-table-filter"
 import { GlobalContext, QueryState, SecurityPageTabState, UsersPageRadioState } from "@/lib/context"
 
 function createAuthoritiesFieldValues(authorities?: Authority[]) {

@@ -29,7 +29,7 @@ import { JournalSchema, JournalFieldValues } from "@/app/ui/validators/journal"
 import { CREATE_JOURNAL, DELETE_JOURNAL, READ_JOURNALS, UPDATE_JOURNAL } from "@/lib/graphql-queries"
 import usePageLogic from "@/hooks/use-page-logic"
 import { JournalInput, TrackedEntityQueryFilter } from '@/app/model/schema'
-import LinkableEntityTableFilter from '@/app/ui/data-table/linkable-entity-table-filter'
+import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter'
 
 function createFieldValues(journal?: Journal) : JournalFieldValues {
   return {

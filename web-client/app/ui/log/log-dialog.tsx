@@ -19,7 +19,7 @@
 
 'use client'
 
-import { getRecordLabel, toDate } from "@/lib/utils";
+import { toDate } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -29,9 +29,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import ITrackedEntity from "@/app/model/ITrackedEntity";
 import { Button } from "@/components/ui/button";
-import RecordKind from "@/app/model/RecordKind";
 import ListBulletIcon from "@heroicons/react/24/outline/ListBulletIcon";
 import { useState } from "react";
 import Log from "@/app/model/Log";
@@ -42,7 +40,7 @@ import { LogInput, LogQueryFilter } from "@/app/model/schema";
 import usePageLogic from "@/hooks/use-page-logic";
 import { READ_LOGS } from "@/lib/graphql-queries";
 import { LogFieldValues } from "../validators/log";
-import LogDialogFilter from "../data-table/log-dialog-filter";
+import LogDialogFilter from "../filter/log-dialog-filter";
 
 function createFieldValues(record?: Log) : LogFieldValues {
   return {
@@ -59,17 +57,15 @@ function createFieldValues(record?: Log) : LogFieldValues {
 export default function LogDialog({
   className,
   disabled,
-  recordKind,
-  record,
+  recordId,
+  recordLabel,
   state,
-  title,
 } : {
   className?: string
   disabled: boolean
-  recordKind: RecordKind
-  record: ITrackedEntity
+  recordId: string
+  recordLabel: string
   state: DetailState
-  title: string
 }) {
   const [open, setOpen] = useState(false)
 
@@ -90,7 +86,7 @@ export default function LogDialog({
         <Button
           className="w-20 place-self-center bg-blue-500 text-md"
           disabled={disabled}
-          title={title}
+          title={`Show log for ${recordLabel}`}
         >Show log</Button>
       </DialogTrigger>
       <DialogContent>
@@ -98,7 +94,7 @@ export default function LogDialog({
           <DialogTitle>Record Log</DialogTitle>
           <DialogDescription>
             <ListBulletIcon className="w-6 h-6 inline" />
-            &nbsp;{`${getRecordLabel(recordKind, record)}`}.
+            &nbsp;{recordLabel}
           </DialogDescription>
         </DialogHeader>
         <DataTable<Log, unknown>
@@ -110,7 +106,7 @@ export default function LogDialog({
           filterComponent={LogDialogFilter}
           manualPagination={true}
           manualSorting={true}
-          auxRecordId={record?.id}
+          auxRecordId={recordId}
         />
         <DialogFooter>
           <Button onClick={() => setOpen(false)}>Close</Button>

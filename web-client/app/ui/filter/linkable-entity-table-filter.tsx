@@ -20,8 +20,8 @@
 'use client'
 
 import { Checkbox } from "@/components/ui/checkbox";
-import Search from "../filter/search";
-import { DataTableFilterProps, DataTableViewOptions } from "./data-table-view-options";
+import Search from "./search";
+import { DataTableFilterProps, DataTableViewOptions } from "../data-table/data-table-view-options";
 import { getRecordLinkProperties } from "@/lib/utils";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -118,7 +118,7 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
           value={status ?? ''}
           onValueChange={handleStatusChange}
         >
-          <SelectTrigger id="kind">
+          <SelectTrigger id="status">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>

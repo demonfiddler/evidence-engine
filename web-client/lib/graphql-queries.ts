@@ -138,6 +138,7 @@ fragment linkableEntityFields on ILinkableEntity {
       toEntity {
         ...linkedEntityFields
       }
+      ...trackedEntityFields
       fromEntityLocations
       toEntityLocations
     }
@@ -175,6 +176,7 @@ fragment linkableEntityFields on ILinkableEntity {
       fromEntity {
         ...linkedEntityFields
       }
+      ...trackedEntityFields
       fromEntityLocations
       toEntityLocations
     }
@@ -240,6 +242,7 @@ fragment entityLinkFields on EntityLink {
     ...trackedEntityFields
     ...linkableEntityFields
   }
+  ...trackedEntityFields
   fromEntityLocations
   toEntityLocations
 }

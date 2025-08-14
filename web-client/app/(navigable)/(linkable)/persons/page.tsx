@@ -30,7 +30,7 @@ import { PersonFieldValues, PersonSchema as PersonSchema } from "@/app/ui/valida
 import { CREATE_PERSON, DELETE_PERSON, READ_PERSONS, UPDATE_PERSON } from "@/lib/graphql-queries";
 import usePageLogic from "@/hooks/use-page-logic";
 import { LinkableEntityQueryFilter, PersonInput } from '@/app/model/schema';
-import LinkableEntityTableFilter from '@/app/ui/data-table/linkable-entity-table-filter';
+import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter';
 
 function createFieldValues(person?: Person) : PersonFieldValues {
   return {

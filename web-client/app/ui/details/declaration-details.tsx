@@ -78,12 +78,12 @@ export default function DeclarationDetails(
 
   return (
     <fieldset className="border shadow-lg rounded-md w-2/3">
-      <legend>&nbsp;Declaration Details&nbsp;</legend>
+      <legend className="text-lg">&nbsp;Declaration Details&nbsp;</legend>
       <StandardDetails recordKind="Declaration" record={record} state={state} showLinkingDetails={true} />
       <Form {...form}>
         <form>
           <FormDescription>
-            <span className="pt-2 pb-4">
+            <span className="text-lg pt-2 pb-4">
               &nbsp;&nbsp;{state.mode == "create"
                 ? "Details for new Declaration"
                 : record

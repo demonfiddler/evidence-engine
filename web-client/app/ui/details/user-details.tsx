@@ -100,12 +100,12 @@ export default function UserDetails(
 
   return (
     <fieldset className="border shadow-lg rounded-md">
-      <legend>&nbsp;User Details&nbsp;</legend>
+      <legend className="text-lg">&nbsp;User Details&nbsp;</legend>
       <StandardDetails recordKind="User" record={user} state={state} showLinkingDetails={false} />
       <Form {...form}>
         <form>
           <FormDescription>
-            <span className="pt-2 pb-4">
+            <span className="text-lg pt-2 pb-4">
               &nbsp;&nbsp;{state.mode == "create"
                 ? "Details for new User"
                 : user

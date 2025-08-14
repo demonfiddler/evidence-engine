@@ -241,7 +241,7 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
         Delete
       </Button>
       <fieldset className={cn("border rounded-md p-2 flex flex-col gap-2", isLinkableEntity && state.mode === "create"? "" : "hidden")}>
-        <legend>&nbsp;Create Master Links&nbsp;</legend>
+        <legend className="text-lg">&nbsp;Create Master Links&nbsp;</legend>
         <div className="flex gap-2" title={`Link new record to master topic '${masterTopicPath}'`}>
           <Checkbox
             id="link-topic"

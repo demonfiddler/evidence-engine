@@ -44,9 +44,7 @@ export default function StandardDetails(
       onOpenChange={setTrackingDetailsOpen}
       className="ml-2 mr-2 space-y-2"
     >
-      <span>
-        { showLinkingDetails ? "Tracking & Linking" : "Tracking"}
-      </span>
+      <span className="text-lg">Tracking</span>
       <CollapsibleTrigger asChild>
         <Button variant="ghost" size="sm">
           {

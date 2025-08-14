@@ -30,7 +30,7 @@ import { PublicationFieldValues, PublicationKind, PublicationSchema as Publicati
 import { CREATE_PUBLICATION, DELETE_PUBLICATION, READ_PUBLICATIONS, UPDATE_PUBLICATION } from "@/lib/graphql-queries";
 import usePageLogic from "@/hooks/use-page-logic";
 import { LinkableEntityQueryFilter, PublicationInput } from '@/app/model/schema';
-import LinkableEntityTableFilter from '@/app/ui/data-table/linkable-entity-table-filter';
+import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter';
 
 function createFieldValues(publication?: Publication) : PublicationFieldValues {
   return {

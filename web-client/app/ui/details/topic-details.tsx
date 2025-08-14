@@ -45,15 +45,7 @@ import { Dispatch, SetStateAction, useMemo, useState } from "react"
 import { useFormContext } from "react-hook-form"
 import { TopicFieldValues } from "../validators/topic"
 import { FormActionHandler } from "@/hooks/use-page-logic"
-
-function flatten(topics: Topic[], result: Topic[]) : Topic[] {
-  for (let topic of topics) {
-    result.push(topic)
-    if (topic.children)
-      flatten(topic.children, result)
-  }
-  return result
-}
+import { flatten } from "@/lib/utils"
 
 export default function TopicDetails(
   {
@@ -84,12 +76,12 @@ export default function TopicDetails(
 
   return (
     <fieldset className="border shadow-lg rounded-md w-2/3">
-      <legend>&nbsp;Topic Details&nbsp;</legend>
+      <legend className="text-lg">&nbsp;Topic Details&nbsp;</legend>
       <StandardDetails recordKind="Topic" record={record} state={state} showLinkingDetails={true} />
       <Form {...form}>
         <form>
           <FormDescription>
-            <span className="pt-2 pb-4">
+            <span className="text-lg pt-2 pb-4">
               &nbsp;&nbsp;{state.mode == "create"
                 ? "Details for new Topic"
                 : record

@@ -21,6 +21,7 @@ type RecordKind =
   "None" |
   "Claim" |
   "Declaration" |
+  "RecordLink" |
   "Group" |
   "Journal" |
   "Log" |

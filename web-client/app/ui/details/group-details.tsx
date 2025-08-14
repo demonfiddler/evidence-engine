@@ -62,12 +62,12 @@ export default function GroupDetails(
 
   return (
     <fieldset className="border shadow-lg rounded-md">
-      <legend>&nbsp;Group Details&nbsp;</legend>
+      <legend className="text-lg">&nbsp;Group Details&nbsp;</legend>
       <StandardDetails recordKind="Group" record={record} state={state} showLinkingDetails={false} />
       <Form {...form}>
         <form>
           <FormDescription>
-            <span className="pt-2 pb-4">
+            <span className="text-lg pt-2 pb-4">
               &nbsp;&nbsp;{state.mode == "create"
                 ? "Details for new Group"
                 : record

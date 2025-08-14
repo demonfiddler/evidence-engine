@@ -31,7 +31,7 @@ import { TopicFieldValues, TopicSchema } from "@/app/ui/validators/topic"
 import { CREATE_TOPIC, DELETE_TOPIC, READ_TOPIC_HIERARCHY, UPDATE_TOPIC } from "@/lib/graphql-queries"
 import usePageLogic from "@/hooks/use-page-logic"
 import { TopicInput, TopicQueryFilter } from '@/app/model/schema'
-import TopicTableFilter from '@/app/ui/data-table/topic-table-filter'
+import TopicTableFilter from '@/app/ui/filter/topic-table-filter'
 
 function createFieldValues(topic?: Topic) : TopicFieldValues {
   return {

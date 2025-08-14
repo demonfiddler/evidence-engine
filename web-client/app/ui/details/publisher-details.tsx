@@ -70,12 +70,12 @@ export default function PublisherDetails(
 
   return (
     <fieldset className="border shadow-lg rounded-md w-2/3">
-      <legend>&nbsp;Publisher Details&nbsp;</legend>
+      <legend className="text-lg">&nbsp;Publisher Details&nbsp;</legend>
       <StandardDetails recordKind="Publisher" record={record} state={state} showLinkingDetails={false} />
       <Form {...form}>
         <form>
           <FormDescription>
-            <span className="pt-2 pb-4">
+            <span className="text-lg pt-2 pb-4">
               &nbsp;&nbsp;{state.mode == "create"
                 ? "Details for new Publisher"
                 : record

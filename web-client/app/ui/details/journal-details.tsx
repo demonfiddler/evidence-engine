@@ -71,12 +71,12 @@ export default function JournalDetails(
 
   return (
     <fieldset className="border shadow-lg rounded-md w-2/3">
-      <legend>&nbsp;Journal Details&nbsp;</legend>
+      <legend className="text-lg">&nbsp;Journal Details&nbsp;</legend>
       <StandardDetails recordKind="Journal" record={record} state={state} showLinkingDetails={false} />
       <Form {...form}>
         <form>
           <FormDescription>
-            <span className="pt-2 pb-4">
+            <span className="text-lg pt-2 pb-4">
               &nbsp;&nbsp;{state.mode == "create"
                 ? "Details for new Journal"
                 : record

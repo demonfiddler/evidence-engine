@@ -178,9 +178,9 @@ export default function EntityLinks() {
     >
       <div>
         <div className="flex flex-row items-center space-x-4 px-4">
-          <h4>
+          <span className="text-lg">
             Filter by Links
-          </h4>
+          </span>
           <CollapsibleTrigger className="justify-self-end" asChild>
             <Button variant="ghost" size="default">
               {

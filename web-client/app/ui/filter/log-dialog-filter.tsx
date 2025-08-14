@@ -18,10 +18,10 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 import Log from "@/app/model/Log";
-import { DataTableFilterProps, DataTableViewOptions } from "./data-table-view-options";
+import { DataTableFilterProps, DataTableViewOptions } from "../data-table/data-table-view-options";
 import { LogQueryFilter } from "@/app/model/schema";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { formatDate } from "@/lib/utils";
 import { READ_USERS } from "@/lib/graphql-queries";
 import { useQuery } from "@apollo/client";
@@ -33,12 +33,13 @@ import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import Spinner from "../misc/spinner";
-import InputEx from "../misc/input-ex";
 import { GlobalContext, QueryState } from "@/lib/context";
 
-export default function LogTableFilter(
+export default function LogDialogFilter(
   {
     table,
+    recordId,
+    auxRecordId,
   } : DataTableFilterProps<Log>) {
 
   const {queries, setFilter} = useContext(GlobalContext)
@@ -48,75 +49,57 @@ export default function LogTableFilter(
   const {filter} = queries["Log"] as QueryState<LogQueryFilter>
   const [from, setFrom] = useState<Date|undefined>(filter.from)
   const [fromOpen, setFromOpen] = useState(false)
-  const [to, setTo] = useState<Date|undefined>(filter.to)
+  const [to, setTo] = useState<Date|undefined>( filter.to)
   const [toOpen, setToOpen] = useState(false)
   const [userId, setUserId] = useState(filter.userId ?? '')
   const [transactionKind, setTransactionKind] = useState(filter.transactionKinds?.[0] ?? '')
-  const [entityKind, setEntityKind] = useState(filter.entityKind ?? '')
-  const [entityId, setEntityId] = useState(filter.entityId ?? '')
 
   const updateFilter = useCallback((
-    entityKind: string,
-    entityId: string,
     userId: string,
     transactionKind: string,
     from: Date|undefined,
     to: Date|undefined) => {
       const filter = {
-        entityKind: entityKind || undefined,
-        entityId: entityId || undefined,
+        entityId: auxRecordId,
         userId: userId || undefined,
         transactionKinds: transactionKind ? [transactionKind] : undefined,
         from: from || undefined,
         to: to || undefined
       } as LogQueryFilter
       onFilterChange(filter)
-    }, [entityKind, entityId, userId, transactionKind, from, to, onFilterChange])
+  }, [auxRecordId, userId, transactionKind, from, to, onFilterChange])
+  useEffect(() => updateFilter(userId, transactionKind, from, to), [recordId])
 
   const handleFromChange = useCallback((from?: Date) => {
     setFrom(from)
     setFromOpen(false)
-    updateFilter(entityKind, entityId, userId, transactionKind, from, to)
-  }, [entityKind, entityId, userId, transactionKind, from, to, updateFilter])
+    updateFilter(userId, transactionKind, from, to)
+  }, [userId, transactionKind, from, to, setFrom, updateFilter])
 
   const handleToChange = useCallback((to?: Date) => {
     setTo(to)
     setToOpen(false)
-    updateFilter(entityKind, entityId, userId, transactionKind, from, to)
-  }, [entityKind, entityId, userId, transactionKind, from, to, updateFilter])
+    updateFilter(userId, transactionKind, from, to)
+  }, [userId, transactionKind, from, to, setTo, updateFilter])
 
   const handleUserIdChange = useCallback((userId: string) => {
     userId = userId === "ALL" ? '' : userId
     setUserId(userId)
-    updateFilter(entityKind, entityId, userId, transactionKind, from, to)
-  }, [entityKind, entityId, userId, transactionKind, from, to, updateFilter])
+    updateFilter(userId, transactionKind, from, to)
+  }, [userId, transactionKind, from, to, setUserId, updateFilter])
 
   const handleTransactionKindChange = useCallback((transactionKind: string) => {
     transactionKind = transactionKind === "ALL" ? '' : transactionKind
     setTransactionKind(transactionKind)
-    updateFilter(entityKind, entityId, userId, transactionKind, from, to)
-  }, [entityKind, entityId, userId, transactionKind, from, to, updateFilter])
-
-  const handleEntityKindChange = useCallback((entityKind: string) => {
-    entityKind = entityKind === "ALL" ? '' : entityKind
-    setEntityKind(entityKind)
-    updateFilter(entityKind, entityId, userId, transactionKind, from, to)
-  }, [entityKind, entityId, userId, transactionKind, from, to, updateFilter])
-
-  const handleEntityIdChange = useCallback((entityId: string | number | readonly string[] | undefined) => {
-    entityId = entityId?.toString() ?? ''
-    setEntityId(entityId)
-    updateFilter(entityKind, entityId, userId, transactionKind, from, to)
-  }, [entityKind, entityId, userId, transactionKind, from, to, updateFilter])
+    updateFilter(userId, transactionKind, from, to)
+  }, [userId, transactionKind, from, to, setTransactionKind, updateFilter])
 
   const handleReset = useCallback(() => {
     setFrom(undefined)
     setTo(undefined)
     setUserId('')
     setTransactionKind('')
-    setEntityKind('')
-    setEntityId('')
-    updateFilter('', '', '', '', undefined, undefined)
+    updateFilter('', '', undefined, undefined)
   }, [setFrom, setTo, setUserId, setTransactionKind, updateFilter])
 
   const result = useQuery(
@@ -236,41 +219,6 @@ export default function LogTableFilter(
             </SelectGroup>
           </SelectContent>
         </Select>
-        <Select
-          value={entityKind ?? ''}
-          onValueChange={handleEntityKindChange}
-        >
-          <SelectTrigger id="kind">
-            <SelectValue placeholder="Record Kind" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Record Kinds</SelectLabel>
-              {
-                entityKind
-                ? <SelectItem value="ALL">-Clear-</SelectItem>
-                : null
-              }
-              <SelectItem value="CLA">Claim</SelectItem>
-              <SelectItem value="DEC">Declaration</SelectItem>
-              <SelectItem value="GRP">Group</SelectItem>
-              <SelectItem value="JOU">Journal</SelectItem>
-              <SelectItem value="LNK">Link</SelectItem>
-              <SelectItem value="PER">Person</SelectItem>
-              <SelectItem value="PUB">Publication</SelectItem>
-              <SelectItem value="PBR">Publisher</SelectItem>
-              <SelectItem value="QUO">Quotation</SelectItem>
-              <SelectItem value="TOP">Topic</SelectItem>
-              <SelectItem value="USR">User</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <InputEx
-          className="w-30 text-right"
-          placeholder="Record ID"
-          value={entityId}
-          onChangeValue={handleEntityIdChange}
-        />
         <Button variant="outline" title="Clear all filters" onClick={handleReset}>Reset</Button>
         <DataTableViewOptions table={table} />
       </div>

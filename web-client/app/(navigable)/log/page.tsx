@@ -22,11 +22,11 @@
 import { ListBulletIcon } from '@heroicons/react/24/outline';
 import LogDetails from "@/app/ui/details/log-details";
 import DataTable from "@/app/ui/data-table/data-table";
-import { columns, columnVisibility } from "@/app/ui/tables/log-columns"
+import { columns } from "@/app/ui/tables/log-columns"
 import Log from "@/app/model/Log";
 import { toDate } from "@/lib/utils";
 import { READ_LOGS } from "@/lib/graphql-queries";
-import LogTableFilter from "@/app/ui/data-table/log-table-filter"
+import LogTableFilter from "@/app/ui/filter/log-table-filter"
 import { LogInput, LogQueryFilter } from "@/app/model/schema";
 import usePageLogic from "@/hooks/use-page-logic";
 import { LogFieldValues } from '@/app/ui/validators/log';

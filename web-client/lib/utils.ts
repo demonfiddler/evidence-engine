@@ -28,14 +28,27 @@ import Publication from "@/app/model/Publication"
 import Publisher from "@/app/model/Publisher"
 import Quotation from "@/app/model/Quotation"
 import RecordKind from "@/app/model/RecordKind"
-import { StatusKind } from "@/app/model/schema"
 import Topic from "@/app/model/Topic"
 import User from "@/app/model/User"
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { READ_CLAIMS, READ_DECLARATIONS, READ_GROUPS, READ_JOURNALS, READ_LOGS, READ_PERSONS, READ_PUBLICATIONS, READ_PUBLISHERS, READ_QUOTATIONS, READ_TOPIC_HIERARCHY, READ_USERS } from "./graphql-queries"
+import {
+  READ_CLAIMS,
+  READ_DECLARATIONS,
+  READ_ENTITY_LINKS,
+  READ_GROUPS,
+  READ_JOURNALS,
+  READ_LOGS,
+  READ_PERSONS,
+  READ_PUBLICATIONS,
+  READ_PUBLISHERS,
+  READ_QUOTATIONS,
+  READ_TOPIC_HIERARCHY,
+  READ_USERS
+} from "./graphql-queries"
 import { DocumentNode } from "graphql"
 import { Updater } from "@tanstack/react-table"
+import EntityLink from "@/app/model/EntityLink"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -83,6 +96,10 @@ export function getRecordLabel(recordKind: RecordKind | undefined, record?: ITra
     case "Declaration": {
       const declaration = record as Declaration
       return `${recordKind} #${record?.id}: ${declaration?.title}`
+    }
+    case "RecordLink": {
+      const link = record as EntityLink
+      return `${recordKind} #${record?.id}: #${link?.fromEntity?.id} -> #${link?.toEntity?.id}`
     }
     case "Group": {
       const group = record as Group
@@ -138,6 +155,15 @@ export function setTopicFields(path: string, parentId?: string, inTopics?: Topic
       outTopics?.push(outTopic)
     }
   }
+}
+
+export function flatten(topics: Topic[], result: Topic[]) : Topic[] {
+  for (let topic of topics) {
+    result.push(topic)
+    if (topic.children)
+      flatten(topic.children, result)
+  }
+  return result
 }
 
 export const FROM_ENTITY_ID = "fromEntityId"
@@ -216,6 +242,7 @@ const readQueryByRecordKind = {
   None: undefined,
   Claim: READ_CLAIMS,
   Declaration: READ_DECLARATIONS,
+  RecordLink: READ_ENTITY_LINKS,
   Group: READ_GROUPS,
   Journal: READ_JOURNALS,
   Log: READ_LOGS,

@@ -45,21 +45,20 @@ export default function TrackingDetails(
       <Label htmlFor="status">Status:</Label>
       <Input id="status" type="text" readOnly={true} disabled={!record} value={record?.status ?? ''} />
       <LogDialog
-        recordKind={recordKind}
-        record={record}
+        recordId={record?.id ?? ''}
+        recordLabel={getRecordLabel(recordKind, record) ?? ''}
         className="col-start-5 place-items-center"
         disabled={!record || !state.allowRead || state.mode == "create"}
         state={state}
-        title={`Show log for '${getRecordLabel(recordKind, record)}'`}
       />
-      <Label htmlFor="created" className="col-start-1">Created on:</Label>
-      <Input id="created" type="text" readOnly={true} disabled={!record} value={String(record?.created ?? '')} />
-      <Label htmlFor="created-by">Created by:</Label>
+      <Label htmlFor="created-by" className="col-start-1">Created by:</Label>
       <Input id="created-by" type="text" readOnly={true} disabled={!record} value={record?.createdByUser?.username ?? ''} />
-      <Label htmlFor="updated" className="col-start-1">Updated on:</Label>
-      <Input id="updated" type="text" readOnly={true} disabled={!record} value={String(record?.updated ?? '')} />
-      <Label htmlFor="updated-by">Updated by:</Label>
+      <Label htmlFor="created">Created on:</Label>
+      <Input id="created" type="text" readOnly={true} disabled={!record} value={record?.created?.toLocaleString() ?? ''} />
+      <Label htmlFor="updated-by" className="col-start-1">Updated by:</Label>
       <Input id="updated-by" type="text" readOnly={true} disabled={!record} value={record?.updatedByUser?.username ?? ''} />
+      <Label htmlFor="updated">Updated on:</Label>
+      <Input id="updated" type="text" readOnly={true} disabled={!record} value={record?.updated?.toLocaleString() ?? ''} />
     </div>
   )
 }

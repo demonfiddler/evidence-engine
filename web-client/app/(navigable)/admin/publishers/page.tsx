@@ -30,7 +30,7 @@ import { PublisherSchema, PublisherFieldValues } from "@/app/ui/validators/publi
 import { CREATE_PUBLISHER, DELETE_PUBLISHER, READ_PUBLISHERS, UPDATE_PUBLISHER } from "@/lib/graphql-queries"
 import usePageLogic from "@/hooks/use-page-logic"
 import { PublisherInput, TrackedEntityQueryFilter } from '@/app/model/schema'
-import LinkableEntityTableFilter from '@/app/ui/data-table/linkable-entity-table-filter'
+import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter'
 
 function createFieldValues(publisher?: Publisher) : PublisherFieldValues {
   return {

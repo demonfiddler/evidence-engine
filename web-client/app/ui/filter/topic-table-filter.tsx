@@ -20,8 +20,8 @@
 import Topic from "@/app/model/Topic";
 import { TopicQueryFilter } from "@/app/model/schema";
 import { Checkbox } from "@/components/ui/checkbox";
-import Search from "../filter/search";
-import { DataTableFilterProps, DataTableViewOptions } from "./data-table-view-options";
+import Search from "./search";
+import { DataTableFilterProps, DataTableViewOptions } from "../data-table/data-table-view-options";
 import { useCallback, useContext, useState } from "react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { GlobalContext, QueryState } from "@/lib/context";

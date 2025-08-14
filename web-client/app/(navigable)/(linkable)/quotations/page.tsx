@@ -30,7 +30,7 @@ import { CREATE_QUOTATION, DELETE_QUOTATION, READ_QUOTATIONS, UPDATE_QUOTATION }
 import usePageLogic from "@/hooks/use-page-logic"
 import { toDate, toIsoDateString } from '@/lib/utils'
 import { LinkableEntityQueryFilter, QuotationInput } from '@/app/model/schema'
-import LinkableEntityTableFilter from '@/app/ui/data-table/linkable-entity-table-filter'
+import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter'
 
 function createFieldValues(quotation?: Quotation) {
   return {

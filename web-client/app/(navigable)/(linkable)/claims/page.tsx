@@ -31,7 +31,7 @@ import { ClaimSchema, ClaimFieldValues } from "@/app/ui/validators/claim";
 import { CREATE_CLAIM, DELETE_CLAIM, READ_CLAIMS, UPDATE_CLAIM } from "@/lib/graphql-queries"
 import usePageLogic from "@/hooks/use-page-logic"
 import { ClaimInput, LinkableEntityQueryFilter } from "@/app/model/schema"
-import LinkableEntityTableFilter from "@/app/ui/data-table/linkable-entity-table-filter"
+import LinkableEntityTableFilter from "@/app/ui/filter/linkable-entity-table-filter"
 
 function createFieldValues(claim?: Claim) : ClaimFieldValues {
   return {
