@@ -17,17 +17,21 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import ITrackedEntity from "./ITrackedEntity"
+'use client'
 
-export default interface Publisher extends ITrackedEntity {
-  /** The publisher name. */
-  name?: string
-  /** The publisher location. */
-  location?: string | null
-  /** The publisher country. */
-  country?: string | null
-  /** URL of publisher's home page. */
-  url?: /*URL | */string | null
-  /** The number of journals published. */
-  journalCount?: number
+import * as LabelPrimitive from "@radix-ui/react-label"
+import { ComponentProps } from "react"
+import Help, { HelpProps } from "../misc/help"
+import { Label } from "@/components/ui/label"
+import { cn } from "@/lib/utils"
+
+type LabelExProps = ComponentProps<typeof LabelPrimitive.Root> & HelpProps
+
+export default function LabelEx({help, outerClassName, ...props} : LabelExProps) {
+  return (
+    <div className={cn("flex flex-row items-center gap-1", outerClassName)}>
+      <Label {...props} />
+      <Help text={help} />
+    </div>
+  )
 }

@@ -21,7 +21,7 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import Log from "@/app/model/Log"
-import { columns as baseEntityColumns, columnVisibility as baseEntityColumnVisibility } from "./base-entity-columns"
+import { columns as baseEntityColumns } from "./base-entity-columns"
 import { actionColumn as rawActionColumn, selectColumn as rawSelectColumn } from "./extra-columns"
 import { formatDateTime } from "@/lib/utils"
 import User from "@/app/model/User"
@@ -118,7 +118,7 @@ export const columns: ColumnDef<Log>[] = [
 ]
 
 export const columnVisibility = {
-  ... baseEntityColumnVisibility,
+  id: false,
   timestamp: true,
   user: true,
   transactionKind: true,

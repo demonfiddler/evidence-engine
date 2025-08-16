@@ -19,8 +19,8 @@
 
 'use client'
 
-import "@/app/globals.css";
-import '@/app/ui/global.css';
+import "@/app/globals.css"
+import '@/app/ui/global.css'
 import EntityLinks from "@/app/ui/filter/entity-links"
 
 // export const metadata: Metadata = {

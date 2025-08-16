@@ -17,25 +17,25 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import IPage from "@/app/model/IPage";
-import ITrackedEntity from "@/app/model/ITrackedEntity";
-import RecordKind from "@/app/model/RecordKind";
-import { BaseEntityInput, PageableInput } from "@/app/model/schema";
-import { GlobalContext, QueryState } from "@/lib/context";
-import { DocumentNode, useMutation, useQuery } from "@apollo/client";
-import { OperationTypeNode } from "graphql/language";
-import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
-import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { FieldValues, useForm, UseFormReturn } from "react-hook-form";
-import { toast } from "sonner";
-import z from "zod/v4";
-import IBaseEntity from "@/app/model/IBaseEntity";
-import { DetailMode, DetailState } from "@/app/ui/details/detail-actions";
-import Authority from "@/app/model/Authority";
-import useAuth from "./use-auth";
-import { introspect } from "@/lib/graphql-utils";
-import { CREATE_ENTITY_LINK } from "@/lib/graphql-queries";
-import { getRecordLinkProperties } from "@/lib/utils";
+import IPage from "@/app/model/IPage"
+import ITrackedEntity from "@/app/model/ITrackedEntity"
+import RecordKind from "@/app/model/RecordKind"
+import { BaseEntityInput, PageableInput } from "@/app/model/schema"
+import { GlobalContext, QueryState } from "@/lib/context"
+import { DocumentNode, useMutation, useQuery } from "@apollo/client"
+import { OperationTypeNode } from "graphql/language"
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
+import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { FieldValues, useForm, UseFormReturn } from "react-hook-form"
+import { toast } from "sonner"
+import z from "zod/v4"
+import IBaseEntity from "@/app/model/IBaseEntity"
+import { DetailMode, DetailState } from "@/app/ui/details/detail-actions"
+import Authority from "@/app/model/Authority"
+import useAuth from "./use-auth"
+import { introspect } from "@/lib/graphql-utils"
+import { CREATE_ENTITY_LINK } from "@/lib/graphql-queries"
+import { getRecordLinkProperties } from "@/lib/utils"
 
 export type Options = {[key: string]: any}
 export type FormActionHandler<TFieldValues extends FieldValues> = (command: string, fieldValues?: TFieldValues, options?: Options) => void

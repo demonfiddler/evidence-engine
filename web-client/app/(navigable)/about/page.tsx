@@ -19,7 +19,7 @@
 
 'use client'
 
-import InformationCircleIcon from "@heroicons/react/24/outline/InformationCircleIcon";
+import InformationCircleIcon from "@heroicons/react/24/outline/InformationCircleIcon"
 
 export default function About() {
   return (

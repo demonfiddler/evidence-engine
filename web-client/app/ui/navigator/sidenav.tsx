@@ -19,10 +19,10 @@
 
 'use client'
 
-import Link from 'next/link';
-import NavLinks from '@/app/ui/navigator/nav-links';
-import Logo from '@/app/ui/logo';
-import { PowerIcon } from '@heroicons/react/24/outline';
+import Link from 'next/link'
+import NavLinks from '@/app/ui/navigator/nav-links'
+import Logo from '@/app/ui/logo'
+import { PowerIcon } from '@heroicons/react/24/outline'
 // import { signOut } from '@/auth';
 
 export default function SideNav() {

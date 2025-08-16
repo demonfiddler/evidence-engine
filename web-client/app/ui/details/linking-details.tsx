@@ -19,23 +19,23 @@
 
 'use client'
 
-import EntityLink from "@/app/model/EntityLink";
-import ILinkableEntity from "@/app/model/ILinkableEntity";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
-import { getRecordLinkProperties, getReadQuery, getRecordLabel, TO_ENTITY_ID, setTopicFields, flatten } from "@/lib/utils";
-import RecordKind from "@/app/model/RecordKind";
-import { DetailState } from "./detail-actions";
-import { CREATE_ENTITY_LINK, DELETE_ENTITY_LINK, READ_ENTITY_LINKS, READ_TOPIC_HIERARCHY, UPDATE_ENTITY_LINK } from "@/lib/graphql-queries";
-import { useMutation, useQuery } from "@apollo/client";
-import { GlobalContext } from "@/lib/context";
-import Topic from "@/app/model/Topic";
-import LogDialog from "../log/log-dialog";
-import { Span } from "next/dist/trace";
+import EntityLink from "@/app/model/EntityLink"
+import ILinkableEntity from "@/app/model/ILinkableEntity"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectValue } from "@/components/ui/select"
+import { useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { toast } from "sonner"
+import { getRecordLinkProperties, getReadQuery, getRecordLabel, TO_ENTITY_ID, setTopicFields, flatten } from "@/lib/utils"
+import RecordKind from "@/app/model/RecordKind"
+import { DetailState } from "./detail-actions"
+import { CREATE_ENTITY_LINK, DELETE_ENTITY_LINK, READ_ENTITY_LINKS, READ_TOPIC_HIERARCHY, UPDATE_ENTITY_LINK } from "@/lib/graphql-queries"
+import { useMutation, useQuery } from "@apollo/client"
+import { GlobalContext } from "@/lib/context"
+import Topic from "@/app/model/Topic"
+import LogDialog from "../log/log-dialog"
+import SelectTriggerEx from "../ext/select-ex"
+import InputEx from "../ext/input-ex"
+import ButtonEx from "../ext/button-ex"
 
 type RecordLink = {
   id: string
@@ -54,7 +54,9 @@ type RecordLink = {
 }
 
 function getLinkLabel(recordKind: RecordKind, link?: RecordLink) {
-  return `RecordLink #${link?.id} (${recordKind} #${link?.thisRecordId} <—> ${link?.otherRecordKind} #${link?.otherRecordId})`
+  return link
+    ? `RecordLink #${link?.id} (${recordKind} #${link?.thisRecordId} <—> ${link?.otherRecordKind} #${link?.otherRecordId})`
+    : "Selected Record Link"
 }
 
 function getRecordLinks(record?: ILinkableEntity, toLinks?: boolean, entityLinks?: EntityLink[], results?: RecordLink[]) : RecordLink[] {
@@ -172,8 +174,11 @@ export default function LinkingDetails(
   const handleLinkorCancel = useCallback(() => {
     if (mode === "edit" || mode === "create") {
       if (isModified()) {
-        if (confirm(`Confirm discard changes to record link '${selectedLink?.otherRecordLabel}'?`)) {
-          toast.info("Cancelling edit ...")
+        const target = mode === "edit"
+          ? `link with record '${selectedLink?.otherRecordLabel}'`
+          : "new record link"
+        if (confirm(`Confirm discard changes to ${target}?`)) {
+          toast.info(`Cancelling ${mode} ...`)
           refreshEditableFields(selectedLinkId)
           setMode("view")
         }
@@ -249,7 +254,7 @@ export default function LinkingDetails(
   ])
 
   const handleUnlink = useCallback(() => {
-    if (confirm(`Confirm delete record link '${selectedLink?.otherRecordLabel}'?`)) {
+    if (confirm(`Confirm delete link with record '${selectedLink?.otherRecordLabel}'?`)) {
       toast.info(`Unlinking '${selectedLink?.otherRecordLabel}'...`)
       deleteLinkOp({
         variables: {entityLinkId: selectedLinkId},
@@ -271,18 +276,24 @@ export default function LinkingDetails(
 
   useEffect(() => handleSelectedLinkChange(''), [record])
 
+  const alreadyLinked = recordLinks.findIndex(r => r.otherRecordId == masterRecordId) != -1
+
   return (
     <div className="w-full grid grid-cols-5 gap-2">
       <span className="col-span-5 text-lg">Linking</span>
       <Label htmlFor="links">{`Record links (${recordLinks.length}):`}</Label>
       <Select disabled={!record || mode !== "view"} value={selectedLinkId ?? ''} onValueChange={handleSelectedLinkChange}>
-        <SelectTrigger id="links" className="col-span-3 w-full">
+        <SelectTriggerEx
+          id="links"
+          className="col-span-3 w-full"
+          help="A list of all the records which are linked with the selected record. Select one to see/edit its settings."
+        >
           <SelectValue placeholder={
             recordLinks.length ?? 0 > 0
             ? "-Select a record link-"
             : "-No record links-"}
           />
-        </SelectTrigger>
+        </SelectTriggerEx>
         <SelectContent>
           {
             selectedLinkId
@@ -299,35 +310,68 @@ export default function LinkingDetails(
         </SelectContent>
       </Select>
       <LogDialog
+        recordKind="RecordLink"
         recordId={selectedLinkId ?? ''}
         recordLabel={getLinkLabel(recordKind, selectedLink)}
         className="col-start-5 place-items-center"
         disabled={!selectedLink || mode != "view" || !state.allowRead}
         state={state}
       />
-      <Label htmlFor="db-id">Database ID:</Label>
-      <Input id="db-id" type="text" readOnly={true} disabled={!record} value={selectedLinkId} />
+      <Label className="col-start-1" htmlFor="db-id">Database ID:</Label>
+      <InputEx
+        id="db-id"
+        type="text"
+        readOnly={true}
+        disabled={!record}
+        value={selectedLinkId}
+        help="The database identifier of the selected record link"
+      />
       <Label htmlFor="status">Status:</Label>
-      <Input id="status" type="text" readOnly={true} disabled={!record} value={selectedLink?.status ?? ''} />
-      <Button
+      <InputEx
+        id="status"
+        type="text"
+        readOnly={true}
+        disabled={!record}
+        value={selectedLink?.status ?? ''}
+        help="The status of the selected record link"
+      />
+      <ButtonEx
+        outerClassName="justify-center w-full"
         className="w-20 place-self-center bg-blue-500"
         disabled={!allowLinking || (mode == "view" && !selectedLinkId) || (mode == "edit" && !isModified())}
         onClick={handleSaveOrEdit}
-        title={
+        help={
           mode === "view"
-          ? `Edit selected record link '${selectedLink?.otherRecordLabel}'`
+          ? selectedLink
+            ? `Edit selected link with record '${selectedLink?.otherRecordLabel}'. Requires authentication and 'Link' authority.`
+            : "No record link selected"
           : mode === "create"
             ? "Save changes to new record link"
-            : `Save changes to record link '${selectedLink?.otherRecordLabel}'`
+            : `Save changes to link with record '${selectedLink?.otherRecordLabel}'`
         }
       >
         {mode !== "view" ? 'Save' : 'Edit'}
-      </Button>
+      </ButtonEx>
       <Label htmlFor="created-by" className="col-start-1">Created by:</Label>
-      <Input id="created-by" type="text" readOnly={true} disabled={!selectedLink} value={selectedLink?.createdByUser ?? ''} />
+      <InputEx
+        id="created-by"
+        type="text"
+        readOnly={true}
+        disabled={!selectedLink}
+        value={selectedLink?.createdByUser ?? ''}
+        help="The username of the user who created the record link"
+      />
       <Label htmlFor="created">Created on:</Label>
-      <Input id="created" type="text" readOnly={true} disabled={!record} value={selectedLink?.created ?? ''} />
-      <Button
+      <InputEx
+        id="created"
+        type="text"
+        readOnly={true}
+        disabled={!record}
+        value={selectedLink?.created ?? ''}
+        help="The date and time at which the record link was created"
+      />
+      <ButtonEx
+        outerClassName="justify-center w-full"
         className="w-20 place-self-center bg-blue-500"
         disabled={
           !allowLinking ||
@@ -336,63 +380,88 @@ export default function LinkingDetails(
             masterRecordKind === "None" ||
             masterRecordKind === recordKind ||
             !masterRecordId ||
-            recordLinks.findIndex(r => r.otherRecordId == masterRecordId) != -1
+            alreadyLinked
           )
         }
         onClick={handleLinkorCancel}
-        title={
+        help={
           mode === "view"
-          ? `Create record link with '${masterRecordLabel}'`
+          ? recordKind != masterRecordKind && masterRecordId && !alreadyLinked
+             ? `Create link with record '${masterRecordLabel}'. Requires authentication and 'Link' authority.`
+             : "Record link creation not possible"
           : mode === "create"
-            ? "Save changes to new record link"
-            : `Save changes to record link '${selectedLink?.otherRecordLabel}'`
+            ? "Discard changes to new record link"
+            : `Discard changes to link with record '${selectedLink?.otherRecordLabel}'`
         }
       >
         {mode !== "view" ? "Cancel" : "Link"}
-      </Button>
+      </ButtonEx>
       <Label htmlFor="updated-by" className="col-start-1">Updated by:</Label>
-      <Input id="updated-by" type="text" readOnly={true} disabled={!record} value={selectedLink?.updatedByUser ?? ''} />
+      <InputEx
+        id="updated-by"
+        type="text"
+        readOnly={true}
+        disabled={!record}
+        value={selectedLink?.updatedByUser ?? ''}
+        help="The username of the user who last updated the record link"
+      />
       <Label htmlFor="updated">Updated on:</Label>
-      <Input id="updated" type="text" readOnly={true} disabled={!record} value={selectedLink?.updated ?? ''} />
-      <Button
+      <InputEx
+        id="updated"
+        type="text"
+        readOnly={true}
+        disabled={!record}
+        value={selectedLink?.updated ?? ''}
+        help="The date and time at which the record link was last updated"
+      />
+      <ButtonEx
+        outerClassName="justify-center w-full"
         className="w-20 place-self-center bg-blue-500"
         disabled={!allowLinking || !selectedLinkId || mode !== "view"}
         onClick={handleUnlink}
-        title={`Delete record link '${selectedLink?.otherRecordLabel}'`}
+        help={
+          selectedLink
+            ? `Delete link with record '${selectedLink?.otherRecordLabel}'. Requires authentication and 'Link' authority.`
+            : "No record link selected"
+        }
       >
         Unlink
-      </Button>
+      </ButtonEx>
       <Label htmlFor="this-locations" className="col-start-1">Location(s) in this record:</Label>
-      <Input
+      <InputEx
         id="this-locations"
         type="text"
-        className="col-span-3"
+        outerClassName="col-span-3"
         disabled={!record && !mode}
         readOnly={!allowLinking || mode === "view"}
         value={thisRecordLocations}
         onChange={e => setThisRecordLocations(e.target.value)}
+        help="Location(s) within this record that pertain to the record link"
       />
       <Label htmlFor="other-locations" className="col-start-1">Location(s) in other record:</Label>
-      <Input
+      <InputEx
         id="other-locations"
         type="text"
-        className="col-span-3"
+        outerClassName="col-span-3"
         disabled={!record || selectedLink?.otherRecordKind == "Topic"}
         readOnly={!allowLinking || mode === "view"}
         value={otherRecordLocations}
         onChange={e => setOtherRecordLocations(e.target.value)}
+        help="Location(s) within the other record that pertain to the record link"
       />
       <Label htmlFor="topicId" className="col-start-1">If other record is a Topic:</Label>
       <Select
         value={topicId}
         onValueChange={setTopicId}
       >
-        <SelectTrigger
+        <SelectTriggerEx
           id="topicId"
           className="col-span-3 w-full"
-          disabled={mode != "edit" || selectedLink?.otherRecordKind != "Topic"}>
+          disabled={mode != "edit" || selectedLink?.otherRecordKind != "Topic"}
+          help="When applicable, the topic to which the record is linked"
+        >
           <SelectValue className="col-span-3 w-full" placeholder="-Other record is not a topic-" />
-        </SelectTrigger>
+        </SelectTriggerEx>
         <SelectContent>
           <SelectGroup>
             <SelectLabel>Topics</SelectLabel>

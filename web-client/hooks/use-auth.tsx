@@ -17,9 +17,9 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import Authority from '@/app/model/Authority';
-import User from '@/app/model/User';
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode, useMemo } from 'react';
+import Authority from '@/app/model/Authority'
+import User from '@/app/model/User'
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode, useMemo } from 'react'
 
 const GRAPHQL_ENDPOINT_URL = new URL(process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL ?? '')
 const baseUrl = getUrl('/').toString()

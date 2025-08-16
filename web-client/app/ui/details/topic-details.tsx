@@ -20,7 +20,6 @@
 'use client'
 
 import Topic from "@/app/model/Topic"
-import { Input } from "@/components/ui/input"
 import {
   Form,
   FormControl,
@@ -36,16 +35,17 @@ import {
   SelectGroup,
   SelectItem,
   SelectLabel,
-  SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
 import StandardDetails from "./standard-details"
 import DetailActions, { DetailMode, DetailState } from "./detail-actions"
-import { Dispatch, SetStateAction, useMemo, useState } from "react"
+import { Dispatch, SetStateAction, useMemo } from "react"
 import { useFormContext } from "react-hook-form"
 import { TopicFieldValues } from "../validators/topic"
 import { FormActionHandler } from "@/hooks/use-page-logic"
 import { flatten } from "@/lib/utils"
+import InputEx from "../ext/input-ex"
+import SelectTriggerEx from "../ext/select-ex"
 
 export default function TopicDetails(
   {
@@ -63,7 +63,6 @@ export default function TopicDetails(
   }) {
 
   const form = useFormContext()
-  const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
   const { updating } = state
 
   const flatTopics = useMemo(() => {
@@ -97,20 +96,15 @@ export default function TopicDetails(
                 <FormItem className="col-span-2">
                   <FormLabel>Path</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="path"
                       className="col-span-4"
                       readOnly={true}
+                      placeholder="path"
                       {...field}
+                      help="The full path to the topic, including ancestor labels. Non-editable."
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The full path to the topic
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -127,9 +121,14 @@ export default function TopicDetails(
                     onValueChange={field.onChange}
                   >
                     <FormControl>
-                      <SelectTrigger id="parentId" className="col-span-4" disabled={!record && !updating}>
+                      <SelectTriggerEx
+                        outerClassName="col-span-4"
+                        className="grow"
+                        id="parentId"
+                        help="The parent topic, if any"
+                      >
                         <SelectValue className="col-span-4 w-full" placeholder="Specify parent" />
-                      </SelectTrigger>
+                      </SelectTriggerEx>
                     </FormControl>
                     <SelectContent>
                       <SelectGroup>
@@ -159,13 +158,6 @@ export default function TopicDetails(
                       </SelectGroup>
                     </SelectContent>
                   </Select>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The parent topic
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -177,8 +169,6 @@ export default function TopicDetails(
               form={form}
               state={state}
               setMode={setMode}
-              showFieldHelp={showFieldHelp}
-              setShowFieldHelp={setShowFieldHelp}
               onFormAction={onFormAction}
             />
             <FormField
@@ -188,21 +178,15 @@ export default function TopicDetails(
                 <FormItem className="col-span-2">
                   <FormLabel>Label</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="label"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       placeholder="label"
                       {...field}
+                      help="The short topic label"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The short topic label
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -214,21 +198,17 @@ export default function TopicDetails(
                 <FormItem className="col-span-2">
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
+                      outerClassName="w-full"
+                      className="grow"
                       id="description"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       placeholder="description"
                       {...field}
+                      help="The long topic description"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The long topic description
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}

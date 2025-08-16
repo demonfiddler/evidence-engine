@@ -19,7 +19,7 @@
 
 'use client'
 
-import Person from "@/app/model/Person";
+import Person from "@/app/model/Person"
 import {
   Form,
   FormControl,
@@ -29,18 +29,19 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectValue } from "@/components/ui/select"
 import rawCountries from "@/data/countries.json" assert {type: 'json'}
 import Country from "@/app/model/Country"
-import StandardDetails from "./standard-details";
-import DetailActions, { DetailMode, DetailState } from "./detail-actions";
-import { Dispatch, SetStateAction, useState } from "react";
+import StandardDetails from "./standard-details"
+import DetailActions, { DetailMode, DetailState } from "./detail-actions"
+import { Dispatch, SetStateAction } from "react"
 import { useFormContext } from "react-hook-form"
-import { PersonFieldValues } from "../validators/person";
-import { FormActionHandler } from "@/hooks/use-page-logic";
+import { PersonFieldValues } from "../validators/person"
+import { FormActionHandler } from "@/hooks/use-page-logic"
+import InputEx from "../ext/input-ex"
+import TextareaEx from "../ext/textarea-ex"
+import SelectTriggerEx from "../ext/select-ex"
+import CheckboxEx from "../ext/checkbox-ex"
 
 const countries = rawCountries as unknown as Country[]
 
@@ -59,7 +60,6 @@ export default function PersonDetails(
   }) {
 
   const form = useFormContext()
-  const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
   const { updating } = state
 
   return (
@@ -85,21 +85,15 @@ export default function PersonDetails(
                 <FormItem>
                   <FormLabel>Title</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="title"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       placeholder="title"
                       {...field}
+                      help="The person's formal honorific title (Dr, Prof, Sir, etc.)"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The person's formal honorific title (Dr, Prof, Sir, etc.)
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -111,20 +105,14 @@ export default function PersonDetails(
                 <FormItem>
                   <FormLabel>First name(s)</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="firstName"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="The person's forename(s) or initials"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The person's forename(s) or initials
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -136,20 +124,14 @@ export default function PersonDetails(
                 <FormItem>
                   <FormLabel>Nickname</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="nickname"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="The person's informal nickname"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The person's informal nickname
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -161,8 +143,6 @@ export default function PersonDetails(
               form={form}
               state={state}
               setMode={setMode}
-              showFieldHelp={showFieldHelp}
-              setShowFieldHelp={setShowFieldHelp}
               onFormAction={onFormAction}
             />
             <FormField
@@ -172,20 +152,14 @@ export default function PersonDetails(
                 <FormItem className="col-start-1">
                   <FormLabel>Prefix</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="prefix"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="The prefix to the person's surname (de, van, zu, etc.)"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The prefix to the person's surname (de, van, zu, etc.)
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -197,20 +171,14 @@ export default function PersonDetails(
                 <FormItem>
                   <FormLabel>Last name</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="lastName"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="The person's surname/family name, excluding any prefix"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The person's surname/family name, excluding any prefix
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -222,20 +190,14 @@ export default function PersonDetails(
                 <FormItem>
                   <FormLabel>Suffix</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="suffix"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="The suffix to the person's surname (Jnr, Snr, III, etc.)"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The suffix to the person's surname (Jnr, Snr, III, etc.)
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -247,21 +209,15 @@ export default function PersonDetails(
                 <FormItem>
                   <FormLabel>Alias</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="alias"
                       className="col-span-2"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="An alternative name by which the person is also known"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        An alternative name by which the person is also known
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -273,21 +229,15 @@ export default function PersonDetails(
                 <FormItem className="col-start-1 col-span-4">
                   <FormLabel>Notes</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <TextareaEx
                       id="notes"
                       className="h-40 overflow-y-auto"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="Biographical and other notes about the person"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        Biographical and other notes about the person
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -299,21 +249,15 @@ export default function PersonDetails(
                 <FormItem className="col-start-1 col-span-4">
                   <FormLabel>Qualifications</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <TextareaEx
                       id="qualifications"
                       className="h-40 overflow-y-auto"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="The person's formal academic qualifications, including degree, subject, graduation year and academic institution"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The person's formal academic qualifications
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -330,9 +274,13 @@ export default function PersonDetails(
                     onValueChange={field.onChange}
                   >
                     <FormControl>
-                      <SelectTrigger id="country" className="w-full" disabled={!record && !updating}>
+                      <SelectTriggerEx
+                        id="country"
+                        className="w-full"
+                        help="The country with which the person is primarily associated"
+                      >
                         <SelectValue placeholder="Specify country" />
-                      </SelectTrigger>
+                      </SelectTriggerEx>
                     </FormControl>
                     <SelectContent>
                       <SelectGroup>
@@ -342,13 +290,6 @@ export default function PersonDetails(
                       </SelectGroup>
                     </SelectContent>
                   </Select>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The country with which the person is primarily associated
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -360,22 +301,16 @@ export default function PersonDetails(
                 <FormItem>
                   <FormLabel>Rating</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="rating"
                       type="number"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       placeholder="rating"
                       {...field}
+                      help="A star-rating to reflect the person's eminence and credibility"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        A star-rating to reflect the person's eminence and credibility
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -387,20 +322,14 @@ export default function PersonDetails(
                 <FormItem>
                   <FormLabel>Checked</FormLabel>
                   <FormControl>
-                    <Checkbox
+                    <CheckboxEx
                       id="checked"
                       disabled={!updating}
                       checked={field.value}
                       onCheckedChange={field.onChange}
+                      help="Whether the person's details and credentials have been checked"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        Whether the person's details and credentials have been checked
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -412,20 +341,14 @@ export default function PersonDetails(
                 <FormItem>
                   <FormLabel>Published</FormLabel>
                   <FormControl>
-                    <Checkbox
+                    <CheckboxEx
                       id="published"
                       disabled={!updating}
                       checked={field.value}
                       onCheckedChange={field.onChange}
+                      help="Whether the person has authored peer-reviewed publications"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        Whether the person has authored peer-reviewed publications
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}

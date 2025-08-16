@@ -19,38 +19,50 @@
 
 'use client'
 
-import { SearchIcon } from "@/app/ui/icons"
-import { XMarkIcon } from "@heroicons/react/24/outline"
+import { Input } from "@/components/ui/input"
+import { ChangeEvent, ComponentProps, useCallback, useEffect, useState } from "react"
 import { useDebounceValue } from "usehooks-ts"
-import { useEffect, useState } from "react"
-import InputEx from "../ext/input-ex"
+import Help, { HelpProps } from "../misc/help"
+import { cn } from "@/lib/utils"
 
-export default function Search(
-  {value, onChangeValue} :
-  {value: string, onChangeValue: (value: string) => void}
-) {
-  const [text, setText] = useState(value)
-  const [debouncedText, setDebouncedText] = useDebounceValue(value, 500)
-  useEffect(() => onChangeValue(debouncedText), [debouncedText])
-
-  function onChangeText(s: string) {
-    setText(s)
-    setDebouncedText(s)
+type InputExProps = ComponentProps<"input"> & HelpProps & {
+    delay?: number
   }
 
+export default function InputEx(
+  {help, outerClassName, value, onChange, delay, ...props} : InputExProps
+) {
+  const [text, setText] = useState(value)
+  const [event, setEvent] = useDebounceValue<ChangeEvent<HTMLInputElement>|undefined>(undefined, delay || 0)
+
+  useEffect(() => setText(value), [value])
+  useEffect(() => {
+    if (event)
+      onChange?.(event)
+  }, [event])
+
+  const onChangeText = useCallback((e:  ChangeEvent<HTMLInputElement>) => {
+    setText(e.target.value ?? '')
+    setEvent(e)
+  }, [])
+
+  const clear = useCallback(() => {
+    setText('')
+    if (event) {
+      event.target.value = ''
+      onChange?.(event)
+    }
+  }, [event])
+
   return (
-    <div className="flex flex-row items-center gap-2 px-2 pr-2 border rounded-md">
-      <SearchIcon className="w-6 h-6" />
-      <InputEx
-        outerClassName="grow"
-        className="border-0 border-transparent"
-        placeholder="Search..."
-        help="Filter the table to show only records containing the specified text. This performs a case-insensitive match against all text fields, matching whole words unless 'Advanced' is checked."
-        value={text ?? ''}
-        onKeyDown={(e) => e.code == "Escape" && onChangeText('')}
-        onChange={(e) => onChangeText(e.target.value ?? '')}
+    <div className={cn("flex flex-row items-center gap-1", outerClassName)}>
+      <Input
+        value={text}
+        onKeyDown={(e) => e.code == "Escape" && clear()}
+        onChange={(e) => onChangeText(e)}
+        {...props}
       />
-      <XMarkIcon className="w-5 h-5" onClick={() => onChangeText('')} />
+      <Help text={help} />
     </div>
   )
 }

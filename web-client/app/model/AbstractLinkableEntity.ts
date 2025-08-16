@@ -17,10 +17,10 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import AbstractTrackedEntity from "./AbstractTrackedEntity";
-import EntityLink from "./EntityLink";
-import ILinkableEntity from "./ILinkableEntity";
-import IPage from "./IPage";
+import AbstractTrackedEntity from "./AbstractTrackedEntity"
+import EntityLink from "./EntityLink"
+import ILinkableEntity from "./ILinkableEntity"
+import IPage from "./IPage"
 
 export default abstract class AbstractLinkableEntity extends AbstractTrackedEntity implements ILinkableEntity {
   fromEntityLinks?: IPage<EntityLink>

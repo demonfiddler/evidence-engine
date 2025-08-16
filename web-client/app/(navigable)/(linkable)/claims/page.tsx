@@ -24,10 +24,10 @@ import { ExclamationCircleIcon } from "@heroicons/react/24/outline"
 import ClaimDetails from "@/app/ui/details/claim-details"
 import DataTable from "@/app/ui/data-table/data-table"
 import { columns } from "@/app/ui/tables/claim-columns"
-import Claim from "@/app/model/Claim";
+import Claim from "@/app/model/Claim"
 import { toDate, toIsoDateString } from "@/lib/utils"
 import { FormProvider } from "react-hook-form"
-import { ClaimSchema, ClaimFieldValues } from "@/app/ui/validators/claim";
+import { ClaimSchema, ClaimFieldValues } from "@/app/ui/validators/claim"
 import { CREATE_CLAIM, DELETE_CLAIM, READ_CLAIMS, UPDATE_CLAIM } from "@/lib/graphql-queries"
 import usePageLogic from "@/hooks/use-page-logic"
 import { ClaimInput, LinkableEntityQueryFilter } from "@/app/model/schema"

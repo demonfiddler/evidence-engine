@@ -19,7 +19,7 @@
 
 'use client'
 
-import Publication from "@/app/model/Publication";
+import Publication from "@/app/model/Publication"
 import {
   Form,
   FormControl,
@@ -29,33 +29,33 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar"
-import { Checkbox } from "@/components/ui/checkbox";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Textarea } from "@/components/ui/textarea";
-import { cn, formatDate } from "@/lib/utils";
-import { CalendarIcon } from "@heroicons/react/24/outline";
-import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { cn, formatDate } from "@/lib/utils"
+import { CalendarIcon } from "@heroicons/react/24/outline"
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectLabel,
-  SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
 import rawJournals from "@/data/journals.json" assert {type: 'json'}
 import rawPublicationKinds from "@/data/publication-kinds.json" assert {type: 'json'}
-import Journal from "@/app/model/Journal";
-import StandardDetails from "./standard-details";
-import DetailActions, { DetailMode, DetailState } from "./detail-actions";
-import Link from "next/link";
-import { Dispatch, SetStateAction, useState } from "react";
+import Journal from "@/app/model/Journal"
+import StandardDetails from "./standard-details"
+import DetailActions, { DetailMode, DetailState } from "./detail-actions"
+import { Dispatch, SetStateAction, useState } from "react"
 import { useFormContext } from "react-hook-form"
-import { PublicationFieldValues } from "../validators/publication";
-import { FormActionHandler } from "@/hooks/use-page-logic";
+import { PublicationFieldValues } from "../validators/publication"
+import { FormActionHandler } from "@/hooks/use-page-logic"
+import InputEx from "../ext/input-ex"
+import SelectTriggerEx from "../ext/select-ex"
+import TextareaEx from "../ext/textarea-ex"
+import ButtonEx from "../ext/button-ex"
+import LinkEx from "../ext/link-ex"
+import CheckboxEx from "../ext/checkbox-ex"
 
 type PublicationKind = {
   kind: string
@@ -80,7 +80,6 @@ export default function PublicationDetails(
   const form = useFormContext()
   const [dateOpen, setDateOpen] = useState(false)
   const [accessedOpen, setAccessedOpen] = useState(false)
-  const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
   const { updating } = state
 
   return (
@@ -106,20 +105,14 @@ export default function PublicationDetails(
                 <FormItem className="col-span-3">
                   <FormLabel>Title</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="title"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="The publication name/title"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The publication name/title
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -131,8 +124,6 @@ export default function PublicationDetails(
               form={form}
               state={state}
               setMode={setMode}
-              showFieldHelp={showFieldHelp}
-              setShowFieldHelp={setShowFieldHelp}
               onFormAction={onFormAction}
             />
             <FormField
@@ -147,9 +138,13 @@ export default function PublicationDetails(
                     onValueChange={field.onChange}
                   >
                     <FormControl>
-                      <SelectTrigger id="kind" className="w-full" disabled={!record && !updating}>
+                      <SelectTriggerEx
+                        id="kind"
+                        className="w-full"
+                        help="The kind of publication (corresponds to the RIS 'TY' field)"
+                      >
                         <SelectValue placeholder="Specify kind" />
-                      </SelectTrigger>
+                      </SelectTriggerEx>
                     </FormControl>
                     <SelectContent>
                       <SelectGroup>
@@ -164,13 +159,6 @@ export default function PublicationDetails(
                       </SelectGroup>
                     </SelectContent>
                   </Select>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The kind of declaration
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -187,9 +175,12 @@ export default function PublicationDetails(
                     onValueChange={field.onChange}
                   >
                     <FormControl>
-                      <SelectTrigger id="journal" className="w-full" disabled={!record && !updating}>
+                      <SelectTriggerEx
+                        id="journal"
+                        className="w-full"
+                        help="The journal or series containing the publication">
                         <SelectValue className="w-full" placeholder="Specify journal" />
-                      </SelectTrigger>
+                      </SelectTriggerEx>
                     </FormControl>
                     <SelectContent>
                       <SelectGroup>
@@ -205,13 +196,6 @@ export default function PublicationDetails(
                       </SelectGroup>
                     </SelectContent>
                   </Select>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The journal or series containing the publication
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -223,21 +207,15 @@ export default function PublicationDetails(
                 <FormItem>
                   <FormLabel>Authors</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <TextareaEx
                       id="authors"
                       className=" h-40 overflow-y-auto"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="The author(s) of the publication, one per line"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The author(s) of the publication, one per line
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -251,18 +229,20 @@ export default function PublicationDetails(
                   <Popover open={dateOpen} onOpenChange={setDateOpen}>
                     <PopoverTrigger id="date" asChild>
                       <FormControl>
-                        <Button
+                        <ButtonEx
                           variant={"outline"}
                           disabled={!updating}
-                          className={cn("justify-start text-left font-normal",
-                            (!record || !record.date) && "text-muted-foreground")}>
+                          className={cn("grow justify-start text-left font-normal",
+                            (!record || !record.date) && "text-muted-foreground")}
+                          help="The date on which the publication was first published"
+                        >
                           <CalendarIcon />
                           {field.value ? (
                             formatDate(field.value, "PPP")
                           ) : (
                             <span>Pick a date</span>
                           )}
-                        </Button>
+                        </ButtonEx>
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
@@ -278,13 +258,6 @@ export default function PublicationDetails(
                       />
                     </PopoverContent>
                   </Popover>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The publication date
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -296,21 +269,15 @@ export default function PublicationDetails(
                 <FormItem>
                   <FormLabel>Publication year</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="year"
                       type="number"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="The year in which the publication was first published"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The publication year
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -324,21 +291,22 @@ export default function PublicationDetails(
                   <FormControl>
                     {
                       updating
-                      ? <Input
+                      ? <InputEx
                           id="doi"
                           className="col-span-2"
                           {...field}
-                        />
-                      : <Link className="col-span-2" href={record?.doi ? `https://doi.org/${record?.doi ?? ''}` : ''} target="_blank">{record?.doi ?? ''}</Link>
+                          help="The publication's Digital Object Identifier (DOI)"
+                      />
+                      : <LinkEx
+                          className="col-span-2"
+                          href={record?.doi ? `https://doi.org/${record?.doi ?? ''}` : ''}
+                          target="_blank"
+                          help="Link via the publication's Digital Object Identifier (DOI) to its current location online"
+                      >
+                        {record?.doi ?? ''}
+                      </LinkEx>
                     }
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The publication's digital object identifier
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -350,20 +318,14 @@ export default function PublicationDetails(
                 <FormItem>
                   <FormLabel>ISBN</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="isbn"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="The publication's International Standard Book Number (ISBN)"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The publication's international standard book number
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -377,21 +339,21 @@ export default function PublicationDetails(
                   <FormControl>
                     {
                       updating
-                      ? <Input
-                          id="url"
-                          type="url"
-                          {...field}
-                        />
-                      : <Link href={record?.url ?? ''} target="_blank">{record?.url ?? ''}</Link>
+                      ? <InputEx
+                        id="url"
+                        type="url"
+                        {...field}
+                        help="The publication's online web address"
+                      />
+                      : <LinkEx
+                        href={record?.url ?? ''}
+                        target="_blank"
+                        help="The publication's online web address"
+                      >
+                        {record?.url ?? ''}
+                      </LinkEx>
                     }
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The publication's online web address
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -405,18 +367,20 @@ export default function PublicationDetails(
                   <Popover open={accessedOpen} onOpenChange={setAccessedOpen}>
                     <PopoverTrigger id="accessed" asChild>
                       <FormControl>
-                        <Button
+                        <ButtonEx
+                          className={cn("grow justify-start text-left font-normal",
+                            (!record || !record.date) && "text-muted-foreground")}
                           variant={"outline"}
                           disabled={!updating}
-                          className={cn("justify-start text-left font-normal",
-                            (!record || !record.date) && "text-muted-foreground")}>
+                          help="The date the publication was last accessed by contributor"
+                        >
                           <CalendarIcon />
                           {field.value ? (
                             formatDate(field.value, "PPP")
                           ) : (
                             <span>Pick a date</span>
                           )}
-                        </Button>
+                        </ButtonEx>
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
@@ -432,13 +396,6 @@ export default function PublicationDetails(
                       />
                     </PopoverContent>
                   </Popover>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The date the publication was last accessed by contributor
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -450,21 +407,15 @@ export default function PublicationDetails(
                 <FormItem>
                   <FormLabel>Peer reviewed</FormLabel>
                   <FormControl>
-                    <Checkbox
+                    <CheckboxEx
                       id="peerReviewed"
                       className="col-span-1"
                       disabled={!updating}
                       checked={field.value}
                       onCheckedChange={field.onChange}
+                      help="Whether the publication was peer-reviewed"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        Whether the publication was peer-reviewed
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -476,20 +427,14 @@ export default function PublicationDetails(
                 <FormItem>
                   <FormLabel>Cached</FormLabel>
                   <FormControl>
-                    <Checkbox
+                    <CheckboxEx
                       id="cached"
                       disabled={!updating}
                       checked={field.value}
                       onCheckedChange={field.onChange}
+                      help="Whether the publication content is cached on this server"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        Whether the publication content is cached on this server
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -501,21 +446,15 @@ export default function PublicationDetails(
                 <FormItem className="col-start-1 col-span-3">
                   <FormLabel>Abstract</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <TextareaEx
                       id="abstract"
                       className="h-40 overflow-y-auto"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="Concise summary of the publication"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        Concise summary of the publication
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -527,21 +466,15 @@ export default function PublicationDetails(
                 <FormItem className="col-start-1 col-span-3">
                   <FormLabel>Notes</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <TextareaEx
                       id="notes"
                       className="col-span-4 h-40 overflow-y-auto"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="Contributor notes about the publication"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        Contributor notes about the publication
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}

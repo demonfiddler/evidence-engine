@@ -17,8 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import Authority from "./Authority";
-import ITrackedEntity from "./ITrackedEntity";
+import Authority from "./Authority"
+import ITrackedEntity from "./ITrackedEntity"
 
 export default interface SecurityPrincipal extends ITrackedEntity {
   /** The authorities granted to the security principal. */

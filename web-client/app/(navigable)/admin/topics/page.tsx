@@ -21,7 +21,7 @@
 
 import { Bars3BottomRightIcon } from '@heroicons/react/24/outline'
 import TopicDetails from "@/app/ui/details/topic-details"
-import DataTable from "@/app/ui/data-table/data-table";
+import DataTable from "@/app/ui/data-table/data-table"
 import { columns } from "@/app/ui/tables/topic-columns"
 import IPage from "@/app/model/IPage"
 import Topic from "@/app/model/Topic"

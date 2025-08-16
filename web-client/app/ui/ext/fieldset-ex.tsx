@@ -17,17 +17,19 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import ITrackedEntity from "./ITrackedEntity"
+'use client'
 
-export default interface Publisher extends ITrackedEntity {
-  /** The publisher name. */
-  name?: string
-  /** The publisher location. */
-  location?: string | null
-  /** The publisher country. */
-  country?: string | null
-  /** URL of publisher's home page. */
-  url?: /*URL | */string | null
-  /** The number of journals published. */
-  journalCount?: number
+import { DetailedHTMLProps } from "react"
+import Help, { HelpProps } from "../misc/help"
+import { cn } from "@/lib/utils"
+
+type FieldsetExProps = DetailedHTMLProps<React.FieldsetHTMLAttributes<HTMLFieldSetElement>, HTMLFieldSetElement> & HelpProps
+
+export default function FieldsetEx({help, outerClassName, ...props} : FieldsetExProps) {
+  return (
+    <div className={cn("flex flex-row items-center gap-1", outerClassName)}>
+      <fieldset {...props} />
+      <Help text={help} />
+    </div>
+  )
 }

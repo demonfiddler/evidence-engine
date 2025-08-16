@@ -17,17 +17,24 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import ITrackedEntity from "./ITrackedEntity"
+'use client'
 
-export default interface Publisher extends ITrackedEntity {
-  /** The publisher name. */
-  name?: string
-  /** The publisher location. */
-  location?: string | null
-  /** The publisher country. */
-  country?: string | null
-  /** URL of publisher's home page. */
-  url?: /*URL | */string | null
-  /** The number of journals published. */
-  journalCount?: number
+import { AnchorHTMLAttributes, ReactNode, RefAttributes } from "react"
+import Help, { HelpProps } from "../misc/help"
+import Link, { LinkProps } from "next/link"
+import { cn } from "@/lib/utils"
+
+type LinkExProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps> & LinkProps & {
+    children?: ReactNode | undefined
+  } &
+  RefAttributes<HTMLAnchorElement> &
+  HelpProps
+
+export default function LinkEx({help, outerClassName, ...props} : LinkExProps) {
+  return (
+    <div className={cn("flex flex-row items-center gap-1", outerClassName)}>
+      <Link {...props} />
+      <Help text={help} />
+    </div>
+  )
 }

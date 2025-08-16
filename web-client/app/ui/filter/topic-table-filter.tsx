@@ -17,15 +17,15 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import Topic from "@/app/model/Topic";
-import { TopicQueryFilter } from "@/app/model/schema";
-import { Checkbox } from "@/components/ui/checkbox";
-import Search from "./search";
-import { DataTableFilterProps, DataTableViewOptions } from "../data-table/data-table-view-options";
-import { useCallback, useContext, useState } from "react";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { GlobalContext, QueryState } from "@/lib/context";
-import { Button } from "@/components/ui/button";
+import Topic from "@/app/model/Topic"
+import { TopicQueryFilter } from "@/app/model/schema"
+import { Checkbox } from "@/components/ui/checkbox"
+import Search from "./search"
+import { DataTableFilterProps, DataTableViewOptions } from "../data-table/data-table-view-options"
+import { useCallback, useContext, useState } from "react"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { GlobalContext, QueryState } from "@/lib/context"
+import { Button } from "@/components/ui/button"
 
 export default function TopicTableFilter({
   table,

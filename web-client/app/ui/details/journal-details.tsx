@@ -19,15 +19,12 @@
 
 'use client'
 
-import { Textarea } from "@/components/ui/textarea"
-import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectLabel,
-  SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
 import {
@@ -44,11 +41,14 @@ import Publisher from "@/app/model/Publisher"
 import rawPublishers from "@/data/publishers.json" assert {type: 'json'}
 import StandardDetails from "./standard-details"
 import DetailActions, { DetailMode, DetailState } from "./detail-actions"
-import Link from "next/link"
-import { Dispatch, SetStateAction, useState } from "react"
+import { Dispatch, SetStateAction } from "react"
 import { useFormContext } from "react-hook-form"
 import { JournalFieldValues } from "../validators/journal"
 import { FormActionHandler } from "@/hooks/use-page-logic"
+import InputEx from "../ext/input-ex"
+import SelectTriggerEx from "../ext/select-ex"
+import TextareaEx from "../ext/textarea-ex"
+import LinkEx from "../ext/link-ex"
 
 const publishers = rawPublishers.content as unknown as Publisher[]
 
@@ -66,7 +66,6 @@ export default function JournalDetails(
   }) {
 
   const form = useFormContext()
-  const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
   const { updating } = state
 
   return (
@@ -92,20 +91,14 @@ export default function JournalDetails(
                 <FormItem className="col-span-2">
                   <FormLabel>Title</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="title"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="The journal's official name or title"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The journal's official name/title
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -117,8 +110,6 @@ export default function JournalDetails(
               form={form}
               state={state}
               setMode={setMode}
-              showFieldHelp={showFieldHelp}
-              setShowFieldHelp={setShowFieldHelp}
               onFormAction={onFormAction}
             />
             <FormField
@@ -128,20 +119,14 @@ export default function JournalDetails(
                 <FormItem className="col-span-1">
                   <FormLabel>Abbreviation</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="abbreviation"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="The ISO 4 journal title abbreviation, with full stops for LTWA abbreviated words"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The ISO 4 journal title abbreviation
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -153,21 +138,15 @@ export default function JournalDetails(
                 <FormItem className="col-span-1">
                   <FormLabel>ISSN</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="issn"
                       className="col-span-1"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="The International Standard Serial Number (ISSN)"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The international standard serial number
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -179,14 +158,19 @@ export default function JournalDetails(
                 <FormItem className="col-span-2">
                   <FormLabel>Publisher</FormLabel>
                   <Select
-                    disabled={!record && !updating}
+                    disabled={!updating}
                     value={field.value}
                     onValueChange={field.onChange}
                   >
                     <FormControl>
-                      <SelectTrigger id="publisherId" className="w-full" disabled={!record && !updating}>
+                      <SelectTriggerEx
+                        id="publisherId"
+                        className="w-full"
+                        disabled={!updating}
+                        help="The journal publisher"
+                      >
                         <SelectValue className="w-full" placeholder="Specify publisher" />
-                      </SelectTrigger>
+                      </SelectTriggerEx>
                     </FormControl>
                     <SelectContent>
                       <SelectGroup>
@@ -203,13 +187,6 @@ export default function JournalDetails(
                       </SelectGroup>
                     </SelectContent>
                   </Select>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The journal publisher
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -223,21 +200,20 @@ export default function JournalDetails(
                   <FormControl>
                     {
                       updating
-                      ? <Input
+                      ? <InputEx
                           id="url"
-                          // type="url"
                           {...field}
+                          help="The journals's online web address"
                         />
-                      : <Link href={record?.url ?? ''} target="_blank">{record?.url ?? ''}</Link>
+                      : <LinkEx
+                        href={record?.url ?? ''}
+                        target="_blank"
+                        help="The journals's online web address"
+                      >
+                        {record?.url ?? ''}
+                      </LinkEx>
                     }
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The journals's online web address
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -249,21 +225,15 @@ export default function JournalDetails(
                 <FormItem className="col-start-1 col-span-2">
                   <FormLabel>Notes</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <TextareaEx
                       id="notes"
                       className="col-span-4 h-40 overflow-y-auto"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="Contributor notes about the journal"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        Contributor notes about the journal
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}

@@ -29,10 +29,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Textarea } from "@/components/ui/textarea"
 import { cn, formatDate } from "@/lib/utils"
 import { CalendarIcon } from "@heroicons/react/24/outline"
 import StandardDetails from "./standard-details"
@@ -41,6 +39,8 @@ import { Dispatch, SetStateAction, useState } from "react"
 import { useFormContext } from "react-hook-form"
 import { ClaimFieldValues } from "../validators/claim"
 import { FormActionHandler } from "@/hooks/use-page-logic"
+import TextareaEx from "../ext/textarea-ex"
+import ButtonEx from "../ext/button-ex"
 
 export default function ClaimDetails(
   {
@@ -57,7 +57,6 @@ export default function ClaimDetails(
 
   const form = useFormContext()
   const [open, setOpen] = useState(false)
-  const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
   const { updating } = state
 
   return (
@@ -85,18 +84,20 @@ export default function ClaimDetails(
                   <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger id="date" asChild>
                       <FormControl>
-                        <Button
+                        <ButtonEx
                           variant={"outline"}
-                          disabled={!record && !updating}
-                          className={cn("w-full justify-start text-left font-normal",
-                            (!record || !record.date) && "text-muted-foreground")}>
+                          disabled={!updating}
+                          className={cn("grow justify-start text-left font-normal",
+                            (!record || !record.date) && "text-muted-foreground")}
+                          help="The date the claim was first made"
+                        >
                           <CalendarIcon />
                           {field.value ? (
                             formatDate(field.value, "PPP")
                           ) : (
                             <span>Pick a date</span>
                           )}
-                        </Button>
+                        </ButtonEx>
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
@@ -112,13 +113,6 @@ export default function ClaimDetails(
                       />
                     </PopoverContent>
                   </Popover>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The date the claim was first made
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -130,8 +124,6 @@ export default function ClaimDetails(
               form={form}
               state={state}
               setMode={setMode}
-              showFieldHelp={showFieldHelp}
-              setShowFieldHelp={setShowFieldHelp}
               onFormAction={onFormAction}
             />
             <FormField
@@ -141,21 +133,15 @@ export default function ClaimDetails(
                 <FormItem className="col-span-4">
                   <FormLabel>Text</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <TextareaEx
                       id="text"
                       className="h-40 overflow-y-auto"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="A succinct summary of the claim"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        Succinct summary of the claim
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -167,21 +153,15 @@ export default function ClaimDetails(
                 <FormItem className="col-span-4">
                   <FormLabel>Notes</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <TextareaEx
                       id="notes"
                       className="h-40 overflow-y-auto"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="Contributors' notes on the claim"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        Contributors' notes on the claim
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}

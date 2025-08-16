@@ -17,24 +17,24 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import Log from "@/app/model/Log";
-import { DataTableFilterProps, DataTableViewOptions } from "../data-table/data-table-view-options";
-import { LogQueryFilter } from "@/app/model/schema";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useCallback, useContext, useState } from "react";
-import { formatDate } from "@/lib/utils";
-import { READ_USERS } from "@/lib/graphql-queries";
-import { useQuery } from "@apollo/client";
-import { toast } from "sonner";
-import IPage from "@/app/model/IPage";
-import User from "@/app/model/User";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { Button } from "@/components/ui/button";
-import { CalendarIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
-import Spinner from "../misc/spinner";
-import InputEx from "../misc/input-ex";
-import { GlobalContext, QueryState } from "@/lib/context";
+import Log from "@/app/model/Log"
+import { DataTableFilterProps, DataTableViewOptions } from "../data-table/data-table-view-options"
+import { LogQueryFilter } from "@/app/model/schema"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ChangeEvent, useCallback, useContext, useState } from "react"
+import { formatDate } from "@/lib/utils"
+import { READ_USERS } from "@/lib/graphql-queries"
+import { useQuery } from "@apollo/client"
+import { toast } from "sonner"
+import IPage from "@/app/model/IPage"
+import User from "@/app/model/User"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
+import { Button } from "@/components/ui/button"
+import { CalendarIcon, ChevronDownIcon } from "@heroicons/react/24/outline"
+import Spinner from "../misc/spinner"
+import InputEx from "../ext/input-ex"
+import { GlobalContext, QueryState } from "@/lib/context"
 
 export default function LogTableFilter(
   {
@@ -103,8 +103,8 @@ export default function LogTableFilter(
     updateFilter(entityKind, entityId, userId, transactionKind, from, to)
   }, [entityKind, entityId, userId, transactionKind, from, to, updateFilter])
 
-  const handleEntityIdChange = useCallback((entityId: string | number | readonly string[] | undefined) => {
-    entityId = entityId?.toString() ?? ''
+  const handleEntityIdChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const entityId = e.target.value?.toString() ?? ''
     setEntityId(entityId)
     updateFilter(entityKind, entityId, userId, transactionKind, from, to)
   }, [entityKind, entityId, userId, transactionKind, from, to, updateFilter])
@@ -269,7 +269,8 @@ export default function LogTableFilter(
           className="w-30 text-right"
           placeholder="Record ID"
           value={entityId}
-          onChangeValue={handleEntityIdChange}
+          onChange={handleEntityIdChange}
+          delay={500}
         />
         <Button variant="outline" title="Clear all filters" onClick={handleReset}>Reset</Button>
         <DataTableViewOptions table={table} />

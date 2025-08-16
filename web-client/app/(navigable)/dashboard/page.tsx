@@ -20,9 +20,9 @@
 'use client'
 
 // import type { Metadata } from "next";
-import TopicsAndRecords from "@/app/ui/dashboard/topics-records";
-import DatabaseStatistics from "@/app/ui/dashboard/database-statistics";
-import ChartBarIcon from "@heroicons/react/24/outline/ChartBarIcon";
+import TopicsAndRecords from "@/app/ui/dashboard/topics-records"
+import DatabaseStatistics from "@/app/ui/dashboard/database-statistics"
+import ChartBarIcon from "@heroicons/react/24/outline/ChartBarIcon"
 
 // export const metadata: Metadata = {
 //   title: "Dashboard",

@@ -17,10 +17,10 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import IBaseEntity from "./IBaseEntity";
-import IPage from "./IPage";
-import Log from "./Log";
-import User from "./User";
+import IBaseEntity from "./IBaseEntity"
+import IPage from "./IPage"
+import Log from "./Log"
+import User from "./User"
 
 export default interface ITrackedEntity extends IBaseEntity {
   /** The entity kind. */

@@ -19,30 +19,18 @@
 
 'use client'
 
-import { Input } from "@/components/ui/input";
-import { ComponentProps, useEffect, useState } from "react";
-import { useDebounceValue } from "usehooks-ts";
+import { Textarea } from "@/components/ui/textarea"
+import { ComponentProps } from "react"
+import Help, { HelpProps } from "../misc/help"
+import { cn } from "@/lib/utils"
 
-export default function InputEx(
-  {onChangeValue, value, ...props} :
-  {onChangeValue: (value: string | number | readonly string[] | undefined) => void} & ComponentProps<"input">
-) {
-  const [text, setText] = useState(value)
-  const [debouncedValue, setDebouncedValue] = useDebounceValue(value, 500)
-  useEffect(() => setText(value), [value])
-  useEffect(() => onChangeValue(debouncedValue), [debouncedValue])
+type TextareaExProps = ComponentProps<"textarea"> & HelpProps
 
-  function onChangeText(s: string) {
-    setText(s)
-    setDebouncedValue(s)
-  }
-
+export default function TextareaEx({help, outerClassName, ...props} : TextareaExProps) {
   return (
-    <Input
-      value={text}
-      onKeyDown={(e) => e.code == "Escape" && onChangeText('')}
-      onChange={(e) => onChangeText(e.target.value ?? '')}
-      {...props}
-    />
+    <div className={cn("flex flex-row items-center gap-1", outerClassName)}>
+      <Textarea {...props} />
+      <Help text={help} />
+    </div>
   )
 }

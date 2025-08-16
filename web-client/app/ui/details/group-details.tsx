@@ -29,15 +29,16 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import Group from "@/app/model/Group"
-import { Input } from "@/components/ui/input"
 import StandardDetails from "./standard-details"
-import { Checkbox } from "@/components/ui/checkbox"
 import DetailActions, { DetailMode, DetailState } from "./detail-actions"
-import { Dispatch, SetStateAction, useState } from "react"
+import { Dispatch, SetStateAction } from "react"
 import { useFormContext } from "react-hook-form"
 import { authorities } from "./authority-ui"
 import { GroupFieldValues } from "../validators/group"
 import { FormActionHandler } from "@/hooks/use-page-logic"
+import InputEx from "../ext/input-ex"
+import CheckboxEx from "../ext/checkbox-ex"
+import FieldsetEx from "../ext/fieldset-ex"
 
 export default function GroupDetails(
   {
@@ -52,12 +53,7 @@ export default function GroupDetails(
     onFormAction: FormActionHandler<GroupFieldValues>
   }) {
 
-  // const {hasAuthority} = useAuth()
   const form = useFormContext<GroupFieldValues>()
-  // const [mode, setMode] = useState<DetailMode>("view")
-  const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
-
-  // const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
   const { updating } = state
 
   return (
@@ -83,21 +79,15 @@ export default function GroupDetails(
                 <FormItem>
                   <FormLabel>Group name</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="groupname"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       placeholder="groupname"
                       {...field}
+                      help="The name for the group, consisting of letters only"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The group name
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -109,11 +99,13 @@ export default function GroupDetails(
               form={form}
               state={state}
               setMode={setMode}
-              showFieldHelp={showFieldHelp}
-              setShowFieldHelp={setShowFieldHelp}
               onFormAction={onFormAction}
             />
-            <fieldset className="grid grid-cols-7 border rounded-md p-4 gap-4 w-full" disabled={!record && !updating}>
+            <FieldsetEx
+              className="grid grid-cols-7 border rounded-md p-4 gap-4"
+              disabled={!updating}
+              help="Authorities to grant to the group"
+            >
               <legend>&nbsp;Authorities&nbsp;</legend>
               {
                 authorities.map(auth => (
@@ -125,26 +117,20 @@ export default function GroupDetails(
                       <FormItem>
                         <FormLabel>{auth.label}</FormLabel>
                         <FormControl>
-                          <Checkbox
+                          <CheckboxEx
                             id={auth.key}
                             checked={field.value}
                             onCheckedChange={field.onChange}
+                            help={auth.description}
                           />
                         </FormControl>
-                        {
-                          showFieldHelp
-                          ? <FormDescription>
-                              {auth.description}
-                            </FormDescription>
-                          : null
-                        }
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 ))
               }
-            </fieldset>
+            </FieldsetEx>
             <p>Click the 'Users' tab to see group members</p>
           </div>
         </form>

@@ -17,23 +17,23 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import Log from "@/app/model/Log";
-import { DataTableFilterProps, DataTableViewOptions } from "../data-table/data-table-view-options";
-import { LogQueryFilter } from "@/app/model/schema";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { formatDate } from "@/lib/utils";
-import { READ_USERS } from "@/lib/graphql-queries";
-import { useQuery } from "@apollo/client";
-import { toast } from "sonner";
-import IPage from "@/app/model/IPage";
-import User from "@/app/model/User";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { Button } from "@/components/ui/button";
-import { CalendarIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
-import Spinner from "../misc/spinner";
-import { GlobalContext, QueryState } from "@/lib/context";
+import Log from "@/app/model/Log"
+import { DataTableFilterProps, DataTableViewOptions } from "../data-table/data-table-view-options"
+import { LogQueryFilter } from "@/app/model/schema"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useCallback, useContext, useEffect, useState } from "react"
+import { formatDate } from "@/lib/utils"
+import { READ_USERS } from "@/lib/graphql-queries"
+import { useQuery } from "@apollo/client"
+import { toast } from "sonner"
+import IPage from "@/app/model/IPage"
+import User from "@/app/model/User"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
+import { Button } from "@/components/ui/button"
+import { CalendarIcon, ChevronDownIcon } from "@heroicons/react/24/outline"
+import Spinner from "../misc/spinner"
+import { GlobalContext, QueryState } from "@/lib/context"
 
 export default function LogDialogFilter(
   {

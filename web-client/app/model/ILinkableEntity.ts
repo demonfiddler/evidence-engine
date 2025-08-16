@@ -17,9 +17,9 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import EntityLink from "./EntityLink";
-import IPage from "./IPage";
-import ITrackedEntity from "./ITrackedEntity";
+import EntityLink from "./EntityLink"
+import IPage from "./IPage"
+import ITrackedEntity from "./ITrackedEntity"
 
 export default interface ILinkableEntity extends ITrackedEntity {
   /** Outbound links for which the receiver is the 'linked-from' entity */

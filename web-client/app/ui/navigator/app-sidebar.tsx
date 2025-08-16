@@ -19,8 +19,8 @@
 
 'use client';
 
-import Link from 'next/link';
-import Logo from '@/app/ui/logo';
+import Link from 'next/link'
+import Logo from '@/app/ui/logo'
 import {
   Sidebar,
   SidebarContent,
@@ -49,7 +49,7 @@ import {
   ShieldCheckIcon,
   UserIcon,
 } from '@heroicons/react/24/outline';
-import useAuth from '@/hooks/use-auth';
+import useAuth from '@/hooks/use-auth'
 
 const appItems = [
   { title: 'Home', url: '/', icon: HomeIcon },

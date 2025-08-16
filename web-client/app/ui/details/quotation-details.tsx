@@ -29,20 +29,20 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
-import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Textarea } from "@/components/ui/textarea"
 import { cn, formatDate } from "@/lib/utils"
 import { CalendarIcon } from "@heroicons/react/24/outline"
 import StandardDetails from "./standard-details"
 import DetailActions, { DetailMode, DetailState } from "./detail-actions"
-import Link from "next/link"
 import { Dispatch, SetStateAction, useState } from "react"
 import { useFormContext } from "react-hook-form"
 import { QuotationFieldValues } from "../validators/quotation"
 import { FormActionHandler } from "@/hooks/use-page-logic"
+import InputEx from "../ext/input-ex"
+import ButtonEx from "../ext/button-ex"
+import TextareaEx from "../ext/textarea-ex"
+import LinkEx from "../ext/link-ex"
 
 export default function QuotationDetails(
   {
@@ -59,7 +59,6 @@ export default function QuotationDetails(
 
   const form = useFormContext()
   const [open, setOpen] = useState(false)
-  const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
   const { updating } = state
 
   return (
@@ -85,21 +84,15 @@ export default function QuotationDetails(
                 <FormItem>
                   <FormLabel>Quotee</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="quotee"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       placeholder="quotee"
                       {...field}
+                      help="The full name of the person being quoted"
                     />
                   </FormControl>
-                    {
-                      showFieldHelp
-                      ? <FormDescription>
-                          The name of the person being quoted
-                        </FormDescription>
-                      : null
-                    }
                   <FormMessage />
                 </FormItem>
               )}
@@ -113,18 +106,20 @@ export default function QuotationDetails(
                   <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger id="date" asChild>
                       <FormControl>
-                        <Button
+                        <ButtonEx
                           variant={"outline"}
                           disabled={!updating}
-                          className={cn("w-full justify-start text-left font-normal",
-                            (!record || !record.date) && "text-muted-foreground")}>
+                          className={cn("grow justify-start text-left font-normal",
+                            (!record || !record.date) && "text-muted-foreground")}
+                          help="The date when the quotation was first spoken or written"
+                        >
                           <CalendarIcon />
                           {field.value ? (
                             formatDate(field.value, "PPP")
                           ) : (
                             <span>Pick a date</span>
                           )}
-                        </Button>
+                        </ButtonEx>
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
@@ -140,13 +135,6 @@ export default function QuotationDetails(
                       />
                     </PopoverContent>
                   </Popover>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The date the quotation was first spoken or written
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -158,8 +146,6 @@ export default function QuotationDetails(
               form={form}
               state={state}
               setMode={setMode}
-              showFieldHelp={showFieldHelp}
-              setShowFieldHelp={setShowFieldHelp}
               onFormAction={onFormAction}
             />
             <FormField
@@ -169,21 +155,15 @@ export default function QuotationDetails(
                 <FormItem className="col-span-2">
                   <FormLabel>Quote</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <TextareaEx
                       id="text"
                       className="col-span-4 h-40 overflow-y-auto"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="The verbatim text of the quotation"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The text of the quotation
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -195,21 +175,15 @@ export default function QuotationDetails(
                 <FormItem className="col-span-2">
                   <FormLabel>Source</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       className="col-span-4"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       placeholder="source"
                       {...field}
+                      help="Where the quotation was spoken or written"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        Where the quotation was spoken or written
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -223,22 +197,23 @@ export default function QuotationDetails(
                   <FormControl>
                     {
                       updating
-                      ? <Input
+                      ? <InputEx
                         type="url"
                         className="col-span-4"
                         placeholder="URL"
                         {...field}
+                        help="The online web address of the quotation"
                       />
-                      : <Link className="col-span-4" href={record?.url ?? ''} target="_blank">{record?.url ?? ''}</Link>
+                      : <LinkEx
+                        className="col-span-4"
+                        href={record?.url ?? ''}
+                        target="_blank"
+                        help="The online web address of the quotation"
+                      >
+                        {record?.url ?? ''}
+                      </LinkEx>
                     }
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The online web address of the quotation
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -250,21 +225,15 @@ export default function QuotationDetails(
                 <FormItem className="col-span-2">
                   <FormLabel>Notes</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <TextareaEx
                       id="notes"
                       className="col-span-4 h-40 overflow-y-auto"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="Contributors' notes on the quotation"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        Contributors' notes on the quotation
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}

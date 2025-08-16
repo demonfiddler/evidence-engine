@@ -17,8 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import ILinkableEntity from "./ILinkableEntity";
-import Journal from "./Journal";
+import ILinkableEntity from "./ILinkableEntity"
+import Journal from "./Journal"
 
 export default interface Publication extends ILinkableEntity {
   /** The publication title. */

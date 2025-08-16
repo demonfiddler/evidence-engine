@@ -44,14 +44,14 @@ import { useCallback, useEffect, useRef } from 'react'
 import { useSessionStorage } from 'usehooks-ts'
 import Topic from './model/Topic'
 import User from './model/User'
-import { ApolloProvider } from '@apollo/client';
-import { apolloClient } from '@/lib/graphql-utils';
-import { AuthProvider } from '@/hooks/use-auth';
-import { useImmerReducer } from "use-immer";
-import { ColumnOrderState, ColumnSizingState, PaginationState, SortingState, VisibilityState } from '@tanstack/react-table';
-import IBaseEntity from './model/IBaseEntity';
-import { LinkableEntityQueryFilter, LogQueryFilter, TrackedEntityQueryFilter } from './model/schema';
-import { usePathname } from 'next/navigation';
+import { ApolloProvider } from '@apollo/client'
+import { apolloClient } from '@/lib/graphql-utils'
+import { AuthProvider } from '@/hooks/use-auth'
+import { useImmerReducer } from "use-immer"
+import { ColumnOrderState, ColumnSizingState, PaginationState, SortingState, VisibilityState } from '@tanstack/react-table'
+import IBaseEntity from './model/IBaseEntity'
+import { LinkableEntityQueryFilter, LogQueryFilter, TrackedEntityQueryFilter } from './model/schema'
+import { usePathname } from 'next/navigation'
 import { columns as claimColumns, columnVisibility as claimColumnVisibility } from "@/app/ui/tables/claim-columns"
 import { columns as declarationColumns, columnVisibility as declarationColumnVisibility } from "@/app/ui/tables/declaration-columns"
 import { columns as groupColumns, columnVisibility as groupColumnVisibility } from "@/app/ui/tables/group-columns"

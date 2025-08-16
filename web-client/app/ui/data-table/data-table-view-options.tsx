@@ -31,6 +31,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 import RecordKind from "@/app/model/RecordKind"
+import ButtonEx from "../ext/button-ex"
 
 export interface DataTableViewOptionsProps<T> {
   table: Table<T>
@@ -49,15 +50,16 @@ export function DataTableViewOptions<T>({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
+        <ButtonEx
           variant="ghost"
           size="sm"
+          
           className="ml-auto hidden h-8 lg:flex"
-          title="Select columns to display"
+          help="Select the columns to display"
         >
           <Settings2 />
           View
-        </Button>
+        </ButtonEx>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[150px]">
         <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>

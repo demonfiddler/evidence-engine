@@ -20,7 +20,7 @@
 
 'use client'
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
 /*
  * Loosely based on https://tailwindflex.com/@mohit/spinning-loading.

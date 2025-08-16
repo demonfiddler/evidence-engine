@@ -19,18 +19,18 @@
 
 'use client'
 
-import { BeakerIcon } from '@heroicons/react/24/outline';
-import PublicationDetails from "@/app/ui/details/publication-details";
-import DataTable from "@/app/ui/data-table/data-table";
+import { BeakerIcon } from '@heroicons/react/24/outline'
+import PublicationDetails from "@/app/ui/details/publication-details"
+import DataTable from "@/app/ui/data-table/data-table"
 import { columns } from "@/app/ui/tables/publication-columns"
-import Publication from "@/app/model/Publication";
-import { toDate, toInteger, toIsoDateString } from "@/lib/utils";
+import Publication from "@/app/model/Publication"
+import { toDate, toInteger, toIsoDateString } from "@/lib/utils"
 import { FormProvider } from "react-hook-form"
-import { PublicationFieldValues, PublicationKind, PublicationSchema as PublicationSchema } from "@/app/ui/validators/publication";
-import { CREATE_PUBLICATION, DELETE_PUBLICATION, READ_PUBLICATIONS, UPDATE_PUBLICATION } from "@/lib/graphql-queries";
-import usePageLogic from "@/hooks/use-page-logic";
-import { LinkableEntityQueryFilter, PublicationInput } from '@/app/model/schema';
-import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter';
+import { PublicationFieldValues, PublicationKind, PublicationSchema as PublicationSchema } from "@/app/ui/validators/publication"
+import { CREATE_PUBLICATION, DELETE_PUBLICATION, READ_PUBLICATIONS, UPDATE_PUBLICATION } from "@/lib/graphql-queries"
+import usePageLogic from "@/hooks/use-page-logic"
+import { LinkableEntityQueryFilter, PublicationInput } from '@/app/model/schema'
+import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter'
 
 function createFieldValues(publication?: Publication) : PublicationFieldValues {
   return {

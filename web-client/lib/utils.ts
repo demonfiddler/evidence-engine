@@ -91,11 +91,11 @@ export function getRecordLabel(recordKind: RecordKind | undefined, record?: ITra
   switch (recordKind) {
     case "Claim": {
       const claim = record as Claim
-      return `${recordKind} #${record?.id}: ${claim?.text}`
+      return `${recordKind} #${record?.id}: '${claim?.text}'`
     }
     case "Declaration": {
       const declaration = record as Declaration
-      return `${recordKind} #${record?.id}: ${declaration?.title}`
+      return `${recordKind} #${record?.id}: '${declaration?.title}'`
     }
     case "RecordLink": {
       const link = record as EntityLink
@@ -103,11 +103,11 @@ export function getRecordLabel(recordKind: RecordKind | undefined, record?: ITra
     }
     case "Group": {
       const group = record as Group
-      return `${recordKind} #${record?.id}: ${group?.groupname}`
+      return `${recordKind} #${record?.id}: '${group?.groupname}'`
     }
     case "Journal": {
       const journal = record as Journal
-      return `${recordKind} #${record?.id}: ${journal?.title}`
+      return `${recordKind} #${record?.id}: '${journal?.title}'`
     }
     case "Log": {
       const log = record as Log
@@ -115,27 +115,27 @@ export function getRecordLabel(recordKind: RecordKind | undefined, record?: ITra
     }
     case "Person": {
       const person = record as Person
-      return `${recordKind} #${record?.id}: ${person?.firstName} ${person?.lastName}`
+      return `${recordKind} #${record?.id}: '${person?.firstName} ${person?.lastName}'`
     }
     case "Publication": {
       const publication = record as Publication
-      return `${recordKind} #${record?.id}: ${publication?.title}`
+      return `${recordKind} #${record?.id}: '${publication?.title}'`
     }
     case "Publisher": {
       const publisher = record as Publisher
-      return `${recordKind} #${record?.id}: ${publisher?.name}`
+      return `${recordKind} #${record?.id}: '${publisher?.name}'`
     }
     case "Quotation": {
       const quotation = record as Quotation
-      return `${recordKind} #${record?.id}: ${quotation?.text}`
+      return `${recordKind} #${record?.id}: '${quotation?.text}'`
     }
     case "Topic": {
       const topic = record as Topic
-      return `${recordKind} #${record?.id}: ${topic?.label}`
+      return `${recordKind} #${record?.id}: '${topic?.label}'`
     }
     case "User": {
       const user = record as User
-      return `${recordKind} #${record?.id}: ${user?.firstName} ${user?.lastName} (${user?.username})`
+      return `${recordKind} #${record?.id}: '${user?.firstName} ${user?.lastName}' (${user?.username})`
     }
     default:
       throw new Error(`Unrecognised record kind: ${recordKind}`);

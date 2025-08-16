@@ -19,7 +19,7 @@
 
 'use client'
 
-import { toDate } from "@/lib/utils";
+import { toDate } from "@/lib/utils"
 import {
   Dialog,
   DialogContent,
@@ -29,18 +29,20 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button";
-import ListBulletIcon from "@heroicons/react/24/outline/ListBulletIcon";
-import { useState } from "react";
-import Log from "@/app/model/Log";
+import { Button } from "@/components/ui/button"
+import ListBulletIcon from "@heroicons/react/24/outline/ListBulletIcon"
+import { useState } from "react"
+import Log from "@/app/model/Log"
 import { ownColumns as columns } from "@/app/ui/tables/log-columns"
-import DataTable from "../data-table/data-table";
-import { DetailState } from "../details/detail-actions";
-import { LogInput, LogQueryFilter } from "@/app/model/schema";
-import usePageLogic from "@/hooks/use-page-logic";
-import { READ_LOGS } from "@/lib/graphql-queries";
-import { LogFieldValues } from "../validators/log";
-import LogDialogFilter from "../filter/log-dialog-filter";
+import DataTable from "../data-table/data-table"
+import { DetailState } from "../details/detail-actions"
+import { LogInput, LogQueryFilter } from "@/app/model/schema"
+import usePageLogic from "@/hooks/use-page-logic"
+import { READ_LOGS } from "@/lib/graphql-queries"
+import { LogFieldValues } from "../validators/log"
+import LogDialogFilter from "../filter/log-dialog-filter"
+import ButtonEx from "../ext/button-ex"
+import RecordKind from "@/app/model/RecordKind"
 
 function createFieldValues(record?: Log) : LogFieldValues {
   return {
@@ -57,12 +59,14 @@ function createFieldValues(record?: Log) : LogFieldValues {
 export default function LogDialog({
   className,
   disabled,
+  recordKind,
   recordId,
   recordLabel,
   state,
 } : {
   className?: string
   disabled: boolean
+  recordKind: RecordKind
   recordId: string
   recordLabel: string
   state: DetailState
@@ -82,12 +86,17 @@ export default function LogDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild className={className}>
-        <Button
-          className="w-20 place-self-center bg-blue-500 text-md"
+      <DialogTrigger className={className}>
+        <ButtonEx
+          outerClassName="place-self-center"
+          className="w-20 bg-blue-500 text-md"
           disabled={disabled}
-          title={`Show log for ${recordLabel}`}
-        >Show log</Button>
+          help={
+            recordId
+            ? `Show log for ${recordLabel}`
+            : `No ${recordKind} selected`
+          }
+        >Show log</ButtonEx>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

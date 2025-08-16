@@ -17,13 +17,13 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import { createContext } from 'react';
+import { createContext } from 'react'
 
 import ILinkableEntity from "../app/model/ILinkableEntity"
 import RecordKind from "../app/model/RecordKind"
 import Topic from "../app/model/Topic"
-import Authority from '@/app/model/Authority';
-import User from '@/app/model/User';
+import Authority from '@/app/model/Authority'
+import User from '@/app/model/User'
 import {
   ColumnOrderState,
   ColumnSizingState,

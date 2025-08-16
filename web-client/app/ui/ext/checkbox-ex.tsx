@@ -17,17 +17,21 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import ITrackedEntity from "./ITrackedEntity"
+'use client'
 
-export default interface Publisher extends ITrackedEntity {
-  /** The publisher name. */
-  name?: string
-  /** The publisher location. */
-  location?: string | null
-  /** The publisher country. */
-  country?: string | null
-  /** URL of publisher's home page. */
-  url?: /*URL | */string | null
-  /** The number of journals published. */
-  journalCount?: number
+import { Checkbox } from "@/components/ui/checkbox"
+import { ComponentProps } from "react"
+import Help, { HelpProps } from "../misc/help"
+import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
+import { cn } from "@/lib/utils"
+
+type CheckboxExProps = ComponentProps<typeof CheckboxPrimitive.Root> & HelpProps
+
+export default function CheckboxEx({help, outerClassName, ...props} : CheckboxExProps) {
+  return (
+    <div className={cn("flex flex-row items-center gap-1", outerClassName)}>
+      <Checkbox {...props} />
+      <Help text={help} />
+    </div>
+  )
 }

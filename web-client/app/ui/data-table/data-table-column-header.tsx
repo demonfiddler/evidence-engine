@@ -21,13 +21,13 @@
 
 import { Column, Header, Table } from "@tanstack/react-table"
 import { ArrowDown, ArrowUp, ChevronsUpDown, GripVertical } from "lucide-react"
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { useSortable } from "@dnd-kit/sortable";
+import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from '@dnd-kit/utilities'
-import { CSSProperties } from "react";
-import { TableHead } from "@/components/ui/table";
+import { CSSProperties } from "react"
+import { TableHead } from "@/components/ui/table"
 
 interface DataTableColumnHeaderProps<TData, TValue> extends React.HTMLAttributes<HTMLDivElement> {
   table: Table<TData>

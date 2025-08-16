@@ -17,7 +17,7 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import IBaseEntity from "./IBaseEntity";
+import IBaseEntity from "./IBaseEntity"
 
 export default abstract class AbstractBaseEntity implements IBaseEntity {
     id?: string;

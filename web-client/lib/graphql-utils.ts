@@ -17,8 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import { ApolloClient, createHttpLink, DocumentNode, InMemoryCache } from '@apollo/client';
-import { FieldNode, Kind, OperationDefinitionNode, OperationTypeNode } from 'graphql';
+import { ApolloClient, createHttpLink, DocumentNode, InMemoryCache } from '@apollo/client'
+import { FieldNode, Kind, OperationDefinitionNode, OperationTypeNode } from 'graphql'
 
 // console.log(`process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL=${process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL}, process.env.NEXT_PUBLIC_WEB_CLIENT_URL=${process.env.NEXT_PUBLIC_WEB_CLIENT_URL}`)
 

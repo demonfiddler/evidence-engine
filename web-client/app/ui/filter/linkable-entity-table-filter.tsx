@@ -19,15 +19,17 @@
 
 'use client'
 
-import { Checkbox } from "@/components/ui/checkbox";
-import Search from "./search";
-import { DataTableFilterProps, DataTableViewOptions } from "../data-table/data-table-view-options";
-import { getRecordLinkProperties } from "@/lib/utils";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { LinkableEntityQueryFilter } from "@/app/model/schema";
-import { GlobalContext, QueryState } from "@/lib/context";
-import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox"
+import Search from "./search"
+import { DataTableFilterProps, DataTableViewOptions } from "../data-table/data-table-view-options"
+import { getRecordLinkProperties } from "@/lib/utils"
+import { useCallback, useContext, useEffect, useState } from "react"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectValue } from "@/components/ui/select"
+import { LinkableEntityQueryFilter } from "@/app/model/schema"
+import { GlobalContext, QueryState } from "@/lib/context"
+import SelectTriggerEx from "../ext/select-ex"
+import ButtonEx from "../ext/button-ex"
+import LabelEx from "../ext/label-ex"
 
 export default function LinkableEntityTableFilter<TData, TFilter>({
   table,
@@ -118,9 +120,9 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
           value={status ?? ''}
           onValueChange={handleStatusChange}
         >
-          <SelectTrigger id="status">
+          <SelectTriggerEx id="status" help="Filter the table to show only records with this status">
             <SelectValue placeholder="Status" />
-          </SelectTrigger>
+          </SelectTriggerEx>
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Status Kinds</SelectLabel>
@@ -140,25 +142,36 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
         {/* See https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode */}
         <Checkbox
           id="advanced"
-          title="Use advanced text search syntax"
           checked={advanced}
           onCheckedChange={handleAdvancedSearchChange}
         />
-        <label htmlFor="advanced">Advanced</label>
+        <LabelEx htmlFor="advanced" help="Use advanced text search syntax">Advanced</LabelEx>
         {
           isLinkableEntity
           ? <>
               <Checkbox
                 id="linkedOnly"
-                title="Only show records linked to the current master record(s)"
                 checked={showOnlyLinkedRecords}
                 onCheckedChange={handleShowOnlyLinkedRecordsChange}
               />
-              <label htmlFor="linkedOnly" className="flex-none">Show only linked records</label>
+              <LabelEx
+                htmlFor="linkedOnly"
+                className="flex-none"
+                help="Filter the table to show only records linked to the master topic and/or master record selected in the 'Filter by Links' section above"
+              >
+                Show only linked records
+              </LabelEx>
             </>
           : null
         }
-        <Button variant="outline" title="Clear all filters" onClick={handleReset}>Reset</Button>
+        <ButtonEx
+          outerClassName="flex-grow"
+          variant="outline"
+          help="Clear all filters"
+          onClick={handleReset}
+        >
+          Reset
+        </ButtonEx>
         <DataTableViewOptions table={table} />
       </div>
     </div>

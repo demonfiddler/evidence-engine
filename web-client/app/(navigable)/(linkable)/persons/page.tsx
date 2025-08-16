@@ -19,18 +19,18 @@
 
 'use client'
 
-import { UserIcon } from '@heroicons/react/24/outline';
-import PersonDetails from "@/app/ui/details/person-details";
-import DataTable from "@/app/ui/data-table/data-table";
+import { UserIcon } from '@heroicons/react/24/outline'
+import PersonDetails from "@/app/ui/details/person-details"
+import DataTable from "@/app/ui/data-table/data-table"
 import { columns } from "@/app/ui/tables/person-columns"
-import Person from "@/app/model/Person";
-import { toInteger } from "@/lib/utils";
+import Person from "@/app/model/Person"
+import { toInteger } from "@/lib/utils"
 import { FormProvider } from "react-hook-form"
-import { PersonFieldValues, PersonSchema as PersonSchema } from "@/app/ui/validators/person";
-import { CREATE_PERSON, DELETE_PERSON, READ_PERSONS, UPDATE_PERSON } from "@/lib/graphql-queries";
-import usePageLogic from "@/hooks/use-page-logic";
-import { LinkableEntityQueryFilter, PersonInput } from '@/app/model/schema';
-import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter';
+import { PersonFieldValues, PersonSchema as PersonSchema } from "@/app/ui/validators/person"
+import { CREATE_PERSON, DELETE_PERSON, READ_PERSONS, UPDATE_PERSON } from "@/lib/graphql-queries"
+import usePageLogic from "@/hooks/use-page-logic"
+import { LinkableEntityQueryFilter, PersonInput } from '@/app/model/schema'
+import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter'
 
 function createFieldValues(person?: Person) : PersonFieldValues {
   return {

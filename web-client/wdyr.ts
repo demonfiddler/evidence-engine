@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"
 
 // Only include the library in development
 if (process.env.NODE_ENV === "development") {

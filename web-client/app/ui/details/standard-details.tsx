@@ -19,17 +19,17 @@
 
 'use client'
 
-import ILinkableEntity from "@/app/model/ILinkableEntity";
-import TrackingDetails from "./tracking-details";
-import LinkingDetails from "./linking-details";
-import { useContext } from "react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Button } from "@/components/ui/button";
-import ITrackedEntity from "@/app/model/ITrackedEntity";
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
-import RecordKind from "@/app/model/RecordKind";
-import { DetailState } from "./detail-actions";
-import { GlobalContext } from "@/lib/context";
+import ILinkableEntity from "@/app/model/ILinkableEntity"
+import TrackingDetails from "./tracking-details"
+import LinkingDetails from "./linking-details"
+import { useContext } from "react"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { Button } from "@/components/ui/button"
+import ITrackedEntity from "@/app/model/ITrackedEntity"
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline"
+import RecordKind from "@/app/model/RecordKind"
+import { DetailState } from "./detail-actions"
+import { GlobalContext } from "@/lib/context"
 
 export default function StandardDetails(
   {recordKind, record, state, showLinkingDetails}:

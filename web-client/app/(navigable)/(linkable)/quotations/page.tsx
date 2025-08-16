@@ -25,7 +25,7 @@ import DataTable from "@/app/ui/data-table/data-table"
 import { columns } from "@/app/ui/tables/quotation-columns"
 import Quotation from "@/app/model/Quotation"
 import { FormProvider } from "react-hook-form"
-import { QuotationSchema, QuotationFieldValues } from "@/app/ui/validators/quotation";
+import { QuotationSchema, QuotationFieldValues } from "@/app/ui/validators/quotation"
 import { CREATE_QUOTATION, DELETE_QUOTATION, READ_QUOTATIONS, UPDATE_QUOTATION } from "@/lib/graphql-queries"
 import usePageLogic from "@/hooks/use-page-logic"
 import { toDate, toIsoDateString } from '@/lib/utils'

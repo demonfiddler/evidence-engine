@@ -27,7 +27,6 @@ import 'react-dropdown-tree-select/dist/styles.css'
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import {
@@ -35,13 +34,16 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline'
 import Topic from "@/app/model/Topic"
 import RecordKind from "@/app/model/RecordKind"
 import { GlobalContext } from '@/lib/context'
 import { setTopicFields } from "@/lib/utils"
 import { useQuery } from "@apollo/client"
 import { READ_TOPIC_HIERARCHY } from "@/lib/graphql-queries"
+import ButtonEx from "../ext/button-ex"
+import Help from "../misc/help"
+import InputEx from "../ext/input-ex"
 
 interface TopicTreeNode extends TreeNodeProps {
   topic: Topic
@@ -196,17 +198,20 @@ export default function EntityLinks() {
           <fieldset className="border rounded-md">
             <legend className="text-sm">&nbsp;Topic Link&nbsp;</legend>
             <div className="flex flex-col m-2 gap-2">
-              <DropdownTreeSelect
-                className="ee"
-                clearSearchOnChange={false}
-                data={treeData}
-                onChange={handleTopicChange}
-                mode="radioSelect"
-                keepTreeOnSearch={true}
-                inlineSearchInput={true}
-                showPartiallySelected={true}
-                texts={{ placeholder: `${topicPlaceholder}` }}
-              />
+              <div className="flex flex-row items-center gap-2">
+                <DropdownTreeSelect
+                  className="ee"
+                  clearSearchOnChange={false}
+                  data={treeData}
+                  onChange={handleTopicChange}
+                  mode="radioSelect"
+                  keepTreeOnSearch={true}
+                  inlineSearchInput={true}
+                  showPartiallySelected={true}
+                  texts={{ placeholder: `${topicPlaceholder}` }}
+                />
+                <Help text="In the table below, show only records linked to this topic when 'Show only linked records' is checked" />
+              </div>
               <Textarea placeholder="-Topic description here-" disabled={true} value={masterTopicDescription ?? ''} />
               <p className="text-xs text-gray-500">{`Path: ${masterTopicPath ?? ""}`}</p>
             </div>
@@ -242,12 +247,30 @@ export default function EntityLinks() {
                   <RadioGroupItem value="Quotation" id="option-six" />
                   <Label htmlFor="option-six">Quotation</Label>
                 </div>
+                <Help text="In the table below, show only records linked with the instance of this record kind shown in the 'Master record' drop-down below, when 'Show only linked records' is checked" />
               </RadioGroup>
-              <div className="flex flex-row m-2 gap-4">
+              <div className="flex flex-row items-center m-2 gap-2">
                 <Label htmlFor="masterRecord">Master record:</Label>
-                <Input id="masterRecord" readOnly={true} placeholder="-Master record description here-" value={getMasterRecordLabel()} />
+                <InputEx
+                  outerClassName="flex-grow"
+                  id="masterRecord"
+                  readOnly={true}
+                  placeholder="-Master record description here-"
+                  value={getMasterRecordLabel()}
+                  help="In the table below, show only records linked with this master record instance when 'Show only linked records' is checked"
+                />
                 <Link href={getMasterRecordUri()}>
-                  <Button className="bg-blue-500" disabled={masterRecordKind == "None"}>Go to</Button>
+                  <ButtonEx
+                    className="bg-blue-500"
+                    disabled={masterRecordKind == "None"}
+                    help={
+                      masterRecordKind != "None"
+                      ? `Navigate to the ${masterRecordKind}s page`
+                      : "No master record kind selected"
+                    }
+                  >
+                    Go to
+                  </ButtonEx>
                 </Link>
               </div>
               <Label className="text-xs text-gray-500">{

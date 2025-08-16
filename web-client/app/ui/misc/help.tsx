@@ -17,17 +17,34 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import ITrackedEntity from "./ITrackedEntity"
+'use client'
 
-export default interface Publisher extends ITrackedEntity {
-  /** The publisher name. */
-  name?: string
-  /** The publisher location. */
-  location?: string | null
-  /** The publisher country. */
-  country?: string | null
-  /** URL of publisher's home page. */
-  url?: /*URL | */string | null
-  /** The number of journals published. */
-  journalCount?: number
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card"
+import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline"
+
+export type HelpProps = {
+  outerClassName?: string
+  help?: string
+}
+
+export default function Help({text} : {text?: string}) {
+  if (!text)
+    return null
+
+  return (
+    <HoverCard>
+      <HoverCardTrigger asChild>
+        <QuestionMarkCircleIcon className="w-6 h-6 text-sky-300"/>
+      </HoverCardTrigger>
+      <HoverCardContent className="w-80 bg-sky-50" side="left">
+        <p className="text-sm">
+          {text}
+        </p>
+      </HoverCardContent>
+    </HoverCard>
+  )
 }

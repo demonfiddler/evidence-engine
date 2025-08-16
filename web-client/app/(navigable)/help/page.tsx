@@ -19,7 +19,7 @@
 
 'use client'
 
-import QuestionMarkCircleIcon from "@heroicons/react/24/outline/QuestionMarkCircleIcon";
+import QuestionMarkCircleIcon from "@heroicons/react/24/outline/QuestionMarkCircleIcon"
 
 export default function Help() {
   return (

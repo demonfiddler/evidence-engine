@@ -17,8 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import Group from "./Group";
-import SecurityPrincipal from "./SecurityPrincipal";
+import Group from "./Group"
+import SecurityPrincipal from "./SecurityPrincipal"
 
 export default interface User extends SecurityPrincipal {
   /** The (mutable?) unique user name (user-assigned). */

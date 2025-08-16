@@ -19,13 +19,13 @@
 
 'use client'
 
-import "@/app/globals.css";
-import '@/app/ui/global.css';
+import "@/app/globals.css"
+import '@/app/ui/global.css'
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/app/ui//navigator/app-sidebar"
-import SignIn from "../ui/security/sign-in";
-import { GlobalContext } from "@/lib/context";
-import { useContext } from "react";
+import SignIn from "../ui/security/sign-in"
+import { GlobalContext } from "@/lib/context"
+import { useContext } from "react"
 
 export default function NavigableLayout({
   children,

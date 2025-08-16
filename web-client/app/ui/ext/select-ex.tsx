@@ -17,17 +17,22 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import ITrackedEntity from "./ITrackedEntity"
+'use client'
 
-export default interface Publisher extends ITrackedEntity {
-  /** The publisher name. */
-  name?: string
-  /** The publisher location. */
-  location?: string | null
-  /** The publisher country. */
-  country?: string | null
-  /** URL of publisher's home page. */
-  url?: /*URL | */string | null
-  /** The number of journals published. */
-  journalCount?: number
+import Help, { HelpProps } from "../misc/help"
+import { SelectTrigger } from "@/components/ui/select"
+import { cn } from "@/lib/utils"
+import * as SelectPrimitive from "@radix-ui/react-select"
+
+type SelectTriggerExProps =
+  React.ComponentProps<typeof SelectPrimitive.Trigger> &
+  HelpProps
+
+export default function SelectTriggerEx({help, outerClassName, ...props} : SelectTriggerExProps) {
+  return (
+    <div className={cn("flex flex-row items-center gap-1", outerClassName)}>
+      <SelectTrigger {...props} />
+      <Help text={help} />
+    </div>
+  )
 }

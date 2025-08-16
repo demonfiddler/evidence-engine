@@ -17,8 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import ITrackedEntity from "./ITrackedEntity";
-import Publisher from "./Publisher";
+import ITrackedEntity from "./ITrackedEntity"
+import Publisher from "./Publisher"
 
 export default interface Journal extends ITrackedEntity {
   /** The full journal title. */

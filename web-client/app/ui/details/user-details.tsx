@@ -20,8 +20,6 @@
 'use client'
 
 import User from "@/app/model/User"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
   Form,
   FormControl,
@@ -37,11 +35,9 @@ import {
   SelectGroup,
   SelectItem,
   SelectLabel,
-  SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
 import StandardDetails from "./standard-details"
-import { Checkbox } from "@/components/ui/checkbox"
 import Country from "@/app/model/Country"
 import rawCountries from "@/data/countries.json" assert {type: 'json'}
 import Group from "@/app/model/Group"
@@ -49,11 +45,16 @@ import { getRecordLabel } from "@/lib/utils"
 import DetailActions, { DetailMode, DetailState } from "./detail-actions"
 import { toast } from "sonner"
 import { authorities } from "./authority-ui"
-import { Dispatch, SetStateAction, useCallback, useState } from "react"
+import { Dispatch, SetStateAction, useCallback } from "react"
 import { useFormContext } from "react-hook-form"
 import { UserFieldValues } from "../validators/user"
 import { FormActionHandler } from "@/hooks/use-page-logic"
-import { Textarea } from "@/components/ui/textarea"
+import InputEx from "../ext/input-ex"
+import SelectTriggerEx from "../ext/select-ex"
+import TextareaEx from "../ext/textarea-ex"
+import CheckboxEx from "../ext/checkbox-ex"
+import ButtonEx from "../ext/button-ex"
+import FieldsetEx from "../ext/fieldset-ex"
 
 const countries = rawCountries as unknown as Country[]
 
@@ -76,8 +77,6 @@ export default function UserDetails(
   }) {
 
   const form = useFormContext<UserFieldValues>()
-  const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
-
   const { updating } = state
   const userInGroup = (group?.members?.findIndex(m => m.id == user?.id) ?? -1) != -1
 
@@ -121,44 +120,19 @@ export default function UserDetails(
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="username"
                       disabled={!user && !updating}
-                      readOnly={!updating}
+                      readOnly={state.mode != "create"}
                       placeholder="username"
                       {...field}
+                      help="The user's username, consisting of lowercase letters only. This cannot be changed once it has been set."
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The user's username
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button
-              type="button"
-              className="col-start-3 w-20 place-self-center bg-blue-500"
-              disabled={!user || !group || updating}
-              title={
-                user && group
-                ? userInGroup
-                  ? `Remove selected user from  ${getRecordLabel("Group", group)}`
-                  : `Add selected User to ${getRecordLabel("Group", group)}`
-                : ''
-              }
-              onClick={handleAddOrRemove}
-            >
-              {
-                userInGroup
-                ? "Remove"
-                : "Add"
-              }
-            </Button>
             <FormField
               control={form.control}
               name="firstName"
@@ -166,26 +140,40 @@ export default function UserDetails(
                 <FormItem>
                   <FormLabel>First name</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="firstName"
                       className="col-span-2"
                       disabled={!user && !updating}
                       readOnly={!updating}
                       placeholder="first name"
                       {...field}
+                      help="The user's first name"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The user's first name
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
             />
+            <ButtonEx
+              type="button"
+              outerClassName="col-start-3 place-self-center"
+              className="w-20 bg-blue-500"
+              disabled={!user || !group || updating}
+              onClick={handleAddOrRemove}
+              help={
+                user && group
+                ? userInGroup
+                  ? `Remove selected user ${user.firstName} ${user.lastName} (${user.username}) from  ${getRecordLabel("Group", group)}`
+                  : `Add selected User ${user.firstName} ${user.lastName} (${user.username}) to ${getRecordLabel("Group", group)}`
+                : "User or Group not selected"
+              }
+            >
+              {
+                userInGroup
+                ? "Remove"
+                : "Add"
+              }
+            </ButtonEx>
             <FormField
               control={form.control}
               name="lastName"
@@ -193,21 +181,15 @@ export default function UserDetails(
                 <FormItem>
                   <FormLabel>Last name</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="lastName"
                       disabled={!user && !updating}
                       readOnly={!updating}
                       placeholder="last name"
                       {...field}
+                      help="The user's last name"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The user's last name
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -220,8 +202,6 @@ export default function UserDetails(
               form={form}
               state={state}
               setMode={setMode}
-              showFieldHelp={showFieldHelp}
-              setShowFieldHelp={setShowFieldHelp}
               onFormAction={onFormAction}
             />
             <FormField
@@ -231,22 +211,16 @@ export default function UserDetails(
                 <FormItem className="col-span-2">
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="email"
                       type="email"
                       disabled={!user && !updating}
                       readOnly={!updating}
                       placeholder="email"
                       {...field}
+                      help="The user's email address"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The user's email address
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -258,22 +232,16 @@ export default function UserDetails(
                 <FormItem className="col-span-2">
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="password"
                       // type="password"
                       disabled={!user && !updating}
                       readOnly={!updating}
                       placeholder="password"
                       {...field}
+                      help="bcrypt hash of user's password"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        bcrypt hash of user's password
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -290,9 +258,14 @@ export default function UserDetails(
                     onValueChange={field.onChange}
                   >
                     <FormControl>
-                      <SelectTrigger id="country" className="w-full" disabled={!user && !updating}>
+                      <SelectTriggerEx
+                        id="country"
+                        className="w-full"
+                        disabled={!user && !updating}
+                        help="The user's country of residence"
+                      >
                         <SelectValue placeholder="Specify country" />
-                      </SelectTrigger>
+                      </SelectTriggerEx>
                     </FormControl>
                     <SelectContent>
                       <SelectGroup>
@@ -309,13 +282,6 @@ export default function UserDetails(
                       </SelectGroup>
                     </SelectContent>
                   </Select>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The user's country of residence
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -327,26 +293,25 @@ export default function UserDetails(
                 <FormItem className="col-start-1 col-span-2">
                   <FormLabel>Notes</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <TextareaEx
                       id="notes"
                       className="h-40 overflow-y-auto"
                       disabled={!user && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="Added notes on the user"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        Added notes on the user.
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <fieldset className="col-start-1 col-span-2 grid grid-cols-7 border rounded-md p-4 gap-4 w-full" disabled={!user && !updating}>
+            <FieldsetEx
+              outerClassName="col-start-1 col-span-2"
+              className="grid grid-cols-7 border rounded-md p-4 gap-4"
+              disabled={!user && !updating}
+              help="Authorities to grant to the user"
+            >
               <legend>&nbsp;Authorities&nbsp;</legend>
               {
                 authorities.map(auth => (
@@ -358,33 +323,21 @@ export default function UserDetails(
                       <FormItem>
                         <FormLabel>{auth.label}</FormLabel>
                         <FormControl>
-                          <Checkbox
+                          <CheckboxEx
                             id={auth.key}
                             checked={field.value}
                             onCheckedChange={field.onChange}
+                            help={auth.description}
                           />
                         </FormControl>
-                        {
-                          showFieldHelp
-                          ? <FormDescription>
-                              {auth.description}
-                            </FormDescription>
-                          : null
-                        }
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 ))
               }
-              {
-                showFieldHelp
-                ? <FormDescription className="col-span-3">
-                    The authorities granted to the user
-                  </FormDescription>
-                : null
-              }
-            </fieldset>
+              <p className="col-span-7 text-sm">N.B. Consider adding this user to a group with authorities rather than granting authorities here</p>
+            </FieldsetEx>
           </div>
         </form>
       </Form>

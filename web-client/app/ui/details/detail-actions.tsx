@@ -21,17 +21,16 @@
 
 import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from "react"
 import { toast } from "sonner"
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { cn, getRecordLabel } from "@/lib/utils";
-import ITrackedEntity from "@/app/model/ITrackedEntity";
-import RecordKind from "@/app/model/RecordKind";
-import { FieldValues, UseFormReturn } from "react-hook-form";
-import { FormActionHandler } from "@/hooks/use-page-logic";
-import { Checkbox } from "@/components/ui/checkbox";
-import { GlobalContext } from "@/lib/context";
-import { Input } from "@/components/ui/input";
+import { cn, getRecordLabel } from "@/lib/utils"
+import ITrackedEntity from "@/app/model/ITrackedEntity"
+import RecordKind from "@/app/model/RecordKind"
+import { FieldValues, UseFormReturn } from "react-hook-form"
+import { FormActionHandler } from "@/hooks/use-page-logic"
+import { Checkbox } from "@/components/ui/checkbox"
+import { GlobalContext } from "@/lib/context"
+import ButtonEx from "../ext/button-ex"
+import InputEx from "../ext/input-ex"
 
 export type ClickHandler = () => void
 
@@ -56,8 +55,6 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
     form,
     state,
     setMode,
-    showFieldHelp,
-    setShowFieldHelp,
     onFormAction
   } :
   {
@@ -67,8 +64,6 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
     form: UseFormReturn<any>
     state: DetailState
     setMode: Dispatch<SetStateAction<DetailMode>>
-    showFieldHelp: boolean
-    setShowFieldHelp: any
     onFormAction: FormActionHandler<V>
   }) {
 
@@ -202,44 +197,53 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
 
   return (
     <div className={cn("self-start flex flex-col gap-2 items-center", className)}>
-      <Button
+      <ButtonEx
         type="button"
         onClick={handleNewOrCancel}
+        outerClassName="justify-center w-full"
         className="col-start-6 w-20 place-self-center bg-blue-500"
         disabled={!state.updating && !state.allowCreate}
-        title={
+        help={
           state.updating
-          ? `Discard changes to ${recordLabel}`
-          : `Create a new ${recordKind}`
+          ? `Discard pending changes to ${state.mode == "create" ? `new ${recordKind}` : recordLabel}`
+          : `Create a new ${recordKind}. Requires authentication and 'Create' authority.`
         }
       >
         {state.updating ? 'Cancel' : 'New'}
-      </Button>
-      <Button
+      </ButtonEx>
+      <ButtonEx
         type="button"
         onClick={handleEditOrSave}
+        outerClassName="justify-center w-full"
         className="col-start-6 w-20 place-self-center bg-blue-500"
         disabled={
           !state.updating && (!state.allowEdit || !record) ||
           state.updating && (!form.formState.isDirty || !form.formState.isValid)
         }
-        title={
+        help={
           state.updating
           ? `Save changes to ${recordLabel}`
-          : `Edit the selected ${recordLabel}`
+          : record
+            ? `Edit the selected ${recordLabel}. Requires authentication and 'Update' authority.`
+            : `No ${recordKind} selected`
         }
       >
         {state.updating ? 'Save' : 'Edit'}
-      </Button>
-      <Button
+      </ButtonEx>
+      <ButtonEx
         type="button"
         onClick={handleDelete}
+        outerClassName="justify-center w-full"
         className="col-start-6 w-20 place-self-center bg-blue-500"
         disabled={!record || !state.allowDelete || state.updating}
-        title={`Delete the selected ${recordLabel}`}
+        help={
+          record
+          ? `Delete the selected ${recordLabel}. Requires authentication and 'Delete' authority.`
+          : `No ${recordKind} selected`
+        }
       >
         Delete
-      </Button>
+      </ButtonEx>
       <fieldset className={cn("border rounded-md p-2 flex flex-col gap-2", isLinkableEntity && state.mode === "create"? "" : "hidden")}>
         <legend className="text-lg">&nbsp;Create Master Links&nbsp;</legend>
         <div className="flex gap-2" title={`Link new record to master topic '${masterTopicPath}'`}>
@@ -251,11 +255,11 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
           <Label className="col-span-3" htmlFor="link-topic">To master topic</Label>
         </div>
         <Label htmlFor="this-locations" className="col-start-1">Location(s) in this record:</Label>
-        <Input
+        <InputEx
           id="this-locations-topic"
           type="text"
           disabled={!linkMasterTopic}
-          title={`Locations in the new new ${recordKind} that refer to Topic '${masterTopicPath}'`}
+          help={`Locations in the new new ${recordKind} that refer to Topic '${masterTopicPath}'`}
           value={thisRecordLocationsForTopic}
           onChange={e => setThisRecordLocationsForTopic(e.target.value)}
         />
@@ -268,30 +272,24 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
           <Label className="col-span-3" htmlFor="link-mr">To master record</Label>
         </div>
         <Label htmlFor="this-locations" className="col-start-1">Location(s) in this record:</Label>
-        <Input
+        <InputEx
           id="this-locations-master"
           type="text"
-          title={`Locations in the new ${recordKind} that refer to '${masterRecordLabel}'`}
+          help={`Locations in the new ${recordKind} that refer to '${masterRecordLabel}'`}
           disabled={!linkMasterRecord}
           value={thisRecordLocationsForMaster}
           onChange={e => setThisRecordLocationsForMaster(e.target.value)}
         />
         <Label htmlFor="other-locations">Location(s) in other record:</Label>
-        <Input
+        <InputEx
           id="other-locations-master"
           type="text"
-          title={`Locations in '${masterRecordLabel}' that refer to the new ${recordKind}`}
+          help={`Locations in '${masterRecordLabel}' that refer to the new ${recordKind}`}
           disabled={!linkMasterRecord}
           value={otherRecordLocationsForMaster}
           onChange={e => setOtherRecordLocationsForMaster(e.target.value)}
         />
       </fieldset>
-      <Label htmlFor="field-help">Field Help</Label>
-      <Switch
-        id="field-help"
-        checked={showFieldHelp}
-        onCheckedChange={setShowFieldHelp}
-      />
     </div>
   )
 }

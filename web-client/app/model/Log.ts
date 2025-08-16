@@ -17,8 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import IBaseEntity from "./IBaseEntity";
-import User from "./User";
+import IBaseEntity from "./IBaseEntity"
+import User from "./User"
 
 export default interface Log extends IBaseEntity {
   /** The date-time stamp. */

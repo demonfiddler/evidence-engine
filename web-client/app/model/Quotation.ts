@@ -17,7 +17,7 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import ILinkableEntity from "./ILinkableEntity";
+import ILinkableEntity from "./ILinkableEntity"
 
 export default interface Quotation extends ILinkableEntity {
   /** The text of the quotation. */

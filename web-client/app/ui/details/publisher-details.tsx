@@ -20,7 +20,6 @@
 'use client'
 
 import Publisher from "@/app/model/Publisher"
-import { Input } from "@/components/ui/input"
 import {
   Form,
   FormControl,
@@ -36,18 +35,19 @@ import {
   SelectGroup,
   SelectItem,
   SelectLabel,
-  SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
 import StandardDetails from "./standard-details"
 import rawCountries from "@/data/countries.json" assert {type: 'json'}
 import Country from "@/app/model/Country"
 import DetailActions, { DetailMode, DetailState } from "./detail-actions"
-import Link from "next/link"
-import { Dispatch, SetStateAction, useState } from "react"
+import { Dispatch, SetStateAction } from "react"
 import { useFormContext } from "react-hook-form"
 import { PublisherFieldValues } from "../validators/publisher"
 import { FormActionHandler } from "@/hooks/use-page-logic"
+import InputEx from "../ext/input-ex"
+import SelectTriggerEx from "../ext/select-ex"
+import LinkEx from "../ext/link-ex"
 
 const countries = rawCountries as unknown as Country[]
 
@@ -65,7 +65,6 @@ export default function PublisherDetails(
   }) {
 
   const form = useFormContext()
-  const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
   const { updating } = state
 
   return (
@@ -91,20 +90,14 @@ export default function PublisherDetails(
                 <FormItem className="col-span-2">
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="name"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="The publisher's registered company or trading name"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The publisher's company name
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -116,8 +109,6 @@ export default function PublisherDetails(
               form={form}
               state={state}
               setMode={setMode}
-              showFieldHelp={showFieldHelp}
-              setShowFieldHelp={setShowFieldHelp}
               onFormAction={onFormAction}
             />
             <FormField
@@ -127,21 +118,15 @@ export default function PublisherDetails(
                 <FormItem>
                   <FormLabel>Location</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="location"
                       className="col-span-2"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="The publisher's location(s) (city/region)"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The publisher's location (city/region)
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -158,9 +143,13 @@ export default function PublisherDetails(
                     onValueChange={field.onChange}
                   >
                     <FormControl>
-                      <SelectTrigger id="country" className="w-full" disabled={!record && !updating}>
+                      <SelectTriggerEx
+                        id="country"
+                        className="w-full"
+                        help="The publisher's country, if known and singular"
+                      >
                         <SelectValue placeholder="Specify country" />
-                      </SelectTrigger>
+                      </SelectTriggerEx>
                     </FormControl>
                     <SelectContent>
                       <SelectGroup>
@@ -177,13 +166,6 @@ export default function PublisherDetails(
                       </SelectGroup>
                     </SelectContent>
                   </Select>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The publisher's country
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -197,20 +179,20 @@ export default function PublisherDetails(
                   <FormControl>
                     {
                       updating
-                      ? <Input
-                          id="url"
-                          {...field}
-                        />
-                      : <Link href={record?.url ?? ''} target="_blank">{record?.url ?? ''}</Link>
+                      ? <InputEx
+                        id="url"
+                        {...field}
+                        help="The publisher's online web address"
+                      />
+                      : <LinkEx
+                        href={record?.url ?? ''}
+                        target="_blank"
+                        help="The publisher's online web address"
+                      >
+                        {record?.url ?? ''}
+                      </LinkEx>
                     }
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The publisher's online web address
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -222,22 +204,16 @@ export default function PublisherDetails(
                 <FormItem>
                   <FormLabel>Journal count</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="journalCount"
                       type="number"
                       className="col-span-1"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="The number of journals published by this organisation"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The number of journals published by this organisation
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}

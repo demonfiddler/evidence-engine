@@ -34,8 +34,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useCallback, useEffect, useState } from "react"
-import InputEx from "../misc/input-ex"
+import { ChangeEvent, useCallback, useEffect, useState } from "react"
+import InputEx from "../ext/input-ex"
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>
@@ -49,7 +49,8 @@ export function DataTablePaginator<TData>({
   useEffect(() => {
     setPageNumber(pn)
   }, [setPageNumber, pn])
-  const handlePageNumberChange = useCallback((value: string | number | readonly string[] | undefined) => {
+  const handlePageNumberChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
     const newpn = typeof value ==="number" ? value : Number.parseInt(value?.toString() ?? "0")
     if (newpn !== pageNumber && newpn > 0 && newpn <= table.getPageCount()) {
       const pageIndex = newpn - 1
@@ -86,17 +87,22 @@ export function DataTablePaginator<TData>({
           </Select>
         </div>
         <div className="flex items-center justify-center text-sm font-medium">
-          <p>Page&nbsp;
+          Page&nbsp;
           <InputEx
+            outerClassName="inline"
             className="w-14 inline text-right"
             type="number"
             min={1}
             max={table.getPageCount()}
             value={pageNumber}
-            onChangeValue={handlePageNumberChange}
+            onChange={handlePageNumberChange}
+            delay={500}
           />
-          &nbsp;of&nbsp;{table.getPageCount()} <span>(showing {table.getRowModel().rows.length.toLocaleString()}
-          &nbsp;of&nbsp;{table.getRowCount().toLocaleString()} items)</span></p>
+          &nbsp;of&nbsp;{table.getPageCount()}
+          <span>
+            &nbsp;(showing {table.getRowModel().rows.length.toLocaleString()}
+            &nbsp;of&nbsp;{table.getRowCount().toLocaleString()} items)
+          </span>
         </div>
         <div className="flex items-center space-x-2">
           <Button

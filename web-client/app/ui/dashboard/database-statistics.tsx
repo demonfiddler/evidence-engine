@@ -39,7 +39,7 @@ import {
     SchoolTeacherIcon,
     NobelPrizeIcon
 } from "@/app/ui/icons";
-import Link from "next/link";
+import Link from "next/link"
 
 type StatKey = "topics" | "claims" | "declarations" | "persons" | "publications" | "quotations" | "nobels" | "professors" | "doctorates"
 const stats = {

@@ -17,11 +17,11 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import AbstractBaseEntity from "./AbstractBaseEntity";
-import IPage from "./IPage";
-import ITrackedEntity from "./ITrackedEntity";
-import Log from "./Log";
-import User from "./User";
+import AbstractBaseEntity from "./AbstractBaseEntity"
+import IPage from "./IPage"
+import ITrackedEntity from "./ITrackedEntity"
+import Log from "./Log"
+import User from "./User"
 
 export default abstract class AbstractTrackedEntity extends AbstractBaseEntity implements ITrackedEntity {
   entityKind?: string;

@@ -19,9 +19,9 @@
 
 'use client'
 
-import Logo from '@/app/ui/logo';
-import Link from 'next/link';
-import Image from 'next/image';
+import Logo from '@/app/ui/logo'
+import Link from 'next/link'
+import Image from 'next/image'
 // import { Metadata } from 'next';
 import {
   Card,
@@ -29,7 +29,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import UserIcon from '@heroicons/react/24/outline/UserIcon';
+import UserIcon from '@heroicons/react/24/outline/UserIcon'
 
 // export const metadata: Metadata = {
 //   title: 'Dashboard',

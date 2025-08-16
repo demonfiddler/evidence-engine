@@ -19,13 +19,13 @@
 
 'use client'
 
-import ITrackedEntity from "@/app/model/ITrackedEntity";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import LogDialog from "../log/log-dialog";
-import RecordKind from "@/app/model/RecordKind";
-import { DetailState } from "./detail-actions";
-import { getRecordLabel } from "@/lib/utils";
+import ITrackedEntity from "@/app/model/ITrackedEntity"
+import { Label } from "@/components/ui/label"
+import LogDialog from "../log/log-dialog"
+import RecordKind from "@/app/model/RecordKind"
+import { DetailState } from "./detail-actions"
+import { getRecordLabel } from "@/lib/utils"
+import InputEx from "../ext/input-ex"
 
 export default function TrackingDetails(
   {
@@ -41,10 +41,25 @@ export default function TrackingDetails(
   return (
     <div className="w-full grid grid-cols-5 mb-2 gap-2">
       <Label htmlFor="db-id">Database ID:</Label>
-      <Input id="db-id" type="text" readOnly={true} disabled={!record} value={String(record?.id ?? '')} />
+      <InputEx
+        id="db-id"
+        type="text"
+        readOnly={true}
+        disabled={!record}
+        value={String(record?.id ?? '')}
+        help="The database identifier for the selected record"
+      />
       <Label htmlFor="status">Status:</Label>
-      <Input id="status" type="text" readOnly={true} disabled={!record} value={record?.status ?? ''} />
+      <InputEx
+        id="status"
+        type="text"
+        readOnly={true}
+        disabled={!record}
+        value={record?.status ?? ''}
+        help="The record status"
+      />
       <LogDialog
+        recordKind={recordKind}
         recordId={record?.id ?? ''}
         recordLabel={getRecordLabel(recordKind, record) ?? ''}
         className="col-start-5 place-items-center"
@@ -52,13 +67,41 @@ export default function TrackingDetails(
         state={state}
       />
       <Label htmlFor="created-by" className="col-start-1">Created by:</Label>
-      <Input id="created-by" type="text" readOnly={true} disabled={!record} value={record?.createdByUser?.username ?? ''} />
+      <InputEx
+        id="created-by"
+        type="text"
+        readOnly={true}
+        disabled={!record}
+        value={record?.createdByUser?.username ?? ''}
+        help="The username of the user who created the record"
+      />
       <Label htmlFor="created">Created on:</Label>
-      <Input id="created" type="text" readOnly={true} disabled={!record} value={record?.created?.toLocaleString() ?? ''} />
+      <InputEx
+        id="created"
+        type="text"
+        readOnly={true}
+        disabled={!record}
+        value={record?.created?.toLocaleString() ?? ''}
+        help="The date and time at which the record was created"
+      />
       <Label htmlFor="updated-by" className="col-start-1">Updated by:</Label>
-      <Input id="updated-by" type="text" readOnly={true} disabled={!record} value={record?.updatedByUser?.username ?? ''} />
+      <InputEx
+        id="updated-by"
+        type="text"
+        readOnly={true}
+        disabled={!record}
+        value={record?.updatedByUser?.username ?? ''}
+        help="The username of the user who last updated the record"
+      />
       <Label htmlFor="updated">Updated on:</Label>
-      <Input id="updated" type="text" readOnly={true} disabled={!record} value={record?.updated?.toLocaleString() ?? ''} />
+      <InputEx
+        id="updated"
+        type="text"
+        readOnly={true}
+        disabled={!record}
+        value={record?.updated?.toLocaleString() ?? ''}
+        help="The date and time at which the record was last updated"
+      />
     </div>
   )
 }

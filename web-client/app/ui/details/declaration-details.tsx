@@ -20,12 +20,8 @@
 'use client'
 
 import Declaration from "@/app/model/Declaration"
-import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Textarea } from "@/components/ui/textarea"
 import { cn, formatDate } from "@/lib/utils"
 import {
   Form,
@@ -42,7 +38,6 @@ import {
   SelectGroup,
   SelectItem,
   SelectLabel,
-  SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
 import { CalendarIcon } from "@heroicons/react/24/outline"
@@ -50,11 +45,16 @@ import Country from "@/app/model/Country"
 import rawCountries from "@/data/countries.json" assert {type: 'json'}
 import StandardDetails from "./standard-details"
 import DetailActions, { DetailMode, DetailState } from "./detail-actions"
-import Link from "next/link"
 import { Dispatch, SetStateAction, useState } from "react"
 import { useFormContext } from "react-hook-form"
 import { DeclarationFieldValues } from "../validators/declaration"
 import { FormActionHandler } from "@/hooks/use-page-logic"
+import InputEx from "../ext/input-ex"
+import ButtonEx from "../ext/button-ex"
+import SelectTriggerEx from "../ext/select-ex"
+import LinkEx from "../ext/link-ex"
+import CheckboxEx from "../ext/checkbox-ex"
+import TextareaEx from "../ext/textarea-ex"
 const countries = rawCountries as unknown as Country[]
 
 export default function DeclarationDetails(
@@ -73,7 +73,6 @@ export default function DeclarationDetails(
 
   const form = useFormContext()
   const [open, setOpen] = useState(false)
-  const [showFieldHelp, setShowFieldHelp] = useState<boolean>(false)
   const { updating } = state
 
   return (
@@ -101,11 +100,12 @@ export default function DeclarationDetails(
                   <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger id="date" asChild>
                       <FormControl>
-                        <Button
+                        <ButtonEx
                           variant={"outline"}
-                          disabled={!record && !updating}
-                          className={cn("w-full justify-start text-left font-normal",
+                          disabled={!updating}
+                          className={cn("grow justify-start text-left font-normal",
                             (!record || !record.date) && "text-muted-foreground")}
+                          help="The date on which the declaration was first issued"
                         >
                           <CalendarIcon />
                           {field.value ? (
@@ -113,7 +113,7 @@ export default function DeclarationDetails(
                           ) : (
                             <span>Pick a date</span>
                           )}
-                        </Button>
+                        </ButtonEx>
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="col-span-2 w-auto p-0" align="start">
@@ -129,13 +129,6 @@ export default function DeclarationDetails(
                       />
                     </PopoverContent>
                   </Popover>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The date the declaration was last issued
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage className="col-start-2 col-span-4" />
                 </FormItem>
               )}
@@ -147,14 +140,19 @@ export default function DeclarationDetails(
                 <FormItem>
                   <FormLabel>Kind</FormLabel>
                   <Select
-                    disabled={!record && !updating}
+                    disabled={!updating}
                     value={field.value}
                     onValueChange={field.onChange}
                   >
                     <FormControl>
-                      <SelectTrigger id="kind" className="w-full" disabled={!record && !updating}>
+                      <SelectTriggerEx
+                        id="kind"
+                        className="w-full"
+                        disabled={!updating}
+                        help="The kind of declaration"
+                      >
                         <SelectValue placeholder="Specify kind" />
-                      </SelectTrigger>
+                      </SelectTriggerEx>
                     </FormControl>
                     <SelectContent>
                       <SelectGroup>
@@ -165,13 +163,6 @@ export default function DeclarationDetails(
                       </SelectGroup>
                     </SelectContent>
                   </Select>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The kind of declaration
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -183,8 +174,6 @@ export default function DeclarationDetails(
               form={form}
               state={state}
               setMode={setMode}
-              showFieldHelp={showFieldHelp}
-              setShowFieldHelp={setShowFieldHelp}
               onFormAction={onFormAction}
             />
             <FormField
@@ -194,20 +183,14 @@ export default function DeclarationDetails(
                 <FormItem className="col-span-2">
                   <FormLabel>Title</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       id="title"
                       disabled={!record && !updating}
                       readOnly={!updating}
+                      help="The declaration's official name/title"
                       {...field}
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The declaration's official name/title
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -221,21 +204,21 @@ export default function DeclarationDetails(
                   <FormControl>
                     {
                       updating
-                      ? <Input
+                      ? <InputEx
                           type="url"
                           placeholder="URL"
                           {...field}
-                        />
-                      : <Link href={record?.url ?? ''} target="_blank">{record?.url ?? ''}</Link>
+                          help="The declaration's online web address"
+                      />
+                      : <LinkEx
+                        href={record?.url ?? ''}
+                        target="_blank"
+                        help="The declaration's online web address"
+                      >
+                        {record?.url ?? ''}
+                      </LinkEx>
                     }
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The declaration's online web address
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -247,20 +230,14 @@ export default function DeclarationDetails(
                 <FormItem>
                   <FormLabel>Cached</FormLabel>
                   <FormControl>
-                    <Checkbox
+                    <CheckboxEx
                       id="cached"
-                      disabled={!record && !updating}
+                      disabled={!updating}
                       checked={field.value}
                       onCheckedChange={field.onChange}
+                      help="Whether the declaration is cached in this server"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        Whether the declaration is cached in this server
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -272,14 +249,19 @@ export default function DeclarationDetails(
                 <FormItem>
                   <FormLabel>Country</FormLabel>
                   <Select
-                    disabled={!record && !updating}
+                    disabled={!updating}
                     value={field.value}
                     onValueChange={field.onChange}
                   >
                     <FormControl>
-                      <SelectTrigger id="country" className="w-full" disabled={!record && !updating}>
+                      <SelectTriggerEx
+                        id="country"
+                        className="w-full"
+                        disabled={!updating}
+                        help="The country in which the declaration was issued"
+                      >
                         <SelectValue placeholder="Specify country" />
-                      </SelectTrigger>
+                      </SelectTriggerEx>
                     </FormControl>
                     <SelectContent>
                       <SelectGroup>
@@ -289,13 +271,6 @@ export default function DeclarationDetails(
                       </SelectGroup>
                     </SelectContent>
                   </Select>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The country in which the declaration was issued
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -307,21 +282,15 @@ export default function DeclarationDetails(
                 <FormItem>
                   <FormLabel>Signatories</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <TextareaEx
                       id="signatories"
                       className="h-40 overflow-y-auto"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="Signatory names, verbatim, one per line"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        Signatory names, verbatim, one per line
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -333,22 +302,16 @@ export default function DeclarationDetails(
                 <FormItem>
                   <FormLabel>Signatory count</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputEx
                       type="number"
                       id="signatoryCount"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       placeholder="count"
                       {...field}
+                      help="The number of signatories to the declaration"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        The number of signatories
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -360,21 +323,15 @@ export default function DeclarationDetails(
                 <FormItem className="col-span-2">
                   <FormLabel>Notes</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <TextareaEx
                       id="notes"
                       className="h-40 overflow-y-auto"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
+                      help="Contributor notes on the declaration"
                     />
                   </FormControl>
-                  {
-                    showFieldHelp
-                    ? <FormDescription>
-                        Contributor notes on the declaration
-                      </FormDescription>
-                    : null
-                  }
                   <FormMessage />
                 </FormItem>
               )}
