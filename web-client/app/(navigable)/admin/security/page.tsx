@@ -189,15 +189,15 @@ export default function Security() {
     createInput: createGroupInput,
   })
 
-  const {queries, setActiveTab, setShowUsersOrMembers} = useContext(GlobalContext)
+  const {queries, setActiveSecurityPageTab, setShowUsersOrMembers} = useContext(GlobalContext)
   const groupQueryState = queries["Group"]
   const userQueryState = queries["User"]
   const activeTab = groupQueryState?.activeTab ?? "groups"
   const showUsersOrMembers = userQueryState?.showUsersOrMembers ?? "users"
 
   const onActiveTabChange = useCallback((activeTab: string) => {
-    setActiveTab(activeTab as SecurityPageTabState)
-  }, [setActiveTab])
+    setActiveSecurityPageTab(activeTab as SecurityPageTabState)
+  }, [setActiveSecurityPageTab])
 
   // const {storeAppState} = useContext(GlobalContext)
   // useEffect(() => {return () => storeAppState()}, [])

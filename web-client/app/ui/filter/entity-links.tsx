@@ -44,6 +44,8 @@ import { READ_TOPIC_HIERARCHY } from "@/lib/graphql-queries"
 import ButtonEx from "../ext/button-ex"
 import Help from "../misc/help"
 import InputEx from "../ext/input-ex"
+import LabelEx from "../ext/label-ex"
+import { Checkbox } from "@/components/ui/checkbox"
 
 interface TopicTreeNode extends TreeNodeProps {
   topic: Topic
@@ -76,7 +78,6 @@ function getTreeData(topics: Topic[], masterTopicId?: string): TopicTreeNode[] {
   }
   const treeData = getTreeDataRecursive(topics)
   expandParents(treeData)
-  // console.log(`EntityLinks treeData = ${JSON.stringify(treeData)}`)
   return treeData
 }
 
@@ -101,9 +102,11 @@ export default function EntityLinks() {
     masterRecordKind,
     masterRecordId,
     masterRecordLabel,
+    showOnlyLinkedRecords,
     setLinkFilterOpen,
     setMasterTopic,
     setMasterRecordKind,
+    setShowOnlyLinkedRecords,
   } = useContext(GlobalContext)
   const [topicPlaceholder, setTopicPlaceholder] = useState(masterTopicId ? String.fromCharCode(160) : "-Choose topic-")
   const result = useQuery(
@@ -169,9 +172,6 @@ export default function EntityLinks() {
     setMasterRecordKind(recordKind)
   }
 
-  // console.log(`EntityLinks(): masterLinkContext = ${JSON.stringify(masterLinkContext)}`)
-  // console.log(`EntityLinks(): selectedRecordsContext = ${JSON.stringify(selectedRecordsContext)}`)
-
   return (
     <Collapsible
       className="border shadow-lg rounded-md w-fit"
@@ -194,92 +194,109 @@ export default function EntityLinks() {
             </Button>
           </CollapsibleTrigger>
         </div>
-        <CollapsibleContent className="flex items-stretch m-4 gap-4">
-          <fieldset className="border rounded-md">
-            <legend className="text-sm">&nbsp;Topic Link&nbsp;</legend>
-            <div className="flex flex-col m-2 gap-2">
-              <div className="flex flex-row items-center gap-2">
-                <DropdownTreeSelect
-                  className="ee"
-                  clearSearchOnChange={false}
-                  data={treeData}
-                  onChange={handleTopicChange}
-                  mode="radioSelect"
-                  keepTreeOnSearch={true}
-                  inlineSearchInput={true}
-                  showPartiallySelected={true}
-                  texts={{ placeholder: `${topicPlaceholder}` }}
-                />
-                <Help text="In the table below, show only records linked to this topic when 'Show only linked records' is checked" />
+        <CollapsibleContent className="">
+          <div className="flex items-stretch m-4 gap-4">
+            <fieldset className="border rounded-md">
+              <legend className="text-sm">&nbsp;Topic Link&nbsp;</legend>
+              <div className="flex flex-col m-2 gap-2">
+                <div className="flex flex-row items-center gap-2">
+                  <DropdownTreeSelect
+                    className="ee"
+                    clearSearchOnChange={false}
+                    data={treeData}
+                    onChange={handleTopicChange}
+                    mode="radioSelect"
+                    keepTreeOnSearch={true}
+                    inlineSearchInput={true}
+                    showPartiallySelected={true}
+                    texts={{ placeholder: `${topicPlaceholder}` }}
+                  />
+                  <Help text="In the table below, show only records linked to this topic when 'Show only linked records' is checked" />
+                </div>
+                <Textarea placeholder="-Topic description here-" disabled={true} value={masterTopicDescription ?? ''} />
+                <p className="text-xs text-gray-500">{`Path: ${masterTopicPath ?? ""}`}</p>
               </div>
-              <Textarea placeholder="-Topic description here-" disabled={true} value={masterTopicDescription ?? ''} />
-              <p className="text-xs text-gray-500">{`Path: ${masterTopicPath ?? ""}`}</p>
-            </div>
-          </fieldset>
-          <fieldset className="border rounded-md">
-            <legend className="text-sm">&nbsp;Master Record Link&nbsp;</legend>
-            <div className="flex flex-col m-2 gap-2">
-              <RadioGroup
-                className="flex flex-row"
-                value={masterRecordKind}
-                onValueChange={handleMasterRecordKindChange}>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="None" id="option-one" />
-                  <Label htmlFor="option-one">None</Label>
+            </fieldset>
+            <fieldset className="border rounded-md">
+              <legend className="text-sm">&nbsp;Master Record Link&nbsp;</legend>
+              <div className="flex flex-col m-2 gap-2">
+                <RadioGroup
+                  className="flex flex-row"
+                  value={masterRecordKind}
+                  onValueChange={handleMasterRecordKindChange}>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="None" id="option-one" />
+                    <Label htmlFor="option-one">None</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="Claim" id="option-two" />
+                    <Label htmlFor="option-two">Claim</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="Declaration" id="option-three" />
+                    <Label htmlFor="option-three">Declaration</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="Person" id="option-four" />
+                    <Label htmlFor="option-four">Person</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="Publication" id="option-five" />
+                    <Label htmlFor="option-five">Publication</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="Quotation" id="option-six" />
+                    <Label htmlFor="option-six">Quotation</Label>
+                  </div>
+                  <Help text="In the table below, show only records linked with the instance of this record kind shown in the 'Master record' drop-down below, when 'Show only linked records' is checked" />
+                </RadioGroup>
+                <div className="flex flex-row items-center m-2 gap-2">
+                  <Label htmlFor="masterRecord">Master record:</Label>
+                  <InputEx
+                    outerClassName="flex-grow"
+                    id="masterRecord"
+                    readOnly={true}
+                    placeholder="-Master record description here-"
+                    value={getMasterRecordLabel()}
+                    help="In the table below, show only records linked with this master record instance when 'Show only linked records' is checked"
+                  />
+                  <Link href={getMasterRecordUri()}>
+                    <ButtonEx
+                      className="bg-blue-500"
+                      disabled={masterRecordKind == "None"}
+                      help={
+                        masterRecordKind != "None"
+                        ? `Navigate to the ${masterRecordKind}s page`
+                        : "No master record kind selected"
+                      }
+                    >
+                      Go to
+                    </ButtonEx>
+                  </Link>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="Claim" id="option-two" />
-                  <Label htmlFor="option-two">Claim</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="Declaration" id="option-three" />
-                  <Label htmlFor="option-three">Declaration</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="Person" id="option-four" />
-                  <Label htmlFor="option-four">Person</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="Publication" id="option-five" />
-                  <Label htmlFor="option-five">Publication</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="Quotation" id="option-six" />
-                  <Label htmlFor="option-six">Quotation</Label>
-                </div>
-                <Help text="In the table below, show only records linked with the instance of this record kind shown in the 'Master record' drop-down below, when 'Show only linked records' is checked" />
-              </RadioGroup>
-              <div className="flex flex-row items-center m-2 gap-2">
-                <Label htmlFor="masterRecord">Master record:</Label>
-                <InputEx
-                  outerClassName="flex-grow"
-                  id="masterRecord"
-                  readOnly={true}
-                  placeholder="-Master record description here-"
-                  value={getMasterRecordLabel()}
-                  help="In the table below, show only records linked with this master record instance when 'Show only linked records' is checked"
-                />
-                <Link href={getMasterRecordUri()}>
-                  <ButtonEx
-                    className="bg-blue-500"
-                    disabled={masterRecordKind == "None"}
-                    help={
-                      masterRecordKind != "None"
-                      ? `Navigate to the ${masterRecordKind}s page`
-                      : "No master record kind selected"
-                    }
-                  >
-                    Go to
-                  </ButtonEx>
-                </Link>
+                <Label className="text-xs text-gray-500">{
+                  masterRecordKind == "None"
+                    ? "None selected: all lists behave independently"
+                    : `Other lists show only records linked with the selected master ${masterRecordKind}`
+                }</Label>
               </div>
-              <Label className="text-xs text-gray-500">{
-                masterRecordKind == "None"
-                  ? "None selected: all lists behave independently"
-                  : `Other lists show only records linked with the selected master ${masterRecordKind}`
-              }</Label>
-            </div>
-          </fieldset>
+            </fieldset>
+          </div>
+          <div className="flex justify-center items-center m-4 gap-4">
+            <Checkbox
+              id="linkedOnly"
+              disabled={!masterTopicId && !masterRecordId}
+              checked={showOnlyLinkedRecords}
+              onCheckedChange={setShowOnlyLinkedRecords}
+            />
+            <LabelEx
+              htmlFor="linkedOnly"
+              // className="flex-none"
+              help="In the table below, show only records linked to the master topic and/or master record selected above. Note that since records of the same kind cannot be linked, if the master record kind is the same kind as the table below, the master record filter will have no effect."
+            >
+              Show only linked records
+            </LabelEx>
+          </div>
         </CollapsibleContent>
       </div>
     </Collapsible>

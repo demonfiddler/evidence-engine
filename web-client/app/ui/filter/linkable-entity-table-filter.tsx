@@ -41,26 +41,20 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
     masterTopicId,
     masterRecordKind,
     masterRecordId,
+    showOnlyLinkedRecords,
     queries,
     setFilter,
-    setShowOnlyLinkedRecords
   } = useContext(GlobalContext)
   const onFilterChange = useCallback((filter: any) => {
     setFilter(recordKind, filter)
   }, [setFilter])
-  // This was an experiment in remembering the selected link, but it got too complicated.
-  // const onShowOnlyLinkedRecordsChange = useCallback((filter: any) => {
-  //   setShowOnlyLinkedRecords(recordKind, filter)
-  // }, [setShowOnlyLinkedRecords])
   const queryState = queries[recordKind] as QueryState<LinkableEntityQueryFilter>
   const {filter} = queryState
-  const showOnlyLinkedRecords = queryState.showOnlyLinkedRecords ?? false
   const [status, setStatus] = useState(filter.status?.[0] ?? '')
   const [text, setText] = useState(filter.text ?? '')
   const [advanced, setAdvanced] = useState(filter.advancedSearch ?? false)
-  // const [showOnlyLinkedRecords, setShowOnlyLinkedRecords] = useState(false)
 
-  const updateFilter = useCallback((status: string, text: string, advanced: boolean, showOnlyLinkedRecords: boolean) => {
+  const updateFilter = useCallback((status: string, text: string, advanced: boolean) => {
     const filter = {
       status: status ? [status] : undefined,
       text: text || undefined,
@@ -79,39 +73,34 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
       }
     }
     onFilterChange(filter)
-  }, [showOnlyLinkedRecords, masterTopicId, masterRecordKind, masterRecordId, onFilterChange])
+  }, [masterTopicId, masterRecordKind, masterRecordId, showOnlyLinkedRecords, onFilterChange])
+
   useEffect(() => {
-    updateFilter(status, text, advanced, showOnlyLinkedRecords)
+    updateFilter(status, text, advanced)
   }, [masterTopicId, masterRecordKind, masterRecordId, showOnlyLinkedRecords])
 
   const handleStatusChange = useCallback((status: string) => {
     status = status === "ALL" ? '' : status
     setStatus(status)
-    updateFilter(status, text, advanced, showOnlyLinkedRecords)
+    updateFilter(status, text, advanced)
   }, [setStatus, updateFilter, text, advanced, showOnlyLinkedRecords])
 
   const handleTextChange = useCallback((text: string) => {
     setText(text)
-    updateFilter(status, text, advanced, showOnlyLinkedRecords)
+    updateFilter(status, text, advanced)
   }, [setText, updateFilter, status, advanced, showOnlyLinkedRecords])
 
   const handleAdvancedSearchChange = useCallback((advanced: boolean) => {
     setAdvanced(advanced)
-    updateFilter(status, text, advanced, showOnlyLinkedRecords)
+    updateFilter(status, text, advanced)
   }, [setAdvanced, updateFilter, status, text, showOnlyLinkedRecords])
-
-  const handleShowOnlyLinkedRecordsChange = useCallback((showOnlyLinkedRecords: boolean) => {
-    setShowOnlyLinkedRecords(recordKind, showOnlyLinkedRecords)
-    updateFilter(status, text, advanced, showOnlyLinkedRecords)
-  }, [setShowOnlyLinkedRecords, updateFilter, status, text, advanced])
 
   const handleReset = useCallback(() => {
     setStatus('')
     setText('')
     setAdvanced(false)
-    setShowOnlyLinkedRecords(recordKind, false)
-    updateFilter('', '', false, false)
-  }, [setStatus, setText, setAdvanced, setShowOnlyLinkedRecords, updateFilter])
+    updateFilter('', '', false)
+  }, [setStatus, setText, setAdvanced, updateFilter])
 
   return (
     <div className="flex flex-col gap-2">
@@ -146,24 +135,6 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
           onCheckedChange={handleAdvancedSearchChange}
         />
         <LabelEx htmlFor="advanced" help="Use advanced text search syntax">Advanced</LabelEx>
-        {
-          isLinkableEntity
-          ? <>
-              <Checkbox
-                id="linkedOnly"
-                checked={showOnlyLinkedRecords}
-                onCheckedChange={handleShowOnlyLinkedRecordsChange}
-              />
-              <LabelEx
-                htmlFor="linkedOnly"
-                className="flex-none"
-                help="Filter the table to show only records linked to the master topic and/or master record selected in the 'Filter by Links' section above"
-              >
-                Show only linked records
-              </LabelEx>
-            </>
-          : null
-        }
         <ButtonEx
           outerClassName="flex-grow"
           variant="outline"

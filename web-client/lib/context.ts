@@ -40,12 +40,14 @@ export type MasterLinkState = {
   masterRecordId?: string
   masterRecordLabel?: string
   masterRecordKind: RecordKind
+  showOnlyLinkedRecords: boolean
 }
 
 export type MasterLinkStateSetters = {
   setMasterTopic: (topic?: Topic) => void
   setMasterRecord: (recordKind: RecordKind, record?: ILinkableEntity) => void
   setMasterRecordKind: (recordKind: RecordKind) => void
+  setShowOnlyLinkedRecords: (showOnlyLinkedRecords: boolean) => void
 }
 
 export type SelectedRecord = {
@@ -82,7 +84,6 @@ export type QueryState<TFilter> = {
   sorting: SortingState
   pagination: PaginationState
   selectedLinkId?: string
-  showOnlyLinkedRecords?: boolean
   showUsersOrMembers?: UsersPageRadioState
   activeTab?: SecurityPageTabState
 }
@@ -114,9 +115,8 @@ export type QueryStateSetters = {
   setSorting: (recordKind: RecordKind, sorting: Updater<SortingState>) => void
   setPagination: (recordKind: RecordKind, pagination: Updater<PaginationState>) => void
   setSelectedLinkId: (recordKind: RecordKind, selectedLinkId?: string) => void
-  setShowOnlyLinkedRecords: (recordKind: RecordKind, showOnlyLinkedRecords: boolean) => void
   setShowUsersOrMembers: (showUsersOrMembers: UsersPageRadioState) => void
-  setActiveTab: (activeTab : SecurityPageTabState) => void
+  setActiveSecurityPageTab: (activeTab : SecurityPageTabState) => void
 }
 
 export type SizeState = {
@@ -199,6 +199,7 @@ export const GlobalContext = createContext<GlobalContextType>({
   modified: false,
   sidebarOpen: false,
   linkFilterOpen: false,
+  showOnlyLinkedRecords: false,
   trackingDetailsOpen: false,
   masterRecordKind: "None",
   selectedRecords: {},
@@ -211,6 +212,7 @@ export const GlobalContext = createContext<GlobalContextType>({
   setMasterTopic: () => {throw new Error("setMasterTopic() not supported in default GlobalContext")},
   setMasterRecord: () => {throw new Error("setMasterRecord() not supported in default GlobalContext")},
   setMasterRecordKind: () => {throw new Error("setMasterRecordKind() not supported in default GlobalContext")},
+  setShowOnlyLinkedRecords: () => {throw new Error("setShowOnlyLinkedRecords() not supported in default GlobalContext")},
   setSelectedRecord: () => {throw new Error("setSelectedRecord() not supported in default GlobalContext")},
   setColumnVisibility: () => {throw new Error("setColumnVisibility() not supported in default GlobalContext")},
   setColumnSizing: () => {throw new Error("setColumnSize() not supported in default GlobalContext")},
@@ -219,8 +221,7 @@ export const GlobalContext = createContext<GlobalContextType>({
   setSorting: () => {throw new Error("setSort() not supported in default GlobalContext")},
   setPagination: () => {throw new Error("setPagination() not supported in default GlobalContext")},
   setSelectedLinkId: () => {throw new Error("setSelectedLinkId() not supported in default GlobalContext")},
-  setShowOnlyLinkedRecords: () => {throw new Error("setShowOnlyLinkedRecords() not supported in default GlobalContext")},
   setShowUsersOrMembers: () => {throw new Error("setShowUsersOrMembers() not supported in default GlobalContext")},
   storeAppState: () => {throw new Error("storeAppState() not supported in default GlobalContext")},
-  setActiveTab: () => {throw new Error("setActiveTab() not supported in default GlobalContext")},
+  setActiveSecurityPageTab: () => {throw new Error("setActiveTab() not supported in default GlobalContext")},
 })

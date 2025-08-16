@@ -75,6 +75,7 @@ const defaultColumnSettings = {
   Publication: {columns: publicationColumns, visibility: publicationColumnVisibility},
   Publisher: {columns: publisherColumns, visibility: publisherColumnVisibility},
   Quotation: {columns: quotationColumns, visibility: quotationColumnVisibility},
+  RecordLink: {columns: [], visibility: {}},
   Topic: {columns: topicColumns, visibility: topicColumnVisibility},
   User: {columns: userColumns, visibility: userColumnVisibility},
 }
@@ -207,6 +208,10 @@ function reducer(draft: AppState, action: ReducerArg) {
       draft.masterRecordLabel = value.value?.label
       break
     }
+    case "setShowOnlyLinkedRecords": {
+      draft.showOnlyLinkedRecords = action.value
+      break
+    }
     case "setSelectedRecord": {
       const {recordKind, value : record} = action.value as RecordKindValueOpt<IBaseEntity>
       if (record && !record.id)
@@ -264,12 +269,6 @@ function reducer(draft: AppState, action: ReducerArg) {
       const {recordKind, value: selectedLinkId} = action.value as RecordKindValue<string>
       const query = draft.queries[recordKind] ??= defaultQueryState() as QueryState<any>
       query.selectedLinkId = selectedLinkId
-      break
-    }
-    case "setShowOnlyLinkedRecords": {
-      const {recordKind, value: showOnlyLinkedRecords} = action.value as RecordKindValue<boolean>
-      const query = draft.queries[recordKind] ??= defaultQueryState() as QueryState<any>
-      query.showOnlyLinkedRecords = showOnlyLinkedRecords
       break
     }
     case "setShowUsersOrMembers": {
@@ -341,6 +340,10 @@ export default function RootLayout({
     dispatch({command: "setMasterRecord", value: {recordKind, value: record}})
   }, [dispatch, appState])
 
+  const setShowOnlyLinkedRecords = useCallback((showOnlyLinkedRecords: boolean) => {
+    dispatch({command: "setShowOnlyLinkedRecords", value: showOnlyLinkedRecords})
+  }, [dispatch])
+
   const setSelectedRecord = useCallback((recordKind: RecordKind, record?: ILinkableEntity) => {
     dispatch({command: "setSelectedRecord", value: {recordKind, value: record}})
   }, [dispatch])
@@ -373,15 +376,11 @@ export default function RootLayout({
     dispatch({command: "setSelectedLinkId", value: {recordKind, value: selectedLinkId}})
   }, [dispatch])
 
-  const setShowOnlyLinkedRecords = useCallback((recordKind: RecordKind, showOnlyLinkedRecords: boolean) => {
-    dispatch({command: "setShowOnlyLinkedRecords", value: {recordKind, value: showOnlyLinkedRecords}})
-  }, [dispatch])
-
   const setShowUsersOrMembers = useCallback((showUsersOrMembers: UsersPageRadioState) => {
     dispatch({command: "setShowUsersOrMembers", value: {recordKind: "User", value: showUsersOrMembers}})
   }, [dispatch])
 
-  const setActiveTab = useCallback((activeTab: SecurityPageTabState) => {
+  const setActiveSecurityPageTab = useCallback((activeTab: SecurityPageTabState) => {
     dispatch({command: "setActiveTab", value: {recordKind: "Group", value: activeTab}})
   }, [dispatch])
 
@@ -402,6 +401,7 @@ export default function RootLayout({
     setMasterTopic,
     setMasterRecord,
     setMasterRecordKind,
+    setShowOnlyLinkedRecords,
     setSelectedRecord,
     setColumnVisibility,
     setColumnSizing,
@@ -410,9 +410,8 @@ export default function RootLayout({
     setSorting,
     setPagination,
     setSelectedLinkId,
-    setShowOnlyLinkedRecords,
     setShowUsersOrMembers,
-    setActiveTab,
+    setActiveSecurityPageTab,
     storeAppState,
   } as GlobalContextType
 
