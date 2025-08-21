@@ -24,7 +24,7 @@ The authors use Visual Studio Code with a selection of appropriate extensions:
 
 ## Generate Client Code
 
-- Edit the [client build.gradle](/client/build.gradle) file and uncomment:
+- Edit the client [build.gradle](/client/build.gradle) file and uncomment:
     - ```id "com.graphql-java-generator.graphql-gradle-plugin3"``` at the top of the file
     - ```apply from: 'codegen.gradle'``` at the bottom of the file.
 - Also, in the ```tasks.named('test')``` section comment out:
@@ -36,7 +36,7 @@ The authors use Visual Studio Code with a selection of appropriate extensions:
 
 ## Generate Server Code
 
-- Edit the [server build.gradle](/server/build.gradle) file and uncomment:
+- Edit the server [build.gradle](/server/build.gradle) file and uncomment:
     - ```id "com.graphql-java-generator.graphql-gradle-plugin3"``` at the top of the file
     - ```apply from: 'codegen.gradle'``` at the bottom of the file
 - Execute ```./gradlew server:generateServerCode```
@@ -56,7 +56,10 @@ The following tables summarise what needs to be done and where, in order to add 
 |client|```TYPE.java```|```client/build/generated/sources/graphqlClient/io/github/demonfiddler/ee/client/```|```client/src/main/java/io/github/demonfiddler/ee/client/```||
 ||```TYPEInput.java```|```client/build/generated/sources/graphqlClient/io/github/demonfiddler/ee/client/```|```client/src/main/java/io/github/demonfiddler/ee/client/```||
 ||```TYPEPage.java```|```client/build/generated/sources/graphqlClient/io/github/demonfiddler/ee/client/```|```client/src/main/java/io/github/demonfiddler/ee/client/```||
-|web-client||||TODO|
+|web-client|```TYPE.ts```|n/a|```web-client/app/model/```|```TYPE``` as processed by Apollo GraphQL|
+||```TYPE.ts```|n/a|```web-client/app/ui/validators/```|```TYPE``` as edited/validated in a form|
+||```TYPEInput```|n/a|[```web-client/app/model/schema.ts```](web-client/app/model/schema.ts)||
+||```page.tsx```|n/a|```web-client/app/(navigable)[/(linkable)]/TYPEs/```|If the ```TYPE``` has a corresponding app page|
 |server|```TYPE.java```|```server/build/generated/sources/graphqlGradlePlugin/io/github/demonfiddler/ee/server/```|```server/src/main/java/io/github/demonfiddler/ee/server/model/```||
 ||```TYPEInput.java```|```server/build/generated/sources/graphqlGradlePlugin/io/github/demonfiddler/ee/server/```|```server/src/main/java/io/github/demonfiddler/ee/server/model/```||
 ||```TYPEPage.java```|```server/build/generated/sources/graphqlGradlePlugin/io/github/demonfiddler/ee/server/```|```server/src/main/java/io/github/demonfiddler/ee/server/model/```||
@@ -82,13 +85,17 @@ Resource & Member column entry key:
 |||+```TYPE.Builder```|+ALL||Extend [```AbstractBaseEntity.Builder```](client/src/main/java/io/github/demonfiddler/ee/client/AbstractBaseEntity.java) / [```AbstractTrackedEntity.Builder```](client/src/main/java/io/github/demonfiddler/ee/client/AbstractTrackedEntity.java) / [```AbstractLinkableEntity.Builder```](client/src/main/java/io/github/demonfiddler/ee/client/AbstractLinkableEntity.java). One ```Builder.PROPERTY``` field per ```TYPE``` property.|
 ||||+```withALL()```||One ```Builder.withPROPERTY()``` method per ```TYPE``` property.|
 ||||+```build()```||One ```_object.setPROPERTY()``` call per ```TYPE``` property.|
-|||+```TYPEInput```|+ALL||Extend [```AbstractBaseEntityInput```](client/src/main/java/io/github/demonfiddler/ee/client/AbstractBaseEntityInput.java).|
+|||+```TYPEInput```|+ALL||Only if ```TYPE``` is updateable through GraphQL API: extend [```AbstractBaseEntityInput```](client/src/main/java/io/github/demonfiddler/ee/client/AbstractBaseEntityInput.java).|
 |||+```TYPEInput.Builder```|+ALL||Extend [```AbstractBaseEntityInput.Builder```](client/src/main/java/io/github/demonfiddler/ee/client/AbstractBaseEntityInput.java). One ```Builder.PROPERTY``` field per ```TYPEInput``` property.|
 ||||+```withALL()```||One ```Builder.withPROPERTY()``` method per ```TYPEInput``` property.|
 ||||+```build()```||One ```_object.setPROPERTY()``` call per ```TYPEInput``` property.|
 |||+```TYPEPage```|+ALL||Extend [```AbstractPage<TYPE>```](client/src/main/java/io/github/demonfiddler/ee/client/AbstractPage.java).|
 |||+```TYPEPage.Builder```|+```build()```||Extend [```AbstractPage.Builder<Builder, TYPEPage, TYPE>```](client/src/main/java/io/github/demonfiddler/ee/client/AbstractPage.java) and ```return build(new TYPEPage());```.|
 ||web-client|~[```apolloClient```](web-client/lib/graphql-utils.ts)|~```cache.possibleTypes```||Add ```TYPE``` to ```IBaseEntity```, ```ITrackedEntity```, ```ILinkableEntity``` as appropriate and ```TYPEPage``` to ```IPage```.|
+|||+```TYPE```|+ALL||The Apollo GraphQL ```TYPE```.|
+|||~[```TYPEInput```](web-client/app/model/schema.ts)|+ALL||Only if ```TYPE``` is updateable through GraphQL API: the corresponding GraphQL ```TYPEInput```.|
+|||+```TYPE```|+ALL||The form validation ```TYPE```.|
+|||+```TYPEs```|+ALL||If ```TYPE``` has a corresponding app page.|
 ||server|~[```schema-mariadb.sql```](server/src/main/resources/db/schema-mariadb.sql)|+```TYPE```||Also implement ```TYPEs```, ```TYPEById``` [queries](#adding-a-query) and ```createTYPE```, ```updateTYPE``` and ```deleteTYPE``` [mutations](#adding-a-mutation).|
 |||[~```schema-h2.sql```](server/src/main/resources/db/schema-h2.sql)|+```TYPE```|||
 |||[~```schema.graphqls```](server/src/main/resources/graphql/schema.graphqls)|+```TYPE```|||
@@ -128,6 +135,10 @@ Resource & Member column entry key:
 |||~```TYPEInput.Builder```|+```PROPERTY```||Only if ```PROPERTY``` is included in ```TYPEInput```.|
 ||||+```withPROPERTY()```|||
 ||||~```build()```||Call ```_object.setPROPERTY(this.PROPERTY)```.|
+||web-client|~```TYPE```|+```PROPERTY```||The Apollo GraphQL ```TYPE```.```PROPERTY```.|
+|||~```TYPE```|+```PROPERTY```||The form validation ```TYPE```.```PROPERTY```.|
+|||~[```TYPEInput```](web-client/app/model/schema.ts)|+```PROPERTY```||Only if ```TYPE``` is updateable through GraphQL API: the corresponding GraphQL ```TYPEInput```.|
+|||~```TYPEs```|+```PROPERTY```||If ```TYPE``` has a corresponding app page and ```PROPERTY``` appears on that page.|
 ||server|~[```schema-mariadb.sql```](server/src/main/resources/db/schema-mariadb.sql)|+```TYPE.PROPERTY```|||
 |||~[```schema-h2.sql```](server/src/main/resources/db/schema-h2.sql)|+```TYPE.PROPERTY```|||
 |||~[```schema.graphqls```](server/src/main/resources/graphql/schema.graphqls)|+```TYPE.PROPERTY```|||

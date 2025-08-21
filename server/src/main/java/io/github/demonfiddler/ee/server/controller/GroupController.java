@@ -239,7 +239,7 @@ public class GroupController {
 	 * <code>generateBatchMappingDataFetchers</code> plugin parameter is true. <br/>
 	 * 
 	 * @param batchLoaderEnvironment
-	 * 		The environement for this batch loaded. You can extract the GraphQLContext from this parameter.
+	 * 		The environment for this batch loader. You can extract the GraphQLContext from this parameter.
 	 * @param graphQLContext
 	 * @param keys
 	 * 		The objects for which the value for the members field must be retrieved.

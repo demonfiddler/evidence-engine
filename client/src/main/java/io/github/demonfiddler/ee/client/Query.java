@@ -19,6 +19,7 @@
 
 package io.github.demonfiddler.ee.client;
 
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -28,6 +29,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.graphql_java_generator.annotation.GraphQLInputParameters;
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
@@ -35,6 +37,8 @@ import com.graphql_java_generator.annotation.GraphQLQuery;
 import com.graphql_java_generator.annotation.GraphQLScalar;
 import com.graphql_java_generator.annotation.RequestType;
 import com.graphql_java_generator.client.GraphQLRequestObject;
+
+import io.github.demonfiddler.ee.client.util.CustomJacksonDeserializers;
 
 /**
  * Available queries.
@@ -287,7 +291,7 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 	@GraphQLNonScalar(fieldName = "currentUser", graphQLTypeSimpleName = "User", javaClass = User.class, listDepth = 0)
 	User currentUser;
 
- 	/**
+	/**
 	 * Returns a paged list of groups.
 	 */
 	@JsonProperty("groups")
@@ -315,6 +319,29 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 	@GraphQLNonScalar(fieldName = "groupByGroupname", graphQLTypeSimpleName = "Group", javaClass = Group.class,
 		listDepth = 0)
 	Group groupByGroupname;
+
+	/**
+	 * Returns statistics on the specified entity kinds.
+	 */
+	@JsonProperty("entityStatistics")
+	@JsonDeserialize(using = CustomJacksonDeserializers.ListEntityStatistics.class)
+	@GraphQLInputParameters(names = { "filter" }, types = { "TrackedEntityQueryFilter" }, mandatories = { false },
+		listDepths = { 0 }, itemsMandatory = { false })
+	@GraphQLNonScalar(fieldName = "entityStatistics", graphQLTypeSimpleName = "EntityStatistics",
+		javaClass = io.github.demonfiddler.ee.client.EntityStatistics.class, listDepth = 1)
+	List<EntityStatistics> entityStatistics;
+
+	/**
+	 * Returns statistics on entities linked to the specified topic(s).
+	 */
+	@JsonProperty("topicStatistics")
+	@JsonDeserialize(using = CustomJacksonDeserializers.ListTopicStatistics.class)
+	@GraphQLInputParameters(names = { "topicFilter", "entityFilter" },
+		types = { "TopicQueryFilter", "TrackedEntityQueryFilter" }, mandatories = { false, false },
+		listDepths = { 0, 0 }, itemsMandatory = { false, false })
+	@GraphQLNonScalar(fieldName = "topicStatistics", graphQLTypeSimpleName = "TopicStatistics",
+		javaClass = io.github.demonfiddler.ee.client.TopicStatistics.class, listDepth = 1)
+	List<TopicStatistics> topicStatistics;
 
 	@JsonProperty("__schema")
 	@GraphQLNonScalar(fieldName = "__schema", graphQLTypeSimpleName = "__Schema", javaClass = __Schema.class,
@@ -763,6 +790,38 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 		return this.groupByGroupname;
 	}
 
+	/**
+	 * Returns statistics on the specified entity kinds.
+	 */
+	@JsonProperty("entityStatistics")
+	public void setEntityStatistics(List<EntityStatistics> entityStatistics) {
+		this.entityStatistics = entityStatistics;
+	}
+
+	/**
+	 * Returns statistics on the specified entity kinds.
+	 */
+	@JsonProperty("entityStatistics")
+	public List<EntityStatistics> getEntityStatistics() {
+		return this.entityStatistics;
+	}
+
+	/**
+	 * Returns statistics on entities linked to the specified topic(s).
+	 */
+	@JsonProperty("topicStatistics")
+	public void setTopicStatistics(List<TopicStatistics> topicStatistics) {
+		this.topicStatistics = topicStatistics;
+	}
+
+	/**
+	 * Returns statistics on entities linked to the specified topic(s).
+	 */
+	@JsonProperty("topicStatistics")
+	public List<TopicStatistics> getTopicStatistics() {
+		return this.topicStatistics;
+	}
+
 	@JsonProperty("__schema")
 	public void set__schema(__Schema __schema) {
 		this.__schema = __schema;
@@ -838,6 +897,10 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 			+ "groupById: " + this.groupById //
 			+ ", " //
 			+ "groupByGroupname: " + this.groupByGroupname //
+			+ ", " //$NON-NLS-1$
+			+ "entityStatistics: " + this.entityStatistics //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
+			+ "topicStatistics: " + this.topicStatistics //$NON-NLS-1$
 			+ ", " //
 			+ "__schema: " + this.__schema //
 			+ ", " //
@@ -884,6 +947,8 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 		private GroupPage groups;
 		private Group groupById;
 		private Group groupByGroupname;
+		private List<EntityStatistics> entityStatistics;
+		private List<TopicStatistics> topicStatistics;
 		private __Schema __schema;
 		private __Type __type;
 
@@ -1103,6 +1168,22 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 			return this;
 		}
 
+		/**
+		 * Returns statistics on the specified entity kinds.
+		 */
+		public Builder withEntityStatistics(List<EntityStatistics> entityStatisticsParam) {
+			this.entityStatistics = entityStatisticsParam;
+			return this;
+		}
+
+		/**
+		 * Returns statistics on entities linked to the specified topic(s).
+		 */
+		public Builder withTopicStatistics(List<TopicStatistics> topicStatisticsParam) {
+			this.topicStatistics = topicStatisticsParam;
+			return this;
+		}
+
 		public Builder with__schema(__Schema __schemaParam) {
 			this.__schema = __schemaParam;
 			return this;
@@ -1142,6 +1223,8 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 			_object.setGroups(this.groups);
 			_object.setGroupById(this.groupById);
 			_object.setGroupByGroupname(this.groupByGroupname);
+			_object.setEntityStatistics(this.entityStatistics);
+			_object.setTopicStatistics(this.topicStatistics);
 			_object.set__schema(this.__schema);
 			_object.set__type(this.__type);
 			return _object;

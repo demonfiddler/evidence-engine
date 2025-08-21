@@ -19,6 +19,12 @@
 
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 
 import graphql.schema.DataFetchingEnvironment;
@@ -29,6 +35,7 @@ import io.github.demonfiddler.ee.server.model.Declaration;
 import io.github.demonfiddler.ee.server.model.DeclarationPage;
 import io.github.demonfiddler.ee.server.model.EntityLinkPage;
 import io.github.demonfiddler.ee.server.model.EntityLinkQueryFilter;
+import io.github.demonfiddler.ee.server.model.EntityStatistics;
 import io.github.demonfiddler.ee.server.model.GroupPage;
 import io.github.demonfiddler.ee.server.model.JournalPage;
 import io.github.demonfiddler.ee.server.model.LinkableEntityQueryFilter;
@@ -42,8 +49,13 @@ import io.github.demonfiddler.ee.server.model.PublicationPage;
 import io.github.demonfiddler.ee.server.model.PublisherPage;
 import io.github.demonfiddler.ee.server.model.Quotation;
 import io.github.demonfiddler.ee.server.model.QuotationPage;
+import io.github.demonfiddler.ee.server.model.StatisticsQueryFilter;
+import io.github.demonfiddler.ee.server.model.StatusKind;
+import io.github.demonfiddler.ee.server.model.Topic;
 import io.github.demonfiddler.ee.server.model.TopicPage;
 import io.github.demonfiddler.ee.server.model.TopicQueryFilter;
+import io.github.demonfiddler.ee.server.model.TopicStatistics;
+import io.github.demonfiddler.ee.server.model.TopicStatisticsDto;
 import io.github.demonfiddler.ee.server.model.TrackedEntityQueryFilter;
 import io.github.demonfiddler.ee.server.model.UserPage;
 import io.github.demonfiddler.ee.server.repository.ClaimRepository;
@@ -56,6 +68,7 @@ import io.github.demonfiddler.ee.server.repository.PersonRepository;
 import io.github.demonfiddler.ee.server.repository.PublicationRepository;
 import io.github.demonfiddler.ee.server.repository.PublisherRepository;
 import io.github.demonfiddler.ee.server.repository.QuotationRepository;
+import io.github.demonfiddler.ee.server.repository.StatisticsRepository;
 import io.github.demonfiddler.ee.server.repository.TopicRepository;
 import io.github.demonfiddler.ee.server.repository.UserRepository;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
@@ -89,6 +102,8 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     private UserRepository userRepository;
     @Resource
     private GroupRepository groupRepository;
+    @Resource
+    private StatisticsRepository statisticsRepository;
     @Resource
     private EntityUtils entityUtils;
     @Resource
@@ -251,6 +266,60 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     @Override
     public Object groupByGroupname(DataFetchingEnvironment dataFetchingEnvironment, String groupname) {
         return groupRepository.findByGroupname(groupname).get();
+    }
+
+    @Override
+    public Object entityStatistics(DataFetchingEnvironment dataFetchingEnvironment, StatisticsQueryFilter filter) {
+        return statisticsRepository.getEntityStatistics(filter);
+    }
+
+    private boolean matchesFilter(Topic topic, StatisticsQueryFilter filter) {
+        return filter.getStatus() == null ||
+            filter.getStatus().contains(StatusKind.fromGraphQlValue(topic.getStatus()));
+    }
+
+    @Override
+    public Object topicStatistics(DataFetchingEnvironment dataFetchingEnvironment, StatisticsQueryFilter filter) {
+        // First create a TopicStatistics object for every topic.
+        Map<Long, TopicStatistics> stats = new HashMap<>();
+        List<Topic> topics = topicRepository.findAll();
+        topics.forEach(topic -> {
+            // if (filter.getStatus() == null ||
+            // filter.getStatus().contains(StatusKind.fromGraphQlValue(topic.getStatus()))) {
+            TopicStatistics stat = new TopicStatistics();
+            stat.setTopic(topic);
+            stat.setEntityStatistics(new ArrayList<>());
+            stat.setChildren(new ArrayList<>());
+            stats.put(topic.getId(), stat);
+            // }
+        });
+
+        // Then populate the TopicStatistics objects with the actual figures.
+        List<TopicStatisticsDto> rawStats = statisticsRepository.getTopicStatistics(filter);
+        for (TopicStatisticsDto dto : rawStats) {
+            TopicStatistics stat = stats.get(dto.getTopicId());
+            stat.getEntityStatistics().add(new EntityStatistics(dto.getEntityKind(), dto.getCount()));
+        }
+
+        // Transform the TopicStatistics objects into a tree reflective of the topic hierarchy.
+        for (TopicStatistics stat : stats.values()) {
+            if (matchesFilter(stat.getTopic(), filter)) {
+                Topic parent = stat.getTopic().getParent();
+                if (parent != null && matchesFilter(parent, filter)) {
+                    Long parentId = parent.getId();
+                    stats.get(parentId).getChildren().add(stat);
+                }
+            }
+        }
+        // Trim sub-topic stats from the top level.
+        Iterator<TopicStatistics> itr = stats.values().iterator();
+        while (itr.hasNext()) {
+            TopicStatistics stat = itr.next();
+            if (!matchesFilter(stat.getTopic(), filter) || stat.getTopic().getParent() != null)
+                itr.remove();
+        }
+
+        return stats.values();
     }
 
 }

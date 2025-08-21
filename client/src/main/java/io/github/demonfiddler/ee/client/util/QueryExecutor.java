@@ -22,6 +22,7 @@ package io.github.demonfiddler.ee.client.util;
 import static com.graphql_java_generator.client.request.InputParameter.InputParameterType.MANDATORY;
 import static com.graphql_java_generator.client.request.InputParameter.InputParameterType.OPTIONAL;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -38,6 +39,7 @@ import com.graphql_java_generator.annotation.RequestType;
 import com.graphql_java_generator.client.GraphQLQueryExecutor;
 import com.graphql_java_generator.client.request.Builder;
 import com.graphql_java_generator.client.request.InputParameter;
+import com.graphql_java_generator.client.request.InputParameter.InputParameterType;
 import com.graphql_java_generator.client.request.ObjectResponse;
 import com.graphql_java_generator.customscalars.GraphQLScalarTypeDate;
 import com.graphql_java_generator.exception.GraphQLRequestExecutionException;
@@ -52,6 +54,7 @@ import io.github.demonfiddler.ee.client.DeclarationPage;
 import io.github.demonfiddler.ee.client.EntityLink;
 import io.github.demonfiddler.ee.client.EntityLinkPage;
 import io.github.demonfiddler.ee.client.EntityLinkQueryFilter;
+import io.github.demonfiddler.ee.client.EntityStatistics;
 import io.github.demonfiddler.ee.client.Group;
 import io.github.demonfiddler.ee.client.GroupPage;
 import io.github.demonfiddler.ee.client.Journal;
@@ -69,9 +72,11 @@ import io.github.demonfiddler.ee.client.PublisherPage;
 import io.github.demonfiddler.ee.client.Query;
 import io.github.demonfiddler.ee.client.Quotation;
 import io.github.demonfiddler.ee.client.QuotationPage;
+import io.github.demonfiddler.ee.client.StatisticsQueryFilter;
 import io.github.demonfiddler.ee.client.Topic;
 import io.github.demonfiddler.ee.client.TopicPage;
 import io.github.demonfiddler.ee.client.TopicQueryFilter;
+import io.github.demonfiddler.ee.client.TopicStatistics;
 import io.github.demonfiddler.ee.client.TrackedEntityQueryFilter;
 import io.github.demonfiddler.ee.client.User;
 import io.github.demonfiddler.ee.client.UserPage;
@@ -5895,9 +5900,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 
 	/**
 	 * Returns the currently logged-in user.<br/>
-	 * This method executes a partial query on the currentUser query against the GraphQL server. That is, the query
-	 * is one of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part of
-	 * the query that follows the field name.<br/>
+	 * This method executes a partial query on the currentUser query against the GraphQL server. That is, the query is
+	 * one of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part of the
+	 * query that follows the field name.<br/>
 	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
 	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
 	 * describes the format of the response of the server response, that is the expected fields of the
@@ -5943,9 +5948,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 
 	/**
 	 * Returns the currently logged-in user.<br/>
-	 * This method executes a partial query on the currentUser query against the GraphQL server. That is, the query
-	 * is one of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part of
-	 * the query that follows the field name.<br/>
+	 * This method executes a partial query on the currentUser query against the GraphQL server. That is, the query is
+	 * one of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part of the
+	 * query that follows the field name.<br/>
 	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
 	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
 	 * describes the format of the response of the server response, that is the expected fields of the
@@ -6247,7 +6252,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 
 	 * 	void myMethod() {
 	 * 		GroupPage groups = executor.groupsWithBindValues(preparedRequest, filter, // A value for groups's filter
-	 * 																				// input parameter
+	 * 																					// input parameter
 	 * 			pageSort, // A value for groups's pageSort input parameter
 	 * 			params);
 	 * 	}
@@ -6300,7 +6305,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 	}
 	 * 
 	 * 	void myMethod() {
-	 * 		GroupPage groups = executor.groups(preparedRequest, filter, // A value for groups's filter input parameter
+	 * 		GroupPage groups = executor.groups(preparedRequest, filter, // A value for groups's filter input
+	 * 																	// parameter
 	 * 			pageSort, // A value for groups's pageSort input parameter
 	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
@@ -6368,8 +6374,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
 	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
 	 * describes the format of the response of the server response, that is the expected fields of the
-	 * <code>groupById</code> of the Query query type. It can be something like "{ id name }", or "" for a scalar. Please
-	 * take a look at the StarWars, Forum and other samples for more complex queries.<br/>
+	 * <code>groupById</code> of the Query query type. It can be something like "{ id name }", or "" for a scalar.
+	 * Please take a look at the StarWars, Forum and other samples for more complex queries.<br/>
 	 * Here is a sample on how to use it:
 	 * 
 	 * <PRE>
@@ -6418,8 +6424,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
 	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
 	 * describes the format of the response of the server response, that is the expected fields of the
-	 * <code>groupById</code> of the Query query type. It can be something like "{ id name }", or "" for a scalar. Please
-	 * take a look at the StarWars, Forum and other samples for more complex queries.<br/>
+	 * <code>groupById</code> of the Query query type. It can be something like "{ id name }", or "" for a scalar.
+	 * Please take a look at the StarWars, Forum and other samples for more complex queries.<br/>
 	 * Here is a sample on how to use it:
 	 * 
 	 * <PRE>
@@ -6482,7 +6488,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 	}
 	 * 
 	 * 	void myMethod() {
-	 * 		Group groupById = executor.groupByIdWithBindValues(preparedRequest, id, // A value for groupById's id input
+	 * 		Group groupById = executor.groupByIdWithBindValues(preparedRequest, id, // A value for groupById's id
+	 * 																				// input
 	 * 																				// parameter
 	 * 			params);
 	 * 	}
@@ -6596,8 +6603,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
 	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
 	 * describes the format of the response of the server response, that is the expected fields of the
-	 * <code>groupByGroupname</code> of the Query query type. It can be something like "{ id name }", or "" for a scalar.
-	 * Please take a look at the StarWars, Forum and other samples for more complex queries.<br/>
+	 * <code>groupByGroupname</code> of the Query query type. It can be something like "{ id name }", or "" for a
+	 * scalar. Please take a look at the StarWars, Forum and other samples for more complex queries.<br/>
 	 * Here is a sample on how to use it:
 	 * 
 	 * <PRE>
@@ -6631,8 +6638,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "groupByGroupname", graphQLTypeSimpleName = "Group", javaClass = Group.class)
-	public Group groupByGroupnameWithBindValues(String queryResponseDef, String groupname, Map<String, Object> parameters)
-		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+	public Group groupByGroupnameWithBindValues(String queryResponseDef, String groupname,
+		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
 		return getValueFromMonoOptional(
 			this.queryReactiveExecutor.groupByGroupnameWithBindValues(queryResponseDef, groupname, parameters));
@@ -6646,8 +6653,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
 	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
 	 * describes the format of the response of the server response, that is the expected fields of the
-	 * <code>groupByGroupname</code> of the Query query type. It can be something like "{ id name }", or "" for a scalar.
-	 * Please take a look at the StarWars, Forum and other samples for more complex queries.<br/>
+	 * <code>groupByGroupname</code> of the Query query type. It can be something like "{ id name }", or "" for a
+	 * scalar. Please take a look at the StarWars, Forum and other samples for more complex queries.<br/>
 	 * Here is a sample on how to use it:
 	 * 
 	 * <PRE>
@@ -6711,7 +6718,8 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 	}
 	 * 
 	 * 	void myMethod() {
-	 * 		Group groupByGroupname = executor.groupByGroupnameWithBindValues(preparedRequest, groupname, // A value for
+	 * 		Group groupByGroupname = executor.groupByGroupnameWithBindValues(preparedRequest, groupname, // A value
+	 * 																										// for
 	 * 			// groupByGroupname's groupname
 	 * 			// input parameter
 	 * 			params);
@@ -6764,8 +6772,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * 	}
 	 * 
 	 * 	void myMethod() {
-	 * 		Group groupByGroupname = executor.groupByGroupname(preparedRequest, groupname, // A value for groupByGroupname's
-	 * 																					// groupname input
+	 * 		Group groupByGroupname = executor.groupByGroupname(preparedRequest, groupname, // A value for
+	 * 																						// groupByGroupname's
+	 * 																						// groupname input
 	 * 			// parameter
 	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
@@ -6820,8 +6829,500 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 		throws GraphQLRequestPreparationException {
 
 		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "groupByGroupname",
-			InputParameter.newBindParameter("", "groupname", "queryGroupByGroupnameGroupname", MANDATORY, "String", true, 0,
-				false));
+			InputParameter.newBindParameter("", "groupname", "queryGroupByGroupnameGroupname", MANDATORY, "String",
+				true, 0, false));
+	}
+
+	/**
+	 * Returns statistics on the specified entity kinds.<br/>
+	 * This method executes a partial query on the entityStatistics query against the GraphQL server. That is, the query
+	 * is one of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part of
+	 * the query that follows the field name.<br/>
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the expected fields of the
+	 * <code>entityStatistics</code> of the Query query type. It can be something like "{ id name }", or "" for a
+	 * scalar. Please take a look at the StarWars, Forum and other samples for more complex queries.<br/>
+	 * Here is a sample on how to use it:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Map<String, Object> params = new HashMap<>();
+	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
+	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
+	 * 
+	 * 		List<EntityStatistics> entityStatistics = executor.entityStatisticsWithBindValues(
+	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 			filter, // A value for entityStatistics's filter input parameter
+	 * 			params);
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
+	 * @param filter Selects the entities to include.
+	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
+	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
+	 * building the {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "entityStatistics", graphQLTypeSimpleName = "EntityStatistics",
+		javaClass = EntityStatistics.class)
+	public List<EntityStatistics> entityStatisticsWithBindValues(String queryResponseDef, StatisticsQueryFilter filter,
+		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+
+		return getValueFromMonoOptional(
+			this.queryReactiveExecutor.entityStatisticsWithBindValues(queryResponseDef, filter, parameters));
+	}
+
+	/**
+	 * Returns statistics on the specified entity kinds.<br/>
+	 * This method executes a partial query on the entityStatistics query against the GraphQL server. That is, the query
+	 * is one of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part of
+	 * the query that follows the field name.<br/>
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the expected fields of the
+	 * <code>entityStatistics</code> of the Query query type. It can be something like "{ id name }", or "" for a
+	 * scalar. Please take a look at the StarWars, Forum and other samples for more complex queries.<br/>
+	 * Here is a sample on how to use it:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		List<EntityStatistics> entityStatistics = executor.entityStatistics(
+	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 			filter, // A value for entityStatistics's filter input parameter
+	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
+	 * @param filter Selects the entities to include.
+	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
+	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
+	 * building the {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "entityStatistics", graphQLTypeSimpleName = "EntityStatistics",
+		javaClass = EntityStatistics.class)
+	public List<EntityStatistics> entityStatistics(String queryResponseDef, StatisticsQueryFilter filter,
+		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+
+		return getValueFromMonoOptional(
+			this.queryReactiveExecutor.entityStatistics(queryResponseDef, filter, paramsAndValues));
+	}
+
+	/**
+	 * Returns statistics on the specified entity kinds.<br/>
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<br/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed several times
+	 * 		preparedRequest = executor.getEntityStatisticsGraphQLRequest(
+	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		List<EntityStatistics> entityStatistics =
+	 * 			executor.entityStatisticsWithBindValues(preparedRequest, filter, // A value for entityStatistics's
+	 * 																				// filter input parameter
+	 * 				params);
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
+	 * to return<br/>
+	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
+	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
+	 * {@link getEntityStatisticsGraphQLRequest(String)} method.
+	 * @param filter Selects the entities to include.
+	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
+	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "entityStatistics", graphQLTypeSimpleName = "EntityStatistics",
+		javaClass = EntityStatistics.class)
+	public List<EntityStatistics> entityStatisticsWithBindValues(ObjectResponse objectResponse,
+		StatisticsQueryFilter filter, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
+		return getValueFromMonoOptional(
+			this.queryReactiveExecutor.entityStatisticsWithBindValues(objectResponse, filter, parameters));
+	}
+
+	/**
+	 * Returns statistics on the specified entity kinds.<br/>
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<br/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed several times
+	 * 		preparedRequest = executor.getEntityStatisticsGraphQLRequest(
+	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		List<EntityStatistics> entityStatistics = executor.entityStatistics(preparedRequest, filter, // A value
+	 * 																										// for
+	 * 																										// entityStatistics's
+	 * 																										// filter
+	 * 																										// input
+	 * 																										// parameter
+	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
+	 * to return<br/>
+	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
+	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
+	 * {@link getEntityStatisticsGraphQLRequest(String)} method.
+	 * @param filter Selects the entities to include.
+	 * @param paramsAndValues This parameter contains all the name and values for the Bind Variables defined in the
+	 * objectResponse parameter, that must be sent to the server. Optional parameter may not have a value. They will be
+	 * ignored and not sent to the server. Mandatory parameter must be provided in this argument.<br/>
+	 * This parameter contains an even number of parameters: it must be a series of name and values : (paramName1,
+	 * paramValue1, paramName2, paramValue2...)
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "entityStatistics", graphQLTypeSimpleName = "EntityStatistics",
+		javaClass = EntityStatistics.class)
+	public List<EntityStatistics> entityStatistics(ObjectResponse objectResponse, StatisticsQueryFilter filter,
+		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+
+		return getValueFromMonoOptional(
+			this.queryReactiveExecutor.entityStatistics(objectResponse, filter, paramsAndValues));
+	}
+
+	/**
+	 * Returns statistics on the specified entity kinds.<br/>
+	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the EntityStatistics, as expected by the
+	 * entityStatistics query.
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public Builder getEntityStatisticsResponseBuilder() throws GraphQLRequestPreparationException {
+		return this.queryReactiveExecutor.getEntityStatisticsResponseBuilder();
+	}
+
+	/**
+	 * Returns statistics on the specified entity kinds.<br/>
+	 * Get the {@link GraphQLRequest} for the entityStatistics EXECUTOR, created with the given Partial request.
+	 * @param partialRequest The Partial GraphQL request, as explained in the
+	 * <A HREF="https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin client
+	 * documentation</A>
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public GraphQLRequest getEntityStatisticsGraphQLRequest(String partialRequest)
+		throws GraphQLRequestPreparationException {
+
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "entityStatistics",
+			InputParameter.newBindParameter("", "filter", "queryEntityStatisticsFilter", InputParameterType.OPTIONAL,
+				"StatisticsQueryFilter", false, 0, false));
+	}
+
+	/**
+	 * Returns statistics on entities linked to the specified topic(s).<br/>
+	 * This method executes a partial query on the topicStatistics query against the GraphQL server. That is, the query
+	 * is one of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part of
+	 * the query that follows the field name.<br/>
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the expected fields of the
+	 * <code>topicStatistics</code> of the Query query type. It can be something like "{ id name }", or "" for a scalar.
+	 * Please take a look at the StarWars, Forum and other samples for more complex queries.<br/>
+	 * Here is a sample on how to use it:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Map<String, Object> params = new HashMap<>();
+	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
+	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
+	 * 
+	 * 		List<TopicStatistics> topicStatistics = executor.topicStatisticsWithBindValues(
+	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 			topicFilter, // A value for topicStatistics's topicFilter input parameter
+	 * 			entityFilter, // A value for topicStatistics's entityFilter input parameter
+	 * 			params);
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
+	 * @param filter Selects the entities to include.
+	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
+	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
+	 * building the {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "topicStatistics", graphQLTypeSimpleName = "TopicStatistics",
+		javaClass = TopicStatistics.class)
+	public List<TopicStatistics> topicStatisticsWithBindValues(String queryResponseDef, StatisticsQueryFilter filter,
+		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+
+		return getValueFromMonoOptional(
+			this.queryReactiveExecutor.topicStatisticsWithBindValues(queryResponseDef, filter, parameters));
+	}
+
+	/**
+	 * Returns statistics on entities linked to the specified topic(s).<br/>
+	 * This method executes a partial query on the topicStatistics query against the GraphQL server. That is, the query
+	 * is one of the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part of
+	 * the query that follows the field name.<br/>
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the expected fields of the
+	 * <code>topicStatistics</code> of the Query query type. It can be something like "{ id name }", or "" for a scalar.
+	 * Please take a look at the StarWars, Forum and other samples for more complex queries.<br/>
+	 * Here is a sample on how to use it:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		List<TopicStatistics> topicStatistics = executor.topicStatistics(
+	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 			topicFilter, // A value for topicStatistics's topicFilter input parameter
+	 * 			entityFilter, // A value for topicStatistics's entityFilter input parameter
+	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
+	 * @param filter Selects the entities to include.
+	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
+	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
+	 * building the {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "topicStatistics", graphQLTypeSimpleName = "TopicStatistics",
+		javaClass = TopicStatistics.class)
+	public List<TopicStatistics> topicStatistics(String queryResponseDef, StatisticsQueryFilter filter,
+		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+
+		return getValueFromMonoOptional(
+			this.queryReactiveExecutor.topicStatistics(queryResponseDef, filter, paramsAndValues));
+	}
+
+	/**
+	 * Returns statistics on entities linked to the specified topic(s).<br/>
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<br/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed several times
+	 * 		preparedRequest = executor.getTopicStatisticsGraphQLRequest(
+	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		List<TopicStatistics> topicStatistics =
+	 * 			executor.topicStatisticsWithBindValues(preparedRequest, entityFilter, // A value for
+	 * 																					// topicStatistics's
+	 * 																					// entityFilter input
+	 * 																					// parameter
+	 * 				params);
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
+	 * to return<br/>
+	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
+	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
+	 * {@link getTopicStatisticsGraphQLRequest(String)} method.
+	 * @param filter Selects the linked entities to include.
+	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
+	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "topicStatistics", graphQLTypeSimpleName = "TopicStatistics",
+		javaClass = TopicStatistics.class)
+	public List<TopicStatistics> topicStatisticsWithBindValues(ObjectResponse objectResponse,
+		StatisticsQueryFilter filter, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
+		return getValueFromMonoOptional(
+			this.queryReactiveExecutor.topicStatisticsWithBindValues(objectResponse, filter, parameters));
+	}
+
+	/**
+	 * Returns statistics on entities linked to the specified topic(s).<br/>
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<br/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed several times
+	 * 		preparedRequest = executor.getTopicStatisticsGraphQLRequest(
+	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		List<TopicStatistics> topicStatistics = executor.topicStatistics(preparedRequest, topicFilter, // A value
+	 * 																										// for
+	 * 																										// topicStatistics's
+	 * 																										// topicFilter
+	 * 																										// input
+	 * 																										// parameter
+	 * 			entityFilter, // A value for topicStatistics's entityFilter input parameter
+	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
+	 * to return<br/>
+	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
+	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
+	 * {@link getTopicStatisticsGraphQLRequest(String)} method.
+	 * @param filter Selects the linked entities to include.
+	 * @param paramsAndValues This parameter contains all the name and values for the Bind Variables defined in the
+	 * objectResponse parameter, that must be sent to the server. Optional parameter may not have a value. They will be
+	 * ignored and not sent to the server. Mandatory parameter must be provided in this argument.<br/>
+	 * This parameter contains an even number of parameters: it must be a series of name and values : (paramName1,
+	 * paramValue1, paramName2, paramValue2...)
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "topicStatistics", graphQLTypeSimpleName = "TopicStatistics",
+		javaClass = TopicStatistics.class)
+	public List<TopicStatistics> topicStatistics(ObjectResponse objectResponse, StatisticsQueryFilter filter,
+		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+
+		return getValueFromMonoOptional(
+			this.queryReactiveExecutor.topicStatistics(objectResponse, filter, paramsAndValues));
+	}
+
+	/**
+	 * Returns statistics on entities linked to the specified topic(s).<br/>
+	 * Get the {@link Builder} for the TopicStatistics, as expected by the topicStatistics query.
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public Builder getTopicStatisticsResponseBuilder() throws GraphQLRequestPreparationException {
+		return this.queryReactiveExecutor.getTopicStatisticsResponseBuilder();
+	}
+
+	/**
+	 * Returns statistics on entities linked to the specified topic(s).<br/>
+	 * Get the {@link GraphQLRequest} for the topicStatistics EXECUTOR, created with the given Partial request.
+	 * @param partialRequest The Partial GraphQL request, as explained in the
+	 * <A HREF="https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin client
+	 * documentation</A>
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public GraphQLRequest getTopicStatisticsGraphQLRequest(String partialRequest)
+		throws GraphQLRequestPreparationException {
+
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "topicStatistics",
+			InputParameter.newBindParameter("", "filter", "queryTopicStatisticsFilter", InputParameterType.OPTIONAL,
+				"StatisticsQueryFilter", false, 0, false));
 	}
 
 	/**

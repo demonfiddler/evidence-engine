@@ -6,8 +6,8 @@ PersonInput,io.github.demonfiddler.ee.client.PersonInput
 Journal,io.github.demonfiddler.ee.client.Journal
 NullHandlingKind,io.github.demonfiddler.ee.client.NullHandlingKind
 String,java.lang.String
-DateTime,java.time.OffsetDateTime
 LogQueryFilter,io.github.demonfiddler.ee.client.LogQueryFilter
+DateTime,java.time.OffsetDateTime
 Quotation,io.github.demonfiddler.ee.client.Quotation
 OrderInput,io.github.demonfiddler.ee.client.OrderInput
 DirectionKind,io.github.demonfiddler.ee.client.DirectionKind
@@ -15,6 +15,7 @@ QuotationInput,io.github.demonfiddler.ee.client.QuotationInput
 ID,java.lang.Long
 Boolean,java.lang.Boolean
 Void,java.lang.Void
+EntityStatistics,io.github.demonfiddler.ee.client.EntityStatistics
 ClaimInput,io.github.demonfiddler.ee.client.ClaimInput
 TopicInput,io.github.demonfiddler.ee.client.TopicInput
 TransactionKind,io.github.demonfiddler.ee.client.TransactionKind
@@ -57,6 +58,7 @@ PageableInput,io.github.demonfiddler.ee.client.PageableInput
 IPage,io.github.demonfiddler.ee.client.IPage
 PublicationInput,io.github.demonfiddler.ee.client.PublicationInput
 PublisherInput,io.github.demonfiddler.ee.client.PublisherInput
+StatisticsQueryFilter,io.github.demonfiddler.ee.client.StatisticsQueryFilter
 Declaration,io.github.demonfiddler.ee.client.Declaration
 Topic,io.github.demonfiddler.ee.client.Topic
 EntityKind,io.github.demonfiddler.ee.client.EntityKind
@@ -66,6 +68,7 @@ DeclarationInput,io.github.demonfiddler.ee.client.DeclarationInput
 PersonPage,io.github.demonfiddler.ee.client.PersonPage
 UserInput,io.github.demonfiddler.ee.client.UserInput
 GroupInput,io.github.demonfiddler.ee.client.GroupInput
+TopicStatistics,io.github.demonfiddler.ee.client.TopicStatistics
 Publisher,io.github.demonfiddler.ee.client.Publisher
 UserPage,io.github.demonfiddler.ee.client.UserPage
 GroupPage,io.github.demonfiddler.ee.client.GroupPage

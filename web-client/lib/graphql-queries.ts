@@ -416,7 +416,6 @@ fragment topicHierarchyFields on Topic {
   ...subtopicFieldsRecursive
 }
 `
-//alert("(15) graphql-queries.ts")
 
 const FRAGMENT_USER_FIELDS = gql`
 fragment userFields on User {
@@ -1355,6 +1354,115 @@ mutation RevokeGroupAuthorities($groupId: ID!, $authorities: [AuthorityKind!]!) 
   revokeGroupAuthorities(groupId: $groupId, authorities: $authorities) {
     ...trackedEntityFields
     ...groupFields
+  }
+}
+`
+
+const FRAGMENT_ENTITY_STATS_FIELDS = gql`
+fragment entityStatsFields on EntityStatistics {
+  entityKind
+  count
+}
+`
+
+export const READ_ENTITY_STATISTICS = gql`
+${FRAGMENT_ENTITY_STATS_FIELDS}
+query ReadEntityStatistics($filter: StatisticsQueryFilter) {
+  entityStatistics(filter: $filter) {
+    ...entityStatsFields
+  }
+}
+`
+
+const FRAGMENT_TOPIC_STATS_FIELDS = gql`
+fragment topicStatsFields on TopicStatistics {
+  topic {
+    id
+    status
+    label
+    description
+  }
+  entityStatistics {
+    ...entityStatsFields
+  }
+}
+`
+
+const FRAGMENT_TOPIC_STATS_FIELDS_RECURSIVE = gql`
+fragment topicStatsFieldsRecursive on TopicStatistics {
+  children {
+    ...topicStatsFields
+    children {
+      ...topicStatsFields
+      children {
+        ...topicStatsFields
+        children {
+          ...topicStatsFields
+          children {
+            ...topicStatsFields
+            children {
+              ...topicStatsFields
+              children {
+                ...topicStatsFields
+                children {
+                  ...topicStatsFields
+                  children {
+                    ...topicStatsFields
+                    children {
+                      ...topicStatsFields
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+`
+
+const FRAGMENT_TOPIC_STATS_HIERARCHY_FIELDS = gql`
+fragment topicStatsHierarchyFields on TopicStatistics {
+  ...topicStatsFields
+  ...topicStatsFieldsRecursive
+}
+`
+
+export const READ_TOPIC_STATISTICS = gql`
+${FRAGMENT_ENTITY_STATS_FIELDS}
+${FRAGMENT_TOPIC_STATS_FIELDS}
+query ReadTopicStatistics($filter: StatisticsQueryFilter) {
+  topicStatistics(filter: $filter) {
+    ...topicStatsFields
+  }
+}
+`
+
+export const READ_TOPIC_STATISTICS_HIERARCHY = gql`
+${FRAGMENT_ENTITY_STATS_FIELDS}
+${FRAGMENT_TOPIC_STATS_FIELDS}
+${FRAGMENT_TOPIC_STATS_FIELDS_RECURSIVE}
+${FRAGMENT_TOPIC_STATS_HIERARCHY_FIELDS}
+query TopicHierarchy($filter: StatisticsQueryFilter) {
+  topicStatistics(filter: $filter) {
+    ...topicStatsHierarchyFields
+  }
+}
+`
+
+export const READ_ALL_STATISTICS = gql`
+${FRAGMENT_ENTITY_STATS_FIELDS}
+${FRAGMENT_TOPIC_STATS_FIELDS}
+${FRAGMENT_TOPIC_STATS_FIELDS_RECURSIVE}
+${FRAGMENT_TOPIC_STATS_HIERARCHY_FIELDS}
+query AllStatistics($filter: StatisticsQueryFilter) {
+  topicStatistics(filter: $filter) {
+    ...topicStatsHierarchyFields
+  }
+  entityStatistics(filter: $filter) {
+    ...entityStatsFields
   }
 }
 `

@@ -19,9 +19,13 @@
 
 package io.github.demonfiddler.ee.server.model;
 
+import java.util.List;
+
 import com.graphql_java_generator.annotation.GraphQLDirective;
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
+
+import jakarta.persistence.Transient;
 
 /**
  * Available queries.
@@ -204,25 +208,44 @@ public class Query {
 	/**
 	 * Returns a paged list of groups.
 	 */
-	@GraphQLNonScalar( fieldName = "groups", graphQLTypeSimpleName = "GroupPage", javaClass = GroupPage.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	@GraphQLNonScalar(fieldName = "groups", graphQLTypeSimpleName = "GroupPage", javaClass = GroupPage.class,
+		listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	GroupPage groups;
-
 
 	/**
 	 * Returns a group given its identifier.
 	 */
-	@GraphQLNonScalar( fieldName = "groupById", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	@GraphQLNonScalar(fieldName = "groupById", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	Group groupById;
-
 
 	/**
 	 * Returns a group given its groupname.
 	 */
-	@GraphQLNonScalar( fieldName = "groupByGroupname", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	@GraphQLNonScalar(fieldName = "groupByGroupname", graphQLTypeSimpleName = "Group", javaClass = Group.class,
+		listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	Group groupByGroupname;
+
+	/**
+	 * Returns statistics on the specified entity kinds.
+	 */
+	@Transient
+	@GraphQLNonScalar(fieldName = "entityStatistics", graphQLTypeSimpleName = "EntityStatistics",
+		javaClass = EntityStatistics.class, listDepth = 1)
+	List<EntityStatistics> entityStatistics;
+
+	/**
+	 * Returns statistics on entities linked to the specified topic(s).
+	 */
+	@Transient
+	@GraphQLNonScalar(fieldName = "topicStatistics", graphQLTypeSimpleName = "TopicStatistics",
+		javaClass = TopicStatisticsDto.class, listDepth = 1)
+	List<TopicStatisticsDto> topicStatistics;
 
 	/**
 	 * Returns a paged list of claims.
@@ -573,9 +596,10 @@ public class Query {
 	}
 
 	/**
-	  * Returns a paged list of groups.
- 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	 * Returns a paged list of groups.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	public void setGroups(GroupPage groups) {
 		this.groups = groups;
 	}
@@ -583,15 +607,17 @@ public class Query {
 	/**
 	 * Returns a paged list of groups.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	public GroupPage getGroups() {
 		return this.groups;
 	}
 
 	/**
-	  * Returns a group given its identifier.
- 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	 * Returns a group given its identifier.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	public void setGroupById(Group groupById) {
 		this.groupById = groupById;
 	}
@@ -599,15 +625,17 @@ public class Query {
 	/**
 	 * Returns a group given its identifier.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	public Group getGroupById() {
 		return this.groupById;
 	}
 
 	/**
-	  * Returns a group given its groupname.
- 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	 * Returns a group given its groupname.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	public void setGroupByGroupname(Group groupByGroupname) {
 		this.groupByGroupname = groupByGroupname;
 	}
@@ -615,9 +643,38 @@ public class Query {
 	/**
 	 * Returns a group given its groupname.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	public Group getGroupByGroupname() {
 		return this.groupByGroupname;
+	}
+
+	/**
+	 * Returns statistics on the specified entity kinds.
+	 */
+	public void setEntityStatistics(List<EntityStatistics> entityStatistics) {
+		this.entityStatistics = entityStatistics;
+	}
+
+	/**
+	 * Returns statistics on the specified entity kinds.
+	 */
+	public List<EntityStatistics> getEntityStatistics() {
+		return this.entityStatistics;
+	}
+
+	/**
+	 * Returns statistics on entities linked to the specified topic(s).
+	 */
+	public void setTopicStatistics(List<TopicStatisticsDto> topicStatistics) {
+		this.topicStatistics = topicStatistics;
+	}
+
+	/**
+	 * Returns statistics on entities linked to the specified topic(s).
+	 */
+	public List<TopicStatisticsDto> getTopicStatistics() {
+		return this.topicStatistics;
 	}
 
 	public String toString() {
@@ -675,6 +732,10 @@ public class Query {
 			+ "groupById: " + this.groupById //$NON-NLS-1$
 			+ ", " //$NON-NLS-1$
 			+ "groupByGroupname: " + this.groupByGroupname //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
+			+ "entityStatistics: " + this.entityStatistics //$NON-NLS-1$
+			+ ", " //$NON-NLS-1$
+			+ "topicStatistics: " + this.topicStatistics //$NON-NLS-1$
 			+ "}"; //$NON-NLS-1$
 	}
 
@@ -715,6 +776,8 @@ public class Query {
 		private GroupPage groups;
 		private Group groupById;
 		private Group groupByGroupname;
+		private List<EntityStatistics> entityStatistics;
+		private List<TopicStatisticsDto> topicStatistics;
 
 		/**
 		 * Returns a paged list of claims.
@@ -767,8 +830,7 @@ public class Query {
 		/**
 		 * Returns an entity link given its from- and to-entity identifiers.
 		 */
-		public Builder
-			withEntityLinkByEntityIds(EntityLink entityLinkByEntityIdsParam) {
+		public Builder withEntityLinkByEntityIds(EntityLink entityLinkByEntityIdsParam) {
 			this.entityLinkByEntityIds = entityLinkByEntityIdsParam;
 			return this;
 		}
@@ -910,26 +972,42 @@ public class Query {
 		}
 
 		/**
-	     * Returns a paged list of groups.
-	     */
+		 * Returns a paged list of groups.
+		 */
 		public Builder withGroups(GroupPage groupsParam) {
 			this.groups = groupsParam;
 			return this;
 		}
 
 		/**
-	     * Returns a group given its identifier.
-	     */
+		 * Returns a group given its identifier.
+		 */
 		public Builder withGroupById(Group groupByIdParam) {
 			this.groupById = groupByIdParam;
 			return this;
 		}
 
 		/**
-	     * Returns a group given its groupname.
-	     */
+		 * Returns a group given its groupname.
+		 */
 		public Builder withGroupByGroupname(Group groupByGroupnameParam) {
 			this.groupByGroupname = groupByGroupnameParam;
+			return this;
+		}
+
+		/**
+		 * Returns statistics on the specified entity kinds.
+		 */
+		public Builder withEntityStatistics(List<EntityStatistics> entityStatisticsParam) {
+			this.entityStatistics = entityStatisticsParam;
+			return this;
+		}
+
+		/**
+		 * Returns statistics on entities linked to the specified topic(s).
+		 */
+		public Builder withTopicStatistics(List<TopicStatisticsDto> topicStatisticsParam) {
+			this.topicStatistics = topicStatisticsParam;
 			return this;
 		}
 
@@ -962,6 +1040,8 @@ public class Query {
 			_object.setGroups(this.groups);
 			_object.setGroupById(this.groupById);
 			_object.setGroupByGroupname(this.groupByGroupname);
+			_object.setEntityStatistics(this.entityStatistics);
+			_object.setTopicStatistics(this.topicStatistics);
 			return _object;
 		}
 

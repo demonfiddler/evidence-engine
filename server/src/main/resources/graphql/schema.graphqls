@@ -712,7 +712,7 @@ input LinkableEntityQueryFilter {
 }
 
 # TODO: See whether GraphQL has any hook points to perform logging
-"A log entry to show who changed what and when"
+"A log entry to show who changed what and when."
 type Log implements IBaseEntity {
     "The unique identifier for the log entry."
     id: ID!
@@ -1426,6 +1426,33 @@ type QuotationPage implements IPage {
 #     DESC
 # }
 
+"Statistics about a given entity kind."
+type EntityStatistics {
+    "The entity kind."
+    entityKind(
+        "How to format the result. SHORT format is per ```EntityKind``` enum."
+        format: FormatKind = LONG
+    ): String
+    "The number of entities of that kind."
+    count: Long
+}
+
+"Statistics about a given topic."
+type TopicStatistics {
+    "The topic in question."
+    topic: Topic
+    "Statistics for the requested entities."
+    entityStatistics: [EntityStatistics!]
+    "Statistics for the immediate sub-topics."
+    children: [TopicStatistics!]
+}
+
+"Parameters to filter a statstics query."
+input StatisticsQueryFilter {
+    "Include only entities with these statuses."
+    status: [StatusKind!]
+}
+
 "Enumeration of ITrackedEntity status codes."
 enum StatusKind {
     "Record is draft/new."
@@ -1896,6 +1923,17 @@ type Query {
     groupById(id: ID!): Group @auth(authority: [ADM])
     "Returns a group given its groupname."
     groupByGroupname(groupname: String!): Group @auth(authority: [ADM])
+
+    "Returns statistics on the specified entity kinds."
+    entityStatistics(
+        "Selects the entities to include."
+        filter: StatisticsQueryFilter
+    ): [EntityStatistics!]
+    "Returns statistics on entities linked to the specified topic(s)."
+    topicStatistics(
+        "Selects the entities to include."
+        filter: StatisticsQueryFilter
+    ): [TopicStatistics!]
 }
 
 "Available mutations."

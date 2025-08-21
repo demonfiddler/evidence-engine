@@ -30,6 +30,7 @@ import graphql.schema.GraphQLScalarType;
 import io.github.demonfiddler.ee.client.Claim;
 import io.github.demonfiddler.ee.client.Declaration;
 import io.github.demonfiddler.ee.client.EntityLink;
+import io.github.demonfiddler.ee.client.EntityStatistics;
 import io.github.demonfiddler.ee.client.Group;
 import io.github.demonfiddler.ee.client.Journal;
 import io.github.demonfiddler.ee.client.Log;
@@ -38,6 +39,7 @@ import io.github.demonfiddler.ee.client.Publication;
 import io.github.demonfiddler.ee.client.Publisher;
 import io.github.demonfiddler.ee.client.Quotation;
 import io.github.demonfiddler.ee.client.Topic;
+import io.github.demonfiddler.ee.client.TopicStatistics;
 import io.github.demonfiddler.ee.client.User;
 import io.github.demonfiddler.ee.client.__Directive;
 import io.github.demonfiddler.ee.client.__DirectiveLocation;
@@ -98,6 +100,18 @@ public class CustomJacksonDeserializers {
 
 	}
 
+	public static class ListEntityStatistics extends AbstractCustomJacksonDeserializer<List<EntityStatistics>> {
+		private static final long serialVersionUID = 1L;
+		public ListEntityStatistics() {
+			super(
+				null,
+				true,
+				EntityStatistics.class,
+				null
+			);
+		}
+	}
+
 	public static class List__EnumValue extends AbstractCustomJacksonDeserializer<List<__EnumValue>> {
 
 		private static final long serialVersionUID = 1L;
@@ -123,6 +137,18 @@ public class CustomJacksonDeserializers {
 			super(null, true, Claim.class, null);
 		}
 
+	}
+
+	public static class ListTopicStatistics extends AbstractCustomJacksonDeserializer<List<TopicStatistics>> {
+		private static final long serialVersionUID = 1L;
+		public ListTopicStatistics() {
+			super(
+				null,
+				true,
+				TopicStatistics.class,
+				null
+			);
+		}
 	}
 
 	public static class ListDeclaration extends AbstractCustomJacksonDeserializer<List<Declaration>> {

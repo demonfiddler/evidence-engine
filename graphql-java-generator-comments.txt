@@ -37,8 +37,10 @@ static final transient volatile
 - Javadoc contains {@link xxx} to unqualified class names (e.g. Date) that aren't imported. This triggers confusing queries when organising imports.
 - Multiple violations of official Javadoc format guidelines, especially around 'first sentence rollup'.
 - Javadoc is littered with spelling mistakes.
+- Javadoc contains miscapitalised words such as 'json'.
 - Inaccurate translation of GraphQL inline Common Markdown documentation to Javadoc (e.g., ```xxx``` should be translated to {@code xxx} but isn't).
 - The generateServerCode Gradle task has a useJakartaEE9 flag, which causes the generated classes corresponding to GraphQL types to be annotated with @Entity. However, this scheme involves the assumption that every such type necessarily corresponds to a database entity. There are valid use cases where this assumption is invalid, and in these the @Entity annotation distorts the semantics of the type. For example, every @Entity class requires a primary key field annotated with @Id, which forces you to declare a dummy ID field in the GraphQL type. There needs to be a way to tell the code generator that a type has (or maybe does not have) a corresponding database entity (and therefore to include/omit) the @Entity annotation. This could have been easily accomplished by using an entityPersonalization.deleteAnnotation property in personalization.json file, but unfortunately this capability has been removed on the spurious grounds that people were breaking the generated code by using it. Surely it's a case of 'caveat emptor' - if someone doesn't understand what they are doing, that's their fault not the tools? It doesn't make sense to sacrifice an essential feature purely to stop idiots misusing it and thereby penalise the competent!
+- No codegen options to specify separate packages for the various types of output such as models, controllers, data fetchers, etc.
 
 Runtime
 -------

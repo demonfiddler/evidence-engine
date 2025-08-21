@@ -20,7 +20,7 @@
 'use client'
 
 if (process.env.NODE_ENV === 'development') {
-  // const wdyr = require('../wdyr');
+  const wdyr = require('../wdyr');
 }
 
 import '@/app/ui/global.css'
