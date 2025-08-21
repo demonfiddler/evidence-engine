@@ -77,8 +77,8 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <Link className="mb-2 flex h-20 items-end justify-start rounded-md bg-blue-500 p-4 md:h-40" href="/">
-          <div className="w-12 text-white md:w-40">
+        <Link className="mb-2 flex items-end justify-start rounded-md bg-blue-500 p-4 h-20 md:h-40" href="/">
+          <div className="text-white">
             <Logo />
           </div>
         </Link>

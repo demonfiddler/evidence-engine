@@ -37,8 +37,8 @@ import UserIcon from '@heroicons/react/24/outline/UserIcon'
 
 export default function Page() {
   return (
-    <main className="flex min-h-screen flex-col p-6">
-      <header className="grid grid-cols-3 items-center w-screen h-8 text-white bg-blue-500">
+    <main className="flex min-h-screen flex-col">
+      <header className="grid grid-cols-3 items-center shrink-0 w-full h-12 rounded-md text-white bg-blue-500">
         <p className="col-start-2 justify-self-center">Evidence Engine</p>
         <UserIcon className="justify-self-end size-4" />
       </header>
@@ -116,7 +116,7 @@ export default function Page() {
         </div>
       </div>
       <div className="grow"></div>
-      <footer className="grid grid-cols-3 items-center w-screen h-8 text-xs text-white bg-blue-500">
+      <footer className="grid grid-cols-3 items-center shrink-0 w-full h-12 rounded-md text-xs text-white bg-blue-500">
         <p>&nbsp;Copyright &copy; 2024-25 Adrian Price. All rights reserved.</p>
         <p className="justify-self-center">A <a href="https://campaign-resources.org" target="_blank" className="text-white"><i>Campaign Resources</i></a> application</p>
       </footer>

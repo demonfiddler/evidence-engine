@@ -36,7 +36,7 @@ export const columns: ColumnDef<Publication>[] = [
     accessorKey: "title",
     enableHiding: false,
     enableSorting: true,
-    size: 500,
+    size: 490,
     // enableColumnFilter: false,
     header: "Title",
   },

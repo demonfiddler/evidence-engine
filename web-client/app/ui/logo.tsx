@@ -30,8 +30,8 @@ export default function Logo() {
         aria-hidden
         src="/logo.svg"
         alt="Evidence Engine logo"
-        width={220}
-        height={127}
+        width={150}
+        height={113}
       />
     </div>
   );

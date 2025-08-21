@@ -86,7 +86,7 @@ export default function LogDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className={className}>
+      <DialogTrigger className={className} asChild>
         <ButtonEx
           outerClassName="place-self-center"
           className="w-20 bg-blue-500 text-md"

@@ -19,7 +19,7 @@
 
 'use client'
 
-import { FormEvent, useCallback, useContext, useMemo } from "react"
+import { useCallback, useContext, useMemo } from "react"
 import { ShieldCheckIcon, UserIcon, UsersIcon } from '@heroicons/react/24/outline'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -53,7 +53,7 @@ import usePageLogic from "@/hooks/use-page-logic"
 import { GroupInput, TrackedEntityQueryFilter, UserInput } from "@/app/model/schema"
 import { useMutation } from "@apollo/client"
 import LinkableEntityTableFilter from "@/app/ui/filter/linkable-entity-table-filter"
-import { GlobalContext, QueryState, SecurityPageTabState, UsersPageRadioState } from "@/lib/context"
+import { GlobalContext, SecurityPageTabState } from "@/lib/context"
 
 function createAuthoritiesFieldValues(authorities?: Authority[]) {
   return {

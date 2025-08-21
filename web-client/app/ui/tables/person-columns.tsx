@@ -36,7 +36,7 @@ export const columns: ColumnDef<Person>[] = [
     accessorKey: "title",
     enableHiding: true,
     enableSorting: true,
-    size: 120,
+    size: 112,
     // enableColumnFilter: false,
     header: "Title",
   },

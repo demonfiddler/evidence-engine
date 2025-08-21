@@ -37,15 +37,15 @@ export default function NavigableLayout({
   return (
     <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
       <AppSidebar />
-      <main className="flex flex-col">
-        <header className="grid grid-cols-3 items-center w-screen h-12 rounded-md text-white bg-blue-500">
+      <main className="flex flex-col h-screen w-full">
+        <header className="grid grid-cols-3 items-center shrink-0 w-full h-12 rounded-md text-white bg-blue-500">
           <SidebarTrigger title="Toggle sidebar (Ctrl+B)" />
           <p className="justify-self-center">Evidence Engine</p>
           <SignIn className="justify-self-end" />
         </header>
         {children}
         <div className="grow"></div>
-        <footer className="grid grid-cols-3 items-center w-screen h-12 text-xs rounded-md text-white bg-blue-500">
+        <footer className="grid grid-cols-3 items-center shrink-0 w-full h-12 text-xs rounded-md text-white bg-blue-500">
           <p>&nbsp;Copyright &copy; 2024-25 Adrian Price. All rights reserved.</p>
           <p className="justify-self-center">A <a href="https://campaign-resources.org" target="_blank" className="text-white"><i>Campaign Resources</i></a> application</p>
         </footer>
