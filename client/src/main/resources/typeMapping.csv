@@ -58,6 +58,7 @@ PageableInput,io.github.demonfiddler.ee.client.PageableInput
 IPage,io.github.demonfiddler.ee.client.IPage
 PublicationInput,io.github.demonfiddler.ee.client.PublicationInput
 PublisherInput,io.github.demonfiddler.ee.client.PublisherInput
+UserPasswordInput,io.github.demonfiddler.ee.client.UserPasswordInput
 StatisticsQueryFilter,io.github.demonfiddler.ee.client.StatisticsQueryFilter
 Declaration,io.github.demonfiddler.ee.client.Declaration
 Topic,io.github.demonfiddler.ee.client.Topic
@@ -74,6 +75,7 @@ UserPage,io.github.demonfiddler.ee.client.UserPage
 GroupPage,io.github.demonfiddler.ee.client.GroupPage
 Date,java.time.LocalDate
 ILinkableEntity,io.github.demonfiddler.ee.client.ILinkableEntity
+UserProfileInput,io.github.demonfiddler.ee.client.UserProfileInput
 EntityLink,io.github.demonfiddler.ee.client.EntityLink
 TrackedEntityQueryFilter,io.github.demonfiddler.ee.client.TrackedEntityQueryFilter
 __InputValue,io.github.demonfiddler.ee.client.__InputValue

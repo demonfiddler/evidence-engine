@@ -25,9 +25,12 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Component;
 
 import graphql.schema.DataFetchingEnvironment;
@@ -63,6 +66,8 @@ import io.github.demonfiddler.ee.server.model.EntityLink;
 import io.github.demonfiddler.ee.server.model.TransactionKind;
 import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.model.UserInput;
+import io.github.demonfiddler.ee.server.model.UserPasswordInput;
+import io.github.demonfiddler.ee.server.model.UserProfileInput;
 import io.github.demonfiddler.ee.server.repository.ClaimRepository;
 import io.github.demonfiddler.ee.server.repository.DeclarationRepository;
 import io.github.demonfiddler.ee.server.repository.EntityLinkRepository;
@@ -225,6 +230,11 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
 
     private EntityNotFoundException createEntityNotFoundException(String type, Long id) {
         return new EntityNotFoundException(type + " not found with id: " + id);
+    }
+
+    private AuthenticationCredentialsNotFoundException createUnauthenticatedException(String mutation) {
+        return new AuthenticationCredentialsNotFoundException(
+            "Authentication is required for the `" + mutation + "' mutation");
     }
 
     @Override
@@ -694,8 +704,8 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         if (parentId == null) {
             topic.setParent(null);
         } else {
-            Topic parentTopic = topicRepository.findById(parentId)
-                .orElseThrow(() -> createEntityNotFoundException("Topic", parentId));
+            Topic parentTopic =
+                topicRepository.findById(parentId).orElseThrow(() -> createEntityNotFoundException("Topic", parentId));
             topic.setParent(parentTopic);
         }
         setUpdatedFields(topic);
@@ -747,6 +757,57 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         user.setCountry(input.getCountry());
         user.setNotes(input.getNotes());
         user.setAuthorities(input.getAuthorities());
+        setUpdatedFields(user);
+
+        user = userRepository.save(user);
+
+        logUpdated(user);
+
+        return user;
+    }
+
+    private static final Pattern BCRYPT_PATTERN = Pattern.compile("^\\{bcrypt\\}\\$2[ab]\\$10\\$[./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789]{53}$");
+
+    @Override
+    public Object updateUserPassword(DataFetchingEnvironment dataFetchingEnvironment, UserPasswordInput input) {
+        User currentUser =
+            securityUtils.getCurrentUser().orElseThrow(() -> createUnauthenticatedException("updateUserPassword"));
+        if (!securityUtils.hasAuthority(AuthorityKind.ADM) || !input.getId().equals(currentUser.getId())) {
+            throw new AccessDeniedException(
+                "You are not authorised to invoke the 'updateUserPassword' mutation for User#" + input.getId());
+        }
+
+        User user = userRepository.findById(input.getId())
+            .orElseThrow(() -> createEntityNotFoundException("User", input.getId()));
+        if (!BCRYPT_PATTERN.matcher(input.getPassword()).matches())
+            throw new IllegalArgumentException("Invalid bcrypt password hash: " + input.getPassword());
+
+        user.setPassword(input.getPassword());
+        setUpdatedFields(user);
+
+        user = userRepository.save(user);
+
+        logUpdated(user);
+
+        return user;
+    }
+
+    @Override
+    public Object updateUserProfile(DataFetchingEnvironment dataFetchingEnvironment, UserProfileInput input) {
+        User currentUser =
+            securityUtils.getCurrentUser().orElseThrow(() -> createUnauthenticatedException("updateUserProfile"));
+        if (!securityUtils.hasAuthority(AuthorityKind.ADM) || !input.getId().equals(currentUser.getId())) {
+            throw new AccessDeniedException(
+                "You are not authorised to invoke the 'updateUserProfile' mutation for User#" + input.getId());
+        }
+
+        User user = userRepository.findById(input.getId())
+            .orElseThrow(() -> createEntityNotFoundException("User", input.getId()));
+        user.setFirstName(input.getFirstName());
+        user.setLastName(input.getLastName());
+        user.setEmail(input.getEmail());
+        user.setCountry(input.getCountry());
+        user.setNotes(input.getNotes());
         setUpdatedFields(user);
 
         user = userRepository.save(user);
@@ -832,8 +893,8 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     public Object grantGroupAuthorities(DataFetchingEnvironment dataFetchingEnvironment, Long groupId,
         List<AuthorityKind> authorities) {
 
-        Group group = groupRepository.findById(groupId)
-            .orElseThrow(() -> createEntityNotFoundException("Group", groupId));
+        Group group =
+            groupRepository.findById(groupId).orElseThrow(() -> createEntityNotFoundException("Group", groupId));
         if (addAuthorities(group.getAuthorities(), authorities)) {
             setUpdatedFields(group);
             group = groupRepository.save(group);
@@ -847,8 +908,8 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     public Object revokeGroupAuthorities(DataFetchingEnvironment dataFetchingEnvironment, Long groupId,
         List<AuthorityKind> authorities) {
 
-        Group group = groupRepository.findById(groupId)
-            .orElseThrow(() -> createEntityNotFoundException("Group", groupId));
+        Group group =
+            groupRepository.findById(groupId).orElseThrow(() -> createEntityNotFoundException("Group", groupId));
         if (removeAuthorities(group.getAuthorities(), authorities)) {
             setUpdatedFields(group);
             group = groupRepository.save(group);
@@ -860,10 +921,9 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @Override
     @PreAuthorize("hasAuthority('ADM')")
     public Object addGroupMember(DataFetchingEnvironment dataFetchingEnvironment, Long groupId, Long userId) {
-        Group group = groupRepository.findById(groupId).orElseThrow(()
-            -> createEntityNotFoundException("Group", groupId));
-        User user = userRepository.findById(userId).orElseThrow(()
-            -> createEntityNotFoundException("User", userId));
+        Group group =
+            groupRepository.findById(groupId).orElseThrow(() -> createEntityNotFoundException("Group", groupId));
+        User user = userRepository.findById(userId).orElseThrow(() -> createEntityNotFoundException("User", userId));
         List<User> members = group.getMembers();
         boolean alreadyMember = CollectionUtils.contains(members, m -> Objects.equals(m.getId(), userId));
         if (!alreadyMember) {
@@ -878,8 +938,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @Override
     @PreAuthorize("hasAuthority('ADM')")
     public Object removeGroupMember(DataFetchingEnvironment dataFetchingEnvironment, Long groupId, Long userId) {
-        Group group = groupRepository.findById(groupId).orElseThrow(()
-            -> createEntityNotFoundException(null, groupId));
+        Group group = groupRepository.findById(groupId).orElseThrow(() -> createEntityNotFoundException(null, groupId));
         List<User> members = group.getMembers();
         User member = CollectionUtils.find(members, m -> Objects.equals(m.getId(), userId));
         if (member != null) {

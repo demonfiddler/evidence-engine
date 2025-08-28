@@ -39,6 +39,8 @@ import io.github.demonfiddler.ee.server.model.QuotationInput;
 import io.github.demonfiddler.ee.server.model.StatusKind;
 import io.github.demonfiddler.ee.server.model.TopicInput;
 import io.github.demonfiddler.ee.server.model.UserInput;
+import io.github.demonfiddler.ee.server.model.UserPasswordInput;
+import io.github.demonfiddler.ee.server.model.UserProfileInput;
 
 /**
  * Contains the data fetchers that are delegated in the bean that the implementation has to provide, when fetching
@@ -54,13 +56,11 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the createClaim field: <br/>
 	 * Creates a new claim. <br/>
-	 * Loads the data for Mutation.createClaim. It may return whatever is accepted by the Spring Controller,
-	 * that is:
+	 * Loads the data for Mutation.createClaim. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Claim)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Claim&gt;
-	 * or a Flux&lt;Claim&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Claim&gt; or a Flux&lt;Claim&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
@@ -68,11 +68,11 @@ public interface DataFetchersDelegateMutation {
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Claim>. This allows
-	 * to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly
-	 * optimize the number of requests to the server. The principle is this one: The data loader collects all the data
-	 * to load, avoid to load several times the same data, and allows parallel execution of the queries, if multiple
-	 * queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Claim>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -88,13 +88,11 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the updateClaim field: <br/>
 	 * Updates an existing claim. <br/>
-	 * Loads the data for Mutation.updateClaim. It may return whatever is accepted by the Spring Controller,
-	 * that is:
+	 * Loads the data for Mutation.updateClaim. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Claim)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Claim&gt;
-	 * or a Flux&lt;Claim&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Claim&gt; or a Flux&lt;Claim&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
@@ -102,11 +100,11 @@ public interface DataFetchersDelegateMutation {
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Claim>. This allows
-	 * to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly
-	 * optimize the number of requests to the server. The principle is this one: The data loader collects all the data
-	 * to load, avoid to load several times the same data, and allows parallel execution of the queries, if multiple
-	 * queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Claim>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -122,8 +120,7 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the deleteClaim field: <br/>
 	 * Deletes an existing claim. <br/>
-	 * Loads the data for Mutation.deleteClaim. It may return whatever is accepted by the Spring Controller,
-	 * that is:
+	 * Loads the data for Mutation.deleteClaim. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Claim)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
@@ -155,13 +152,12 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the createDeclaration field: <br/>
 	 * Creates a new declaration. <br/>
-	 * Loads the data for Mutation.createDeclaration. It may return whatever is accepted by the Spring
-	 * Controller, that is:
+	 * Loads the data for Mutation.createDeclaration. It may return whatever is accepted by the Spring Controller, that
+	 * is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Declaration)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a
-	 * Mono&lt;Declaration&gt; or a
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Declaration&gt; or a
 	 * Flux&lt;Declaration&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
@@ -170,11 +166,11 @@ public interface DataFetchersDelegateMutation {
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Declaration>. This
-	 * allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
-	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
-	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Declaration>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -191,13 +187,12 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the updateDeclaration field: <br/>
 	 * Updates an existing declaration. <br/>
-	 * Loads the data for Mutation.updateDeclaration. It may return whatever is accepted by the Spring
-	 * Controller, that is:
+	 * Loads the data for Mutation.updateDeclaration. It may return whatever is accepted by the Spring Controller, that
+	 * is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Declaration)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a
-	 * Mono&lt;Declaration&gt; or a
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Declaration&gt; or a
 	 * Flux&lt;Declaration&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
@@ -206,11 +201,11 @@ public interface DataFetchersDelegateMutation {
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Declaration>. This
-	 * allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
-	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
-	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Declaration>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -227,8 +222,8 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the deleteDeclaration field: <br/>
 	 * Deletes an existing declaration. <br/>
-	 * Loads the data for Mutation.deleteDeclaration. It may return whatever is accepted by the Spring
-	 * Controller, that is:
+	 * Loads the data for Mutation.deleteDeclaration. It may return whatever is accepted by the Spring Controller, that
+	 * is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Declaration)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
@@ -262,8 +257,8 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the createEntityLink field: <br/>
 	 * Links two entities. <br/>
-	 * Loads the data for Mutation.createEntityLink. It may return whatever is accepted by the Spring
-	 * Controller, that is:
+	 * Loads the data for Mutation.createEntityLink. It may return whatever is accepted by the Spring Controller, that
+	 * is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Boolean)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
@@ -284,7 +279,8 @@ public interface DataFetchersDelegateMutation {
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
-	 * @param entityLink The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @param entityLink The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL
+	 * schema.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
 	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
@@ -295,8 +291,8 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the updateEntityLink field: <br/>
 	 * Updates an existing entity link. <br/>
-	 * Loads the data for Mutation.updateEntityLink. It may return whatever is accepted by the Spring
-	 * Controller, that is:
+	 * Loads the data for Mutation.updateEntityLink. It may return whatever is accepted by the Spring Controller, that
+	 * is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, an EntityLink)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
@@ -309,16 +305,17 @@ public interface DataFetchersDelegateMutation {
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<EntityLink>. This
-	 * allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
-	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
-	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<EntityLink>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
-	 * @param entityLink The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @param entityLink The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL
+	 * schema.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
 	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
@@ -329,8 +326,8 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the deleteEntityLink field: <br/>
 	 * Unlinks two linked entities. <br/>
-	 * Loads the data for Mutation.deleteEntityLink. It may return whatever is accepted by the Spring
-	 * Controller, that is:
+	 * Loads the data for Mutation.deleteEntityLink. It may return whatever is accepted by the Spring Controller, that
+	 * is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Boolean)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
@@ -351,7 +348,8 @@ public interface DataFetchersDelegateMutation {
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
-	 * @param entityLinkId The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @param entityLinkId The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL
+	 * schema.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
 	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
@@ -362,13 +360,11 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the createJournal field: <br/>
 	 * Create a new journal. <br/>
-	 * Loads the data for Mutation.createJournal. It may return whatever is accepted by the Spring
-	 * Controller, that is:
+	 * Loads the data for Mutation.createJournal. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Journal)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Journal&gt;
-	 * or a Flux&lt;Journal&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Journal&gt; or a Flux&lt;Journal&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
@@ -376,11 +372,11 @@ public interface DataFetchersDelegateMutation {
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Journal>. This allows
-	 * to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly
-	 * optimize the number of requests to the server. The principle is this one: The data loader collects all the data
-	 * to load, avoid to load several times the same data, and allows parallel execution of the queries, if multiple
-	 * queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Journal>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -396,13 +392,11 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the updateJournal field: <br/>
 	 * Updates an existing journal. <br/>
-	 * Loads the data for Mutation.updateJournal. It may return whatever is accepted by the Spring
-	 * Controller, that is:
+	 * Loads the data for Mutation.updateJournal. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Journal)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Journal&gt;
-	 * or a Flux&lt;Journal&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Journal&gt; or a Flux&lt;Journal&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
@@ -410,11 +404,11 @@ public interface DataFetchersDelegateMutation {
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Journal>. This allows
-	 * to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly
-	 * optimize the number of requests to the server. The principle is this one: The data loader collects all the data
-	 * to load, avoid to load several times the same data, and allows parallel execution of the queries, if multiple
-	 * queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Journal>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -430,8 +424,7 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the deleteJournal field: <br/>
 	 * Deletes an existing journal. <br/>
-	 * Loads the data for Mutation.deleteJournal. It may return whatever is accepted by the Spring
-	 * Controller, that is:
+	 * Loads the data for Mutation.deleteJournal. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Journal)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
@@ -463,13 +456,11 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the createPerson field: <br/>
 	 * Creates a new person. <br/>
-	 * Loads the data for Mutation.createPerson. It may return whatever is accepted by the Spring
-	 * Controller, that is:
+	 * Loads the data for Mutation.createPerson. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Person)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Person&gt;
-	 * or a Flux&lt;Person&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Person&gt; or a Flux&lt;Person&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
@@ -477,11 +468,11 @@ public interface DataFetchersDelegateMutation {
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Person>. This allows
-	 * to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly
-	 * optimize the number of requests to the server. The principle is this one: The data loader collects all the data
-	 * to load, avoid to load several times the same data, and allows parallel execution of the queries, if multiple
-	 * queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Person>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -497,13 +488,11 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the updatePerson field: <br/>
 	 * Updates an existing person. <br/>
-	 * Loads the data for Mutation.updatePerson. It may return whatever is accepted by the Spring
-	 * Controller, that is:
+	 * Loads the data for Mutation.updatePerson. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Person)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Person&gt;
-	 * or a Flux&lt;Person&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Person&gt; or a Flux&lt;Person&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
@@ -511,11 +500,11 @@ public interface DataFetchersDelegateMutation {
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Person>. This allows
-	 * to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly
-	 * optimize the number of requests to the server. The principle is this one: The data loader collects all the data
-	 * to load, avoid to load several times the same data, and allows parallel execution of the queries, if multiple
-	 * queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Person>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -531,8 +520,7 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the deletePerson field: <br/>
 	 * Deletes an existing person. <br/>
-	 * Loads the data for Mutation.deletePerson. It may return whatever is accepted by the Spring
-	 * Controller, that is:
+	 * Loads the data for Mutation.deletePerson. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Person)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
@@ -564,13 +552,12 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the createPublication field: <br/>
 	 * Creates a new publication. <br/>
-	 * Loads the data for Mutation.createPublication. It may return whatever is accepted by the Spring
-	 * Controller, that is:
+	 * Loads the data for Mutation.createPublication. It may return whatever is accepted by the Spring Controller, that
+	 * is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Publication)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a
-	 * Mono&lt;Publication&gt; or a
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Publication&gt; or a
 	 * Flux&lt;Publication&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
@@ -579,11 +566,11 @@ public interface DataFetchersDelegateMutation {
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Publication>. This
-	 * allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
-	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
-	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Publication>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -600,13 +587,12 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the updatePublication field: <br/>
 	 * Updates an existing publication. <br/>
-	 * Loads the data for Mutation.updatePublication. It may return whatever is accepted by the Spring
-	 * Controller, that is:
+	 * Loads the data for Mutation.updatePublication. It may return whatever is accepted by the Spring Controller, that
+	 * is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Publication)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a
-	 * Mono&lt;Publication&gt; or a
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Publication&gt; or a
 	 * Flux&lt;Publication&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
@@ -615,11 +601,11 @@ public interface DataFetchersDelegateMutation {
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Publication>. This
-	 * allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
-	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
-	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Publication>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -636,8 +622,8 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the deletePublication field: <br/>
 	 * Deletes an existing publication. <br/>
-	 * Loads the data for Mutation.deletePublication. It may return whatever is accepted by the Spring
-	 * Controller, that is:
+	 * Loads the data for Mutation.deletePublication. It may return whatever is accepted by the Spring Controller, that
+	 * is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Publication)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
@@ -671,13 +657,12 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the createPublisher field: <br/>
 	 * Creates a new publisher. <br/>
-	 * Loads the data for Mutation.createPublisher. It may return whatever is accepted by the Spring
-	 * Controller, that is:
+	 * Loads the data for Mutation.createPublisher. It may return whatever is accepted by the Spring Controller, that
+	 * is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Publisher)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a
-	 * Mono&lt;Publisher&gt; or a
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Publisher&gt; or a
 	 * Flux&lt;Publisher&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
@@ -686,11 +671,11 @@ public interface DataFetchersDelegateMutation {
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Publisher>. This
-	 * allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
-	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
-	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Publisher>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -706,13 +691,12 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the updatePublisher field: <br/>
 	 * Updates an existing publisher. <br/>
-	 * Loads the data for Mutation.updatePublisher. It may return whatever is accepted by the Spring
-	 * Controller, that is:
+	 * Loads the data for Mutation.updatePublisher. It may return whatever is accepted by the Spring Controller, that
+	 * is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Publisher)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a
-	 * Mono&lt;Publisher&gt; or a
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Publisher&gt; or a
 	 * Flux&lt;Publisher&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
@@ -721,11 +705,11 @@ public interface DataFetchersDelegateMutation {
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Publisher>. This
-	 * allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
-	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
-	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Publisher>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -741,8 +725,8 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the deletePublisher field: <br/>
 	 * Deletes an existing publisher. <br/>
-	 * Loads the data for Mutation.deletePublisher. It may return whatever is accepted by the Spring
-	 * Controller, that is:
+	 * Loads the data for Mutation.deletePublisher. It may return whatever is accepted by the Spring Controller, that
+	 * is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Publisher)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
@@ -776,13 +760,12 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the createQuotation field: <br/>
 	 * Creates a new quotation. <br/>
-	 * Loads the data for Mutation.createQuotation. It may return whatever is accepted by the Spring
-	 * Controller, that is:
+	 * Loads the data for Mutation.createQuotation. It may return whatever is accepted by the Spring Controller, that
+	 * is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Quotation)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a
-	 * Mono&lt;Quotation&gt; or a
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Quotation&gt; or a
 	 * Flux&lt;Quotation&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
@@ -791,11 +774,11 @@ public interface DataFetchersDelegateMutation {
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Quotation>. This
-	 * allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
-	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
-	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Quotation>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -811,13 +794,12 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the updateQuotation field: <br/>
 	 * Updates an existing quotation. <br/>
-	 * Loads the data for Mutation.updateQuotation. It may return whatever is accepted by the Spring
-	 * Controller, that is:
+	 * Loads the data for Mutation.updateQuotation. It may return whatever is accepted by the Spring Controller, that
+	 * is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Quotation)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a
-	 * Mono&lt;Quotation&gt; or a
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Quotation&gt; or a
 	 * Flux&lt;Quotation&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
@@ -826,11 +808,11 @@ public interface DataFetchersDelegateMutation {
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Quotation>. This
-	 * allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
-	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
-	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Quotation>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -846,8 +828,8 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the deleteQuotation field: <br/>
 	 * Deletes an existing quotation. <br/>
-	 * Loads the data for Mutation.deleteQuotation. It may return whatever is accepted by the Spring
-	 * Controller, that is:
+	 * Loads the data for Mutation.deleteQuotation. It may return whatever is accepted by the Spring Controller, that
+	 * is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Quotation)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
@@ -881,13 +863,11 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the createTopic field: <br/>
 	 * Creates a new topic. <br/>
-	 * Loads the data for Mutation.createTopic. It may return whatever is accepted by the Spring Controller,
-	 * that is:
+	 * Loads the data for Mutation.createTopic. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Topic)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Topic&gt;
-	 * or a Flux&lt;Topic&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Topic&gt; or a Flux&lt;Topic&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
@@ -895,11 +875,11 @@ public interface DataFetchersDelegateMutation {
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Topic>. This allows
-	 * to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly
-	 * optimize the number of requests to the server. The principle is this one: The data loader collects all the data
-	 * to load, avoid to load several times the same data, and allows parallel execution of the queries, if multiple
-	 * queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Topic>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -915,13 +895,11 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the updateTopic field: <br/>
 	 * Updates an existing topic. <br/>
-	 * Loads the data for Mutation.updateTopic. It may return whatever is accepted by the Spring Controller,
-	 * that is:
+	 * Loads the data for Mutation.updateTopic. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Topic)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Topic&gt;
-	 * or a Flux&lt;Topic&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Topic&gt; or a Flux&lt;Topic&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
@@ -929,11 +907,11 @@ public interface DataFetchersDelegateMutation {
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Topic>. This allows
-	 * to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly
-	 * optimize the number of requests to the server. The principle is this one: The data loader collects all the data
-	 * to load, avoid to load several times the same data, and allows parallel execution of the queries, if multiple
-	 * queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Topic>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -949,8 +927,7 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the deleteTopic field: <br/>
 	 * Deletes an existing topic. <br/>
-	 * Loads the data for Mutation.deleteTopic. It may return whatever is accepted by the Spring Controller,
-	 * that is:
+	 * Loads the data for Mutation.deleteTopic. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a Topic)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
@@ -987,13 +964,11 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the createUser field: <br/>
 	 * Creates a new user. <br/>
-	 * Loads the data for Mutation.createUser. It may return whatever is accepted by the Spring Controller,
-	 * that is:
+	 * Loads the data for Mutation.createUser. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a User)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a Mono&lt;User&gt; or
-	 * a Flux&lt;User&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;User&gt; or a Flux&lt;User&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
@@ -1001,11 +976,11 @@ public interface DataFetchersDelegateMutation {
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<User>. This allows to
-	 * use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize
-	 * the number of requests to the server. The principle is this one: The data loader collects all the data to load,
-	 * avoid to load several times the same data, and allows parallel execution of the queries, if multiple queries are
-	 * to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<User>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -1021,13 +996,11 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the updateUser field: <br/>
 	 * Updates an existing user. <br/>
-	 * Loads the data for Mutation.updateUser. It may return whatever is accepted by the Spring Controller,
-	 * that is:
+	 * Loads the data for Mutation.updateUser. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a User)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a Mono&lt;User&gt; or
-	 * a Flux&lt;User&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;User&gt; or a Flux&lt;User&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
@@ -1035,7 +1008,41 @@ public interface DataFetchersDelegateMutation {
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<User>. This allows to
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<User>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
+	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
+	 * </ul>
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param user The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
+	 */
+	Object updateUser(DataFetchingEnvironment dataFetchingEnvironment, UserInput user);
+
+	/**
+	 * Description for the updateUserPassword field: <br/>
+	 * Updates an existing user's password. <br/>
+	 * This method loads the data for Mutation.updateUserPassword. It may return whatever is accepted by the Spring
+	 * Controller, that is:
+	 * <ul>
+	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.User)</li>
+	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;io.github.demonfiddler.ee.server.User&gt; or
+	 * a Flux&lt;io.github.demonfiddler.ee.server.User&gt;</li>
+	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
+	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
+	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
+	 * Callable&lt;io.github.demonfiddler.ee.server.User&gt;</li>
+	 * </ul>
+	 * As a complement to the spring-graphql documentation, you may also return:
+	 * <ul>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.User>. This allows to
 	 * use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize
 	 * the number of requests to the server. The principle is this one: The data loader collects all the data to load,
 	 * avoid to load several times the same data, and allows parallel execution of the queries, if multiple queries are
@@ -1050,13 +1057,50 @@ public interface DataFetchersDelegateMutation {
 	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
 	 * will take care of the {@link NoSuchElementException} exception.
 	 */
-	Object updateUser(DataFetchingEnvironment dataFetchingEnvironment, UserInput user);
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	Object updateUserPassword(DataFetchingEnvironment dataFetchingEnvironment, UserPasswordInput user);
+
+	/**
+	 * Description for the updateUserProfile field: <br/>
+	 * Updates an existing user's profile. <br/>
+	 * This method loads the data for Mutation.updateUserProfile. It may return whatever is accepted by the Spring
+	 * Controller, that is:
+	 * <ul>
+	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.User)</li>
+	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;io.github.demonfiddler.ee.server.User&gt; or
+	 * a Flux&lt;io.github.demonfiddler.ee.server.User&gt;</li>
+	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
+	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
+	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
+	 * Callable&lt;io.github.demonfiddler.ee.server.User&gt;</li>
+	 * </ul>
+	 * As a complement to the spring-graphql documentation, you may also return:
+	 * <ul>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.User>. This allows to
+	 * use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize
+	 * the number of requests to the server. The principle is this one: The data loader collects all the data to load,
+	 * avoid to load several times the same data, and allows parallel execution of the queries, if multiple queries are
+	 * to be run.</li>
+	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
+	 * </ul>
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param user The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	Object updateUserProfile(DataFetchingEnvironment dataFetchingEnvironment, UserProfileInput user);
 
 	/**
 	 * Description for the deleteUser field: <br/>
 	 * Updates an existing user. <br/>
-	 * Loads the data for Mutation.deleteUser. It may return whatever is accepted by the Spring Controller,
-	 * that is:
+	 * Loads the data for Mutation.deleteUser. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a User)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
@@ -1088,13 +1132,12 @@ public interface DataFetchersDelegateMutation {
 	/**
 	 * Description for the grantUserAuthorities field: <br/>
 	 * Grants authorities to a user. The specified authorities are added to any existing ones. <br/>
-	 * Loads the data for Mutation.grantUserAuthorities. It may return whatever is accepted by the Spring
-	 * Controller, that is:
+	 * Loads the data for Mutation.grantUserAuthorities. It may return whatever is accepted by the Spring Controller,
+	 * that is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a User)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a Mono&lt;User&gt; or
-	 * a Flux&lt;User&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;User&gt; or a Flux&lt;User&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
@@ -1102,11 +1145,11 @@ public interface DataFetchersDelegateMutation {
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<User>. This allows to
-	 * use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize
-	 * the number of requests to the server. The principle is this one: The data loader collects all the data to load,
-	 * avoid to load several times the same data, and allows parallel execution of the queries, if multiple queries are
-	 * to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<User>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -1126,13 +1169,12 @@ public interface DataFetchersDelegateMutation {
 	 * Description for the revokeUserAuthorities field: <br/>
 	 * Revokes authorities from a user. The specified authorities are removed from the user; other authorities remain
 	 * intact. <br/>
-	 * Loads the data for Mutation.revokeUserAuthorities. It may return whatever is accepted by the Spring
-	 * Controller, that is:
+	 * Loads the data for Mutation.revokeUserAuthorities. It may return whatever is accepted by the Spring Controller,
+	 * that is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a User)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a Mono&lt;User&gt; or
-	 * a Flux&lt;User&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;User&gt; or a Flux&lt;User&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
@@ -1140,11 +1182,11 @@ public interface DataFetchersDelegateMutation {
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<User>. This allows to
-	 * use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize
-	 * the number of requests to the server. The principle is this one: The data loader collects all the data to load,
-	 * avoid to load several times the same data, and allows parallel execution of the queries, if multiple queries are
-	 * to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<User>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -1162,58 +1204,35 @@ public interface DataFetchersDelegateMutation {
 
 	/**
 	 * Description for the createGroup field: <br/>
-	 * Creates a new group.
-	 * <br/>
-	 *
-	 * This method loads the data for Mutation.createGroup. It may return whatever
-	 * is
-	 * accepted by the Spring Controller, that is:
+	 * Creates a new group. <br/>
+	 * This method loads the data for Mutation.createGroup. It may return whatever is accepted by the Spring Controller,
+	 * that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a
-	 * io.github.demonfiddler.ee.server.Group)</li>
-	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods
-	 * and for any DataFetcher as described in Reactive DataFetcher.
-	 * This would typically be a Mono&lt;io.github.demonfiddler.ee.server.Group&gt;
+	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.Group)</li>
+	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;io.github.demonfiddler.ee.server.Group&gt;
 	 * or a Flux&lt;io.github.demonfiddler.ee.server.Group&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
-	 * <li>java.util.concurrent.Callable to have the value(s) produced
-	 * asynchronously. For this to work, AnnotatedControllerConfigurer must be
-	 * configured with an Executor. This would typically by a
+	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
+	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
 	 * Callable&lt;io.github.demonfiddler.ee.server.Group&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance
-	 * CompletableFuture<io.github.demonfiddler.ee.server.Group>. This
-	 * allows to use
-	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java
-	 * java-dataloader</A> to highly optimize the
-	 * number of requests to the server. The principle is this one: The data loader
-	 * collects all the data to load, avoid to load several
-	 * times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.Group>. This allows
+	 * to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly
+	 * optimize the number of requests to the server. The principle is this one: The data loader collects all the data
+	 * to load, avoid to load several times the same data, and allows parallel execution of the queries, if multiple
+	 * queries are to be run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
-	 * 
-	 * @param dataFetchingEnvironment
-	 *                                The GraphQL {@link DataFetchingEnvironment}.
-	 *                                It gives you access to the full GraphQL
-	 *                                context for this DataFetcher
-	 * @param group
-	 *                                The input parameter sent in the query by the
-	 *                                GraphQL consumer, as defined in the GraphQL
-	 *                                schema.
-	 * @throws NoSuchElementException
-	 *                                This method may return a
-	 *                                {@link NoSuchElementException} exception. In
-	 *                                this case, the exception is trapped
-	 *                                by the calling method, and the return is
-	 *                                consider as null. This allows to use the
-	 *                                {@link Optional#get()} method directly,
-	 *                                without caring of
-	 *                                whether or not there is a value. The generated
-	 *                                code will take care of the
-	 *                                {@link NoSuchElementException} exception.
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param group The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
@@ -1221,58 +1240,35 @@ public interface DataFetchersDelegateMutation {
 
 	/**
 	 * Description for the updateGroup field: <br/>
-	 * Updates an existing group.
-	 * <br/>
-	 *
-	 * This method loads the data for Mutation.updateGroup. It may return whatever
-	 * is
-	 * accepted by the Spring Controller, that is:
+	 * Updates an existing group. <br/>
+	 * This method loads the data for Mutation.updateGroup. It may return whatever is accepted by the Spring Controller,
+	 * that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a
-	 * io.github.demonfiddler.ee.server.Group)</li>
-	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods
-	 * and for any DataFetcher as described in Reactive DataFetcher.
-	 * This would typically be a Mono&lt;io.github.demonfiddler.ee.server.Group&gt;
+	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.Group)</li>
+	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;io.github.demonfiddler.ee.server.Group&gt;
 	 * or a Flux&lt;io.github.demonfiddler.ee.server.Group&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
-	 * <li>java.util.concurrent.Callable to have the value(s) produced
-	 * asynchronously. For this to work, AnnotatedControllerConfigurer must be
-	 * configured with an Executor. This would typically by a
+	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
+	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
 	 * Callable&lt;io.github.demonfiddler.ee.server.Group&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance
-	 * CompletableFuture<io.github.demonfiddler.ee.server.Group>. This
-	 * allows to use
-	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java
-	 * java-dataloader</A> to highly optimize the
-	 * number of requests to the server. The principle is this one: The data loader
-	 * collects all the data to load, avoid to load several
-	 * times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.Group>. This allows
+	 * to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly
+	 * optimize the number of requests to the server. The principle is this one: The data loader collects all the data
+	 * to load, avoid to load several times the same data, and allows parallel execution of the queries, if multiple
+	 * queries are to be run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
-	 * 
-	 * @param dataFetchingEnvironment
-	 *                                The GraphQL {@link DataFetchingEnvironment}.
-	 *                                It gives you access to the full GraphQL
-	 *                                context for this DataFetcher
-	 * @param group
-	 *                                The input parameter sent in the query by the
-	 *                                GraphQL consumer, as defined in the GraphQL
-	 *                                schema.
-	 * @throws NoSuchElementException
-	 *                                This method may return a
-	 *                                {@link NoSuchElementException} exception. In
-	 *                                this case, the exception is trapped
-	 *                                by the calling method, and the return is
-	 *                                consider as null. This allows to use the
-	 *                                {@link Optional#get()} method directly,
-	 *                                without caring of
-	 *                                whether or not there is a value. The generated
-	 *                                code will take care of the
-	 *                                {@link NoSuchElementException} exception.
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param group The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
@@ -1280,58 +1276,35 @@ public interface DataFetchersDelegateMutation {
 
 	/**
 	 * Description for the deleteGroup field: <br/>
-	 * Deletes an existing group.
-	 * <br/>
-	 *
-	 * This method loads the data for Mutation.deleteGroup. It may return whatever
-	 * is
-	 * accepted by the Spring Controller, that is:
+	 * Deletes an existing group. <br/>
+	 * This method loads the data for Mutation.deleteGroup. It may return whatever is accepted by the Spring Controller,
+	 * that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a
-	 * io.github.demonfiddler.ee.server.Group)</li>
-	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods
-	 * and for any DataFetcher as described in Reactive DataFetcher.
-	 * This would typically be a Mono&lt;io.github.demonfiddler.ee.server.Group&gt;
+	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.Group)</li>
+	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;io.github.demonfiddler.ee.server.Group&gt;
 	 * or a Flux&lt;io.github.demonfiddler.ee.server.Group&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
-	 * <li>java.util.concurrent.Callable to have the value(s) produced
-	 * asynchronously. For this to work, AnnotatedControllerConfigurer must be
-	 * configured with an Executor. This would typically by a
+	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
+	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
 	 * Callable&lt;io.github.demonfiddler.ee.server.Group&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance
-	 * CompletableFuture<io.github.demonfiddler.ee.server.Group>. This
-	 * allows to use
-	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java
-	 * java-dataloader</A> to highly optimize the
-	 * number of requests to the server. The principle is this one: The data loader
-	 * collects all the data to load, avoid to load several
-	 * times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.Group>. This allows
+	 * to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly
+	 * optimize the number of requests to the server. The principle is this one: The data loader collects all the data
+	 * to load, avoid to load several times the same data, and allows parallel execution of the queries, if multiple
+	 * queries are to be run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
-	 * 
-	 * @param dataFetchingEnvironment
-	 *                                The GraphQL {@link DataFetchingEnvironment}.
-	 *                                It gives you access to the full GraphQL
-	 *                                context for this DataFetcher
-	 * @param groupId
-	 *                                The input parameter sent in the query by the
-	 *                                GraphQL consumer, as defined in the GraphQL
-	 *                                schema.
-	 * @throws NoSuchElementException
-	 *                                This method may return a
-	 *                                {@link NoSuchElementException} exception. In
-	 *                                this case, the exception is trapped
-	 *                                by the calling method, and the return is
-	 *                                consider as null. This allows to use the
-	 *                                {@link Optional#get()} method directly,
-	 *                                without caring of
-	 *                                whether or not there is a value. The generated
-	 *                                code will take care of the
-	 *                                {@link NoSuchElementException} exception.
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param groupId The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
@@ -1339,62 +1312,36 @@ public interface DataFetchersDelegateMutation {
 
 	/**
 	 * Description for the addGroupMember field: <br/>
-	 * Adds a user to a group.
-	 * <br/>
-	 *
-	 * This method loads the data for Mutation.addGroupMember. It may return
-	 * whatever is
-	 * accepted by the Spring Controller, that is:
+	 * Adds a user to a group. <br/>
+	 * This method loads the data for Mutation.addGroupMember. It may return whatever is accepted by the Spring
+	 * Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a
-	 * io.github.demonfiddler.ee.server.Group)</li>
-	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods
-	 * and for any DataFetcher as described in Reactive DataFetcher.
-	 * This would typically be a Mono&lt;io.github.demonfiddler.ee.server.Group&gt;
+	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.Group)</li>
+	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;io.github.demonfiddler.ee.server.Group&gt;
 	 * or a Flux&lt;io.github.demonfiddler.ee.server.Group&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
-	 * <li>java.util.concurrent.Callable to have the value(s) produced
-	 * asynchronously. For this to work, AnnotatedControllerConfigurer must be
-	 * configured with an Executor. This would typically by a
+	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
+	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
 	 * Callable&lt;io.github.demonfiddler.ee.server.Group&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance
-	 * CompletableFuture<io.github.demonfiddler.ee.server.Group>. This
-	 * allows to use
-	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java
-	 * java-dataloader</A> to highly optimize the
-	 * number of requests to the server. The principle is this one: The data loader
-	 * collects all the data to load, avoid to load several
-	 * times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.Group>. This allows
+	 * to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly
+	 * optimize the number of requests to the server. The principle is this one: The data loader collects all the data
+	 * to load, avoid to load several times the same data, and allows parallel execution of the queries, if multiple
+	 * queries are to be run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
-	 * 
-	 * @param dataFetchingEnvironment
-	 *                                The GraphQL {@link DataFetchingEnvironment}.
-	 *                                It gives you access to the full GraphQL
-	 *                                context for this DataFetcher
-	 * @param groupId
-	 *                                The input parameter sent in the query by the
-	 *                                GraphQL consumer, as defined in the GraphQL
-	 *                                schema.
-	 * @param userId
-	 *                                The input parameter sent in the query by the
-	 *                                GraphQL consumer, as defined in the GraphQL
-	 *                                schema.
-	 * @throws NoSuchElementException
-	 *                                This method may return a
-	 *                                {@link NoSuchElementException} exception. In
-	 *                                this case, the exception is trapped
-	 *                                by the calling method, and the return is
-	 *                                consider as null. This allows to use the
-	 *                                {@link Optional#get()} method directly,
-	 *                                without caring of
-	 *                                whether or not there is a value. The generated
-	 *                                code will take care of the
-	 *                                {@link NoSuchElementException} exception.
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param groupId The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @param userId The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
@@ -1402,62 +1349,36 @@ public interface DataFetchersDelegateMutation {
 
 	/**
 	 * Description for the removeGroupMember field: <br/>
-	 * Removes a user from a group.
-	 * <br/>
-	 *
-	 * This method loads the data for Mutation.removeGroupMember. It may return
-	 * whatever is
-	 * accepted by the Spring Controller, that is:
+	 * Removes a user from a group. <br/>
+	 * This method loads the data for Mutation.removeGroupMember. It may return whatever is accepted by the Spring
+	 * Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a
-	 * io.github.demonfiddler.ee.server.Group)</li>
-	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods
-	 * and for any DataFetcher as described in Reactive DataFetcher.
-	 * This would typically be a Mono&lt;io.github.demonfiddler.ee.server.Group&gt;
+	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.Group)</li>
+	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;io.github.demonfiddler.ee.server.Group&gt;
 	 * or a Flux&lt;io.github.demonfiddler.ee.server.Group&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
-	 * <li>java.util.concurrent.Callable to have the value(s) produced
-	 * asynchronously. For this to work, AnnotatedControllerConfigurer must be
-	 * configured with an Executor. This would typically by a
+	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
+	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
 	 * Callable&lt;io.github.demonfiddler.ee.server.Group&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance
-	 * CompletableFuture<io.github.demonfiddler.ee.server.Group>. This
-	 * allows to use
-	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java
-	 * java-dataloader</A> to highly optimize the
-	 * number of requests to the server. The principle is this one: The data loader
-	 * collects all the data to load, avoid to load several
-	 * times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.Group>. This allows
+	 * to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly
+	 * optimize the number of requests to the server. The principle is this one: The data loader collects all the data
+	 * to load, avoid to load several times the same data, and allows parallel execution of the queries, if multiple
+	 * queries are to be run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
-	 * 
-	 * @param dataFetchingEnvironment
-	 *                                The GraphQL {@link DataFetchingEnvironment}.
-	 *                                It gives you access to the full GraphQL
-	 *                                context for this DataFetcher
-	 * @param groupId
-	 *                                The input parameter sent in the query by the
-	 *                                GraphQL consumer, as defined in the GraphQL
-	 *                                schema.
-	 * @param userId
-	 *                                The input parameter sent in the query by the
-	 *                                GraphQL consumer, as defined in the GraphQL
-	 *                                schema.
-	 * @throws NoSuchElementException
-	 *                                This method may return a
-	 *                                {@link NoSuchElementException} exception. In
-	 *                                this case, the exception is trapped
-	 *                                by the calling method, and the return is
-	 *                                consider as null. This allows to use the
-	 *                                {@link Optional#get()} method directly,
-	 *                                without caring of
-	 *                                whether or not there is a value. The generated
-	 *                                code will take care of the
-	 *                                {@link NoSuchElementException} exception.
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param groupId The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @param userId The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
@@ -1465,63 +1386,37 @@ public interface DataFetchersDelegateMutation {
 
 	/**
 	 * Description for the grantGroupAuthorities field: <br/>
-	 * Grants authorities to a group. The specified authorities are added to any
-	 * existing ones.
-	 * <br/>
-	 *
-	 * This method loads the data for Mutation.grantGroupAuthorities. It may return
-	 * whatever is
-	 * accepted by the Spring Controller, that is:
+	 * Grants authorities to a group. The specified authorities are added to any existing ones. <br/>
+	 * This method loads the data for Mutation.grantGroupAuthorities. It may return whatever is accepted by the Spring
+	 * Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a
-	 * io.github.demonfiddler.ee.server.Group)</li>
-	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods
-	 * and for any DataFetcher as described in Reactive DataFetcher.
-	 * This would typically be a Mono&lt;io.github.demonfiddler.ee.server.Group&gt;
+	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.Group)</li>
+	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;io.github.demonfiddler.ee.server.Group&gt;
 	 * or a Flux&lt;io.github.demonfiddler.ee.server.Group&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
-	 * <li>java.util.concurrent.Callable to have the value(s) produced
-	 * asynchronously. For this to work, AnnotatedControllerConfigurer must be
-	 * configured with an Executor. This would typically by a
+	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
+	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
 	 * Callable&lt;io.github.demonfiddler.ee.server.Group&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance
-	 * CompletableFuture<io.github.demonfiddler.ee.server.Group>. This
-	 * allows to use
-	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java
-	 * java-dataloader</A> to highly optimize the
-	 * number of requests to the server. The principle is this one: The data loader
-	 * collects all the data to load, avoid to load several
-	 * times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.Group>. This allows
+	 * to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly
+	 * optimize the number of requests to the server. The principle is this one: The data loader collects all the data
+	 * to load, avoid to load several times the same data, and allows parallel execution of the queries, if multiple
+	 * queries are to be run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
-	 * 
-	 * @param dataFetchingEnvironment
-	 *                                The GraphQL {@link DataFetchingEnvironment}.
-	 *                                It gives you access to the full GraphQL
-	 *                                context for this DataFetcher
-	 * @param groupId
-	 *                                The input parameter sent in the query by the
-	 *                                GraphQL consumer, as defined in the GraphQL
-	 *                                schema.
-	 * @param authorities
-	 *                                The input parameter sent in the query by the
-	 *                                GraphQL consumer, as defined in the GraphQL
-	 *                                schema.
-	 * @throws NoSuchElementException
-	 *                                This method may return a
-	 *                                {@link NoSuchElementException} exception. In
-	 *                                this case, the exception is trapped
-	 *                                by the calling method, and the return is
-	 *                                consider as null. This allows to use the
-	 *                                {@link Optional#get()} method directly,
-	 *                                without caring of
-	 *                                whether or not there is a value. The generated
-	 *                                code will take care of the
-	 *                                {@link NoSuchElementException} exception.
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param groupId The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @param authorities The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL
+	 * schema.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
@@ -1530,63 +1425,38 @@ public interface DataFetchersDelegateMutation {
 
 	/**
 	 * Description for the revokeGroupAuthorities field: <br/>
-	 * Revokes authorities from a group. The specified authorities are removed from
-	 * the group; other authorities remain intact.
-	 * <br/>
-	 *
-	 * This method loads the data for Mutation.revokeGroupAuthorities. It may return
-	 * whatever is
-	 * accepted by the Spring Controller, that is:
+	 * Revokes authorities from a group. The specified authorities are removed from the group; other authorities remain
+	 * intact. <br/>
+	 * This method loads the data for Mutation.revokeGroupAuthorities. It may return whatever is accepted by the Spring
+	 * Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a
-	 * io.github.demonfiddler.ee.server.Group)</li>
-	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods
-	 * and for any DataFetcher as described in Reactive DataFetcher.
-	 * This would typically be a Mono&lt;io.github.demonfiddler.ee.server.Group&gt;
+	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.Group)</li>
+	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;io.github.demonfiddler.ee.server.Group&gt;
 	 * or a Flux&lt;io.github.demonfiddler.ee.server.Group&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
-	 * <li>java.util.concurrent.Callable to have the value(s) produced
-	 * asynchronously. For this to work, AnnotatedControllerConfigurer must be
-	 * configured with an Executor. This would typically by a
+	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
+	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
 	 * Callable&lt;io.github.demonfiddler.ee.server.Group&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance
-	 * CompletableFuture<io.github.demonfiddler.ee.server.Group>. This
-	 * allows to use
-	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java
-	 * java-dataloader</A> to highly optimize the
-	 * number of requests to the server. The principle is this one: The data loader
-	 * collects all the data to load, avoid to load several
-	 * times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.Group>. This allows
+	 * to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly
+	 * optimize the number of requests to the server. The principle is this one: The data loader collects all the data
+	 * to load, avoid to load several times the same data, and allows parallel execution of the queries, if multiple
+	 * queries are to be run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
-	 * 
-	 * @param dataFetchingEnvironment
-	 *                                The GraphQL {@link DataFetchingEnvironment}.
-	 *                                It gives you access to the full GraphQL
-	 *                                context for this DataFetcher
-	 * @param groupId
-	 *                                The input parameter sent in the query by the
-	 *                                GraphQL consumer, as defined in the GraphQL
-	 *                                schema.
-	 * @param authorities
-	 *                                The input parameter sent in the query by the
-	 *                                GraphQL consumer, as defined in the GraphQL
-	 *                                schema.
-	 * @throws NoSuchElementException
-	 *                                This method may return a
-	 *                                {@link NoSuchElementException} exception. In
-	 *                                this case, the exception is trapped
-	 *                                by the calling method, and the return is
-	 *                                consider as null. This allows to use the
-	 *                                {@link Optional#get()} method directly,
-	 *                                without caring of
-	 *                                whether or not there is a value. The generated
-	 *                                code will take care of the
-	 *                                {@link NoSuchElementException} exception.
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param groupId The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @param authorities The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL
+	 * schema.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })

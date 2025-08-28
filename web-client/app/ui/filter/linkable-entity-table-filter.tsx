@@ -102,6 +102,18 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
     updateFilter('', '', false)
   }, [setStatus, setText, setAdvanced, updateFilter])
 
+  // If the user resets all settings, refresh the UI to match.
+  useEffect(() => {
+    const newFilter = queries[recordKind]?.filter
+    if (status !== (newFilter.status?.[0] ?? ''))
+      setStatus(newFilter.status?.[0] ?? '')
+    if (text !== (newFilter.text ?? ''))
+      // FIXME: this doesn't clear the displayed value.
+      setText(newFilter.text ?? '')
+    if (advanced !== !!newFilter.advancedSearch)
+      setAdvanced(!!newFilter.advancedSearch)
+  }, [queries[recordKind]?.filter])
+
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2">

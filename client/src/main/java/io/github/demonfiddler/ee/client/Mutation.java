@@ -333,9 +333,8 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	 * Sets entity status.
 	 */
 	@JsonProperty("setEntityStatus")
-	@GraphQLInputParameters(names = { "entityId", "status" },
-		types = { "ID", "StatusKind" }, mandatories = { true, true, true }, listDepths = { 0, 0, 0 },
-		itemsMandatory = { false, false, false })
+	@GraphQLInputParameters(names = { "entityId", "status" }, types = { "ID", "StatusKind" },
+		mandatories = { true, true, true }, listDepths = { 0, 0, 0 }, itemsMandatory = { false, false, false })
 	@GraphQLScalar(fieldName = "setEntityStatus", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class,
 		listDepth = 0)
 	Boolean setEntityStatus;
@@ -357,6 +356,30 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 		itemsMandatory = { false })
 	@GraphQLNonScalar(fieldName = "updateUser", graphQLTypeSimpleName = "User", javaClass = User.class, listDepth = 0)
 	User updateUser;
+
+	/**
+	 * Updates an existing user's password.
+	 */
+	@JsonProperty("updateUserPassword")
+	@GraphQLInputParameters(names = { "user" }, types = { "UserPasswordInput" }, mandatories = { true },
+		listDepths = { 0 }, itemsMandatory = { false })
+	@GraphQLNonScalar(fieldName = "updateUserPassword", graphQLTypeSimpleName = "User", javaClass = User.class,
+		listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	User updateUserPassword;
+
+	/**
+	 * Updates an existing user's profile.
+	 */
+	@JsonProperty("updateUserProfile")
+	@GraphQLInputParameters(names = { "user" }, types = { "UserProfileInput" }, mandatories = { true },
+		listDepths = { 0 }, itemsMandatory = { false })
+	@GraphQLNonScalar(fieldName = "updateUserProfile", graphQLTypeSimpleName = "User", javaClass = User.class,
+		listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	User updateUserProfile;
 
 	/**
 	 * Deletes an existing user.
@@ -394,7 +417,8 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	@JsonProperty("createGroup")
 	@GraphQLInputParameters(names = { "group" }, types = { "GroupInput" }, mandatories = { true }, listDepths = { 0 },
 		itemsMandatory = { false })
-	@GraphQLNonScalar(fieldName = "createGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
+	@GraphQLNonScalar(fieldName = "createGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class,
+		listDepth = 0)
 	Group createGroup;
 
 	/**
@@ -403,7 +427,8 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	@JsonProperty("updateGroup")
 	@GraphQLInputParameters(names = { "group" }, types = { "GroupInput" }, mandatories = { true }, listDepths = { 0 },
 		itemsMandatory = { false })
-	@GraphQLNonScalar(fieldName = "updateGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
+	@GraphQLNonScalar(fieldName = "updateGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class,
+		listDepth = 0)
 	Group updateGroup;
 
 	/**
@@ -419,18 +444,24 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	 * Adds a user to a group.
 	 */
 	@JsonProperty("addGroupMember")
-	@GraphQLInputParameters(names = {"groupId", "userId"}, types = {"ID", "ID"}, mandatories = {true, true}, listDepths = {0, 0}, itemsMandatory = {false, false})
-	@GraphQLNonScalar( fieldName = "addGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	@GraphQLInputParameters(names = { "groupId", "userId" }, types = { "ID", "ID" }, mandatories = { true, true },
+		listDepths = { 0, 0 }, itemsMandatory = { false, false })
+	@GraphQLNonScalar(fieldName = "addGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class,
+		listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	Group addGroupMember;
 
 	/**
 	 * Removes a user from a group.
 	 */
 	@JsonProperty("removeGroupMember")
-	@GraphQLInputParameters(names = {"groupId", "userId"}, types = {"ID", "ID"}, mandatories = {true, true}, listDepths = {0, 0}, itemsMandatory = {false, false})
-	@GraphQLNonScalar( fieldName = "removeGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	@GraphQLInputParameters(names = { "groupId", "userId" }, types = { "ID", "ID" }, mandatories = { true, true },
+		listDepths = { 0, 0 }, itemsMandatory = { false, false })
+	@GraphQLNonScalar(fieldName = "removeGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class,
+		listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	Group removeGroupMember;
 
 	/**
@@ -947,7 +978,47 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	}
 
 	/**
-	 * Updates an existing user.
+	 * Updates an existing user's password.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	@JsonProperty("updateUserPassword")
+	public void setUpdateUserPassword(User updateUserPassword) {
+		this.updateUserPassword = updateUserPassword;
+	}
+
+	/**
+	 * Updates an existing user's password.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	@JsonProperty("updateUserPassword")
+	public User getUpdateUserPassword() {
+		return this.updateUserPassword;
+	}
+
+	/**
+	 * Updates an existing user's profile.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	@JsonProperty("updateUserProfile")
+	public void setUpdateUserProfile(User updateUserProfile) {
+		this.updateUserProfile = updateUserProfile;
+	}
+
+	/**
+	 * Updates an existing user's profile.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	@JsonProperty("updateUserProfile")
+	public User getUpdateUserProfile() {
+		return this.updateUserProfile;
+	}
+
+	/**
+	 * Deletes an existing user.
 	 */
 	@JsonProperty("deleteUser")
 	public void setDeleteUser(User deleteUser) {
@@ -955,7 +1026,7 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	}
 
 	/**
-	 * Updates an existing user.
+	 * Deletes an existing user.
 	 */
 	@JsonProperty("deleteUser")
 	public User getDeleteUser() {
@@ -1045,9 +1116,10 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	}
 
 	/**
-	  * Adds a user to a group.
- 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	 * Adds a user to a group.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	@JsonProperty("addGroupMember")
 	public void setAddGroupMember(Group addGroupMember) {
 		this.addGroupMember = addGroupMember;
@@ -1056,16 +1128,18 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	/**
 	 * Adds a user to a group.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	@JsonProperty("addGroupMember")
 	public Group getAddGroupMember() {
 		return this.addGroupMember;
 	}
-		
+
 	/**
-	  * Removes a user from a group.
- 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	 * Removes a user from a group.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	@JsonProperty("removeGroupMember")
 	public void setRemoveGroupMember(Group removeGroupMember) {
 		this.removeGroupMember = removeGroupMember;
@@ -1074,7 +1148,8 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	/**
 	 * Removes a user from a group.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = {"authority"}, parameterTypes = {"[AuthorityKind!]"}, parameterValues = {"[ADM]"})
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	@JsonProperty("removeGroupMember")
 	public Group getRemoveGroupMember() {
 		return this.removeGroupMember;
@@ -1176,6 +1251,10 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 			+ ", " //
 			+ "updateUser: " + this.updateUser //
 			+ ", " //
+			+ "updateUserPassword: " + this.updateUserPassword //
+			+ ", " //
+			+ "updateUserProfile: " + this.updateUserProfile //
+			+ ", " //
 			+ "deleteUser: " + this.deleteUser //
 			+ ", " //
 			+ "grantUserAuthorities: " + this.grantUserAuthorities //
@@ -1236,6 +1315,8 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 		private Boolean setEntityStatus;
 		private User createUser;
 		private User updateUser;
+		private User updateUserPassword;
+		private User updateUserProfile;
 		private User deleteUser;
 		private User grantUserAuthorities;
 		private User revokeUserAuthorities;
@@ -1488,6 +1569,22 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 		}
 
 		/**
+		 * Updates an existing user's password.
+		 */
+		public Builder withUpdateUserPassword(User updateUserPasswordParam) {
+			this.updateUserPassword = updateUserPasswordParam;
+			return this;
+		}
+
+		/**
+		 * Updates an existing user's profile.
+		 */
+		public Builder withUpdateUserProfile(User updateUserProfileParam) {
+			this.updateUserProfile = updateUserProfileParam;
+			return this;
+		}
+
+		/**
 		 * Updates an existing user.
 		 */
 		public Builder withDeleteUser(User deleteUserParam) {
@@ -1553,8 +1650,7 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 		}
 
 		/**
-		 * Grants authorities to a group. The specified authorities are added to any
-		 * existing ones.
+		 * Grants authorities to a group. The specified authorities are added to any existing ones.
 		 */
 		public Builder withGrantGroupAuthorities(Group grantGroupAuthoritiesParam) {
 			this.grantGroupAuthorities = grantGroupAuthoritiesParam;
@@ -1562,8 +1658,8 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 		}
 
 		/**
-		 * Revokes authorities from a group. The specified authorities are removed from
-		 * the group; other authorities remain intact.
+		 * Revokes authorities from a group. The specified authorities are removed from the group; other authorities
+		 * remain intact.
 		 */
 		public Builder withRevokeGroupAuthorities(Group revokeGroupAuthoritiesParam) {
 			this.revokeGroupAuthorities = revokeGroupAuthoritiesParam;
@@ -1602,6 +1698,8 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 			_object.setSetEntityStatus(this.setEntityStatus);
 			_object.setCreateUser(this.createUser);
 			_object.setUpdateUser(this.updateUser);
+			_object.setUpdateUserPassword(this.updateUserPassword);
+			_object.setUpdateUserProfile(this.updateUserProfile);
 			_object.setDeleteUser(this.deleteUser);
 			_object.setGrantUserAuthorities(this.grantUserAuthorities);
 			_object.setRevokeUserAuthorities(this.revokeUserAuthorities);

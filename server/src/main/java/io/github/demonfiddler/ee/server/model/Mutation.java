@@ -300,6 +300,24 @@ public class Mutation {
 	User updateUser;
 
 	/**
+	 * Updates an existing user's password.
+	 */
+	@GraphQLNonScalar(fieldName = "updateUserPassword", graphQLTypeSimpleName = "User", javaClass = User.class,
+		listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	User updateUserPassword;
+
+	/**
+	 * Updates an existing user's profile.
+	 */
+	@GraphQLNonScalar(fieldName = "updateUserProfile", graphQLTypeSimpleName = "User", javaClass = User.class,
+		listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	User updateUserProfile;
+
+	/**
 	 * Updates an existing user.
 	 */
 	@GraphQLScalar(fieldName = "deleteUser", graphQLTypeSimpleName = "User", javaClass = User.class, listDepth = 0)
@@ -329,59 +347,65 @@ public class Mutation {
 	/**
 	 * Creates a new group.
 	 */
-	@GraphQLNonScalar(fieldName = "createGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
-			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	@GraphQLNonScalar(fieldName = "createGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class,
+		listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	Group createGroup;
 
 	/**
 	 * Updates an existing group.
 	 */
-	@GraphQLNonScalar(fieldName = "updateGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
-			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	@GraphQLNonScalar(fieldName = "updateGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class,
+		listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	Group updateGroup;
 
 	/**
 	 * Deletes an existing group.
 	 */
-	@GraphQLNonScalar(fieldName = "deleteGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
-			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	@GraphQLNonScalar(fieldName = "deleteGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class,
+		listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	Group deleteGroup;
 
 	/**
 	 * Adds a user to a group.
 	 */
-	@GraphQLNonScalar(fieldName = "addGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
-			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	@GraphQLNonScalar(fieldName = "addGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class,
+		listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	Group addGroupMember;
 
 	/**
 	 * Removes a user from a group.
 	 */
-	@GraphQLNonScalar(fieldName = "removeGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
-			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	@GraphQLNonScalar(fieldName = "removeGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class,
+		listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	Group removeGroupMember;
 
 	/**
-	 * Grants authorities to a group. The specified authorities are added to any
-	 * existing ones.
+	 * Grants authorities to a group. The specified authorities are added to any existing ones.
 	 */
-	@GraphQLNonScalar(fieldName = "grantGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
-			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	@GraphQLNonScalar(fieldName = "grantGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class,
+		listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	Group grantGroupAuthorities;
 
 	/**
-	 * Revokes authorities from a group. The specified authorities are removed from
-	 * the group; other authorities remain intact.
+	 * Revokes authorities from a group. The specified authorities are removed from the group; other authorities remain
+	 * intact.
 	 */
-	@GraphQLNonScalar(fieldName = "revokeGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
-			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	@GraphQLNonScalar(fieldName = "revokeGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class,
+		listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	Group revokeGroupAuthorities;
 
 	/**
@@ -925,6 +949,42 @@ public class Mutation {
 	}
 
 	/**
+	 * Updates an existing user's password.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	public void setUpdateUserPassword(User updateUserPassword) {
+		this.updateUserPassword = updateUserPassword;
+	}
+
+	/**
+	 * Updates an existing user's password.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	public User getUpdateUserPassword() {
+		return this.updateUserPassword;
+	}
+
+	/**
+	 * Updates an existing user's profile.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	public void setUpdateUserProfile(User updateUserProfile) {
+		this.updateUserProfile = updateUserProfile;
+	}
+
+	/**
+	 * Updates an existing user's profile.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
+	public User getUpdateUserProfile() {
+		return this.updateUserProfile;
+	}
+
+	/**
 	 * Deletes an existing user.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
@@ -983,8 +1043,8 @@ public class Mutation {
 	/**
 	 * Creates a new group.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
-			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	public void setCreateGroup(Group createGroup) {
 		this.createGroup = createGroup;
 	}
@@ -992,8 +1052,8 @@ public class Mutation {
 	/**
 	 * Creates a new group.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
-			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	public Group getCreateGroup() {
 		return this.createGroup;
 	}
@@ -1001,8 +1061,8 @@ public class Mutation {
 	/**
 	 * Updates an existing group.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
-			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	public void setUpdateGroup(Group updateGroup) {
 		this.updateGroup = updateGroup;
 	}
@@ -1010,8 +1070,8 @@ public class Mutation {
 	/**
 	 * Updates an existing group.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
-			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	public Group getUpdateGroup() {
 		return this.updateGroup;
 	}
@@ -1019,8 +1079,8 @@ public class Mutation {
 	/**
 	 * Deletes an existing group.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
-			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	public void setDeleteGroup(Group deleteGroup) {
 		this.deleteGroup = deleteGroup;
 	}
@@ -1028,8 +1088,8 @@ public class Mutation {
 	/**
 	 * Deletes an existing group.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
-			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	public Group getDeleteGroup() {
 		return this.deleteGroup;
 	}
@@ -1037,8 +1097,8 @@ public class Mutation {
 	/**
 	 * Adds a user to a group.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
-			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	public void setAddGroupMember(Group addGroupMember) {
 		this.addGroupMember = addGroupMember;
 	}
@@ -1046,8 +1106,8 @@ public class Mutation {
 	/**
 	 * Adds a user to a group.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
-			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	public Group getAddGroupMember() {
 		return this.addGroupMember;
 	}
@@ -1055,8 +1115,8 @@ public class Mutation {
 	/**
 	 * Removes a user from a group.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
-			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	public void setRemoveGroupMember(Group removeGroupMember) {
 		this.removeGroupMember = removeGroupMember;
 	}
@@ -1064,134 +1124,136 @@ public class Mutation {
 	/**
 	 * Removes a user from a group.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
-			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	public Group getRemoveGroupMember() {
 		return this.removeGroupMember;
 	}
 
 	/**
-	 * Grants authorities to a group. The specified authorities are added to any
-	 * existing ones.
+	 * Grants authorities to a group. The specified authorities are added to any existing ones.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
-			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	public void setGrantGroupAuthorities(Group grantGroupAuthorities) {
 		this.grantGroupAuthorities = grantGroupAuthorities;
 	}
 
 	/**
-	 * Grants authorities to a group. The specified authorities are added to any
-	 * existing ones.
+	 * Grants authorities to a group. The specified authorities are added to any existing ones.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
-			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	public Group getGrantGroupAuthorities() {
 		return this.grantGroupAuthorities;
 	}
 
 	/**
-	 * Revokes authorities from a group. The specified authorities are removed from
-	 * the group; other authorities remain intact.
+	 * Revokes authorities from a group. The specified authorities are removed from the group; other authorities remain
+	 * intact.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
-			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	public void setRevokeGroupAuthorities(Group revokeGroupAuthorities) {
 		this.revokeGroupAuthorities = revokeGroupAuthorities;
 	}
 
 	/**
-	 * Revokes authorities from a group. The specified authorities are removed from
-	 * the group; other authorities remain intact.
+	 * Revokes authorities from a group. The specified authorities are removed from the group; other authorities remain
+	 * intact.
 	 */
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
-			"[AuthorityKind!]" }, parameterValues = { "[ADM]" })
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[ADM]" })
 	public Group getRevokeGroupAuthorities() {
 		return this.revokeGroupAuthorities;
 	}
 
 	public String toString() {
-		return "Mutation {" //$NON-NLS-1$
-				+ "createClaim: " + this.createClaim //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "updateClaim: " + this.updateClaim //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "deleteClaim: " + this.deleteClaim //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "createDeclaration: " + this.createDeclaration //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "updateDeclaration: " + this.updateDeclaration //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "deleteDeclaration: " + this.deleteDeclaration //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "createEntityLink: " + this.createEntityLink //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "updateEntityLink: " + this.updateEntityLink //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "deleteEntityLink: " + this.deleteEntityLink //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "createJournal: " + this.createJournal //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "updateJournal: " + this.updateJournal //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "deleteJournal: " + this.deleteJournal //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "createPerson: " + this.createPerson //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "updatePerson: " + this.updatePerson //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "deletePerson: " + this.deletePerson //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "createPublication: " + this.createPublication //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "updatePublication: " + this.updatePublication //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "deletePublication: " + this.deletePublication //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "createPublisher: " + this.createPublisher //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "updatePublisher: " + this.updatePublisher //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "deletePublisher: " + this.deletePublisher //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "createQuotation: " + this.createQuotation //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "updateQuotation: " + this.updateQuotation //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "deleteQuotation: " + this.deleteQuotation //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "createTopic: " + this.createTopic //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "updateTopic: " + this.updateTopic //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "deleteTopic: " + this.deleteTopic //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "setEntityStatus: " + this.setEntityStatus //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "createUser: " + this.createUser //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "updateUser: " + this.updateUser //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "deleteUser: " + this.deleteUser //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "grantUserAuthorities: " + this.grantUserAuthorities //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "revokeUserAuthorities: " + this.revokeUserAuthorities //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "createGroup: " + this.createGroup //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "updateGroup: " + this.updateGroup //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "deleteGroup: " + this.deleteGroup //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "addGroupMember: " + this.addGroupMember //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "removeGroupMember: " + this.removeGroupMember //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "grantGroupAuthorities: " + this.grantGroupAuthorities //$NON-NLS-1$
-				+ ", " //$NON-NLS-1$
-				+ "revokeGroupAuthorities: " + this.revokeGroupAuthorities //$NON-NLS-1$
-				+ "}"; //$NON-NLS-1$
+		return "Mutation {" //
+			+ "createClaim: " + this.createClaim //
+			+ ", " //
+			+ "updateClaim: " + this.updateClaim //
+			+ ", " //
+			+ "deleteClaim: " + this.deleteClaim //
+			+ ", " //
+			+ "createDeclaration: " + this.createDeclaration //
+			+ ", " //
+			+ "updateDeclaration: " + this.updateDeclaration //
+			+ ", " //
+			+ "deleteDeclaration: " + this.deleteDeclaration //
+			+ ", " //
+			+ "createEntityLink: " + this.createEntityLink //
+			+ ", " //
+			+ "updateEntityLink: " + this.updateEntityLink //
+			+ ", " //
+			+ "deleteEntityLink: " + this.deleteEntityLink //
+			+ ", " //
+			+ "createJournal: " + this.createJournal //
+			+ ", " //
+			+ "updateJournal: " + this.updateJournal //
+			+ ", " //
+			+ "deleteJournal: " + this.deleteJournal //
+			+ ", " //
+			+ "createPerson: " + this.createPerson //
+			+ ", " //
+			+ "updatePerson: " + this.updatePerson //
+			+ ", " //
+			+ "deletePerson: " + this.deletePerson //
+			+ ", " //
+			+ "createPublication: " + this.createPublication //
+			+ ", " //
+			+ "updatePublication: " + this.updatePublication //
+			+ ", " //
+			+ "deletePublication: " + this.deletePublication //
+			+ ", " //
+			+ "createPublisher: " + this.createPublisher //
+			+ ", " //
+			+ "updatePublisher: " + this.updatePublisher //
+			+ ", " //
+			+ "deletePublisher: " + this.deletePublisher //
+			+ ", " //
+			+ "createQuotation: " + this.createQuotation //
+			+ ", " //
+			+ "updateQuotation: " + this.updateQuotation //
+			+ ", " //
+			+ "deleteQuotation: " + this.deleteQuotation //
+			+ ", " //
+			+ "createTopic: " + this.createTopic //
+			+ ", " //
+			+ "updateTopic: " + this.updateTopic //
+			+ ", " //
+			+ "deleteTopic: " + this.deleteTopic //
+			+ ", " //
+			+ "setEntityStatus: " + this.setEntityStatus //
+			+ ", " //
+			+ "createUser: " + this.createUser //
+			+ ", " //
+			+ "updateUser: " + this.updateUser //
+			+ ", " //
+			+ "updateUserPassword: " + this.updateUserPassword //
+			+ ", " //
+			+ "updateUserProfile: " + this.updateUserProfile //
+			+ ", " //
+			+ "deleteUser: " + this.deleteUser //
+			+ ", " //
+			+ "grantUserAuthorities: " + this.grantUserAuthorities //
+			+ ", " //
+			+ "revokeUserAuthorities: " + this.revokeUserAuthorities //
+			+ ", " //
+			+ "createGroup: " + this.createGroup //
+			+ ", " //
+			+ "updateGroup: " + this.updateGroup //
+			+ ", " //
+			+ "deleteGroup: " + this.deleteGroup //
+			+ ", " //
+			+ "addGroupMember: " + this.addGroupMember //
+			+ ", " //
+			+ "removeGroupMember: " + this.removeGroupMember //
+			+ ", " //
+			+ "grantGroupAuthorities: " + this.grantGroupAuthorities //
+			+ ", " //
+			+ "revokeGroupAuthorities: " + this.revokeGroupAuthorities //
+			+ "}"; //
 	}
 
 	public static Builder builder() {
@@ -1234,6 +1296,8 @@ public class Mutation {
 		private Boolean setEntityStatus;
 		private User createUser;
 		private User updateUser;
+		private User updateUserPassword;
+		private User updateUserProfile;
 		private User deleteUser;
 		private User grantUserAuthorities;
 		private User revokeUserAuthorities;
@@ -1486,6 +1550,22 @@ public class Mutation {
 		}
 
 		/**
+		 * Updates an existing user's password.
+		 */
+		public Builder withUpdateUserPassword(User updateUserPasswordParam) {
+			this.updateUserPassword = updateUserPasswordParam;
+			return this;
+		}
+
+		/**
+		 * Updates an existing user's profile.
+		 */
+		public Builder withUpdateUserProfile(User updateUserProfileParam) {
+			this.updateUserProfile = updateUserProfileParam;
+			return this;
+		}
+
+		/**
 		 * Updates an existing user.
 		 */
 		public Builder withDeleteUser(User deleteUserParam) {
@@ -1551,8 +1631,7 @@ public class Mutation {
 		}
 
 		/**
-		 * Grants authorities to a group. The specified authorities are added to any
-		 * existing ones.
+		 * Grants authorities to a group. The specified authorities are added to any existing ones.
 		 */
 		public Builder withGrantGroupAuthorities(Group grantGroupAuthoritiesParam) {
 			this.grantGroupAuthorities = grantGroupAuthoritiesParam;
@@ -1560,8 +1639,8 @@ public class Mutation {
 		}
 
 		/**
-		 * Revokes authorities from a group. The specified authorities are removed from
-		 * the group; other authorities remain intact.
+		 * Revokes authorities from a group. The specified authorities are removed from the group; other authorities
+		 * remain intact.
 		 */
 		public Builder withRevokeGroupAuthorities(Group revokeGroupAuthoritiesParam) {
 			this.revokeGroupAuthorities = revokeGroupAuthoritiesParam;
@@ -1600,6 +1679,8 @@ public class Mutation {
 			_object.setSetEntityStatus(this.setEntityStatus);
 			_object.setCreateUser(this.createUser);
 			_object.setUpdateUser(this.updateUser);
+			_object.setUpdateUserPassword(this.updateUserPassword);
+			_object.setUpdateUserProfile(this.updateUserProfile);
 			_object.setDeleteUser(this.deleteUser);
 			_object.setGrantUserAuthorities(this.grantUserAuthorities);
 			_object.setRevokeUserAuthorities(this.revokeUserAuthorities);

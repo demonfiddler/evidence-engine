@@ -1672,8 +1672,7 @@ input UserInput {
     lastName: String!
     "The user's email address."
     email: String!
-    # TODO: consider whether to reveal this through the GraphQL API.
-    "A hash of the user's password."
+    "A bcrypt hash of the user's password."
     password: String
     "The user's country of residence (ISO-3166-1 alpha-2 code)."
     country: String
@@ -1681,6 +1680,30 @@ input UserInput {
     notes: String
     "The authorities to grant to the user."
     authorities: [AuthorityKind!]!
+}
+
+"Input for updating a user's password."
+input UserPasswordInput {
+    "The immutable, unique user identifier (system-assigned)."
+    id: ID!
+    "A bcrypt hash of the user's password."
+    password: String!
+}
+
+"Input for updating an existing user of the system."
+input UserProfileInput {
+    "The immutable, unique user identifier (system-assigned)."
+    id: ID!
+    "The user's first name."
+    firstName: String!
+    "The user's last name."
+    lastName: String!
+    "The user's email address."
+    email: String!
+    "The user's country of residence (ISO-3166-1 alpha-2 code)."
+    country: String!
+    "Added notes about the user."
+    notes: String
 }
 
 "Returns paginated user query results."
@@ -2008,6 +2031,10 @@ type Mutation {
     createUser(user: UserInput!): User @auth(authority: [ADM])
     "Updates an existing user."
     updateUser(user: UserInput!): User @auth(authority: [ADM])
+    "Updates an existing user's password."
+    updateUserPassword(user: UserPasswordInput!): User @auth(authority: [ADM])
+    "Updates an existing user's profile."
+    updateUserProfile(user: UserProfileInput!): User @auth(authority: [ADM])
     "Deletes an existing user."
     deleteUser(userId: ID!): User @auth(authority: [ADM])
     "Grants authorities to a user. The specified authorities are added to any existing ones."

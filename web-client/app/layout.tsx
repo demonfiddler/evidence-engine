@@ -176,6 +176,24 @@ function reducer(draft: AppState, action: ReducerArg) {
     case "flush":
       draft.modified = false
       break
+    case "setDefaults": {
+      const defaults = defaultAppState()
+      draft.modified = defaults.modified
+      draft.sidebarOpen = defaults.sidebarOpen
+      draft.linkFilterOpen = defaults.linkFilterOpen
+      draft.trackingDetailsOpen = defaults.trackingDetailsOpen
+      draft.masterTopicId = defaults.masterTopicId
+      draft.masterTopicDescription = defaults.masterTopicDescription
+      draft.masterTopicPath = defaults.masterTopicPath
+      draft.masterRecordKind = defaults.masterRecordKind
+      draft.masterRecordId = defaults.masterRecordId
+      draft.masterRecordLabel = defaults.masterRecordLabel
+      draft.showOnlyLinkedRecords = defaults.showOnlyLinkedRecords
+      draft.queries = defaults.queries
+      draft.columns = defaults.columns
+      draft.selectedRecords = defaults.selectedRecords
+      break
+    }
     case "setSecurityPrincipal": {
       const user = action.value as User
       draft.username = user?.username
@@ -311,6 +329,10 @@ export default function RootLayout({
   const [appStateSs, storeAppStateSs] = useSessionStorage<AppState>('app-state', defaultAppState)
   const [appState, dispatch] = useImmerReducer<AppState, ReducerArg>(reducer, appStateSs)
 
+  const setDefaults = useCallback(() => {
+    dispatch({command: "setDefaults", value: null})
+  }, [dispatch])
+
   const setSecurityPrincipal = useCallback((user?: User) => {
     dispatch({command: "setSecurityPrincipal", value: user})
   }, [dispatch])
@@ -394,6 +416,7 @@ export default function RootLayout({
 
   const globalContext = {
     ...appState,
+    setDefaults,
     setSecurityPrincipal,
     setSidebarOpen,
     setLinkFilterOpen,

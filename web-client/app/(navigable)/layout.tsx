@@ -23,7 +23,7 @@ import "@/app/globals.css"
 import '@/app/ui/global.css'
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/app/ui//navigator/app-sidebar"
-import SignIn from "../ui/security/sign-in"
+import MyAccount from "../ui/security/my-account"
 import { GlobalContext } from "@/lib/context"
 import { useContext } from "react"
 
@@ -41,7 +41,7 @@ export default function NavigableLayout({
         <header className="grid grid-cols-3 items-center shrink-0 w-full h-12 rounded-md text-white bg-blue-500">
           <SidebarTrigger title="Toggle sidebar (Ctrl+B)" />
           <p className="justify-self-center">Evidence Engine</p>
-          <SignIn className="justify-self-end" />
+          <MyAccount className="justify-self-end" />
         </header>
         {children}
         <div className="grow"></div>

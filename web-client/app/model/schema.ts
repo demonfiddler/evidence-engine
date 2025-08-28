@@ -185,6 +185,20 @@ export interface UserInput extends SecurityPrincipalInput {
   notes: string | null
 }
 
+export interface UserPasswordInput {
+  id: string
+  password: string
+}
+
+export interface UserProfileInput {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  country: string
+  notes: string | null
+}
+
 export interface GroupInput extends SecurityPrincipalInput {
   groupname: string
 }

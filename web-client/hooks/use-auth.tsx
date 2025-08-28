@@ -114,6 +114,9 @@ async function fetchUser() {
             username
             firstName
             lastName
+            email
+            country(format:ALPHA_2)
+            notes
             authorities(aggregation: ALL, format: SHORT)
           }
         }

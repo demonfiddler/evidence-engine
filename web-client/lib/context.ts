@@ -160,6 +160,7 @@ export type StorageState = {
 }
 
 export type StorageStateFns = {
+  setDefaults: () => void
   storeAppState: () => void
 }
 
@@ -205,6 +206,7 @@ export const GlobalContext = createContext<GlobalContextType>({
   selectedRecords: {},
   columns: {},
   queries: {},
+  setDefaults: () => {throw new Error("setDefaults() not supported in default GlobalContext")},
   setSecurityPrincipal: () => {throw new Error("setSecurityPrincipal() not supported in default GlobalContext")},
   setSidebarOpen: () => {throw new Error("setSidebarOpen() not supported in default GlobalContext")},
   setLinkFilterOpen: () => {throw new Error("setLinkFilterOpen() not supported in default GlobalContext")},
