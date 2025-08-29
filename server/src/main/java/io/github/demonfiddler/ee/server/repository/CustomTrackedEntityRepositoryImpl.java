@@ -47,7 +47,8 @@ public abstract class CustomTrackedEntityRepositoryImpl<T extends ITrackedEntity
     /** Describes the elements of a query. */
     private static record QueryMetaData(@Nullable TrackedEntityQueryFilter filter, @NonNull Pageable pageable,
         String countQueryName, String selectQueryName, String entityName, boolean hasStatus, boolean hasText,
-        boolean hasTextH2, boolean hasTextMariaDB, boolean isAdvanced, boolean isPaged, boolean isSorted) {
+        boolean hasTextH2, boolean hasTextMariaDB, boolean isAdvanced, boolean isPaged, boolean isSorted,
+        boolean isSortedOnCreatedByUsername, boolean isSortedOnUpdatedByUsername) {
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomTrackedEntityRepositoryImpl.class);
@@ -85,6 +86,8 @@ public abstract class CustomTrackedEntityRepositoryImpl<T extends ITrackedEntity
         boolean hasStatus = hasFilter && filter.getStatus() != null && !filter.getStatus().isEmpty();
         boolean isPaged = pageable.isPaged();
         boolean isSorted = pageable.getSort().isSorted();
+        boolean isSortedOnCreatedByUsername = false;
+        boolean isSortedOnUpdatedByUsername = false;
         String entityName = entityUtils.getEntityName(getEntityClass());
 
         // For paged queries involving an H2 full text filter, we need to ensure that the sort order includes "id"
@@ -93,6 +96,12 @@ public abstract class CustomTrackedEntityRepositoryImpl<T extends ITrackedEntity
             Sort sort = pageable.getSort().and(Sort.by("id"));
             pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
             isSorted = true;
+        }
+        if (isSorted) {
+            isSortedOnCreatedByUsername =
+                !pageable.getSort().filter(o -> o.getProperty().equals("createdByUsername")).isEmpty();
+            isSortedOnUpdatedByUsername =
+                !pageable.getSort().filter(o -> o.getProperty().equals("updatedByUsername")).isEmpty();
         }
 
         StringBuilder countQueryName = new StringBuilder();
@@ -112,7 +121,8 @@ public abstract class CustomTrackedEntityRepositoryImpl<T extends ITrackedEntity
             entityUtils.appendOrderByToQueryName(selectQueryName, pageable);
 
         return new QueryMetaData(filter, pageable, countQueryName.toString(), selectQueryName.toString(), entityName,
-            hasStatus, hasText, hasTextH2, hasTextMariaDB, isAdvanced, isPaged, isSorted);
+            hasStatus, hasText, hasTextH2, hasTextMariaDB, isAdvanced, isPaged, isSorted, isSortedOnCreatedByUsername,
+            isSortedOnUpdatedByUsername);
     }
 
     /**
@@ -131,6 +141,14 @@ public abstract class CustomTrackedEntityRepositoryImpl<T extends ITrackedEntity
         ON ft.\"TABLE\" = '${m.entityName}'
             AND ft.\"KEYS\"[1] = e.\"id\"
         -- }
+        -- if (m.isSortedOnCreatedByUsername) { cbuJoinClause =
+        JOIN "user" cbu
+        ON cbu."id" = e."created_by_user_id"
+        --}
+        -- if (m.isSortedOnUpdatedByUsername) { ubuJoinClause =
+        JOIN "user" ubu
+        ON ubu."id" = e."updated_by_user_id"
+        --}
         -- if (m.hasTextMariaDB || m.hasStatus) {
         WHERE
         -- if (m.hasStatus) {
@@ -149,6 +167,17 @@ public abstract class CustomTrackedEntityRepositoryImpl<T extends ITrackedEntity
             .append("FROM \"entity\" e").append(NL) //
             .append("JOIN \"").append(m.entityName).append("\" ee").append(NL) //
             .append("ON ee.\"id\" = e.\"id\"");
+        if (m.isSortedOnCreatedByUsername) {
+            selectBuf.append(NL) //
+                .append("JOIN \"user\" cbu").append(NL) //
+                .append("ON cbu.\"id\" = e.\"created_by_user_id\"");
+        }
+        if (m.isSortedOnUpdatedByUsername) {
+            selectBuf.append(NL) //
+                .append("JOIN \"user\" ubu").append(NL) //
+                .append("ON ubu.\"id\" = e.\"updated_by_user_id\"");
+        }
+
         if (m.hasText || m.hasStatus) {
             if (m.hasTextH2) {
                 selectBuf.append(NL) //
@@ -186,7 +215,7 @@ public abstract class CustomTrackedEntityRepositoryImpl<T extends ITrackedEntity
         selectBuf.insert(0,
             "SELECT e.\"dtype\", e.\"status\", e.\"created\", e.\"created_by_user_id\", e.\"updated\", e.\"updated_by_user_id\", ee.*");
         if (m.isSorted)
-            entityUtils.appendOrderByClause(selectBuf, m.pageable, "e.", "ee.", true);
+            entityUtils.appendOrderByClause(selectBuf, m.pageable, "e.", "ee.", "cbu.", "ubu.", true);
         selectBuf.append(';');
 
         // NOTE: since the COUNT query does not include an ORDER BY clause, multiple executions of the same SELECT query

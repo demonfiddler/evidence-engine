@@ -152,7 +152,7 @@ public class CustomLogRepositoryImpl extends AbstractCustomRepositoryImpl implem
         countBuf.append(';');
         selectBuf.insert(0, "SELECT *");
         if (m.isSorted)
-            entityUtils.appendOrderByClause(selectBuf, m.pageable, "", "", false);
+            entityUtils.appendOrderByClause(selectBuf, m.pageable, "", "", "", "", false);
 
         // NOTE: since the COUNT query does not include an ORDER BY clause, multiple executions of the same SELECT query
         // with different ORDER BY clauses will result in the registration of multiple identical COUNT queries, each of

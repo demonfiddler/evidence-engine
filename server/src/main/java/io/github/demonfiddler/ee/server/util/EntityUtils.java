@@ -255,8 +255,7 @@ public class EntityUtils {
 	/**
 	 * Indicates whether a sort involves a non-native null precedence specification.
 	 * @param sort The sort specification.
-	 * @return {@code true} if any of {@code sort}'s {@code Order}'s are other than
-	 * {@code NullHandling.NATIVE}.
+	 * @return {@code true} if any of {@code sort}'s {@code Order}'s are other than {@code NullHandling.NATIVE}.
 	 */
 	private boolean usesNonNativeNullPrecedence(Sort sort) {
 		return !sort.filter(o -> o.getNullHandling() != NullHandling.NATIVE).isEmpty();
@@ -357,14 +356,18 @@ public class EntityUtils {
 	 * Appends an ORDER BY clause to a string buffer.
 	 * @param sql The SQL buffer.
 	 * @param pageable Paginator with sorting information.
-	 * @param baseTableQualifier The qualifier with which to prefix field references in base tables
-	 * (e.g. {@code "e."}). For unprefixed, pass an empty string.
-	 * @param joinedTableQualifier The qualifier with which to prefix field references in joined tables
-	 * (e.g. {@code "ee."}). For unprefixed, pass an empty string.
+	 * @param baseTableQualifier The qualifier with which to prefix field references in base tables (e.g. {@code "e."}).
+	 * For unprefixed, pass an empty string.
+	 * @param joinedTableQualifier The qualifier with which to prefix field references in joined tables (e.g.
+	 * {@code "ee."}). For unprefixed, pass an empty string.
+	 * @param createdByUserQualifier The qualifier with which to prefix 'createdByUser*' field references to joined user
+	 * table (e.g., {@code "cbu."}). For unprefixed, pass an empty string.
+	 * @param updatedByUserQualifier The qualifier with which to prefix 'updatedByUser*' field references to joined user
+	 * table (e.g., {@code "ubu."}). For unprefixed, pass an empty string.
 	 * @param multiline Whether to place the ORDER BY and each sort term on a separate line.
 	 */
 	public void appendOrderByClause(StringBuilder sql, Pageable pageable, String baseTableQualifier,
-		String joinedTableQualifier, boolean multiline) {
+		String joinedTableQualifier, String createdByUserQualifier, String updatedByUserQualifier, boolean multiline) {
 
 		if (pageable.getSort().isSorted()) {
 			if (multiline)
@@ -378,7 +381,8 @@ public class EntityUtils {
 				sql.append(' ');
 			boolean needsComma = false;
 			for (Order order : pageable.getSort().toList()) {
-				String qualifier = isBaseTableField(order.getProperty()) ? baseTableQualifier : joinedTableQualifier;
+				String qualifier = getQualifier(order.getProperty(), baseTableQualifier, joinedTableQualifier,
+					createdByUserQualifier, updatedByUserQualifier);
 				String property = toDbColumnName(order.getProperty());
 				if (needsComma) {
 					sql.append(',');
@@ -469,6 +473,10 @@ public class EntityUtils {
 	 * @return The database column name.
 	 */
 	private String toDbColumnName(String property) {
+		// These particular fields are special cases, as they are in the "user" table.
+		if (property.equals("createdByUsername") || property.equals("updatedByUsername"))
+			return "username";
+
 		// TODO: see if there is a better way of doing this using the JPA API.
 		StringBuilder buf = new StringBuilder(property.length());
 		for (int i = 0; i < property.length(); i++) {
@@ -483,6 +491,18 @@ public class EntityUtils {
 
 	private boolean isBaseTableField(String fieldName) {
 		return BASE_TABLE_FIELDS.contains(fieldName);
+	}
+
+	private String getQualifier(String fieldName, String baseTableQualifier, String joinedTableQualifier,
+		String createdByUserQualifier, String updatedByUserQualifier) {
+
+		if (isBaseTableField(fieldName))
+			return baseTableQualifier;
+		if (fieldName.startsWith("createdByUser"))
+			return createdByUserQualifier;
+		if (fieldName.startsWith("updatedByUser"))
+			return updatedByUserQualifier;
+		return joinedTableQualifier;
 	}
 
 }

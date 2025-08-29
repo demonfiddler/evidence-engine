@@ -39,7 +39,6 @@ import jakarta.persistence.Query;
 
 /**
  * An abstract base implementation of the {@code CustomRepository} interface.
- * 
  * @param <T> The type handled by the implementation.
  */
 public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEntity> extends AbstractCustomRepositoryImpl
@@ -47,10 +46,11 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
 
     /** Describes the elements of a query. */
     private static record QueryMetaData(LinkableEntityQueryFilter filter, Pageable pageable, String entityName,
-        String countQueryName, String selectQueryName, boolean hasTopic, boolean isRecursive,
-        boolean hasFromEntityKind, boolean hasFromEntityId, String fromEntityName, boolean hasToEntityKind,
-        boolean hasToEntityId, String toEntityName, boolean hasStatus, boolean hasText, boolean hasTextH2,
-        boolean hasTextMariaDB, boolean isAdvanced, boolean isPaged, boolean isSorted) {
+        String countQueryName, String selectQueryName, boolean hasTopic, boolean isRecursive, boolean hasFromEntityKind,
+        boolean hasFromEntityId, String fromEntityName, boolean hasToEntityKind, boolean hasToEntityId,
+        String toEntityName, boolean hasStatus, boolean hasText, boolean hasTextH2, boolean hasTextMariaDB,
+        boolean isAdvanced, boolean isPaged, boolean isSorted, boolean isSortedOnCreatedByUsername,
+        boolean isSortedOnUpdatedByUsername) {
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomLinkableEntityRepositoryImpl.class);
@@ -61,24 +61,20 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
     }
 
     /**
-     * Returns the runtime entity class corresponding to the {@literal <T>} type
-     * parameter.
-     * 
+     * Returns the runtime entity class corresponding to the {@literal <T>} type parameter.
      * @return The runtime entity class.
      */
     protected abstract Class<T> getEntityClass();
 
     /**
      * Returns the database columns for which there exists a full text index.
-     * 
      * @return A comma-separated list of back-quoted database column names.
      */
     protected abstract String getFulltextColumns();
 
     /**
      * Returns metadata about a query and paging/sorting specification.
-     * 
-     * @param filter   The query filter, must not be {@code null}.
+     * @param filter The query filter, must not be {@code null}.
      * @param pageable Specifies sorting and pagination, must not be {@code null}.
      * @return Query metadata.
      */
@@ -98,6 +94,8 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
         boolean isAdvanced = hasText && filter.getAdvancedSearch();
         boolean isPaged = pageable.isPaged();
         boolean isSorted = pageable.getSort().isSorted();
+        boolean isSortedOnCreatedByUsername = false;
+        boolean isSortedOnUpdatedByUsername = false;
         String entityName = entityUtils.getEntityName(getEntityClass());
         String fromEntityName = hasFromEntityKind ? entityUtils.getEntityName(filter.getFromEntityKind()) : "";
         String toEntityName = hasToEntityKind ? entityUtils.getEntityName(filter.getToEntityKind()) : "";
@@ -111,6 +109,12 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
             Sort sort = pageable.getSort().and(Sort.by("id"));
             pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
             isSorted = true;
+        }
+        if (isSorted) {
+            isSortedOnCreatedByUsername =
+                !pageable.getSort().filter(o -> o.getProperty().equals("createdByUsername")).isEmpty();
+            isSortedOnUpdatedByUsername =
+                !pageable.getSort().filter(o -> o.getProperty().equals("updatedByUsername")).isEmpty();
         }
 
         StringBuilder countQueryName = new StringBuilder();
@@ -154,13 +158,12 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
 
         return new QueryMetaData(filter, pageable, entityName, countQueryName.toString(), selectQueryName.toString(),
             hasTopic, isRecursive, hasFromEntityKind, hasFromEntityId, fromEntityName, hasToEntityKind, hasToEntityId,
-            toEntityName, hasStatus, hasText, hasTextH2, hasTextMariaDB, isAdvanced, isPaged, isSorted);
+            toEntityName, hasStatus, hasText, hasTextH2, hasTextMariaDB, isAdvanced, isPaged, isSorted,
+            isSortedOnCreatedByUsername, isSortedOnUpdatedByUsername);
     }
 
     /**
-     * Defines and registers a pair of named queries with the
-     * {@code EntityManagerFactory}.
-     * 
+     * Defines and registers a pair of named queries with the {@code EntityManagerFactory}.
      * @param m Query metadata.
      * @return An executable query pair.
      */
@@ -302,7 +305,17 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
          * 
          * JOIN "${m.entityName}" ee
          * ON ee."id" = e."id"
-         * 
+         *
+         * -- if (m.isSortedOnCreatedByUsername) { cbuJoinClause =
+         * JOIN "user" cbu
+         * ON cbu."id" = e."created_by_user_id"
+         * --}
+         *
+         * -- if (m.isSortedOnUpdatedByUsername) { ubuJoinClause =
+         * JOIN "user" ubu
+         * ON ubu."id" = e."updated_by_user_id"
+         * --}
+         *
          * -- if (m.hasStatus || m.hasTextMariaDB)
          * WHERE
          * -- if (m.hasStatus) {
@@ -347,8 +360,8 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
                 cteStatusClause2.append(NL) //
                     .append("    WHERE e.\"status\" IN (:status)");
             }
-            commonTableExpr = String.format(cteTemplate, cteJoinClause, cteStatusClause1, cteJoinClause,
-                cteStatusClause2);
+            commonTableExpr =
+                String.format(cteTemplate, cteJoinClause, cteStatusClause1, cteJoinClause, cteStatusClause2);
         } else {
             commonTableExpr = "";
         }
@@ -391,8 +404,8 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
         StringBuilder meJoinClause = new StringBuilder();
         if (m.hasFromEntityKind || m.hasFromEntityId) {
             meJoinClause.append(NL) //
-                    .append("JOIN \"entity_link\" master_el").append(NL) //
-                    .append("ON");
+                .append("JOIN \"entity_link\" master_el").append(NL) //
+                .append("ON");
             needsAnd = false;
             if (m.hasFromEntityId) {
                 meJoinClause.append(NL) //
@@ -448,10 +461,23 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
         eeJoinClause.append(NL) //
             .append("JOIN \"").append(m.entityName).append("\" ee").append(NL).append("ON ee.\"id\" = e.\"id\"");
 
+        StringBuilder cbuJoinClause = new StringBuilder();
+        if (m.isSortedOnCreatedByUsername) {
+            cbuJoinClause.append(NL) //
+                .append("JOIN \"user\" cbu").append(NL) //
+                .append("ON cbu.\"id\" = e.\"created_by_user_id\"");
+        }
+        StringBuilder ubuJoinClause = new StringBuilder();
+        if (m.isSortedOnUpdatedByUsername) {
+            ubuJoinClause.append(NL) //
+                .append("JOIN \"user\" ubu").append(NL) //
+                .append("ON ubu.\"id\" = e.\"updated_by_user_id\"");
+        }
+
         StringBuilder whereClause = new StringBuilder();
         if (m.hasStatus || m.hasTextMariaDB) {
             whereClause.append(NL) //
-                    .append("WHERE");
+                .append("WHERE");
             needsAnd = false;
             if (m.hasStatus) {
                 whereClause.append(NL) //
@@ -476,23 +502,24 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
 
         StringBuilder orderByClause = new StringBuilder();
         if (m.isSorted)
-            entityUtils.appendOrderByClause(orderByClause, m.pageable, "e.", "ee.", true);
+            entityUtils.appendOrderByClause(orderByClause, m.pageable, "e.", "ee.", "cbu.", "ubu.", true);
 
         String template = """
             %sSELECT %s
-            FROM "entity" e%s%s%s%s%s%s;
+            FROM "entity" e%s%s%s%s%s%s%s%s;
             """;
 
         // NOTE: since the COUNT query does not include an ORDER BY clause, multiple executions of the same SELECT query
         // with different ORDER BY clauses will result in the registration of multiple identical COUNT queries, each of
         // which will simply overwrite the previous definition. This is not a problem, but it is somewhat inefficient.
         String countSql = String.format(template, commonTableExpr, "COUNT(*)", topicJoinClause, meJoinClause,
-            ftJoinClause, eeJoinClause, whereClause, "");
+            ftJoinClause, eeJoinClause, "", "", whereClause, "");
         Query countQuery = defineNamedQuery(m.countQueryName, countSql, Long.class);
 
-        String columns = "DISTINCT e.\"dtype\", e.\"status\", e.\"created\", e.\"created_by_user_id\", e.\"updated\", e.\"updated_by_user_id\", ee.*";
+        String columns =
+            "DISTINCT e.\"dtype\", e.\"status\", e.\"created\", e.\"created_by_user_id\", e.\"updated\", e.\"updated_by_user_id\", ee.*";
         String selectSql = String.format(template, commonTableExpr, columns, topicJoinClause, meJoinClause,
-            ftJoinClause, eeJoinClause, whereClause, orderByClause);
+            ftJoinClause, eeJoinClause, cbuJoinClause, ubuJoinClause, whereClause, orderByClause);
         Query selectQuery = defineNamedQuery(m.selectQueryName, selectSql, getEntityClass());
 
         return new QueryPair(countQuery, selectQuery);
@@ -533,7 +560,7 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
         if (m.isPaged)
             entityUtils.setQueryPagination(queries.selectQuery(), m.pageable);
 
-        long total = (Long) queries.countQuery().getSingleResult();
+        long total = (Long)queries.countQuery().getSingleResult();
         List<T> content = queries.selectQuery().getResultList();
         return new PageImpl<>(content, m.pageable, total);
     }
