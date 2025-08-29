@@ -36,7 +36,7 @@ import { flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } fro
 import { BeakerIcon, RotateCw, UserIcon } from 'lucide-react'
 import { cn } from "@/lib/utils"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
 import useAuth from "@/hooks/use-auth"
 import EntityStatistics from "@/app/model/EntityStatistics"
 import { getExpandedRowModelEx } from "@/app/ui/data-table/data-table-expanded-row-model"
@@ -175,18 +175,15 @@ export default function Dashboard() {
                   <SelectValue placeholder="Status" />
                 </SelectTriggerEx>
                 <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Status Kinds</SelectLabel>
-                    {
-                      status
-                      ? <SelectItem value="ALL">-Clear-</SelectItem>
-                      : null
-                    }
-                    <SelectItem value="DRA">Draft</SelectItem>
-                    <SelectItem value="PUB">Published</SelectItem>
-                    <SelectItem value="SUS">Suspended</SelectItem>
-                    <SelectItem value="DEL">Deleted</SelectItem>
-                  </SelectGroup>
+                  {
+                    status
+                    ? <SelectItem value="ALL">-Clear-</SelectItem>
+                    : null
+                  }
+                  <SelectItem value="DRA">Draft</SelectItem>
+                  <SelectItem value="PUB">Published</SelectItem>
+                  <SelectItem value="SUS">Suspended</SelectItem>
+                  <SelectItem value="DEL">Deleted</SelectItem>
                 </SelectContent>
               </Select>
               <Label htmlFor="">Aggregation:</Label>

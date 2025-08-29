@@ -22,9 +22,7 @@
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectValue,
 } from "@/components/ui/select"
 import {
@@ -173,18 +171,15 @@ export default function JournalDetails(
                       </SelectTriggerEx>
                     </FormControl>
                     <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Publishers</SelectLabel>
-                        {
-                          publishers.map(publisher => (
-                            <SelectItem
-                              key={publisher.id?.toString() ?? ''}
-                              value={publisher.id?.toString() ?? ''}>
-                              {publisher.name}
-                            </SelectItem>
-                          ))
-                        }
-                      </SelectGroup>
+                      {
+                        publishers.map(publisher => (
+                          <SelectItem
+                            key={publisher.id?.toString() ?? ''}
+                            value={publisher.id?.toString() ?? ''}>
+                            {publisher.name}
+                          </SelectItem>
+                        ))
+                      }
                     </SelectContent>
                   </Select>
                   <FormMessage />

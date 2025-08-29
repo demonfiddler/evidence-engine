@@ -24,7 +24,7 @@ import Search from "./search"
 import { DataTableFilterProps, DataTableViewOptions } from "../data-table/data-table-view-options"
 import { getRecordLinkProperties } from "@/lib/utils"
 import { useCallback, useContext, useEffect, useState } from "react"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
 import { LinkableEntityQueryFilter } from "@/app/model/schema"
 import { GlobalContext, QueryState } from "@/lib/context"
 import SelectTriggerEx from "../ext/select-ex"
@@ -125,18 +125,15 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
             <SelectValue placeholder="Status" />
           </SelectTriggerEx>
           <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Status Kinds</SelectLabel>
-              {
-                status
-                ? <SelectItem value="ALL">-Clear-</SelectItem>
-                : null
-              }
-              <SelectItem value="DRA">Draft</SelectItem>
-              <SelectItem value="PUB">Published</SelectItem>
-              <SelectItem value="SUS">Suspended</SelectItem>
-              <SelectItem value="DEL">Deleted</SelectItem>
-            </SelectGroup>
+            {
+              status
+              ? <SelectItem value="ALL">-Clear-</SelectItem>
+              : null
+            }
+            <SelectItem value="DRA">Draft</SelectItem>
+            <SelectItem value="PUB">Published</SelectItem>
+            <SelectItem value="SUS">Suspended</SelectItem>
+            <SelectItem value="DEL">Deleted</SelectItem>
           </SelectContent>
         </Select>
         <Search value={text} onChangeValue={handleTextChange} />

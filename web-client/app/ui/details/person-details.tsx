@@ -29,7 +29,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
 import rawCountries from "@/data/countries.json" assert {type: 'json'}
 import Country from "@/app/model/Country"
 import StandardDetails from "./standard-details"
@@ -283,11 +283,10 @@ export default function PersonDetails(
                       </SelectTriggerEx>
                     </FormControl>
                     <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Countries</SelectLabel>
-                          {countries.map(country =>
-                            <SelectItem key={country.alpha_2} value={country.alpha_2}>{country.common_name}</SelectItem>)}
-                      </SelectGroup>
+                      {
+                        countries.map(country =>
+                          <SelectItem key={country.alpha_2} value={country.alpha_2}>{country.common_name}</SelectItem>)
+                      }
                     </SelectContent>
                   </Select>
                   <FormMessage />

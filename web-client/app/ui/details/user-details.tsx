@@ -32,9 +32,7 @@ import {
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectValue,
 } from "@/components/ui/select"
 import StandardDetails from "./standard-details"
@@ -268,18 +266,15 @@ export default function UserDetails(
                       </SelectTriggerEx>
                     </FormControl>
                     <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Countries</SelectLabel>
-                        {
-                          countries.map(country => (
-                            <SelectItem
-                              key={country.alpha_2}
-                              value={country.alpha_2}>
-                              {country.common_name}
-                            </SelectItem>
-                          ))
-                        }
-                      </SelectGroup>
+                      {
+                        countries.map(country => (
+                          <SelectItem
+                            key={country.alpha_2}
+                            value={country.alpha_2}>
+                            {country.common_name}
+                          </SelectItem>
+                        ))
+                      }
                     </SelectContent>
                   </Select>
                   <FormMessage />

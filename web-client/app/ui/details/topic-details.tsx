@@ -32,9 +32,7 @@ import {
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectValue,
 } from "@/components/ui/select"
 import StandardDetails from "./standard-details"
@@ -131,31 +129,28 @@ export default function TopicDetails(
                       </SelectTriggerEx>
                     </FormControl>
                     <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Topics</SelectLabel>
-                        {
-                          record?.parentId
-                          ? (
-                            <SelectItem
-                              key="0"
-                              value="0"
-                            >
-                              <span>-Clear Selection-</span>
-                            </SelectItem>
-                          )
-                          : null
-                        }
-                        {
-                          flatTopics.map(topic => (
-                            <SelectItem
-                              key={topic.id ?? ''}
-                              value={topic.id ?? ''}
-                            >
-                              {`Topic #${topic.id}: ${topic.path}`}
-                            </SelectItem>
-                          ))
-                        }
-                      </SelectGroup>
+                      {
+                        record?.parentId
+                        ? (
+                          <SelectItem
+                            key="0"
+                            value="0"
+                          >
+                            <span>-Clear Selection-</span>
+                          </SelectItem>
+                        )
+                        : null
+                      }
+                      {
+                        flatTopics.map(topic => (
+                          <SelectItem
+                            key={topic.id ?? ''}
+                            value={topic.id ?? ''}
+                          >
+                            {`Topic #${topic.id}: ${topic.path}`}
+                          </SelectItem>
+                        ))
+                      }
                     </SelectContent>
                   </Select>
                   <FormMessage />

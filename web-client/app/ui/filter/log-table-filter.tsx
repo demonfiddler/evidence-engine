@@ -20,7 +20,7 @@
 import Log from "@/app/model/Log"
 import { DataTableFilterProps, DataTableViewOptions } from "../data-table/data-table-view-options"
 import { LogQueryFilter } from "@/app/model/schema"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ChangeEvent, useCallback, useContext, useState } from "react"
 import { formatDate } from "@/lib/utils"
 import { READ_USERS } from "@/lib/graphql-queries"
@@ -200,17 +200,14 @@ export default function LogTableFilter(
             <SelectValue placeholder="User" />
           </SelectTrigger>
           <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Users</SelectLabel>
-              {
-                userId
-                ? <SelectItem value="ALL">-Clear-</SelectItem>
-                : null
-              }
-              {
-                users?.map(user => <SelectItem key={user.id} value={user.id ?? ''}>{user.username}</SelectItem>)
-              }
-            </SelectGroup>
+            {
+              userId
+              ? <SelectItem value="ALL">-Clear-</SelectItem>
+              : null
+            }
+            {
+              users?.map(user => <SelectItem key={user.id} value={user.id ?? ''}>{user.username}</SelectItem>)
+            }
           </SelectContent>
         </Select>
         <Select
@@ -221,19 +218,16 @@ export default function LogTableFilter(
             <SelectValue placeholder="Transaction" />
           </SelectTrigger>
           <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Transaction</SelectLabel>
-              {
-                transactionKind
-                ? <SelectItem value="ALL">-Clear-</SelectItem>
-                : null
-              }
-              <SelectItem value="CRE">Created</SelectItem>
-              <SelectItem value="UPD">Updated</SelectItem>
-              <SelectItem value="DEL">Deleted</SelectItem>
-              <SelectItem value="LNK">Linked</SelectItem>
-              <SelectItem value="UNL">Unlinked</SelectItem>
-            </SelectGroup>
+            {
+              transactionKind
+              ? <SelectItem value="ALL">-Clear-</SelectItem>
+              : null
+            }
+            <SelectItem value="CRE">Created</SelectItem>
+            <SelectItem value="UPD">Updated</SelectItem>
+            <SelectItem value="DEL">Deleted</SelectItem>
+            <SelectItem value="LNK">Linked</SelectItem>
+            <SelectItem value="UNL">Unlinked</SelectItem>
           </SelectContent>
         </Select>
         <Select
@@ -244,25 +238,22 @@ export default function LogTableFilter(
             <SelectValue placeholder="Record Kind" />
           </SelectTrigger>
           <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Record Kinds</SelectLabel>
-              {
-                entityKind
-                ? <SelectItem value="ALL">-Clear-</SelectItem>
-                : null
-              }
-              <SelectItem value="CLA">Claim</SelectItem>
-              <SelectItem value="DEC">Declaration</SelectItem>
-              <SelectItem value="GRP">Group</SelectItem>
-              <SelectItem value="JOU">Journal</SelectItem>
-              <SelectItem value="LNK">Link</SelectItem>
-              <SelectItem value="PER">Person</SelectItem>
-              <SelectItem value="PUB">Publication</SelectItem>
-              <SelectItem value="PBR">Publisher</SelectItem>
-              <SelectItem value="QUO">Quotation</SelectItem>
-              <SelectItem value="TOP">Topic</SelectItem>
-              <SelectItem value="USR">User</SelectItem>
-            </SelectGroup>
+            {
+              entityKind
+              ? <SelectItem value="ALL">-Clear-</SelectItem>
+              : null
+            }
+            <SelectItem value="CLA">Claim</SelectItem>
+            <SelectItem value="DEC">Declaration</SelectItem>
+            <SelectItem value="GRP">Group</SelectItem>
+            <SelectItem value="JOU">Journal</SelectItem>
+            <SelectItem value="LNK">Link</SelectItem>
+            <SelectItem value="PER">Person</SelectItem>
+            <SelectItem value="PUB">Publication</SelectItem>
+            <SelectItem value="PBR">Publisher</SelectItem>
+            <SelectItem value="QUO">Quotation</SelectItem>
+            <SelectItem value="TOP">Topic</SelectItem>
+            <SelectItem value="USR">User</SelectItem>
           </SelectContent>
         </Select>
         <InputEx

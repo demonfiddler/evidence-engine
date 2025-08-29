@@ -35,9 +35,7 @@ import {
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectValue,
 } from "@/components/ui/select"
 import { CalendarIcon } from "@heroicons/react/24/outline"
@@ -155,12 +153,9 @@ export default function DeclarationDetails(
                       </SelectTriggerEx>
                     </FormControl>
                     <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Declaration Kinds</SelectLabel>
-                        <SelectItem value="DECL">Declaration</SelectItem>
-                        <SelectItem value="OPLE">Open Letter</SelectItem>
-                        <SelectItem value="PETN">Petition</SelectItem>
-                      </SelectGroup>
+                      <SelectItem value="DECL">Declaration</SelectItem>
+                      <SelectItem value="OPLE">Open Letter</SelectItem>
+                      <SelectItem value="PETN">Petition</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -264,11 +259,10 @@ export default function DeclarationDetails(
                       </SelectTriggerEx>
                     </FormControl>
                     <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Countries</SelectLabel>
-                          {countries.map(country =>
-                            <SelectItem key={country.alpha_2} value={country.alpha_2}>{country.common_name}</SelectItem>)}
-                      </SelectGroup>
+                      {
+                        countries.map(country =>
+                          <SelectItem key={country.alpha_2} value={country.alpha_2}>{country.common_name}</SelectItem>)
+                      }
                     </SelectContent>
                   </Select>
                   <FormMessage />

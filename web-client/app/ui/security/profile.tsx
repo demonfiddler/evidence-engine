@@ -32,7 +32,7 @@ import z from "zod/v4"
 import { useMutation } from "@apollo/client"
 import { UPDATE_USER_PROFILE } from "@/lib/graphql-queries"
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
 import TextareaEx from "../ext/textarea-ex"
 import SelectTriggerEx from "../ext/select-ex"
 import InputEx from "../ext/input-ex"
@@ -190,11 +190,10 @@ export default function ProfileDialog(
                         </SelectTriggerEx>
                       </FormControl>
                       <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Countries</SelectLabel>
-                            {countries.map(country =>
-                              <SelectItem key={country.alpha_2} value={country.alpha_2}>{country.common_name}</SelectItem>)}
-                        </SelectGroup>
+                        {
+                          countries.map(country =>
+                            <SelectItem key={country.alpha_2} value={country.alpha_2}>{country.common_name}</SelectItem>)
+                        }
                       </SelectContent>
                     </Select>
                     <FormMessage />

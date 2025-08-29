@@ -20,7 +20,7 @@
 import Log from "@/app/model/Log"
 import { DataTableFilterProps, DataTableViewOptions } from "../data-table/data-table-view-options"
 import { LogQueryFilter } from "@/app/model/schema"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useCallback, useContext, useEffect, useState } from "react"
 import { formatDate } from "@/lib/utils"
 import { READ_USERS } from "@/lib/graphql-queries"
@@ -183,17 +183,14 @@ export default function LogDialogFilter(
             <SelectValue placeholder="User" />
           </SelectTrigger>
           <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Users</SelectLabel>
-              {
-                userId
-                ? <SelectItem value="ALL">-Clear-</SelectItem>
-                : null
-              }
-              {
-                users?.map(user => <SelectItem key={user.id} value={user.id ?? ''}>{user.username}</SelectItem>)
-              }
-            </SelectGroup>
+            {
+              userId
+              ? <SelectItem value="ALL">-Clear-</SelectItem>
+              : null
+            }
+            {
+              users?.map(user => <SelectItem key={user.id} value={user.id ?? ''}>{user.username}</SelectItem>)
+            }
           </SelectContent>
         </Select>
         <Select
@@ -204,19 +201,16 @@ export default function LogDialogFilter(
             <SelectValue placeholder="Transaction" />
           </SelectTrigger>
           <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Transaction</SelectLabel>
-              {
-                transactionKind
-                ? <SelectItem value="ALL">-Clear-</SelectItem>
-                : null
-              }
-              <SelectItem value="CRE">Created</SelectItem>
-              <SelectItem value="UPD">Updated</SelectItem>
-              <SelectItem value="DEL">Deleted</SelectItem>
-              <SelectItem value="LNK">Linked</SelectItem>
-              <SelectItem value="UNL">Unlinked</SelectItem>
-            </SelectGroup>
+            {
+              transactionKind
+              ? <SelectItem value="ALL">-Clear-</SelectItem>
+              : null
+            }
+            <SelectItem value="CRE">Created</SelectItem>
+            <SelectItem value="UPD">Updated</SelectItem>
+            <SelectItem value="DEL">Deleted</SelectItem>
+            <SelectItem value="LNK">Linked</SelectItem>
+            <SelectItem value="UNL">Unlinked</SelectItem>
           </SelectContent>
         </Select>
         <Button variant="outline" title="Clear all filters" onClick={handleReset}>Reset</Button>

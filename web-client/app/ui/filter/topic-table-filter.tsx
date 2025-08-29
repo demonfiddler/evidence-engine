@@ -23,7 +23,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import Search from "./search"
 import { DataTableFilterProps, DataTableViewOptions } from "../data-table/data-table-view-options"
 import { useCallback, useContext, useState } from "react"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { GlobalContext, QueryState } from "@/lib/context"
 import { Button } from "@/components/ui/button"
 
@@ -84,18 +84,15 @@ export default function TopicTableFilter({
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Status Kinds</SelectLabel>
-              {
-                status
-                ? <SelectItem value="ALL">-Clear-</SelectItem>
-                : null
-              }
-              <SelectItem value="DRA">Draft</SelectItem>
-              <SelectItem value="PUB">Published</SelectItem>
-              <SelectItem value="SUS">Suspended</SelectItem>
-              <SelectItem value="DEL">Deleted</SelectItem>
-            </SelectGroup>
+            {
+              status
+              ? <SelectItem value="ALL">-Clear-</SelectItem>
+              : null
+            }
+            <SelectItem value="DRA">Draft</SelectItem>
+            <SelectItem value="PUB">Published</SelectItem>
+            <SelectItem value="SUS">Suspended</SelectItem>
+            <SelectItem value="DEL">Deleted</SelectItem>
           </SelectContent>
         </Select>
         <Search value={text} onChangeValue={handleTextChange} />

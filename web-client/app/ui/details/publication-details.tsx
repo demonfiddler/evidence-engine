@@ -36,9 +36,7 @@ import { CalendarIcon } from "@heroicons/react/24/outline"
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectValue,
 } from "@/components/ui/select"
 import rawJournals from "@/data/journals.json" assert {type: 'json'}
@@ -147,16 +145,14 @@ export default function PublicationDetails(
                       </SelectTriggerEx>
                     </FormControl>
                     <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Publication Kind</SelectLabel> {
-                          publicationKinds.map(kind =>
-                            <SelectItem
-                              key={kind.kind?.toString() ?? ''}
-                              value={kind.kind?.toString() ?? ''}>
-                              {kind.label}
-                            </SelectItem>)
-                        }
-                      </SelectGroup>
+                      {
+                        publicationKinds.map(kind =>
+                          <SelectItem
+                            key={kind.kind?.toString() ?? ''}
+                            value={kind.kind?.toString() ?? ''}>
+                            {kind.label}
+                          </SelectItem>)
+                      }
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -183,17 +179,15 @@ export default function PublicationDetails(
                       </SelectTriggerEx>
                     </FormControl>
                     <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Journals</SelectLabel> {
-                          journals.map(journal => (
-                            <SelectItem
-                              key={journal.id?.toString() ?? ''}
-                              value={journal.id?.toString() ?? ''}>
-                              {journal.title}
-                            </SelectItem>
-                          ))
-                        }
-                      </SelectGroup>
+                      {
+                        journals.map(journal => (
+                          <SelectItem
+                            key={journal.id?.toString() ?? ''}
+                            value={journal.id?.toString() ?? ''}>
+                            {journal.title}
+                          </SelectItem>
+                        ))
+                      }
                     </SelectContent>
                   </Select>
                   <FormMessage />

@@ -22,7 +22,7 @@
 import EntityLink from "@/app/model/EntityLink"
 import ILinkableEntity from "@/app/model/ILinkableEntity"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
 import { useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 import { getRecordLinkProperties, getReadQuery, getRecordLabel, TO_ENTITY_ID, setTopicFields, flatten, formatDateTime } from "@/lib/utils"
@@ -464,19 +464,16 @@ export default function LinkingDetails(
           <SelectValue className="col-span-3 w-full" placeholder="-Other record is not a topic-" />
         </SelectTriggerEx>
         <SelectContent>
-          <SelectGroup>
-            <SelectLabel>Topics</SelectLabel>
-            {
-              topics.map(topic => (
-                <SelectItem
-                  key={topic.id ?? ''}
-                  value={topic.id ?? ''}
-                >
-                  {`Topic #${topic.id}: ${topic.path}`}
-                </SelectItem>
-              ))
-            }
-          </SelectGroup>
+          {
+            topics.map(topic => (
+              <SelectItem
+                key={topic.id ?? ''}
+                value={topic.id ?? ''}
+              >
+                {`Topic #${topic.id}: ${topic.path}`}
+              </SelectItem>
+            ))
+          }
         </SelectContent>
       </Select>
     </div>
