@@ -63,7 +63,7 @@ export default function PersonDetails(
   const { updating } = state
 
   return (
-    <fieldset className="border shadow-lg rounded-md w-2/3">
+    <fieldset className="border shadow-lg rounded-md">
       <legend className="text-lg">&nbsp;Person Details&nbsp;</legend>
       <StandardDetails recordKind="Person" record={record} state={state} showLinkingDetails={true} />
       <Form {...form}>

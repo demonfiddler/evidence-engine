@@ -26,7 +26,7 @@ import InputEx from "../ext/input-ex"
 
 export default function LogDetails({record}: {record: Log | undefined}) {
   return (
-    <fieldset className="border shadow-lg rounded-md w-2/3">
+    <fieldset className="border shadow-lg rounded-md">
       <legend className="text-lg">&nbsp;Log Details&nbsp;</legend>
       <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Log #${record?.id}` : "-Select a log entry in the list above to see its details-"}</p>
       <div className="grid grid-cols-4 ml-2 mr-2 mb-2 gap-2">
@@ -36,7 +36,7 @@ export default function LogDetails({record}: {record: Log | undefined}) {
           className="col-span-1"
           disabled={!record}
           readOnly={true}
-          value={formatDateTime(record?.timestamp) ?? ''}
+          value={formatDateTime(record?.timestamp)}
           help="The date and time at which the even occurred"
         />
         <Label htmlFor="transactionKind" className="col-start-1">Transaction kind:</Label>

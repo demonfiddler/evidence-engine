@@ -25,7 +25,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectValue } from "@/components/ui/select"
 import { useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
-import { getRecordLinkProperties, getReadQuery, getRecordLabel, TO_ENTITY_ID, setTopicFields, flatten } from "@/lib/utils"
+import { getRecordLinkProperties, getReadQuery, getRecordLabel, TO_ENTITY_ID, setTopicFields, flatten, formatDateTime } from "@/lib/utils"
 import RecordKind from "@/app/model/RecordKind"
 import { DetailState } from "./detail-actions"
 import { CREATE_ENTITY_LINK, DELETE_ENTITY_LINK, READ_ENTITY_LINKS, READ_TOPIC_HIERARCHY, UPDATE_ENTITY_LINK } from "@/lib/graphql-queries"
@@ -285,7 +285,8 @@ export default function LinkingDetails(
       <Select disabled={!record || mode !== "view"} value={selectedLinkId ?? ''} onValueChange={handleSelectedLinkChange}>
         <SelectTriggerEx
           id="links"
-          className="col-span-3 w-full"
+          outerClassName="col-span-3"
+          className="w-full"
           help="A list of all the records which are linked with the selected record. Select one to see/edit its settings."
         >
           <SelectValue placeholder={
@@ -367,7 +368,7 @@ export default function LinkingDetails(
         type="text"
         readOnly={true}
         disabled={!record}
-        value={selectedLink?.created ?? ''}
+        value={formatDateTime(selectedLink?.created)}
         help="The date and time at which the record link was created"
       />
       <ButtonEx
@@ -411,7 +412,7 @@ export default function LinkingDetails(
         type="text"
         readOnly={true}
         disabled={!record}
-        value={selectedLink?.updated ?? ''}
+        value={formatDateTime(selectedLink?.updated)}
         help="The date and time at which the record link was last updated"
       />
       <ButtonEx

@@ -62,7 +62,7 @@ export default function QuotationDetails(
   const { updating } = state
 
   return (
-    <fieldset className="border shadow-lg rounded-md w-2/3">
+    <fieldset className="border shadow-lg rounded-md">
       <legend className="text-lg">&nbsp;Quotation Details&nbsp;</legend>
       <StandardDetails recordKind="Quotation" record={record} state={state} showLinkingDetails={true} />
       <Form {...form}>
@@ -115,7 +115,7 @@ export default function QuotationDetails(
                         >
                           <CalendarIcon />
                           {field.value ? (
-                            formatDate(field.value, "PPP")
+                            formatDate(field.value)
                           ) : (
                             <span>Pick a date</span>
                           )}

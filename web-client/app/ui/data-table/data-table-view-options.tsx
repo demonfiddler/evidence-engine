@@ -53,7 +53,7 @@ export function DataTableViewOptions<T>({
         <ButtonEx
           variant="ghost"
           size="sm"
-          
+          outerClassName="grow justify-self-end" 
           className="ml-auto hidden h-8 lg:flex"
           help="Select the columns to display"
         >

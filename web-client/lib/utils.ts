@@ -55,19 +55,33 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatDate(date: Date | string | null | undefined, format?: string) {
-  if (typeof date == "string")
-    date = new Date(date)
-  if (date && typeof date == "object")
-    return date.toDateString()
-  return ""
+  if (date) {
+    if (typeof date == "string")
+      date = new Date(date)
+    if (typeof date == "object")
+      return date.toLocaleDateString()
+  }
+  return ''
+}
+
+export function formatTime(date: Date | string | null | undefined, format?: string) {
+  if (date) {
+    if (typeof date == "string")
+      date = new Date(date)
+    if (typeof date == "object")
+      return date.toLocaleTimeString()
+  }
+  return ''
 }
 
 export function formatDateTime(date: Date | string | null | undefined, format?: string) {
-  if (typeof date == "string")
-    date = new Date(date)
-  if (date && typeof date == "object")
-    return `${date.toDateString()} ${date.toLocaleTimeString()}`
-  return ""
+  if (date) {
+    if (typeof date == "string")
+      date = new Date(date)
+    if (typeof date == "object")
+      return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
+  }
+  return ''
 }
 
 export function isLinkableEntity(recordKind: RecordKind) {

@@ -83,7 +83,7 @@ export default function PublicationDetails(
   const { updating } = state
 
   return (
-    <fieldset className="border shadow-lg rounded-md w-2/3">
+    <fieldset className="border shadow-lg rounded-md">
       <legend className="text-lg">&nbsp;Publication Details&nbsp;</legend>
       <StandardDetails recordKind="Publication" record={record} state={state} showLinkingDetails={true} />
       <Form {...form}>
@@ -238,7 +238,7 @@ export default function PublicationDetails(
                         >
                           <CalendarIcon />
                           {field.value ? (
-                            formatDate(field.value, "PPP")
+                            formatDate(field.value)
                           ) : (
                             <span>Pick a date</span>
                           )}

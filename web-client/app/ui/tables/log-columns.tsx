@@ -41,7 +41,7 @@ const ownColumns1: ColumnDef<Log>[] = [
     // enableColumnFilter: false,
     header: "Timestamp",
     cell: ({ row, cell }) => (
-      <div key={cell.id} className="font-medium">{formatDateTime(row.getValue("timestamp"))}</div>
+      <div key={cell.id} className="font-medium">{formatDateTime(row.original.timestamp)}</div>
     )
   },
   {

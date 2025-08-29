@@ -49,7 +49,7 @@ export const columns: ColumnDef<Claim>[] = [
     size: 140,
     header: "Date",
     cell: ({ row, cell }) => (
-      <div key={cell.id} className="font-medium">{formatDate(row.getValue("date"))}</div>
+      <div key={cell.id} className="font-medium">{formatDate(row.original.date)}</div>
     ),
   },
   {

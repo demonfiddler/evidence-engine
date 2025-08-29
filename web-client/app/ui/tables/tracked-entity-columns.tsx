@@ -22,6 +22,7 @@
 import { ColumnDef } from "@tanstack/react-table"
 import type ITrackedEntity from "@/app/model/ITrackedEntity"
 import { columns as baseEntityColumns, columnVisibility as baseEntityColumnVisibility } from "./base-entity-columns"
+import { formatDateTime } from "@/lib/utils"
 
 export const columns: ColumnDef<ITrackedEntity>[] = [
   ...baseEntityColumns,
@@ -36,20 +37,10 @@ export const columns: ColumnDef<ITrackedEntity>[] = [
     id: "created",
     accessorKey: "created",
     enableSorting: true,
-    size: 140,
+    size: 164,
     header: "Created",
     cell: ({ row, cell }) => {
-      const created = row.getValue("created");
-      let createdDate;
-      switch (typeof created) {
-        case "string":
-          createdDate = new Date(created);
-          break;
-        case "object":
-          createdDate = created as Date;
-      }
-      const formatted = createdDate && createdDate.toDateString();
-      return <div id={cell.id} className="font-medium">{formatted}</div>
+      return <div id={cell.id} className="font-medium">{formatDateTime(row.original.created)}</div>
     },
   },
   {
@@ -63,20 +54,10 @@ export const columns: ColumnDef<ITrackedEntity>[] = [
     id: "updated",
     accessorKey: "updated",
     enableSorting: true,
-    size: 140,
+    size: 164,
     header: "Updated",
     cell: ({ cell, row }) => {
-      const updated = row.getValue("updated");
-      let updatedDate;
-      switch (typeof updated) {
-        case "string":
-          updatedDate = new Date(updated);
-          break;
-        case "object":
-          updatedDate = updated as Date;
-      }
-      const formatted = updatedDate && updatedDate.toDateString();
-      return <div id={cell.id} className="font-medium">{formatted}</div>
+      return <div id={cell.id} className="font-medium">{formatDateTime(row.original.updated)}</div>
     },
   },
   {

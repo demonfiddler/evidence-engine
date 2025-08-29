@@ -76,7 +76,7 @@ export default function DeclarationDetails(
   const { updating } = state
 
   return (
-    <fieldset className="border shadow-lg rounded-md w-2/3">
+    <fieldset className="border shadow-lg rounded-md">
       <legend className="text-lg">&nbsp;Declaration Details&nbsp;</legend>
       <StandardDetails recordKind="Declaration" record={record} state={state} showLinkingDetails={true} />
       <Form {...form}>
@@ -109,7 +109,7 @@ export default function DeclarationDetails(
                         >
                           <CalendarIcon />
                           {field.value ? (
-                            formatDate(field.value, "PPP")
+                            formatDate(field.value)
                           ) : (
                             <span>Pick a date</span>
                           )}

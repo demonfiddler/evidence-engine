@@ -69,7 +69,7 @@ export default function JournalDetails(
   const { updating } = state
 
   return (
-    <fieldset className="border shadow-lg rounded-md w-2/3">
+    <fieldset className="border shadow-lg rounded-md">
       <legend className="text-lg">&nbsp;Journal Details&nbsp;</legend>
       <StandardDetails recordKind="Journal" record={record} state={state} showLinkingDetails={false} />
       <Form {...form}>

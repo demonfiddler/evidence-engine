@@ -24,7 +24,7 @@ import { Label } from "@/components/ui/label"
 import LogDialog from "../log/log-dialog"
 import RecordKind from "@/app/model/RecordKind"
 import { DetailState } from "./detail-actions"
-import { getRecordLabel } from "@/lib/utils"
+import { formatDateTime, getRecordLabel } from "@/lib/utils"
 import InputEx from "../ext/input-ex"
 
 export default function TrackingDetails(
@@ -81,7 +81,7 @@ export default function TrackingDetails(
         type="text"
         readOnly={true}
         disabled={!record}
-        value={record?.created?.toLocaleString() ?? ''}
+        value={formatDateTime(record?.created)}
         help="The date and time at which the record was created"
       />
       <Label htmlFor="updated-by" className="col-start-1">Updated by:</Label>
@@ -99,7 +99,7 @@ export default function TrackingDetails(
         type="text"
         readOnly={true}
         disabled={!record}
-        value={record?.updated?.toLocaleString() ?? ''}
+        value={formatDateTime(record?.updated)}
         help="The date and time at which the record was last updated"
       />
     </div>

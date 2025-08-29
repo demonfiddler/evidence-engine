@@ -24,6 +24,7 @@ import Publication from "@/app/model/Publication"
 import { columns as trackedEntityColumns, columnVisibility as trackedEntityColumnVisibility } from "./tracked-entity-columns"
 import { actionColumn as rawActionColumn, selectColumn as rawSelectColumn } from "./extra-columns"
 import { Checkbox } from "@/components/ui/checkbox"
+import { formatDate } from "@/lib/utils"
 
 const actionColumn = rawActionColumn as ColumnDef<Publication>
 const selectColumn = rawSelectColumn as ColumnDef<Publication>
@@ -63,6 +64,9 @@ export const columns: ColumnDef<Publication>[] = [
     enableSorting: true,
     size: 140,
     header: "Date",
+    cell: ({ row, cell }) => {
+      return <div id={cell.id} className="font-medium">{formatDate(row.original.date)}</div>
+    },
   },
   {
     id: "year",
