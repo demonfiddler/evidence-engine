@@ -268,7 +268,7 @@ CREATE UNIQUE INDEX "transaction_kind_label" ON "transaction_kind" ("label");
 CREATE TABLE "user" (
   "id" BIGINT NOT NULL COMMENT 'The unique system-assigned user identifier',
   "username" VARCHAR(50) NOT NULL COMMENT 'The unique user-assigned user name',
-  "password" VARCHAR(500) NOT NULL COMMENT 'Hash of the user''s password',
+  "password" VARCHAR(68) NOT NULL COMMENT 'Bcrypt hash of the user''s password',
 	"enabled" BOOLEAN DEFAULT TRUE NOT NULL COMMENT 'Whether the user account is enabled',
   "first_name" VARCHAR(50) NOT NULL COMMENT 'The user''s first name',
   "last_name" VARCHAR(50) NOT NULL COMMENT 'The user''s last name',

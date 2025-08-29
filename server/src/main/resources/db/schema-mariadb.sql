@@ -319,7 +319,7 @@ CREATE TABLE IF NOT EXISTS "transaction_kind" (
 CREATE TABLE IF NOT EXISTS "user" (
   "id"  bigint(20) unsigned NOT NULL COMMENT 'The unique system-assigned user identifier',
   "username" varchar(50) NOT NULL COMMENT 'The unique user-assigned user name',
-  "password" varchar(500) NOT NULL COMMENT 'Hash of the user''s password',
+  "password" varchar(68) NOT NULL COMMENT 'Bcrypt hash of the user''s password',
 	"enabled" bit(1) NOT NULL DEFAULT b'1' COMMENT 'Whether the user account is enabled',
   "first_name" varchar(50) NULL COMMENT 'The user''s first name',
   "last_name" varchar(50) NULL COMMENT 'The user''s last name',
