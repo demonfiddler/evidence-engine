@@ -19,15 +19,11 @@
 
 package io.github.demonfiddler.ee.server.util;
 
-import java.util.Optional;
-
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import io.github.demonfiddler.ee.server.model.AuthorityKind;
-import io.github.demonfiddler.ee.server.repository.UserRepository;
-import jakarta.annotation.Resource;
 
 /**
  * Security related utility methods.
@@ -35,13 +31,9 @@ import jakarta.annotation.Resource;
 @Component
 public class SecurityUtils {
 
-    @Resource
-    private UserRepository userRepository;
-
-    public Optional<io.github.demonfiddler.ee.server.model.User> getCurrentUser() {
+    public String getCurrentUsername() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = principal instanceof User user ? user.getUsername() : principal.toString();
-        return userRepository.findByUsername(username);
+        return principal instanceof User user ? user.getUsername() : principal.toString();
     }
 
     public boolean hasAuthority(AuthorityKind authorityKind) {

@@ -34,6 +34,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.github.demonfiddler.ee.server.model.StatusKind;
 import io.github.demonfiddler.ee.server.model.Topic;
 import io.github.demonfiddler.ee.server.model.TopicQueryFilter;
 import jakarta.persistence.Query;
@@ -71,6 +72,14 @@ public class CustomTopicRepositoryImpl extends AbstractCustomRepositoryImpl impl
         boolean isRecursive = hasFilter && filter.getRecursive() != null && filter.getRecursive();
         boolean isPaged = pageable.isPaged();
         boolean isSorted = pageable.getSort().isSorted();
+
+        // Unauthenticated queries should only return published results.
+        if (securityUtils.getCurrentUsername().equals("anonymousUser")) {
+            if (filter == null)
+                filter = new TopicQueryFilter();
+            filter.setStatus(List.of(StatusKind.PUB));
+            hasFilter = hasStatus = true;
+        }
 
         // For paged queries involving an H2 full text filter, we need to ensure that the sort order includes "id"
         // because otherwise the join with FT_SEARCH_DATA can result in records duplicated across successive pages.

@@ -98,8 +98,8 @@ function copyStats(inStats: TopicStatistics[], outStats: TopicStatistics[]) {
 }
 
 export default function Dashboard() {
-  const user = useAuth()
-  const [status, setStatus] = useState<string>("PUB")
+  const {user} = useAuth()
+  const [status, setStatus] = useState<string>("")
   const [rollup, setRollup] = useState<string>("full")
 
   const result = useQuery(READ_ALL_STATISTICS, {
@@ -163,29 +163,34 @@ export default function Dashboard() {
         <fieldset className="relative p-2 border rounded-md shadow-lg">
           <div className="flex flex-col pb-2">
             <div className="flex items-center gap-2">
-              <Label htmlFor="status">Show items with status:</Label>
-              <Select
-                value={status}
-                onValueChange={handleStatusChange}
-              >
-                <SelectTriggerEx
-                  id="status"
-                  disabled={!user}
-                  help="Filter the table to show only topics and counts of linked records with this status.">
-                  <SelectValue placeholder="Status" />
-                </SelectTriggerEx>
-                <SelectContent>
-                  {
-                    status
-                    ? <SelectItem value="ALL">-Clear-</SelectItem>
-                    : null
-                  }
-                  <SelectItem value="DRA">Draft</SelectItem>
-                  <SelectItem value="PUB">Published</SelectItem>
-                  <SelectItem value="SUS">Suspended</SelectItem>
-                  <SelectItem value="DEL">Deleted</SelectItem>
-                </SelectContent>
-              </Select>
+              {
+                user
+                ? <>
+                <Label htmlFor="status">Show items with status:</Label>
+                <Select
+                  value={status}
+                  onValueChange={handleStatusChange}
+                >
+                  <SelectTriggerEx
+                    id="status"
+                    disabled={!user}
+                    help="Filter the table to show only topics and counts of linked records with this status.">
+                    <SelectValue placeholder="Status" />
+                  </SelectTriggerEx>
+                  <SelectContent>
+                    {
+                      status
+                      ? <SelectItem value="ALL">-Clear-</SelectItem>
+                      : null
+                    }
+                    <SelectItem value="DRA">Draft</SelectItem>
+                    <SelectItem value="PUB">Published</SelectItem>
+                    <SelectItem value="SUS">Suspended</SelectItem>
+                    <SelectItem value="DEL">Deleted</SelectItem>
+                  </SelectContent>
+                </Select>
+                </>: null
+              }
               <Label htmlFor="">Aggregation:</Label>
               <RadioGroup defaultValue={rollup} value={rollup} onValueChange={setRollup}>
                 <div className="flex items-center gap-3">
@@ -206,6 +211,7 @@ export default function Dashboard() {
               </ButtonEx>
             </div>
           </div>
+          <hr />
           <h2>Topic Statistics</h2>
           <div className="flex flex-col gap-2">
             <Table className="table-fixed box-border" style={{width: `${table.getTotalSize()}px`}}>
@@ -254,6 +260,7 @@ export default function Dashboard() {
             </Table>
             <DataTablePaginator table={table} />
           </div>
+          <hr className="mt-2" />
           <h2>Record Statistics</h2>
           <div className="flex flex-wrap gap-4">
             {

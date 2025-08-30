@@ -20,6 +20,7 @@
 package io.github.demonfiddler.ee.server.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import io.github.demonfiddler.ee.server.model.AuthorityKind;
 import io.github.demonfiddler.ee.server.model.TrackedEntityQueryFilter;
@@ -36,5 +37,11 @@ public interface CustomUserRepository extends CustomRepository<User, TrackedEnti
      * @return The user's authorities.
      */
     List<AuthorityKind> findAllUserAuthorities(Long userId);
+
+    /**
+     * Returns the currently logged-in user, if any.
+     * @return the currently logged-in user, empty if unauthenticated.
+     */
+    Optional<User> getCurrentUser();
 
 }

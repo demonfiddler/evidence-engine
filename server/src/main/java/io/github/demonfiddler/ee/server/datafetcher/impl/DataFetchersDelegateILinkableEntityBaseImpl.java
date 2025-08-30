@@ -19,6 +19,8 @@
 
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
+import java.util.List;
+
 import org.dataloader.DataLoader;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +31,7 @@ import io.github.demonfiddler.ee.server.model.EntityLinkPage;
 import io.github.demonfiddler.ee.server.model.LinkableEntityQueryFilter;
 import io.github.demonfiddler.ee.server.model.ILinkableEntity;
 import io.github.demonfiddler.ee.server.model.PageableInput;
+import io.github.demonfiddler.ee.server.model.StatusKind;
 import io.github.demonfiddler.ee.server.repository.EntityLinkRepository;
 import jakarta.annotation.Resource;
 
@@ -87,6 +90,9 @@ abstract class DataFetchersDelegateILinkableEntityBaseImpl<T extends ILinkableEn
     private LinkableEntityQueryFilter fixFilter(T origin, LinkableEntityQueryFilter filter, boolean fromEntityLinks) {
         if (filter == null)
             filter = new LinkableEntityQueryFilter();
+        // Unauthenticated queries should only return published links.
+        if (securityUtils.getCurrentUsername().equals("anonymousUser"))
+            filter.setStatus(List.of(StatusKind.PUB));
         if (fromEntityLinks)
             filter.setFromEntityId(origin.getId());
         else

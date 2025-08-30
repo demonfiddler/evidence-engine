@@ -26,11 +26,12 @@ import { useCallback, useContext, useState } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { GlobalContext, QueryState } from "@/lib/context"
 import { Button } from "@/components/ui/button"
+import useAuth from "@/hooks/use-auth"
 
 export default function TopicTableFilter({
   table,
 }: DataTableFilterProps<Topic>) {
-
+  const {user} = useAuth()
   const {queries, setFilter} = useContext(GlobalContext)
   const onFilterChange = useCallback((filter: any) => {
     setFilter("Topic", filter)
@@ -76,25 +77,29 @@ export default function TopicTableFilter({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2">
-        <Select
-          value={status ?? ''}
-          onValueChange={handleStatusChange}
-        >
-          <SelectTrigger id="kind">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            {
-              status
-              ? <SelectItem value="ALL">-Clear-</SelectItem>
-              : null
-            }
-            <SelectItem value="DRA">Draft</SelectItem>
-            <SelectItem value="PUB">Published</SelectItem>
-            <SelectItem value="SUS">Suspended</SelectItem>
-            <SelectItem value="DEL">Deleted</SelectItem>
-          </SelectContent>
-        </Select>
+        {
+          user
+          ? <Select
+            value={status ?? ''}
+            onValueChange={handleStatusChange}
+          >
+            <SelectTrigger id="kind">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              {
+                status
+                ? <SelectItem value="ALL">-Clear-</SelectItem>
+                : null
+              }
+              <SelectItem value="DRA">Draft</SelectItem>
+              <SelectItem value="PUB">Published</SelectItem>
+              <SelectItem value="SUS">Suspended</SelectItem>
+              <SelectItem value="DEL">Deleted</SelectItem>
+            </SelectContent>
+          </Select>
+          : null
+        }
         <Search value={text} onChangeValue={handleTextChange} />
         {/* See https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode */}
         <Checkbox

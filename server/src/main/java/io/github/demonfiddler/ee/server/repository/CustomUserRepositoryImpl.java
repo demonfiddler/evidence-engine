@@ -20,6 +20,10 @@
 package io.github.demonfiddler.ee.server.repository;
 
 import java.util.List;
+import java.util.Optional;
+
+import org.springframework.context.annotation.Lazy;
+
 import io.github.demonfiddler.ee.server.model.AuthorityKind;
 import io.github.demonfiddler.ee.server.model.User;
 import jakarta.persistence.Query;
@@ -39,6 +43,12 @@ public class CustomUserRepositoryImpl extends CustomTrackedEntityRepositoryImpl<
         JOIN "user" u
         ON u."username" = gu."username" AND u."id" = :userId 
     """;
+
+    private final UserRepository userRepository;
+
+    public CustomUserRepositoryImpl(@Lazy UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     protected Class<User> getEntityClass() {
@@ -62,6 +72,12 @@ public class CustomUserRepositoryImpl extends CustomTrackedEntityRepositoryImpl<
             query = em.createNamedQuery(QUERY_SELECT_ALL_AUTHORITIES, AuthorityKind.class);
         query.setParameter("userId", userId);
         return (List<AuthorityKind>)query.getResultList();
+    }
+
+    @Override
+    public Optional<User> getCurrentUser() {
+        String username = securityUtils.getCurrentUsername();
+        return userRepository.findByUsername(username);
     }
 
 }

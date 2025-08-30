@@ -35,6 +35,7 @@ import org.springframework.lang.Nullable;
 
 import io.github.demonfiddler.ee.server.model.ILinkableEntity;
 import io.github.demonfiddler.ee.server.model.LinkableEntityQueryFilter;
+import io.github.demonfiddler.ee.server.model.StatusKind;
 import jakarta.persistence.Query;
 
 /**
@@ -99,6 +100,14 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
         String entityName = entityUtils.getEntityName(getEntityClass());
         String fromEntityName = hasFromEntityKind ? entityUtils.getEntityName(filter.getFromEntityKind()) : "";
         String toEntityName = hasToEntityKind ? entityUtils.getEntityName(filter.getToEntityKind()) : "";
+
+        // Unauthenticated queries should only return published results.
+        if (securityUtils.getCurrentUsername().equals("anonymousUser")) {
+            if (filter == null)
+                filter = new LinkableEntityQueryFilter();
+            filter.setStatus(List.of(StatusKind.PUB));
+            hasFilter = hasStatus = true;
+        }
 
         // For paged queries, we need to ensure that the sort order includes "id"
         // because otherwise the join with H2's

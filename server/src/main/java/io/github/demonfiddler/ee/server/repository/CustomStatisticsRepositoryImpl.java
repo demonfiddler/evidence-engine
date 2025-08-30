@@ -28,6 +28,7 @@ import org.springframework.stereotype.Repository;
 
 import io.github.demonfiddler.ee.server.model.EntityStatistics;
 import io.github.demonfiddler.ee.server.model.StatisticsQueryFilter;
+import io.github.demonfiddler.ee.server.model.StatusKind;
 import io.github.demonfiddler.ee.server.model.TopicStatisticsDto;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
 import jakarta.annotation.Resource;
@@ -64,6 +65,14 @@ public class CustomStatisticsRepositoryImpl extends AbstractCustomRepositoryImpl
     private QueryMetaData getQueryMetaData(Class<?> resultClass, @Nullable StatisticsQueryFilter filter) {
         boolean hasFilter = filter != null;
         boolean hasStatus = hasFilter && filter.getStatus() != null && !filter.getStatus().isEmpty();
+
+        // Unauthenticated queries should only return published results.
+        if (securityUtils.getCurrentUsername().equals("anonymousUser")) {
+            if (filter == null)
+                filter = new StatisticsQueryFilter();
+            filter.setStatus(List.of(StatusKind.PUB));
+            hasFilter = hasStatus = true;
+        }
 
         StringBuilder queryName = new StringBuilder();
         StringBuilder[] queryNames = { queryName };
@@ -147,9 +156,12 @@ public class CustomStatisticsRepositoryImpl extends AbstractCustomRepositoryImpl
         JOIN "entity_link" el
         ON el."from_entity_id" = te."id" AND
            el."to_entity_id" = e."id"
+        JOIN "entity" ele
+        ON ele."id" = el."id"
         WHERE te."dtype" = 'TOP' AND
               te."status" IN (:status) AND
-              e."status" IN (:status)
+              e."status" IN (:status) AND
+              ele."status" IN (:status)
         GROUP BY te."id", entityKind;
         */
 
@@ -160,11 +172,14 @@ public class CustomStatisticsRepositoryImpl extends AbstractCustomRepositoryImpl
             .append("JOIN \"entity_link\" el").append(NL) //
             .append("ON el.\"from_entity_id\" = te.\"id\" AND ").append(NL) //
             .append("  el.\"to_entity_id\" = e.\"id\"").append(NL) //
+            .append("JOIN \"entity\" ele").append(NL) //
+            .append("ON ele.\"id\" = el.\"id\"").append(NL) //
             .append("WHERE te.\"dtype\" = 'TOP'");
         if (m.hasStatus) {
             selectBuf.append(" AND").append(NL) //
                 .append("  te.\"status\" IN (:status) AND").append(NL) //
-                .append("  e.\"status\" IN (:status)");
+                .append("  e.\"status\" IN (:status) AND").append(NL) //
+                .append("  ele.\"status\" IN (:status)");
         }
         selectBuf.append(NL) //
             .append("GROUP BY topicId, entityKind;");

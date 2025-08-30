@@ -30,6 +30,7 @@ import { GlobalContext, QueryState } from "@/lib/context"
 import SelectTriggerEx from "../ext/select-ex"
 import ButtonEx from "../ext/button-ex"
 import LabelEx from "../ext/label-ex"
+import useAuth from "@/hooks/use-auth"
 
 export default function LinkableEntityTableFilter<TData, TFilter>({
   table,
@@ -48,6 +49,7 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
   const onFilterChange = useCallback((filter: any) => {
     setFilter(recordKind, filter)
   }, [setFilter])
+  const {user} = useAuth()
   const queryState = queries[recordKind] as QueryState<LinkableEntityQueryFilter>
   const {filter} = queryState
   const [status, setStatus] = useState(filter.status?.[0] ?? '')
@@ -117,25 +119,29 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2">
-        <Select
-          value={status ?? ''}
-          onValueChange={handleStatusChange}
-        >
-          <SelectTriggerEx id="status" help="Filter the table to show only records with this status">
-            <SelectValue placeholder="Status" />
-          </SelectTriggerEx>
-          <SelectContent>
-            {
-              status
-              ? <SelectItem value="ALL">-Clear-</SelectItem>
-              : null
-            }
-            <SelectItem value="DRA">Draft</SelectItem>
-            <SelectItem value="PUB">Published</SelectItem>
-            <SelectItem value="SUS">Suspended</SelectItem>
-            <SelectItem value="DEL">Deleted</SelectItem>
-          </SelectContent>
-        </Select>
+        {
+          user
+          ? <Select
+            value={status ?? ''}
+            onValueChange={handleStatusChange}
+          >
+            <SelectTriggerEx id="status" help="Filter the table to show only records with this status">
+              <SelectValue placeholder="Status" />
+            </SelectTriggerEx>
+            <SelectContent>
+              {
+                status
+                ? <SelectItem value="ALL">-Clear-</SelectItem>
+                : null
+              }
+              <SelectItem value="DRA">Draft</SelectItem>
+              <SelectItem value="PUB">Published</SelectItem>
+              <SelectItem value="SUS">Suspended</SelectItem>
+              <SelectItem value="DEL">Deleted</SelectItem>
+            </SelectContent>
+          </Select>
+          : null
+        }
         <Search value={text} onChangeValue={handleTextChange} />
         {/* See https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode */}
         <Checkbox

@@ -127,16 +127,16 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     private void setCreatedFields(ITrackedEntity entity) {
         entity.setStatus(StatusKind.DRA.name());
         entity.setCreated(OffsetDateTime.now());
-        entity.setCreatedByUser(getUser().get());
+        entity.setCreatedByUser(getCurrentUser().get());
     }
 
     private void setUpdatedFields(ITrackedEntity entity) {
         entity.setUpdated(OffsetDateTime.now());
-        entity.setUpdatedByUser(getUser().get());
+        entity.setUpdatedByUser(getCurrentUser().get());
     }
 
-    private Optional<User> getUser() {
-        return securityUtils.getCurrentUser();
+    private Optional<User> getCurrentUser() {
+        return userRepository.getCurrentUser();
     }
 
     private void log(TransactionKind txnKind, ITrackedEntity entity, OffsetDateTime timestamp) {
@@ -149,7 +149,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         Log log = new Log();
         log.setTransactionKind(txnKind.name());
         log.setTimestamp(timestamp);
-        log.setUser(getUser().get());
+        log.setUser(getCurrentUser().get());
         log.setEntityId(entityId);
         log.setEntityKind(entityKind.name());
         if (linkedEntityId != null && linkedEntityKind != null) {
@@ -766,12 +766,12 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         return user;
     }
 
-    private static final Pattern BCRYPT_PATTERN = Pattern.compile("^\\{bcrypt\\}\\$2[ab]\\$10\\$[./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789]{53}$");
+    private static final Pattern BCRYPT_PATTERN = Pattern.compile(
+        "^\\{bcrypt\\}\\$2[ab]\\$10\\$[./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789]{53}$");
 
     @Override
     public Object updateUserPassword(DataFetchingEnvironment dataFetchingEnvironment, UserPasswordInput input) {
-        User currentUser =
-            securityUtils.getCurrentUser().orElseThrow(() -> createUnauthenticatedException("updateUserPassword"));
+        User currentUser = getCurrentUser().orElseThrow(() -> createUnauthenticatedException("updateUserPassword"));
         if (!securityUtils.hasAuthority(AuthorityKind.ADM) || !input.getId().equals(currentUser.getId())) {
             throw new AccessDeniedException(
                 "You are not authorised to invoke the 'updateUserPassword' mutation for User#" + input.getId());
@@ -794,8 +794,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
 
     @Override
     public Object updateUserProfile(DataFetchingEnvironment dataFetchingEnvironment, UserProfileInput input) {
-        User currentUser =
-            securityUtils.getCurrentUser().orElseThrow(() -> createUnauthenticatedException("updateUserProfile"));
+        User currentUser = getCurrentUser().orElseThrow(() -> createUnauthenticatedException("updateUserProfile"));
         if (!securityUtils.hasAuthority(AuthorityKind.ADM) || !input.getId().equals(currentUser.getId())) {
             throw new AccessDeniedException(
                 "You are not authorised to invoke the 'updateUserProfile' mutation for User#" + input.getId());

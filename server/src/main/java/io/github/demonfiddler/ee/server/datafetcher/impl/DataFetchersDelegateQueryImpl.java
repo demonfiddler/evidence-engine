@@ -248,7 +248,7 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
 
     @Override
     public Object currentUser(DataFetchingEnvironment dataFetchingEnvironment) {
-        return securityUtils.getCurrentUser();
+        return userRepository.getCurrentUser();
     }
 
     @Override

@@ -34,6 +34,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import io.github.demonfiddler.ee.server.model.ITrackedEntity;
+import io.github.demonfiddler.ee.server.model.StatusKind;
 import io.github.demonfiddler.ee.server.model.TrackedEntityQueryFilter;
 import jakarta.persistence.Query;
 
@@ -89,6 +90,14 @@ public abstract class CustomTrackedEntityRepositoryImpl<T extends ITrackedEntity
         boolean isSortedOnCreatedByUsername = false;
         boolean isSortedOnUpdatedByUsername = false;
         String entityName = entityUtils.getEntityName(getEntityClass());
+
+        // Unauthenticated queries should only return published results.
+        if (securityUtils.getCurrentUsername().equals("anonymousUser")) {
+            if (filter == null)
+                filter = new TrackedEntityQueryFilter();
+            filter.setStatus(List.of(StatusKind.PUB));
+            hasFilter = hasStatus = true;
+        }
 
         // For paged queries involving an H2 full text filter, we need to ensure that the sort order includes "id"
         // because otherwise the join with FT_SEARCH_DATA can result in records duplicated across successive pages.
