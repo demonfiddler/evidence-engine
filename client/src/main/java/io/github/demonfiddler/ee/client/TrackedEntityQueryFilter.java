@@ -64,6 +64,13 @@ public class TrackedEntityQueryFilter extends AbstractGraphQLObject {
 	Boolean advancedSearch;
 
 	/**
+	 * The identifier of the single record to return.
+	 */
+	@JsonProperty("recordId")
+	@GraphQLScalar(fieldName = "recordId", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
+	Long recordId;
+
+	/**
 	 * Return only records with these status codes (default: ALL).
 	 */
 	@JsonProperty("status")
@@ -111,6 +118,22 @@ public class TrackedEntityQueryFilter extends AbstractGraphQLObject {
 		return this.advancedSearch;
 	}
 
+	/**
+	 * The identifier of the single record to return.
+	 */
+	@JsonProperty("recordId")
+	public void setRecordId(Long recordId) {
+		this.recordId = recordId;
+	}
+
+	/**
+	 * The identifier of the single record to return.
+	 */
+	@JsonProperty("recordId")
+	public Long getRecordId() {
+		return recordId;
+	}
+
 	public String toString() {
 		return "TrackedEntityQueryFilter {" //
 			+ "status: " + this.status //
@@ -118,6 +141,8 @@ public class TrackedEntityQueryFilter extends AbstractGraphQLObject {
 			+ "text: " + this.text //
 			+ ", " //
 			+ "advancedSearch: " + this.advancedSearch //
+			+ ", " //
+			+ "recordId: " + this.recordId //
 			+ "}";
 	}
 
@@ -135,6 +160,7 @@ public class TrackedEntityQueryFilter extends AbstractGraphQLObject {
 		private List<StatusKind> status;
 		private String text;
 		private Boolean advancedSearch;
+		private Long recordId;
 
 		/**
 		 * Return only records with these status codes (default: ALL).
@@ -160,10 +186,19 @@ public class TrackedEntityQueryFilter extends AbstractGraphQLObject {
 			return (B)this;
 		}
 
+		/**
+		 * The identifier of the single record to return.
+		 */
+		public final B withRecordId(Long recordId) {
+			this.recordId = recordId;
+			return (B)this;
+		}
+
 		T build(T _object) {
 			_object.setStatus(this.status);
 			_object.setText(this.text);
 			_object.setAdvancedSearch(this.advancedSearch);
+			_object.setRecordId(this.recordId);
 			return _object;
 		}
 

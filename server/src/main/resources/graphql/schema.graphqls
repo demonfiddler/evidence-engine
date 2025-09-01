@@ -709,6 +709,8 @@ input LinkableEntityQueryFilter {
     text: String
     "Whether to search ```text``` in advanced (boolean) mode."
     advancedSearch: Boolean = false
+    "The identifier of the single record to return."
+    recordId: ID
 }
 
 # TODO: See whether GraphQL has any hook points to perform logging
@@ -1544,6 +1546,8 @@ input TopicQueryFilter {
     text: String
     "Whether to search ```text``` in advanced (boolean) mode."
     advancedSearch: Boolean = false
+    "The identifier of the single record to return."
+    recordId: ID
 }
 
 "Returns paginated topic query results."
@@ -1584,6 +1588,8 @@ input TrackedEntityQueryFilter {
     text: String
     "Whether to search ```text``` in advanced (boolean) mode."
     advancedSearch: Boolean = false
+    "The identifier of the single record to return."
+    recordId: ID
 }
 
 "Enumeration of the possible transaction kinds."

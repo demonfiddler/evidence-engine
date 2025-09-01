@@ -35,7 +35,15 @@ export default function InputEx(
   const [text, setText] = useState(value)
   const [event, setEvent] = useDebounceValue<ChangeEvent<HTMLInputElement>|undefined>(undefined, delay || 0)
 
-  useEffect(() => setText(value), [value])
+  useEffect(() => {
+    if (value !== text) {
+      setText(value)
+      if (event && onChange) {
+        event.target.value = value?.toString() ?? ''
+        onChange(event)
+      }
+    }
+  }, [value])
   useEffect(() => {
     if (event)
       onChange?.(event)
@@ -48,9 +56,9 @@ export default function InputEx(
 
   const clear = useCallback(() => {
     setText('')
-    if (event) {
+    if (event && onChange) {
       event.target.value = ''
-      onChange?.(event)
+      onChange(event)
     }
   }, [event])
 

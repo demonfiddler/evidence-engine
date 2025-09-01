@@ -31,6 +31,7 @@ import SelectTriggerEx from "../ext/select-ex"
 import ButtonEx from "../ext/button-ex"
 import LabelEx from "../ext/label-ex"
 import useAuth from "@/hooks/use-auth"
+import InputEx from "../ext/input-ex"
 
 export default function LinkableEntityTableFilter<TData, TFilter>({
   table,
@@ -55,12 +56,14 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
   const [status, setStatus] = useState(filter.status?.[0] ?? '')
   const [text, setText] = useState(filter.text ?? '')
   const [advanced, setAdvanced] = useState(filter.advancedSearch ?? false)
+  const [recordId, setRecordId] = useState(filter.recordId ?? '')
 
-  const updateFilter = useCallback((status: string, text: string, advanced: boolean) => {
+  const updateFilter = useCallback((status: string, text: string, advanced: boolean, recordId: string) => {
     const filter = {
       status: status ? [status] : undefined,
       text: text || undefined,
-      advancedSearch: text && advanced || undefined
+      advancedSearch: text && advanced || undefined,
+      recordId: recordId || undefined,
     } as TFilter
     if (isLinkableEntity && showOnlyLinkedRecords) {
       const leFilter = filter as LinkableEntityQueryFilter
@@ -71,38 +74,49 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
       if (masterRecordId) {
         const [, otherRecordIdProperty] = getRecordLinkProperties(recordKind, masterRecordKind)
         if (otherRecordIdProperty)
-          leFilter[otherRecordIdProperty] = masterRecordId // TODO: fix this TypeScript error
+          leFilter[otherRecordIdProperty as keyof LinkableEntityQueryFilter] = masterRecordId // TODO: fix this TypeScript error
       }
     }
     onFilterChange(filter)
   }, [masterTopicId, masterRecordKind, masterRecordId, showOnlyLinkedRecords, onFilterChange])
 
   useEffect(() => {
-    updateFilter(status, text, advanced)
+    updateFilter(status, text, advanced, recordId)
   }, [masterTopicId, masterRecordKind, masterRecordId, showOnlyLinkedRecords])
 
   const handleStatusChange = useCallback((status: string) => {
     status = status === "ALL" ? '' : status
     setStatus(status)
-    updateFilter(status, text, advanced)
-  }, [setStatus, updateFilter, text, advanced, showOnlyLinkedRecords])
+    updateFilter(status, text, advanced, recordId)
+  }, [updateFilter, text, advanced, recordId, showOnlyLinkedRecords])
 
   const handleTextChange = useCallback((text: string) => {
     setText(text)
-    updateFilter(status, text, advanced)
-  }, [setText, updateFilter, status, advanced, showOnlyLinkedRecords])
+    updateFilter(status, text, advanced, recordId)
+  }, [updateFilter, status, advanced, recordId, showOnlyLinkedRecords])
 
   const handleAdvancedSearchChange = useCallback((advanced: boolean) => {
     setAdvanced(advanced)
-    updateFilter(status, text, advanced)
-  }, [setAdvanced, updateFilter, status, text, showOnlyLinkedRecords])
+    updateFilter(status, text, advanced, recordId)
+  }, [updateFilter, status, text, recordId, showOnlyLinkedRecords])
+
+  const handleRecordIdChange = useCallback((recordId: string) => {
+    if (recordId) {
+      setStatus('')
+      setText('')
+      setAdvanced(false)
+    }
+    setRecordId(recordId)
+    updateFilter('', '', false, recordId)
+  }, [updateFilter])
 
   const handleReset = useCallback(() => {
     setStatus('')
     setText('')
     setAdvanced(false)
-    updateFilter('', '', false)
-  }, [setStatus, setText, setAdvanced, updateFilter])
+    setRecordId('')
+    updateFilter('', '', false, '')
+  }, [updateFilter])
 
   // If the user resets all settings, refresh the UI to match.
   useEffect(() => {
@@ -114,6 +128,8 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
       setText(newFilter.text ?? '')
     if (advanced !== !!newFilter.advancedSearch)
       setAdvanced(!!newFilter.advancedSearch)
+    if (recordId !== (newFilter.recordId ?? ''))
+      setRecordId(newFilter.recordId ?? '')
   }, [queries[recordKind]?.filter])
 
   return (
@@ -150,6 +166,15 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
           onCheckedChange={handleAdvancedSearchChange}
         />
         <LabelEx htmlFor="advanced" help="Use advanced text search syntax">Advanced</LabelEx>
+        <InputEx
+          outerClassName="w-28"
+          className="text-right"
+          placeholder="Record ID"
+          value={recordId}
+          onChange={(e) => handleRecordIdChange(e.target.value)}
+          delay={500}
+          help="Filter the table to show only the record with the specified ID. Clears all other filters."
+        />
         <ButtonEx
           outerClassName="flex-grow"
           variant="outline"

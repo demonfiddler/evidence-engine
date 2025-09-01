@@ -21,10 +21,12 @@ package io.github.demonfiddler.ee.server.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -62,6 +64,7 @@ import io.github.demonfiddler.ee.server.model.Publisher;
 import io.github.demonfiddler.ee.server.model.Quotation;
 import io.github.demonfiddler.ee.server.model.SortInput;
 import io.github.demonfiddler.ee.server.model.Topic;
+import io.github.demonfiddler.ee.server.model.TrackedEntityQueryFilter;
 import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.repository.CustomRepository;
 import io.github.demonfiddler.ee.server.repository.QueryPair;
@@ -225,7 +228,7 @@ public class EntityUtils {
 	 * @param repository The repository to query.
 	 * @param ctor The result page query supplier (typically a constructor reference).
 	 */
-	public <T extends IBaseEntity, F, R extends JpaRepository<T, ?> & CustomRepository<T, F>, P extends IBaseEntityPage<T>>
+	public <T extends IBaseEntity, F, R extends JpaRepository<T, Long> & CustomRepository<T, F>, P extends IBaseEntityPage<T>>
 		P findByFilter(F filter, PageableInput pageSort, R repository, Supplier<P> ctor) {
 
 		Pageable pageable = toPageable(pageSort);
@@ -246,6 +249,10 @@ public class EntityUtils {
 					page = new PageImpl<>(repository.findAll());
 				}
 			}
+		} else if (filter instanceof TrackedEntityQueryFilter teqf && teqf.getRecordId() != null) {
+			// If a recordId is specified, ignore all other filter fields.
+			Optional<T> record = repository.findById(((TrackedEntityQueryFilter)filter).getRecordId());
+			page = new PageImpl<T>(record.isPresent() ? List.of(record.get()) : Collections.emptyList());
 		} else {
 			page = repository.findByFilter(filter, pageable);
 		}

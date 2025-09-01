@@ -42,6 +42,7 @@ export type TrackedEntityQueryFilter = {
   status?: StatusKind[]
   text?: string
   advancedSearch?: boolean
+  recordId?: string
 }
 
 export type LinkableEntityQueryFilter = TrackedEntityQueryFilter & {

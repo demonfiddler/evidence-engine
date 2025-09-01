@@ -27,6 +27,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { GlobalContext, QueryState } from "@/lib/context"
 import { Button } from "@/components/ui/button"
 import useAuth from "@/hooks/use-auth"
+import InputEx from "../ext/input-ex"
+import LabelEx from "../ext/label-ex"
 
 export default function TopicTableFilter({
   table,
@@ -40,13 +42,15 @@ export default function TopicTableFilter({
   const [status, setStatus] = useState(filter.status?.[0] ?? '')
   const [text, setText] = useState(filter.text ?? '')
   const [advanced, setAdvanced] = useState(filter.advancedSearch ?? false)
+  const [recordId, setRecordId] = useState(filter.recordId ?? '')
 
-  const updateFilter = useCallback((status: string, text: string, advanced: boolean) => {
+  const updateFilter = useCallback((status: string, text: string, advanced: boolean, recordId: string) => {
     const filter = {
       status: status ? [status] : undefined,
       text: text || undefined,
       advancedSearch: text && advanced || undefined,
-      parentId: "-1"
+      recordId: recordId || undefined,
+      parentId: recordId ? undefined : "-1",
     } as TopicQueryFilter
     onFilterChange(filter)
   }, [onFilterChange])
@@ -54,25 +58,36 @@ export default function TopicTableFilter({
   const handleStatusChange = useCallback((status: string) => {
     status = status === "ALL" ? '' : status
     setStatus(status)
-    updateFilter(status, text, advanced)
-  }, [setStatus, updateFilter, text, advanced])
+    updateFilter(status, text, advanced, recordId)
+  }, [updateFilter, text, advanced, recordId])
 
   const handleTextChange = useCallback((text: string) => {
     setText(text)
-    updateFilter(status, text, advanced)
-  }, [setText, updateFilter, status, advanced])
+    updateFilter(status, text, advanced, recordId)
+  }, [updateFilter, status, advanced, recordId])
 
   const handleAdvancedSearchChange = useCallback((advanced: boolean) => {
     setAdvanced(advanced)
-    updateFilter(status, text, advanced)
-  }, [setAdvanced, updateFilter, status, text])
+    updateFilter(status, text, advanced, recordId)
+  }, [updateFilter, status, text, recordId])
+
+  const handleRecordIdChange = useCallback((recordId: string) => {
+    if (recordId) {
+      setStatus('')
+      setText('')
+      setAdvanced(false)
+    }
+    setRecordId(recordId)
+    updateFilter('', '', false, recordId)
+  }, [updateFilter])
 
   const handleReset = useCallback(() => {
     setStatus('')
     setText('')
     setAdvanced(false)
-    updateFilter('', '', false)
-  }, [setStatus, setText, setAdvanced, updateFilter])
+    setRecordId('')
+    updateFilter('', '', false, '')
+  }, [updateFilter])
 
   return (
     <div className="flex flex-col gap-2">
@@ -108,7 +123,16 @@ export default function TopicTableFilter({
           checked={advanced}
           onCheckedChange={handleAdvancedSearchChange}
         />
-        <label htmlFor="advanced">Advanced</label>
+        <LabelEx htmlFor="advanced" help="Use advanced text search syntax">Advanced</LabelEx>
+        <InputEx
+          outerClassName="w-28"
+          className="text-right"
+          placeholder="Record ID"
+          value={recordId}
+          onChange={(e) => handleRecordIdChange(e.target.value)}
+          delay={500}
+          help="Filter the table to show only the record with the specified ID. Clears all other filters."
+        />
         <Button variant="outline" title="Clear all filters" onClick={handleReset}>Reset</Button>
         <DataTableViewOptions table={table} />
       </div>
