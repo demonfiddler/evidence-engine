@@ -81,7 +81,7 @@ export default function ProfileDialog(
       notes: user?.notes ?? '',
     },
   })
-  const [updateUserProfileOp, { data, loading }] = useMutation(UPDATE_USER_PROFILE)
+  const [updateUserProfileOp, { loading }] = useMutation(UPDATE_USER_PROFILE)
 
   const createInput = useCallback(() => {
     return {
@@ -95,7 +95,7 @@ export default function ProfileDialog(
       form.clearErrors()
       setOpen(false)
     }
-  }, [])
+  }, [form, setOpen])
 
   const handleSave = useCallback(() => {
     if (form.formState.isValid) {
@@ -107,9 +107,9 @@ export default function ProfileDialog(
         onError: (e) => setError(e.message),
       })
     }
-  }, [form, createInput])
+  }, [form, updateUserProfileOp, createInput, setOpen])
 
-  console.log("ProfileDialog: render")
+  // console.log("ProfileDialog: render")
 
   return open ? (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -121,7 +121,7 @@ export default function ProfileDialog(
               <DialogTitle>User Profile</DialogTitle>
               <DialogDescription className="py-4">
                 <UserIcon className="w-6 h-6 inline" />
-                &nbsp;Update your details then click 'Save'.
+                &nbsp;Update your details then click &apos;Save&apos;.
               </DialogDescription>
             </DialogHeader>
             <div className="grid grid-cols-2 gap-4">

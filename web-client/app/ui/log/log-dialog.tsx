@@ -36,7 +36,7 @@ import Log from "@/app/model/Log"
 import { ownColumns as columns } from "@/app/ui/tables/log-columns"
 import DataTable from "../data-table/data-table"
 import { DetailState } from "../details/detail-actions"
-import { LogInput, LogQueryFilter } from "@/app/model/schema"
+import { BaseEntityInput, LogQueryFilter } from "@/app/model/schema"
 import usePageLogic from "@/hooks/use-page-logic"
 import { READ_LOGS } from "@/lib/graphql-queries"
 import { LogFieldValues } from "../validators/log"
@@ -46,7 +46,7 @@ import RecordKind from "@/app/model/RecordKind"
 
 function createFieldValues(record?: Log) : LogFieldValues {
   return {
-    timestamp: toDate(record?.timestamp) ?? '',
+    timestamp: toDate(record?.timestamp),
     transactionKind: record?.transactionKind ?? '',
     username: record?.user?.username ?? '',
     entityKind: record?.entityKind ?? '',
@@ -76,7 +76,9 @@ export default function LogDialog({
   const {
     loading,
     page,
-  } = usePageLogic<Log, LogFieldValues, LogInput, LogQueryFilter>({
+    refetch,
+    loadingPathWithSearchParams,
+  } = usePageLogic<Log, LogFieldValues, BaseEntityInput, LogQueryFilter>({
     recordKind: "Log",
     manualPagination: true,
     manualSorting: true,
@@ -116,6 +118,8 @@ export default function LogDialog({
           manualPagination={true}
           manualSorting={true}
           auxRecordId={recordId}
+          refetch={refetch}
+          loadingPathWithSearchParams={loadingPathWithSearchParams}
         />
         <DialogFooter>
           <Button onClick={() => setOpen(false)}>Close</Button>

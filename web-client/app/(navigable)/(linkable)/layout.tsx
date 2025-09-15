@@ -21,7 +21,7 @@
 
 import "@/app/globals.css"
 import '@/app/ui/global.css'
-import EntityLinks from "@/app/ui/filter/entity-links"
+import EntityLinkFilter from "@/app/ui/filter/entity-link-filter"
 
 // export const metadata: Metadata = {
 //   title: {
@@ -39,7 +39,7 @@ export default function LinkableEntityLayout({
 }>) {
   return (
     <div className="m-4">
-      <EntityLinks />
+      <EntityLinkFilter />
       {children}
     </div>
   )

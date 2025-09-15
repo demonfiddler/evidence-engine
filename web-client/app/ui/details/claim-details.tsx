@@ -55,7 +55,7 @@ export default function ClaimDetails(
     onFormAction: FormActionHandler<ClaimFieldValues>
   }) {
 
-  const form = useFormContext()
+  const form = useFormContext<ClaimFieldValues>()
   const [open, setOpen] = useState(false)
   const { updating } = state
 

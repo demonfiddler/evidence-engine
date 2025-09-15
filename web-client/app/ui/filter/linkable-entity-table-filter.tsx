@@ -21,9 +21,10 @@
 
 import { Checkbox } from "@/components/ui/checkbox"
 import Search from "./search"
-import { DataTableFilterProps, DataTableViewOptions } from "../data-table/data-table-view-options"
-import { getRecordLinkProperties } from "@/lib/utils"
-import { useCallback, useContext, useEffect, useState } from "react"
+import DataTableViewOptions from "../data-table/data-table-view-options"
+import DataTableFilterProps from "../data-table/data-table-filter"
+import { LinkableEntityQueryFilterIdProperty, getEntityKind, getRecordLinkProperties, isEqual } from "@/lib/utils"
+import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import { Select, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
 import { LinkableEntityQueryFilter } from "@/app/model/schema"
 import { GlobalContext, QueryState } from "@/lib/context"
@@ -32,24 +33,26 @@ import ButtonEx from "../ext/button-ex"
 import LabelEx from "../ext/label-ex"
 import useAuth from "@/hooks/use-auth"
 import InputEx from "../ext/input-ex"
+import { RotateCw } from "lucide-react"
+import RecordKind from "@/app/model/RecordKind"
 
 export default function LinkableEntityTableFilter<TData, TFilter>({
   table,
   recordKind,
   isLinkableEntity,
+  refetch,
+  loadingPathWithSearchParams,
 }: DataTableFilterProps<TData>) {
 
   const {
     masterTopicId,
+    masterTopicRecursive,
     masterRecordKind,
     masterRecordId,
     showOnlyLinkedRecords,
     queries,
     setFilter,
   } = useContext(GlobalContext)
-  const onFilterChange = useCallback((filter: any) => {
-    setFilter(recordKind, filter)
-  }, [setFilter])
   const {user} = useAuth()
   const queryState = queries[recordKind] as QueryState<LinkableEntityQueryFilter>
   const {filter} = queryState
@@ -59,78 +62,112 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
   const [recordId, setRecordId] = useState(filter.recordId ?? '')
 
   const updateFilter = useCallback((status: string, text: string, advanced: boolean, recordId: string) => {
-    const filter = {
-      status: status ? [status] : undefined,
-      text: text || undefined,
-      advancedSearch: text && advanced || undefined,
-      recordId: recordId || undefined,
-    } as TFilter
-    if (isLinkableEntity && showOnlyLinkedRecords) {
-      const leFilter = filter as LinkableEntityQueryFilter
-      if (masterTopicId) {
-        leFilter.topicId = masterTopicId
-        leFilter.recursive = true
+    // console.log(`LinkableEntityTableFilter.updateFilter: status='${status}', text='${text}', advanced=${advanced}, recordId='${recordId}'`)
+    if (!loadingPathWithSearchParams) {
+      const newFilter = {
+        status: status ? [status] : undefined,
+        text: text || undefined,
+        advancedSearch: text && advanced || undefined,
+        recordId: recordId || undefined,
+      } as TFilter
+      if (isLinkableEntity && showOnlyLinkedRecords) {
+        const leFilter = newFilter as LinkableEntityQueryFilter
+        if (masterTopicId) {
+          leFilter.topicId = masterTopicId
+          leFilter.recursive = masterTopicRecursive
+        }
+        if (masterRecordId) {
+          const [, otherRecordKindProperty,, otherRecordIdProperty] = getRecordLinkProperties(recordKind, masterRecordKind)
+          if (otherRecordIdProperty) {
+            leFilter[otherRecordKindProperty as LinkableEntityQueryFilterIdProperty] = getEntityKind(masterRecordKind)
+            leFilter[otherRecordIdProperty as LinkableEntityQueryFilterIdProperty] = masterRecordId
+          }
+        }
       }
-      if (masterRecordId) {
-        const [, otherRecordIdProperty] = getRecordLinkProperties(recordKind, masterRecordKind)
-        if (otherRecordIdProperty)
-          leFilter[otherRecordIdProperty as keyof LinkableEntityQueryFilter] = masterRecordId // TODO: fix this TypeScript error
+      if (!isEqual(newFilter as LinkableEntityQueryFilter, filter)) {
+        // console.log(`LinkableEntityTableFilter.updateFilter from ${JSON.stringify(filter)} to ${JSON.stringify(newFilter)}`)
+        setFilter(recordKind, newFilter)
       }
     }
-    onFilterChange(filter)
-  }, [masterTopicId, masterRecordKind, masterRecordId, showOnlyLinkedRecords, onFilterChange])
+  }, [loadingPathWithSearchParams, isLinkableEntity, recordKind, filter, masterTopicId, masterTopicRecursive, masterRecordKind, masterRecordId, showOnlyLinkedRecords, setFilter])
 
+  // If the filter changes, refresh the UI to match.
+  const prevFilter = useRef<LinkableEntityQueryFilter>({})
   useEffect(() => {
-    updateFilter(status, text, advanced, recordId)
-  }, [masterTopicId, masterRecordKind, masterRecordId, showOnlyLinkedRecords])
+    // console.log(`LinkableEntityTableFilter.effect1 (1)`)
+    if (!isEqual(filter, prevFilter.current)) {
+      // console.log(`LinkableEntityTableFilter.effect1 (2): prevFilter=${JSON.stringify(prevFilter.current)}, filter=${JSON.stringify(filter)}`)
+      prevFilter.current = filter
+
+      if (status !== (filter?.status?.[0] ?? ''))
+        setStatus(filter?.status?.[0] ?? '')
+      if (text !== (filter?.text ?? ''))
+        setText(filter?.text ?? '')
+      if (advanced !== !!filter?.advancedSearch)
+        setAdvanced(!!filter?.advancedSearch)
+      if (recordId !== (filter?.recordId ?? ''))
+        setRecordId(filter?.recordId ?? '')
+    }
+  }, [filter, status, text, advanced, recordId]) // previously [queries[recordKind]?.filter]
+
+  // If MasterEntityFilter is already set or changes, update the filter.
+  const prevMasterTopicId = useRef<string>(undefined)
+  const prevMasterTopicRecursive = useRef<boolean>(true)
+  const prevMasterRecordKind = useRef<RecordKind>("None")
+  const prevMasterRecordId = useRef<string>(undefined)
+  const prevShowOnlyLinkedRecords = useRef<boolean>(false)
+  useEffect(() => {
+    // console.log(`LinkableEntityTableFilter.effect2 (1)`)
+    if (masterTopicId !== prevMasterTopicId.current ||
+      masterTopicRecursive !== prevMasterTopicRecursive.current ||
+      masterRecordKind !== prevMasterRecordKind.current ||
+      masterRecordId !== prevMasterRecordId.current ||
+      showOnlyLinkedRecords !== prevShowOnlyLinkedRecords.current) {
+
+      // console.log(`LinkableEntityTableFilter.effect2 (2)`)
+
+      prevMasterTopicId.current = masterTopicId
+      prevMasterTopicRecursive.current = masterTopicRecursive
+      prevMasterRecordKind.current = masterRecordKind
+      prevMasterRecordId.current = masterRecordId
+      prevShowOnlyLinkedRecords.current = showOnlyLinkedRecords
+      updateFilter(status, text, advanced, recordId)
+    }
+  }, [updateFilter, status, text, advanced, recordId, masterTopicId, masterTopicRecursive, masterRecordKind, masterRecordId, showOnlyLinkedRecords])
 
   const handleStatusChange = useCallback((status: string) => {
+    // console.log(`LinkableEntityTableFilter.handleStatusChange: status='${status}'`)
     status = status === "ALL" ? '' : status
     setStatus(status)
     updateFilter(status, text, advanced, recordId)
-  }, [updateFilter, text, advanced, recordId, showOnlyLinkedRecords])
+  }, [updateFilter, text, advanced, recordId])
 
   const handleTextChange = useCallback((text: string) => {
+    // console.log(`LinkableEntityTableFilter.handleTextChange: text='${text}'`)
     setText(text)
     updateFilter(status, text, advanced, recordId)
-  }, [updateFilter, status, advanced, recordId, showOnlyLinkedRecords])
+  }, [updateFilter, status, advanced, recordId])
 
   const handleAdvancedSearchChange = useCallback((advanced: boolean) => {
+    // console.log(`LinkableEntityTableFilter.handleAdvancedSearchChange: advanced=${advanced}`)
     setAdvanced(advanced)
     updateFilter(status, text, advanced, recordId)
-  }, [updateFilter, status, text, recordId, showOnlyLinkedRecords])
+  }, [updateFilter, status, text, recordId])
 
   const handleRecordIdChange = useCallback((recordId: string) => {
-    if (recordId) {
-      setStatus('')
-      setText('')
-      setAdvanced(false)
-    }
+    // console.log(`LinkableEntityTableFilter.handleRecordIdChange: recordId='${recordId}'`)
     setRecordId(recordId)
     updateFilter('', '', false, recordId)
   }, [updateFilter])
 
   const handleReset = useCallback(() => {
+    // console.log(`LinkableEntityTableFilter.handleReset`)
     setStatus('')
     setText('')
     setAdvanced(false)
     setRecordId('')
     updateFilter('', '', false, '')
   }, [updateFilter])
-
-  // If the user resets all settings, refresh the UI to match.
-  useEffect(() => {
-    const newFilter = queries[recordKind]?.filter
-    if (status !== (newFilter.status?.[0] ?? ''))
-      setStatus(newFilter.status?.[0] ?? '')
-    if (text !== (newFilter.text ?? ''))
-      // FIXME: this doesn't clear the displayed value.
-      setText(newFilter.text ?? '')
-    if (advanced !== !!newFilter.advancedSearch)
-      setAdvanced(!!newFilter.advancedSearch)
-    if (recordId !== (newFilter.recordId ?? ''))
-      setRecordId(newFilter.recordId ?? '')
-  }, [queries[recordKind]?.filter])
 
   return (
     <div className="flex flex-col gap-2">
@@ -165,7 +202,7 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
           checked={advanced}
           onCheckedChange={handleAdvancedSearchChange}
         />
-        <LabelEx htmlFor="advanced" help="Use advanced text search syntax">Advanced</LabelEx>
+        <LabelEx htmlFor="advanced" help="Use advanced text search syntax. See MariaDB documentation at https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode">Advanced</LabelEx>
         <InputEx
           outerClassName="w-28"
           className="text-right"
@@ -176,10 +213,17 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
           help="Filter the table to show only the record with the specified ID. Clears all other filters."
         />
         <ButtonEx
+          variant="outline"
+          help="Refresh the table using the same filter and pagination settings."
+          onClick={() => refetch()}
+        >
+          <RotateCw />
+        </ButtonEx>
+        <ButtonEx
           outerClassName="flex-grow"
           variant="outline"
-          help="Clear all filters"
           onClick={handleReset}
+          help="Clear all filters"
         >
           Reset
         </ButtonEx>

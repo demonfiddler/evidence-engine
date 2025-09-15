@@ -18,11 +18,12 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 import Log from "@/app/model/Log"
-import { DataTableFilterProps, DataTableViewOptions } from "../data-table/data-table-view-options"
+import DataTableFilterProps from "../data-table/data-table-filter"
+import DataTableViewOptions from "../data-table/data-table-view-options"
 import { LogQueryFilter } from "@/app/model/schema"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ChangeEvent, useCallback, useContext, useState } from "react"
-import { formatDate } from "@/lib/utils"
+import { ChangeEvent, useCallback, useContext, useEffect, useRef, useState } from "react"
+import { formatDate, isEqual } from "@/lib/utils"
 import { READ_USERS } from "@/lib/graphql-queries"
 import { useQuery } from "@apollo/client"
 import { toast } from "sonner"
@@ -35,16 +36,17 @@ import { CalendarIcon, ChevronDownIcon } from "@heroicons/react/24/outline"
 import Spinner from "../misc/spinner"
 import InputEx from "../ext/input-ex"
 import { GlobalContext, QueryState } from "@/lib/context"
+import ButtonEx from "../ext/button-ex"
+import { RotateCw } from "lucide-react"
 
 export default function LogTableFilter(
   {
     table,
+    refetch,
+    loadingPathWithSearchParams,
   } : DataTableFilterProps<Log>) {
 
   const {queries, setFilter} = useContext(GlobalContext)
-  const onFilterChange = useCallback((filter: any) => {
-    setFilter("Log", filter)
-  }, [setFilter])
   const {filter} = queries["Log"] as QueryState<LogQueryFilter>
   const [from, setFrom] = useState<Date|undefined>(filter.from)
   const [fromOpen, setFromOpen] = useState(false)
@@ -60,54 +62,83 @@ export default function LogTableFilter(
     entityId: string,
     userId: string,
     transactionKind: string,
-    from: Date|undefined,
-    to: Date|undefined) => {
-      const filter = {
-        entityKind: entityKind || undefined,
-        entityId: entityId || undefined,
-        userId: userId || undefined,
-        transactionKinds: transactionKind ? [transactionKind] : undefined,
-        from: from || undefined,
-        to: to || undefined
-      } as LogQueryFilter
-      onFilterChange(filter)
-    }, [entityKind, entityId, userId, transactionKind, from, to, onFilterChange])
+    from: Date | undefined,
+    to: Date | undefined) => {
+      // console.log(`LogTableFilter.updateFilter: entityKind='${entityKind}', entityId='${entityId}', userId=${userId}, transactionKind='${transactionKind}', from='${from}', to='${to}'`)
+      if (!loadingPathWithSearchParams) {
+        const newFilter = {
+          entityKind: entityKind || undefined,
+          entityId: entityId || undefined,
+          userId: userId || undefined,
+          transactionKinds: transactionKind ? [transactionKind] : undefined,
+          from: from,
+          to: to
+        } as LogQueryFilter
+        if (!isEqual(newFilter as LogQueryFilter, filter)) {
+          // console.log(`LogTableFilter.updateFilter from ${JSON.stringify(filter)} to ${JSON.stringify(newFilter)}`)
+          setFilter("Log", newFilter)
+        }
+      }
+    }, [loadingPathWithSearchParams, filter, setFilter])
+
+  // If the filter changes, refresh the UI to match.
+  const prevFilter = useRef<LogQueryFilter>({})
+  useEffect(() => {
+    // console.log(`LogTableFilter.effect2 (1)`)
+    if (!isEqual(filter, prevFilter.current)) {
+      // console.log(`LogTableFilter.effect2 (2): prevFilter=${JSON.stringify(prevFilter.current)}, filter=${JSON.stringify(filter)}`)
+      prevFilter.current = filter
+
+      if (entityKind !== (filter?.entityKind?.[0] ?? ''))
+        setEntityKind(filter?.entityKind ?? '')
+      if (entityId !== (filter?.entityId ?? ''))
+        setEntityId(filter?.entityId ?? '')
+      if (userId !== filter?.userId)
+        setUserId(filter?.userId ?? '')
+      if (transactionKind !== (filter?.transactionKinds?.[0] ?? ''))
+        setTransactionKind(filter?.transactionKinds?.[0] ?? '')
+      if (from?.valueOf() !== filter?.from?.valueOf())
+        setFrom(filter?.from)
+      if (to?.valueOf() !== filter?.to?.valueOf())
+        setTo(filter?.to)
+    }
+  }, [filter, entityKind, entityId, userId, transactionKind, from, to])
 
   const handleFromChange = useCallback((from?: Date) => {
     setFrom(from)
     setFromOpen(false)
     updateFilter(entityKind, entityId, userId, transactionKind, from, to)
-  }, [entityKind, entityId, userId, transactionKind, from, to, updateFilter])
+  }, [entityKind, entityId, userId, transactionKind, to, updateFilter])
 
   const handleToChange = useCallback((to?: Date) => {
     setTo(to)
     setToOpen(false)
     updateFilter(entityKind, entityId, userId, transactionKind, from, to)
-  }, [entityKind, entityId, userId, transactionKind, from, to, updateFilter])
+  }, [entityKind, entityId, userId, transactionKind, from, updateFilter])
 
   const handleUserIdChange = useCallback((userId: string) => {
     userId = userId === "ALL" ? '' : userId
     setUserId(userId)
     updateFilter(entityKind, entityId, userId, transactionKind, from, to)
-  }, [entityKind, entityId, userId, transactionKind, from, to, updateFilter])
+  }, [entityKind, entityId, transactionKind, from, to, updateFilter])
 
   const handleTransactionKindChange = useCallback((transactionKind: string) => {
     transactionKind = transactionKind === "ALL" ? '' : transactionKind
     setTransactionKind(transactionKind)
     updateFilter(entityKind, entityId, userId, transactionKind, from, to)
-  }, [entityKind, entityId, userId, transactionKind, from, to, updateFilter])
+  }, [entityKind, entityId, userId, from, to, updateFilter])
 
   const handleEntityKindChange = useCallback((entityKind: string) => {
     entityKind = entityKind === "ALL" ? '' : entityKind
     setEntityKind(entityKind)
     updateFilter(entityKind, entityId, userId, transactionKind, from, to)
-  }, [entityKind, entityId, userId, transactionKind, from, to, updateFilter])
+  }, [entityId, userId, transactionKind, from, to, updateFilter])
 
   const handleEntityIdChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const entityId = e.target.value?.toString() ?? ''
     setEntityId(entityId)
     updateFilter(entityKind, entityId, userId, transactionKind, from, to)
-  }, [entityKind, entityId, userId, transactionKind, from, to, updateFilter])
+  }, [entityKind, userId, transactionKind, from, to, updateFilter])
 
   const handleReset = useCallback(() => {
     setFrom(undefined)
@@ -151,7 +182,7 @@ export default function LogTableFilter(
               className="justify-start text-left font-normal">
               <CalendarIcon />
               {from ? (
-                formatDate(from, "PPP")
+                formatDate(from)
               ) : (
                 <span className="text-gray-500">Start Date</span>
               )}
@@ -175,7 +206,7 @@ export default function LogTableFilter(
               className="justify-start text-left font-normal">
               <CalendarIcon />
               {to ? (
-                formatDate(to, "PPP")
+                formatDate(to)
               ) : (
                 <span className="text-gray-500">End Date</span>
               )}
@@ -263,6 +294,13 @@ export default function LogTableFilter(
           onChange={handleEntityIdChange}
           delay={500}
         />
+        <ButtonEx
+          variant="outline"
+          help="Refresh the table using the same filter and pagination settings."
+          onClick={() => refetch()}
+        >
+          <RotateCw />
+        </ButtonEx>
         <Button variant="outline" title="Clear all filters" onClick={handleReset}>Reset</Button>
         <DataTableViewOptions table={table} />
       </div>

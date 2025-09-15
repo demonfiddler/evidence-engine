@@ -31,6 +31,7 @@ import { CREATE_PERSON, DELETE_PERSON, READ_PERSONS, UPDATE_PERSON } from "@/lib
 import usePageLogic from "@/hooks/use-page-logic"
 import { LinkableEntityQueryFilter, PersonInput } from '@/app/model/schema'
 import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter'
+import useLinkableEntityQueryFilter from '@/hooks/use-linkable-entity-query-filter'
 
 function createFieldValues(person?: Person) : PersonFieldValues {
   return {
@@ -70,6 +71,7 @@ function createInput(fieldValues: PersonFieldValues, id?: string) : PersonInput 
 }
 
 export default function Persons() {
+  const filterLogic = useLinkableEntityQueryFilter()
   const {
     loading,
     page,
@@ -79,6 +81,8 @@ export default function Persons() {
     setMode,
     form,
     handleFormAction,
+    refetch,
+    loadingPathWithSearchParams,
   } = usePageLogic<Person, PersonFieldValues, PersonInput, LinkableEntityQueryFilter>({
     recordKind: "Person",
     schema: PersonSchema,
@@ -90,6 +94,7 @@ export default function Persons() {
     deleteMutation: DELETE_PERSON,
     createFieldValues,
     createInput,
+    filterLogic,
   })
 
   // const {storeAppState} = useContext(GlobalContext)
@@ -112,6 +117,8 @@ export default function Persons() {
         manualPagination={true}
         manualSorting={true}
         onRowSelectionChange={handleRowSelectionChange}
+        refetch={refetch}
+        loadingPathWithSearchParams={loadingPathWithSearchParams}
       />
       <FormProvider {...form}>
         <PersonDetails

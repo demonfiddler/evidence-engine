@@ -71,7 +71,7 @@ const entityItems = [
 const empty = [] as unknown
 
 function copyStats(inStats: TopicStatistics[], outStats: TopicStatistics[]) {
-  for (let inStat of inStats) {
+  for (const inStat of inStats) {
     const outStat = {
       topic: {
         ...inStat.topic
@@ -79,7 +79,7 @@ function copyStats(inStats: TopicStatistics[], outStats: TopicStatistics[]) {
       entityStatistics: [] as EntityStatistics[],
       children: [] as TopicStatistics[],
     }
-    for (let inEntityStat of inStat.entityStatistics) {
+    for (const inEntityStat of inStat.entityStatistics) {
       const outEntityStat = {
         ...inEntityStat
       }
@@ -116,7 +116,8 @@ export default function Dashboard() {
       }
     })
   }, [result, status])
-  useEffect(refetch, [status])
+
+  useEffect(refetch, [refetch, status])
 
   const {loading, data} = result
   const entityStats = (data?.entityStatistics ?? result.previousData?.entityStatistics ?? empty) as unknown as EntityStatistics[]
@@ -205,7 +206,7 @@ export default function Dashboard() {
               <ButtonEx
                 variant="ghost"
                 help="Refresh the table using the same filter settings."
-                onClick={e => refetch()}
+                onClick={() => refetch()}
               >
                 <RotateCw />
               </ButtonEx>

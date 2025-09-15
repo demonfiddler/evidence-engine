@@ -75,7 +75,7 @@ export default function PublicationDetails(
     onFormAction: FormActionHandler<PublicationFieldValues>
   }) {
 
-  const form = useFormContext()
+  const form = useFormContext<PublicationFieldValues>()
   const [dateOpen, setDateOpen] = useState(false)
   const [accessedOpen, setAccessedOpen] = useState(false)
   const { updating } = state
@@ -370,7 +370,7 @@ export default function PublicationDetails(
                         >
                           <CalendarIcon />
                           {field.value ? (
-                            formatDate(field.value, "PPP")
+                            formatDate(field.value)
                           ) : (
                             <span>Pick a date</span>
                           )}

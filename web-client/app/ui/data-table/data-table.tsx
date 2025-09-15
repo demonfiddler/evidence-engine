@@ -46,7 +46,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { CSSProperties, JSX, useCallback, useContext, useEffect, useState } from "react"
+import { CSSProperties, JSX, useCallback, useContext, useEffect, useRef, useState } from "react"
 import {
   DndContext,
   KeyboardSensor,
@@ -75,7 +75,8 @@ import DataTableColumnHeader from "./data-table-column-header"
 import Spinner from "../misc/spinner"
 import { getExpandedRowModelEx } from "./data-table-expanded-row-model"
 import { DetailState } from "../details/detail-actions"
-import { DataTableFilterProps } from "./data-table-view-options"
+import DataTableFilterProps from "./data-table-filter"
+import { QueryFilter } from "@/app/model/schema"
 
 function DragAlongCell<TData>({ cell }: { cell: Cell<TData, unknown> }) {
   const { isDragging, setNodeRef, transform } = useSortable({
@@ -106,12 +107,14 @@ interface DataTableProps<TData, TValue> {
   page: IPage<TData> | undefined
   state?: DetailState
   loading: boolean
-  filterComponent: ({ table, recordKind, isLinkableEntity, auxRecordId }: DataTableFilterProps<TData>) => JSX.Element,
+  filterComponent: ({ table, recordKind, isLinkableEntity, auxRecordId, refetch, }: DataTableFilterProps<TData>) => JSX.Element,
   manualPagination: boolean
   manualSorting: boolean
   getSubRows?: (row: TData) => TData[] | undefined
   onRowSelectionChange?: (recordId?: string) => void
   auxRecordId?: string
+  refetch: () => void
+  loadingPathWithSearchParams: boolean
 }
 
 interface ColumnMetaData {
@@ -123,7 +126,6 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
   recordKind,
   defaultColumns,
   page,
-  state,
   loading,
   filterComponent: DataTableFilter,
   manualPagination,
@@ -131,12 +133,13 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
   getSubRows,
   onRowSelectionChange,
   auxRecordId,
+  refetch,
+  loadingPathWithSearchParams,
 }: DataTableProps<TData, TValue>) {
   const {
     selectedRecords,
     columns : columnsMap,
     queries,
-    setMasterRecord,
     setSelectedRecord,
     setColumnOrder,
     setColumnSizing,
@@ -147,28 +150,28 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
   const [columns] = useState<typeof defaultColumns>(() => [
     ...defaultColumns,
   ])
-  const {sorting, pagination} = queries[recordKind] as QueryState<any>
+  const {sorting, pagination} = queries[recordKind] as QueryState<QueryFilter>
   const {visibility : columnVisibility, order : columnOrder, sizing : columnSizing} = columnsMap[recordKind] as ColumnState
   const onColumnOrderChange = useCallback((updaterOrValue: Updater<ColumnOrderState>) => {
     const order = getValue(updaterOrValue, columnOrder)
     setColumnOrder(recordKind, order)
-  }, [columnOrder, setColumnOrder])
+  }, [recordKind, columnOrder, setColumnOrder])
   const onColumnSizingChange = useCallback((updaterOrValue: Updater<ColumnSizingState>) => {
     const sizing = getValue(updaterOrValue, columnSizing)
     setColumnSizing(recordKind, sizing)
-  }, [columnSizing, setColumnSizing])
+  }, [recordKind, columnSizing, setColumnSizing])
   const onColumnVisibilityChange = useCallback((updaterOrValue: Updater<VisibilityState>) => {
     const visibility = getValue(updaterOrValue, columnVisibility)
     setColumnVisibility(recordKind, visibility)
-  }, [columnVisibility, setColumnVisibility])
+  }, [recordKind, columnVisibility, setColumnVisibility])
   const onSortingChange = useCallback((updaterOrValue: Updater<SortingState>) => {
     const newSorting = getValue(updaterOrValue, sorting)
     setSorting(recordKind, newSorting)
-  }, [sorting, setSorting])
+  }, [recordKind, sorting, setSorting])
   const onPaginationChange = useCallback((updaterOrValue: Updater<PaginationState>) => {
     const newPagination = getValue(updaterOrValue, pagination)
     setPagination(recordKind, newPagination)
-  }, [pagination, setPagination])
+  }, [recordKind, pagination, setPagination])
 
   const selectedRecord = selectedRecords[recordKind]
   const [rowSelection, setRowSelection] = useState(selectedRecord ? {[selectedRecord.id]: true} : {})
@@ -178,10 +181,10 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
     useSensor(TouchSensor, {}),
     useSensor(KeyboardSensor, {})
   )
-  const findItem = useCallback((rowId: any, data?: TData[]) : TData | undefined => {
+  const findItem = useCallback((rowId: string, data?: TData[]) : TData | undefined => {
     if (!data)
       return undefined
-    for (let row of data) {
+    for (const row of data) {
       if (row.id == rowId)
         return row
       const found = findItem(rowId, getSubRows?.(row))
@@ -204,7 +207,7 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
     setSelectedRecord(recordKind, selectedRecord)
     if (onRowSelectionChange)
       onRowSelectionChange(selectedRecord?.id)
-  }, [setRowSelection, findItem, setMasterRecord, setSelectedRecord, recordKind, onRowSelectionChange])
+  }, [findItem, page, setSelectedRecord, recordKind, onRowSelectionChange])
 
   const table = useReactTable({
     // aggregationFns: ,
@@ -307,14 +310,17 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
     },
   })
 
-  if (manualPagination) {
-    useEffect(() => {
+  const prevTotalElements = useRef(0)
+  useEffect(() => {
+    const totalElements = page?.totalElements ?? 0
+    if (manualPagination && totalElements !== prevTotalElements.current) {
+      prevTotalElements.current = totalElements
       table.setOptions({
         ...table.options,
-        rowCount: page?.totalElements ?? 0,
+        rowCount: totalElements,
       })
-    }, [page?.totalElements]);
-  }
+    }
+  }, [manualPagination, table, page]);
 
   // function computeTableMetrics() {
   //   let length = 0
@@ -336,7 +342,7 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
         return arrayMove(columnOrder, oldIndex, newIndex)
       })
     }
-  }, [onColumnOrderChange, columnOrder])
+  }, [onColumnOrderChange])
 
   return (
     // NOTE: This provider creates div elements, so don't nest inside of <table> elements
@@ -355,6 +361,8 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
             recordId={selectedRecord?.id}
             isLinkableEntity={isLinkableEntity(recordKind)}
             auxRecordId={auxRecordId}
+            refetch={refetch}
+            loadingPathWithSearchParams={loadingPathWithSearchParams}
           />
           <Table className="table-fixed box-border" style={{width: `${table.getTotalSize()}px`}}>
             <colgroup>

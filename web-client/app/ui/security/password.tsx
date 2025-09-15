@@ -69,7 +69,7 @@ export default function PasswordDialog(
       password2: '',
     },
   })
-  const [updateUserProfileOp, { data, loading }] = useMutation(UPDATE_USER_PASSWORD)
+  const [updateUserProfileOp, { loading }] = useMutation(UPDATE_USER_PASSWORD)
 
   const createInput = useCallback(() => {
     const salt = genSaltSync(10)
@@ -85,7 +85,7 @@ export default function PasswordDialog(
       form.clearErrors()
       setOpen(false)
     }
-  }, [])
+  }, [form, setOpen])
 
   const handleSave = useCallback(() => {
     const values = form.getValues()
@@ -100,9 +100,7 @@ export default function PasswordDialog(
         onError: (e) => setError(e.message),
       })
     }
-  }, [createInput])
-
-  console.log("PasswordDialog: render")
+  }, [form, updateUserProfileOp, createInput, setOpen])
 
   return open ? (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -116,7 +114,7 @@ export default function PasswordDialog(
                 &nbsp;Change Password
               </DialogTitle>
               <DialogDescription className="py-4">
-                &nbsp;Enter your new password twice then click 'Save'.
+                &nbsp;Enter your new password twice then click &apos;Save&apos;.
               </DialogDescription>
             </DialogHeader>
             <div className="grid grid-cols-1 gap-4">

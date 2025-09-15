@@ -57,7 +57,7 @@ export default function QuotationDetails(
     onFormAction: FormActionHandler<QuotationFieldValues>
   }) {
 
-  const form = useFormContext()
+  const form = useFormContext<QuotationFieldValues>()
   const [open, setOpen] = useState(false)
   const { updating } = state
 

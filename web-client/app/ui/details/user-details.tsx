@@ -60,7 +60,6 @@ export default function UserDetails(
   {
     user,
     group,
-    showUsersOrMembers,
     state,
     setMode,
     onFormAction
@@ -68,7 +67,6 @@ export default function UserDetails(
   {
     user?: User
     group?: Group
-    showUsersOrMembers: string
     state: DetailState
     setMode: Dispatch<SetStateAction<DetailMode>>
     onFormAction: FormActionHandler<UserFieldValues>
@@ -93,7 +91,7 @@ export default function UserDetails(
         onFormAction("add", form.getValues())
       }
     }
-  }, [user, group, onFormAction, form])
+  }, [user, group, userInGroup, onFormAction, form])
 
   return (
     <fieldset className="border shadow-lg rounded-md">

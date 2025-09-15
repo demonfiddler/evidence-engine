@@ -47,7 +47,7 @@ export default function SettingsDialog(
       settings.setDefaults()
       setOpen(false)
     }
-  }, [settings])
+  }, [settings, setOpen])
 
   return open ? (
     <Dialog open={open} onOpenChange={setOpen}>

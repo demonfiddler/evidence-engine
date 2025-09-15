@@ -60,7 +60,7 @@ export default function TopicDetails(
     onFormAction: FormActionHandler<TopicFieldValues>
   }) {
 
-  const form = useFormContext()
+  const form = useFormContext<TopicFieldValues>()
   const { updating } = state
 
   const flatTopics = useMemo(() => {

@@ -59,6 +59,12 @@ export type TopicQueryFilter = TrackedEntityQueryFilter & {
   recursive?: boolean
 }
 
+export type QueryFilter =
+  TrackedEntityQueryFilter |
+  LinkableEntityQueryFilter |
+  TopicQueryFilter |
+  LogQueryFilter
+
 export type PageableInput = {
   pageNumber?: number
   pageSize?: number
@@ -110,9 +116,6 @@ export interface JournalInput extends BaseEntityInput {
   issn: string | null
   publisherId: string | null
   notes: string | null
-}
-
-export interface LogInput extends BaseEntityInput {
 }
 
 export interface PersonInput extends BaseEntityInput {

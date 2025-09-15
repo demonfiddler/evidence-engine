@@ -131,7 +131,7 @@ export default function GroupDetails(
                 ))
               }
             </FieldsetEx>
-            <p>Click the 'Users' tab to see group members</p>
+            <p>Click the &apos;Users&apos; tab to see group members</p>
           </div>
         </form>
       </Form>

@@ -84,7 +84,7 @@ export const PublicationSchema = z.object({
   authors: z.string().min(10).max(2000),
   journalId: z.string().regex(/^\d*$/).optional(),
   kind: PublicationKindSchema,
-  date: z.iso.date().or(z.date()).optional(),
+  date: z.date().max(Date.now(), { error: "Publication date cannot be in the future" }).optional(),
   year: z.string().regex(/^(?:19|20)\d{2}$/).or(z.uint32().min(1900).max(2099)),
   abstract: z.string().optional(),
   notes: z.string().optional(),
@@ -93,7 +93,7 @@ export const PublicationSchema = z.object({
   isbn: z.string().max(20).optional(),
   url: z.url().min(10).max(200).or(z.string().length(0)).optional(),
   cached: z.boolean(),
-  accessed: z.iso.date().or(z.date()).optional()
+  accessed: z.date().max(Date.now(), { error: "Accessed date cannot be in the future" }).optional()
 })
 
 export type PublicationFieldValues = z.infer<typeof PublicationSchema>

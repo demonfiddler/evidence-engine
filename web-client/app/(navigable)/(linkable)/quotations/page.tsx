@@ -31,12 +31,13 @@ import usePageLogic from "@/hooks/use-page-logic"
 import { toDate, toIsoDateString } from '@/lib/utils'
 import { LinkableEntityQueryFilter, QuotationInput } from '@/app/model/schema'
 import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter'
+import useLinkableEntityQueryFilter from '@/hooks/use-linkable-entity-query-filter'
 
 function createFieldValues(quotation?: Quotation) {
   return {
     text: quotation?.text ?? '',
     quotee: quotation?.quotee ?? '',
-    date: toDate(quotation?.date) ?? '',
+    date: toDate(quotation?.date),
     source: quotation?.source ?? '',
     url: quotation?.url ?? '',
     notes: quotation?.notes ?? ''
@@ -56,6 +57,7 @@ function createInput(fieldValues: QuotationFieldValues, id?: string) : Quotation
 }
 
 export default function Quotations() {
+  const filterLogic = useLinkableEntityQueryFilter()
   const {
     loading,
     page,
@@ -65,6 +67,8 @@ export default function Quotations() {
     setMode,
     form,
     handleFormAction,
+    refetch,
+    loadingPathWithSearchParams,
   } = usePageLogic<Quotation, QuotationFieldValues, QuotationInput, LinkableEntityQueryFilter>({
     recordKind: "Quotation",
     schema: QuotationSchema,
@@ -76,6 +80,7 @@ export default function Quotations() {
     deleteMutation: DELETE_QUOTATION,
     createFieldValues,
     createInput,
+    filterLogic,
   })
 
   // const {storeAppState} = useContext(GlobalContext)
@@ -98,6 +103,8 @@ export default function Quotations() {
         manualPagination={true}
         manualSorting={true}
         onRowSelectionChange={handleRowSelectionChange}
+        refetch={refetch}
+        loadingPathWithSearchParams={loadingPathWithSearchParams}
       />
       <FormProvider {...form}>
         <QuotationDetails

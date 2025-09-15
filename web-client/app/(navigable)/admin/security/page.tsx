@@ -155,6 +155,7 @@ export default function Security() {
     setMode: setUserMode,
     form: userForm,
     handleFormAction: handleUserFormAction,
+    refetch: refetchUsers,
   } = usePageLogic<User, UserFieldValues, UserInput, TrackedEntityQueryFilter>({
     recordKind: "User",
     schema: UserSchema,
@@ -176,6 +177,7 @@ export default function Security() {
     setMode: setGroupMode,
     form: groupForm,
     handleFormAction: handleGroupFormAction,
+    refetch: refetchGroups
   } = usePageLogic<Group, GroupFieldValues, GroupInput, TrackedEntityQueryFilter>({
     recordKind: "Group",
     schema: GroupSchema,
@@ -239,7 +241,7 @@ export default function Security() {
         }
         break
     }
-  }, [selectedGroup, selectedUser, addGroupMemberOp, removeGroupMemberOp])
+  }, [handleUserFormAction, selectedGroup, selectedUser, addGroupMemberOp, removeGroupMemberOp])
 
   return (
     <main className="flex flex-col items-start m-4 gap-4">
@@ -270,6 +272,8 @@ export default function Security() {
             manualPagination={false}
             manualSorting={false}
             onRowSelectionChange={handleGroupSelectionChange}
+            refetch={refetchGroups}
+            loadingPathWithSearchParams={false}
           />
           <FormProvider {...groupForm}>
             <GroupDetails
@@ -321,13 +325,14 @@ export default function Security() {
               manualPagination={false}
               manualSorting={false}
               onRowSelectionChange={handleUserSelectionChange}
+              refetch={refetchUsers}
+            loadingPathWithSearchParams={false}
             />
           </div>
           <FormProvider {...userForm}>
             <UserDetails
               user={selectedUser}
               group={selectedGroup}
-              showUsersOrMembers={showUsersOrMembers}
               state={userState}
               setMode={setUserMode}
               onFormAction={handleUserFormActionEx}

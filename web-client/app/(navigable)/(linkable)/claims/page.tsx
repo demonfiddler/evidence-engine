@@ -20,7 +20,6 @@
 'use client'
 
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline"
-
 import ClaimDetails from "@/app/ui/details/claim-details"
 import DataTable from "@/app/ui/data-table/data-table"
 import { columns } from "@/app/ui/tables/claim-columns"
@@ -32,11 +31,12 @@ import { CREATE_CLAIM, DELETE_CLAIM, READ_CLAIMS, UPDATE_CLAIM } from "@/lib/gra
 import usePageLogic from "@/hooks/use-page-logic"
 import { ClaimInput, LinkableEntityQueryFilter } from "@/app/model/schema"
 import LinkableEntityTableFilter from "@/app/ui/filter/linkable-entity-table-filter"
+import useLinkableEntityQueryFilter from "@/hooks/use-linkable-entity-query-filter"
 
 function createFieldValues(claim?: Claim) : ClaimFieldValues {
   return {
     text: claim?.text ?? '',
-    date: toDate(claim?.date) ?? '',
+    date: toDate(claim?.date),
     notes: claim?.notes ?? ''
   }
 }
@@ -51,6 +51,7 @@ function createInput(fieldValues: ClaimFieldValues, id?: string) : ClaimInput {
 }
 
 export default function Claims() {
+  const filterLogic = useLinkableEntityQueryFilter()
   const {
     loading,
     page,
@@ -60,6 +61,8 @@ export default function Claims() {
     setMode,
     form,
     handleFormAction,
+    refetch,
+    loadingPathWithSearchParams,
   } = usePageLogic<Claim, ClaimFieldValues, ClaimInput, LinkableEntityQueryFilter>({
     recordKind: "Claim",
     schema: ClaimSchema,
@@ -71,6 +74,7 @@ export default function Claims() {
     deleteMutation: DELETE_CLAIM,
     createFieldValues,
     createInput,
+    filterLogic,
   })
 
   // const {storeAppState} = useContext(GlobalContext)
@@ -99,6 +103,8 @@ export default function Claims() {
         manualPagination={true}
         manualSorting={true}
         onRowSelectionChange={handleRowSelectionChange}
+        refetch={refetch}
+        loadingPathWithSearchParams={loadingPathWithSearchParams}
       />
       <FormProvider {...form}>
         <ClaimDetails

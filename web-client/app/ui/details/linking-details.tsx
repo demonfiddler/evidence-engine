@@ -23,7 +23,7 @@ import EntityLink from "@/app/model/EntityLink"
 import ILinkableEntity from "@/app/model/ILinkableEntity"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
-import { useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
 import { getRecordLinkProperties, getReadQuery, getRecordLabel, TO_ENTITY_ID, setTopicFields, flatten, formatDateTime } from "@/lib/utils"
 import RecordKind from "@/app/model/RecordKind"
@@ -63,7 +63,7 @@ function getRecordLinks(record?: ILinkableEntity, toLinks?: boolean, entityLinks
   if (entityLinks) {
     if (!record || !results)
       throw new Error("record, entityLinks and results must all be passed")
-    for (let entityLink of entityLinks) {
+    for (const entityLink of entityLinks) {
       if (!entityLink.id)
         continue
       const otherRecord = toLinks ? entityLink.fromEntity : entityLink.toEntity
@@ -96,6 +96,8 @@ function getRecordLinks(record?: ILinkableEntity, toLinks?: boolean, entityLinks
   return results
 }
 
+const EMPTY = [] as Topic[]
+
 export default function LinkingDetails(
   {
     recordKind,
@@ -106,22 +108,21 @@ export default function LinkingDetails(
     record: ILinkableEntity | undefined
     state: DetailState
   }) {
-  const { masterRecordKind, masterRecordId, masterRecordLabel, /*queries, setSelectedLinkId*/ } = useContext(GlobalContext)
+  const { masterRecordKind, masterRecordId, masterRecordLabel } = useContext(GlobalContext)
   const [ selectedLinkId, setSelectedLinkId ] = useState('')
   const [ mode, setMode ] = useState("view")
-  const [ linkStatus, setLinkStatus ] = useState<string>('')
   const [ thisRecordLocations, setThisRecordLocations ] = useState<string>('')
   const [ otherRecordLocations, setOtherRecordLocations ] = useState<string>('')
   const [ topicId, setTopicId ] = useState<string>('')
   const topicsResult = useQuery(READ_TOPIC_HIERARCHY, {variables: {filter: {parentId: "-1"}}})
   const readRecordsQuery = getReadQuery(recordKind) ?? READ_ENTITY_LINKS
-  const [createLinkOp, createResult] = useMutation(CREATE_ENTITY_LINK, {refetchQueries: [readRecordsQuery]})
-  const [updateLinkOp, updateResult] = useMutation(UPDATE_ENTITY_LINK, {refetchQueries: [readRecordsQuery]})
-  const [deleteLinkOp, deleteResult] = useMutation(DELETE_ENTITY_LINK, {refetchQueries: [readRecordsQuery]})
+  const [createLinkOp/*, createResult*/] = useMutation(CREATE_ENTITY_LINK, {refetchQueries: [readRecordsQuery]})
+  const [updateLinkOp/*, updateResult*/] = useMutation(UPDATE_ENTITY_LINK, {refetchQueries: [readRecordsQuery]})
+  const [deleteLinkOp/*, deleteResult*/] = useMutation(DELETE_ENTITY_LINK, {refetchQueries: [readRecordsQuery]})
   const recordLinks = useMemo(() => getRecordLinks(record), [record])
   const allowLinking = record && state.allowLink && !state.updating
 
-  const rawTopics = (topicsResult.data?.topics.content ?? []) as Topic[]
+  const rawTopics = (topicsResult.data?.topics.content ?? EMPTY) as Topic[]
   const topics = useMemo(() => {
     const tmpTopics = [] as Topic[]
     setTopicFields("", undefined, rawTopics, tmpTopics)
@@ -189,7 +190,7 @@ export default function LinkingDetails(
       toast.info(`Linking '${masterRecordLabel}'. Enter link locations then Save.`)
       setMode("create")
     }
-  }, [mode, selectedLinkId, selectedLink, isModified, refreshEditableFields])
+  }, [mode, selectedLinkId, selectedLink, isModified, refreshEditableFields, masterRecordLabel])
 
   const handleSaveOrEdit = useCallback(() => {
     if (mode === "create") {
@@ -197,7 +198,7 @@ export default function LinkingDetails(
       const otherRecordId = masterRecordId
       const otherRecordLabel = masterRecordLabel
       if (thisRecordId && otherRecordId && otherRecordLabel) {
-        const [thisRecordIdProperty] = getRecordLinkProperties(recordKind, masterRecordKind)
+        const [,, thisRecordIdProperty] = getRecordLinkProperties(recordKind, masterRecordKind)
         if (thisRecordIdProperty) {
           const thisRecordIsToEntity = thisRecordIdProperty === TO_ENTITY_ID
           createLinkOp({
@@ -229,10 +230,10 @@ export default function LinkingDetails(
           variables: {
             input: createInput(selectedLink)
           },
-          onCompleted: (data, clientOptions) => {
+          onCompleted: (/*data, clientOptions*/) => {
             setMode("view")
           },
-          onError: (error, clientOptions) => {
+          onError: (error/*, clientOptions*/) => {
             toast.error(error.message)
           },
         })
@@ -247,6 +248,8 @@ export default function LinkingDetails(
     masterRecordKind,
     masterRecordId,
     masterRecordLabel,
+    otherRecordLocations,
+    thisRecordLocations,
     selectedLink,
     createLinkOp,
     createInput,
@@ -258,7 +261,7 @@ export default function LinkingDetails(
       toast.info(`Unlinking '${selectedLink?.otherRecordLabel}'...`)
       deleteLinkOp({
         variables: {entityLinkId: selectedLinkId},
-        onError: (error, clientOptions) => {
+        onError: (error/*, clientOptions*/) => {
           toast.error(error.message)
         },
       })
@@ -274,7 +277,13 @@ export default function LinkingDetails(
     refreshEditableFields(linkId)
   }, [refreshEditableFields])
 
-  useEffect(() => handleSelectedLinkChange(''), [record])
+  const prevRecord = useRef<ILinkableEntity>(undefined)
+  useEffect(() => {
+    if (record !== prevRecord.current) {
+      prevRecord.current = record
+      handleSelectedLinkChange('')
+    }
+  }, [handleSelectedLinkChange, record])
 
   const alreadyLinked = recordLinks.findIndex(r => r.otherRecordId == masterRecordId) != -1
 

@@ -20,7 +20,7 @@
 'use client'
 
 if (process.env.NODE_ENV === 'development') {
-  const wdyr = require('../wdyr');
+  // require('../wdyr');
 }
 
 import '@/app/ui/global.css'
@@ -40,9 +40,8 @@ import {
 import RecordKind from './model/RecordKind'
 import ILinkableEntity from './model/ILinkableEntity'
 import { getRecordLabel } from '@/lib/utils'
-import { useCallback, useEffect, useRef } from 'react'
+import { Suspense, useCallback, useEffect, useRef } from 'react'
 import { useSessionStorage } from 'usehooks-ts'
-import Topic from './model/Topic'
 import User from './model/User'
 import { ApolloProvider } from '@apollo/client'
 import { apolloClient } from '@/lib/graphql-utils'
@@ -50,7 +49,7 @@ import { AuthProvider } from '@/hooks/use-auth'
 import { useImmerReducer } from "use-immer"
 import { ColumnOrderState, ColumnSizingState, PaginationState, SortingState, VisibilityState } from '@tanstack/react-table'
 import IBaseEntity from './model/IBaseEntity'
-import { LinkableEntityQueryFilter, LogQueryFilter, TrackedEntityQueryFilter } from './model/schema'
+import { LinkableEntityQueryFilter, LogQueryFilter, QueryFilter, TrackedEntityQueryFilter } from './model/schema'
 import { usePathname } from 'next/navigation'
 import { columns as claimColumns, columnVisibility as claimColumnVisibility } from "@/app/ui/tables/claim-columns"
 import { columns as declarationColumns, columnVisibility as declarationColumnVisibility } from "@/app/ui/tables/declaration-columns"
@@ -86,7 +85,9 @@ function defaultAppState() {
     sidebarOpen: true,
     linkFilterOpen: false,
     trackingDetailsOpen: false,
+    masterTopicRecursive: true,
     masterRecordKind: "None",
+    showOnlyLinkedRecords: false,
     selectedRecords: {},
     columns: defaultColumnStatesMap(),
     queries: defaultQueryStatesMap(),
@@ -126,7 +127,7 @@ function defaultColumnState(recordKind: RecordKind) {
 
 function defaultQueryStatesMap() {
   return {
-    None: defaultQueryState<any>(),
+    None: defaultQueryState<never>(),
     Claim: defaultQueryState<LinkableEntityQueryFilter>(),
     Declaration: defaultQueryState<LinkableEntityQueryFilter>(),
     Group: defaultQueryState<TrackedEntityQueryFilter>(),
@@ -158,7 +159,24 @@ function defaultPagination() {
 
 type ReducerArg = {
   command: string
-  value: any
+  value:
+    undefined |
+    null |
+    boolean |
+    User |
+    string |
+    RecordKindValueOpt<SelectedRecord> |
+    RecordKindValueOpt<IBaseEntity> |
+    RecordKindValue<VisibilityState> |
+    RecordKindValue<ColumnSizingState> |
+    RecordKindValue<ColumnOrderState> |
+    RecordKindValue<QueryFilter> |
+    RecordKindValue<SortingState> |
+    RecordKindValue<PaginationState> |
+    RecordKindValue<string> |
+    RecordKindValue<UsersPageRadioState> |
+    RecordKindValue<SecurityPageTabState> |
+    QueryState<QueryFilter>
 }
 
 type RecordKindValue<TValue> = {
@@ -171,6 +189,7 @@ type RecordKindValueOpt<TValue> = Omit<RecordKindValue<TValue>, "value"> & {
 }
 
 function reducer(draft: AppState, action: ReducerArg) {
+  // console.log(`reducer(action: ${JSON.stringify(action)})`)
   draft.modified = true
   switch (action.command) {
     case "flush":
@@ -183,11 +202,9 @@ function reducer(draft: AppState, action: ReducerArg) {
       draft.linkFilterOpen = defaults.linkFilterOpen
       draft.trackingDetailsOpen = defaults.trackingDetailsOpen
       draft.masterTopicId = defaults.masterTopicId
-      draft.masterTopicDescription = defaults.masterTopicDescription
-      draft.masterTopicPath = defaults.masterTopicPath
+      draft.masterTopicRecursive = defaults.masterTopicRecursive
       draft.masterRecordKind = defaults.masterRecordKind
       draft.masterRecordId = defaults.masterRecordId
-      draft.masterRecordLabel = defaults.masterRecordLabel
       draft.showOnlyLinkedRecords = defaults.showOnlyLinkedRecords
       draft.queries = defaults.queries
       draft.columns = defaults.columns
@@ -201,33 +218,41 @@ function reducer(draft: AppState, action: ReducerArg) {
       break
     }
     case "setSidebarOpen": {
-      draft.sidebarOpen = action.value
+      draft.sidebarOpen = action.value as boolean
       break
     }
     case "setLinkFilterOpen": {
-      draft.linkFilterOpen = action.value
+      draft.linkFilterOpen = action.value as boolean
       break
     }
     case "setTrackingDetailsOpen": {
-      draft.trackingDetailsOpen = action.value
+      draft.trackingDetailsOpen = action.value as boolean
       break
     }
-    case "setMasterTopic": {
-      const topic = action.value as Topic
-      draft.masterTopicId = topic?.id
-      draft.masterTopicDescription = topic?.description
-      draft.masterTopicPath = topic?.path
+    case "setMasterTopicId": {
+      draft.masterTopicId = action.value as string
+      break;
+    }
+    case "setMasterTopicRecursive": {
+      draft.masterTopicRecursive = action.value as boolean
       break
     }
     case "setMasterRecord": {
-      const value = action.value as RecordKindValueOpt<SelectedRecord>
-      draft.masterRecordKind = value.recordKind
-      draft.masterRecordId = value.value?.id
-      draft.masterRecordLabel = value.value?.label
+      const record = action.value as RecordKindValueOpt<SelectedRecord>
+      draft.masterRecordKind = record.recordKind
+      draft.masterRecordId = record.value?.id
+      draft.masterRecordLabel = record.value?.label
+      break
+    }
+    case "setMasterRecordId": {
+      const record = action.value as RecordKindValueOpt<string>
+      draft.masterRecordKind = record.recordKind
+      draft.masterRecordId = record.value
+      draft.masterRecordLabel = `${record.recordKind}#${record.value}`
       break
     }
     case "setShowOnlyLinkedRecords": {
-      draft.showOnlyLinkedRecords = action.value
+      draft.showOnlyLinkedRecords = action.value as boolean
       break
     }
     case "setSelectedRecord": {
@@ -266,7 +291,7 @@ function reducer(draft: AppState, action: ReducerArg) {
       break
     }
     case "setFilter": {
-      const {recordKind, value: filter} = action.value as RecordKindValue<any>
+      const {recordKind, value: filter} = action.value as RecordKindValue<QueryFilter>
       const query = draft.queries[recordKind] ??= defaultQueryState()
       query.filter = filter
       break
@@ -285,19 +310,19 @@ function reducer(draft: AppState, action: ReducerArg) {
     }
     case "setSelectedLinkId": {
       const {recordKind, value: selectedLinkId} = action.value as RecordKindValue<string>
-      const query = draft.queries[recordKind] ??= defaultQueryState() as QueryState<any>
+      const query = draft.queries[recordKind] ??= defaultQueryState() as QueryState<QueryFilter>
       query.selectedLinkId = selectedLinkId
       break
     }
     case "setShowUsersOrMembers": {
       const {recordKind, value: showUsersOrMembers} = action.value as RecordKindValue<UsersPageRadioState>
-      const query = draft.queries[recordKind] ??= defaultQueryState() as QueryState<any>
+      const query = draft.queries[recordKind] ??= defaultQueryState() as QueryState<QueryFilter>
       query.showUsersOrMembers = showUsersOrMembers
       break
     }
     case "setActiveTab": {
       const {recordKind, value: activeTab} = action.value as RecordKindValue<SecurityPageTabState>
-      const query = draft.queries[recordKind] ??= defaultQueryState() as QueryState<any>
+      const query = draft.queries[recordKind] ??= defaultQueryState() as QueryState<QueryFilter>
       query.activeTab = activeTab
       break
     }
@@ -312,7 +337,7 @@ function FlushOnPathChange({flushFn} : {flushFn: () => void}) {
 
   useEffect(() => {
     if (prevPath.current !== pathname) {
-      console.log(`Navigating from ${prevPath.current} to ${pathname}`)
+      // console.log(`Navigating from ${prevPath.current} to ${pathname}`)
       flushFn();
       prevPath.current = pathname;
     }
@@ -326,7 +351,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [appStateSs, storeAppStateSs] = useSessionStorage<AppState>('app-state', defaultAppState)
+  const [appStateSs/*, storeAppStateSs*/] = useSessionStorage<AppState>('app-state', defaultAppState)
   const [appState, dispatch] = useImmerReducer<AppState, ReducerArg>(reducer, appStateSs)
 
   const setDefaults = useCallback(() => {
@@ -349,12 +374,20 @@ export default function RootLayout({
     dispatch({command: "setTrackingDetailsOpen", value: trackingDetailsOpen})
   }, [dispatch])
 
-  const setMasterTopic = useCallback((masterTopic?: Topic) => {
-    dispatch({command: "setMasterTopic", value: masterTopic})
+  const setMasterTopicId = useCallback((masterTopicId: string | undefined) => {
+    dispatch({command: "setMasterTopicId", value: masterTopicId})
+  }, [dispatch])
+
+  const setMasterTopicRecursive = useCallback((recursive: boolean) => {
+    dispatch({command: "setMasterTopicRecursive", value: recursive})
   }, [dispatch])
 
   const setMasterRecord = useCallback((recordKind: RecordKind, record: IBaseEntity) => {
     dispatch({command: "setMasterRecord", value: {recordKind, value: record}})
+  }, [dispatch])
+
+  const setMasterRecordId = useCallback((recordKind: RecordKind, record: string) => {
+    dispatch({command: "setMasterRecordId", value: {recordKind, value: record}})
   }, [dispatch])
 
   const setMasterRecordKind = useCallback((recordKind: RecordKind) => {
@@ -386,7 +419,7 @@ export default function RootLayout({
     dispatch({command: "setSorting", value: {recordKind, value: sorting}})
   }, [dispatch])
 
-  const setFilter = useCallback((recordKind: RecordKind, filter: any) => {
+  const setFilter = useCallback((recordKind: RecordKind, filter: QueryFilter) => {
     dispatch({command: "setFilter", value: {recordKind, value: filter}})
   }, [dispatch])
 
@@ -410,9 +443,9 @@ export default function RootLayout({
     if (appState.modified) {
       // storeAppStateSs(appState)
       dispatch({command: "flush", value: undefined})
-      console.log("Flushed app state to session storage (would have!)")
+      // console.log("Flushed app state to session storage (would have!)")
     }
-  }, [appState])
+  }, [dispatch, appState])
 
   const globalContext = {
     ...appState,
@@ -421,9 +454,11 @@ export default function RootLayout({
     setSidebarOpen,
     setLinkFilterOpen,
     setTrackingDetailsOpen,
-    setMasterTopic,
-    setMasterRecord,
+    setMasterTopicId,
+    setMasterTopicRecursive,
     setMasterRecordKind,
+    setMasterRecord,
+    setMasterRecordId,
     setShowOnlyLinkedRecords,
     setSelectedRecord,
     setColumnVisibility,
@@ -449,10 +484,6 @@ export default function RootLayout({
   //   router.events.on('routeChangeStart', storeAppState)
   //   return () => router.events.off('routeChangeStart', storeAppState)
   // }, [router, storeAppState])
-  // useEffect(() => {
-  //   router.events.on('routeChangeStart', storeAppState)
-  //   return () => router.events.off('routeChangeStart', storeAppState)
-  // }, [router, storeAppState])
 
   return (
     <html lang="en">
@@ -462,7 +493,9 @@ export default function RootLayout({
           <ApolloProvider client={apolloClient}>
             <GlobalContext value={globalContext}>
               <Toaster position="top-center" expand />
-              {children}
+              <Suspense>
+                {children}
+              </Suspense>
             </GlobalContext>
           </ApolloProvider>
         </AuthProvider>

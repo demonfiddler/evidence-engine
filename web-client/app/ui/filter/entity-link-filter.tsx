@@ -20,7 +20,7 @@
 'use client'
 
 import { toast } from "sonner"
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { useContext } from 'react'
 import DropdownTreeSelect, { TreeNode, TreeNodeProps } from 'react-dropdown-tree-select'
 import 'react-dropdown-tree-select/dist/styles.css'
@@ -36,9 +36,8 @@ import {
 } from "@/components/ui/collapsible"
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline'
 import Topic from "@/app/model/Topic"
-import RecordKind from "@/app/model/RecordKind"
 import { GlobalContext } from '@/lib/context'
-import { setTopicFields } from "@/lib/utils"
+import { findTopic, setTopicFields } from "@/lib/utils"
 import { useQuery } from "@apollo/client"
 import { READ_TOPIC_HIERARCHY } from "@/lib/graphql-queries"
 import ButtonEx from "../ext/button-ex"
@@ -46,6 +45,8 @@ import Help from "../misc/help"
 import InputEx from "../ext/input-ex"
 import LabelEx from "../ext/label-ex"
 import { Checkbox } from "@/components/ui/checkbox"
+import { LinkableEntityQueryFilter } from "@/app/model/schema"
+import useLinkableEntityQueryFilter from "@/hooks/use-linkable-entity-query-filter"
 
 interface TopicTreeNode extends TreeNodeProps {
   topic: Topic
@@ -66,7 +67,7 @@ function getTreeData(topics: Topic[], masterTopicId?: string): TopicTreeNode[] {
     })
   }
   function expandParents(nodes: TopicTreeNode[]): boolean {
-    for (let node of nodes) {
+    for (const node of nodes) {
       if (node.checked)
         return true
       if (node.children && expandParents(node.children as TopicTreeNode[])) {
@@ -93,22 +94,26 @@ function setChecked(data: TreeNode[], currentNode: TreeNode): boolean {
   return false
 }
 
-export default function EntityLinks() {
+export default function EntityLinkFilter() {
   const {
     linkFilterOpen,
     masterTopicId,
-    masterTopicDescription,
-    masterTopicPath,
+    masterTopicRecursive,
     masterRecordKind,
     masterRecordId,
     masterRecordLabel,
     showOnlyLinkedRecords,
+    queries,
     setLinkFilterOpen,
-    setMasterTopic,
+    setMasterTopicId,
+    setMasterTopicRecursive,
     setMasterRecordKind,
     setShowOnlyLinkedRecords,
   } = useContext(GlobalContext)
-  const [topicPlaceholder, setTopicPlaceholder] = useState(masterTopicId ? String.fromCharCode(160) : "-Choose topic-")
+  const {createSearchParams} = useLinkableEntityQueryFilter()
+  const topicPlaceholder = masterTopicId ? String.fromCharCode(160) : "-Choose topic-"
+  const [topicDescription, setTopicDescription] = useState('')
+  const [topicPath, setTopicPath] = useState('')
   const result = useQuery(
     READ_TOPIC_HIERARCHY,
     {
@@ -132,45 +137,47 @@ export default function EntityLinks() {
 
   useEffect(() => {
     setTreeData(getTreeData(topics, masterTopicId))
+    const masterTopic = findTopic(topics, masterTopicId)
+    setTopicDescription(masterTopic?.description ?? '')
+    setTopicPath(masterTopic?.path ?? '')
   }, [topics, masterTopicId])
 
-  function getMasterRecordLabel(): string {
+  const getMasterRecordLabel = useCallback(() => {
     if (masterRecordKind == "None")
       return '- None -'
     if (!masterRecordLabel)
       return `- Select a ${masterRecordKind} in the ${masterRecordKind}s page -`
     return masterRecordLabel
-  }
+  }, [masterRecordKind, masterRecordLabel])
 
-  function getMasterRecordUri(): string {
+  const getMasterRecordUri = useCallback(() => {
     let uri = ""
     if (masterRecordKind != "None")
       uri = `/${masterRecordKind?.toLowerCase()}s`
+    const newFilter = {...queries[masterRecordKind]?.filter} as LinkableEntityQueryFilter
     if (masterRecordId)
-      uri += `?id=${masterRecordId}`
+      newFilter.recordId = masterRecordId
+    const searchParams = createSearchParams(newFilter)
+    uri += `?${searchParams.toString()}`
     return uri
-  }
+  }, [masterRecordKind, masterRecordId, queries, createSearchParams])
 
-  function handleTopicChange(currentNode: TreeNode, selectedNodes: TreeNode[]) {
+  const handleTopicChange = useCallback((currentNode: TreeNode, selectedNodes: TreeNode[]) => {
     const topic = selectedNodes.length != 0 ? selectedNodes[0].topic : undefined
-    let newData = getTreeData(topics, topic?.id)
+    const newData = getTreeData(topics, topic?.id)
     setChecked(newData, currentNode)
     setTreeData(newData)
 
     const description = currentNode.description.trim()
-    const hasTopic = currentNode.checked
-    setTopicPlaceholder(hasTopic ? String.fromCharCode(160) : "-Choose topic-")
-    setMasterTopic(topic)
+    setMasterTopicId(topic?.id)
+    setTopicDescription(topic?.description ?? '')
+    setTopicPath(topic?.path ?? '')
 
     const topicId = currentNode.topic.id;
     const label = currentNode.topic.label;
     const verb = currentNode.checked ? "selected" : "deselected"
-    toast.success(`You ${verb} topic #${topicId} (${label} - ${description})`);
-  }
-
-  function handleMasterRecordKindChange(recordKind: RecordKind) {
-    setMasterRecordKind(recordKind)
-  }
+    toast.success(`You ${verb} Topic#${topicId} (${label} - ${description})`);
+  }, [topics, setMasterTopicId])
 
   return (
     <Collapsible
@@ -213,8 +220,17 @@ export default function EntityLinks() {
                   />
                   <Help text="In the table below, show only records linked to this topic when 'Show only linked records' is checked" />
                 </div>
-                <Textarea placeholder="-Topic description here-" disabled={true} value={masterTopicDescription ?? ''} />
-                <p className="text-xs text-gray-500">{`Path: ${masterTopicPath ?? ""}`}</p>
+                <Textarea placeholder="-Topic description here-" disabled={true} value={topicDescription ?? ''} />
+                <p className="text-xs text-gray-500">{`Path: ${topicPath ?? ""}`}</p>
+                <div className="flex gap-2">
+                  <Checkbox id="recursive" checked={masterTopicRecursive} onCheckedChange={setMasterTopicRecursive} />
+                  <LabelEx
+                    htmlFor="recursive"
+                    help="If checked, the table below will include records linked to sub-topics of the selected topic"
+                  >
+                    Include records linked to sub-topics
+                  </LabelEx>
+                </div>
               </div>
             </fieldset>
             <fieldset className="border rounded-md">
@@ -223,7 +239,7 @@ export default function EntityLinks() {
                 <RadioGroup
                   className="flex flex-row"
                   value={masterRecordKind}
-                  onValueChange={handleMasterRecordKindChange}>
+                  onValueChange={setMasterRecordKind}>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="None" id="option-one" />
                     <Label htmlFor="option-one">None</Label>
@@ -291,8 +307,7 @@ export default function EntityLinks() {
             />
             <LabelEx
               htmlFor="linkedOnly"
-              // className="flex-none"
-              help="In the table below, show only records linked to the master topic and/or master record selected above. Note that since records of the same kind cannot be linked, if the master record kind is the same kind as the table below, the master record filter will have no effect."
+              help="If checked, the table below will show only records linked to the master topic and/or master record selected above. Note that since records of the same kind cannot be linked, if the master record kind is the same kind as the table below, the master record filter will have no effect (though the topic link filter, if set, will still apply)."
             >
               Show only linked records
             </LabelEx>

@@ -57,7 +57,7 @@ function checkResponse(response: Response, action: string) {
   // - POST to /login redirects to the base URL, which doesn't exist.
   // - POST to /logout redirects to the /login page, which does exist.
   if (response.status != 0 && !response.ok && !response.redirected || !(response.status == 0 && response.type == "opaqueredirect")) {
-    console.log(`status = ${response.status}, statusText = ${response.statusText}, ok = ${response.ok}, redirected = ${response.redirected}, type = ${response.type}`)
+    // console.log(`status = ${response.status}, statusText = ${response.statusText}, ok = ${response.ok}, redirected = ${response.redirected}, type = ${response.type}`)
     throw new Error(`${action} failed: status = ${response.status}: ${response.statusText}`);
   }
 }

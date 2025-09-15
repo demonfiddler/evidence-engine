@@ -21,7 +21,6 @@ import { createContext } from 'react'
 
 import ILinkableEntity from "../app/model/ILinkableEntity"
 import RecordKind from "../app/model/RecordKind"
-import Topic from "../app/model/Topic"
 import Authority from '@/app/model/Authority'
 import User from '@/app/model/User'
 import {
@@ -32,11 +31,11 @@ import {
   Updater,
   VisibilityState
 } from '@tanstack/react-table';
+import { QueryFilter } from '@/app/model/schema'
 
 export type MasterLinkState = {
   masterTopicId?: string
-  masterTopicDescription?: string | null
-  masterTopicPath?: string | null
+  masterTopicRecursive: boolean
   masterRecordId?: string
   masterRecordLabel?: string
   masterRecordKind: RecordKind
@@ -44,9 +43,11 @@ export type MasterLinkState = {
 }
 
 export type MasterLinkStateSetters = {
-  setMasterTopic: (topic?: Topic) => void
-  setMasterRecord: (recordKind: RecordKind, record?: ILinkableEntity) => void
+  setMasterTopicId(topicId: string | undefined) : void
+  setMasterTopicRecursive: (recursive: boolean) => void
   setMasterRecordKind: (recordKind: RecordKind) => void
+  setMasterRecord: (recordKind: RecordKind, record?: ILinkableEntity) => void
+  setMasterRecordId: (recordKind: RecordKind, masterRecordId: string | undefined) => void
   setShowOnlyLinkedRecords: (showOnlyLinkedRecords: boolean) => void
 }
 
@@ -89,22 +90,8 @@ export type QueryState<TFilter> = {
 }
 
 export type QueryStatesMap = {
-  [k in RecordKind]?: QueryState<any>
+  [k in RecordKind]?: QueryState<QueryFilter>
 }
-// export type QueryStatesMap = {
-//   None?: QueryState<any>
-//   Claim?: QueryState<LinkableEntityQueryFilter>
-//   Declaration?: QueryState<LinkableEntityQueryFilter>
-//   Group?: QueryState<TrackedEntityQueryFilter>
-//   Journal?: QueryState<TrackedEntityQueryFilter>
-//   Log?: QueryState<LogQueryFilter>
-//   Person?: QueryState<LinkableEntityQueryFilter>
-//   Publication?: QueryState<LinkableEntityQueryFilter>
-//   Publisher?: QueryState<TrackedEntityQueryFilter>
-//   Quotation?: QueryState<LinkableEntityQueryFilter>
-//   Topic?: QueryState<TrackedEntityQueryFilter>
-//   User?: QueryState<TrackedEntityQueryFilter>
-// }
 
 export type QueryStates = {
   queries: QueryStatesMap
@@ -202,6 +189,7 @@ export const GlobalContext = createContext<GlobalContextType>({
   linkFilterOpen: false,
   showOnlyLinkedRecords: false,
   trackingDetailsOpen: false,
+  masterTopicRecursive: true,
   masterRecordKind: "None",
   selectedRecords: {},
   columns: {},
@@ -211,9 +199,11 @@ export const GlobalContext = createContext<GlobalContextType>({
   setSidebarOpen: () => {throw new Error("setSidebarOpen() not supported in default GlobalContext")},
   setLinkFilterOpen: () => {throw new Error("setLinkFilterOpen() not supported in default GlobalContext")},
   setTrackingDetailsOpen: () => {throw new Error("setTrackingDetailsOpen() not supported in default GlobalContext")},
-  setMasterTopic: () => {throw new Error("setMasterTopic() not supported in default GlobalContext")},
-  setMasterRecord: () => {throw new Error("setMasterRecord() not supported in default GlobalContext")},
+  setMasterTopicId: () => {throw new Error("setMasterTopicId() not supported in default GlobalContext")},
+  setMasterTopicRecursive: () => {throw new Error("setMasterTopicRecursive() not supported in default GlobalContext")},
   setMasterRecordKind: () => {throw new Error("setMasterRecordKind() not supported in default GlobalContext")},
+  setMasterRecord: () => {throw new Error("setMasterRecord() not supported in default GlobalContext")},
+  setMasterRecordId: () => {throw new Error("setMasterRecordId() not supported in default GlobalContext")},
   setShowOnlyLinkedRecords: () => {throw new Error("setShowOnlyLinkedRecords() not supported in default GlobalContext")},
   setSelectedRecord: () => {throw new Error("setSelectedRecord() not supported in default GlobalContext")},
   setColumnVisibility: () => {throw new Error("setColumnVisibility() not supported in default GlobalContext")},

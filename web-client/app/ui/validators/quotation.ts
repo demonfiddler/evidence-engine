@@ -22,10 +22,10 @@ import { z } from "zod/v4"
 export const QuotationSchema = z.object({
   quotee: z.string().min(5).max(50),
   text: z.string().max(1000),
-  date: z.iso.date().or(z.date()).optional(),
+  date: z.date().max(Date.now(), { error: "Quotation date cannot be in the future" }).optional(),
   source: z.string().max(200).optional(),
   url: z.url().min(10).max(200).or(z.string().length(0)).optional(),
-  notes: z.string().nullable().optional()
+  notes: z.string().optional()
 })
 
 export type QuotationFieldValues = z.infer<typeof QuotationSchema>

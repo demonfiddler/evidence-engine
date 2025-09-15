@@ -61,13 +61,13 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
     className?: string
     recordKind: RecordKind
     record?: T
-    form: UseFormReturn<any>
+    form: UseFormReturn<V>
     state: DetailState
     setMode: Dispatch<SetStateAction<DetailMode>>
     onFormAction: FormActionHandler<V>
   }) {
 
-  const {masterTopicId, masterTopicPath, masterRecordKind, masterRecordId, masterRecordLabel} = useContext(GlobalContext)
+  const {masterTopicId, masterRecordKind, masterRecordId, masterRecordLabel} = useContext(GlobalContext)
 
   // For now, we only support linking as a convenience during record creation.
   const allowTopicLink = !!masterTopicId && ["Claim", "Declaration", "Publication", "Person", "Quotation"].includes(recordKind)
@@ -80,7 +80,7 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
   useEffect(() => {
     if (linkMasterTopic != allowTopicLink)
       setLinkMasterTopic(allowTopicLink)
-  }, [allowTopicLink])
+  }, [linkMasterTopic, allowTopicLink])
   useEffect(() => {
     if (linkMasterRecord != allowMasterRecordLink)
       setLinkMasterRecord(allowMasterRecordLink)
@@ -90,7 +90,7 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
       if (otherRecordLocationsForMaster)
         setOtherRecordLocationsForMaster('')
     }
-  }, [allowMasterRecordLink])
+  }, [linkMasterRecord, allowMasterRecordLink, thisRecordLocationsForMaster, otherRecordLocationsForMaster])
   useEffect(() => {
     if (!linkMasterTopic && thisRecordLocationsForTopic)
       setThisRecordLocationsForTopic('')
@@ -100,7 +100,7 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
       if (otherRecordLocationsForMaster)
         setOtherRecordLocationsForMaster('')
     }
-  }, [linkMasterTopic, linkMasterRecord])
+  }, [linkMasterTopic, thisRecordLocationsForTopic, linkMasterRecord, thisRecordLocationsForMaster, otherRecordLocationsForMaster])
   useEffect(() => {
     if (state.mode == "view") {
       setThisRecordLocationsForTopic('')
@@ -130,7 +130,7 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
       onFormAction("new")
       setMode("create")
     }
-  }, [state, form, recordLabel, onFormAction, setMode])
+  }, [state, form, recordLabel, recordKind, onFormAction, setMode])
 
   const handleEditOrSave = useCallback(() => {
     // console.log(`ENTER handleEditOrSave(), state = ${JSON.stringify(state)}, isDirty = ${JSON.stringify(form.formState.isDirty)}, isValid = ${JSON.stringify(form.formState.isValid)}`)
@@ -183,6 +183,7 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
     linkMasterRecord,
     thisRecordLocationsForMaster,
     otherRecordLocationsForMaster,
+    recordKind,
     onFormAction,
     setMode,
   ])
@@ -193,7 +194,7 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
       onFormAction("delete")
       setMode("view")
     }
-  }, [recordLabel, onFormAction, form, setMode])
+  }, [recordLabel, onFormAction, setMode])
 
   return (
     <div className={cn("self-start flex flex-col gap-2 items-center", className)}>
@@ -246,7 +247,7 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
       </ButtonEx>
       <fieldset className={cn("border rounded-md p-2 flex flex-col gap-2", isLinkableEntity && state.mode === "create"? "" : "hidden")}>
         <legend className="text-lg">&nbsp;Create Master Links&nbsp;</legend>
-        <div className="flex gap-2" title={`Link new record to master topic '${masterTopicPath}'`}>
+        <div className="flex gap-2" title={`Link new record to master topic`}>
           <Checkbox
             id="link-topic"
             disabled={!allowTopicLink}
@@ -259,7 +260,7 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
           id="this-locations-topic"
           type="text"
           disabled={!linkMasterTopic}
-          help={`Locations in the new new ${recordKind} that refer to Topic '${masterTopicPath}'`}
+          help={`Locations in the new ${recordKind} that refer to master topic`}
           value={thisRecordLocationsForTopic}
           onChange={e => setThisRecordLocationsForTopic(e.target.value)}
         />

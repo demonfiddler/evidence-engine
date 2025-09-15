@@ -59,7 +59,7 @@ export default function PersonDetails(
     onFormAction: FormActionHandler<PersonFieldValues>
   }) {
 
-  const form = useFormContext()
+  const form = useFormContext<PersonFieldValues>()
   const { updating } = state
 
   return (

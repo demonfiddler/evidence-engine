@@ -69,7 +69,7 @@ export default function DeclarationDetails(
     onFormAction: FormActionHandler<DeclarationFieldValues>
   }) {
 
-  const form = useFormContext()
+  const form = useFormContext<DeclarationFieldValues>()
   const [open, setOpen] = useState(false)
   const { updating } = state
 

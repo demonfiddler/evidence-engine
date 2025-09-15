@@ -31,6 +31,7 @@ import { CREATE_PUBLISHER, DELETE_PUBLISHER, READ_PUBLISHERS, UPDATE_PUBLISHER }
 import usePageLogic from "@/hooks/use-page-logic"
 import { PublisherInput, TrackedEntityQueryFilter } from '@/app/model/schema'
 import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter'
+import useTrackedEntityQueryFilter from '@/hooks/use-tracked-entity-query-filter'
 
 function createFieldValues(publisher?: Publisher) : PublisherFieldValues {
   return {
@@ -54,6 +55,7 @@ function createInput(fieldValues: PublisherFieldValues, id?: string) : Publisher
 }
 
 export default function Publishers() {
+  const filterLogic = useTrackedEntityQueryFilter()
   const {
     loading,
     page,
@@ -63,6 +65,8 @@ export default function Publishers() {
     setMode,
     form,
     handleFormAction,
+    refetch,
+    loadingPathWithSearchParams,
   } = usePageLogic<Publisher, PublisherFieldValues, PublisherInput, TrackedEntityQueryFilter>({
     recordKind: "Publisher",
     schema: PublisherSchema,
@@ -74,6 +78,7 @@ export default function Publishers() {
     deleteMutation: DELETE_PUBLISHER,
     createFieldValues,
     createInput,
+    filterLogic,
   })
 
   // const {storeAppState} = useContext(GlobalContext)
@@ -96,6 +101,8 @@ export default function Publishers() {
         manualPagination={true}
         manualSorting={true}
         onRowSelectionChange={handleRowSelectionChange}
+        refetch={refetch}
+        loadingPathWithSearchParams={loadingPathWithSearchParams}
       />
       <FormProvider {...form}>
         <PublisherDetails

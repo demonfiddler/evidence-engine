@@ -63,7 +63,7 @@ export default function JournalDetails(
     onFormAction: FormActionHandler<JournalFieldValues>
   }) {
 
-  const form = useFormContext()
+  const form = useFormContext<JournalFieldValues>()
   const { updating } = state
 
   return (

@@ -45,19 +45,19 @@ export default function MyAccount({className} : {className: string}) {
   const [profileOpen, setProfileOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
 
-  function handleChangePassword(event: Event): void {
+  function handleChangePassword(/*e: Event*/): void {
     setPasswordOpen(true)
   }
 
-  function handleProfile(event: Event): void {
+  function handleProfile(/*e: Event*/): void {
     setProfileOpen(true)
   }
 
-  function handleSettings(event: Event): void {
+  function handleSettings(/*e: Event*/): void {
     setSettingsOpen(true)
   }
 
-  function handleSignout(event: Event): void {
+  function handleSignout(/*e: Event*/): void {
     logout()
   }
 

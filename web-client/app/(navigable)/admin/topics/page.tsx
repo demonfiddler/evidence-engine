@@ -25,13 +25,16 @@ import DataTable from "@/app/ui/data-table/data-table"
 import { columns } from "@/app/ui/tables/topic-columns"
 import IPage from "@/app/model/IPage"
 import Topic from "@/app/model/Topic"
-import { setTopicFields, } from "@/lib/utils"
+import { findTopic, setTopicFields, } from "@/lib/utils"
 import { FormProvider } from "react-hook-form"
 import { TopicFieldValues, TopicSchema } from "@/app/ui/validators/topic"
-import { CREATE_TOPIC, DELETE_TOPIC, READ_TOPIC_HIERARCHY, UPDATE_TOPIC } from "@/lib/graphql-queries"
+import { CREATE_TOPIC, DELETE_TOPIC, READ_TOPIC_HIERARCHY, READ_TOPICS, UPDATE_TOPIC } from "@/lib/graphql-queries"
 import usePageLogic from "@/hooks/use-page-logic"
 import { TopicInput, TopicQueryFilter } from '@/app/model/schema'
 import TopicTableFilter from '@/app/ui/filter/topic-table-filter'
+import useTopicQueryFilter from '@/hooks/use-topic-query-filter'
+import { GlobalContext } from '@/lib/context'
+import { useContext } from 'react'
 
 function createFieldValues(topic?: Topic) : TopicFieldValues {
   return {
@@ -62,23 +65,10 @@ function preparePage(rawPage?: IPage<Topic>) {
   return result
 }
 
-function findRecord(topics?: Topic[], topicId?: string | null) : Topic | undefined {
-  if (topics) {
-    let topic: Topic | undefined
-    for (topic of topics) {
-      if (topic?.id == topicId)
-        return topic
-      if (topic?.children) {
-        topic = findRecord(topic.children, topicId)
-        if (topic)
-          return topic
-      }
-    }
-  }
-  return undefined
-}
-
 export default function Topics() {
+  const { queries } = useContext(GlobalContext)
+  const filter = queries["Topic"]?.filter as TopicQueryFilter
+  const filterLogic = useTopicQueryFilter()
   const {
     loading,
     page,
@@ -88,19 +78,22 @@ export default function Topics() {
     setMode,
     form,
     handleFormAction,
+    refetch,
+    loadingPathWithSearchParams,
   } = usePageLogic<Topic, TopicFieldValues, TopicInput, TopicQueryFilter>({
     recordKind: "Topic",
     schema: TopicSchema,
     manualPagination: false,
     manualSorting: false,
-    readQuery: READ_TOPIC_HIERARCHY,
+    readQuery: filter?.recursive ? READ_TOPIC_HIERARCHY : READ_TOPICS,
     createMutation: CREATE_TOPIC,
     updateMutation: UPDATE_TOPIC,
     deleteMutation: DELETE_TOPIC,
     createFieldValues: createFieldValues,
     createInput,
     preparePage,
-    findRecord,
+    findRecord: findTopic,
+    filterLogic,
   })
 
   // const {storeAppState} = useContext(GlobalContext)
@@ -124,13 +117,16 @@ export default function Topics() {
         manualSorting={false}
         onRowSelectionChange={handleRowSelectionChange}
         getSubRows={(row) => row.children}
+        refetch={refetch}
+        loadingPathWithSearchParams={loadingPathWithSearchParams}
       />
       <FormProvider {...form}>
         <TopicDetails
           record={selectedRecord}
           state={state}
           setMode={setMode}
-          topics={page?.content ?? []} onFormAction={handleFormAction}
+          topics={page?.content ?? []}
+          onFormAction={handleFormAction}
         />
       </FormProvider>
     </main>

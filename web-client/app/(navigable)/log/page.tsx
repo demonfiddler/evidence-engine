@@ -27,13 +27,14 @@ import Log from "@/app/model/Log"
 import { toDate } from "@/lib/utils"
 import { READ_LOGS } from "@/lib/graphql-queries"
 import LogTableFilter from "@/app/ui/filter/log-table-filter"
-import { LogInput, LogQueryFilter } from "@/app/model/schema"
+import { BaseEntityInput, LogQueryFilter } from "@/app/model/schema"
 import usePageLogic from "@/hooks/use-page-logic"
 import { LogFieldValues } from '@/app/ui/validators/log'
+import useLogQueryFilter from '@/hooks/use-log-query-filter'
 
 function createFieldValues(record?: Log) : LogFieldValues {
   return {
-    timestamp: toDate(record?.timestamp) ?? '',
+    timestamp: toDate(record?.timestamp),
     transactionKind: record?.transactionKind ?? '',
     username: record?.user?.username ?? '',
     entityKind: record?.entityKind ?? '',
@@ -44,17 +45,21 @@ function createFieldValues(record?: Log) : LogFieldValues {
 }
 
 export default function Logs() {
+  const filterLogic = useLogQueryFilter()
   const {
     loading,
     page,
     selectedRecord,
     handleRowSelectionChange,
-  } = usePageLogic<Log, LogFieldValues, LogInput, LogQueryFilter>({
+    refetch,
+    loadingPathWithSearchParams,
+  } = usePageLogic<Log, LogFieldValues, BaseEntityInput, LogQueryFilter>({
     recordKind: "Log",
     manualPagination: true,
     manualSorting: true,
     readQuery: READ_LOGS,
     createFieldValues,
+    filterLogic,
   })
 
   return (
@@ -73,6 +78,8 @@ export default function Logs() {
         manualPagination={true}
         manualSorting={true}
         onRowSelectionChange={handleRowSelectionChange}
+        refetch={refetch}
+        loadingPathWithSearchParams={loadingPathWithSearchParams}
       />
       <LogDetails record={selectedRecord} />
     </main>

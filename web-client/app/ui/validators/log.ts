@@ -29,7 +29,7 @@ const TransactionKind = z.enum([
   "UPD",
 ])
 
-export const LogSchema = z.object({
+export const Log = z.object({
   timestamp: z.iso.datetime().optional(),
   transactionKind: TransactionKind.optional(),
   username: z.string(),
@@ -43,7 +43,7 @@ export const LogSchema = z.object({
 
 // For now, just use a hand-coded FieldValues, since we never update log entries.
 export type LogFieldValues = {
-  timestamp: Date | string
+  timestamp: Date | undefined
   transactionKind: string
   username: string
   entityKind: string

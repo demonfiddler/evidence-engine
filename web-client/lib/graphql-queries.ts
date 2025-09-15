@@ -19,8 +19,6 @@
 
 import { gql } from "@apollo/client"
 
-//alert("ENTER graphql-queries.ts")
-
 const FRAGMENT_PAGE_FIELDS = gql`
 fragment pageFields on IPage {
     hasContent
@@ -36,7 +34,6 @@ fragment pageFields on IPage {
     hasPrevious
 }
 `
-//alert("(1) graphql-queries.ts")
 
 const FRAGMENT_TRACKED_ENTITY_FIELDS = gql`
 fragment trackedEntityFields on ITrackedEntity {
@@ -69,8 +66,8 @@ fragment trackedEntityFields on ITrackedEntity {
   # }
 }
 `
-//alert("(2) graphql-queries.ts")
 
+/*
 const FRAGMENT_TRACKED_ENTITY_FIELDS_POLYMORPHIC = gql`
 fragment trackedEntityFieldsPolymorphic on ITrackedEntity {
   ...trackedEntityFields
@@ -88,7 +85,7 @@ fragment trackedEntityFieldsPolymorphic on ITrackedEntity {
   }
 }
 `
-//alert("(3) graphql-queries.ts")
+*/
 
 const FRAGMENT_LINKED_ENTITY_FIELDS = gql`
 fragment linkedEntityFields on ILinkableEntity {
@@ -202,8 +199,8 @@ fragment linkableEntityFields on ILinkableEntity {
   }
 }
 `
-//alert("(4) graphql-queries.ts")
 
+/*
 const FRAGMENT_LINKABLE_ENTITY_FIELDS_POLYMORPHIC = gql`
 fragment linkableEntityFieldsPolymorphic on ILinkableEntity {
   ...trackedEntityFields
@@ -225,7 +222,7 @@ fragment linkableEntityFieldsPolymorphic on ILinkableEntity {
   }
 }
 `
-//alert("(5) graphql-queries.ts")
+*/
 
 const FRAGMENT_CLAIM_FIELDS = gql`
 fragment claimFields on Claim {
@@ -234,7 +231,6 @@ fragment claimFields on Claim {
   notes
 }
 `
-//alert("(6) graphql-queries.ts")
 
 const FRAGMENT_DECLARATION_FIELDS = gql`
 fragment declarationFields on Declaration {
@@ -249,7 +245,6 @@ fragment declarationFields on Declaration {
   notes
 }
 `
-//alert("(7) graphql-queries.ts")
 
 const FRAGMENT_ENTITY_LINK_FIELDS = gql`
 fragment entityLinkFields on EntityLink {
@@ -266,9 +261,6 @@ fragment entityLinkFields on EntityLink {
   toEntityLocations
 }
 `
-//alert("(8) graphql-queries.ts")
-
-//alert("(9) graphql-queries.ts")
 
 const FRAGMENT_LOG_FIELDS = gql`
 fragment logFields on Log {
@@ -284,7 +276,6 @@ fragment logFields on Log {
   linkedEntityId
 }
 `
-//alert("(10) graphql-queries.ts")
 
 const FRAGMENT_PERSON_FIELDS = gql`
 fragment personFields on Person {
@@ -303,9 +294,6 @@ fragment personFields on Person {
   published
 }
 `
-//alert("(11) graphql-queries.ts")
-
-//alert("(12) graphql-queries.ts")
 
 const FRAGMENT_PUBLISHER_FIELDS = gql`
 fragment publisherFields on Publisher {
@@ -351,7 +339,6 @@ fragment publicationFields on Publication {
   accessed
 }
 `
-//alert("(13) graphql-queries.ts")
 
 const FRAGMENT_QUOTATION_FIELDS = gql`
 fragment quotationFields on Quotation {
@@ -363,7 +350,6 @@ fragment quotationFields on Quotation {
   notes
 }
 `
-//alert("(14) graphql-queries.ts")
 
 const FRAGMENT_TOPIC_FIELDS = gql`
 fragment topicFields on Topic {
@@ -374,10 +360,10 @@ fragment topicFields on Topic {
     id
     label
   }
-  children {
-    id
-    label
-  }
+  # children {
+  #   id
+  #   label
+  # }
 }
 `
 
@@ -465,7 +451,6 @@ fragment groupFields on Group {
 }
 `
 
-//alert("(16) graphql-queries.ts")
 /*
 export const READ_CLAIM_BY_ID = gql`
 query {
@@ -476,7 +461,6 @@ query {
   }
 }
 `
-//alert("(17) graphql-queries.ts")
 
 export const READ_DECLARATION_BY_ID = gql`
 query {
@@ -487,7 +471,6 @@ query {
   }
 }
 `
-//alert("(18) graphql-queries.ts")
 
 export const READ_ENTITY_LINK_BY_ID = gql`
 query {
@@ -497,7 +480,6 @@ query {
   }
 }
 `
-//alert("(19) graphql-queries.ts")
 
 export const READ_JOURNAL_BY_ID = gql`
 query {
@@ -507,7 +489,6 @@ query {
   }
 }
 `
-//alert("(20) graphql-queries.ts")
 
 export const READ_PERSON_BY_ID = gql`
 query {
@@ -518,7 +499,6 @@ query {
   }
 }
 `
-//alert("(21) graphql-queries.ts")
 
 export const READ_PUBLICATION_BY_ID = gql`
 query {
@@ -528,7 +508,6 @@ query {
   }
 }
 `
-//alert("(22) graphql-queries.ts")
 
 export const READ_PUBLISHER_BY_ID = gql`
 query {
@@ -538,7 +517,6 @@ query {
   }
 }
 `
-//alert("(23) graphql-queries.ts")
 
 export const READ_QUOTATION_BY_ID = gql`
 query {
@@ -549,7 +527,6 @@ query {
   }
 }
 `
-//alert("(24) graphql-queries.ts")
 
 export const READ_TOPIC_BY_ID = gql`
 query {
@@ -560,7 +537,6 @@ query {
   }
 }
 `
-//alert("(25) graphql-queries.ts")
 
 export const READ_USER_BY_ID = gql`
 query {
@@ -570,7 +546,6 @@ query {
   }
 }
 `
-//alert("(26) graphql-queries.ts")
 */
 
 export const READ_CLAIMS = gql`
@@ -840,7 +815,6 @@ query Log($filter: LogQueryFilter, $pageSort: PageableInput) {
   }
 }
 `
-//alert("(31) graphql-queries.ts")
 
 export const READ_PERSONS = gql`
 ${FRAGMENT_PAGE_FIELDS}

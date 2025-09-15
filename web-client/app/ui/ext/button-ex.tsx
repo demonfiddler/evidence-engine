@@ -70,3 +70,5 @@ export default function ButtonEx({help, outerClassName, ...props} : ButtonExProp
     </div>
   )
 }
+
+export { buttonVariants }

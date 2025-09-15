@@ -27,10 +27,10 @@ export const DeclarationKindSchema = z.enum([
 
 export const DeclarationSchema = z.object({
   kind: DeclarationKindSchema,
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).or(z.date().max(Date.now(), {error: "Date cannot be in the future"})),
+  date: z.date().max(Date.now(), {error: "Declaration date cannot be in the future"}).optional(),
   title: z.string().min(10).max(100),
   country: z.string().uppercase().length(2).optional(),
-  url: z.url().min(10).max(200).or(z.string().length(0)).nullable().optional(),
+  url: z.url().min(10).max(200).or(z.string().length(0)).optional(),
   cached: z.boolean(),
   signatories: z.string().optional(),
   signatoryCount: z.string().regex(/^\d*$/).or(z.uint32()).optional(),

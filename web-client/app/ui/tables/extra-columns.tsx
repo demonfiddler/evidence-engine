@@ -33,10 +33,9 @@ import {
 import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline"
+import IBaseEntity from "@/app/model/IBaseEntity"
 
-import { TableHead } from "@/components/ui/table"
-
-export const actionColumn: ColumnDef<any> = {
+export const actionColumn: ColumnDef<IBaseEntity> = {
   id: "action",
   enableSorting: false,
   enableHiding: false,
@@ -67,7 +66,7 @@ export const actionColumn: ColumnDef<any> = {
   }
 }
 
-export const expandColumn: ColumnDef<any> = {
+export const expandColumn: ColumnDef<IBaseEntity> = {
   id: "expand",
   enableSorting: false,
   enableHiding: false,
@@ -91,7 +90,7 @@ export const expandColumn: ColumnDef<any> = {
   }
 }
 
-export const selectColumn: ColumnDef<any> = {
+export const selectColumn: ColumnDef<IBaseEntity> = {
   id: "select",
   enableSorting: false,
   enableHiding: false,

@@ -17,15 +17,18 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import IPage from "@/app/model/IPage"
 import ITrackedEntity from "@/app/model/ITrackedEntity"
 import RecordKind from "@/app/model/RecordKind"
-import { BaseEntityInput, PageableInput } from "@/app/model/schema"
+import { BaseEntityInput, LinkableEntityQueryFilter, LogQueryFilter, PageableInput, TrackedEntityQueryFilter } from "@/app/model/schema"
 import { GlobalContext, QueryState } from "@/lib/context"
 import { DocumentNode, useMutation, useQuery } from "@apollo/client"
 import { OperationTypeNode } from "graphql/language"
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
-import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { FieldValues, useForm, UseFormReturn } from "react-hook-form"
 import { toast } from "sonner"
 import z from "zod/v4"
@@ -35,12 +38,12 @@ import Authority from "@/app/model/Authority"
 import useAuth from "./use-auth"
 import { introspect } from "@/lib/graphql-utils"
 import { CREATE_ENTITY_LINK } from "@/lib/graphql-queries"
-import { getRecordLinkProperties } from "@/lib/utils"
+import { getRecordLinkProperties, isEmpty, isEqual } from "@/lib/utils"
 
 export type Options = {[key: string]: any}
 export type FormActionHandler<TFieldValues extends FieldValues> = (command: string, fieldValues?: TFieldValues, options?: Options) => void
 
-export type PageConfiguration<TData extends ITrackedEntity, TFieldValues extends FieldValues, TInput extends BaseEntityInput> = {
+type PageConfiguration<TData extends ITrackedEntity, TFilter, TFieldValues extends FieldValues, TInput extends BaseEntityInput> = {
   recordKind: RecordKind
   schema?: z.ZodObject<any>
   manualPagination: boolean
@@ -49,13 +52,15 @@ export type PageConfiguration<TData extends ITrackedEntity, TFieldValues extends
   createMutation?: DocumentNode
   updateMutation?: DocumentNode
   deleteMutation?: DocumentNode
-  createFieldValues: (record?: TData) => TFieldValues
-  createInput?: (fieldValues: TFieldValues, id?: string) => TInput
-  preparePage?: (page?: IPage<TData>) => IPage<TData> | undefined
-  findRecord?: (records?: TData[], id?: string | null) => TData | undefined
+  createFieldValues(record: TData | undefined) : TFieldValues
+  createInput?(fieldValues: TFieldValues, id?: string) : TInput
+  preparePage?(page: IPage<TData> | undefined) : IPage<TData> | undefined
+  findRecord?(records: TData[] | undefined, id: string | undefined) : TData | undefined
+  filterLogic?: QueryFilterLogic<TFilter>
 }
 
-export type PageLogic<TData extends ITrackedEntity, TFieldValues extends FieldValues, TFilter> = {
+type PageLogic<TData extends ITrackedEntity, TFieldValues extends FieldValues> = {
+  loadingPathWithSearchParams: boolean
   loading: boolean
   page?: IPage<TData>
   selectedRecord?: TData
@@ -64,6 +69,7 @@ export type PageLogic<TData extends ITrackedEntity, TFieldValues extends FieldVa
   setMode: Dispatch<SetStateAction<DetailMode>>
   form: UseFormReturn<TFieldValues, any, TFieldValues>
   handleFormAction: FormActionHandler<TFieldValues>
+  refetch: () => void
 }
 
 // type ReducerArg<T> = {
@@ -97,27 +103,55 @@ function createDetailState(
   }
 }
 
-const defaultFindRecord = <T extends IBaseEntity>(records?: T[], id?: string | null) => records?.find(r => r?.id === id)
+const defaultFindRecord = <T extends IBaseEntity>(records: T[] | undefined, id: string | undefined) : T | undefined => records?.find(r => r?.id === id)
 
-// function recomputePageFields<T extends IBaseEntity>(page: IPage<T>) {
-//   page.hasContent = page.content.length != 0
-//   page.isEmpty = page.content.length == 0
-//   // page.number = 0,
-//   // page.size = 0,
-//   page.numberOfElements = page.content.length,
-//   // page.totalPages = 0,
-//   page.totalElements = 0,
-//   // page.isFirst = true,
-//   // page.isLast = true,
-//   // page.hasNext = false,
-//   // page.hasPrevious = false,
-// }
+export type QueryFilterConfiguration = {
+  recordKind: RecordKind
+}
+
+export type QueryFilterLogic<TFilter> = {
+  createFilter(searchParams: URLSearchParams) : TFilter
+  createSearchParams(filter: TFilter) : URLSearchParams
+}
+
+function searchParamsEqual(p1: URLSearchParams, p2: URLSearchParams) {
+  if (p1.size != p2.size)
+    return false
+  let equal = true
+  p1.forEach((value: string, key: string) => {
+    if (p2.get(key) !== value)
+      equal &&= false
+  })
+  return equal
+}
+
+function fixFilter<TFilter extends TrackedEntityQueryFilter | LogQueryFilter>(filter: TFilter) : TFilter {
+  let hasRecordId = false
+  if (Object.hasOwn(filter, "recordId")) {
+    // The filter includes a recordId, so we don't need to pass any of the other properties.
+    const teFilter = filter as TrackedEntityQueryFilter
+    hasRecordId = !!teFilter.recordId
+    if (hasRecordId)
+      filter = {recordId: teFilter.recordId} as TFilter
+  }
+  if (!hasRecordId &&
+    Object.hasOwn(filter, "fromEntityKind") && Object.hasOwn(filter, "fromEntityId") ||
+    Object.hasOwn(filter, "toEntityKind") && Object.hasOwn(filter, "toEntityId")) {
+
+    // We don't need to pass fromEntityKind or toEntityKind, as fromEntityId or toEntityId will suffice.
+    filter = {...filter}
+    const leFilter = filter as LinkableEntityQueryFilter
+    delete leFilter.fromEntityKind
+    delete leFilter.toEntityKind
+  }
+  return filter
+}
 
 export default function usePageLogic<
     TData extends IBaseEntity,
     TFieldValues extends FieldValues,
     TInput extends BaseEntityInput,
-    TFilter
+    TFilter extends TrackedEntityQueryFilter | LogQueryFilter,
   >({
     recordKind,
     schema,
@@ -131,18 +165,83 @@ export default function usePageLogic<
     createInput,
     preparePage,
     findRecord,
+    filterLogic,
   }
-  : PageConfiguration<TData, TFieldValues, TInput>
-  ) : PageLogic<TData, TFieldValues, TFilter> {
+  : PageConfiguration<TData, TFilter, TFieldValues, TInput>
+  ) : PageLogic<TData, TFieldValues> {
 
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const {hasAuthority} = useAuth()
   const globalContext = useContext(GlobalContext)
-  const {selectedRecords, queries, masterTopicId, masterRecordKind, masterRecordId} = globalContext
+  const {
+    selectedRecords,
+    queries,
+    masterTopicId,
+    masterRecordKind,
+    masterRecordId,
+    setFilter,
+  } = globalContext
   const selectedRecordId = selectedRecords[recordKind]?.id
-  const {filter, sorting: sort, pagination } = queries[recordKind] as QueryState<TFilter>
   const [mode, setMode] = useState<DetailMode>("view")
   const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
   const setSelectedRecord = useCallback((record?: TData) => globalContext.setSelectedRecord(recordKind, record), [globalContext])
+
+  // Get the current filter from the global context.
+  const query = queries[recordKind] as QueryState<TFilter>
+  const {filter, sorting, pagination} = query
+
+  // Note whether this is the first-time render of a URL with a query string.
+  const loadingPathWithSearchParamsRef = useRef(searchParams.size != 0)
+
+  // Update the page URL's query string to reflect the current filter setting.
+  const updateUrlQuery = useCallback(() => {
+    if (!loadingPathWithSearchParamsRef.current && filterLogic?.createSearchParams) {
+      const newSearchParams = filterLogic.createSearchParams(filter)
+      if (!searchParamsEqual(newSearchParams, searchParams)) {
+        // This call updates the address bar URL without doing a page reload.
+        router.replace(`?${newSearchParams.toString()}`, { scroll: false })
+        // console.log(`usePageLogic.updateUrlQuery: Updated query from '${searchParams.toString()}' to '${newSearchParams.toString()}'`)
+      }
+    }
+  }, [loadingPathWithSearchParamsRef, filter, searchParams, router])
+
+  // Whenever path changes, adjust filter or query string as appropriate.
+  const prevPath = useRef('')
+  useEffect(() => {
+    // console.log(`usePageLogic.effect2 (1)`)
+    if (pathname !== prevPath.current) {
+      // console.log(`usePageLogic.effect2 (2) prevPath='${prevPath.current}' pathname='${pathname}'`)
+      prevPath.current = pathname;
+
+      // If navigating to a URL with a query string, replace filter to match query string and store in global context.
+      if (loadingPathWithSearchParamsRef.current) {
+        if (filterLogic?.createFilter) {
+          const newFilter = filterLogic.createFilter(searchParams)
+          if (!isEqual(newFilter, filter)) {
+            // console.log(`usePageLogic.effect2 (3): searchParams=?${searchParams.toString()}, so updating filter from ${JSON.stringify(filter)} to ${JSON.stringify(newFilter)}`)
+            setFilter(recordKind, newFilter)
+          }
+
+          // We've now synchronised the filter to match the query string, so make sure we don't do it again.
+          // Note that we have to delay flipping the guard value until all re-renders and refreshes have finished.
+          let frameId1: number, frameId2: number
+          frameId1 = requestAnimationFrame(() => {
+            frameId2 = requestAnimationFrame(() => {
+              // NOTE: there's no need to worry about cancelling the animation frames in the event that the component
+              // unmounts before the frame has run, since all we are doing here is to set a field on a reference.
+              // console.log("usePageLogic.effect2 (4): cleanup")
+              loadingPathWithSearchParamsRef.current = false
+            })
+          })
+        }
+      // Otherwise, if a filter is present, update the query string to match the filter.
+      } else if (!isEmpty(filter)) {
+          updateUrlQuery()
+      }
+    }
+  }, [loadingPathWithSearchParamsRef, pathname, filterLogic, setFilter, updateUrlQuery]);
 
   const pageSort = useMemo(() => {
     const pageSort : PageableInput = manualPagination && pagination
@@ -151,9 +250,9 @@ export default function usePageLogic<
         pageSize: pagination.pageSize,
       }
       : {}
-    if (manualSorting && sort.length > 0) {
+    if (manualSorting && sorting.length > 0) {
       pageSort.sort = { orders: [] }
-      for (let s of sort) {
+      for (const s of sorting) {
         pageSort.sort?.orders.push({
           property: s.id,
           direction: s.desc ? "DESC" : undefined
@@ -162,34 +261,49 @@ export default function usePageLogic<
     }
     // console.log(`${recordKind}s effect: pageSort = ${JSON.stringify(pageSort)}`)
     return pageSort
-  }, [manualPagination && pagination, manualSorting && sort])
+  }, [manualPagination && pagination, manualSorting && sorting])
 
   const [readFieldName] = useMemo(() => introspect(readQuery, OperationTypeNode.QUERY), [readQuery])
   const [createFieldName, createVarName] = useMemo(() => introspect(createMutation, OperationTypeNode.MUTATION), [createMutation])
-  const [updateFieldName, updateVarName] = useMemo(() => introspect(updateMutation, OperationTypeNode.MUTATION), [updateMutation])
-  const [deleteFieldName, deleteVarName] = useMemo(() => introspect(deleteMutation, OperationTypeNode.MUTATION), [deleteMutation])
+  const [, updateVarName] = useMemo(() => introspect(updateMutation, OperationTypeNode.MUTATION), [updateMutation])
+  const [, deleteVarName] = useMemo(() => introspect(deleteMutation, OperationTypeNode.MUTATION), [deleteMutation])
+  const [createOp, createResult] = createMutation ? useMutation(createMutation, { refetchQueries: [readQuery] }) : []
+  const [updateOp, updateResult] = updateMutation ? useMutation(updateMutation, { refetchQueries: [readQuery] }) : []
+  const [deleteOp, deleteResult] = deleteMutation ? useMutation(deleteMutation, { refetchQueries: [readQuery] }) : []
+  const [linkOp, linkResult] = useMutation(CREATE_ENTITY_LINK, { refetchQueries: [readQuery] })
 
   const readResult = useQuery(
     readQuery,
     {
       variables: {
-        filter,
+        filter: fixFilter(filter),
         pageSort
       },
     }
   )
-  // Whenever filter or pagination changes, ask Apollo to refetch
-  useEffect(() => {
+  const refetch = useCallback(() => {
     readResult.refetch({
-      filter,
-      pageSort
-    });
-  }, [filter, manualPagination && pageSort]);
+        filter: fixFilter(filter),
+        pageSort
+    })
+  }, [readResult, filter, pageSort])
 
-  const [createOp, createResult] = createMutation ? useMutation(createMutation, { refetchQueries: [readQuery] }) : []
-  const [updateOp, updateResult] = updateMutation ? useMutation(updateMutation, { refetchQueries: [readQuery] }) : []
-  const [deleteOp, deleteResult] = deleteMutation ? useMutation(deleteMutation, { refetchQueries: [readQuery] }) : []
-  const [linkOp, linkResult] = useMutation(CREATE_ENTITY_LINK, { refetchQueries: [readQuery] })
+  // Whenever filter or pagination (actually) changes, update query string and ask Apollo to refetch.
+  const prevFilter = useRef<TFilter>(filter);
+  const prevPageSort = useRef<PageableInput>(pageSort);
+  useEffect(() => {
+    // console.log(`usePageLogic.effect3 (1)`)
+    // Don't do this if we are still loading a path with search params or if neither filter nor pagination has changed.
+    if (!loadingPathWithSearchParamsRef.current && (!isEqual(filter, prevFilter.current) ||
+      manualPagination && !isEqual(pageSort, prevPageSort.current))) {
+
+      // console.log(`usePageLogic.effect3 (2)`)
+      prevFilter.current = filter
+      prevPageSort.current = pageSort
+      updateUrlQuery()
+      refetch()
+    }
+  }, [loadingPathWithSearchParamsRef, filter, manualPagination && pageSort, updateUrlQuery, refetch]);
 
   const loading = (readResult.loading || createResult?.loading || updateResult?.loading || deleteResult?.loading || linkResult?.loading) ?? false
   const error = readResult.error || createResult?.error || updateResult?.error || deleteResult?.error || linkResult?.error
@@ -245,7 +359,7 @@ export default function usePageLogic<
   const [page, dispatch] = useImmerReducer<IPage<T>, ReducerArg<T>>(reducer, rawPage ?? dummyPage)
   */
 
-  const getRecord = useCallback((id?: string) => {
+  const getRecord = useCallback((id: string | undefined) => {
     return (findRecord ?? defaultFindRecord)(page?.content, id)
   }, [findRecord, page])
   const selectedRecord = getRecord(selectedRecordId)
@@ -260,7 +374,7 @@ export default function usePageLogic<
     // TODO: update Apollo cache?
     switch (command) {
       case "new":
-        form?.reset(createFieldValues())
+        form?.reset(createFieldValues(undefined))
         setSelectedRecord()
         break
       case "create":
@@ -290,6 +404,7 @@ export default function usePageLogic<
                 let masterRecordLinkInput
                 if (linkMasterRecord && masterRecordId) {
                   const [
+                    ,,
                     thisRecordIdProperty,
                     otherRecordIdProperty,
                     thisLocationsProperty,
@@ -372,8 +487,9 @@ export default function usePageLogic<
 
   // console.log(`${settings.recordKind}s() page: ${JSON.stringify(page)})`)
 
-  const pageLogic = useMemo<PageLogic<TData, TFieldValues, TFilter>>(() => {
+  const pageLogic = useMemo<PageLogic<TData, TFieldValues>>(() => {
     return {
+      loadingPathWithSearchParams: loadingPathWithSearchParamsRef.current,
       loading,
       page,
       selectedRecord,
@@ -382,15 +498,17 @@ export default function usePageLogic<
       setMode,
       form,
       handleFormAction,
+      refetch,
     }}, [
+      loadingPathWithSearchParamsRef.current,
       readResult.loading,
       page,
       selectedRecord,
       handleRowSelectionChange,
       state,
-      setMode,
       form,
       handleFormAction,
+      refetch,
   ])
 
   return pageLogic

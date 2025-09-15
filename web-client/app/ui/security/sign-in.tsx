@@ -87,7 +87,7 @@ export default function SignInDialog() {
               <DialogTitle>Sign in</DialogTitle>
               <DialogDescription>
                 <ShieldExclamationIcon className="w-6 h-6 inline" />
-                &nbsp;Provide your credentials then click 'Sign in'.
+                &nbsp;Provide your credentials then click &apos;Sign in&apos;.
               </DialogDescription>
             </DialogHeader>
             <div className="grid grid-cols-1 gap-4">

@@ -31,6 +31,7 @@ import { CREATE_PUBLICATION, DELETE_PUBLICATION, READ_PUBLICATIONS, UPDATE_PUBLI
 import usePageLogic from "@/hooks/use-page-logic"
 import { LinkableEntityQueryFilter, PublicationInput } from '@/app/model/schema'
 import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter'
+import useLinkableEntityQueryFilter from '@/hooks/use-linkable-entity-query-filter'
 
 function createFieldValues(publication?: Publication) : PublicationFieldValues {
   return {
@@ -72,6 +73,7 @@ function createInput(fieldValues: PublicationFieldValues, id?: string) : Publica
 }
 
 export default function Publications() {
+  const filterLogic = useLinkableEntityQueryFilter()
   const {
     loading,
     page,
@@ -81,6 +83,8 @@ export default function Publications() {
     setMode,
     form,
     handleFormAction,
+    refetch,
+    loadingPathWithSearchParams,
   } = usePageLogic<Publication, PublicationFieldValues, PublicationInput, LinkableEntityQueryFilter>({
     recordKind: "Publication",
     schema: PublicationSchema,
@@ -92,6 +96,7 @@ export default function Publications() {
     deleteMutation: DELETE_PUBLICATION,
     createFieldValues,
     createInput,
+    filterLogic,
   })
 
   // const {storeAppState} = useContext(GlobalContext)
@@ -114,6 +119,8 @@ export default function Publications() {
         manualPagination={true}
         manualSorting={true}
         onRowSelectionChange={handleRowSelectionChange}
+        refetch={refetch}
+        loadingPathWithSearchParams={loadingPathWithSearchParams}
       />
       <FormProvider {...form}>
         <PublicationDetails

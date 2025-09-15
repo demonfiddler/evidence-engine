@@ -48,7 +48,7 @@ export function DataTablePaginator<TData>({
   const [pageNumber, setPageNumber] = useState(pn)
   useEffect(() => {
     setPageNumber(pn)
-  }, [setPageNumber, pn])
+  }, [pn])
   const handlePageNumberChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     const newpn = typeof value ==="number" ? value : Number.parseInt(value?.toString() ?? "0")

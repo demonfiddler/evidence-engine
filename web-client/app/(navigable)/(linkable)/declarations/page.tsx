@@ -31,6 +31,7 @@ import { CREATE_DECLARATION, DELETE_DECLARATION, READ_DECLARATIONS, UPDATE_DECLA
 import usePageLogic from "@/hooks/use-page-logic"
 import { DeclarationInput, LinkableEntityQueryFilter } from '@/app/model/schema'
 import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter'
+import useLinkableEntityQueryFilter from '@/hooks/use-linkable-entity-query-filter'
 
 function createFieldValues(declaration?: Declaration) : DeclarationFieldValues {
   return {
@@ -62,6 +63,7 @@ function createInput(fieldValues: DeclarationFieldValues, id?: string) : Declara
 }
 
 export default function Declarations() {
+  const filterLogic = useLinkableEntityQueryFilter()
   const {
     loading,
     page,
@@ -71,6 +73,8 @@ export default function Declarations() {
     setMode,
     form,
     handleFormAction,
+    refetch,
+    loadingPathWithSearchParams,
   } = usePageLogic<Declaration, DeclarationFieldValues, DeclarationInput, LinkableEntityQueryFilter>({
     recordKind: "Declaration",
     schema: DeclarationSchema,
@@ -82,6 +86,7 @@ export default function Declarations() {
     deleteMutation: DELETE_DECLARATION,
     createFieldValues,
     createInput,
+    filterLogic,
   })
 
   // const {storeAppState} = useContext(GlobalContext)
@@ -104,6 +109,8 @@ export default function Declarations() {
         manualPagination={true}
         manualSorting={true}
         onRowSelectionChange={handleRowSelectionChange}
+        refetch={refetch}
+        loadingPathWithSearchParams={loadingPathWithSearchParams}
       />
       <FormProvider {...form}>
         <DeclarationDetails

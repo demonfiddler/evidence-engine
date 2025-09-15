@@ -40,7 +40,7 @@ export default function NavigableLayout({
       <main className="flex flex-col h-screen w-full">
         <header className="grid grid-cols-3 items-center shrink-0 w-full h-12 rounded-md text-white bg-blue-500">
           <SidebarTrigger title="Toggle sidebar (Ctrl+B)" />
-          <p className="justify-self-center">Evidence Engine</p>
+          <p className="justify-self-center">The <i>Evidence Engine</i></p>
           <MyAccount className="justify-self-end" />
         </header>
         {children}

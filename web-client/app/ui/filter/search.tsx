@@ -21,8 +21,7 @@
 
 import { SearchIcon } from "@/app/ui/icons"
 import { XMarkIcon } from "@heroicons/react/24/outline"
-import { useDebounceValue } from "usehooks-ts"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import InputEx from "../ext/input-ex"
 
 export default function Search(
@@ -30,13 +29,27 @@ export default function Search(
   {value: string, onChangeValue: (value: string) => void}
 ) {
   const [text, setText] = useState(value)
-  const [debouncedText, setDebouncedText] = useDebounceValue(value, 500)
-  useEffect(() => onChangeValue(debouncedText), [debouncedText])
 
-  function onChangeText(s: string) {
+  // If the supplied value changes externally, update text state to match and notify supplied listener.
+  const prevValue = useRef<string | number | readonly string[] | undefined>('')
+  useEffect(() => {
+    // console.log("Search.effect (1)")
+    if (value !== prevValue.current) {
+      // console.log(`Search.effect (2): value = '${value}', prevValue='${prevValue.current}'`)
+      prevValue.current = value
+      if (value !== text) {
+        // console.log(`Search.effect (3): value = '${value}', text='${text}'`)
+        setText(value)
+      }
+    }
+  }, [value, text, onChangeValue])
+
+  // If the input component value changes, update text state to match and notify supplied listener.
+  const onChangeText = useCallback((s: string) => {
+    // console.log(`Search.onChangeText: s = '${s}', text='${text}'`)
     setText(s)
-    setDebouncedText(s)
-  }
+    onChangeValue(s)
+  }, [onChangeValue])
 
   return (
     <div className="flex flex-row items-center gap-2 px-2 pr-2 border rounded-md">
@@ -45,10 +58,10 @@ export default function Search(
         outerClassName="grow"
         className="border-0 border-transparent"
         placeholder="Search..."
-        help="Filter the table to show only records containing the specified text. This performs a case-insensitive match against all text fields, matching whole words unless 'Advanced' is checked."
         value={text ?? ''}
-        onKeyDown={(e) => e.code == "Escape" && onChangeText('')}
+        delay={500}
         onChange={(e) => onChangeText(e.target.value ?? '')}
+        help="Filter the table to show only records containing the specified text. This performs a case-insensitive match against all text fields, matching whole words unless 'Advanced' is checked."
       />
       <XMarkIcon className="w-5 h-5" onClick={() => onChangeText('')} />
     </div>

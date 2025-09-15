@@ -62,7 +62,7 @@ export default function PublisherDetails(
     onFormAction: FormActionHandler<PublisherFieldValues>
   }) {
 
-  const form = useFormContext()
+  const form = useFormContext<PublisherFieldValues>()
   const { updating } = state
 
   return (

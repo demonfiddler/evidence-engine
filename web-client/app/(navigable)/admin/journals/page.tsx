@@ -30,6 +30,7 @@ import { CREATE_JOURNAL, DELETE_JOURNAL, READ_JOURNALS, UPDATE_JOURNAL } from "@
 import usePageLogic from "@/hooks/use-page-logic"
 import { JournalInput, TrackedEntityQueryFilter } from '@/app/model/schema'
 import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter'
+import useTrackedEntityQueryFilter from '@/hooks/use-tracked-entity-query-filter'
 
 function createFieldValues(journal?: Journal) : JournalFieldValues {
   return {
@@ -55,6 +56,7 @@ function createInput(fieldValues: JournalFieldValues, id?: string) : JournalInpu
 }
 
 export default function Journals() {
+  const filterLogic = useTrackedEntityQueryFilter()
   const {
     loading,
     page,
@@ -64,6 +66,8 @@ export default function Journals() {
     setMode,
     form,
     handleFormAction,
+    refetch,
+    loadingPathWithSearchParams,
   } = usePageLogic<Journal, JournalFieldValues, JournalInput, TrackedEntityQueryFilter>({
     recordKind: "Journal",
     schema: JournalSchema,
@@ -75,6 +79,7 @@ export default function Journals() {
     deleteMutation: DELETE_JOURNAL,
     createFieldValues,
     createInput,
+    filterLogic,
   })
 
   // const {storeAppState} = useContext(GlobalContext)
@@ -97,6 +102,8 @@ export default function Journals() {
         manualPagination={true}
         manualSorting={true}
         onRowSelectionChange={handleRowSelectionChange}
+        refetch={refetch}
+        loadingPathWithSearchParams={loadingPathWithSearchParams}
       />
       <FormProvider {...form}>
         <JournalDetails

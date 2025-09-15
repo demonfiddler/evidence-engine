@@ -20,7 +20,7 @@
 'use client'
 
 import { Input } from "@/components/ui/input"
-import { ChangeEvent, ComponentProps, useCallback, useEffect, useState } from "react"
+import { ChangeEvent, ComponentProps, useCallback, useEffect, useRef, useState } from "react"
 import { useDebounceValue } from "usehooks-ts"
 import Help, { HelpProps } from "../misc/help"
 import { cn } from "@/lib/utils"
@@ -35,32 +35,49 @@ export default function InputEx(
   const [text, setText] = useState(value)
   const [event, setEvent] = useDebounceValue<ChangeEvent<HTMLInputElement>|undefined>(undefined, delay || 0)
 
+  // If the supplied value changes externally, update text to match.
+  const prevValue = useRef<string | number | readonly string[] | undefined>('')
   useEffect(() => {
-    if (value !== text) {
-      setText(value)
-      if (event && onChange) {
-        event.target.value = value?.toString() ?? ''
-        onChange(event)
+    // console.log(`InputEx.effect1 (1): value='${value}' prevValue='${prevValue.current}'`)
+    if (value !== prevValue.current) {
+      prevValue.current = value
+      if (value !== text) {
+        // console.log(`InputEx.effect1 (2): value='${value}' text='${text}'`)
+        setText(value)
+        if (event && onChange) {
+          event.target.value = value?.toString() ?? ''
+          onChange(event)
+        }
       }
     }
-  }, [value])
-  useEffect(() => {
-    if (event)
-      onChange?.(event)
-  }, [event])
+  }, [value, text, event, onChange]) // previously [value]
 
+  // When the debounced event changes, invoke the supplied listener function.
+  const prevEvent = useRef(event)
+  useEffect(() => {
+    // console.log(`InputEx.effect2 (1): event.target.value='${event?.target.value}'`)
+    if (event && event !== prevEvent.current) {
+      prevEvent.current = event
+      // console.log(`InputEx.effect2 (2)`)
+      onChange?.(event)
+    }
+  }, [event, onChange]) // previously [event]
+
+  // On typing, sync the controlled text value and trigger event debouncing.
   const onChangeText = useCallback((e:  ChangeEvent<HTMLInputElement>) => {
+    // console.log(`InputEx.onChangeText: e.target.value='${e?.target.value}'`)
     setText(e.target.value ?? '')
     setEvent(e)
-  }, [])
+  }, [setEvent])
 
+  // To clear, empty text value and invoke supplied change handler immediately.
   const clear = useCallback(() => {
     setText('')
     if (event && onChange) {
       event.target.value = ''
       onChange(event)
     }
-  }, [event])
+  }, [event, onChange])
 
   return (
     <div className={cn("flex flex-row items-center gap-1", outerClassName)}>
