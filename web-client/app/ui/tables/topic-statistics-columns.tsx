@@ -65,37 +65,54 @@ export const columns: ColumnDef<TopicStatistics>[] = [
     id: "claims",
     accessorFn: row => getValue(row, "CLA"),
     header: "Claims",
-    meta: {className: "text-right"},
+    meta: {
+      href: "/claims",
+      className: "text-right"
+    },
   },
   {
     id: "declarations",
     accessorFn: row => getValue(row, "DEC"),
     header: "Declarations",
-    meta: {className: "text-right"},
+    meta: {
+      href: "/declarations",
+      className: "text-right"
+    },
   },
   {
     id: "persons",
     accessorFn: row => getValue(row, "PER"),
     header: "Persons",
-    meta: {className: "text-right"},
+    meta: {
+      href: "/persons",
+      className: "text-right"
+    },
   },
   {
     id: "publications",
     accessorFn: row => getValue(row, "PUB"),
     header: "Publications",
-    meta: {className: "text-right"},
+    meta: {
+      href: "/publications",
+      className: "text-right"
+    },
   },
   {
     id: "quotations",
     accessorFn: row => getValue(row, "QUO"),
     header: "Quotations",
-    meta: {className: "text-right"},
+    meta: {
+      href: "/quotations",
+      className: "text-right"
+    },
   },
   {
     id: "total",
     accessorFn: row => row.entityStatistics.reduce((total, stat) => total + stat.count, 0).toLocaleString() || 0,
     header: "Total",
-    meta: {className: "text-right"},
+    meta: {
+      className: "text-right"
+    },
   },
 ]
 

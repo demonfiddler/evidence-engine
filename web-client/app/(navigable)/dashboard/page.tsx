@@ -54,6 +54,7 @@ import LabelEx from "@/app/ui/ext/label-ex"
 
 interface ColumnMetaData {
   className?: string
+  href?: string
 }
 
 const entityItems = [
@@ -95,6 +96,24 @@ function copyStats(inStats: TopicStatistics[], outStats: TopicStatistics[]) {
     }
     outStats.push(outStat)
   }
+}
+
+function getUri(href: string, status?: string, topicId?: string, recursive?: boolean) {
+  let uri = href
+  let sep = "?"
+  if (status) {
+    uri += `${sep}status=${status}`
+    sep = "&"
+  }
+  if (topicId) {
+    uri += `${sep}topicId=${topicId}`
+    sep = "&"
+  }
+  if (recursive) {
+    uri += `${sep}recursive=${recursive}`
+    sep = "&"
+  }
+  return uri
 }
 
 export default function Dashboard() {
@@ -244,8 +263,12 @@ export default function Dashboard() {
                         <TableCell
                           key={cell.id}
                           className={cn("truncate border box-border", (cell.column.columnDef?.meta as ColumnMetaData)?.className)}
-                          title={String(cell.getValue() ?? '')}>
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        >
+                          {
+                            (cell.column.columnDef.meta as ColumnMetaData)?.href
+                            ? <Link href={getUri((cell.column.columnDef.meta as ColumnMetaData).href ?? "/", status, row.original.topic.id, rollup === "full")}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Link>
+                            : flexRender(cell.column.columnDef.cell, cell.getContext())
+                          }
                         </TableCell>
                       ))}
                     </TableRow>
@@ -266,7 +289,7 @@ export default function Dashboard() {
           <div className="flex flex-wrap gap-4">
             {
               entityItems.map(item => (
-                <Link key={item.property} href={item.href ?? ""}>
+                <Link key={item.property} href={getUri(item.href ?? "/", status)}>
                   <Card className="w-60 h-56 bg-cyan-50 shadow-lg transition-transform duration-300 ease-in-out transform hover:scale-105">
                     <CardHeader className="flex justify-center">
                       <item.icon className="w-8" />
