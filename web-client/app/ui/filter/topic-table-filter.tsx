@@ -44,18 +44,17 @@ export default function TopicTableFilter({
   const [status, setStatus] = useState(filter.status?.[0] ?? '')
   const [text, setText] = useState(filter.text ?? '')
   const [advanced, setAdvanced] = useState(filter.advancedSearch ?? false)
-  const [recursive, setRecursive] = useState(filter.recursive ?? false)
+  const [treeView, setTreeView] = useState(filter.parentId === "-1")
   const [recordId, setRecordId] = useState(filter.recordId ?? '')
 
-  const updateFilter = useCallback((status: string, text: string, advanced: boolean, recursive: boolean, recordId: string) => {
+  const updateFilter = useCallback((status: string, text: string, advanced: boolean, treeView: boolean, recordId: string) => {
     // console.log(`TopicTableFilter.updateFilter: status='${status}', text='${text}', advanced=${advanced}, recursive=${recursive}, recordId='${recordId}'`)
     if (!loadingPathWithSearchParams) {
       const newFilter = {
         status: status ? [status] : undefined,
         text: text || undefined,
         advancedSearch: text && advanced || undefined,
-        recursive: recursive || undefined,
-        parentId: recordId || !recursive ? undefined : "-1",
+        parentId: treeView && !recordId ? "-1" : undefined,
         recordId: recordId || undefined,
       } as TopicQueryFilter
       if (!isEqual(newFilter, filter)) {
@@ -79,31 +78,31 @@ export default function TopicTableFilter({
         setText(filter?.text ?? '')
       if (advanced !== !!filter?.advancedSearch)
         setAdvanced(!!filter?.advancedSearch)
-      if (recursive !== !!filter?.recursive)
-        setRecursive(!!filter?.recursive)
+      if (treeView !== (filter?.parentId ===  "-1"))
+        setTreeView(filter?.parentId ===  "-1")
       if (recordId !== (filter?.recordId ?? ''))
         setRecordId(filter?.recordId ?? '')
     }
-  }, [filter, status, text, advanced, recursive, recordId])
+  }, [filter, status, text, advanced, treeView, recordId])
 
   const handleStatusChange = useCallback((status: string) => {
     status = status === "ALL" ? '' : status
     setStatus(status)
-    updateFilter(status, text, advanced, recursive, recordId)
-  }, [updateFilter, text, advanced, recursive, recordId])
+    updateFilter(status, text, advanced, treeView, recordId)
+  }, [updateFilter, text, advanced, treeView, recordId])
 
   const handleTextChange = useCallback((text: string) => {
     setText(text)
-    updateFilter(status, text, advanced, recursive, recordId)
-  }, [updateFilter, status, advanced, recursive, recordId])
+    updateFilter(status, text, advanced, treeView, recordId)
+  }, [updateFilter, status, advanced, treeView, recordId])
 
   const handleAdvancedSearchChange = useCallback((advanced: boolean) => {
     setAdvanced(advanced)
-    updateFilter(status, text, advanced, recursive, recordId)
-  }, [updateFilter, status, text, recursive, recordId])
+    updateFilter(status, text, advanced, treeView, recordId)
+  }, [updateFilter, status, text, treeView, recordId])
 
   const handleRecursiveChange = useCallback((recursive: boolean) => {
-    setRecursive(recursive)
+    setTreeView(recursive)
     updateFilter(status, text, advanced, recursive, recordId)
   }, [updateFilter, status, text, advanced, recordId])
 
@@ -112,7 +111,7 @@ export default function TopicTableFilter({
       setStatus('')
       setText('')
       setAdvanced(false)
-      setRecursive(false)
+      setTreeView(false)
     }
     setRecordId(recordId)
     updateFilter('', '', false, false, recordId)
@@ -122,7 +121,7 @@ export default function TopicTableFilter({
     setStatus('')
     setText('')
     setAdvanced(false)
-    setRecursive(true)
+    setTreeView(true)
     setRecordId('')
     updateFilter('', '', false, true, '')
   }, [updateFilter])
@@ -163,7 +162,7 @@ export default function TopicTableFilter({
         <LabelEx htmlFor="advanced" help="Use advanced text search syntax">Advanced</LabelEx>
         <Checkbox
           id="recursive"
-          checked={recursive}
+          checked={treeView}
           onCheckedChange={handleRecursiveChange}
         />
         <LabelEx htmlFor="recursive" help="Show topics as an expandable tree">Tree view</LabelEx>

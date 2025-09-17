@@ -85,7 +85,7 @@ export default function Topics() {
     schema: TopicSchema,
     manualPagination: false,
     manualSorting: false,
-    readQuery: filter?.recursive ? READ_TOPIC_HIERARCHY : READ_TOPICS,
+    readQuery: filter?.parentId === "-1" ? READ_TOPIC_HIERARCHY : READ_TOPICS,
     createMutation: CREATE_TOPIC,
     updateMutation: UPDATE_TOPIC,
     deleteMutation: DELETE_TOPIC,

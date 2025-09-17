@@ -68,6 +68,7 @@ import io.github.demonfiddler.ee.server.model.TrackedEntityQueryFilter;
 import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.repository.CustomRepository;
 import io.github.demonfiddler.ee.server.repository.QueryPair;
+import jakarta.annotation.Resource;
 import jakarta.persistence.Query;
 
 /**
@@ -111,6 +112,9 @@ public class EntityUtils {
 		ENTITY_NAMES.put(Topic.class, "topic");
 		ENTITY_NAMES.put(User.class, "user");
 	}
+
+    @Resource
+    SecurityUtils securityUtils;
 
 	/**
 	 * Converts an {@link Iterable} of a given source class into a list of a given target class.
@@ -233,21 +237,22 @@ public class EntityUtils {
 
 		Pageable pageable = toPageable(pageSort);
 		Page<T> page;
-		if (filter == null) {
+		// Unauthenticated users can only access published entities, so allow the repository to apply that filter.
+		if (securityUtils.getCurrentUsername().equals("anonymousUser")) {
+			page = repository.findByFilter(filter, pageable);
+		} else if (filter == null) {
 			if (pageable.isPaged()) {
 				page = repository.findAll(pageable);
+			} else if (pageable.getSort().isSorted()) {
+				// If the sort involves non-native null precedence, call findByFilter() instead.
+				// TODO: TEMPORARY: JPA 3.2 NullHandling won't be supported until Spring Data JPA 4.0;
+				// see https://github.com/spring-projects/spring-data-jpa/issues/3729
+				if (usesNonNativeNullPrecedence(pageable.getSort()))
+					page = repository.findByFilter(null, pageable);
+				else
+					page = new PageImpl<>(repository.findAll(pageable.getSort()));
 			} else {
-				if (pageable.getSort().isSorted()) {
-					// If the sort involves non-native null precedence, call findByFilter() instead.
-					// TODO: TEMPORARY: JPA 3.2 NullHandling won't be supported until Spring Data JPA 4.0;
-					// see https://github.com/spring-projects/spring-data-jpa/issues/3729
-					if (usesNonNativeNullPrecedence(pageable.getSort()))
-						page = repository.findByFilter(null, pageable);
-					else
-						page = new PageImpl<>(repository.findAll(pageable.getSort()));
-				} else {
-					page = new PageImpl<>(repository.findAll());
-				}
+				page = new PageImpl<>(repository.findAll());
 			}
 		} else if (filter instanceof TrackedEntityQueryFilter teqf && teqf.getRecordId() != null) {
 			// If a recordId is specified, ignore all other filter fields.

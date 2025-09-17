@@ -31,7 +31,6 @@ function convertQueryValue(key: string, value: string): FilterValue {
     case "status":
       return value ? [value] : undefined
     case "advancedSearch":
-    case "recursive":
       return value === "true" || undefined
     default:
       return value || undefined
@@ -44,8 +43,7 @@ function convertFilterValue(key: string, value: FilterValue) : string | undefine
       const array = value as string[] | undefined
       return array && array.length != 0 ? array[0] : undefined
     }
-    case "advancedSearch":
-    case "recursive": {
+    case "advancedSearch": {
       const b = value as boolean
       return b ? "true" : undefined
     }

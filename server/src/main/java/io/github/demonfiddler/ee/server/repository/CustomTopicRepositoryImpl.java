@@ -258,11 +258,11 @@ public class CustomTopicRepositoryImpl extends AbstractCustomRepositoryImpl impl
 
         Map<String, Object> params = new HashMap<>();
         if (m.hasParentId && m.filter.getParentId() != -1)
-            params.put("parentId", filter.getParentId());
+            params.put("parentId", m.filter.getParentId());
         if (m.hasText)
-            params.put("text", filter.getText());
+            params.put("text", m.filter.getText());
         if (m.hasStatus)
-            params.put("status", filter.getStatus().stream().map(s -> s.name()).toList());
+            params.put("status", m.filter.getStatus().stream().map(s -> s.name()).toList());
         entityUtils.setQueryParameters(queries, params);
         if (m.isPaged)
             entityUtils.setQueryPagination(queries.selectQuery(), pageable);
