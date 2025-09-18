@@ -370,7 +370,7 @@ fragment topicFields on Topic {
 const FRAGMENT_SUBTOPIC_FIELDS = gql`
 fragment subtopicFields on Topic {
   ...trackedEntityFields
-  # ...linkableEntityFields
+  ...linkableEntityFields
   label
   description
   # TODO: try experiment with recursive query:
@@ -1065,11 +1065,11 @@ mutation DeleteQuotation($id: ID!) {
 }
 `
 
-// ${FRAGMENT_LINKABLE_ENTITY_FIELDS}
-// ${FRAGMENT_LINKED_ENTITY_FIELDS}
 export const READ_TOPICS = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
 ${FRAGMENT_TOPIC_FIELDS}
 query Topics($filter: TopicQueryFilter, $pageSort: PageableInput) {
   topics(
@@ -1079,19 +1079,19 @@ query Topics($filter: TopicQueryFilter, $pageSort: PageableInput) {
     ...pageFields
     content {
       ...trackedEntityFields
-      # ...linkableEntityFields
+      ...linkableEntityFields
       ...topicFields
     }
   }
 }
 `
 
-// ${FRAGMENT_LINKABLE_ENTITY_FIELDS}
-// ${FRAGMENT_LINKED_ENTITY_FIELDS}
 export const READ_TOPIC_HIERARCHY = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TOPIC_HIERARCHY_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
 ${FRAGMENT_SUBTOPIC_FIELDS}
 ${FRAGMENT_TOPIC_FIELDS_RECURSIVE}
 query TopicHierarchy($filter: TopicQueryFilter, $pageSort: PageableInput) {

@@ -88,10 +88,10 @@ function getRecordLinks(record?: ILinkableEntity, toLinks?: boolean, entityLinks
     }
   } else {
     results = []
-    if (record) {
-      getRecordLinks(record, false, record.fromEntityLinks?.content, results)
-      getRecordLinks(record, true, record.toEntityLinks?.content, results)
-    }
+    if (record?.fromEntityLinks?.content)
+      getRecordLinks(record, false, record.fromEntityLinks.content, results)
+    if (record?.toEntityLinks?.content)
+      getRecordLinks(record, true, record.toEntityLinks.content, results)
   }
   return results
 }
