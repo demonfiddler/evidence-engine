@@ -327,18 +327,18 @@ export default function LinkingDetails(
         disabled={!selectedLink || mode != "view" || !state.allowRead}
         state={state}
       />
-      <Label className="col-start-1" htmlFor="db-id">Database ID:</Label>
+      <Label className="col-start-1" htmlFor="link-id">Database ID:</Label>
       <InputEx
-        id="db-id"
+        id="link-id"
         type="text"
         readOnly={true}
         disabled={!record}
         value={selectedLinkId}
         help="The database identifier of the selected record link"
       />
-      <Label htmlFor="status">Status:</Label>
+      <Label htmlFor="link-status">Status:</Label>
       <InputEx
-        id="status"
+        id="link-status"
         type="text"
         readOnly={true}
         disabled={!record}
@@ -362,18 +362,18 @@ export default function LinkingDetails(
       >
         {mode !== "view" ? 'Save' : 'Edit'}
       </ButtonEx>
-      <Label htmlFor="created-by" className="col-start-1">Created by:</Label>
+      <Label htmlFor="link-created-by" className="col-start-1">Created by:</Label>
       <InputEx
-        id="created-by"
+        id="link-created-by"
         type="text"
         readOnly={true}
         disabled={!selectedLink}
         value={selectedLink?.createdByUser ?? ''}
         help="The username of the user who created the record link"
       />
-      <Label htmlFor="created">Created on:</Label>
+      <Label htmlFor="link-created">Created on:</Label>
       <InputEx
-        id="created"
+        id="link-created"
         type="text"
         readOnly={true}
         disabled={!record}
@@ -406,18 +406,18 @@ export default function LinkingDetails(
       >
         {mode !== "view" ? "Cancel" : "Link"}
       </ButtonEx>
-      <Label htmlFor="updated-by" className="col-start-1">Updated by:</Label>
+      <Label htmlFor="link-updated-by" className="col-start-1">Updated by:</Label>
       <InputEx
-        id="updated-by"
+        id="link-updated-by"
         type="text"
         readOnly={true}
         disabled={!record}
         value={selectedLink?.updatedByUser ?? ''}
         help="The username of the user who last updated the record link"
       />
-      <Label htmlFor="updated">Updated on:</Label>
+      <Label htmlFor="link-updated">Updated on:</Label>
       <InputEx
-        id="updated"
+        id="link-updated"
         type="text"
         readOnly={true}
         disabled={!record}
@@ -437,9 +437,9 @@ export default function LinkingDetails(
       >
         Unlink
       </ButtonEx>
-      <Label htmlFor="this-locations" className="col-start-1">Location(s) in this record:</Label>
+      <Label htmlFor="link-this-locations" className="col-start-1">Location(s) in this record:</Label>
       <InputEx
-        id="this-locations"
+        id="link-this-locations"
         type="text"
         outerClassName="col-span-3"
         disabled={!record && !mode}
@@ -448,9 +448,9 @@ export default function LinkingDetails(
         onChange={e => setThisRecordLocations(e.target.value)}
         help="Location(s) within this record that pertain to the record link"
       />
-      <Label htmlFor="other-locations" className="col-start-1">Location(s) in other record:</Label>
+      <Label htmlFor="link-other-locations" className="col-start-1">Location(s) in other record:</Label>
       <InputEx
-        id="other-locations"
+        id="link-other-locations"
         type="text"
         outerClassName="col-span-3"
         disabled={!record || selectedLink?.otherRecordKind == "Topic"}
@@ -459,13 +459,13 @@ export default function LinkingDetails(
         onChange={e => setOtherRecordLocations(e.target.value)}
         help="Location(s) within the other record that pertain to the record link"
       />
-      <Label htmlFor="topicId" className="col-start-1">If other record is a Topic:</Label>
+      <Label htmlFor="link-topicId" className="col-start-1">If other record is a Topic:</Label>
       <Select
         value={topicId}
         onValueChange={setTopicId}
       >
         <SelectTriggerEx
-          id="topicId"
+          id="link-topicId"
           className="col-span-3 w-full"
           disabled={mode != "edit" || selectedLink?.otherRecordKind != "Topic"}
           help="When applicable, the topic to which the record is linked"

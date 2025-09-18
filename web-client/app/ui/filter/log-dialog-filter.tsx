@@ -41,7 +41,6 @@ import { RotateCw } from "lucide-react"
 export default function LogDialogFilter(
   {
     table,
-    recordId,
     auxRecordId,
     refetch,
   } : DataTableFilterProps<Log>) {
@@ -74,13 +73,13 @@ export default function LogDialogFilter(
       }
   }, [auxRecordId, filter, setFilter])
 
-  const prevRecordId = useRef<string>(undefined)
+  const prevAuxRecordId = useRef<string>(undefined)
   useEffect(() => {
-    if (recordId !== prevRecordId.current) {
-      prevRecordId.current = recordId
+    if (auxRecordId !== prevAuxRecordId.current) {
+      prevAuxRecordId.current = auxRecordId
       updateFilter(userId, transactionKind, from, to)
     }
-  }, [updateFilter, userId, transactionKind, from, to, recordId]) // previously [recordId]
+  }, [updateFilter, userId, transactionKind, from, to, auxRecordId])
 
   const handleFromChange = useCallback((from?: Date) => {
     setFrom(from)
@@ -140,7 +139,7 @@ export default function LogDialogFilter(
       <Spinner loading={result.loading} className="absolute inset-0 bg-black/20 z-50" />
       <div className="flex items-center gap-2">
         <Popover open={fromOpen} onOpenChange={setFromOpen}>
-          <PopoverTrigger id="from" asChild>
+          <PopoverTrigger id="filter-from" asChild>
             <Button
               variant={"outline"}
               className="justify-start text-left font-normal">
@@ -164,7 +163,7 @@ export default function LogDialogFilter(
           </PopoverContent>
         </Popover>
         <Popover open={toOpen} onOpenChange={setToOpen}>
-          <PopoverTrigger id="to" asChild>
+          <PopoverTrigger id="filter-to" asChild>
             <Button
               variant={"outline"}
               className="justify-start text-left font-normal">
@@ -191,7 +190,7 @@ export default function LogDialogFilter(
           value={userId ?? ''}
           onValueChange={handleUserIdChange}
         >
-          <SelectTrigger id="userId">
+          <SelectTrigger id="filter-userId">
             <SelectValue placeholder="User" />
           </SelectTrigger>
           <SelectContent>
@@ -209,7 +208,7 @@ export default function LogDialogFilter(
           value={transactionKind ?? ''}
           onValueChange={handleTransactionKindChange}
         >
-          <SelectTrigger id="transactionKind">
+          <SelectTrigger id="filter-transactionKind">
             <SelectValue placeholder="Transaction" />
           </SelectTrigger>
           <SelectContent>
