@@ -26,6 +26,8 @@ export default interface Topic extends ILinkableEntity {
   description?: string | null
   /** The full path to the topic. */
   path?: string | null
+  /** The parent topic, if any. */
+  parent?: Topic | null
   /** The ID of the parent topic, if any. */
   parentId?: string | null
   /** The sub-topics. */

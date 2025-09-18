@@ -45,7 +45,7 @@ public class CustomTopicRepositoryImpl extends AbstractCustomRepositoryImpl impl
     /** Describes the elements of a query. */
     static record QueryMetaData(@Nullable TopicQueryFilter filter, @NonNull Pageable pageable, String countQueryName,
         String selectQueryName, boolean hasParentId, boolean hasText, boolean hasTextH2, boolean hasTextMariaDB,
-        boolean isAdvanced, boolean hasStatus, boolean isRecursive, boolean isPaged, boolean isSorted) {
+        boolean isAdvanced, boolean hasStatus, boolean hasRecordId, boolean isRecursive, boolean isPaged, boolean isSorted) {
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomTopicRepositoryImpl.class);
@@ -69,9 +69,15 @@ public class CustomTopicRepositoryImpl extends AbstractCustomRepositoryImpl impl
         boolean hasTextMariaDB = hasText && !profileUtils.isIntegrationTesting();
         boolean isAdvanced = hasText && filter.getAdvancedSearch() != null && filter.getAdvancedSearch();
         boolean hasStatus = hasFilter && filter.getStatus() != null && !filter.getStatus().isEmpty();
+        boolean hasRecordId = hasFilter && filter.getRecordId() != null;
         boolean isRecursive = hasFilter && filter.getRecursive() != null && filter.getRecursive();
         boolean isPaged = pageable.isPaged();
         boolean isSorted = pageable.getSort().isSorted();
+
+        // If filter supplies a recordId, ignore all other criteria.
+        if (hasRecordId) {
+            hasParentId = hasText = hasTextH2 = hasTextMariaDB = isAdvanced = hasStatus = isRecursive = false;
+        }
 
         // Unauthenticated queries should only return published results.
         if (securityUtils.getCurrentUsername().equals("anonymousUser")) {
@@ -95,6 +101,8 @@ public class CustomTopicRepositoryImpl extends AbstractCustomRepositoryImpl impl
         append("topic.", queryNames);
         countQueryName.append("countBy");
         selectQueryName.append("findBy");
+        if (hasRecordId)
+            append("Id", queryNames);
         if (hasParentId) {
             append("Parent", queryNames);
             if (isRecursive)
@@ -113,7 +121,7 @@ public class CustomTopicRepositoryImpl extends AbstractCustomRepositoryImpl impl
         }
 
         return new QueryMetaData(filter, pageable, countQueryName.toString(), selectQueryName.toString(), hasParentId,
-            hasText, hasTextH2, hasTextMariaDB, isAdvanced, hasStatus, isRecursive, isPaged, isSorted);
+            hasText, hasTextH2, hasTextMariaDB, isAdvanced, hasStatus, hasRecordId, isRecursive, isPaged, isSorted);
     }
 
     /**
@@ -183,15 +191,26 @@ public class CustomTopicRepositoryImpl extends AbstractCustomRepositoryImpl impl
             selectFields =
                 "e.\"dtype\", e.\"status\", e.\"created\", e.\"created_by_user_id\", e.\"updated\", e.\"updated_by_user_id\", t.*";
         }
-        if ((m.hasParentId || m.hasStatus) && !m.isRecursive || m.hasText) {
+        if ((m.hasParentId || m.hasStatus || m.hasRecordId) && !m.isRecursive || m.hasText) {
             boolean needsAnd = false;
-            if ((m.hasParentId || m.hasStatus) && !m.isRecursive || m.hasTextMariaDB) {
+            if ((m.hasParentId || m.hasStatus || m.hasRecordId) && !m.isRecursive || m.hasTextMariaDB) {
                 whereClause.append(NL) //
                     .append("WHERE");
             }
+            if (m.hasRecordId) {
+                whereClause.append(NL) //
+                    .append("    ");
+                if (needsAnd)
+                    whereClause.append("AND ");
+                whereClause.append("e.\"id\" = :recordId");
+                needsAnd = true;
+            }
             if (m.hasParentId && !m.isRecursive) {
                 whereClause.append(NL) //
-                    .append("    ").append("t.\"parent_id\" ");
+                    .append("    ");
+                if (needsAnd)
+                    whereClause.append("AND ");
+                whereClause.append("t.\"parent_id\" ");
                 if (m.filter.getParentId() == -1)
                     whereClause.append("IS NULL");
                 else
@@ -259,6 +278,8 @@ public class CustomTopicRepositoryImpl extends AbstractCustomRepositoryImpl impl
         Map<String, Object> params = new HashMap<>();
         if (m.hasParentId && m.filter.getParentId() != -1)
             params.put("parentId", m.filter.getParentId());
+        if (m.hasRecordId)
+            params.put("recordId", m.filter.getRecordId());
         if (m.hasText)
             params.put("text", m.filter.getText());
         if (m.hasStatus)

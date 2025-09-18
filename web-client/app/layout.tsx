@@ -487,6 +487,9 @@ export default function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        <title>Evidence Engine</title>
+      </head>
       <body className={`${inter.className} antialiased`}>
         <FlushOnPathChange flushFn={storeAppState} />
         <AuthProvider>

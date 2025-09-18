@@ -19,6 +19,7 @@ The server is configured by the [server/src/main/resources/config/application.pr
 |```--debug-jvm```|Launch gradle task in remote-debuggable mode (process will suspend and wait for a debugger to connect on port 5005)|
 |```-PskipLaunch```|Do not launch a server process, connect instead to a running server|
 |```-PcaseInsensitive```|Run tests in case-insensitive mode, necessary when testing against a MariaDB production database, which uses case-insensitive collation by default|
+|```-x TASK```|Skip TASK|
 
 ## Running tests
 

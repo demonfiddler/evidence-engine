@@ -196,14 +196,17 @@ export function getRecordLabel(recordKind: RecordKind | undefined, record?: ITra
   }
 }
 
-export function setTopicFields(path: string, parentId?: string, inTopics?: Topic[], outTopics?: Topic[]) {
+export function setTopicFields(path: string, parentId: string | undefined, inTopics: Topic[] | undefined,
+  outTopics: Topic[] | undefined) {
+
   if (inTopics) {
     for (const inTopic of inTopics) {
       const outTopic = {
         ...inTopic,
         children: [],
         path: (path.length > 0 ? path + " > " : "") + inTopic.label,
-        parentId: parentId,
+        parent: undefined,
+        parentId: parentId ?? inTopic.parent?.id,
       }
       setTopicFields(outTopic.path, inTopic.id, inTopic.children, outTopic.children)
       outTopics?.push(outTopic)
@@ -211,13 +214,19 @@ export function setTopicFields(path: string, parentId?: string, inTopics?: Topic
   }
 }
 
-export function flatten(topics: Topic[], result: Topic[]) : Topic[] {
-  for (const topic of topics) {
-    result.push(topic)
+export function flatten(inTopics: Topic[], outTopics: Topic[]) : Topic[] {
+  for (const topic of inTopics) {
+    outTopics.push({
+      id: topic.id,
+      parentId: topic.parentId,
+      label: topic.label,
+      description: topic.description,
+      path: topic.path,
+    })
     if (topic.children)
-      flatten(topic.children, result)
+      flatten(topic.children, outTopics)
   }
-  return result
+  return outTopics
 }
 
 export const FROM_ENTITY_KIND = "fromEntityKind"

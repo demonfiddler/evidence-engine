@@ -1071,30 +1071,11 @@ export const READ_TOPICS = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
 ${FRAGMENT_TOPIC_FIELDS}
-query {
-  topics
-  # (
-  #   filter: {
-  #     parentId: 0
-  #     recursive: false
-  #     status: SSS
-  #     text: "test"
-  #     advancedSearch: false
-  #   }
-  #   pageSort: {
-  #     pageNumber: 1
-  #     pageSize: 3
-  #     sort: {
-  #       orders: {
-  #         property: "date"
-  #         direction: DESC
-  #         # nullHandling: NULLS_LAST
-  #         # ignoreCase: false
-  #       }
-  #     }
-  #   }
-  # )
-  {
+query Topics($filter: TopicQueryFilter, $pageSort: PageableInput) {
+  topics(
+    filter: $filter
+    pageSort: $pageSort
+  ) {
     ...pageFields
     content {
       ...trackedEntityFields

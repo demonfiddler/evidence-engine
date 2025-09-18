@@ -34,7 +34,8 @@ import { TopicInput, TopicQueryFilter } from '@/app/model/schema'
 import TopicTableFilter from '@/app/ui/filter/topic-table-filter'
 import useTopicQueryFilter from '@/hooks/use-topic-query-filter'
 import { GlobalContext } from '@/lib/context'
-import { useContext } from 'react'
+import { useContext, useMemo } from 'react'
+import { useQuery } from '@apollo/client'
 
 function createFieldValues(topic?: Topic) : TopicFieldValues {
   return {
@@ -54,7 +55,7 @@ function createInput(fieldValues: TopicFieldValues, id?: string) : TopicInput {
   }
 }
 
-function preparePage(rawPage?: IPage<Topic>) {
+function preparePage(rawPage: IPage<Topic> | undefined) {
   const result = rawPage
   ? {
     ...rawPage,
@@ -64,6 +65,8 @@ function preparePage(rawPage?: IPage<Topic>) {
   setTopicFields("", undefined, rawPage?.content, result?.content)
   return result
 }
+
+const EMPTY = [] as Topic[]
 
 export default function Topics() {
   const { queries } = useContext(GlobalContext)
@@ -95,6 +98,9 @@ export default function Topics() {
     findRecord: findTopic,
     filterLogic,
   })
+  const allTopicsResult = useQuery(READ_TOPIC_HIERARCHY, {variables: {filter: {parentId: "-1"}}})
+  const allTopicsPage = allTopicsResult.data?.topics
+  const allTopics = useMemo(() => preparePage(allTopicsPage), [allTopicsPage])
 
   // const {storeAppState} = useContext(GlobalContext)
   // useEffect(() => {return () => storeAppState()}, [])
@@ -125,7 +131,7 @@ export default function Topics() {
           record={selectedRecord}
           state={state}
           setMode={setMode}
-          topics={page?.content ?? []}
+          topics={allTopics?.content ?? EMPTY}
           onFormAction={handleFormAction}
         />
       </FormProvider>
