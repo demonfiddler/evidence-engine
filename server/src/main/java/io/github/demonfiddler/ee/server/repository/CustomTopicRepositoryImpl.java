@@ -180,7 +180,7 @@ public class CustomTopicRepositoryImpl extends AbstractCustomRepositoryImpl impl
                 ON st."id" = t."id"%s%s%s;
                 """;
             selectFields =
-                "DISTINCT e.\"dtype\", e.\"status\", e.\"created\", e.\"created_by_user_id\", e.\"updated\", e.\"updated_by_user_id\", t.*";
+                "DISTINCT e.\"dtype\", e.\"status\", e.\"rating\", e.\"created\", e.\"created_by_user_id\", e.\"updated\", e.\"updated_by_user_id\", t.*";
         } else {
             template = """
                 %s%s%s%s%sSELECT %s
@@ -189,7 +189,7 @@ public class CustomTopicRepositoryImpl extends AbstractCustomRepositoryImpl impl
                 ON e."id" = t."id"%s%s%s;
                 """;
             selectFields =
-                "e.\"dtype\", e.\"status\", e.\"created\", e.\"created_by_user_id\", e.\"updated\", e.\"updated_by_user_id\", t.*";
+                "e.\"dtype\", e.\"status\", e.\"rating\", e.\"created\", e.\"created_by_user_id\", e.\"updated\", e.\"updated_by_user_id\", t.*";
         }
         if ((m.hasParentId || m.hasStatus || m.hasRecordId) && !m.isRecursive || m.hasText) {
             boolean needsAnd = false;

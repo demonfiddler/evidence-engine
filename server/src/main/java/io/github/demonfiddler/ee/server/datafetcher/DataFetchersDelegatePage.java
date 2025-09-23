@@ -70,10 +70,10 @@ public interface DataFetchersDelegatePage<P, T> {
     default List<P> batchLoader(List<Long> keys, BatchLoaderEnvironment environment) {
         List<P> ret = unorderedReturnBatchLoader(keys, environment);
         if (ret == null) {
-            throw new NullPointerException("Either batchLoader or unorderedReturnBatchLoader must be overridden in " //$NON-NLS-1$
+            throw new NullPointerException("Either batchLoader or unorderedReturnBatchLoader must be overridden in "
                 + getClass() + " implementation. And unorderedReturnBatchLoader must return a list.");
         }
-        return GraphqlUtils.graphqlUtils.orderList(keys, ret, "dummy"); //$NON-NLS-1$
+        return GraphqlUtils.graphqlUtils.orderList(keys, ret, "dummy");
     }
 
     /**

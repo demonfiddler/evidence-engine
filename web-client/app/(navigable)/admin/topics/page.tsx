@@ -39,6 +39,7 @@ import { useQuery } from '@apollo/client'
 
 function createFieldValues(topic?: Topic) : TopicFieldValues {
   return {
+    rating: topic?.rating ?? 0,
     path: topic?.path ?? '',
     label: topic?.label ?? '',
     description: topic?.description ?? '',
@@ -49,6 +50,7 @@ function createFieldValues(topic?: Topic) : TopicFieldValues {
 function createInput(fieldValues: TopicFieldValues, id?: string) : TopicInput {
   return {
     id,
+    rating: fieldValues.rating || null,
     label: fieldValues.label,
     description: fieldValues.description || null,
     parentId: fieldValues.parentId || null,

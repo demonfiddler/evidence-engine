@@ -35,6 +35,7 @@ import useLinkableEntityQueryFilter from "@/hooks/use-linkable-entity-query-filt
 
 function createFieldValues(claim?: Claim) : ClaimFieldValues {
   return {
+    rating: claim?.rating ?? 0,
     text: claim?.text ?? '',
     date: toDate(claim?.date),
     notes: claim?.notes ?? ''
@@ -44,6 +45,7 @@ function createFieldValues(claim?: Claim) : ClaimFieldValues {
 function createInput(fieldValues: ClaimFieldValues, id?: string) : ClaimInput {
   return {
     id,
+    rating: fieldValues.rating || null,
     text: fieldValues.text,
     date: toIsoDateString(fieldValues.date) || null,
     notes: fieldValues.notes || null,

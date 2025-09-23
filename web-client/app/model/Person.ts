@@ -40,8 +40,6 @@ export default interface Person extends ILinkableEntity {
   qualifications?: string | null
   /** The primary country associated with the person. */
   country?: string | null
-  /** A five-star rating for the person, intended to reflect credibility, experience, qualifications, etc. */
-  rating?: number
   /** Whether the person's credentials have been checked. */
   checked?: boolean
   /** Whether the person has authored any peer-reviewed publications. */

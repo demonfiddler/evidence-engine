@@ -195,6 +195,8 @@ public class Journal extends AbstractTrackedEntity {
 			+ ", " //
 			+ "status: " + this.status //
 			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
 			+ "created: " + this.created //
 			+ ", " //
 			+ "createdByUser.id: " + (this.createdByUser == null ? null : this.createdByUser.getId()) //

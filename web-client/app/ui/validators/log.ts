@@ -18,7 +18,7 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 import { z } from "zod/v4"
-import { EntityKind } from "./tracked-entity"
+import { EntityKind } from "./enums"
 import { ID } from "./id"
 
 const TransactionKind = z.enum([

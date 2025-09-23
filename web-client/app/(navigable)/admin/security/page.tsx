@@ -67,26 +67,6 @@ function createAuthoritiesFieldValues(authorities?: Authority[]) {
   }
 }
 
-function createGroupFieldValues(group?: Group) : GroupFieldValues {
-  return {
-    groupname: group?.groupname ?? '',
-    ...createAuthoritiesFieldValues(group?.authorities)
-  }
-}
-
-function createUserFieldValues(user?: User) : UserFieldValues {
-  return {
-    username: user?.username ?? '',
-    password: user?.password ?? '',
-    firstName: user?.firstName ?? '',
-    lastName: user?.lastName ?? '',
-    email: user?.email ?? '',
-    country: user?.country ?? '',
-    notes: user?.notes ?? '',
-    ...createAuthoritiesFieldValues(user?.authorities)
-  }
-}
-
 function createAuthorities(formValue: AuthoritiesFieldValues) {
   const authorities: Authority[] = []
   if (formValue.adm)
@@ -106,9 +86,32 @@ function createAuthorities(formValue: AuthoritiesFieldValues) {
   return authorities
 }
 
+function createGroupFieldValues(group?: Group) : GroupFieldValues {
+  return {
+    rating: group?.rating ?? 0,
+    groupname: group?.groupname ?? '',
+    ...createAuthoritiesFieldValues(group?.authorities)
+  }
+}
+
+function createUserFieldValues(user?: User) : UserFieldValues {
+  return {
+    rating: user?.rating ?? 0,
+    username: user?.username ?? '',
+    password: user?.password ?? '',
+    firstName: user?.firstName ?? '',
+    lastName: user?.lastName ?? '',
+    email: user?.email ?? '',
+    country: user?.country ?? '',
+    notes: user?.notes ?? '',
+    ...createAuthoritiesFieldValues(user?.authorities)
+  }
+}
+
 function createGroupInput(fieldValues: GroupFieldValues, id?: string) : GroupInput {
   return {
     id,
+    rating: fieldValues.rating || null,
     groupname: fieldValues.groupname,
     authorities: createAuthorities(fieldValues),
   }
@@ -117,6 +120,7 @@ function createGroupInput(fieldValues: GroupFieldValues, id?: string) : GroupInp
 function createUserInput(fieldValues: UserFieldValues, id?: string) : UserInput {
   return {
     id,
+    rating: fieldValues.rating || null,
     username: fieldValues.username,
     password: fieldValues.password || null,
     firstName: fieldValues.firstName,

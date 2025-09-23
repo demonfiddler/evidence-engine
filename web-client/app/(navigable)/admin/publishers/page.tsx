@@ -35,6 +35,7 @@ import useTrackedEntityQueryFilter from '@/hooks/use-tracked-entity-query-filter
 
 function createFieldValues(publisher?: Publisher) : PublisherFieldValues {
   return {
+    rating: publisher?.rating ?? 0,
     name: publisher?.name ?? '',
     location: publisher?.location ?? '',
     country: publisher?.country ?? '',
@@ -46,6 +47,7 @@ function createFieldValues(publisher?: Publisher) : PublisherFieldValues {
 function createInput(fieldValues: PublisherFieldValues, id?: string) : PublisherInput {
   return {
     id,
+    rating: fieldValues.rating || null,
     name: fieldValues.name,
     location: fieldValues.location || null,
     country: fieldValues.country || null,

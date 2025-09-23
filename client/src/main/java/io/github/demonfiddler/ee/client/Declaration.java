@@ -268,6 +268,8 @@ public class Declaration extends AbstractLinkableEntity {
 			+ ", " //
 			+ "status: " + this.status //
 			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
 			+ "created: " + this.created //
 			+ ", " //
 			+ "createdByUser.id: " + (this.createdByUser == null ? null : this.createdByUser.getId()) //

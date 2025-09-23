@@ -19,8 +19,9 @@
 
 import { z } from "zod/v4"
 import { AuthoritiesSchema } from "./authority"
+import { Rateable } from "./tracked-entity"
 
-export const UserSchema = z.object({
+export const UserSchema = Rateable.extend({
   username: z.string().regex(/^[a-z0-9]*$/).min(1).max(50),
   password: z.string().regex(/^\{bcrypt\}\$[a-zA-Z0-9/$.]{59}$/).optional(),
   firstName: z.string().min(1).max(50),

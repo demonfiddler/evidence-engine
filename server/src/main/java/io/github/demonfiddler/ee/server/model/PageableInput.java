@@ -94,13 +94,13 @@ public class PageableInput {
 	}
 
 	public String toString() {
-		return "PageableInput {" //$NON-NLS-1$
-			+ "pageNumber: " + this.pageNumber //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "pageSize: " + this.pageSize //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "sort: " + this.sort //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "PageableInput {" //
+			+ "pageNumber: " + this.pageNumber //
+			+ ", " //
+			+ "pageSize: " + this.pageSize //
+			+ ", " //
+			+ "sort: " + this.sort //
+			+ "}"; //
 	}
 
 	public static Builder builder() {

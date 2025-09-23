@@ -36,7 +36,7 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonSerializers;
  */
 @GraphQLInputType("TopicInput")
 @JsonInclude(Include.NON_NULL)
-public class TopicInput extends AbstractBaseEntityInput {
+public class TopicInput extends AbstractTrackedEntityInput {
 
 	public TopicInput() {
 	}
@@ -48,6 +48,12 @@ public class TopicInput extends AbstractBaseEntityInput {
 	@JsonProperty("id")
 	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
 	Long id;
+
+	/**
+	 */
+	@JsonProperty("rating")
+	@GraphQLScalar(fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
+	Integer rating;
 
 	/**
 	 * The topic label for display in the user interface.
@@ -89,6 +95,22 @@ public class TopicInput extends AbstractBaseEntityInput {
 	@JsonProperty("id")
 	public Long getId() {
 		return this.id;
+	}
+
+	/**
+	 * A five-star rating for the topic, indicative of significance, evidence base, etc.
+	 */
+	@JsonProperty("rating")
+	public void setRating(Integer rating) {
+		this.rating = rating;
+	}
+
+	/**
+	 * A five-star rating for the topic, indicative of significance, evidence base, etc.
+	 */
+	@JsonProperty("rating")
+	public Integer getRating() {
+		return this.rating;
 	}
 
 	/**
@@ -143,6 +165,8 @@ public class TopicInput extends AbstractBaseEntityInput {
 		return "TopicInput {" //
 			+ "id: " + this.id //
 			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
 			+ "label: " + this.label //
 			+ ", " //
 			+ "description: " + this.description //
@@ -159,7 +183,7 @@ public class TopicInput extends AbstractBaseEntityInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, TopicInput> {
+	public static class Builder extends AbstractTrackedEntityInput.Builder<Builder, TopicInput> {
 
 		private String label;
 		private String description;

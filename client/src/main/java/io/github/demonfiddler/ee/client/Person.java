@@ -114,13 +114,6 @@ public class Person extends AbstractLinkableEntity {
 	String country;
 
 	/**
-	 * A five-star rating for the person, intended to reflect credibility, experience, qualifications, etc.
-	 */
-	@JsonProperty("rating")
-	@GraphQLScalar(fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
-	Integer rating;
-
-	/**
 	 * Whether the person's credentials have been checked.
 	 */
 	@JsonProperty("checked")
@@ -295,22 +288,6 @@ public class Person extends AbstractLinkableEntity {
 	}
 
 	/**
-	 * A five-star rating for the person, intended to reflect credibility, experience, qualifications, etc.
-	 */
-	@JsonProperty("rating")
-	public void setRating(Integer rating) {
-		this.rating = rating;
-	}
-
-	/**
-	 * A five-star rating for the person, intended to reflect credibility, experience, qualifications, etc.
-	 */
-	@JsonProperty("rating")
-	public Integer getRating() {
-		return this.rating;
-	}
-
-	/**
 	 * Whether the person's credentials have been checked.
 	 */
 	@JsonProperty("checked")
@@ -350,6 +327,8 @@ public class Person extends AbstractLinkableEntity {
 			+ ", " //
 			+ "status: " + this.status //
 			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
 			+ "created: " + this.created //
 			+ ", " //
 			+ "createdByUser.id: " + (this.createdByUser == null ? null : this.createdByUser.getId()) //
@@ -384,8 +363,6 @@ public class Person extends AbstractLinkableEntity {
 			+ ", " //
 			+ "country: " + this.country //
 			+ ", " //
-			+ "rating: " + this.rating //
-			+ ", " //
 			+ "checked: " + this.checked //
 			+ ", " //
 			+ "published: " + this.published //
@@ -408,7 +385,6 @@ public class Person extends AbstractLinkableEntity {
 		result = prime * result + ((notes == null) ? 0 : notes.hashCode());
 		result = prime * result + ((qualifications == null) ? 0 : qualifications.hashCode());
 		result = prime * result + ((country == null) ? 0 : country.hashCode());
-		result = prime * result + ((rating == null) ? 0 : rating.hashCode());
 		result = prime * result + ((checked == null) ? 0 : checked.hashCode());
 		result = prime * result + ((published == null) ? 0 : published.hashCode());
 		return result;
@@ -469,11 +445,6 @@ public class Person extends AbstractLinkableEntity {
 				return false;
 		} else if (!country.equals(other.country))
 			return false;
-		if (rating == null) {
-			if (other.rating != null)
-				return false;
-		} else if (!rating.equals(other.rating))
-			return false;
 		if (checked == null) {
 			if (other.checked != null)
 				return false;
@@ -507,7 +478,6 @@ public class Person extends AbstractLinkableEntity {
 		private String notes;
 		private String qualifications;
 		private String country;
-		private Integer rating;
 		private Boolean checked;
 		private Boolean published;
 
@@ -592,14 +562,6 @@ public class Person extends AbstractLinkableEntity {
 		}
 
 		/**
-		 * A five-star rating for the person, intended to reflect credibility, experience, qualifications, etc.
-		 */
-		public Builder withRating(Integer ratingParam) {
-			this.rating = ratingParam;
-			return this;
-		}
-
-		/**
 		 * Whether the person's credentials have been checked.
 		 */
 		public Builder withChecked(Boolean checkedParam) {
@@ -628,7 +590,6 @@ public class Person extends AbstractLinkableEntity {
 			_object.setNotes(this.notes);
 			_object.setQualifications(this.qualifications);
 			_object.setCountry(this.country);
-			_object.setRating(this.rating);
 			_object.setChecked(this.checked);
 			_object.setPublished(this.published);
 			return _object;

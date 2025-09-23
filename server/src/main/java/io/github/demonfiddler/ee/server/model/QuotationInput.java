@@ -32,7 +32,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("QuotationInput")
-public class QuotationInput extends AbstractBaseEntityInput {
+public class QuotationInput extends AbstractTrackedEntityInput {
 
 	/**
 	 * The text of the quotation.
@@ -155,21 +155,23 @@ public class QuotationInput extends AbstractBaseEntityInput {
 	}
 
 	public String toString() {
-		return "QuotationInput {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "text: " + this.text //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "quotee: " + this.quotee //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "date: " + this.date //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "source: " + this.source //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "url: " + this.url //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "notes: " + this.notes //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "QuotationInput {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
+			+ "text: " + this.text //
+			+ ", " //
+			+ "quotee: " + this.quotee //
+			+ ", " //
+			+ "date: " + this.date //
+			+ ", " //
+			+ "source: " + this.source //
+			+ ", " //
+			+ "url: " + this.url //
+			+ ", " //
+			+ "notes: " + this.notes //
+			+ "}"; //
 	}
 
 	public static Builder builder() {
@@ -180,7 +182,7 @@ public class QuotationInput extends AbstractBaseEntityInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, QuotationInput> {
+	public static class Builder extends AbstractTrackedEntityInput.Builder<Builder, QuotationInput> {
 
 		private String text;
 		private String quotee;

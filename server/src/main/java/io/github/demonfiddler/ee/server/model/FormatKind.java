@@ -34,10 +34,10 @@ public enum FormatKind {
 
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Short" })
-	SHORT("SHORT"), //$NON-NLS-1$
+	SHORT("SHORT"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Long" })
-	LONG("LONG"); //$NON-NLS-1$
+	LONG("LONG"); //
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different when the value in the GraphQL schema is a Java reserved keyword.
@@ -76,7 +76,7 @@ public enum FormatKind {
 				return e;
 			}
 		}
-		throw new IllegalArgumentException("No FormatKind exists with '" + graphQlValue + "' as a GraphQL value"); //$NON-NLS-1$ //$NON-NLS-2$
+		throw new IllegalArgumentException("No FormatKind exists with '" + graphQlValue + "' as a GraphQL value");
 	}
 
 }

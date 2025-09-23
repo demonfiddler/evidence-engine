@@ -19,7 +19,7 @@
 
 'use client'
 
-import { toDate } from "@/lib/utils"
+import { cn, toDate } from "@/lib/utils"
 import {
   Dialog,
   DialogContent,
@@ -88,9 +88,9 @@ export default function LogDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className={className} asChild>
+      <DialogTrigger asChild>
         <ButtonEx
-          outerClassName="place-self-center"
+          outerClassName={cn("place-self-center", className)}
           className="w-20 bg-blue-500 text-md"
           disabled={disabled}
           help={

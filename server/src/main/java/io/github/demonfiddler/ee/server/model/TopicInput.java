@@ -29,7 +29,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("TopicInput")
-public class TopicInput extends AbstractBaseEntityInput {
+public class TopicInput extends AbstractTrackedEntityInput {
 
 	/**
 	 * The topic label for display in the user interface.
@@ -92,15 +92,17 @@ public class TopicInput extends AbstractBaseEntityInput {
 	}
 
 	public String toString() {
-		return "TopicInput {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "label: " + this.label //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "description: " + this.description //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "parentId: " + this.parentId //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "TopicInput {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
+			+ "label: " + this.label //
+			+ ", " //
+			+ "description: " + this.description //
+			+ ", " //
+			+ "parentId: " + this.parentId //
+			+ "}"; //
 	}
 
 	public static Builder builder() {
@@ -111,7 +113,7 @@ public class TopicInput extends AbstractBaseEntityInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, TopicInput> {
+	public static class Builder extends AbstractTrackedEntityInput.Builder<Builder, TopicInput> {
 
 		private String label;
 		private String description;

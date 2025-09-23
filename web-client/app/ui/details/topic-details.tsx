@@ -44,6 +44,7 @@ import { FormActionHandler } from "@/hooks/use-page-logic"
 import { flatten } from "@/lib/utils"
 import InputEx from "../ext/input-ex"
 import SelectTriggerEx from "../ext/select-ex"
+import StarRatingBasicEx from "../ext/star-rating-ex"
 
 export default function TopicDetails(
   {
@@ -87,6 +88,36 @@ export default function TopicDetails(
             }</span>
           </FormDescription>
           <div className="grid grid-cols-5 ml-2 mr-2 mt-4 mb-4 gap-4 items-center">
+            <FormField
+              control={form.control}
+              name="rating"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Rating</FormLabel>
+                  <FormControl>
+                    <StarRatingBasicEx
+                      readOnly={!updating}
+                      maxStars={5}
+                      iconSize={18}
+                      className="ml-2 w-full"
+                      value={field.value ?? 0}
+                      onChange={field.onChange}
+                      help="A five-star rating for the topic, indicative of significance, evidence base, etc."
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DetailActions
+              className="col-start-5 row-span-5"
+              recordKind="Topic"
+              record={record}
+              form={form}
+              state={state}
+              setMode={setMode}
+              onFormAction={onFormAction}
+            />
             <FormField
               control={form.control}
               name="path"
@@ -156,15 +187,6 @@ export default function TopicDetails(
                   <FormMessage />
                 </FormItem>
               )}
-            />
-            <DetailActions
-              className="col-start-5 row-span-5"
-              recordKind="Topic"
-              record={record}
-              form={form}
-              state={state}
-              setMode={setMode}
-              onFormAction={onFormAction}
             />
             <FormField
               control={form.control}

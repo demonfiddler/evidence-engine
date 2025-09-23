@@ -33,13 +33,13 @@ public enum NullHandlingKind {
 
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Native" })
-	NATIVE("NATIVE"), //$NON-NLS-1$
+	NATIVE("NATIVE"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Nulls first" })
-	NULLS_FIRST("NULLS_FIRST"), //$NON-NLS-1$
+	NULLS_FIRST("NULLS_FIRST"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Nulls last" })
-	NULLS_LAST("NULLS_LAST"); //$NON-NLS-1$
+	NULLS_LAST("NULLS_LAST"); //
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different when the value in the GraphQL schema is a Java reserved keyword.

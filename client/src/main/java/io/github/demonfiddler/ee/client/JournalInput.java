@@ -38,18 +38,25 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonSerializers;
  */
 @GraphQLInputType("JournalInput")
 @JsonInclude(Include.NON_NULL)
-public class JournalInput extends AbstractBaseEntityInput {
+public class JournalInput extends AbstractTrackedEntityInput {
 
 	public JournalInput() {
 	}
 
 	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
-	 * The abreviation identifier, required if updating an existing record.
+	 * The journal identifier, required if updating an existing record.
 	 */
 	@JsonProperty("id")
 	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
 	Long id;
+
+	/**
+	 * A five-star rating for the journal, indicative of prestige, impact, circulation, etc.
+	 */
+	@JsonProperty("rating")
+	@GraphQLScalar( fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
+	Integer rating;
 
 	/**
 	 * The full journal title.
@@ -96,7 +103,7 @@ public class JournalInput extends AbstractBaseEntityInput {
 
 	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
-	 * The abreviation identifier, required if updating an existing record.
+	 * The journal identifier, required if updating an existing record.
 	 */
 	@Override
 	@JsonProperty("id")
@@ -106,12 +113,30 @@ public class JournalInput extends AbstractBaseEntityInput {
 
 	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
-	 * The abreviation identifier, required if updating an existing record.
+	 * The journal identifier, required if updating an existing record.
 	 */
 	@Override
 	@JsonProperty("id")
 	public Long getId() {
 		return this.id;
+	}
+
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
+	/**
+	 * A five-star rating for the journal, indicative of prestige, impact, circulation, etc.
+ 	 */
+	@JsonProperty("rating")
+	public void setRating(Integer rating) {
+		this.rating = rating;
+	}
+
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
+	/**
+	 * A five-star rating for the journal, indicative of prestige, impact, circulation, etc.
+	 */
+	@JsonProperty("rating")
+	public Integer getRating() {
+		return this.rating;
 	}
 
 	/**
@@ -208,6 +233,8 @@ public class JournalInput extends AbstractBaseEntityInput {
 		return "JournalInput {" //
 			+ "id: " + this.id //
 			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
 			+ "title: " + this.title //
 			+ ", " //
 			+ "abbreviation: " + this.abbreviation //
@@ -230,7 +257,7 @@ public class JournalInput extends AbstractBaseEntityInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, JournalInput> {
+	public static class Builder extends AbstractTrackedEntityInput.Builder<Builder, JournalInput> {
 
 		private String title;
 		private String abbreviation;

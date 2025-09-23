@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS "entity" (
   "id" bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'The unique entity record identifier',
   "dtype" char(3) NOT NULL COMMENT 'The entity type discriminator',
   "status" char(3) NOT NULL DEFAULT 'DRA' COMMENT 'The record status',
+  "rating" tinyint(3) unsigned DEFAULT NULL COMMENT 'Quality/significance/eminence star rating, 1..5',
   "created" timestamp NOT NULL DEFAULT current_timestamp() COMMENT 'When the record was created',
   "created_by_user_id"  bigint(20) unsigned COMMENT 'The ID of the user who created the record',
   "updated" timestamp NULL DEFAULT NULL COMMENT 'When the record was last updated',
@@ -51,7 +52,8 @@ CREATE TABLE IF NOT EXISTS "entity" (
   CONSTRAINT "FK_entity_dtype" FOREIGN KEY ("dtype") REFERENCES "entity_kind" ("code") ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT "FK_entity_status" FOREIGN KEY ("status") REFERENCES "status_kind" ("code") ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT "FK_entity_created_by_user" FOREIGN KEY ("created_by_user_id") REFERENCES "user" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT "FK_entity_updated_by_user" FOREIGN KEY ("updated_by_user_id") REFERENCES "user" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT "FK_entity_updated_by_user" FOREIGN KEY ("updated_by_user_id") REFERENCES "user" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT `CC_rating` CHECK ("rating" BETWEEN 1 AND 5)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Base table for all tracked and linkable entities';
 
 -- Dumping structure for table evidence_engine.claim
@@ -200,7 +202,6 @@ CREATE TABLE IF NOT EXISTS "person" (
   "notes" text DEFAULT NULL COMMENT 'Brief biography, notes, etc.',
   "qualifications" text DEFAULT NULL COMMENT 'Academic qualifications',
   "country_code" char(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for country of primary professional association',
-  "rating" tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Eminence star rating, 0..5',
   "checked" bit(1) NOT NULL DEFAULT b'0' COMMENT 'Set when the person''s credentials have been checked',
   "published" bit(1) NOT NULL DEFAULT b'0' COMMENT 'Set if person has published peer-reviewed papers on climate change',
   PRIMARY KEY ("id"),

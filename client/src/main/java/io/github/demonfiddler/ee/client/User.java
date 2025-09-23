@@ -269,6 +269,8 @@ public class User extends AbstractTrackedEntity {
 			+ ", " //
 			+ "status: " + this.status //
 			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
 			+ "created: " + this.created //
 			+ ", " //
 			+ "createdByUser.id: " + (this.createdByUser == null ? null : this.createdByUser.getId()) //
@@ -288,14 +290,14 @@ public class User extends AbstractTrackedEntity {
 			+ "email: " + this.email //
 			+ ", " //
 			+ "password: " + this.password //
-			+ ", " //$NON-NLS-1$
-			+ "country: " + this.country //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "notes: " + this.notes //$NON-NLS-1$
+			+ ", " //
+			+ "country: " + this.country //
+			+ ", " //
+			+ "notes: " + this.notes //
 			+ ", " //
 			+ "authorities: " + this.authorities //
-			+ ", " //$NON-NLS-1$
-			+ "groups: " + this.groups //$NON-NLS-1$
+			+ ", " //
+			+ "groups: " + this.groups //
 			+ ", " //
 			+ "__typename: " + this.__typename //
 			+ "}";

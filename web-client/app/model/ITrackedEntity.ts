@@ -27,6 +27,8 @@ export default interface ITrackedEntity extends IBaseEntity {
   entityKind?: string;
   /** The entity status. */
   status?: string;
+  /** A five-star rating for the entity, interpretation depends on entity kind. */
+  rating?: number
   /** When the record was created. */
   created?: Date | string
   /** The user who created the record. */

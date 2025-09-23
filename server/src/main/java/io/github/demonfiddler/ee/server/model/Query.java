@@ -678,65 +678,65 @@ public class Query {
 	}
 
 	public String toString() {
-		return "Query {" //$NON-NLS-1$
-			+ "claims: " + this.claims //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "claimById: " + this.claimById //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "declarations: " + this.declarations //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "declarationById: " + this.declarationById //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "entityLinks: " + this.entityLinks //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "entityLinkById: " + this.entityLinkById //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "entityLinkByEntityIds: " + this.entityLinkByEntityIds //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "journals: " + this.journals //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "journalById: " + this.journalById //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "log: " + this.log //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "persons: " + this.persons //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "personById: " + this.personById //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "publications: " + this.publications //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "publicationById: " + this.publicationById //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "publishers: " + this.publishers //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "publisherById: " + this.publisherById //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "quotations: " + this.quotations //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "quotationById: " + this.quotationById //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "topics: " + this.topics //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "topicById: " + this.topicById //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "users: " + this.users //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "userById: " + this.userById //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "userByUsername: " + this.userByUsername //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "currentUser: " + this.currentUser //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "groups: " + this.groups //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "groupById: " + this.groupById //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "groupByGroupname: " + this.groupByGroupname //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "entityStatistics: " + this.entityStatistics //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "topicStatistics: " + this.topicStatistics //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "Query {" //
+			+ "claims: " + this.claims //
+			+ ", " //
+			+ "claimById: " + this.claimById //
+			+ ", " //
+			+ "declarations: " + this.declarations //
+			+ ", " //
+			+ "declarationById: " + this.declarationById //
+			+ ", " //
+			+ "entityLinks: " + this.entityLinks //
+			+ ", " //
+			+ "entityLinkById: " + this.entityLinkById //
+			+ ", " //
+			+ "entityLinkByEntityIds: " + this.entityLinkByEntityIds //
+			+ ", " //
+			+ "journals: " + this.journals //
+			+ ", " //
+			+ "journalById: " + this.journalById //
+			+ ", " //
+			+ "log: " + this.log //
+			+ ", " //
+			+ "persons: " + this.persons //
+			+ ", " //
+			+ "personById: " + this.personById //
+			+ ", " //
+			+ "publications: " + this.publications //
+			+ ", " //
+			+ "publicationById: " + this.publicationById //
+			+ ", " //
+			+ "publishers: " + this.publishers //
+			+ ", " //
+			+ "publisherById: " + this.publisherById //
+			+ ", " //
+			+ "quotations: " + this.quotations //
+			+ ", " //
+			+ "quotationById: " + this.quotationById //
+			+ ", " //
+			+ "topics: " + this.topics //
+			+ ", " //
+			+ "topicById: " + this.topicById //
+			+ ", " //
+			+ "users: " + this.users //
+			+ ", " //
+			+ "userById: " + this.userById //
+			+ ", " //
+			+ "userByUsername: " + this.userByUsername //
+			+ ", " //
+			+ "currentUser: " + this.currentUser //
+			+ ", " //
+			+ "groups: " + this.groups //
+			+ ", " //
+			+ "groupById: " + this.groupById //
+			+ ", " //
+			+ "groupByGroupname: " + this.groupByGroupname //
+			+ ", " //
+			+ "entityStatistics: " + this.entityStatistics //
+			+ ", " //
+			+ "topicStatistics: " + this.topicStatistics //
+			+ "}"; //
 	}
 
 	public static Builder builder() {

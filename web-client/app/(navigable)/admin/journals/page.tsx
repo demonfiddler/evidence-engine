@@ -34,6 +34,7 @@ import useTrackedEntityQueryFilter from '@/hooks/use-tracked-entity-query-filter
 
 function createFieldValues(journal?: Journal) : JournalFieldValues {
   return {
+    rating: journal?.rating ?? 0,
     title: journal?.title ?? '',
     abbreviation: journal?.abbreviation ?? '',
     url: journal?.url ?? '',
@@ -46,6 +47,7 @@ function createFieldValues(journal?: Journal) : JournalFieldValues {
 function createInput(fieldValues: JournalFieldValues, id?: string) : JournalInput {
   return {
     id,
+    rating: fieldValues.rating || null,
     title: fieldValues.title,
     abbreviation: fieldValues.abbreviation || null,
     url: fieldValues.url || null,

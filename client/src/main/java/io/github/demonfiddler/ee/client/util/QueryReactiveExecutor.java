@@ -8465,13 +8465,13 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 
 		if (LOGGER.isTraceEnabled()) {
 			StringBuilder sb = new StringBuilder();
-			sb.append("Executing query 'entityStatistics' with bind variables: "); //$NON-NLS-1$
+			sb.append("Executing query 'entityStatistics' with bind variables: ");
 			boolean addComma = false;
 			for (Object o : paramsAndValues) {
 				if (o != null) {
 					sb.append(o.toString());
 					if (addComma)
-						sb.append(", "); //$NON-NLS-1$
+						sb.append(", ");
 					addComma = true;
 				}
 			}
@@ -8570,7 +8570,7 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 		StatisticsQueryFilter filter, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 
-		LOGGER.debug("Executing query 'topicStatistics': {} ", queryResponseDef); //$NON-NLS-1$
+		LOGGER.debug("Executing query 'topicStatistics': {} ", queryResponseDef);
 		ObjectResponse objectResponse =
 			getTopicStatisticsResponseBuilder().withQueryResponseDef(queryResponseDef).build();
 		return topicStatisticsWithBindValues(objectResponse, filter, parameters);
@@ -8625,7 +8625,7 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	public Mono<Optional<List<TopicStatistics>>> topicStatistics(String queryResponseDef, StatisticsQueryFilter filter,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 
-		LOGGER.debug("Executing query 'topicStatistics': {} ", queryResponseDef); //$NON-NLS-1$
+		LOGGER.debug("Executing query 'topicStatistics': {} ", queryResponseDef);
 		ObjectResponse objectResponse =
 			getTopicStatisticsResponseBuilder().withQueryResponseDef(queryResponseDef).build();
 		return topicStatisticsWithBindValues(objectResponse, filter,
@@ -8760,13 +8760,13 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 
 		if (LOGGER.isTraceEnabled()) {
 			StringBuilder sb = new StringBuilder();
-			sb.append("Executing query 'topicStatistics' with bind variables: "); //$NON-NLS-1$
+			sb.append("Executing query 'topicStatistics' with bind variables: ");
 			boolean addComma = false;
 			for (Object o : paramsAndValues) {
 				if (o != null) {
 					sb.append(o.toString());
 					if (addComma)
-						sb.append(", "); //$NON-NLS-1$
+						sb.append(", ");
 					addComma = true;
 				}
 			}

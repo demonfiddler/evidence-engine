@@ -215,23 +215,23 @@ public class Log implements IBaseEntity {
 	}
 
 	public String toString() {
-		return "Log {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "timestamp: " + this.timestamp //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "user: " + this.user //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "transactionKind: " + this.transactionKind //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "entityKind: " + this.entityKind //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "entityId: " + this.entityId //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "linkedEntityKind: " + this.linkedEntityKind //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "linkedEntityId: " + this.linkedEntityId //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "Log {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "timestamp: " + this.timestamp //
+			+ ", " //
+			+ "user: " + this.user //
+			+ ", " //
+			+ "transactionKind: " + this.transactionKind //
+			+ ", " //
+			+ "entityKind: " + this.entityKind //
+			+ ", " //
+			+ "entityId: " + this.entityId //
+			+ ", " //
+			+ "linkedEntityKind: " + this.linkedEntityKind //
+			+ ", " //
+			+ "linkedEntityId: " + this.linkedEntityId //
+			+ "}"; //
 	}
 
 	public static Builder builder() {

@@ -38,7 +38,7 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonSerializers;
  */
 @GraphQLInputType("ClaimInput")
 @JsonInclude(Include.NON_NULL)
-public class ClaimInput extends AbstractBaseEntityInput {
+public class ClaimInput extends AbstractTrackedEntityInput {
 
 	public ClaimInput() {
 	}
@@ -50,6 +50,13 @@ public class ClaimInput extends AbstractBaseEntityInput {
 	@JsonProperty("id")
 	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
 	Long id;
+
+	/**
+	 * A five-star rating for the claim, indicative of significance, credibility, evidence base, etc.
+	 */
+	@JsonProperty("rating")
+	@GraphQLScalar( fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
+	Integer rating;
 
 	/**
 	 * The text of the claim.
@@ -91,6 +98,24 @@ public class ClaimInput extends AbstractBaseEntityInput {
 	@JsonProperty("id")
 	public Long getId() {
 		return this.id;
+	}
+
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
+	/**
+	 * A five-star rating for the claim, indicative of significance, credibility, evidence base, etc.
+ 	 */
+	@JsonProperty("rating")
+	public void setRating(Integer rating) {
+		this.rating = rating;
+	}
+
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
+	/**
+	 * A five-star rating for the claim, indicative of significance, credibility, evidence base, etc.
+	 */
+	@JsonProperty("rating")
+	public Integer getRating() {
+		return this.rating;
 	}
 
 	/**
@@ -145,6 +170,8 @@ public class ClaimInput extends AbstractBaseEntityInput {
 		return "ClaimInput {" //
 			+ "id: " + this.id //
 			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
 			+ "text: " + this.text //
 			+ ", " //
 			+ "date: " + this.date //
@@ -161,7 +188,7 @@ public class ClaimInput extends AbstractBaseEntityInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, ClaimInput> {
+	public static class Builder extends AbstractTrackedEntityInput.Builder<Builder, ClaimInput> {
 
 		private String text;
 		private LocalDate date;

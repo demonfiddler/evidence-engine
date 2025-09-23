@@ -35,6 +35,7 @@ import useLinkableEntityQueryFilter from '@/hooks/use-linkable-entity-query-filt
 
 function createFieldValues(declaration?: Declaration) : DeclarationFieldValues {
   return {
+    rating: declaration?.rating ?? 0,
     kind: declaration?.kind as DeclarationKind ?? '',
     date: toDate(declaration?.date),
     title: declaration?.title ?? '',
@@ -50,6 +51,7 @@ function createFieldValues(declaration?: Declaration) : DeclarationFieldValues {
 function createInput(fieldValues: DeclarationFieldValues, id?: string) : DeclarationInput {
   return {
     id,
+    rating: fieldValues.rating || null,
     kind: fieldValues.kind,
     title: fieldValues.title,
     date: toIsoDateString(fieldValues.date) ?? new Date(), // NOTE: the default value shouldn't apply in practice

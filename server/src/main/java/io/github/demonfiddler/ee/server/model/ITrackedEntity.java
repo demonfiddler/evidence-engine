@@ -47,6 +47,12 @@ public interface ITrackedEntity extends IBaseEntity {
 	@GraphQLScalar(fieldName = "status", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
 	String getStatus();
 
+	@GraphQLScalar(fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
+	void setRating(Integer rating);
+
+	@GraphQLScalar(fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
+	Integer getRating();
+
 	@GraphQLScalar(fieldName = "created", graphQLTypeSimpleName = "DateTime", javaClass = OffsetDateTime.class,
 		listDepth = 0)
 	void setCreated(OffsetDateTime created);

@@ -18,6 +18,7 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 import { z } from "zod/v4"
+import { Rateable } from "./tracked-entity"
 
 export const DeclarationKindSchema = z.enum([
   "DECL",
@@ -25,7 +26,7 @@ export const DeclarationKindSchema = z.enum([
   "PETN",
 ])
 
-export const DeclarationSchema = z.object({
+export const DeclarationSchema = Rateable.extend({
   kind: DeclarationKindSchema,
   date: z.date().max(Date.now(), {error: "Declaration date cannot be in the future"}).optional(),
   title: z.string().min(10).max(100),

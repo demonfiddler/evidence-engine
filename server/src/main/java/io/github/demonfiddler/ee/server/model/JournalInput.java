@@ -31,7 +31,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("JournalInput")
-public class JournalInput extends AbstractBaseEntityInput {
+public class JournalInput extends AbstractTrackedEntityInput {
 
 	/**
 	 * The full journal title.
@@ -146,21 +146,23 @@ public class JournalInput extends AbstractBaseEntityInput {
 	}
 
 	public String toString() {
-		return "JournalInput {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "title: " + this.title //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "abbreviation: " + this.abbreviation //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "url: " + this.url //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "issn: " + this.issn //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "publisherId: " + this.publisherId //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "notes: " + this.notes //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "JournalInput {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
+			+ "title: " + this.title //
+			+ ", " //
+			+ "abbreviation: " + this.abbreviation //
+			+ ", " //
+			+ "url: " + this.url //
+			+ ", " //
+			+ "issn: " + this.issn //
+			+ ", " //
+			+ "publisherId: " + this.publisherId //
+			+ ", " //
+			+ "notes: " + this.notes //
+			+ "}"; //
 	}
 
 	public static Builder builder() {
@@ -171,7 +173,7 @@ public class JournalInput extends AbstractBaseEntityInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, JournalInput> {
+	public static class Builder extends AbstractTrackedEntityInput.Builder<Builder, JournalInput> {
 
 		private String title;
 		private String abbreviation;

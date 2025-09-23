@@ -83,7 +83,7 @@ public class EntityUtils {
 	private static final BidiMap<Class<?>, EntityKind> ENTITY_KINDS = new DualHashBidiMap<>();
 	private static final BidiMap<Class<?>, String> ENTITY_NAMES = new DualHashBidiMap<>();
 	private static final Collection<String> BASE_TABLE_FIELDS =
-		List.of("id", "dtype", "status", "created", "createdByUserId", "updated", "updatedByUserId");
+		List.of("id", "dtype", "status", "rating", "created", "createdByUserId", "updated", "updatedByUserId");
 
 	static {
 		ENTITY_KINDS.put(Claim.class, EntityKind.CLA);

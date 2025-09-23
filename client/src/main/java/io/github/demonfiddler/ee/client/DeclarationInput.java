@@ -39,7 +39,7 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonSerializers;
  */
 @GraphQLInputType("DeclarationInput")
 @JsonInclude(Include.NON_NULL)
-public class DeclarationInput extends AbstractBaseEntityInput {
+public class DeclarationInput extends AbstractTrackedEntityInput {
 
 	public DeclarationInput() {
 	}
@@ -51,6 +51,13 @@ public class DeclarationInput extends AbstractBaseEntityInput {
 	@JsonProperty("id")
 	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
 	Long id;
+
+	/**
+	 * A five-star rating for the declaration, indicative of significance, signatory eminence/count, etc.
+	 */
+	@JsonProperty("rating")
+	@GraphQLScalar( fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
+	Integer rating;
 
 	/**
 	 * The kind of declaration.
@@ -123,6 +130,24 @@ public class DeclarationInput extends AbstractBaseEntityInput {
 	@JsonProperty("id")
 	public Long getId() {
 		return this.id;
+	}
+
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
+	/**
+	 * A five-star rating for the declaration, indicative of significance, signatory eminence/count, etc.
+ 	 */
+	@JsonProperty("rating")
+	public void setRating(Integer rating) {
+		this.rating = rating;
+	}
+
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
+	/**
+	 * A five-star rating for the declaration, indicative of significance, signatory eminence/count, etc.
+	 */
+	@JsonProperty("rating")
+	public Integer getRating() {
+		return this.rating;
 	}
 
 	/**
@@ -241,6 +266,8 @@ public class DeclarationInput extends AbstractBaseEntityInput {
 		return "DeclarationInput {" //
 			+ "id: " + this.id //
 			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
 			+ "kind: " + this.kind //
 			+ ", " //
 			+ "title: " + this.title //
@@ -265,7 +292,7 @@ public class DeclarationInput extends AbstractBaseEntityInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, DeclarationInput> {
+	public static class Builder extends AbstractTrackedEntityInput.Builder<Builder, DeclarationInput> {
 
 		private DeclarationKind kind;
 		private String title;

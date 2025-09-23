@@ -51,10 +51,10 @@ mutation {
 	createPerson
   (
     person: {
+      rating:1
       title: "Mr"
       firstName: "Test"
       lastName: "User"
-      rating:1
       checked:false
       published:false
       qualifications: "Test qualifications"

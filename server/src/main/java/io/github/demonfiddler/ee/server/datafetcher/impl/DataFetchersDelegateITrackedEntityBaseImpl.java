@@ -71,7 +71,15 @@ abstract class DataFetchersDelegateITrackedEntityBaseImpl<T extends ITrackedEnti
     }
 
     public final Object status(DataFetchingEnvironment dataFetchingEnvironment, T origin, FormatKind format) {
-        StatusKind status = StatusKind.valueOf(origin.getStatus());
+        String statusStr = origin.getStatus();
+        // NOTE: This check shouldn't be necessary since status is NOT NULL in the database, but for some reason
+        // Group.members has just started returning null for User.status. This could have been the result of an
+        // uncommitted change to AbstractTrackedEntityImpl, making getters and setters final. At some point I
+        // encountered a Hibernate error complaining that such accessors cannot be final. I reverted that change and it
+        // seemed to cure the NPE here.
+        if (statusStr == null)
+            return null;
+        StatusKind status = StatusKind.valueOf(statusStr);
         return formatUtils.formatStatusKind(status, format);
     }
 

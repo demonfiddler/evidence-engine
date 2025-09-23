@@ -17,14 +17,19 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import { z } from "zod/v4"
-import { Rateable } from "./tracked-entity"
+'use client'
 
-export const TopicSchema = Rateable.extend({
-  path: z.string(),
-  label: z.string().min(2).max(50),
-  description: z.string().max(500).optional(),
-  parentId: z.string().regex(/^\d*$/).optional(),
-})
+import Help, { HelpProps } from "../misc/help"
+import { cn } from "@/lib/utils"
+import StarRatingBasic, { StarRatingBasicProps } from "@/components/commerce-ui/star-rating-basic"
 
-export type TopicFieldValues = z.infer<typeof TopicSchema>
+type LinkExProps = StarRatingBasicProps & HelpProps
+
+export default function StarRatingBasicEx({help, outerClassName, ...props} : LinkExProps) {
+  return (
+    <div className={cn("flex flex-row items-center gap-1", outerClassName)}>
+      <StarRatingBasic {...props} />
+      <Help text={help} />
+    </div>
+  )
+}

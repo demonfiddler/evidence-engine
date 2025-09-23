@@ -33,16 +33,16 @@ public enum StatusKind {
 
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Draft" })
-	DRA("DRA", "Draft"), //$NON-NLS-1$
+	DRA("DRA", "Draft"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Published" })
-	PUB("PUB", "Published"), //$NON-NLS-1$
+	PUB("PUB", "Published"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Suspended" })
-	SUS("SUS", "Suspended"), //$NON-NLS-1$
+	SUS("SUS", "Suspended"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Deleted" })
-	DEL("DEL", "Deleted"); //$NON-NLS-1$
+	DEL("DEL", "Deleted"); //
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different when the value in the GraphQL schema is a Java reserved keyword.

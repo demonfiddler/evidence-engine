@@ -136,31 +136,33 @@ public class EntityLink extends AbstractTrackedEntity {
 	}
 
 	public String toString() {
-		return "EntityLink {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "entityKind: " + this.getEntityKind() //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "status: " + this.status //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "created: " + this.created //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createdByUser: " + this.createdByUser //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updated: " + this.updated //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updatedByUser: " + this.updatedByUser //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "log: " + this.log //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "fromEntity: " + this.fromEntity //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "fromEntityLocations: " + this.fromEntityLocations //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "toEntity: " + this.toEntity //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "toEntityLocations: " + this.toEntityLocations //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "EntityLink {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "entityKind: " + this.getEntityKind() //
+			+ ", " //
+			+ "status: " + this.status //
+			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
+			+ "created: " + this.created //
+			+ ", " //
+			+ "createdByUser: " + this.createdByUser //
+			+ ", " //
+			+ "updated: " + this.updated //
+			+ ", " //
+			+ "updatedByUser: " + this.updatedByUser //
+			+ ", " //
+			+ "log: " + this.log //
+			+ ", " //
+			+ "fromEntity: " + this.fromEntity //
+			+ ", " //
+			+ "fromEntityLocations: " + this.fromEntityLocations //
+			+ ", " //
+			+ "toEntity: " + this.toEntity //
+			+ ", " //
+			+ "toEntityLocations: " + this.toEntityLocations //
+			+ "}"; //
 	}
 
 	public static Builder builder() {

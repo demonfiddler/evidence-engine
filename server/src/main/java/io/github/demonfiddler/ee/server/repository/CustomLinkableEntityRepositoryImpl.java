@@ -250,7 +250,7 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
          * )
          * -- }
          * 
-         * SELECT COUNT(*) | DISTINCT e."dtype", e."status", e."created",
+         * SELECT COUNT(*) | DISTINCT e."dtype", e."status", e."rating", e."created",
          * e."created_by_user_id", e."updated", e."updated_by_user_id", ee.*
          * FROM "entity" e
          * 
@@ -526,7 +526,7 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
         Query countQuery = defineNamedQuery(m.countQueryName, countSql, Long.class);
 
         String columns =
-            "DISTINCT e.\"dtype\", e.\"status\", e.\"created\", e.\"created_by_user_id\", e.\"updated\", e.\"updated_by_user_id\", ee.*";
+            "DISTINCT e.\"dtype\", e.\"status\", e.\"rating\", e.\"created\", e.\"created_by_user_id\", e.\"updated\", e.\"updated_by_user_id\", ee.*";
         String selectSql = String.format(template, commonTableExpr, columns, topicJoinClause, meJoinClause,
             ftJoinClause, eeJoinClause, cbuJoinClause, ubuJoinClause, whereClause, orderByClause);
         Query selectQuery = defineNamedQuery(m.selectQueryName, selectSql, getEntityClass());

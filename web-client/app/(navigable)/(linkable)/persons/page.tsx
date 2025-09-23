@@ -35,6 +35,7 @@ import useLinkableEntityQueryFilter from '@/hooks/use-linkable-entity-query-filt
 
 function createFieldValues(person?: Person) : PersonFieldValues {
   return {
+    rating: person?.rating ?? 0,
     title: person?.title ?? '',
     firstName: person?.firstName ?? '',
     nickname: person?.nickname ?? '',
@@ -45,7 +46,6 @@ function createFieldValues(person?: Person) : PersonFieldValues {
     notes: person?.notes ?? '',
     qualifications: person?.qualifications ?? '',
     country: person?.country ?? '',
-    rating: person?.rating ?? '',
     checked: person?.checked ?? false,
     published: person?.published ?? false
   }
@@ -54,6 +54,7 @@ function createFieldValues(person?: Person) : PersonFieldValues {
 function createInput(fieldValues: PersonFieldValues, id?: string) : PersonInput {
   return {
     id,
+    rating: fieldValues.rating || null,
     title: fieldValues.title || null,
     firstName: fieldValues.firstName,
     nickname: fieldValues.nickname || null,
@@ -64,7 +65,6 @@ function createInput(fieldValues: PersonFieldValues, id?: string) : PersonInput 
     notes: fieldValues.notes || null,
     qualifications: fieldValues.qualifications || null,
     country: fieldValues.country || null,
-    rating: toInteger(fieldValues.rating) ?? 0,
     checked: fieldValues.checked ?? false,
     published: fieldValues.published ?? false
   }

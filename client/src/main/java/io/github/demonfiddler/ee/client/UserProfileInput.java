@@ -174,19 +174,19 @@ public class UserProfileInput extends AbstractBaseEntityInput {
 	}
 
 	public String toString() {
-		return "UserProfileInput {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "firstName: " + this.firstName //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "lastName: " + this.lastName //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "email: " + this.email //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "country: " + this.country //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "notes: " + this.notes //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "UserProfileInput {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "firstName: " + this.firstName //
+			+ ", " //
+			+ "lastName: " + this.lastName //
+			+ ", " //
+			+ "email: " + this.email //
+			+ ", " //
+			+ "country: " + this.country //
+			+ ", " //
+			+ "notes: " + this.notes //
+			+ "}"; //
 	}
 
 	public static Builder builder() {

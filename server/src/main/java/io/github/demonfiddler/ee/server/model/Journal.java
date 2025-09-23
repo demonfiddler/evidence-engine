@@ -176,35 +176,37 @@ public class Journal extends AbstractTrackedEntity {
 	}
 
 	public String toString() {
-		return "Journal {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "entityKind: " + this.getEntityKind() //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "status: " + this.status //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "created: " + this.created //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createdByUser: " + this.createdByUser //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updated: " + this.updated //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updatedByUser: " + this.updatedByUser //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "log: " + this.log //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "title: " + this.title //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "abbreviation: " + this.abbreviation //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "url: " + this.url //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "issn: " + this.issn //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "publisher: " + this.publisher //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "notes: " + this.notes //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "Journal {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "entityKind: " + this.getEntityKind() //
+			+ ", " //
+			+ "status: " + this.status //
+			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
+			+ "created: " + this.created //
+			+ ", " //
+			+ "createdByUser: " + this.createdByUser //
+			+ ", " //
+			+ "updated: " + this.updated //
+			+ ", " //
+			+ "updatedByUser: " + this.updatedByUser //
+			+ ", " //
+			+ "log: " + this.log //
+			+ ", " //
+			+ "title: " + this.title //
+			+ ", " //
+			+ "abbreviation: " + this.abbreviation //
+			+ ", " //
+			+ "url: " + this.url //
+			+ ", " //
+			+ "issn: " + this.issn //
+			+ ", " //
+			+ "publisher: " + this.publisher //
+			+ ", " //
+			+ "notes: " + this.notes //
+			+ "}"; //
 	}
 
 	public static Builder builder() {

@@ -78,17 +78,17 @@ VALUES
 	('DRA', 'Journal eight', 'Jnl 8', null, null, 'Notes #8 (filtered)');
 
 INSERT INTO "person"
-	("status", "first_name", "last_name", "alias", "notes", "rating", "qualifications", "checked", "published")
+	("rating", "status", "first_name", "last_name", "alias", "notes", "qualifications", "checked", "published")
 VALUES
-	('DEL', 'Joanne', 'Smythe', 'Smutt', 'Updated test notes', 'Updated test qualifications', 4, TRUE, TRUE),
-	('DRA', 'Heidi', 'Andrews', 'Z', 'Notes #1', 'PERSON ONE', 1, TRUE, TRUE),
-	('DRA', 'Gary', 'Bosworth', null, 'Notes #2', 'Person two', 1, TRUE, TRUE),
-	('DRA', 'Fiona', 'Charlton', 'X', null, 'PERSON THREE', 1, TRUE, TRUE),
-	('DRA', 'Eric', 'Douglas', null, 'Notes #4', 'Person four', 1, TRUE, TRUE),
-	('DRA', 'Desmond', 'Edwards', 'v', 'Notes #5 (filtered)', 'PERSON FIVE', 1, TRUE, TRUE),
-	('DRA', 'Charles', 'Farquhar', null, null, 'Person six', 1, TRUE, TRUE),
-	('DRA', 'Beth', 'Gibson', 't', 'Notes #7 (filtered)', 'PERSON SEVEN', 1, TRUE, TRUE),
-	('DRA', 'Alison', 'Heath', null, 'Notes #8 (filtered)', 'Person eight', 1, TRUE, TRUE);
+	(4, 'DEL', 'Joanne', 'Smythe', 'Smutt', 'Updated test notes', 'Updated test qualifications', TRUE, TRUE),
+	(1, 'DRA', 'Heidi', 'Andrews', 'Z', 'Notes #1', 'PERSON ONE', TRUE, TRUE),
+	(1, 'DRA', 'Gary', 'Bosworth', null, 'Notes #2', 'Person two', TRUE, TRUE),
+	(1, 'DRA', 'Fiona', 'Charlton', 'X', null, 'PERSON THREE', TRUE, TRUE),
+	(1, 'DRA', 'Eric', 'Douglas', null, 'Notes #4', 'Person four', TRUE, TRUE),
+	(1, 'DRA', 'Desmond', 'Edwards', 'v', 'Notes #5 (filtered)', 'PERSON FIVE', TRUE, TRUE),
+	(1, 'DRA', 'Charles', 'Farquhar', null, null, 'Person six', TRUE, TRUE),
+	(1, 'DRA', 'Beth', 'Gibson', 't', 'Notes #7 (filtered)', 'PERSON SEVEN', TRUE, TRUE),
+	(1, 'DRA', 'Alison', 'Heath', null, 'Notes #8 (filtered)', 'Person eight', TRUE, TRUE);
 
 INSERT INTO "publication"
 	("status", "kind", "title", "authors", "date", "year", "abstract", "notes", "peer_reviewed", "doi", "isbn", "url", "cached", "accessed")

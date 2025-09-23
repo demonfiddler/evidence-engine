@@ -33,7 +33,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  */
 @GraphQLInputType("PersonInput")
 @JsonInclude(Include.NON_NULL)
-public class PersonInput extends AbstractBaseEntityInput {
+public class PersonInput extends AbstractTrackedEntityInput {
 
 	public PersonInput() {
 	}
@@ -45,6 +45,13 @@ public class PersonInput extends AbstractBaseEntityInput {
 	@JsonProperty("id")
 	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
 	Long id;
+
+	/**
+	 * A five-star rating for the person, intended to reflect credibility, experience, qualifications, etc.
+	 */
+	@JsonProperty("rating")
+	@GraphQLScalar(fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
+	Integer rating;
 
 	/**
 	 * The person's title(s).
@@ -118,13 +125,6 @@ public class PersonInput extends AbstractBaseEntityInput {
 	String country;
 
 	/**
-	 * A five-star rating for the person, intended to reflect credibility, experience, qualifications, etc.
-	 */
-	@JsonProperty("rating")
-	@GraphQLScalar(fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
-	Integer rating;
-
-	/**
 	 * Whether the person's credentials have been checked.
 	 */
 	@JsonProperty("checked")
@@ -156,6 +156,22 @@ public class PersonInput extends AbstractBaseEntityInput {
 	@JsonProperty("id")
 	public Long getId() {
 		return this.id;
+	}
+
+	/**
+	 * A five-star rating for the person, intended to reflect credibility, experience, qualifications, etc.
+	 */
+	@JsonProperty("rating")
+	public void setRating(Integer rating) {
+		this.rating = rating;
+	}
+
+	/**
+	 * A five-star rating for the person, intended to reflect credibility, experience, qualifications, etc.
+	 */
+	@JsonProperty("rating")
+	public Integer getRating() {
+		return this.rating;
 	}
 
 	/**
@@ -319,22 +335,6 @@ public class PersonInput extends AbstractBaseEntityInput {
 	}
 
 	/**
-	 * A five-star rating for the person, intended to reflect credibility, experience, qualifications, etc.
-	 */
-	@JsonProperty("rating")
-	public void setRating(Integer rating) {
-		this.rating = rating;
-	}
-
-	/**
-	 * A five-star rating for the person, intended to reflect credibility, experience, qualifications, etc.
-	 */
-	@JsonProperty("rating")
-	public Integer getRating() {
-		return this.rating;
-	}
-
-	/**
 	 * Whether the person's credentials have been checked.
 	 */
 	@JsonProperty("checked")
@@ -370,6 +370,8 @@ public class PersonInput extends AbstractBaseEntityInput {
 		return "PersonInput {" //
 			+ "id: " + this.id //
 			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
 			+ "title: " + this.title //
 			+ ", " //
 			+ "firstName: " + this.firstName //
@@ -390,8 +392,6 @@ public class PersonInput extends AbstractBaseEntityInput {
 			+ ", " //
 			+ "country: " + this.country //
 			+ ", " //
-			+ "rating: " + this.rating //
-			+ ", " //
 			+ "checked: " + this.checked //
 			+ ", " //
 			+ "published: " + this.published //
@@ -406,7 +406,7 @@ public class PersonInput extends AbstractBaseEntityInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, PersonInput> {
+	public static class Builder extends AbstractTrackedEntityInput.Builder<Builder, PersonInput> {
 
 		private String title;
 		private String firstName;
@@ -418,7 +418,6 @@ public class PersonInput extends AbstractBaseEntityInput {
 		private String notes;
 		private String qualifications;
 		private String country;
-		private Integer rating;
 		private Boolean checked;
 		private Boolean published;
 
@@ -503,14 +502,6 @@ public class PersonInput extends AbstractBaseEntityInput {
 		}
 
 		/**
-		 * A five-star rating for the person, intended to reflect credibility, experience, qualifications, etc.
-		 */
-		public Builder withRating(Integer ratingParam) {
-			this.rating = ratingParam;
-			return this;
-		}
-
-		/**
 		 * Whether the person's credentials have been checked.
 		 */
 		public Builder withChecked(Boolean checkedParam) {
@@ -539,7 +530,6 @@ public class PersonInput extends AbstractBaseEntityInput {
 			_object.setNotes(this.notes);
 			_object.setQualifications(this.qualifications);
 			_object.setCountry(this.country);
-			_object.setRating(this.rating);
 			_object.setChecked(this.checked);
 			_object.setPublished(this.published);
 			return _object;

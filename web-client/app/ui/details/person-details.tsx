@@ -42,6 +42,7 @@ import InputEx from "../ext/input-ex"
 import TextareaEx from "../ext/textarea-ex"
 import SelectTriggerEx from "../ext/select-ex"
 import CheckboxEx from "../ext/checkbox-ex"
+import StarRatingBasicEx from "../ext/star-rating-ex"
 
 const countries = rawCountries as unknown as Country[]
 
@@ -78,6 +79,27 @@ export default function PersonDetails(
             }</span>
           </FormDescription>
           <div className="grid grid-cols-5 ml-2 mr-2 mt-4 mb-4 gap-2">
+            <FormField
+              control={form.control}
+              name="rating"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Rating</FormLabel>
+                  <FormControl>
+                    <StarRatingBasicEx
+                      readOnly={!updating}
+                      maxStars={5}
+                      iconSize={18}
+                      className="ml-2 w-full"
+                      value={field.value ?? 0}
+                      onChange={field.onChange}
+                      help="A five-star rating for the person, intended to reflect eminence, credibility, experience, qualifications, publications, etc."
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="title"

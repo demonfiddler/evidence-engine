@@ -35,7 +35,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  */
 @GraphQLInputType("UserInput")
 @JsonInclude(Include.NON_NULL)
-public class UserInput extends AbstractBaseEntityInput {
+public class UserInput extends AbstractTrackedEntityInput {
 
 	public UserInput() {
 	}
@@ -47,6 +47,13 @@ public class UserInput extends AbstractBaseEntityInput {
 	@JsonProperty("id")
 	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
 	Long id;
+
+	/**
+	 * A five-star rating for the user, indicative of contributions, quality, etc.
+	 */
+	@JsonProperty("rating")
+	@GraphQLScalar( fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
+	Integer rating;
 
 	/**
 	 * The (mutable?) unique user name (user-assigned).
@@ -124,6 +131,24 @@ public class UserInput extends AbstractBaseEntityInput {
 	@JsonProperty("id")
 	public Long getId() {
 		return this.id;
+	}
+
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
+	/**
+     * A five-star rating for the user, indicative of contributions, quality, etc.
+ 	 */
+	@JsonProperty("rating")
+	public void setRating(Integer rating) {
+		this.rating = rating;
+	}
+
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
+	/**
+     * A five-star rating for the user, indicative of contributions, quality, etc.
+	 */
+	@JsonProperty("rating")
+	public Integer getRating() {
+		return this.rating;
 	}
 
 	/**
@@ -258,6 +283,8 @@ public class UserInput extends AbstractBaseEntityInput {
 		return "UserInput {" //
 			+ "id: " + this.id //
 			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
 			+ "username: " + this.username //
 			+ ", " //
 			+ "firstName: " + this.firstName //
@@ -267,12 +294,12 @@ public class UserInput extends AbstractBaseEntityInput {
 			+ "email: " + this.email //
 			+ ", " //
 			+ "password: " + this.password //
-			+ ", " //$NON-NLS-1$
-			+ "country: " + this.country //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "notes: " + this.notes //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "authorities: " + this.authorities //$NON-NLS-1$
+			+ ", " //
+			+ "country: " + this.country //
+			+ ", " //
+			+ "notes: " + this.notes //
+			+ ", " //
+			+ "authorities: " + this.authorities //
 			+ "}";
 	}
 
@@ -284,7 +311,7 @@ public class UserInput extends AbstractBaseEntityInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, UserInput> {
+	public static class Builder extends AbstractTrackedEntityInput.Builder<Builder, UserInput> {
 
 		private String username;
 		private String firstName;

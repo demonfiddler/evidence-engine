@@ -167,37 +167,39 @@ public class Quotation extends AbstractLinkableEntity {
 	}
 
 	public String toString() {
-		return "Quotation {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "status: " + this.status //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "created: " + this.created //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createdByUser: " + this.createdByUser //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updated: " + this.updated //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updatedByUser: " + this.updatedByUser //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "log: " + this.log //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "fromEntityLinks: " + this.fromEntityLinks //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "toEntityLinks: " + this.toEntityLinks //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "date: " + this.date //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "text: " + this.text //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "quotee: " + this.quotee //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "source: " + this.source //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "url: " + this.url //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "notes: " + this.notes //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "Quotation {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "status: " + this.status //
+			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
+			+ "created: " + this.created //
+			+ ", " //
+			+ "createdByUser: " + this.createdByUser //
+			+ ", " //
+			+ "updated: " + this.updated //
+			+ ", " //
+			+ "updatedByUser: " + this.updatedByUser //
+			+ ", " //
+			+ "log: " + this.log //
+			+ ", " //
+			+ "fromEntityLinks: " + this.fromEntityLinks //
+			+ ", " //
+			+ "toEntityLinks: " + this.toEntityLinks //
+			+ ", " //
+			+ "date: " + this.date //
+			+ ", " //
+			+ "text: " + this.text //
+			+ ", " //
+			+ "quotee: " + this.quotee //
+			+ ", " //
+			+ "source: " + this.source //
+			+ ", " //
+			+ "url: " + this.url //
+			+ ", " //
+			+ "notes: " + this.notes //
+			+ "}"; //
 	}
 
 	public static Builder builder() {

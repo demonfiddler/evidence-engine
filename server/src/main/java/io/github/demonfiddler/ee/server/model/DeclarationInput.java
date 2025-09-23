@@ -32,7 +32,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("DeclarationInput")
-public class DeclarationInput extends AbstractBaseEntityInput {
+public class DeclarationInput extends AbstractTrackedEntityInput {
 
 	/**
 	 * The kind of declaration.
@@ -176,23 +176,25 @@ public class DeclarationInput extends AbstractBaseEntityInput {
 	}
 
 	public String toString() {
-		return "DeclarationInput {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "kind: " + this.kind //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "title: " + this.title //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "date: " + this.date //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "country: " + this.country //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "url: " + this.url //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "signatories: " + this.signatories //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "notes: " + this.notes //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "DeclarationInput {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
+			+ "kind: " + this.kind //
+			+ ", " //
+			+ "title: " + this.title //
+			+ ", " //
+			+ "date: " + this.date //
+			+ ", " //
+			+ "country: " + this.country //
+			+ ", " //
+			+ "url: " + this.url //
+			+ ", " //
+			+ "signatories: " + this.signatories //
+			+ ", " //
+			+ "notes: " + this.notes //
+			+ "}"; //
 	}
 
 	public static Builder builder() {
@@ -203,7 +205,7 @@ public class DeclarationInput extends AbstractBaseEntityInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, DeclarationInput> {
+	public static class Builder extends AbstractTrackedEntityInput.Builder<Builder, DeclarationInput> {
 
 		private DeclarationKind kind;
 		private String title;

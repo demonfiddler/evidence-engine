@@ -96,13 +96,13 @@ public class TopicStatistics {
 	}
 
 	public String toString() {
-		return "TopicStatistics {" //$NON-NLS-1$
-			+ "topic: " + this.topic //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "entityStatistics: " + this.entityStatistics //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "children: " + this.children //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "TopicStatistics {" //
+			+ "topic: " + this.topic //
+			+ ", " //
+			+ "entityStatistics: " + this.entityStatistics //
+			+ ", " //
+			+ "children: " + this.children //
+			+ "}"; //
 	}
 
 	public static Builder builder() {

@@ -64,25 +64,25 @@ public class LinkableEntityQueryFilter extends EntityLinkQueryFilter {
 	}
 
 	public String toString() {
-		return "LinkableEntityQueryFilter {" //$NON-NLS-1$
-			+ "topicId: " + this.topicId //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "recursive: " + this.recursive //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "fromEntityKind: " + this.fromEntityKind //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "fromEntityId: " + this.fromEntityId //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "toEntityKind: " + this.toEntityKind //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "toEntityId: " + this.toEntityId //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "status: " + this.status //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "text: " + this.text //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "advancedSearch: " + this.advancedSearch //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "LinkableEntityQueryFilter {" //
+			+ "topicId: " + this.topicId //
+			+ ", " //
+			+ "recursive: " + this.recursive //
+			+ ", " //
+			+ "fromEntityKind: " + this.fromEntityKind //
+			+ ", " //
+			+ "fromEntityId: " + this.fromEntityId //
+			+ ", " //
+			+ "toEntityKind: " + this.toEntityKind //
+			+ ", " //
+			+ "toEntityId: " + this.toEntityId //
+			+ ", " //
+			+ "status: " + this.status //
+			+ ", " //
+			+ "text: " + this.text //
+			+ ", " //
+			+ "advancedSearch: " + this.advancedSearch //
+			+ "}"; //
 	}
 
 	public static Builder builderForLinkableEntityQueryFilter() {

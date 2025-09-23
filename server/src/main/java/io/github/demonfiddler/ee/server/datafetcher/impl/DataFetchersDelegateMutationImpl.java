@@ -241,6 +241,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @PreAuthorize("hasAuthority('CRE')")
     public Object createClaim(DataFetchingEnvironment dataFetchingEnvironment, ClaimInput input) {
         Claim claim = new Claim();
+        claim.setRating(input.getRating());
         claim.setDate(input.getDate());
         claim.setNotes(input.getNotes());
         claim.setText(input.getText());
@@ -258,6 +259,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     public Object updateClaim(DataFetchingEnvironment dataFetchingEnvironment, ClaimInput input) {
         Claim claim = claimRepository.findById(input.getId())
             .orElseThrow(() -> createEntityNotFoundException("Claim", input.getId()));
+        claim.setRating(input.getRating());
         claim.setDate(input.getDate());
         claim.setNotes(input.getNotes());
         claim.setText(input.getText());
@@ -280,6 +282,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @PreAuthorize("hasAuthority('CRE')")
     public Object createDeclaration(DataFetchingEnvironment dataFetchingEnvironment, DeclarationInput input) {
         Declaration declaration = new Declaration();
+        declaration.setRating(input.getRating());
         declaration.setCached(false);
         declaration.setCountry(input.getCountry());
         declaration.setDate(input.getDate());
@@ -303,6 +306,8 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     public Object updateDeclaration(DataFetchingEnvironment dataFetchingEnvironment, DeclarationInput input) {
         Declaration declaration = declarationRepository.findById(input.getId())
             .orElseThrow(() -> createEntityNotFoundException("Declaration", input.getId()));
+        declaration.setRating(input.getRating());
+        // declaration.setCached(input.getCached());
         declaration.setCountry(input.getCountry());
         declaration.setDate(input.getDate());
         declaration.setKind(input.getKind() == null ? null : input.getKind().name());
@@ -334,6 +339,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         AbstractLinkableEntity toEntity = linkableEntityRepository.findById(input.getToEntityId())
             .orElseThrow(() -> createEntityNotFoundException("To ILinkableEntity", input.getToEntityId()));
         EntityLink entityLink = EntityLink.builder() //
+            .withRating(input.getRating()) //
             .withFromEntity(fromEntity) //
             .withFromEntityLocations(input.getFromEntityLocations()) //
             .withToEntity(toEntity) //
@@ -356,7 +362,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         AbstractLinkableEntity oldFromEntity = entityLink.getFromEntity();
         AbstractLinkableEntity oldToEntity = entityLink.getToEntity();
 
-        setUpdatedFields(entityLink);
+        entityLink.setRating(input.getRating());
         boolean fromEntityChanged = !oldFromEntity.getId().equals(input.getFromEntityId());
         boolean toEntityChanged = !oldToEntity.getId().equals(input.getToEntityId());
         if (fromEntityChanged || toEntityChanged) {
@@ -377,6 +383,8 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         }
         entityLink.setFromEntityLocations(input.getFromEntityLocations());
         entityLink.setToEntityLocations(input.getToEntityLocations());
+
+        setUpdatedFields(entityLink);
         logUpdated(entityLink);
 
         return entityLinkRepository.save(entityLink);
@@ -402,6 +410,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @PreAuthorize("hasAuthority('CRE')")
     public Object createJournal(DataFetchingEnvironment dataFetchingEnvironment, JournalInput input) {
         Journal journal = new Journal();
+        journal.setRating(input.getRating());
         journal.setAbbreviation(input.getAbbreviation());
         journal.setIssn(input.getIssn());
         journal.setNotes(input.getNotes());
@@ -429,6 +438,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     public Object updateJournal(DataFetchingEnvironment dataFetchingEnvironment, JournalInput input) {
         Journal journal = journalRepository.findById(input.getId())
             .orElseThrow(() -> createEntityNotFoundException("Journal", input.getId()));
+        journal.setRating(input.getRating());
         journal.setAbbreviation(input.getAbbreviation());
         journal.setIssn(input.getIssn());
         journal.setNotes(input.getNotes());
@@ -461,6 +471,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @PreAuthorize("hasAuthority('CRE')")
     public Object createPerson(DataFetchingEnvironment dataFetchingEnvironment, PersonInput input) {
         Person person = new Person();
+        person.setRating(input.getRating());
         person.setAlias(input.getAlias());
         person.setTitle(input.getTitle());
         person.setFirstName(input.getFirstName());
@@ -473,7 +484,6 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         person.setCountry(input.getCountry());
         person.setChecked(input.getChecked());
         person.setPublished(input.getPublished());
-        person.setRating(input.getRating());
         setCreatedFields(person);
 
         person = personRepository.save(person);
@@ -488,6 +498,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     public Object updatePerson(DataFetchingEnvironment dataFetchingEnvironment, PersonInput input) {
         Person person = personRepository.findById(input.getId())
             .orElseThrow(() -> createEntityNotFoundException("Person", input.getId()));
+        person.setRating(input.getRating());
         person.setAlias(input.getAlias());
         person.setTitle(input.getTitle());
         person.setFirstName(input.getFirstName());
@@ -500,7 +511,6 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         person.setCountry(input.getCountry());
         person.setChecked(input.getChecked());
         person.setPublished(input.getPublished());
-        person.setRating(input.getRating());
         setUpdatedFields(person);
 
         person = personRepository.save(person);
@@ -523,6 +533,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         if (input.getJournalId() != null)
             journal = journalRepository.findById(input.getJournalId()).get();
         Publication publication = new Publication();
+        publication.setRating(input.getRating());
         publication.setTitle(input.getTitle());
         publication.setJournal(journal);
         publication.setAuthors(input.getAuthorNames());
@@ -556,6 +567,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         }
         Publication publication = publicationRepository.findById(input.getId())
             .orElseThrow(() -> createEntityNotFoundException("Publication", input.getId()));
+        publication.setRating(input.getRating());
         publication.setTitle(input.getTitle());
         publication.setJournal(journal);
         publication.setAuthors(input.getAuthorNames());
@@ -589,6 +601,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @PreAuthorize("hasAuthority('CRE')")
     public Object createPublisher(DataFetchingEnvironment dataFetchingEnvironment, PublisherInput input) {
         Publisher publisher = new Publisher();
+        publisher.setRating(input.getRating());
         publisher.setCountry(input.getCountry());
         publisher.setJournalCount(input.getJournalCount());
         publisher.setLocation(input.getLocation());
@@ -608,6 +621,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     public Object updatePublisher(DataFetchingEnvironment dataFetchingEnvironment, PublisherInput input) {
         Publisher publisher = publisherRepository.findById(input.getId())
             .orElseThrow(() -> createEntityNotFoundException("Publisher", input.getId()));
+        publisher.setRating(input.getRating());
         publisher.setCountry(input.getCountry());
         publisher.setJournalCount(input.getJournalCount());
         publisher.setLocation(input.getLocation());
@@ -632,6 +646,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @PreAuthorize("hasAuthority('CRE')")
     public Object createQuotation(DataFetchingEnvironment dataFetchingEnvironment, QuotationInput input) {
         Quotation quotation = new Quotation();
+        quotation.setRating(input.getRating());
         quotation.setQuotee(input.getQuotee());
         quotation.setText(input.getText());
         quotation.setDate(input.getDate());
@@ -652,6 +667,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     public Object updateQuotation(DataFetchingEnvironment dataFetchingEnvironment, QuotationInput input) {
         Quotation quotation = quotationRepository.findById(input.getId())
             .orElseThrow(() -> createEntityNotFoundException("Quotation", input.getId()));
+        quotation.setRating(input.getRating());
         quotation.setQuotee(input.getQuotee());
         quotation.setText(input.getText());
         quotation.setDate(input.getDate());
@@ -677,6 +693,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @PreAuthorize("hasAuthority('CRE')")
     public Object createTopic(DataFetchingEnvironment dataFetchingEnvironment, TopicInput input) {
         Topic topic = new Topic();
+        topic.setRating(input.getRating());
         topic.setLabel(input.getLabel());
         topic.setDescription(input.getDescription());
         Long parentId = input.getParentId();
@@ -698,6 +715,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     public Object updateTopic(DataFetchingEnvironment dataFetchingEnvironment, TopicInput input) {
         Topic topic = topicRepository.findById(input.getId())
             .orElseThrow(() -> createEntityNotFoundException("Topic", input.getId()));
+        topic.setRating(input.getRating());
         topic.setLabel(input.getLabel());
         topic.setDescription(input.getDescription());
         Long parentId = input.getParentId();
@@ -727,6 +745,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @PreAuthorize("hasAuthority('ADM')")
     public Object createUser(DataFetchingEnvironment dataFetchingEnvironment, UserInput input) {
         User user = new User();
+        user.setRating(input.getRating());
         user.setUsername(input.getUsername());
         user.setFirstName(input.getFirstName());
         user.setLastName(input.getLastName());
@@ -749,6 +768,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     public Object updateUser(DataFetchingEnvironment dataFetchingEnvironment, UserInput input) {
         User user = userRepository.findById(input.getId())
             .orElseThrow(() -> createEntityNotFoundException("User", input.getId()));
+        user.setRating(input.getRating());
         user.setUsername(input.getUsername());
         user.setFirstName(input.getFirstName());
         user.setLastName(input.getLastName());
@@ -854,6 +874,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @PreAuthorize("hasAuthority('ADM')")
     public Object createGroup(DataFetchingEnvironment dataFetchingEnvironment, GroupInput input) {
         Group group = new Group();
+        group.setRating(input.getRating());
         group.setGroupname(input.getGroupname());
         group.setAuthorities(input.getAuthorities());
         setCreatedFields(group);
@@ -870,6 +891,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     public Object updateGroup(DataFetchingEnvironment dataFetchingEnvironment, GroupInput input) {
         Group group = groupRepository.findById(input.getId())
             .orElseThrow(() -> createEntityNotFoundException("Group", input.getId()));
+        group.setRating(input.getRating());
         group.setGroupname(input.getGroupname());
         group.setAuthorities(input.getAuthorities());
         setUpdatedFields(group);

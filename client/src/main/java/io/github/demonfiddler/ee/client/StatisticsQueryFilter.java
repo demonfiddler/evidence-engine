@@ -96,9 +96,9 @@ public class StatisticsQueryFilter {
 	}
 
 	public String toString() {
-		return "StatisisticsQueryFilter {" //$NON-NLS-1$
-			+ "status: " + this.status //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "StatisisticsQueryFilter {" //
+			+ "status: " + this.status //
+			+ "}"; //
 	}
 
 	public static Builder builder() {

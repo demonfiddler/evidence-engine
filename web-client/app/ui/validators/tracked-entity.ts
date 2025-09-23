@@ -20,32 +20,18 @@
 import { z } from "zod/v4"
 import { Log } from "./log"
 import { IBaseEntity } from "./base-entity"
+import { EntityKind, Status } from "./enums"
 
-export const EntityKind = z.enum([
-  "CLA",
-  "COU",
-  "DEC",
-  "GRP",
-  "JOU",
-  "LNK",
-  "PER",
-  "PUB",
-  "PBR",
-  "QUO",
-  "TOP",
-  "USR",
-])
+const RATING_ERROR = "Rating must be a number between 1 and 5"
 
-export const Status = z.enum([
-  "DEL",
-  "DRA",
-  "PUB",
-  "SUS",
-])
+export const Rateable = z.object({
+  rating: z.number().min(0, {error: RATING_ERROR}).max(5, {error: RATING_ERROR}).optional(),
+})
 
 export const ITrackedEntity = IBaseEntity.extend({
   entityKind: EntityKind,
   status: Status,
+  rating: z.number().min(0, {error: RATING_ERROR}).max(5, {error: RATING_ERROR}).optional(),
   created: z.iso.date(),
   // createdByUser: User,
   updated: z.iso.date().optional(),

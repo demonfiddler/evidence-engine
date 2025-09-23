@@ -54,6 +54,7 @@ import TextareaEx from "../ext/textarea-ex"
 import ButtonEx from "../ext/button-ex"
 import LinkEx from "../ext/link-ex"
 import CheckboxEx from "../ext/checkbox-ex"
+import StarRatingBasicEx from "../ext/star-rating-ex"
 
 type PublicationKind = {
   kind: string
@@ -98,6 +99,36 @@ export default function PublicationDetails(
           <div className="grid grid-cols-4 ml-2 mr-2 mt-4 mb-4 gap-4 items-start">
             <FormField
               control={form.control}
+              name="rating"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Rating</FormLabel>
+                  <FormControl>
+                    <StarRatingBasicEx
+                      readOnly={!updating}
+                      maxStars={5}
+                      iconSize={18}
+                      className="ml-2 w-full"
+                      value={field.value ?? 0}
+                      onChange={field.onChange}
+                      help="A five-star rating for the publication, indicative of impact, quality, credibility, citations, etc."
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DetailActions
+              className="col-start-4 row-span-7"
+              recordKind="Publication"
+              record={record}
+              form={form}
+              state={state}
+              setMode={setMode}
+              onFormAction={onFormAction}
+            />
+            <FormField
+              control={form.control}
               name="title"
               render={({field}) => (
                 <FormItem className="col-span-3">
@@ -114,15 +145,6 @@ export default function PublicationDetails(
                   <FormMessage />
                 </FormItem>
               )}
-            />
-            <DetailActions
-              className="col-start-4 row-span-7"
-              recordKind="Publication"
-              record={record}
-              form={form}
-              state={state}
-              setMode={setMode}
-              onFormAction={onFormAction}
             />
             <FormField
               control={form.control}

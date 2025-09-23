@@ -64,9 +64,9 @@ public interface DataFetchersDelegateIBaseEntity<T extends IBaseEntity> {
 		List<T> ret = unorderedReturnBatchLoader(keys, environment);
 		if (ret == null) {
 			throw new NullPointerException(
-				"Either batchLoader or unorderedReturnBatchLoader must be overridden in DataFetchersDelegateT implementation. And unorderedReturnBatchLoader must return a list."); //$NON-NLS-1$
+				"Either batchLoader or unorderedReturnBatchLoader must be overridden in DataFetchersDelegateT implementation. And unorderedReturnBatchLoader must return a list.");
 		}
-		return GraphqlUtils.graphqlUtils.orderList(keys, ret, "id"); //$NON-NLS-1$
+		return GraphqlUtils.graphqlUtils.orderList(keys, ret, "id");
 	}
 
 	/**

@@ -33,40 +33,40 @@ public enum EntityKind {
 
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Claim" })
-	CLA("CLA", "Claim"), //$NON-NLS-1$
+	CLA("CLA", "Claim"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Country" })
-	COU("COU", "Country"), //$NON-NLS-1$
+	COU("COU", "Country"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Declaration" })
-	DEC("DEC", "Declaration"), //$NON-NLS-1$
+	DEC("DEC", "Declaration"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Group" })
-	GRP("GRP", "Group"), //$NON-NLS-1$
+	GRP("GRP", "Group"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Journal" })
-	JOU("JOU", "Journal"), //$NON-NLS-1$
+	JOU("JOU", "Journal"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Link" })
-	LNK("LNK", "EntityLink"), //$NON-NLS-1$
+	LNK("LNK", "EntityLink"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Person" })
-	PER("PER", "Person"), //$NON-NLS-1$
+	PER("PER", "Person"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Publication" })
-	PUB("PUB", "Publication"), //$NON-NLS-1$
+	PUB("PUB", "Publication"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Publisher" })
-	PBR("PBR", "Publisher"), //$NON-NLS-1$
+	PBR("PBR", "Publisher"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Quotation" })
-	QUO("QUO", "Quotation"), //$NON-NLS-1$
+	QUO("QUO", "Quotation"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Topic" })
-	TOP("TOP", "Topic"), //$NON-NLS-1$
+	TOP("TOP", "Topic"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "User" })
-	USR("USR", "User"); //$NON-NLS-1$
+	USR("USR", "User"); //
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different when the value in the GraphQL schema is a Java reserved keyword.

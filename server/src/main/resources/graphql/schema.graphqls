@@ -113,6 +113,8 @@ interface ITrackedEntity {
         "How to format the result. SHORT format is per ```StatusKind``` enum."
         format: FormatKind = LONG
     ): String
+    "A five-star rating for the entity, interpretation depends on entity kind."
+    rating: Int
     # TODO: support date/time formatting
     "When the record was created."
     created: DateTime
@@ -206,6 +208,8 @@ type Claim implements IBaseEntity & ITrackedEntity & ILinkableEntity {
         "How to format the result. SHORT format is per ```StatusKind``` enum."
         format: FormatKind = LONG
     ): String
+    "A five-star rating for the claim, indicative of significance, credibility, evidence base, etc."
+    rating: Int
     # TODO: support date/time formatting
     "When the record was created."
     created: DateTime
@@ -244,21 +248,14 @@ type Claim implements IBaseEntity & ITrackedEntity & ILinkableEntity {
     date: Date
     "Added notes about the claim."
     notes: String
-    # For now, these are all supported by parameterised top-level queries.
-#    "The declarations making the claim."
-#    declarations: [Declaration!]
-#    "The claimants, i.e., the person(s) making the claim"
-#    persons: [Person!]
-#    "The publication(s) making the claim"
-#    publications: [Publication!]
-#    "The quotations making the claim"
-#    quotations: [Quotation!]
 }
 
 "An input for creating or updating a claim."
 input ClaimInput {
     "The claim identifier, required if updating an existing record."
     id: ID
+    "A five-star rating for the claim, indicative of significance, credibility, evidence base, etc."
+    rating: Int
     "The text of the claim."
     text: String!
     "The date the claim was made."
@@ -325,6 +322,8 @@ type Declaration implements IBaseEntity & ITrackedEntity & ILinkableEntity {
         "How to format the result. SHORT format is per ```StatusKind``` enum."
         format: FormatKind = LONG
     ): String
+    "A five-star rating for the declaration, indicative of significance, signatory eminence/count, etc."
+    rating: Int
     # TODO: support date/time formatting
     "When the record was created."
     created: DateTime
@@ -394,6 +393,8 @@ type Declaration implements IBaseEntity & ITrackedEntity & ILinkableEntity {
 input DeclarationInput {
     "The declaration identifier, required if updating an existing record."
     id: ID
+    "A five-star rating for the declaration, indicative of significance, signatory eminence/count, etc."
+    rating: Int
     # TODO: consider whether to implement all topic-entity linking functionality in one place.
     "The kind of declaration."
     kind: DeclarationKind!
@@ -493,6 +494,8 @@ type EntityLink implements IBaseEntity & ITrackedEntity {
         "How to format the result. SHORT format is per ```StatusKind``` enum."
         format: FormatKind = LONG
     ): String
+    "A five-star rating for the link, indicative of significancce, credibility, evidence base, etc."
+    rating: Int
     # TODO: support date/time formatting
     "When the record was created."
     created: DateTime
@@ -524,6 +527,8 @@ type EntityLink implements IBaseEntity & ITrackedEntity {
 input EntityLinkInput {
     "The entity link identifier, required if updating an existing record."
     id: ID
+    "A five-star rating for the link, indicative of significancce, credibility, evidence base, etc."
+    rating: Int
     "The ID of the 'linked-from' entity."
     fromEntityId: ID!
     "The locations within the 'linked-from' record, one per line."
@@ -597,7 +602,7 @@ enum FormatKind {
 
 "Journal details including abbreviation, publisher, etc."
 type Journal implements IBaseEntity & ITrackedEntity {
-    "The unique abreviation identifier."
+    "The unique journal identifier."
     id: ID!
     "The entity kind."
     entityKind(
@@ -609,6 +614,8 @@ type Journal implements IBaseEntity & ITrackedEntity {
         "How to format the result. SHORT format is per ```StatusKind``` enum."
         format: FormatKind = LONG
     ): String
+    "A five-star rating for the journal, indicative of prestige, impact, circulation, etc."
+    rating: Int
     # TODO: support date/time formatting
     "When the record was created."
     created: DateTime
@@ -628,7 +635,7 @@ type Journal implements IBaseEntity & ITrackedEntity {
     ): LogPage!
     "The full journal title."
     title: String
-    "The official abbreviation."
+    "The official ISO 4 abbreviation."
     abbreviation: String
     "Web link to the journal's home page."
     url: URL
@@ -642,11 +649,13 @@ type Journal implements IBaseEntity & ITrackedEntity {
 
 "An input for creating or updating a journal."
 input JournalInput {
-    "The abreviation identifier, required if updating an existing record."
+    "The journal identifier, required if updating an existing record."
     id: ID
+    "A five-star rating for the journal, indicative of prestige, impact, circulation, etc."
+    rating: Int
     "The full journal title."
     title: String!
-    "The official abbreviation."
+    "The official ISO 4 abbreviation."
     abbreviation: String!
     url: URL
     "The International Standard Serial Number."
@@ -822,6 +831,8 @@ type Person implements IBaseEntity & ITrackedEntity & ILinkableEntity {
         "How to format the result. SHORT format is per ```StatusKind``` enum."
         format: FormatKind = LONG
     ): String
+    "A five-star rating for the person, intended to reflect eminence, credibility, experience, qualifications, publications, etc."
+    rating: Int
     # TODO: support date/time formatting
     "When the record was created."
     created: DateTime
@@ -876,8 +887,6 @@ type Person implements IBaseEntity & ITrackedEntity & ILinkableEntity {
         "How to format the result."
         format: CountryFormatKind = COMMON_NAME
     ): String
-    "A five-star rating for the person, intended to reflect credibility, experience, qualifications, etc."
-    rating: Int
     "Whether the person's credentials have been checked."
     checked: Boolean
     "Whether the person has authored any peer-reviewed publications."
@@ -888,6 +897,8 @@ type Person implements IBaseEntity & ITrackedEntity & ILinkableEntity {
 input PersonInput {
     "The person identifier, required if updating an existing record."
     id: ID
+    "A five-star rating for the person, intended to reflect eminence, credibility, experience, qualifications, publications, etc."
+    rating: Int
     "The person's title(s)."
     title: String
     "The person's first name(s)."
@@ -908,8 +919,6 @@ input PersonInput {
     qualifications: String
     "The ISO-3166-1 alpha-2 code for the primary country associated with the person."
     country: Country
-    "A five-star rating for the person, intended to reflect credibility, experience, qualifications, etc."
-    rating: Int
     "Whether the person's credentials have been checked."
     checked: Boolean
     "Whether the person has authored any peer-reviewed publications."
@@ -960,6 +969,8 @@ type Publication implements IBaseEntity & ITrackedEntity & ILinkableEntity {
         "How to format the result. SHORT format is per ```StatusKind``` enum."
         format: FormatKind = LONG
     ): String
+    "A five-star rating for the publication, indicative of impact, quality, credibility, citations, etc."
+    rating: Int
     # TODO: support date/time formatting
     "When the record was created."
     created: DateTime
@@ -1024,15 +1035,14 @@ type Publication implements IBaseEntity & ITrackedEntity & ILinkableEntity {
     # TODO: support date formatting
     "The date the publication was accessed when compiling the database."
     accessed: Date
-    # For now, these are all supported by parameterised top-level queries.
-#    "The author(s) of the publication" 
-#    persons: [Person!]
 }
 
 "An input for creating or updating a publication."
 input PublicationInput {
     "The publication identifier, required if updating an existing record."
     id: ID
+    "A five-star rating for the publication, indicative of impact, quality, credibility, citations, etc."
+    rating: Int
     "The names of the author, one per line."
     authorNames: String
     "The identifier(s) of the author(s) of the publication."
@@ -1227,6 +1237,8 @@ type Publisher implements IBaseEntity & ITrackedEntity {
         "How to format the result. SHORT format is per ```StatusKind``` enum."
         format: FormatKind = LONG
     ): String
+    "A five-star rating for the publisher, indicative of prestige, reputation, impact, quality, etc."
+    rating: Int
     # TODO: support date/time formatting
     "When the record was created."
     created: DateTime
@@ -1263,6 +1275,8 @@ type Publisher implements IBaseEntity & ITrackedEntity {
 input PublisherInput {
     "The unique publisher identifier."
     id: ID
+    "A five-star rating for the publisher, indicative of prestige, reputation, impact, quality, etc."
+    rating: Int
     "The publisher name."
     name: String!
     "The publisher location."
@@ -1319,6 +1333,8 @@ type Quotation implements IBaseEntity & ITrackedEntity & ILinkableEntity {
         "How to format the result. SHORT format is per ```StatusKind``` enum."
         format: FormatKind = LONG
     ): String
+    "A five-star rating for the quotation, indicative of impact, credibility, etc."
+    rating: Int
     # TODO: support date/time formatting
     "When the record was created."
     created: DateTime
@@ -1376,6 +1392,8 @@ type Quotation implements IBaseEntity & ITrackedEntity & ILinkableEntity {
 input QuotationInput {
     "The quotation identifier, required if updating an existing record."
     id: ID
+    "A five-star rating for the quotation, indicative of impact, credibility, etc."
+    rating: Int
     "The text of the quotation."
     text: String!
     "The identifier of the quotee."
@@ -1481,6 +1499,8 @@ type Topic implements IBaseEntity & ITrackedEntity & ILinkableEntity {
         "How to format the result. SHORT format is per ```StatusKind``` enum."
         format: FormatKind = LONG
     ): String
+    "A five-star rating for the topic, indicative of significance, evidence base, etc."
+    rating: Int
     # TODO: support date/time formatting
     "When the record was created."
     created: DateTime
@@ -1526,6 +1546,8 @@ type Topic implements IBaseEntity & ITrackedEntity & ILinkableEntity {
 input TopicInput {
     "The unique topic identifier."
     id: ID
+    "A five-star rating for the topic, indicative of significance, evidence base, etc."
+    rating: Int
     "The topic label for display in the user interface."
     label: String!
     "The topic description."
@@ -1620,6 +1642,8 @@ type User implements IBaseEntity & ITrackedEntity @auth {
         "How to format the result. SHORT format is per ```StatusKind``` enum."
         format: FormatKind = LONG
     ): String
+    "A five-star rating for the user, indicative of contributions, quality, etc."
+    rating: Int
     # TODO: support date/time formatting
     "When the record was created."
     created: DateTime
@@ -1670,6 +1694,8 @@ type User implements IBaseEntity & ITrackedEntity @auth {
 input UserInput {
     "The immutable, unique user identifier (system-assigned)."
     id: ID
+    "A five-star rating for the user, indicative of contributions, quality, etc."
+    rating: Int
     "The (mutable?) unique user name (user-assigned)."
     username: String!
     "The user's first name."
@@ -1755,6 +1781,8 @@ type Group implements IBaseEntity & ITrackedEntity @auth {
         "How to format the result. SHORT format is per ```StatusKind``` enum."
         format: FormatKind = LONG
     ): String
+    "A five-star rating for the group, though as yet unsure whether/how to use this."
+    rating: Int
     # TODO: support date/time formatting
     "When the record was created."
     created: DateTime
@@ -1786,6 +1814,8 @@ type Group implements IBaseEntity & ITrackedEntity @auth {
 input GroupInput {
     "The immutable, unique group identifier (system-assigned)."
     id: ID
+    "A five-star rating for the group, though as yet unsure whether/how to use this."
+    rating: Int
     "The (mutable?) unique group name (user-assigned)."
     groupname: String!
     "The authorities to grant to the group."

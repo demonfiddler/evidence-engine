@@ -18,8 +18,9 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 import { z } from "zod/v4"
+import { Rateable } from "./tracked-entity"
 
-export const PublisherSchema = z.object({
+export const PublisherSchema = Rateable.extend({
   name: z.string().min(2).max(200),
   location: z.string().max(50).optional(),
   country: z.string().length(0).or(z.string().uppercase().length(2)).optional(),

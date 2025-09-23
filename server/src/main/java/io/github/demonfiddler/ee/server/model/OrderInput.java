@@ -115,15 +115,15 @@ public class OrderInput {
 	}
 
 	public String toString() {
-		return "OrderInput {" //$NON-NLS-1$
-			+ "property: " + this.property //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "direction: " + this.direction //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "ignoreCase: " + this.ignoreCase //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "nullHandling: " + this.nullHandling //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "OrderInput {" //
+			+ "property: " + this.property //
+			+ ", " //
+			+ "direction: " + this.direction //
+			+ ", " //
+			+ "ignoreCase: " + this.ignoreCase //
+			+ ", " //
+			+ "nullHandling: " + this.nullHandling //
+			+ "}"; //
 	}
 
 	public static Builder builder() {

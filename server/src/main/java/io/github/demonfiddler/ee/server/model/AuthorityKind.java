@@ -34,31 +34,31 @@ public enum AuthorityKind {
 	/** Use administrative functions. */
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Administer" })
-	ADM("ADM", "Administer"), //$NON-NLS-1$
+	ADM("ADM", "Administer"), //
 	/** Insert new record. */
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Create" })
-	CRE("CRE", "Create"), //$NON-NLS-1$
+	CRE("CRE", "Create"), //
 	/** Delete existing record. */
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Delete" })
-	DEL("DEL", "Delete"), //$NON-NLS-1$
+	DEL("DEL", "Delete"), //
 	/** Link/unlink existing records. */
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Link" })
-	LNK("LNK", "Link"), //$NON-NLS-1$
+	LNK("LNK", "Link"), //
 	/** Read existing record. */
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Read" })
-	REA("REA", "Read"), //$NON-NLS-1$
+	REA("REA", "Read"), //
 	/** Update existing record. */
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Update" })
-	UPD("UPD", "Update"), //$NON-NLS-1$
+	UPD("UPD", "Update"), //
 	/** Upload file. */
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Upload" })
-	UPL("UPL", "Upload"); //$NON-NLS-1$
+	UPL("UPL", "Upload"); //
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different when the value in the GraphQL schema is a Java reserved keyword.

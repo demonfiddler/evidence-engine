@@ -33,10 +33,10 @@ public enum DirectionKind {
 
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Ascending" })
-	ASC("ASC"), //$NON-NLS-1$
+	ASC("ASC"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Descending" })
-	DESC("DESC"); //$NON-NLS-1$
+	DESC("DESC"); //
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different when the value in the GraphQL schema is a Java reserved keyword.

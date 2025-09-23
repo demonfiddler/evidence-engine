@@ -55,6 +55,13 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 	String status;
 
 	/**
+	 * A five-star rating for the entity, interpretation depends on entity kind.
+	 */
+	@JsonProperty("rating")
+	@GraphQLScalar( fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
+	Integer rating;
+
+	/**
 	 * When the record was created.
 	 */
 	@JsonProperty("created")
@@ -104,7 +111,7 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 	 */
 	@Override
 	@JsonIgnore
-	public final void setEntityKind(String entityKind) {
+	public void setEntityKind(String entityKind) {
 		this.entityKind = entityKind;
 	}
 
@@ -113,7 +120,7 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 	 */
 	@Override
 	@JsonIgnore
-	public final String getEntityKind() {
+	public String getEntityKind() {
 		return this.entityKind;
 	}
 
@@ -122,7 +129,7 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 	 */
 	@Override
 	@JsonIgnore
-	public final void setStatus(String status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 
@@ -131,8 +138,26 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 	 */
 	@Override
 	@JsonIgnore
-	public final String getStatus() {
+	public String getStatus() {
 		return this.status;
+	}
+
+	/**
+	 * A five-star rating for the entity, interpretation depends on entity kind.
+	 */
+	@Override
+	@JsonIgnore
+	public void setRating(Integer rating) {
+		this.rating = rating;
+	}
+  
+	/**
+	 * A five-star rating for the entity, interpretation depends on entity kind.
+	 */
+	@Override
+	@JsonIgnore
+	public Integer getRating() {
+		return this.rating;
 	}
 
 	/**
@@ -140,7 +165,7 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 	 */
 	@Override
 	@JsonIgnore
-	public final void setCreated(OffsetDateTime created) {
+	public void setCreated(OffsetDateTime created) {
 		this.created = created;
 	}
 
@@ -149,7 +174,7 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 	 */
 	@Override
 	@JsonIgnore
-	public final OffsetDateTime getCreated() {
+	public OffsetDateTime getCreated() {
 		return this.created;
 	}
 
@@ -159,7 +184,7 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 	@Override
 	@JsonIgnore
 	@GraphQLDirective(name = "@auth", parameterNames = {}, parameterTypes = {}, parameterValues = {})
-	public final void setCreatedByUser(User createdByUser) {
+	public void setCreatedByUser(User createdByUser) {
 		this.createdByUser = createdByUser;
 	}
 
@@ -169,7 +194,7 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 	@Override
 	@JsonIgnore
 	@GraphQLDirective(name = "@auth", parameterNames = {}, parameterTypes = {}, parameterValues = {})
-	public final User getCreatedByUser() {
+	public User getCreatedByUser() {
 		return this.createdByUser;
 	}
 
@@ -178,7 +203,7 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 	 */
 	@Override
 	@JsonIgnore
-	public final void setUpdated(OffsetDateTime updated) {
+	public void setUpdated(OffsetDateTime updated) {
 		this.updated = updated;
 	}
 
@@ -187,7 +212,7 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 	 */
 	@Override
 	@JsonIgnore
-	public final OffsetDateTime getUpdated() {
+	public OffsetDateTime getUpdated() {
 		return this.updated;
 	}
 
@@ -197,7 +222,7 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 	@Override
 	@JsonIgnore
 	@GraphQLDirective(name = "@auth", parameterNames = {}, parameterTypes = {}, parameterValues = {})
-	public final void setUpdatedByUser(User updatedByUser) {
+	public void setUpdatedByUser(User updatedByUser) {
 		this.updatedByUser = updatedByUser;
 	}
 
@@ -207,7 +232,7 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 	@Override
 	@JsonIgnore
 	@GraphQLDirective(name = "@auth", parameterNames = {}, parameterTypes = {}, parameterValues = {})
-	public final User getUpdatedByUser() {
+	public User getUpdatedByUser() {
 		return this.updatedByUser;
 	}
 
@@ -216,7 +241,7 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 	 */
 	@Override
 	@JsonIgnore
-	public final void setLog(LogPage log) {
+	public void setLog(LogPage log) {
 		this.log = log;
 	}
 
@@ -225,7 +250,7 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 	 */
 	@Override
 	@JsonIgnore
-	public final LogPage getLog() {
+	public LogPage getLog() {
 		return this.log;
 	}
 
@@ -234,6 +259,7 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
+		result = prime * result + ((rating == null) ? 0 : rating.hashCode());
 		result = prime * result + ((created == null) ? 0 : created.hashCode());
 		result = prime * result
 			+ ((createdByUser == null || createdByUser.getId() == null) ? 0 : createdByUser.getId().hashCode());
@@ -253,6 +279,11 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 			if (other.status != null)
 				return false;
 		} else if (!status.equals(other.status))
+			return false;
+		if (rating == null) {
+			if (other.rating != null)
+				return false;
+		} else if (!rating.equals(other.rating))
 			return false;
 		if (created == null) {
 			if (other.created != null)
@@ -309,6 +340,7 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 
 		private String entityKind;
 		private String status;
+		private Integer rating;
 		private OffsetDateTime created;
 		private User createdByUser;
 		private OffsetDateTime updated;
@@ -318,7 +350,7 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 		/**
 		 * The entity kind.
 		 */
-		public final B withEntityKind(java.lang.String entityKindParam) {
+		public final B withEntityKind(String entityKindParam) {
 			this.entityKind = entityKindParam;
 			return (B)this;
 		}
@@ -332,9 +364,17 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 		}
 
 		/**
+		 * A five-star rating for the entity, interpretation depends on entity kind.
+		 */
+		public final B withRating(Integer ratingParam) {
+			this.rating = ratingParam;
+			return (B)this;
+		}
+
+		/**
 		 * When the record was created.
 		 */
-		public final B withCreated(java.time.OffsetDateTime createdParam) {
+		public final B withCreated(OffsetDateTime createdParam) {
 			this.created = createdParam;
 			return (B)this;
 		}
@@ -350,7 +390,7 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 		/**
 		 * When the record was last updated.
 		 */
-		public final B withUpdated(java.time.OffsetDateTime updatedParam) {
+		public final B withUpdated(OffsetDateTime updatedParam) {
 			this.updated = updatedParam;
 			return (B)this;
 		}
@@ -375,6 +415,7 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 			super.build(_object);
 			_object.setEntityKind(this.entityKind);
 			_object.setStatus(this.status);
+			_object.setRating(this.rating);
 			_object.setCreated(this.created);
 			_object.setCreatedByUser(this.createdByUser);
 			_object.setUpdated(this.updated);

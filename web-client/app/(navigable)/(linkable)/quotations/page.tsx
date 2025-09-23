@@ -35,6 +35,7 @@ import useLinkableEntityQueryFilter from '@/hooks/use-linkable-entity-query-filt
 
 function createFieldValues(quotation?: Quotation) {
   return {
+    rating: quotation?.rating ?? 0,
     text: quotation?.text ?? '',
     quotee: quotation?.quotee ?? '',
     date: toDate(quotation?.date),
@@ -47,6 +48,7 @@ function createFieldValues(quotation?: Quotation) {
 function createInput(fieldValues: QuotationFieldValues, id?: string) : QuotationInput {
   return {
     id,
+    rating: fieldValues.rating || null,
     text: fieldValues.text,
     quotee: fieldValues.quotee,
     date: toIsoDateString(fieldValues.date),

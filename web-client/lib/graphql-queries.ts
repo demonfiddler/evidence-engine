@@ -42,6 +42,7 @@ fragment trackedEntityFields on ITrackedEntity {
   }
   entityKind
   status
+  rating
   created
   createdByUser {
     username
@@ -289,7 +290,6 @@ fragment personFields on Person {
   qualifications
   notes
   country(format: ALPHA_2)
-  rating
   checked
   published
 }

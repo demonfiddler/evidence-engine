@@ -31,7 +31,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("UserInput")
-public class UserInput extends AbstractBaseEntityInput {
+public class UserInput extends AbstractTrackedEntityInput {
 
 	/**
 	 * The (mutable?) unique user name (user-assigned).
@@ -198,25 +198,27 @@ public class UserInput extends AbstractBaseEntityInput {
 	}
 
 	public String toString() {
-		return "UserInput {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "username: " + this.username //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "firstName: " + this.firstName //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "lastName: " + this.lastName //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "email: " + this.email //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "password: " + this.password //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "country: " + this.country //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "notes: " + this.notes //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "authorities: " + this.authorities //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "UserInput {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
+			+ "username: " + this.username //
+			+ ", " //
+			+ "firstName: " + this.firstName //
+			+ ", " //
+			+ "lastName: " + this.lastName //
+			+ ", " //
+			+ "email: " + this.email //
+			+ ", " //
+			+ "password: " + this.password //
+			+ ", " //
+			+ "country: " + this.country //
+			+ ", " //
+			+ "notes: " + this.notes //
+			+ ", " //
+			+ "authorities: " + this.authorities //
+			+ "}"; //
 	}
 
 	public static Builder builder() {
@@ -227,7 +229,7 @@ public class UserInput extends AbstractBaseEntityInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, UserInput> {
+	public static class Builder extends AbstractTrackedEntityInput.Builder<Builder, UserInput> {
 
 		private String username;
 		private String firstName;

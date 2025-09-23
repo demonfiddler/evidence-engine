@@ -40,7 +40,7 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonSerializers;
  */
 @GraphQLInputType("PublicationInput")
 @JsonInclude(Include.NON_NULL)
-public class PublicationInput extends AbstractBaseEntityInput {
+public class PublicationInput extends AbstractTrackedEntityInput {
 
 	public PublicationInput() {
 	}
@@ -52,6 +52,13 @@ public class PublicationInput extends AbstractBaseEntityInput {
 	@JsonProperty("id")
 	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
 	Long id;
+
+	/**
+	 * A five-star rating for the publication, indicative of impact, quality, credibility, citations, etc.
+	 */
+	@JsonProperty("rating")
+	@GraphQLScalar(fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
+	Integer rating;
 
 	/**
 	 * The names of the author, one per line.
@@ -181,6 +188,22 @@ public class PublicationInput extends AbstractBaseEntityInput {
 	@JsonProperty("id")
 	public Long getId() {
 		return this.id;
+	}
+
+	/**
+	 * A five-star rating for the publication, indicative of impact, quality, credibility, citations, etc.
+	 */
+	@JsonProperty("rating")
+	public void setRating(Integer rating) {
+		this.rating = rating;
+	}
+
+	/**
+	 * A five-star rating for the publication, indicative of impact, quality, credibility, citations, etc.
+	 */
+	@JsonProperty("rating")
+	public Integer getRating() {
+		return this.rating;
 	}
 
 	/**
@@ -427,6 +450,8 @@ public class PublicationInput extends AbstractBaseEntityInput {
 		return "PublicationInput {" //
 			+ "id: " + this.id //
 			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
 			+ "authorNames: " + this.authorNames //
 			+ ", " //
 			+ "authorIds: " + this.authorIds //
@@ -467,7 +492,7 @@ public class PublicationInput extends AbstractBaseEntityInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, PublicationInput> {
+	public static class Builder extends AbstractTrackedEntityInput.Builder<Builder, PublicationInput> {
 
 		private String authorNames;
 		private List<Long> authorIds;

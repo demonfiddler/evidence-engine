@@ -86,13 +86,17 @@ export interface BaseEntityInput {
   id?: string
 }
 
-export interface ClaimInput extends BaseEntityInput {
+export interface TrackedEntityInput extends BaseEntityInput {
+  rating: number | null
+}
+
+export interface ClaimInput extends TrackedEntityInput {
   text: string
   date: Date | string | null
   notes: string | null
 }
 
-export interface DeclarationInput extends BaseEntityInput {
+export interface DeclarationInput extends TrackedEntityInput {
   kind: DeclarationKind
   title: string
   date: Date | string
@@ -102,14 +106,14 @@ export interface DeclarationInput extends BaseEntityInput {
   notes: string | null
 }
 
-export interface EntityLinkInput extends BaseEntityInput {
+export interface EntityLinkInput extends TrackedEntityInput {
   fromEntityId: string
   fromEntityLocations: string | null
   toEntityId: string
   toEntityLocations: string | null
 }
 
-export interface JournalInput extends BaseEntityInput {
+export interface JournalInput extends TrackedEntityInput {
   title: string
   abbreviation: string | null
   url: string | null
@@ -118,7 +122,7 @@ export interface JournalInput extends BaseEntityInput {
   notes: string | null
 }
 
-export interface PersonInput extends BaseEntityInput {
+export interface PersonInput extends TrackedEntityInput {
   title: string | null
   firstName: string
   nickname: string | null
@@ -129,12 +133,11 @@ export interface PersonInput extends BaseEntityInput {
   notes: string | null
   qualifications: string | null
   country: string | null // TODO: use Country type
-  rating: number | null
   checked: boolean
   published: boolean
 }
 
-export interface PublicationInput extends BaseEntityInput {
+export interface PublicationInput extends TrackedEntityInput {
   authorNames: string | null // TODO: rename to authors
   // authorIds: string[] | null // TODO: remove from schema.graphql
   title: string
@@ -152,7 +155,7 @@ export interface PublicationInput extends BaseEntityInput {
   cached: boolean
 }
 
-export interface PublisherInput extends BaseEntityInput {
+export interface PublisherInput extends TrackedEntityInput {
   name: string
   location: string | null
   country: string | null // TODO: use Country type
@@ -160,7 +163,7 @@ export interface PublisherInput extends BaseEntityInput {
   journalCount: number | null
 }
 
-export interface QuotationInput extends BaseEntityInput {
+export interface QuotationInput extends TrackedEntityInput {
   text: string
   quotee: string
   date: Date | string | null
@@ -169,13 +172,13 @@ export interface QuotationInput extends BaseEntityInput {
   notes: string | null
 }
 
-export interface TopicInput extends BaseEntityInput {
+export interface TopicInput extends TrackedEntityInput {
   label: string
   description: string | null
   parentId: string | null
 }
 
-export interface SecurityPrincipalInput extends BaseEntityInput {
+export interface SecurityPrincipalInput extends TrackedEntityInput {
   authorities: Authority[]
 }
 

@@ -125,7 +125,7 @@ public class GraphqlClientUtilsEx extends GraphqlClientUtils {
 		if (fieldClass == null && owningClass.isInterface()) {
 			// The class is an interface. So it's logical we didn't find this field as an attribute. Let's search for
 			// the relevant setter
-			String expectedMethodName = "get" + graphqlUtils.getPascalCase(name); //$NON-NLS-1$
+			String expectedMethodName = "get" + graphqlUtils.getPascalCase(name);
 			// for (Method method : owningClass.getDeclaredMethods()) {
 			for (Method method : owningClass.getMethods()) {
 				if (method.getName().equals(expectedMethodName)) {
@@ -137,8 +137,8 @@ public class GraphqlClientUtilsEx extends GraphqlClientUtils {
 		}
 
 		if (fieldClass == null) {
-			throw new GraphQLRequestPreparationException("The GraphQL type '" + owningClass.getSimpleName() + "' (" //$NON-NLS-1$ //$NON-NLS-2$
-				+ owningClass.getName() + ") has no field of name '" + name + "'"); //$NON-NLS-1$ //$NON-NLS-2$
+			throw new GraphQLRequestPreparationException("The GraphQL type '" + owningClass.getSimpleName() + "' ("
+				+ owningClass.getName() + ") has no field of name '" + name + "'");
 		}
 
 		return fieldClass;

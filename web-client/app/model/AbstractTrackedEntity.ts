@@ -24,11 +24,12 @@ import Log from "./Log"
 import User from "./User"
 
 export default abstract class AbstractTrackedEntity extends AbstractBaseEntity implements ITrackedEntity {
-  entityKind?: string;
-  status?: string;
-  created?: Date;
-  createdByUser?: User;
-  updated?: Date;
-  updatedByUser?: User;
-  log?: IPage<Log>;
+  entityKind?: string
+  status?: string
+  rating?: number
+  created?: Date
+  createdByUser?: User
+  updated?: Date
+  updatedByUser?: User
+  log?: IPage<Log>
 }

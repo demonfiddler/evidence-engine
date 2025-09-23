@@ -159,19 +159,19 @@ public class LogQueryFilter {
 	}
 
 	public String toString() {
-		return "LogQueryFilter {" //$NON-NLS-1$
-			+ "entityKind: " + this.entityKind //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "entityId: " + this.entityId //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "userId: " + this.userId //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "transactionKinds: " + this.transactionKinds //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "from: " + this.from //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "to: " + this.to //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "LogQueryFilter {" //
+			+ "entityKind: " + this.entityKind //
+			+ ", " //
+			+ "entityId: " + this.entityId //
+			+ ", " //
+			+ "userId: " + this.userId //
+			+ ", " //
+			+ "transactionKinds: " + this.transactionKinds //
+			+ ", " //
+			+ "from: " + this.from //
+			+ ", " //
+			+ "to: " + this.to //
+			+ "}"; //
 	}
 
 	public static Builder builder() {

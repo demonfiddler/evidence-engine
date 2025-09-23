@@ -141,7 +141,7 @@ public abstract class CustomTrackedEntityRepositoryImpl<T extends ITrackedEntity
      */
     private QueryPair defineNamedQueries(QueryMetaData m) {
         /*
-        SELECT COUNT(*) | e."dtype", e."status", e."created", e."created_by_user_id", e."updated", e."updated_by_user_id", ee.*
+        SELECT COUNT(*) | e."dtype", e."status", e."rating", e."created", e."created_by_user_id", e."updated", e."updated_by_user_id", ee.*
         FROM "entity" e
         JOIN "${m.entityName}" ee
         ON ee."id" = e."id"
@@ -222,7 +222,7 @@ public abstract class CustomTrackedEntityRepositoryImpl<T extends ITrackedEntity
         countBuf.insert(0, "SELECT COUNT(*)");
         countBuf.append(';');
         selectBuf.insert(0,
-            "SELECT e.\"dtype\", e.\"status\", e.\"created\", e.\"created_by_user_id\", e.\"updated\", e.\"updated_by_user_id\", ee.*");
+            "SELECT e.\"dtype\", e.\"status\", e.\"rating\", e.\"created\", e.\"created_by_user_id\", e.\"updated\", e.\"updated_by_user_id\", ee.*");
         if (m.isSorted)
             entityUtils.appendOrderByClause(selectBuf, m.pageable, "e.", "ee.", "cbu.", "ubu.", true);
         selectBuf.append(';');

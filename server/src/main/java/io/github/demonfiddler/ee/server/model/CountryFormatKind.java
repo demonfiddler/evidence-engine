@@ -33,19 +33,19 @@ public enum CountryFormatKind {
 
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Alpha-2 code" })
-	ALPHA_2("ALPHA_2"), //$NON-NLS-1$
+	ALPHA_2("ALPHA_2"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Alpha-3 code" })
-	ALPHA_3("ALPHA_3"), //$NON-NLS-1$
+	ALPHA_3("ALPHA_3"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Numeric code" })
-	NUMERIC("NUMERIC"), //$NON-NLS-1$
+	NUMERIC("NUMERIC"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "ISO name" })
-	ISO_NAME("ISO_NAME"), //$NON-NLS-1$
+	ISO_NAME("ISO_NAME"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Common name" })
-	COMMON_NAME("COMMON_NAME"); //$NON-NLS-1$
+	COMMON_NAME("COMMON_NAME"); //
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different when the value in the GraphQL schema is a Java reserved keyword.

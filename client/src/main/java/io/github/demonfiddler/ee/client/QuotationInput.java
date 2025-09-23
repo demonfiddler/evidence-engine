@@ -39,7 +39,7 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonSerializers;
  */
 @GraphQLInputType("QuotationInput")
 @JsonInclude(Include.NON_NULL)
-public class QuotationInput extends AbstractBaseEntityInput {
+public class QuotationInput extends AbstractTrackedEntityInput {
 
 	public QuotationInput() {
 	}
@@ -51,6 +51,13 @@ public class QuotationInput extends AbstractBaseEntityInput {
 	@JsonProperty("id")
 	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
 	Long id;
+
+	/**
+	 * A five-star rating for the quotation, indicative of impact, credibility, etc.
+	 */
+	@JsonProperty("rating")
+	@GraphQLScalar(fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
+	Integer rating;
 
 	/**
 	 * The text of the quotation.
@@ -114,6 +121,22 @@ public class QuotationInput extends AbstractBaseEntityInput {
 	@JsonProperty("id")
 	public Long getId() {
 		return this.id;
+	}
+
+	/**
+	 * A five-star rating for the quotation, indicative of impact, credibility, etc.
+	 */
+	@JsonProperty("rating")
+	public void setRating(Integer rating) {
+		this.rating = rating;
+	}
+
+	/**
+	 * A five-star rating for the quotation, indicative of impact, credibility, etc.
+	 */
+	@JsonProperty("rating")
+	public Integer getRating() {
+		return this.rating;
 	}
 
 	/**
@@ -216,6 +239,8 @@ public class QuotationInput extends AbstractBaseEntityInput {
 		return "QuotationInput {" //
 			+ "id: " + this.id //
 			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
 			+ "text: " + this.text //
 			+ ", " //
 			+ "quotee: " + this.quotee //
@@ -238,7 +263,7 @@ public class QuotationInput extends AbstractBaseEntityInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, QuotationInput> {
+	public static class Builder extends AbstractTrackedEntityInput.Builder<Builder, QuotationInput> {
 
 		private String text;
 		private String quotee;

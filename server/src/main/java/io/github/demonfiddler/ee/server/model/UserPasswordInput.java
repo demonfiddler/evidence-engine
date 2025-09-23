@@ -52,11 +52,11 @@ public class UserPasswordInput extends AbstractBaseEntityInput {
 	}
 
 	public String toString() {
-		return "UserPasswordInput {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "password: " + this.password //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "UserPasswordInput {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "password: " + this.password //
+			+ "}"; //
 	}
 
 	public static Builder builder() {

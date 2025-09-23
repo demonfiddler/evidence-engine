@@ -23,7 +23,6 @@ import static com.google.common.truth.Truth.assertAbout;
 
 import com.google.common.truth.BooleanSubject;
 import com.google.common.truth.FailureMetadata;
-import com.google.common.truth.IntegerSubject;
 import com.google.common.truth.StringSubject;
 import com.google.common.truth.Subject;
 
@@ -121,14 +120,6 @@ public class PersonSubject extends LinkableEntitySubject<Person> {
 
     public StringSubject country() {
         return check("country()").that(actual.getCountry());
-    }
-
-    public void hasRating(Integer rating) {
-        rating().isEqualTo(rating);
-    }
-
-    public IntegerSubject rating() {
-        return check("rating()").that(actual.getRating());
     }
 
     public void hasChecked(Boolean checked) {

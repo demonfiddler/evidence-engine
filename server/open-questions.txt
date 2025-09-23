@@ -6,7 +6,6 @@ Claim.date: should this be required?
 Declaration.date: should this be required?
 Declaration.cached: is not user-updatable
 Declaration.signatoryCount: should this be calculated in the server but displayed RO in the UI?
-Person.rating: should this be nullable?
 Publication[Input].date|.year: do we need both?
 PublicationInput.authorNames|.authorIds: do we need both?
 EntityLink.from|toLocations (entity_link.from_|to_locations): does this have any meaning for Claim, Declaration, Person or Quotation?

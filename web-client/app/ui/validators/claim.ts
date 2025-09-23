@@ -18,8 +18,9 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 import { z } from "zod/v4"
+import { Rateable } from "./tracked-entity"
 
-export const ClaimSchema = z.object({
+export const ClaimSchema = Rateable.extend({
   text: z.string().min(10).max(500),
   date: z.date().max(Date.now(), { error: "Claim date cannot be in the future" }).optional(),
   notes: z.string().optional()

@@ -18,8 +18,9 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 import { z } from "zod/v4"
+import { Rateable } from "./tracked-entity"
 
-export const QuotationSchema = z.object({
+export const QuotationSchema = Rateable.extend({
   quotee: z.string().min(5).max(50),
   text: z.string().max(1000),
   date: z.date().max(Date.now(), { error: "Quotation date cannot be in the future" }).optional(),

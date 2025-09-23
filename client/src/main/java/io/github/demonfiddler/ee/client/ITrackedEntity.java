@@ -45,6 +45,7 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonDeserializers;
 	@Type(value = Claim.class, name = "Claim"), //
 	@Type(value = Declaration.class, name = "Declaration"), //
 	@Type(value = EntityLink.class, name = "EntityLink"), //
+	@Type(value = Group.class, name = "Group"), //
 	@Type(value = Journal.class, name = "Journal"), //
 	@Type(value = Person.class, name = "Person"), //
 	@Type(value = Publication.class, name = "Publication"),
@@ -59,80 +60,88 @@ public interface ITrackedEntity extends IBaseEntity {
 	@GraphQLInputParameters(names = { "format" }, types = { "FormatKind" }, mandatories = { false }, listDepths = { 0 },
 		itemsMandatory = { false })
 	@GraphQLScalar(fieldName = "entityKind", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	public void setEntityKind(String entityKind);
+	void setEntityKind(String entityKind);
 
 	@JsonProperty("entityKind")
 	@GraphQLInputParameters(names = { "format" }, types = { "FormatKind" }, mandatories = { false }, listDepths = { 0 },
 		itemsMandatory = { false })
 	@GraphQLScalar(fieldName = "entityKind", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	public String getEntityKind();
+	String getEntityKind();
 
 	@JsonProperty("status")
 	@GraphQLInputParameters(names = { "format" }, types = { "FormatKind" }, mandatories = { false }, listDepths = { 0 },
 		itemsMandatory = { false })
 	@GraphQLScalar(fieldName = "status", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	public void setStatus(String status);
+	void setStatus(String status);
 
 	@JsonProperty("status")
 	@GraphQLInputParameters(names = { "format" }, types = { "FormatKind" }, mandatories = { false }, listDepths = { 0 },
 		itemsMandatory = { false })
 	@GraphQLScalar(fieldName = "status", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	public String getStatus();
+	String getStatus();
+
+	@JsonProperty("rating")
+	@GraphQLScalar( fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
+	void setRating(Integer rating);
+
+	@JsonProperty("rating")
+	@GraphQLScalar( fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
+	Integer getRating();
 
 	@JsonProperty("created")
 	@JsonDeserialize(using = CustomJacksonDeserializers.DateTime.class)
 	@GraphQLScalar(fieldName = "created", graphQLTypeSimpleName = "DateTime", javaClass = OffsetDateTime.class,
 		listDepth = 0)
-	public void setCreated(OffsetDateTime created);
+	void setCreated(OffsetDateTime created);
 
 	@JsonProperty("created")
 	@JsonDeserialize(using = CustomJacksonDeserializers.DateTime.class)
 	@GraphQLScalar(fieldName = "created", graphQLTypeSimpleName = "DateTime", javaClass = OffsetDateTime.class,
 		listDepth = 0)
-	public OffsetDateTime getCreated();
+	OffsetDateTime getCreated();
 
 	@JsonProperty("createdByUser")
 	@GraphQLNonScalar(fieldName = "createdByUser", graphQLTypeSimpleName = "User", javaClass = User.class,
 		listDepth = 0)
-	public void setCreatedByUser(User createdByUser);
+	void setCreatedByUser(User createdByUser);
 
 	@JsonProperty("createdByUser")
 	@GraphQLNonScalar(fieldName = "createdByUser", graphQLTypeSimpleName = "User", javaClass = User.class,
 		listDepth = 0)
-	public User getCreatedByUser();
+	User getCreatedByUser();
 
 	@JsonProperty("updated")
 	@JsonDeserialize(using = CustomJacksonDeserializers.DateTime.class)
 	@GraphQLScalar(fieldName = "updated", graphQLTypeSimpleName = "DateTime", javaClass = OffsetDateTime.class,
 		listDepth = 0)
-	public void setUpdated(OffsetDateTime updated);
+	void setUpdated(OffsetDateTime updated);
 
 	@JsonProperty("updated")
 	@JsonDeserialize(using = CustomJacksonDeserializers.DateTime.class)
 	@GraphQLScalar(fieldName = "updated", graphQLTypeSimpleName = "DateTime", javaClass = OffsetDateTime.class,
 		listDepth = 0)
-	public OffsetDateTime getUpdated();
+	OffsetDateTime getUpdated();
 
 	@JsonProperty("updatedByUser")
 	@GraphQLNonScalar(fieldName = "updatedByUser", graphQLTypeSimpleName = "User", javaClass = User.class,
 		listDepth = 0)
-	public void setUpdatedByUser(User updatedByUser);
+	void setUpdatedByUser(User updatedByUser);
 
 	@JsonProperty("updatedByUser")
 	@GraphQLNonScalar(fieldName = "updatedByUser", graphQLTypeSimpleName = "User", javaClass = User.class,
 		listDepth = 0)
-	public User getUpdatedByUser();
+	User getUpdatedByUser();
 
 	@JsonProperty("log")
 	@GraphQLInputParameters(names = { "filter", "pageSort" }, types = { "LogQueryFilter", "PageableInput" },
 		mandatories = { false, false }, listDepths = { 0, 0 }, itemsMandatory = { false, false })
 	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage", javaClass = LogPage.class, listDepth = 0)
-	public void setLog(LogPage log);
+	void setLog(LogPage log);
 
 	@JsonProperty("log")
 	@GraphQLInputParameters(names = { "filter", "pageSort" }, types = { "LogQueryFilter", "PageableInput" },
 		mandatories = { false, false }, listDepths = { 0, 0 }, itemsMandatory = { false, false })
 	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage", javaClass = LogPage.class, listDepth = 0)
-	public LogPage getLog();
+	LogPage getLog();
 
 }

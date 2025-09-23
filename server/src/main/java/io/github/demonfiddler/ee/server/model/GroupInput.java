@@ -31,7 +31,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("GroupInput")
-public class GroupInput extends AbstractBaseEntityInput {
+public class GroupInput extends AbstractTrackedEntityInput {
 
 	/**
 	 * The (mutable?) unique group name (user-assigned).
@@ -74,13 +74,15 @@ public class GroupInput extends AbstractBaseEntityInput {
 	}
 
 	public String toString() {
-		return "GroupInput {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "groupname: " + this.groupname //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "authorities: " + this.authorities //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "GroupInput {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
+			+ "groupname: " + this.groupname //
+			+ ", " //
+			+ "authorities: " + this.authorities //
+			+ "}"; //
 	}
 
 	public static Builder builder() {
@@ -91,7 +93,7 @@ public class GroupInput extends AbstractBaseEntityInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, GroupInput> {
+	public static class Builder extends AbstractTrackedEntityInput.Builder<Builder, GroupInput> {
 
 		private String groupname;
 		private List<AuthorityKind> authorities;

@@ -183,13 +183,13 @@ public class EntityStatistics {
 	}
 
 	public String toString() {
-		return "EntityStatistics {" //$NON-NLS-1$
-			+ "entityKind: " + this.entityKind //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "count: " + this.count //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "__typename: " + this.__typename //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "EntityStatistics {" //
+			+ "entityKind: " + this.entityKind //
+			+ ", " //
+			+ "count: " + this.count //
+			+ ", " //
+			+ "__typename: " + this.__typename //
+			+ "}"; //
 	}
 
 	public static Builder builder() {
@@ -225,7 +225,7 @@ public class EntityStatistics {
 			EntityStatistics _object = new EntityStatistics();
 			_object.setEntityKind(this.entityKind);
 			_object.setCount(this.count);
-			_object.set__typename("EntityStatistics"); //$NON-NLS-1$
+			_object.set__typename("EntityStatistics"); //
 			return _object;
 		}
 

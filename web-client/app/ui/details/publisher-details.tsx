@@ -46,6 +46,7 @@ import { FormActionHandler } from "@/hooks/use-page-logic"
 import InputEx from "../ext/input-ex"
 import SelectTriggerEx from "../ext/select-ex"
 import LinkEx from "../ext/link-ex"
+import StarRatingBasicEx from "../ext/star-rating-ex"
 
 const countries = rawCountries as unknown as Country[]
 
@@ -83,6 +84,36 @@ export default function PublisherDetails(
           <div className="grid grid-cols-3 ml-2 mr-2 mt-4 mb-4 gap-4">
             <FormField
               control={form.control}
+              name="rating"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Rating</FormLabel>
+                  <FormControl>
+                    <StarRatingBasicEx
+                      readOnly={!updating}
+                      maxStars={5}
+                      iconSize={18}
+                      className="ml-2 w-full"
+                      value={field.value ?? 0}
+                      onChange={field.onChange}
+                      help="A five-star rating for the publisher, indicative of prestige, reputation, impact, quality, etc."
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DetailActions
+              className="col-start-3 row-span-4"
+              recordKind="Publisher"
+              record={record}
+              form={form}
+              state={state}
+              setMode={setMode}
+              onFormAction={onFormAction}
+            />
+            <FormField
+              control={form.control}
               name="name"
               render={({field}) => (
                 <FormItem className="col-span-2">
@@ -99,15 +130,6 @@ export default function PublisherDetails(
                   <FormMessage />
                 </FormItem>
               )}
-            />
-            <DetailActions
-              className="col-start-3 row-span-4"
-              recordKind="Publisher"
-              record={record}
-              form={form}
-              state={state}
-              setMode={setMode}
-              onFormAction={onFormAction}
             />
             <FormField
               control={form.control}

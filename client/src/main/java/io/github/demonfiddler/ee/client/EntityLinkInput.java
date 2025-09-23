@@ -33,7 +33,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  */
 @GraphQLInputType("EntityLinkInput")
 @JsonInclude(Include.NON_NULL)
-public class EntityLinkInput extends AbstractBaseEntityInput {
+public class EntityLinkInput extends AbstractTrackedEntityInput {
 
 	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
@@ -42,6 +42,14 @@ public class EntityLinkInput extends AbstractBaseEntityInput {
 	@JsonProperty("id")
 	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
 	Long id;
+
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
+	/**
+	 * A five-star rating for the entity, interpretation depends on entity kind.
+	 */
+	@JsonProperty("rating")
+	@GraphQLScalar( fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
+	Integer rating;
 
 	/**
 	 * The ID of the 'linked from' entity.
@@ -83,7 +91,7 @@ public class EntityLinkInput extends AbstractBaseEntityInput {
 	@Override
 	@JsonProperty("id")
 	public void setId(Long id) {
-	this.id = id;
+		this.id = id;
 	}
 
 	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
@@ -93,7 +101,25 @@ public class EntityLinkInput extends AbstractBaseEntityInput {
 	@Override
 	@JsonProperty("id")
 	public Long getId() {
-	return this.id;
+		return this.id;
+	}
+
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
+	/**
+	  * A five-star rating for the link, indicative of significancce, credibility, evidence base, etc.
+ 	 */
+	@JsonProperty("rating")
+	public void setRating(Integer rating) {
+		this.rating = rating;
+	}
+
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
+	/**
+	 * A five-star rating for the link, indicative of significancce, credibility, evidence base, etc.
+	 */
+	@JsonProperty("rating")
+	public Integer getRating() {
+		return this.rating;
 	}
 
 	/**
@@ -164,13 +190,15 @@ public class EntityLinkInput extends AbstractBaseEntityInput {
 		return "EntityLinkInput {" //
 			+ "id: " + this.id //
 			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
 			+ "fromEntityId: " + this.fromEntityId //
 			+ ", " //
 			+ "fromEntityLocations: " + this.fromEntityLocations //
 			+ ", " //
 			+ "toEntityId: " + this.toEntityId //
-			+ ", " //$NON-NLS-1$
-			+ "toEntityLocations: " + this.toEntityLocations //$NON-NLS-1$
+			+ ", " //
+			+ "toEntityLocations: " + this.toEntityLocations //
 			+ "}";
 	}
 
@@ -182,7 +210,7 @@ public class EntityLinkInput extends AbstractBaseEntityInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, EntityLinkInput> {
+	public static class Builder extends AbstractTrackedEntityInput.Builder<Builder, EntityLinkInput> {
 
 		private Long fromEntityId;
 		private String fromEntityLocations;

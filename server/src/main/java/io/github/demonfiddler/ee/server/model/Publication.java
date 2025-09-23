@@ -337,55 +337,57 @@ public class Publication extends AbstractLinkableEntity {
 	}
 
 	public String toString() {
-		return "Publication {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "entityKind: " + this.getEntityKind() //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "status: " + this.status //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "created: " + this.created //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createdByUser: " + this.createdByUser //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updated: " + this.updated //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updatedByUser: " + this.updatedByUser //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "log: " + this.log //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "fromEntityLinks: " + this.fromEntityLinks //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "toEntityLinks: " + this.toEntityLinks //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "title: " + this.title //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "authors: " + this.authors //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "journal: " + this.journal //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "kind: " + this.kind //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "date: " + this.date //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "year: " + this.year //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "_abstract: " + this._abstract //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "notes: " + this.notes //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "peerReviewed: " + this.peerReviewed //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "doi: " + this.doi //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "isbn: " + this.isbn //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "url: " + this.url //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "cached: " + this.cached //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "accessed: " + this.accessed //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "Publication {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "entityKind: " + this.getEntityKind() //
+			+ ", " //
+			+ "status: " + this.status //
+			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
+			+ "created: " + this.created //
+			+ ", " //
+			+ "createdByUser: " + this.createdByUser //
+			+ ", " //
+			+ "updated: " + this.updated //
+			+ ", " //
+			+ "updatedByUser: " + this.updatedByUser //
+			+ ", " //
+			+ "log: " + this.log //
+			+ ", " //
+			+ "fromEntityLinks: " + this.fromEntityLinks //
+			+ ", " //
+			+ "toEntityLinks: " + this.toEntityLinks //
+			+ ", " //
+			+ "title: " + this.title //
+			+ ", " //
+			+ "authors: " + this.authors //
+			+ ", " //
+			+ "journal: " + this.journal //
+			+ ", " //
+			+ "kind: " + this.kind //
+			+ ", " //
+			+ "date: " + this.date //
+			+ ", " //
+			+ "year: " + this.year //
+			+ ", " //
+			+ "_abstract: " + this._abstract //
+			+ ", " //
+			+ "notes: " + this.notes //
+			+ ", " //
+			+ "peerReviewed: " + this.peerReviewed //
+			+ ", " //
+			+ "doi: " + this.doi //
+			+ ", " //
+			+ "isbn: " + this.isbn //
+			+ ", " //
+			+ "url: " + this.url //
+			+ ", " //
+			+ "cached: " + this.cached //
+			+ ", " //
+			+ "accessed: " + this.accessed //
+			+ "}"; //
 	}
 
 	public static Builder builder() {

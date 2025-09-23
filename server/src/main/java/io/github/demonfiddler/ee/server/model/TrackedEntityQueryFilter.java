@@ -116,15 +116,15 @@ public class TrackedEntityQueryFilter {
 	}
 
 	public String toString() {
-		return "TrackedEntityQueryFilter {" //$NON-NLS-1$
-			+ "status: " + this.status //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "text: " + this.text //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "advancedSearch: " + this.advancedSearch //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "recordId: " + this.recordId //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "TrackedEntityQueryFilter {" //
+			+ "status: " + this.status //
+			+ ", " //
+			+ "text: " + this.text //
+			+ ", " //
+			+ "advancedSearch: " + this.advancedSearch //
+			+ ", " //
+			+ "recordId: " + this.recordId //
+			+ "}"; //
 	}
 
 	public static Builder builderForTrackedEntityQueryFilter() {

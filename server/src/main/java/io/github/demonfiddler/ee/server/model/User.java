@@ -104,7 +104,6 @@ public class User extends AbstractTrackedEntity {
 	/**
 	 * The authorities granted to the user.
 	 */
-	// @Transient
 	@GraphQLScalar(fieldName = "authorities", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 1)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
@@ -117,7 +116,6 @@ public class User extends AbstractTrackedEntity {
     @Enumerated(EnumType.STRING)
 	List<AuthorityKind> authorities = new ArrayList<>();
 
-	// @Transient
 	@GraphQLNonScalar( fieldName = "groups", graphQLTypeSimpleName = "Group", javaClass = Group.class, listDepth = 1)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
@@ -278,41 +276,43 @@ public class User extends AbstractTrackedEntity {
 	}
 
 	public String toString() {
-		return "User {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "entityKind: " + this.getEntityKind() //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "status: " + this.status //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "created: " + this.created //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createdByUser: " + this.createdByUser //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updated: " + this.updated //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updatedByUser: " + this.updatedByUser //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "log: " + this.log //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "username: " + this.username //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "firstName: " + this.firstName //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "lastName: " + this.lastName //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "email: " + this.email //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "password: " + this.password //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "country: " + this.country //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "notes: " + this.notes //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "authorities: " + this.authorities //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "groups: " + this.groups //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "User {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "entityKind: " + this.getEntityKind() //
+			+ ", " //
+			+ "status: " + this.status //
+			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
+			+ "created: " + this.created //
+			+ ", " //
+			+ "createdByUser: " + this.createdByUser //
+			+ ", " //
+			+ "updated: " + this.updated //
+			+ ", " //
+			+ "updatedByUser: " + this.updatedByUser //
+			+ ", " //
+			+ "log: " + this.log //
+			+ ", " //
+			+ "username: " + this.username //
+			+ ", " //
+			+ "firstName: " + this.firstName //
+			+ ", " //
+			+ "lastName: " + this.lastName //
+			+ ", " //
+			+ "email: " + this.email //
+			+ ", " //
+			+ "password: " + this.password //
+			+ ", " //
+			+ "country: " + this.country //
+			+ ", " //
+			+ "notes: " + this.notes //
+			+ ", " //
+			+ "authorities: " + this.authorities //
+			+ ", " //
+			+ "groups: " + this.groups //
+			+ "}"; //
 	}
 
 	@Override

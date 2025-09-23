@@ -29,7 +29,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("EntityLinkInput")
-public class EntityLinkInput extends AbstractBaseEntityInput {
+public class EntityLinkInput extends AbstractTrackedEntityInput {
 
 	/**
 	 * The ID of the 'linked from' entity.
@@ -114,17 +114,19 @@ public class EntityLinkInput extends AbstractBaseEntityInput {
 	}
 
 	public String toString() {
-		return "EntityLinkInput {" //$NON-NLS-1$
-			+ "id: " + this.id  //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "fromEntityId: " + this.fromEntityId //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "toEntityId: " + this.toEntityId //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "fromEntityLocations: " + this.fromEntityLocations //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "toEntityLocations: " + this.toEntityLocations //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "EntityLinkInput {" //
+			+ "id: " + this.id  //
+			+ ", " //
+			+ "rating: " + this.rating  //
+			+ ", " //
+			+ "fromEntityId: " + this.fromEntityId //
+			+ ", " //
+			+ "toEntityId: " + this.toEntityId //
+			+ ", " //
+			+ "fromEntityLocations: " + this.fromEntityLocations //
+			+ ", " //
+			+ "toEntityLocations: " + this.toEntityLocations //
+			+ "}"; //
 	}
 
 	public static Builder builder() {
@@ -135,7 +137,7 @@ public class EntityLinkInput extends AbstractBaseEntityInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, EntityLinkInput> {
+	public static class Builder extends AbstractTrackedEntityInput.Builder<Builder, EntityLinkInput> {
 
 		private Long fromEntityId;
 		private String fromEntityLocations;

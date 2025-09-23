@@ -33,19 +33,19 @@ public enum TransactionKind {
 
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Created" })
-	CRE("CRE", "Created"), //$NON-NLS-1$
+	CRE("CRE", "Created"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Updated" })
-	UPD("UPD", "Updated"), //$NON-NLS-1$
+	UPD("UPD", "Updated"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Deleted" })
-	DEL("DEL", "Deleted"), //$NON-NLS-1$
+	DEL("DEL", "Deleted"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Linked" })
-	LNK("LNK", "Linked"), //$NON-NLS-1$
+	LNK("LNK", "Linked"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Unlinked" })
-	UNL("UNL", "Unlinked"); //$NON-NLS-1$
+	UNL("UNL", "Unlinked"); //
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different

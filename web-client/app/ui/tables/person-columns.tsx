@@ -113,17 +113,6 @@ export const columns: ColumnDef<Person>[] = [
     header: "Country",
   },
   {
-    id: "rating",
-    accessorKey: "rating",
-    enableHiding: true,
-    enableSorting: true,
-    size: 124,
-    header: "Rating",
-    meta: {
-      className: "text-center"
-    }
-  },
-  {
     id: "checked",
     accessorKey: "checked",
     enableHiding: true,
@@ -174,7 +163,6 @@ export const columnVisibility = {
   qualifications: false,
   notes: false,
   country: true,
-  rating: true,
   checked: true,
   published: true
 }

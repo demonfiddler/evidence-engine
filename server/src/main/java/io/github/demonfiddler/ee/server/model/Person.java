@@ -102,12 +102,6 @@ public class Person extends AbstractLinkableEntity {
 	String country;
 
 	/**
-	 * A five-star rating for the person, intended to reflect credibility, experience, qualifications, etc.
-	 */
-	@GraphQLScalar(fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
-	Integer rating;
-
-	/**
 	 * Whether the person's credentials have been checked.
 	 */
 	@GraphQLScalar(fieldName = "checked", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class, listDepth = 0)
@@ -265,20 +259,6 @@ public class Person extends AbstractLinkableEntity {
 	}
 
 	/**
-	 * A five-star rating for the person, intended to reflect credibility, experience, qualifications, etc.
-	 */
-	public void setRating(Integer rating) {
-		this.rating = rating;
-	}
-
-	/**
-	 * A five-star rating for the person, intended to reflect credibility, experience, qualifications, etc.
-	 */
-	public Integer getRating() {
-		return this.rating;
-	}
-
-	/**
 	 * Whether the person's credentials have been checked.
 	 */
 	public void setChecked(Boolean checked) {
@@ -307,53 +287,53 @@ public class Person extends AbstractLinkableEntity {
 	}
 
 	public String toString() {
-		return "Person {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "entityKind: " + this.getEntityKind() //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "status: " + this.status //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "created: " + this.created //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createdByUser: " + this.createdByUser //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updated: " + this.updated //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updatedByUser: " + this.updatedByUser //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "log: " + this.log //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "fromEntityLinks: " + this.fromEntityLinks //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "toEntityLinks: " + this.toEntityLinks //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "title: " + this.title //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "firstName: " + this.firstName //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "nickname: " + this.nickname //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "prefix: " + this.prefix //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "lastName: " + this.lastName //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "suffix: " + this.suffix //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "alias: " + this.alias //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "notes: " + this.notes //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "qualifications: " + this.qualifications //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "country: " + this.country //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "rating: " + this.rating //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "checked: " + this.checked //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "published: " + this.published //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "Person {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "entityKind: " + this.getEntityKind() //
+			+ ", " //
+			+ "status: " + this.status //
+			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
+			+ "created: " + this.created //
+			+ ", " //
+			+ "createdByUser: " + this.createdByUser //
+			+ ", " //
+			+ "updated: " + this.updated //
+			+ ", " //
+			+ "updatedByUser: " + this.updatedByUser //
+			+ ", " //
+			+ "log: " + this.log //
+			+ ", " //
+			+ "fromEntityLinks: " + this.fromEntityLinks //
+			+ ", " //
+			+ "toEntityLinks: " + this.toEntityLinks //
+			+ ", " //
+			+ "title: " + this.title //
+			+ ", " //
+			+ "firstName: " + this.firstName //
+			+ ", " //
+			+ "nickname: " + this.nickname //
+			+ ", " //
+			+ "prefix: " + this.prefix //
+			+ ", " //
+			+ "lastName: " + this.lastName //
+			+ ", " //
+			+ "suffix: " + this.suffix //
+			+ ", " //
+			+ "alias: " + this.alias //
+			+ ", " //
+			+ "notes: " + this.notes //
+			+ ", " //
+			+ "qualifications: " + this.qualifications //
+			+ ", " //
+			+ "country: " + this.country //
+			+ ", " //
+			+ "checked: " + this.checked //
+			+ ", " //
+			+ "published: " + this.published //
+			+ "}"; //
 	}
 
 	public static Builder builder() {
@@ -376,7 +356,6 @@ public class Person extends AbstractLinkableEntity {
 		private String notes;
 		private String qualifications;
 		private String country;
-		private Integer rating;
 		private Boolean checked;
 		private Boolean published;
 
@@ -461,14 +440,6 @@ public class Person extends AbstractLinkableEntity {
 		}
 
 		/**
-		 * A five-star rating for the person, intended to reflect credibility, experience, qualifications, etc.
-		 */
-		public Builder withRating(Integer ratingParam) {
-			this.rating = ratingParam;
-			return this;
-		}
-
-		/**
 		 * Whether the person's credentials have been checked.
 		 */
 		public Builder withChecked(Boolean checkedParam) {
@@ -497,7 +468,6 @@ public class Person extends AbstractLinkableEntity {
 			_object.setNotes(this.notes);
 			_object.setQualifications(this.qualifications);
 			_object.setCountry(this.country);
-			_object.setRating(this.rating);
 			_object.setChecked(this.checked);
 			_object.setPublished(this.published);
 			return _object;

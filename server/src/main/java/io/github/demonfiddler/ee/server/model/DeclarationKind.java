@@ -33,13 +33,13 @@ public enum DeclarationKind {
 
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Declaration" })
-	DECL("DECL", "Declaration"), //$NON-NLS-1$
+	DECL("DECL", "Declaration"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Open letter" })
-	OPLE("OPLE", "Open Letter"), //$NON-NLS-1$
+	OPLE("OPLE", "Open Letter"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Petition" })
-	PETN("PETN", "Petition"); //$NON-NLS-1$
+	PETN("PETN", "Petition"); //
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different when the value in the GraphQL schema is a Java reserved keyword.

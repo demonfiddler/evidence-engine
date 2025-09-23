@@ -276,33 +276,33 @@ public abstract class AbstractPage<T extends IBaseEntity> implements IBaseEntity
 	}
 
 	public String toString() {
-		return getClass().getSimpleName() + " {" //$NON-NLS-1$
-			+ "dummy: " + this.dummy //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "content: " + this.getContent() //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "hasContent: " + this.hasContent //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "isEmpty: " + this.isEmpty //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "number: " + this.number //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "size: " + this.size //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "numberOfElements: " + this.numberOfElements //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "totalPages: " + this.totalPages //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "totalElements: " + this.totalElements //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "isFirst: " + this.isFirst //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "isLast: " + this.isLast //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "hasNext: " + this.hasNext //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "hasPrevious: " + this.hasPrevious //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return getClass().getSimpleName() + " {" //
+			+ "dummy: " + this.dummy //
+			+ ", " //
+			+ "content: " + this.getContent() //
+			+ ", " //
+			+ "hasContent: " + this.hasContent //
+			+ ", " //
+			+ "isEmpty: " + this.isEmpty //
+			+ ", " //
+			+ "number: " + this.number //
+			+ ", " //
+			+ "size: " + this.size //
+			+ ", " //
+			+ "numberOfElements: " + this.numberOfElements //
+			+ ", " //
+			+ "totalPages: " + this.totalPages //
+			+ ", " //
+			+ "totalElements: " + this.totalElements //
+			+ ", " //
+			+ "isFirst: " + this.isFirst //
+			+ ", " //
+			+ "isLast: " + this.isLast //
+			+ ", " //
+			+ "hasNext: " + this.hasNext //
+			+ ", " //
+			+ "hasPrevious: " + this.hasPrevious //
+			+ "}"; //
 	}
 
 	/**

@@ -72,17 +72,17 @@ public class TopicQueryFilter extends TrackedEntityQueryFilter {
 	}
 
 	public String toString() {
-		return "TopicQueryFilter {" //$NON-NLS-1$
-			+ "parentId: " + this.parentId //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "recursive: " + this.recursive //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "status: " + this.status //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "text: " + this.text //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "advancedSearch: " + this.advancedSearch //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "TopicQueryFilter {" //
+			+ "parentId: " + this.parentId //
+			+ ", " //
+			+ "recursive: " + this.recursive //
+			+ ", " //
+			+ "status: " + this.status //
+			+ ", " //
+			+ "text: " + this.text //
+			+ ", " //
+			+ "advancedSearch: " + this.advancedSearch //
+			+ "}"; //
 	}
 
 	public static Builder builderForTopicQueryFilter() {

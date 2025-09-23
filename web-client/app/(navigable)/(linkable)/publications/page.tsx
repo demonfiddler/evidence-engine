@@ -35,6 +35,7 @@ import useLinkableEntityQueryFilter from '@/hooks/use-linkable-entity-query-filt
 
 function createFieldValues(publication?: Publication) : PublicationFieldValues {
   return {
+    rating: publication?.rating ?? 0,
     title: publication?.title ?? '',
     authors: publication?.authors ?? '',
     journalId: publication?.journal?.id ?? '',
@@ -55,6 +56,7 @@ function createFieldValues(publication?: Publication) : PublicationFieldValues {
 function createInput(fieldValues: PublicationFieldValues, id?: string) : PublicationInput {
   return {
     id,
+    rating: fieldValues.rating || null,
     title: fieldValues.title,
     authorNames: fieldValues.authors,
     journalId: fieldValues.journalId || null,

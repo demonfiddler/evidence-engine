@@ -55,9 +55,9 @@ public class SortInput {
 	}
 
 	public String toString() {
-		return "SortInput {" //$NON-NLS-1$
-			+ "orders: " + this.orders //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "SortInput {" //
+			+ "orders: " + this.orders //
+			+ "}"; //
 	}
 
 	public static Builder builder() {

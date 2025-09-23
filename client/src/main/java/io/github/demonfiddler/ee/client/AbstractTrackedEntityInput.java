@@ -19,62 +19,63 @@
 
 package io.github.demonfiddler.ee.client;
 
-public abstract class AbstractBaseEntityInput extends AbstractGraphQLObject {
+public abstract class AbstractTrackedEntityInput extends AbstractBaseEntityInput {
 
 	// Commented out, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
-    // /**
-    //  * The entity identifier, required if updating an existing record.
-    //  */
-    // @JsonProperty("id")
-    // @GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
-    // Long id;
+	// /**
+	//  * A five-star rating for the entity, interpretation depends on entity kind.
+	//  */
+	// @JsonProperty("rating")
+	// @GraphQLScalar( fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
+	// Integer rating;
 
 	// Commented out, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
-    // /**
-    //  * The entity identifier, required if updating an existing record.
-    //  */
-    // @JsonProperty("id")
-    // public final void setId(Long id) {
-    //     this.id = id;
-    // }
+	// /**
+	//   * A five-star rating for the link, indicative of significancce, credibility, evidence base, etc.
+ 	//  */
+	// @JsonProperty("rating")
+	// public void setRating(java.lang.Integer rating) {
+	// 	this.rating = rating;
+	// }
 
 	// Commented out, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
-    // /**
-    //  * The entity identifier, required if updating an existing record.
-    //  */
-    // @JsonProperty("id")
-    // public final Long getId() {
-    //     return this.id;
-    // }
-
+	// /**
+	//  * A five-star rating for the link, indicative of significancce, credibility, evidence base, etc.
+	//  */
+	// @JsonProperty("rating")
+	// public Integer getRating() {
+	// 	return this.rating;
+	// }
+		
 	// Abstract, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
-    public abstract void setId(Long id);
-    public abstract Long getId();
+	public abstract void setRating(Integer rating);
+	public abstract Integer getRating();
 
     /**
      * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
      * {@link #builder()}
      */
     @SuppressWarnings("unchecked")
-    abstract static class Builder<B extends Builder<B, I>, I extends AbstractBaseEntityInput> {
+    abstract static class Builder<B extends Builder<B, I>, I extends AbstractTrackedEntityInput>
+        extends AbstractBaseEntityInput.Builder<B, I> {
 
-        private Long id;
+        private Integer rating;
 
         /**
          * The entity identifier, required if updating an existing record.
          */
-        public final B withId(Long idParam) {
-            this.id = idParam;
+        public final B withRating(Integer ratingParam) {
+            this.rating = ratingParam;
             return (B)this;
         }
 
         I build(I input) {
-            input.setId(id);
+            super.build(input);
+            input.setRating(rating);
             return input;
         }
 
         public abstract I build();
 
     }
-
 }

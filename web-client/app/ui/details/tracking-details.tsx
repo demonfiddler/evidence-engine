@@ -26,6 +26,7 @@ import RecordKind from "@/app/model/RecordKind"
 import { DetailState } from "./detail-actions"
 import { formatDateTime, getRecordLabel } from "@/lib/utils"
 import InputEx from "../ext/input-ex"
+import StarRatingBasicEx from "../ext/star-rating-ex"
 
 export default function TrackingDetails(
   {
@@ -49,7 +50,15 @@ export default function TrackingDetails(
         value={String(record?.id ?? '')}
         help="The database identifier for the selected record"
       />
-      <Label htmlFor="status">Status:</Label>
+      <LogDialog
+        className="col-start-5 place-items-center"
+        disabled={!record || !state.allowRead || state.mode == "create"}
+        recordKind={recordKind}
+        recordId={record?.id ?? ''}
+        recordLabel={getRecordLabel(recordKind, record) ?? ''}
+        state={state}
+      />
+      <Label htmlFor="status" className="col-start-1">Status:</Label>
       <InputEx
         id="status"
         type="text"
@@ -58,13 +67,14 @@ export default function TrackingDetails(
         value={record?.status ?? ''}
         help="The record status"
       />
-      <LogDialog
-        recordKind={recordKind}
-        recordId={record?.id ?? ''}
-        recordLabel={getRecordLabel(recordKind, record) ?? ''}
-        className="col-start-5 place-items-center"
-        disabled={!record || !state.allowRead || state.mode == "create"}
-        state={state}
+      <Label htmlFor="rating">Rating:</Label>
+      <StarRatingBasicEx
+        readOnly={true}
+        value={record?.rating ?? 0}
+        maxStars={5}
+        iconSize={18}
+        className="ml-2 w-full"
+        help="A five-star rating for the entity, interpretation depends on entity kind."
       />
       <Label htmlFor="created-by" className="col-start-1">Created by:</Label>
       <InputEx

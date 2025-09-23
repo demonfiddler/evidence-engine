@@ -135,35 +135,37 @@ public class Topic extends AbstractLinkableEntity {
 	}
 
 	public String toString() {
-		return "Topic {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "entityKind: " + this.getEntityKind() //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "status: " + this.status //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "created: " + this.created //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "createdByUser: " + this.createdByUser //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updated: " + this.updated //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "updatedByUser: " + this.updatedByUser //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "log: " + this.log //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "fromEntityLinks: " + this.fromEntityLinks //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "toEntityLinks: " + this.toEntityLinks //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "label: " + this.label //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "description: " + this.description //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "parent: " + this.parent //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "children: " + this.children //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "Topic {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "entityKind: " + this.getEntityKind() //
+			+ ", " //
+			+ "status: " + this.status //
+			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
+			+ "created: " + this.created //
+			+ ", " //
+			+ "createdByUser: " + this.createdByUser //
+			+ ", " //
+			+ "updated: " + this.updated //
+			+ ", " //
+			+ "updatedByUser: " + this.updatedByUser //
+			+ ", " //
+			+ "log: " + this.log //
+			+ ", " //
+			+ "fromEntityLinks: " + this.fromEntityLinks //
+			+ ", " //
+			+ "toEntityLinks: " + this.toEntityLinks //
+			+ ", " //
+			+ "label: " + this.label //
+			+ ", " //
+			+ "description: " + this.description //
+			+ ", " //
+			+ "parent: " + this.parent //
+			+ ", " //
+			+ "children: " + this.children //
+			+ "}"; //
 	}
 
 	public static Builder builder() {

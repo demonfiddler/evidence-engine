@@ -18,8 +18,9 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 import { z } from "zod/v4"
+import { Rateable } from "./tracked-entity"
 
-export const JournalSchema = z.object({
+export const JournalSchema = Rateable.extend({
   title: z.string().min(10).max(100),
   abbreviation: z.string().max(50).optional(),
   url: z.url().min(10).max(200).or(z.string().length(0)).optional(),

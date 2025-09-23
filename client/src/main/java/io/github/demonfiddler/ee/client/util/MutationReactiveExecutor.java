@@ -9340,7 +9340,6 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLNonScalar(fieldName = "updateUserPassword", graphQLTypeSimpleName = "User", javaClass = User.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	@SuppressWarnings("static-method")
 	public Mono<Optional<User>> updateUserPasswordWithBindValues(ObjectResponse objectResponse, UserPasswordInput user,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 

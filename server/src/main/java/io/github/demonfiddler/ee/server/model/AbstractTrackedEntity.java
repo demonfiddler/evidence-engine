@@ -71,6 +71,12 @@ public abstract class AbstractTrackedEntity implements ITrackedEntity {
 	String status;
 
 	/**
+	 * A five-star rating for the entity, interpretation depends on entity kind.
+	 */
+	@GraphQLScalar(fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
+	Integer rating;
+
+	/**
 	 * When the record was created.
 	 */
 	@GraphQLScalar(fieldName = "created", graphQLTypeSimpleName = "DateTime", javaClass = OffsetDateTime.class,
@@ -158,6 +164,22 @@ public abstract class AbstractTrackedEntity implements ITrackedEntity {
 	}
 
 	/**
+	 * A five-star rating for the entity, interpretation depends on entity kind.
+	 */
+	@Override
+	public void setRating(Integer rating) {
+		this.rating = rating;
+	}
+  
+	/**
+	 * A five-star rating for the entity, interpretation depends on entity kind.
+	 */
+	@Override
+	public Integer getRating() {
+		return this.rating;
+	}
+
+	/**
 	 * When the record was created.
 	 */
 	@Override
@@ -229,7 +251,7 @@ public abstract class AbstractTrackedEntity implements ITrackedEntity {
 	 * Log of transactions involving the record.
 	 */
 	@Override
-	public final void setLog(LogPage log) {
+	public void setLog(LogPage log) {
 		this.log = log;
 	}
 
@@ -237,7 +259,7 @@ public abstract class AbstractTrackedEntity implements ITrackedEntity {
 	 * Log of transactions involving the record.
 	 */
 	@Override
-	public final LogPage getLog() {
+	public LogPage getLog() {
 		return this.log;
 	}
 
@@ -247,6 +269,7 @@ public abstract class AbstractTrackedEntity implements ITrackedEntity {
 		int result = 1;
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
+		result = prime * result + ((rating == null) ? 0 : rating.hashCode());
 		result = prime * result + ((created == null) ? 0 : created.hashCode());
 		result = prime * result + ((createdByUser == null || createdByUser.id == null) ? 0 : createdByUser.id.hashCode());
 		result = prime * result + ((updated == null) ? 0 : updated.hashCode());
@@ -273,6 +296,11 @@ public abstract class AbstractTrackedEntity implements ITrackedEntity {
 			if (other.status != null)
 				return false;
 		} else if (!status.equals(other.status))
+			return false;
+		if (rating == null) {
+			if (other.rating != null)
+				return false;
+		} else if (!rating.equals(other.rating))
 			return false;
 		if (created == null) {
 			if (other.created != null)
@@ -310,6 +338,7 @@ public abstract class AbstractTrackedEntity implements ITrackedEntity {
 
 		private Long id;
 		private String status;
+		private Integer rating;
 		private OffsetDateTime created;
 		private User createdByUser;
 		private OffsetDateTime updated;
@@ -329,6 +358,14 @@ public abstract class AbstractTrackedEntity implements ITrackedEntity {
 		 */
 		public final B withStatus(String statusParam) {
 			this.status = statusParam;
+			return (B)this;
+		}
+
+		/**
+		 * A five-star rating for the entity, interpretation depends on entity kind.
+		 */
+		public final B withRating(Integer ratingParam) {
+			this.rating = ratingParam;
 			return (B)this;
 		}
 
@@ -372,15 +409,16 @@ public abstract class AbstractTrackedEntity implements ITrackedEntity {
 			return (B)this;
 		}
 
-		T build(T t) {
-			t.setId(this.id);
-			t.setStatus(this.status);
-			t.setCreated(this.created);
-			t.setCreatedByUser(this.createdByUser);
-			t.setUpdated(this.updated);
-			t.setUpdatedByUser(this.updatedByUser);
-			t.setLog(this.log);
-			return t;
+		T build(T _object) {
+			_object.setId(this.id);
+			_object.setStatus(this.status);
+			_object.setRating(this.rating);
+			_object.setCreated(this.created);
+			_object.setCreatedByUser(this.createdByUser);
+			_object.setUpdated(this.updated);
+			_object.setUpdatedByUser(this.updatedByUser);
+			_object.setLog(this.log);
+			return _object;
 		}
 
 		public abstract T build();

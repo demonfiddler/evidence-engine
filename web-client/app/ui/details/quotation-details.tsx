@@ -43,6 +43,7 @@ import InputEx from "../ext/input-ex"
 import ButtonEx from "../ext/button-ex"
 import TextareaEx from "../ext/textarea-ex"
 import LinkEx from "../ext/link-ex"
+import StarRatingBasicEx from "../ext/star-rating-ex"
 
 export default function QuotationDetails(
   {
@@ -77,6 +78,36 @@ export default function QuotationDetails(
             }</span>
           </FormDescription>
           <div className="grid grid-cols-3 ml-2 mr-2 mt-4 mb-4 gap-4 items-center">
+            <FormField
+              control={form.control}
+              name="rating"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Rating</FormLabel>
+                  <FormControl>
+                    <StarRatingBasicEx
+                      readOnly={!updating}
+                      maxStars={5}
+                      iconSize={18}
+                      className="ml-2 w-full"
+                      value={field.value ?? 0}
+                      onChange={field.onChange}
+                      help="A five-star rating for the quotation, indicative of impact, credibility, etc."
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DetailActions
+              className="col-start-3 row-span-5"
+              recordKind="Quotation"
+              record={record}
+              form={form}
+              state={state}
+              setMode={setMode}
+              onFormAction={onFormAction}
+            />
             <FormField
               control={form.control}
               name="quotee"
@@ -138,15 +169,6 @@ export default function QuotationDetails(
                   <FormMessage />
                 </FormItem>
               )}
-            />
-            <DetailActions
-              className="col-start-3 row-span-5"
-              recordKind="Quotation"
-              record={record}
-              form={form}
-              state={state}
-              setMode={setMode}
-              onFormAction={onFormAction}
             />
             <FormField
               control={form.control}

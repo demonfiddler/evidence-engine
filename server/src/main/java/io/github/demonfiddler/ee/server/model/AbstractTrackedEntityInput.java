@@ -14,33 +14,33 @@
  * See the GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
- * If not, see <https://www.gnu.org/licenses/>. 
+ * If not, see <https://www.gnu.org/licenses/>.
  *--------------------------------------------------------------------------------------------------------------------*/
 
 package io.github.demonfiddler.ee.server.model;
 
 import com.graphql_java_generator.annotation.GraphQLScalar;
 
-public abstract class AbstractBaseEntityInput {
+public abstract class AbstractTrackedEntityInput extends AbstractBaseEntityInput {
 
     /**
-     * The entity identifier, required if updating an existing record.
+     * A five-star rating for the entity, interpretation depends on entity kind.
      */
-    @GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
-    Long id;
+	@GraphQLScalar( fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
+    Integer rating;
 
     /**
-     * The entity identifier, required if updating an existing record.
+     * A five-star rating for the entity, interpretation depends on entity kind.
      */
-    public final void setId(Long id) {
-        this.id = id;
+    public Integer getRating() {
+        return rating;
     }
 
     /**
-     * The entity identifier, required if updating an existing record.
+     * A five-star rating for the entity, interpretation depends on entity kind.
      */
-    public final Long getId() {
-        return this.id;
+    public void setRating(Integer rating) {
+        this.rating = rating;
     }
 
     /**
@@ -48,20 +48,22 @@ public abstract class AbstractBaseEntityInput {
      * {@link #builderForTrackedEntityQueryFilter()}
      */
     @SuppressWarnings("unchecked")
-    abstract static class Builder<B extends Builder<B, I>, I extends AbstractBaseEntityInput> {
+    abstract static class Builder<B extends Builder<B, I>, I extends AbstractTrackedEntityInput>
+        extends AbstractBaseEntityInput.Builder<B, I> {
 
-        private Long id;
+        private Integer rating;
 
         /**
          * The entity identifier, required if updating an existing record.
          */
-        public final B withId(Long idParam) {
-            this.id = idParam;
+        public final B withRating(Integer ratingParam) {
+            this.rating = ratingParam;
             return (B)this;
         }
 
         I build(I input) {
-            input.setId(id);
+            super.build(input);
+            input.setRating(rating);
             return input;
         }
 

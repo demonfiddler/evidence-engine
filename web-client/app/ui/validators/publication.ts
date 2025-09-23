@@ -18,6 +18,7 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 import { z } from "zod/v4"
+import { Rateable } from "./tracked-entity"
 
 export const PublicationKindSchema = z.enum([
   "ABST",
@@ -79,7 +80,7 @@ export const PublicationKindSchema = z.enum([
   "WEB"
 ])
 
-export const PublicationSchema = z.object({
+export const PublicationSchema = Rateable.extend({
   title: z.string().min(10).max(200),
   authors: z.string().min(10).max(2000),
   journalId: z.string().regex(/^\d*$/).optional(),

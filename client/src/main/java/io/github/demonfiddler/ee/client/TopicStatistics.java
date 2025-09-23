@@ -226,15 +226,15 @@ public class TopicStatistics {
 	}
 
 	public String toString() {
-		return "TopicStatistics {" //$NON-NLS-1$
-			+ "topic: " + this.topic //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "entityStatistics: " + this.entityStatistics //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "children: " + this.children //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "__typename: " + this.__typename //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "TopicStatistics {" //
+			+ "topic: " + this.topic //
+			+ ", " //
+			+ "entityStatistics: " + this.entityStatistics //
+			+ ", " //
+			+ "children: " + this.children //
+			+ ", " //
+			+ "__typename: " + this.__typename //
+			+ "}"; //
 	}
 
 	public static Builder builder() {
@@ -280,7 +280,7 @@ public class TopicStatistics {
 			_object.setTopic(this.topic);
 			_object.setEntityStatistics(this.entityStatistics);
 			_object.setChildren(this.children);
-			_object.set__typename("TopicStatistics"); //$NON-NLS-1$
+			_object.set__typename("TopicStatistics");
 			return _object;
 		}
 

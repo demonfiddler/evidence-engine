@@ -89,11 +89,11 @@ public class EntityStatistics {
 	}
 
 	public String toString() {
-		return "EntityStatistics {" //$NON-NLS-1$
-			+ "entityKind: " + this.entityKind //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "count: " + this.count //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "EntityStatistics {" //
+			+ "entityKind: " + this.entityKind //
+			+ ", " //
+			+ "count: " + this.count //
+			+ "}"; //
 	}
 
 	@Override

@@ -29,7 +29,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("PersonInput")
-public class PersonInput extends AbstractBaseEntityInput {
+public class PersonInput extends AbstractTrackedEntityInput {
 
 	/**
 	 * The person's title(s).
@@ -293,35 +293,37 @@ public class PersonInput extends AbstractBaseEntityInput {
 	}
 
 	public String toString() {
-		return "PersonInput {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "title: " + this.title //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "firstName: " + this.firstName //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "nickname: " + this.nickname //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "prefix: " + this.prefix //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "lastName: " + this.lastName //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "suffix: " + this.suffix //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "alias: " + this.alias //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "notes: " + this.notes //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "qualifications: " + this.qualifications //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "country: " + this.country //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "rating: " + this.rating //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "checked: " + this.checked //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "published: " + this.published //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "PersonInput {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
+			+ "title: " + this.title //
+			+ ", " //
+			+ "firstName: " + this.firstName //
+			+ ", " //
+			+ "nickname: " + this.nickname //
+			+ ", " //
+			+ "prefix: " + this.prefix //
+			+ ", " //
+			+ "lastName: " + this.lastName //
+			+ ", " //
+			+ "suffix: " + this.suffix //
+			+ ", " //
+			+ "alias: " + this.alias //
+			+ ", " //
+			+ "notes: " + this.notes //
+			+ ", " //
+			+ "qualifications: " + this.qualifications //
+			+ ", " //
+			+ "country: " + this.country //
+			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
+			+ "checked: " + this.checked //
+			+ ", " //
+			+ "published: " + this.published //
+			+ "}"; //
 	}
 
 	public static Builder builder() {
@@ -332,7 +334,7 @@ public class PersonInput extends AbstractBaseEntityInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, PersonInput> {
+	public static class Builder extends AbstractTrackedEntityInput.Builder<Builder, PersonInput> {
 
 		private String title;
 		private String firstName;
@@ -344,7 +346,6 @@ public class PersonInput extends AbstractBaseEntityInput {
 		private String notes;
 		private String qualifications;
 		private String country;
-		private Integer rating;
 		private Boolean checked;
 		private Boolean published;
 
@@ -429,14 +430,6 @@ public class PersonInput extends AbstractBaseEntityInput {
 		}
 
 		/**
-		 * A five-star rating for the person, intended to reflect credibility, experience, qualifications, etc.
-		 */
-		public Builder withRating(Integer ratingParam) {
-			this.rating = ratingParam;
-			return this;
-		}
-
-		/**
 		 * Whether the person's credentials have been checked.
 		 */
 		public Builder withChecked(Boolean checkedParam) {
@@ -465,7 +458,6 @@ public class PersonInput extends AbstractBaseEntityInput {
 			_object.setNotes(this.notes);
 			_object.setQualifications(this.qualifications);
 			_object.setCountry(this.country);
-			_object.setRating(this.rating);
 			_object.setChecked(this.checked);
 			_object.setPublished(this.published);
 			return _object;

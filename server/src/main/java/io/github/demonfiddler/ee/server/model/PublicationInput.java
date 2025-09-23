@@ -33,7 +33,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("PublicationInput")
-public class PublicationInput extends AbstractBaseEntityInput {
+public class PublicationInput extends AbstractTrackedEntityInput {
 
 	/**
 	 * The names of the author, one per line.
@@ -338,39 +338,41 @@ public class PublicationInput extends AbstractBaseEntityInput {
 	}
 
 	public String toString() {
-		return "PublicationInput {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "authorNames: " + this.authorNames //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "authorIds: " + this.authorIds //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "title: " + this.title //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "journalId: " + this.journalId //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "kind: " + this.kind //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "date: " + this.date //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "year: " + this.year //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "_abstract: " + this._abstract //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "notes: " + this.notes //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "peerReviewed: " + this.peerReviewed //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "doi: " + this.doi //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "isbn: " + this.isbn //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "url: " + this.url //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "cached: " + this.cached //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "accessed: " + this.accessed //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "PublicationInput {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
+			+ "authorNames: " + this.authorNames //
+			+ ", " //
+			+ "authorIds: " + this.authorIds //
+			+ ", " //
+			+ "title: " + this.title //
+			+ ", " //
+			+ "journalId: " + this.journalId //
+			+ ", " //
+			+ "kind: " + this.kind //
+			+ ", " //
+			+ "date: " + this.date //
+			+ ", " //
+			+ "year: " + this.year //
+			+ ", " //
+			+ "_abstract: " + this._abstract //
+			+ ", " //
+			+ "notes: " + this.notes //
+			+ ", " //
+			+ "peerReviewed: " + this.peerReviewed //
+			+ ", " //
+			+ "doi: " + this.doi //
+			+ ", " //
+			+ "isbn: " + this.isbn //
+			+ ", " //
+			+ "url: " + this.url //
+			+ ", " //
+			+ "cached: " + this.cached //
+			+ ", " //
+			+ "accessed: " + this.accessed //
+			+ "}"; //
 	}
 
 	public static Builder builder() {
@@ -381,7 +383,7 @@ public class PublicationInput extends AbstractBaseEntityInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, PublicationInput> {
+	public static class Builder extends AbstractTrackedEntityInput.Builder<Builder, PublicationInput> {
 
 		private String authorNames;
 		private List<Long> authorIds;

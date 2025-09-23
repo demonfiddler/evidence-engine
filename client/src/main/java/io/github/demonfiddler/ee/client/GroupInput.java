@@ -35,7 +35,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  */
 @GraphQLInputType("GroupInput")
 @JsonInclude(Include.NON_NULL)
-public class GroupInput extends AbstractBaseEntityInput {
+public class GroupInput extends AbstractTrackedEntityInput {
 
 	public GroupInput() {
 	}
@@ -47,6 +47,13 @@ public class GroupInput extends AbstractBaseEntityInput {
 	@JsonProperty("id")
 	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
 	Long id;
+
+	/**
+	 * A five-star rating for the group, though as yet unsure whether/how to use this.
+	 */
+	@JsonProperty("rating")
+	@GraphQLScalar( fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
+	Integer rating;
 
 	/**
 	 * The (mutable?) unique group name (user-assigned).
@@ -81,6 +88,24 @@ public class GroupInput extends AbstractBaseEntityInput {
 	@JsonProperty("id")
 	public Long getId() {
 		return this.id;
+	}
+
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
+	/**
+	 * A five-star rating for the group, though as yet unsure whether/how to use this.
+ 	 */
+	@JsonProperty("rating")
+	public void setRating(Integer rating) {
+		this.rating = rating;
+	}
+
+	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
+	/**
+	 * A five-star rating for the group, though as yet unsure whether/how to use this.
+	 */
+	@JsonProperty("rating")
+	public Integer getRating() {
+		return this.rating;
 	}
 
 	/**
@@ -119,6 +144,8 @@ public class GroupInput extends AbstractBaseEntityInput {
 		return "GroupInput {" //
 			+ "id: " + this.id //
 			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
 			+ "groupname: " + this.groupname //
 			+ ", " //
 			+ "authorities: " + this.authorities //
@@ -133,7 +160,7 @@ public class GroupInput extends AbstractBaseEntityInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, GroupInput> {
+	public static class Builder extends AbstractTrackedEntityInput.Builder<Builder, GroupInput> {
 
 		private String groupname;
 		private List<AuthorityKind> authorities;

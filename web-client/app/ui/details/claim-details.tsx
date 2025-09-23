@@ -41,6 +41,7 @@ import { ClaimFieldValues } from "../validators/claim"
 import { FormActionHandler } from "@/hooks/use-page-logic"
 import TextareaEx from "../ext/textarea-ex"
 import ButtonEx from "../ext/button-ex"
+import StarRatingBasicEx from "../ext/star-rating-ex"
 
 export default function ClaimDetails(
   {
@@ -75,6 +76,27 @@ export default function ClaimDetails(
             }</span>
           </FormDescription>
           <div className="grid grid-cols-5 ml-2 mr-2 mt-4 mb-4 gap-4">
+            <FormField
+              control={form.control}
+              name="rating"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Rating</FormLabel>
+                  <FormControl>
+                    <StarRatingBasicEx
+                      readOnly={!updating}
+                      maxStars={5}
+                      iconSize={18}
+                      className="ml-2 w-full"
+                      value={field.value ?? 0}
+                      onChange={field.onChange}
+                      help="A five-star rating for the claim, indicative of significance, credibility, evidence base, etc."
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="date"

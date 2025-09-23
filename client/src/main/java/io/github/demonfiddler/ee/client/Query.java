@@ -897,10 +897,10 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 			+ "groupById: " + this.groupById //
 			+ ", " //
 			+ "groupByGroupname: " + this.groupByGroupname //
-			+ ", " //$NON-NLS-1$
-			+ "entityStatistics: " + this.entityStatistics //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "topicStatistics: " + this.topicStatistics //$NON-NLS-1$
+			+ ", " //
+			+ "entityStatistics: " + this.entityStatistics //
+			+ ", " //
+			+ "topicStatistics: " + this.topicStatistics //
 			+ ", " //
 			+ "__schema: " + this.__schema //
 			+ ", " //

@@ -23,6 +23,7 @@ import java.time.OffsetDateTime;
 
 import com.google.common.truth.ComparableSubject;
 import com.google.common.truth.FailureMetadata;
+import com.google.common.truth.IntegerSubject;
 import com.google.common.truth.LongSubject;
 import com.google.common.truth.StringSubject;
 import com.google.common.truth.Subject;
@@ -70,6 +71,14 @@ public class TrackedEntitySubject<T extends ITrackedEntity> extends Subject {
 
     public StringSubject status() {
         return check("status()").that(actual.getStatus());
+    }
+
+    public void hasRating(Integer rating) {
+        rating().isEqualTo(rating);
+    }
+
+    public IntegerSubject rating() {
+        return check("rating()").that(actual.getRating());
     }
 
     public void wasCreatedAfter(OffsetDateTime when) {

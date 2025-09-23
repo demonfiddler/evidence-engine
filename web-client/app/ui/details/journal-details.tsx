@@ -47,6 +47,7 @@ import InputEx from "../ext/input-ex"
 import SelectTriggerEx from "../ext/select-ex"
 import TextareaEx from "../ext/textarea-ex"
 import LinkEx from "../ext/link-ex"
+import StarRatingBasicEx from "../ext/star-rating-ex"
 
 const publishers = rawPublishers.content as unknown as Publisher[]
 
@@ -84,6 +85,36 @@ export default function JournalDetails(
           <div className="grid grid-cols-3 ml-2 mr-2 mt-4 mb-4 gap-4">
             <FormField
               control={form.control}
+              name="rating"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Rating</FormLabel>
+                  <FormControl>
+                    <StarRatingBasicEx
+                      readOnly={!updating}
+                      maxStars={5}
+                      iconSize={18}
+                      className="ml-2 w-full"
+                      value={field.value ?? 0}
+                      onChange={field.onChange}
+                      help="A five-star rating for the journal, indicative of prestige, impact, circulation, etc."
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DetailActions
+              className="col-start-3 row-span-5"
+              recordKind="Journal"
+              record={record}
+              form={form}
+              state={state}
+              setMode={setMode}
+              onFormAction={onFormAction}
+            />
+            <FormField
+              control={form.control}
               name="title"
               render={({field}) => (
                 <FormItem className="col-span-2">
@@ -100,15 +131,6 @@ export default function JournalDetails(
                   <FormMessage />
                 </FormItem>
               )}
-            />
-            <DetailActions
-              className="col-start-3 row-span-5"
-              recordKind="Journal"
-              record={record}
-              form={form}
-              state={state}
-              setMode={setMode}
-              onFormAction={onFormAction}
             />
             <FormField
               control={form.control}

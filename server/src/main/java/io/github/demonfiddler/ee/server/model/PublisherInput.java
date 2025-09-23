@@ -31,7 +31,7 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLInputType("PublisherInput")
-public class PublisherInput extends AbstractBaseEntityInput {
+public class PublisherInput extends AbstractTrackedEntityInput {
 
 	/**
 	 * The publisher name.
@@ -134,19 +134,21 @@ public class PublisherInput extends AbstractBaseEntityInput {
 	}
 
 	public String toString() {
-		return "PublisherInput {" //$NON-NLS-1$
-			+ "id: " + this.id //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "name: " + this.name //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "location: " + this.location //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "country: " + this.country //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "url: " + this.url //$NON-NLS-1$
-			+ ", " //$NON-NLS-1$
-			+ "journalCount: " + this.journalCount //$NON-NLS-1$
-			+ "}"; //$NON-NLS-1$
+		return "PublisherInput {" //
+			+ "id: " + this.id //
+			+ ", " //
+			+ "rating: " + this.rating //
+			+ ", " //
+			+ "name: " + this.name //
+			+ ", " //
+			+ "location: " + this.location //
+			+ ", " //
+			+ "country: " + this.country //
+			+ ", " //
+			+ "url: " + this.url //
+			+ ", " //
+			+ "journalCount: " + this.journalCount //
+			+ "}"; //
 	}
 
 	public static Builder builder() {
@@ -157,7 +159,7 @@ public class PublisherInput extends AbstractBaseEntityInput {
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
 	 * {@link #builder()}
 	 */
-	public static class Builder extends AbstractBaseEntityInput.Builder<Builder, PublisherInput> {
+	public static class Builder extends AbstractTrackedEntityInput.Builder<Builder, PublisherInput> {
 
 		private String name;
 		private String location;

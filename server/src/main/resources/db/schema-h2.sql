@@ -24,6 +24,7 @@ CREATE TABLE "entity" (
   "id" BIGINT AUTO_INCREMENT NOT NULL COMMENT 'The unique entity record identifier',
   "dtype" CHAR(3) NOT NULL COMMENT 'The entity type discriminator',
   "status" CHAR(3) DEFAULT 'DRA' NOT NULL COMMENT 'The record status',
+  "rating" SMALLINT DEFAULT NULL CHECK ("rating" BETWEEN 1 AND 5) COMMENT 'Quality/significance/eminence star rating, 1..5',
   "created" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT 'When the record was created',
   "created_by_user_id" BIGINT COMMENT 'ID of the user who created the record',
   "updated" TIMESTAMP COMMENT 'When the record was last updated',
@@ -164,7 +165,6 @@ CREATE TABLE "person" (
   "notes" VARCHAR(65535) DEFAULT NULL COMMENT 'Brief biography, notes, etc.',
   "qualifications" VARCHAR(65535) DEFAULT NULL COMMENT 'Academic qualifications',
   "country_code" CHAR(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for country of primary professional association',
-  "rating" INT DEFAULT 0 NOT NULL CHECK ("rating" BETWEEN 0 AND 5) COMMENT 'Eminence star rating, 0..5',
   "checked" BOOLEAN DEFAULT FALSE NOT NULL COMMENT 'Set when the person''s credentials have been checked',
   "published" BOOLEAN DEFAULT FALSE NOT NULL COMMENT 'Set if person has published peer-reviewed papers on climate change',
   PRIMARY KEY ("id")

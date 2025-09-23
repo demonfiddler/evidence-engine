@@ -18,8 +18,9 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 import { z } from "zod/v4"
+import { Rateable } from "./tracked-entity"
 
-export const PersonSchema = z.object({
+export const PersonSchema = Rateable.extend({
   title: z.string().max(10).optional(),
   firstName: z.string().max(80),
   nickname: z.string().max(40).optional(),
@@ -30,7 +31,6 @@ export const PersonSchema = z.object({
   notes: z.string().optional(),
   qualifications: z.string().optional(),
   country: z.string().uppercase().length(2).optional(),
-  rating: z.string().regex(/^[1-5]?$/).or(z.uint32().min(1).max(5)).optional(),
   checked: z.boolean(),
   published: z.boolean()
 })

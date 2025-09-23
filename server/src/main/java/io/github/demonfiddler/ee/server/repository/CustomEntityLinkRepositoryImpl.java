@@ -277,7 +277,7 @@ public class CustomEntityLinkRepositoryImpl extends AbstractCustomRepositoryImpl
         Query countQuery = defineNamedQuery(m.countQueryName, countSql, Long.class);
 
         String selectFields =
-            "e.\"dtype\", e.\"status\", e.\"created\", e.\"created_by_user_id\", e.\"updated\", e.\"updated_by_user_id\", el.*";
+            "e.\"dtype\", e.\"status\", e.\"rating\", e.\"created\", e.\"created_by_user_id\", e.\"updated\", e.\"updated_by_user_id\", el.*";
         String selectSql = String.format(template, selectFields, feJoinClause, teJoinClause, seJoinClause, ftJoinClause,
             whereClause, orderByClause);
         Query selectQuery = defineNamedQuery(m.selectQueryName, selectSql, EntityLink.class);

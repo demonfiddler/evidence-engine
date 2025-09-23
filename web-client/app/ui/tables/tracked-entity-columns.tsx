@@ -23,6 +23,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import type ITrackedEntity from "@/app/model/ITrackedEntity"
 import { columns as baseEntityColumns, columnVisibility as baseEntityColumnVisibility } from "./base-entity-columns"
 import { formatDateTime } from "@/lib/utils"
+import StarRatingBasic from "@/components/commerce-ui/star-rating-basic"
 
 export const columns: ColumnDef<ITrackedEntity>[] = [
   ...baseEntityColumns,
@@ -32,6 +33,25 @@ export const columns: ColumnDef<ITrackedEntity>[] = [
     enableSorting: true,
     size: 130,
     header: "Status",
+  },
+  {
+    id: "rating",
+    accessorKey: "rating",
+    enableHiding: true,
+    enableSorting: true,
+    size: 124,
+    header: "Rating",
+    cell: ({ getValue }) => {
+      return (
+        <StarRatingBasic
+          className="place-self-center"
+          readOnly={true}
+          value={getValue() as number ?? 0}
+          maxStars={5}
+          iconSize={12}
+        />
+      )
+    },
   },
   {
     id: "created",
@@ -72,6 +92,7 @@ export const columns: ColumnDef<ITrackedEntity>[] = [
 export const columnVisibility = {
   ...baseEntityColumnVisibility,
   status: true,
+  rating: true,
   created: false,
   createdByUsername: false,
   updated: false,

@@ -15,6 +15,7 @@
       "id": 18,
       "entityKind": "Person",
       "status": "Published",
+      "rating": 4,
       "created": "2025-04-01 09:00:00+0:00",
       "createdByUser": {
         "id": 1,
@@ -129,7 +130,6 @@
       "notes": "Russian mathematician and solar astrophysicist. Head of the Space Research Sector of the Sun, at Pulkovo Observatory of the Russian Academy of Sciences. Head of the Russian-Ukrainian Astrometria project on the board of the Russian segment of the ISS and Head of the Lunar Observatory Project on Monitoring of the Climate. Educated at Samarkand State University, Uzbekistan & Leningrad State University.",
       "qualifications": "Dr.Sci.",
       "country": "RU",
-      "rating": 4,
       "checked": true,
       "published": false
     },
@@ -137,6 +137,7 @@
       "id": 19,
       "entityKind": "Person",
       "status": "Published",
+      "rating": 1,
       "created": "2025-04-01 09:30:00+0:00",
       "createdByUser": {
         "id": 1,
@@ -233,7 +234,6 @@
       "notes": "Distinguished Member of the Technical Staff; Director, Business Development Sarnoff Corporation.",
       "qualifications": "M.A. & Ph.D. in Physics from Princeton University.",
       "country": "US",
-      "rating": 1,
       "checked": true,
       "published": false
     },
@@ -241,6 +241,7 @@
       "id": 20,
       "entityKind": "Person",
       "status": "Published",
+      "rating": 2,
       "created": "2025-04-02 10:00:00+0:00",
       "createdByUser": {
         "id": 1,
@@ -288,7 +289,6 @@
       "notes": "Emeritus Professor of Soil Science, Norwegian University of Life Sciences. Department of Soil and Water Sciences, Agricultural University of Norway. Member of the Climate Realists’ Scientific Advisory Board.",
       "qualifications": "",
       "country": "DK",
-      "rating": 2,
       "checked": true,
       "published": false
     },
@@ -296,6 +296,7 @@
       "id": 21,
       "entityKind": "Person",
       "status": "Published",
+      "rating": 0,
       "created": "2025-04-03 11:00:00+0:00",
       "createdByUser": {
         "id": 1,
@@ -343,7 +344,6 @@
       "notes": "Deceased (1933–2014). Emeritus Professor of Geology & Quaternary Studies, Northern Arizona University, Flagstaff, Arizona, USA, Director, Mammoth Site of Hot Springs, Hot Springs, South Dakota, USA. Geological Society of America’s Rip Rapp Archaeological Geology Award (1996); Lowell Thomas Award from The Explorers Club for Lifetime Scientific Achievement (2005).",
       "qualifications": "Degree in Geologic Engineering from University of Arizona, Ph.D. in Geology (1967).",
       "country": "US",
-      "rating": 0,
       "checked": false,
       "published": false
     },
@@ -351,6 +351,7 @@
       "id": 22,
       "entityKind": "Person",
       "status": "Draft",
+      "rating": 1,
       "created": "2025-04-04 12:00:00+0:00",
       "createdByUser": {
         "id": 1,
@@ -398,7 +399,6 @@
       "notes": "Deceased (1921–2013). President, General Atomics Corporation (1979–1984) White House Science Councillor (1982–1989) Director, Los Alamos National Laboratory (1970–1979), E.O. Lawrence Award 1966, Enrico Fermi Award 1978, Los Alamos Medal (with H.A. Bethe) 2001 Member National Academy of Sciences, National Academy of Engineering; Fellow APS, AAAS.",
       "qualifications": "B.A. from University of Denver (1942), M.S. (1948) & Ph.D. (1949) from University of Chicago.",
       "country": "US",
-      "rating": 1,
       "checked": true,
       "published": false
     },
@@ -406,6 +406,7 @@
       "id": 23,
       "entityKind": "Person",
       "status": "Draft",
+      "rating": 1,
       "created": "2025-04-05 13:00:00+0:00",
       "createdByUser": {
         "id": 1,
@@ -453,7 +454,6 @@
       "notes": "Director and General Secretary of the Stockholm Initiative. Professor of Organic Chemistry, Royal Institute of Technology, Stockholm.",
       "qualifications": "Tekn. dr. docent in Organic Chemistry.",
       "country": "SE",
-      "rating": 1,
       "checked": true,
       "published": false
     }
