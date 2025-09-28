@@ -31,7 +31,7 @@ const selectColumn = rawSelectColumn as ColumnDef<Log>
 
 const ownColumns1: ColumnDef<Log>[] = [
   selectColumn,
-  ... baseEntityColumns,
+  ... baseEntityColumns as ColumnDef<Log>[],
   {
     id: "timestamp",
     accessorKey: "timestamp",

@@ -31,7 +31,7 @@ const selectColumn = rawSelectColumn as ColumnDef<Publication>
 
 export const columns: ColumnDef<Publication>[] = [
   selectColumn,
-  ... trackedEntityColumns,
+  ... trackedEntityColumns as ColumnDef<Publication>[],
   {
     id: "title",
     accessorKey: "title",
@@ -98,6 +98,14 @@ export const columns: ColumnDef<Publication>[] = [
       <a key={cell.id} href={`https://doi.org/${getValue() as string}`} target="_blank">{getValue() as string}</a>
     )
   },
+  // {
+  //   id: "isbn",
+  //   accessorKey: "isbn",
+  //   enableHiding: true,
+  //   enableSorting: true,
+  //   size: 170,
+  //   header: "ISBN",
+  // },
   {
     id: "isbn",
     accessorKey: "isbn",
@@ -105,6 +113,149 @@ export const columns: ColumnDef<Publication>[] = [
     enableSorting: true,
     size: 170,
     header: "ISBN",
+    cell: ({cell, getValue}) => (
+      <a key={cell.id} href={`https://isbnsearch.org/isbn/${getValue() as string}`} target="_blank">{getValue() as string}</a>
+    )
+  },
+  {
+    id: "pmid",
+    accessorKey: "pmid",
+    enableHiding: true,
+    enableSorting: true,
+    size: 200,
+    header: "PubMed ID",
+    cell: ({cell, getValue}) => (
+      <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
+    )
+  },
+  {
+    id: "hsid",
+    accessorKey: "hsid",
+    enableHiding: true,
+    enableSorting: true,
+    size: 200,
+    header: "HS ID",
+    cell: ({cell, getValue}) => (
+      <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
+    )
+  },
+  {
+    id: "arxivid",
+    accessorKey: "arxivid",
+    enableHiding: true,
+    enableSorting: true,
+    size: 200,
+    header: "ArXiv ID",
+    cell: ({cell, getValue}) => (
+      <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
+    )
+  },
+  {
+    id: "biorxivid",
+    accessorKey: "biorxivid",
+    enableHiding: true,
+    enableSorting: true,
+    size: 200,
+    header: "BioRxiv ID",
+    cell: ({cell, getValue}) => (
+      <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
+    )
+  },
+  {
+    id: "medrxivid",
+    accessorKey: "medrxivid",
+    enableHiding: true,
+    enableSorting: true,
+    size: 200,
+    header: "MedRxiv ID",
+    cell: ({cell, getValue}) => (
+      <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
+    )
+  },
+  {
+    id: "ericid",
+    accessorKey: "ericid",
+    enableHiding: true,
+    enableSorting: true,
+    size: 200,
+    header: "ERIC",
+    cell: ({cell, getValue}) => (
+      <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
+    )
+  },
+  {
+    id: "ihepid",
+    accessorKey: "ihepid",
+    enableHiding: true,
+    enableSorting: true,
+    size: 200,
+    header: "IHEP ID",
+    cell: ({cell, getValue}) => (
+      <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
+    )
+  },
+  {
+    id: "oaipmhid",
+    accessorKey: "oaipmhid",
+    enableHiding: true,
+    enableSorting: true,
+    size: 200,
+    header: "OAI-PMH ID",
+    cell: ({cell, getValue}) => (
+      <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
+    )
+  },
+  {
+    id: "halid",
+    accessorKey: "halid",
+    enableHiding: true,
+    enableSorting: true,
+    size: 200,
+    header: "HAL ID",
+    cell: ({cell, getValue}) => (
+      <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
+    )
+  },
+  {
+    id: "zenodoid",
+    accessorKey: "zenodoid",
+    enableHiding: true,
+    enableSorting: true,
+    size: 200,
+    header: "Zenodo ID",
+    cell: ({cell, getValue}) => (
+      <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
+    )
+  },
+  {
+    id: "scopuseid",
+    accessorKey: "scopuseid",
+    enableHiding: true,
+    enableSorting: true,
+    size: 200,
+    header: "Scopus EID",
+    cell: ({cell, getValue}) => (
+      <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
+    )
+  },
+  {
+    id: "wsan",
+    accessorKey: "wsan",
+    enableHiding: true,
+    enableSorting: true,
+    size: 200,
+    header: "WSAN",
+  },
+  {
+    id: "pinfoan",
+    accessorKey: "pinfoan",
+    enableHiding: true,
+    enableSorting: true,
+    size: 200,
+    header: "PInfoAN",
+    cell: ({cell, getValue}) => (
+      <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
+    )
   },
   {
     id: "url",
@@ -181,8 +332,21 @@ export const columnVisibility = {
   date: false,
   year: true,
   abstract: false,
-  doi: true,
-  isbn: true,
+  doi: false,
+  isbn: false,
+  pmid: false,
+  hsid: false,
+  arxivid: false,
+  biorxivid: false,
+  medrxivid: false,
+  ericid: false,
+  ihepid: false,
+  oaipmhid: false,
+  halid: false,
+  zenodoid: false,
+  scopuseid: false,
+  wsan: false,
+  pinfoan: false,
   url: false,
   accessed: false,
   notes: false,

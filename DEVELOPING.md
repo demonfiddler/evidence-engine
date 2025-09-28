@@ -142,6 +142,7 @@ Resource & Member column entry key:
 ||server|~[```schema-mariadb.sql```](server/src/main/resources/db/schema-mariadb.sql)|+```TYPE.PROPERTY```|||
 |||~[```schema-h2.sql```](server/src/main/resources/db/schema-h2.sql)|+```TYPE.PROPERTY```|||
 |||~[```schema.graphqls```](server/src/main/resources/graphql/schema.graphqls)|+```TYPE.PROPERTY```|||
+||||+```TYPEInput.PROPERTY```||Only if ```PROPERTY``` is included in ```TYPEInput```.|
 |||~```TYPE```|+```PROPERTY```|||
 ||||+```getPROPERTY()```|||
 ||||+```setPROPERTY()```|||

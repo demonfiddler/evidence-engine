@@ -85,7 +85,7 @@ public interface DataFetchersDelegateUser extends DataFetchersDelegateITrackedEn
 	 * params:[]},Field{name:country, type:String, params:[format:CountryFormatKind]},Field{name:notes, type:String,
 	 * params:[]},Field{name:authorities, type:[String!]!,
 	 * params:[aggregation:AggregationKind,format:FormatKind]},Field{name:groups, type:[Group!], params:[]}}, implements
-	 * IBaseEntity,ITrackedEntity, comments ""}. It depends on your data modle, but it typically contains the id to use
+	 * IBaseEntity,ITrackedEntity, comments ""}. It depends on your data model, but it typically contains the id to use
 	 * in the query.
 	 * @param format The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
@@ -123,7 +123,7 @@ public interface DataFetchersDelegateUser extends DataFetchersDelegateITrackedEn
 	 *     The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full GraphQL context for this DataFetcher
 	 * @param origin 
 	 *    The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch the authorities attribute
-	 *    of the <I>origin</I>, which is an instance of {ObjectType {name:User, fields:{Field{name:id, type:ID!, params:[]},Field{name:entityKind, type:String, params:[format:FormatKind]},Field{name:status, type:String, params:[format:FormatKind]},Field{name:created, type:DateTime, params:[]},Field{name:createdByUser, type:User, params:[]},Field{name:updated, type:DateTime, params:[]},Field{name:updatedByUser, type:User, params:[]},Field{name:log, type:LogPage!, params:[filter:LogQueryFilter,pageSort:PageableInput]},Field{name:username, type:String, params:[]},Field{name:firstName, type:String, params:[]},Field{name:lastName, type:String, params:[]},Field{name:email, type:String, params:[]},Field{name:password, type:String, params:[]},Field{name:authorities, type:[String!]!, params:[aggregation:AggregationKind,format:FormatKind]},Field{name:groups, type:[Group!], params:[]}}, implements IBaseEntity,ITrackedEntity, comments ""}. It depends on your data modle, but it typically contains 
+	 *    of the <I>origin</I>, which is an instance of {ObjectType {name:User, fields:{Field{name:id, type:ID!, params:[]},Field{name:entityKind, type:String, params:[format:FormatKind]},Field{name:status, type:String, params:[format:FormatKind]},Field{name:created, type:DateTime, params:[]},Field{name:createdByUser, type:User, params:[]},Field{name:updated, type:DateTime, params:[]},Field{name:updatedByUser, type:User, params:[]},Field{name:log, type:LogPage!, params:[filter:LogQueryFilter,pageSort:PageableInput]},Field{name:username, type:String, params:[]},Field{name:firstName, type:String, params:[]},Field{name:lastName, type:String, params:[]},Field{name:email, type:String, params:[]},Field{name:password, type:String, params:[]},Field{name:authorities, type:[String!]!, params:[aggregation:AggregationKind,format:FormatKind]},Field{name:groups, type:[Group!], params:[]}}, implements IBaseEntity,ITrackedEntity, comments ""}. It depends on your data model, but it typically contains 
 	 *    the id to use in the query.
 	 * @param aggregation 
 	 *     The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.

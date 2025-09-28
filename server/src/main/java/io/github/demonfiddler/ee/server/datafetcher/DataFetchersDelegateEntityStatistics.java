@@ -64,7 +64,7 @@ public interface DataFetchersDelegateEntityStatistics {
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
 	 * the entityKind attribute of the <I>origin</I>, which is an instance of {ObjectType {name:EntityStatistics,
 	 * fields:{Field{name:entityKind, type:String, params:[format:FormatKind]},Field{name:count, type:Int, params:[]}},
-	 * comments=empty}. It depends on your data modle, but it typically contains the id to use in the query.
+	 * comments=empty}. It depends on your data model, but it typically contains the id to use in the query.
 	 * @param format The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the

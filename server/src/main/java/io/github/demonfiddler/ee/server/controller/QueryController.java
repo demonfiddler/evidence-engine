@@ -702,7 +702,7 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -730,7 +730,7 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -755,7 +755,7 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -783,7 +783,7 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
@@ -810,7 +810,7 @@ public class QueryController {
 	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
 	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
 	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
-	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
 	 * typically contains the id to use in the query.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the

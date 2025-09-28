@@ -29,7 +29,7 @@ const selectColumn = rawSelectColumn as ColumnDef<Group>
 
 export const columns: ColumnDef<Group>[] = [
   selectColumn,
-  ... trackedEntityColumns,
+  ... trackedEntityColumns as ColumnDef<Group>[],
   {
     id: "groupname",
     accessorKey: "groupname",

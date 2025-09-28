@@ -26,7 +26,7 @@ import { formatDateTime } from "@/lib/utils"
 import StarRatingBasic from "@/components/commerce-ui/star-rating-basic"
 
 export const columns: ColumnDef<ITrackedEntity>[] = [
-  ...baseEntityColumns,
+  ...baseEntityColumns as ColumnDef<ITrackedEntity>[],
   {
     id: "status",
     accessorKey: "status",

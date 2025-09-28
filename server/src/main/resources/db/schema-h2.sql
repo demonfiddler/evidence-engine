@@ -21,15 +21,14 @@ CREATE ALIAS IF NOT EXISTS FT_INIT FOR "org.h2.fulltext.FullText.init";
 CALL FT_INIT();
 
 CREATE TABLE "entity" (
-  "id" BIGINT AUTO_INCREMENT NOT NULL COMMENT 'The unique entity record identifier',
+  "id" BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT 'The unique entity record identifier',
   "dtype" CHAR(3) NOT NULL COMMENT 'The entity type discriminator',
   "status" CHAR(3) DEFAULT 'DRA' NOT NULL COMMENT 'The record status',
   "rating" SMALLINT DEFAULT NULL CHECK ("rating" BETWEEN 1 AND 5) COMMENT 'Quality/significance/eminence star rating, 1..5',
   "created" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT 'When the record was created',
   "created_by_user_id" BIGINT COMMENT 'ID of the user who created the record',
   "updated" TIMESTAMP COMMENT 'When the record was last updated',
-  "updated_by_user_id" BIGINT DEFAULT NULL COMMENT 'ID of the user who last updated the record',
-  PRIMARY KEY ("id")
+  "updated_by_user_id" BIGINT DEFAULT NULL COMMENT 'ID of the user who last updated the record'
 );
 CREATE INDEX "FK_entity_dtype" ON "entity" ("dtype");
 CREATE INDEX "FK_entity_status" ON "entity" ("status");
@@ -37,28 +36,22 @@ CREATE INDEX "FK_entity_created_user" ON "entity" ("created_by_user_id");
 CREATE INDEX "FK_entity_updated_user" ON "entity" ("updated_by_user_id");
 
 CREATE TABLE "claim" (
-  "id" BIGINT NOT NULL COMMENT 'The unique claim identifier',
+  "id" BIGINT PRIMARY KEY COMMENT 'The unique claim identifier',
   "date" DATE DEFAULT NULL COMMENT 'The date on which the claim was first made',
   "text" VARCHAR(500) NOT NULL COMMENT 'The claim text',
-  "notes" VARCHAR(65535) DEFAULT NULL COMMENT 'Added notes about the claim',
-  PRIMARY KEY ("id")
+  "notes" VARCHAR(65535) DEFAULT NULL COMMENT 'Added notes about the claim'
 );
 CALL FT_CREATE_INDEX('PUBLIC', 'claim', 'text,notes');
 
 CREATE TABLE "country" (
-  "alpha_2" CHAR(2) NOT NULL COMMENT 'ISO-3166-1 alpha-2 code',
-  "alpha_3" CHAR(3) NOT NULL COMMENT 'ISO-3166-1 alpha-3 code',
-  "numeric" CHAR(3) NOT NULL CHECK ("numeric" REGEXP '^\d{3}$') COMMENT 'ISO-3166-1 numeric code',
-  "iso_name" VARCHAR(100) NOT NULL COMMENT 'Official/ISO country name',
-  "common_name" VARCHAR(50) NOT NULL COMMENT 'Common or short name',
+  "alpha_2" CHAR(2) PRIMARY KEYCOMMENT 'ISO-3166-1 alpha-2 code',
+  "alpha_3" CHAR(3) NOT NULL UNIQUE COMMENT 'ISO-3166-1 alpha-3 code',
+  "numeric" CHAR(3) NOT NULL UNIQUE CHECK ("numeric" REGEXP '^\d{3}$') COMMENT 'ISO-3166-1 numeric code',
+  "iso_name" VARCHAR(100) NOT NULL UNIQUE COMMENT 'Official/ISO country name',
+  "common_name" VARCHAR(50) NOT NULL UNIQUE COMMENT 'Common or short name',
   "year" SMALLINT NOT NULL COMMENT 'Year alpha-2 code was first assigned',
   "cc_tld" CHAR(3) NOT NULL COMMENT 'Country code top level domain',
-  "notes" VARCHAR(65535) DEFAULT NULL COMMENT 'Remarks as per Wikipedia ISO-3166-1 entry',
-  PRIMARY KEY ("alpha_2"),
-  UNIQUE ("alpha_3"),
-  UNIQUE ("numeric"),
-  UNIQUE ("common_name"),
-  UNIQUE ("iso_name")
+  "notes" VARCHAR(65535) DEFAULT NULL COMMENT 'Remarks as per Wikipedia ISO-3166-1 entry'
 );
 CREATE UNIQUE INDEX "country_alpha_3" ON "country" ("alpha_3");
 CREATE UNIQUE INDEX "country_numeric" ON "country" ("numeric");
@@ -66,7 +59,7 @@ CREATE UNIQUE INDEX "country_common_name" ON "country" ("common_name");
 CREATE UNIQUE INDEX "country_iso_name" ON "country" ("iso_name");
 
 CREATE TABLE "declaration" (
-  "id" BIGINT NOT NULL COMMENT 'The unique declaration identifier',
+  "id" BIGINT PRIMARY KEY COMMENT 'The unique declaration identifier',
   "kind" VARCHAR(4) NOT NULL COMMENT 'The kind of declaration',
   "date" DATE NOT NULL COMMENT 'The date the declaration was first published',
   "title" VARCHAR(100) NOT NULL COMMENT 'The declaration name or title',
@@ -75,52 +68,45 @@ CREATE TABLE "declaration" (
   "cached" BOOLEAN DEFAULT FALSE NOT NULL COMMENT 'Flag to indicate that url content is cached on this application server',
   "signatories" VARCHAR(65535) DEFAULT NULL COMMENT 'The list of signatories, one per line',
   "signatory_count" INT DEFAULT NULL COMMENT 'The number of signatories',
-  "notes" VARCHAR(65535) DEFAULT NULL COMMENT 'Added notes about the declaration',
-  PRIMARY KEY ("id")
+  "notes" VARCHAR(65535) DEFAULT NULL COMMENT 'Added notes about the declaration'
 );
 CREATE INDEX "FK_declaration_declaration_kind" ON "declaration" ("kind");
 CREATE INDEX "FK_declaration_country" ON "declaration" ("country_code");
 CALL FT_CREATE_INDEX('PUBLIC', 'declaration', 'title,signatories,notes');
 
 CREATE TABLE "declaration_kind" (
-  "kind" VARCHAR(4) NOT NULL COMMENT 'The declaration kind code',
-  "label" VARCHAR(20) NOT NULL COMMENT 'Label for the declaration kind',
-  "description" VARCHAR(50) NOT NULL COMMENT 'Description of the declaration kind',
-  PRIMARY KEY ("kind"),
-  UNIQUE ("label")
+  "kind" VARCHAR(4) PRIMARY KEY COMMENT 'The declaration kind code',
+  "label" VARCHAR(20) NOT NULL UNIQUE COMMENT 'Label for the declaration kind',
+  "description" VARCHAR(50) NOT NULL COMMENT 'Description of the declaration kind'
 );
 CREATE UNIQUE INDEX "declaration_kind_label" ON "declaration_kind" ("label");
 
 CREATE TABLE "entity_kind" (
-  "code" CHAR(3) NOT NULL COMMENT 'Unique code for the entity kind',
-  "label" VARCHAR(20) NOT NULL COMMENT 'Label for the entity kind',
-  PRIMARY KEY ("code"),
-  UNIQUE ("label")
+  "code" CHAR(3) PRIMARY KEY COMMENT 'Unique code for the entity kind',
+  "label" VARCHAR(20) NOT NULL UNIQUE COMMENT 'Label for the entity kind'
 );
 CREATE UNIQUE INDEX "entity_kind_label" ON "entity_kind" ("label");
 
 CREATE TABLE "entity_link" (
-  "id" BIGINT NOT NULL COMMENT 'The unique entity link identifier',
+  "id" BIGINT PRIMARY KEY COMMENT 'The unique entity link identifier',
   "from_entity_id" BIGINT NOT NULL COMMENT 'The linked-from entity ID',
   "to_entity_id" BIGINT NOT NULL COMMENT 'The linked-to entity ID',
   "from_entity_locations" VARCHAR(500) DEFAULT NULL COMMENT 'Location(s) within the linked-from entity (where applicable), one per line',
-  "to_entity_locations" VARCHAR(500) DEFAULT NULL COMMENT 'Location(s) within the linked-to entity (where applicable), one per line',
-  PRIMARY KEY ("id")
+  "to_entity_locations" VARCHAR(500) DEFAULT NULL COMMENT 'Location(s) within the linked-to entity (where applicable), one per line'
 );
+
 CREATE INDEX "FK_entity_link_from" ON "entity_link" ("from_entity_id");
 CREATE INDEX "FK_entity_link_to" ON "entity_link" ("to_entity_id");
 CALL FT_CREATE_INDEX('PUBLIC', 'entity_link', 'from_entity_locations,to_entity_locations');
 
 CREATE TABLE "journal" (
-  "id" BIGINT NOT NULL COMMENT 'The journal ID',
+  "id" BIGINT PRIMARY KEY COMMENT 'The journal ID',
   "title" VARCHAR(100) NOT NULL COMMENT 'The journal, etc. title',
   "abbreviation" VARCHAR(50) DEFAULT NULL COMMENT 'The ISO 4 title abbreviation',
   "url" VARCHAR(200) DEFAULT NULL COMMENT 'Web link to the journal''s home page',
-  "issn" CHAR(9) DEFAULT NULL CHECK ("issn" REGEXP '^[0-9]{4}-[0-9]{3}[0-9X]$') COMMENT 'The International Standard Serial Number',
+  "issn" CHAR(9) DEFAULT NULL UNIQUE CHECK ("issn" REGEXP '^\\d{4}-\\d{3}[\\dX]$') COMMENT 'The International Standard Serial Number',
   "publisher_id" BIGINT DEFAULT NULL COMMENT 'The ID of the publisher',
-  "notes" VARCHAR(200) DEFAULT NULL COMMENT 'A brief description of the journal',
-  PRIMARY KEY ("id"),
-  UNIQUE ("issn")
+  "notes" VARCHAR(200) DEFAULT NULL COMMENT 'A brief description of the journal'
 );
 CREATE UNIQUE INDEX "journal_issn" ON "journal" ("issn");
 CREATE INDEX "journal_title" ON "journal" ("title");
@@ -129,15 +115,14 @@ CREATE INDEX "FK_journal_publisher" ON "journal" ("publisher_id");
 CALL FT_CREATE_INDEX('PUBLIC', 'journal', 'title,abbreviation,url,issn,notes');
 
 CREATE TABLE "log" (
-  "id" BIGINT AUTO_INCREMENT NOT NULL COMMENT 'The log entry ID',
+  "id" BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT 'The log entry ID',
   "timestamp" TIMESTAMP DEFAULT current_timestamp() NOT NULL COMMENT 'The date and time at which the log entry was made',
   "user_id" BIGINT DEFAULT 0 NOT NULL COMMENT 'The ID of the user who made the change',
   "transaction_kind" CHAR(3) NOT NULL COMMENT 'The kind of change that was made',
   "entity_kind" CHAR(3) NOT NULL COMMENT 'The kind of entity affected by the change',
   "entity_id" BIGINT NOT NULL COMMENT 'The ID of the affected entity',
   "linked_entity_kind" CHAR(3) DEFAULT NULL COMMENT 'The kind of entity that was linked/unlinked',
-  "linked_entity_id" BIGINT DEFAULT NULL COMMENT 'The ID of the entity that was linked/unlinked',
-  PRIMARY KEY ("id")
+  "linked_entity_id" BIGINT DEFAULT NULL COMMENT 'The ID of the entity that was linked/unlinked'
 );
 CREATE INDEX "log_user" ON "log" ("user_id");
 CREATE INDEX "log_entity" ON "log" ("entity_kind","entity_id");
@@ -145,16 +130,14 @@ CREATE INDEX "log_linked_entity" ON "log" ("linked_entity_kind","linked_entity_i
 CREATE INDEX "FK_log_transaction_kind" ON "log" ("transaction_kind");
 
 CREATE TABLE "authority_kind" (
-  "code" CHAR(3) NOT NULL COMMENT 'Unique authority code',
-  "label" VARCHAR(10) NOT NULL COMMENT 'Unique authority label',
-  "description" VARCHAR(50) NOT NULL COMMENT 'Description of the authority',
-  PRIMARY KEY ("code"),
-  UNIQUE ("label")
+  "code" CHAR(3) PRIMARY KEY COMMENT 'Unique authority code',
+  "label" VARCHAR(10) NOT NULL UNIQUE COMMENT 'Unique authority label',
+  "description" VARCHAR(50) NOT NULL COMMENT 'Description of the authority'
 );
 CREATE UNIQUE INDEX "authority_kind_label" ON "authority_kind" ("label");
 
 CREATE TABLE "person" (
-  "id" BIGINT NOT NULL COMMENT 'Unique person identifier',
+  "id" BIGINT PRIMARY KEY COMMENT 'Unique person identifier',
   "title" VARCHAR(10) DEFAULT NULL COMMENT 'Person''s title, e.g., Prof., Dr.',
   "first_name" VARCHAR(80) NOT NULL COMMENT 'Person''s first names and/or initials',
   "nickname" VARCHAR(40) DEFAULT NULL COMMENT 'Nickname by which commonly known',
@@ -166,8 +149,7 @@ CREATE TABLE "person" (
   "qualifications" VARCHAR(65535) DEFAULT NULL COMMENT 'Academic qualifications',
   "country_code" CHAR(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for country of primary professional association',
   "checked" BOOLEAN DEFAULT FALSE NOT NULL COMMENT 'Set when the person''s credentials have been checked',
-  "published" BOOLEAN DEFAULT FALSE NOT NULL COMMENT 'Set if person has published peer-reviewed papers on climate change',
-  PRIMARY KEY ("id")
+  "published" BOOLEAN DEFAULT FALSE NOT NULL COMMENT 'Set if person has published peer-reviewed papers on climate change'
 );
 CREATE INDEX "person_title" ON "person" ("title");
 CREATE INDEX "person_first_name" ON "person" ("first_name");
@@ -179,7 +161,7 @@ CREATE INDEX "person_notes" ON "person" ("notes");
 CALL FT_CREATE_INDEX('PUBLIC', 'person', 'title,first_name,nickname,prefix,last_name,suffix,alias,notes,qualifications');
 
 CREATE TABLE "publication" (
-  "id" BIGINT NOT NULL COMMENT 'Unique publication ID',
+  "id" BIGINT PRIMARY KEY COMMENT 'Unique publication ID',
   "title" VARCHAR(200) NOT NULL COMMENT 'Publication title',
   "authors" VARCHAR(2000) NOT NULL COMMENT 'List of author names',
   "journal_id" BIGINT DEFAULT NULL COMMENT 'Journal title',
@@ -190,93 +172,93 @@ CREATE TABLE "publication" (
   "abstract" VARCHAR(65535) DEFAULT NULL COMMENT 'Abstract from the article',
   "notes" VARCHAR(65535) DEFAULT NULL COMMENT 'Added notes about the publication',
   "peer_reviewed" BOOLEAN DEFAULT FALSE NOT NULL COMMENT 'Whether the article was peer-reviewed',
-  "doi" VARCHAR(255) DEFAULT NULL COMMENT 'Digital Object Identifier',
-  "isbn" VARCHAR(20) DEFAULT NULL COMMENT 'International Standard Book Number (printed publications only)',
+  "doi" VARCHAR(100) DEFAULT NULL UNIQUE CHECK("doi" REGEXP '^(10\\.\\d{4,9}/(?i)[-._;()/:A-Z0-9]+)$') COMMENT 'Digital Object Identifier',
+  "isbn" VARCHAR(20) DEFAULT NULL UNIQUE CHECK("isbn" REGEXP '^(?=(?:\d[- ]?){13}$|(?:\\d[- ]?){9}[\dXx]$)\\d{1,5}[- ]?\\d{1,7}[- ]?\\d{1,7}[- ]?[\\dXx]$') COMMENT 'International Standard Book Number (printed publications only)',
+	"pmid" VARCHAR(10) DEFAULT NULL UNIQUE CHECK("pmid" REGEXP '^\\d{1,10}$') COMMENT 'The U.S. National Library of Medicine''s PubMedID',
+	"hsid" VARCHAR(12) DEFAULT NULL UNIQUE CHECK("hsid" REGEXP '^NIHMS\\d+$') COMMENT 'The Corporation for National Research Initiatives''s Handle System ID',
+	"arxivid" VARCHAR(15) DEFAULT NULL UNIQUE CHECK("arxivid" REGEXP '^\\d{4}\\.\\d{4,5}(v\\d+)?$') COMMENT 'Cornell University Library''s arXiv.org ID',
+	"biorxivid" VARCHAR(20) DEFAULT NULL UNIQUE CHECK("biorxivid" REGEXP '^10\\.1101\\/\\d+$') COMMENT 'Cold Spring Harbor Laboratory''s bioRxiv.org ID',
+	"medrxivid" VARCHAR(20) DEFAULT NULL UNIQUE CHECK("medrxivid" REGEXP '^10\\.1101\\/\\d+$') COMMENT 'Cold Spring Harbor Laboratory''s medRxiv.org ID',
+	"ericid" VARCHAR(8) DEFAULT NULL UNIQUE CHECK("ericid" REGEXP '^(?i)ED\\d{6}$') COMMENT 'U.S. Department of Education''s ERIC database ID (niche)',
+	"ihepid" VARCHAR(10) DEFAULT NULL UNIQUE CHECK("ihepid" REGEXP '^\\d{6,10}$') COMMENT 'CERN''s INSPIRE-HEP ID',
+	"oaipmhid" VARCHAR(50) DEFAULT NULL UNIQUE CHECK("oaipmhid" REGEXP '^oai:[^:]+:[^:]+$') COMMENT 'Open Archives Initiative''s OAI-PMH ID',
+	"halid" VARCHAR(20) DEFAULT NULL UNIQUE CHECK("halid" REGEXP '^hal-\\d{6,10}$') COMMENT 'CNRS (France)''s HAL ID',
+	"zenodoid" VARCHAR(10) DEFAULT NULL UNIQUE CHECK("zenodoid" REGEXP '^\\d{6,10}$') COMMENT 'CERN''s Zenodo Record ID',
+	"scopuseid" VARCHAR(16) DEFAULT NULL UNIQUE CHECK("scopuseid" REGEXP '^\\d{8,16}$') COMMENT 'Elsevier''s SCOPUS database EID (proprietary)',
+	"wsan" VARCHAR(25) DEFAULT NULL UNIQUE CHECK("wsan" REGEXP '[A-Z0-9]{15,25}$') COMMENT 'Clarivate''s Web of Science Accession Number (UT) (proprietary)',
+	"pinfoan" VARCHAR(30) DEFAULT NULL UNIQUE CHECK("pinfoan" REGEXP '^[A-Z0-9\\-]{10,30}$') COMMENT 'American Psychological Association''s PsycINFO Accession Number (proprietary/niche)',
   "url" VARCHAR(200) DEFAULT NULL COMMENT 'URL of the publication',
   "cached" BOOLEAN DEFAULT FALSE NOT NULL COMMENT 'Flag to indicate that url content is cached on this application server',
-  "accessed" DATE DEFAULT NULL COMMENT 'Date a web page was accessed',
-  PRIMARY KEY ("id"),
-  UNIQUE ("doi"),
-  UNIQUE ("isbn")
+  "accessed" DATE DEFAULT NULL COMMENT 'Date a web page was accessed'
 );
 CREATE UNIQUE INDEX "publication_doi" ON "publication" ("doi");
 CREATE INDEX "FK_publication_journal" ON "publication" ("journal_id");
 CREATE INDEX "FK_publication_publication_kind" ON "publication" ("kind");
-CALL FT_CREATE_INDEX('PUBLIC', 'publication', 'title,authors,abstract,notes,doi,isbn,url');
+CALL FT_CREATE_INDEX('PUBLIC', 'publication', 'title,authors,abstract,notes,doi,isbn,pmid,hsid,arxivid,biorxivid,medrxivid,ericid,ihepid,oaipmhid,halid,zenodoid,scopuseid,wsan,pinfoan,url');
 
 CREATE TABLE "publication_kind" (
-  "kind" VARCHAR(10) NOT NULL COMMENT 'The publication type per TY field in RIS specification',
-  "label" VARCHAR(25) NOT NULL COMMENT 'Label for the publication kind',
-  PRIMARY KEY ("kind")
+  "kind" VARCHAR(10) PRIMARY KEY COMMENT 'The publication type per TY field in RIS specification',
+  "label" VARCHAR(25) NOT NULL COMMENT 'Label for the publication kind'
 );
 
 CREATE TABLE "publisher" (
-  "id" BIGINT NOT NULL COMMENT 'The unique publisher identifier',
+  "id" BIGINT PRIMARY KEY COMMENT 'The unique publisher identifier',
   "name" VARCHAR(200) NOT NULL COMMENT 'The publisher name',
   "location" VARCHAR(50) DEFAULT NULL COMMENT 'The publisher location',
   "country_code" CHAR(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for the publisher''s country',
   "url" VARCHAR(200) DEFAULT NULL COMMENT 'URL of publisher''s home page',
-  "journal_count" INT DEFAULT NULL COMMENT 'The number of journals published',
-  PRIMARY KEY ("id")
+  "journal_count" INT DEFAULT NULL COMMENT 'The number of journals published'
 );
 CREATE INDEX "FK_publisher_country" ON "publisher" ("country_code");
 CREATE INDEX "publisher_name" ON "publisher" ("name");
 CALL FT_CREATE_INDEX('PUBLIC', 'publisher', 'name,location,url');
 
 CREATE TABLE "quotation" (
-  "id" BIGINT NOT NULL COMMENT 'Unique quotation identifier',
+  "id" BIGINT PRIMARY KEY COMMENT 'Unique quotation identifier',
   "quotee" VARCHAR(50) NOT NULL COMMENT 'The person(s) who made the quotation',
   "text" VARCHAR(1000) NOT NULL COMMENT 'The quotation text',
   "date" DATE DEFAULT NULL COMMENT 'The quotation date',
   "source" VARCHAR(200) DEFAULT NULL COMMENT 'The source of the quotation',
   "url" VARCHAR(200) DEFAULT NULL COMMENT 'Web url to the quotation',
-  "notes" VARCHAR(65535) DEFAULT NULL COMMENT 'Added notes about the quotation',
-  PRIMARY KEY ("id")
+  "notes" VARCHAR(65535) DEFAULT NULL COMMENT 'Added notes about the quotation'
 );
 CREATE INDEX "quotation_quotee" ON "quotation" ("quotee");
 CALL FT_CREATE_INDEX('PUBLIC', 'quotation', 'quotee,text,source,url,notes');
 
 CREATE TABLE "status_kind" (
-  "code" CHAR(3) NOT NULL COMMENT 'The status code',
-  "label" VARCHAR(20) NOT NULL COMMENT 'The status label',
-  "description" VARCHAR(100) NOT NULL COMMENT 'Defines the meaning of the status code',
-  PRIMARY KEY ("code"),
-  UNIQUE ("label")
+  "code" CHAR(3) PRIMARY KEY COMMENT 'The status code',
+  "label" VARCHAR(20) NOT NULL UNIQUE COMMENT 'The status label',
+  "description" VARCHAR(100) NOT NULL COMMENT 'Defines the meaning of the status code'
 );
 CREATE UNIQUE INDEX "status_kind_label" ON "status_kind" ("label");
 
 CREATE TABLE "topic" (
-  "id" BIGINT NOT NULL COMMENT 'The unique topic identifier',
+  "id" BIGINT PRIMARY KEY COMMENT 'The unique topic identifier',
   "label" VARCHAR(50) NOT NULL COMMENT 'The topic name/label',
   "description" VARCHAR(500) DEFAULT NULL COMMENT 'Notes on when to use the topic',
-  "parent_id" BIGINT DEFAULT NULL COMMENT 'The parent topic ID',
-  PRIMARY KEY ("id")
+  "parent_id" BIGINT DEFAULT NULL COMMENT 'The parent topic ID'
 );
 CREATE INDEX "FK_topic_topic" ON "topic" ("parent_id");
 CALL FT_CREATE_INDEX('PUBLIC', 'topic', 'label,description');
 
 CREATE TABLE "transaction_kind" (
-  "code" CHAR(3) NOT NULL COMMENT 'The transaction code',
-  "label" VARCHAR(20) NOT NULL COMMENT 'A UI label for the transaction kind',
-  "description" VARCHAR(50) NOT NULL COMMENT 'Description of the transaction kind',
-  PRIMARY KEY ("code"),
-  UNIQUE ("label")
+  "code" CHAR(3) PRIMARY KEY COMMENT 'The transaction code',
+  "label" VARCHAR(20) NOT NULL UNIQUE COMMENT 'A UI label for the transaction kind',
+  "description" VARCHAR(50) NOT NULL COMMENT 'Description of the transaction kind'
 );
 CREATE UNIQUE INDEX "transaction_kind_label" ON "transaction_kind" ("label");
 
 -- Spring also recognises locked, expired and credentials_expired fields.
 CREATE TABLE "user" (
-  "id" BIGINT NOT NULL COMMENT 'The unique system-assigned user identifier',
-  "username" VARCHAR(50) NOT NULL COMMENT 'The unique user-assigned user name',
+  "id" BIGINT PRIMARY KEY COMMENT 'The unique system-assigned user identifier',
+  "username" VARCHAR(50) NOT NULL UNIQUE COMMENT 'The unique user-assigned user name',
   "password" VARCHAR(68) NOT NULL COMMENT 'Bcrypt hash of the user''s password',
 	"enabled" BOOLEAN DEFAULT TRUE NOT NULL COMMENT 'Whether the user account is enabled',
   "first_name" VARCHAR(50) NOT NULL COMMENT 'The user''s first name',
   "last_name" VARCHAR(50) NOT NULL COMMENT 'The user''s last name',
-  "email" VARCHAR(100) DEFAULT NULL COMMENT 'The user''s email address, used for sign-in',
+  "email" VARCHAR(100) DEFAULT NULL UNIQUE COMMENT 'The user''s email address, used for sign-in',
   "country_code" CHAR(2) DEFAULT NULL COMMENT 'ISO-3166-1 alpha-2 code for user''s country of residence',
-  "notes" VARCHAR(65535) DEFAULT NULL COMMENT 'Added notes about the user',
-  PRIMARY KEY ("id"),
-  UNIQUE ("username")
+  "notes" VARCHAR(65535) DEFAULT NULL COMMENT 'Added notes about the user'
 );
 CREATE UNIQUE INDEX "username" ON "user" ("username");
 CREATE INDEX "FK_user_country" ON "user" ("country_code");
@@ -292,10 +274,8 @@ CREATE TABLE "user_authority" (
 CREATE UNIQUE INDEX "user_authority" ON "user_authority" ("user_id", "username", "authority");
 
 CREATE TABLE "group" (
-	"id" BIGINT AUTO_INCREMENT NOT NULL COMMENT 'The unique system-assigned group identifier',
-	"groupname" VARCHAR(50) NOT NULL COMMENT 'The group name',
-	PRIMARY KEY ("id"),
-  UNIQUE ("groupname")
+	"id" BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT 'The unique system-assigned group identifier',
+	"groupname" VARCHAR(50) NOT NULL UNIQUE COMMENT 'The group name'
 );
 CREATE UNIQUE INDEX "groupname" ON "group" ("groupname");
 
@@ -307,20 +287,18 @@ CREATE TABLE "group_authority" (
 CREATE UNIQUE INDEX "group_authority" ON "group_authority" ("group_id", "authority");
 
 CREATE TABLE "group_user" (
-  "id" BIGINT AUTO_INCREMENT NOT NULL COMMENT 'The unique system-assigned identifier',
+  "id" BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT 'The unique system-assigned identifier',
   "group_id" BIGINT NOT NULL COMMENT 'ID of the group to which user belongs',
   "username" VARCHAR(50) NOT NULL COMMENT 'The login user name',
-  PRIMARY KEY ("id"),
   UNIQUE ("username", "group_id")
 );
 CREATE UNIQUE INDEX "group_user" ON "group_user" ("username", "group_id");
 
 CREATE TABLE "persistent_login" (
-    "series" VARCHAR(64) COMMENT 'Encoded random number used to detect cookie stealing',
+    "series" VARCHAR(64) PRIMARY KEY COMMENT 'Encoded random number used to detect cookie stealing',
     "username" VARCHAR(64) NOT NULL COMMENT 'The authenticated username',
     "token" VARCHAR(64) NOT NULL COMMENT 'The authentication token returned as a cookie',
-    "last_used" TIMESTAMP NOT NULL COMMENT 'The date/time at which the token was last used',
-    PRIMARY KEY ("series")
+    "last_used" TIMESTAMP NOT NULL COMMENT 'The date/time at which the token was last used'
 );
 
 ALTER TABLE "entity"

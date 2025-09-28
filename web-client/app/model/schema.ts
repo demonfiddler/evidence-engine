@@ -150,6 +150,19 @@ export interface PublicationInput extends TrackedEntityInput {
   peerReviewed: boolean
   doi: string | null
   isbn: string | null
+  pmid: string | null
+  hsid: string | null
+  arxivid: string | null
+  biorxivid: string | null
+  medrxivid: string | null
+  ericid: string | null
+  ihepid: string | null
+  oaipmhid: string | null
+  halid: string | null
+  zenodoid: string | null
+  scopuseid: string | null
+  wsan: string | null
+  pinfoan: string | null
   url: string | null
   accessed: Date | string | null
   cached: boolean

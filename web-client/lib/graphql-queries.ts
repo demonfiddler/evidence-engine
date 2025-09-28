@@ -334,6 +334,19 @@ fragment publicationFields on Publication {
   peerReviewed
   doi
   isbn
+  pmid
+  hsid
+  arxivid
+  biorxivid
+  medrxivid
+  ericid
+  ihepid
+  oaipmhid
+  halid
+  zenodoid
+  scopuseid
+  wsan
+  pinfoan
   url
   cached
   accessed
@@ -924,6 +937,7 @@ ${FRAGMENT_TRACKED_ENTITY_FIELDS}
 ${FRAGMENT_LINKABLE_ENTITY_FIELDS}
 ${FRAGMENT_LINKED_ENTITY_FIELDS}
 ${FRAGMENT_PUBLICATION_FIELDS}
+${FRAGMENT_JOURNAL_FIELDS}
 mutation UpdatePublication($input: PublicationInput!) {
   updatePublication(publication: $input) {
     ...trackedEntityFields

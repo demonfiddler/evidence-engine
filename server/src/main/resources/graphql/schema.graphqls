@@ -1028,6 +1028,32 @@ type Publication implements IBaseEntity & ITrackedEntity & ILinkableEntity {
     doi: String
     "The International Standard Book Number."
     isbn: String
+    "The U.S. National Library of Medicine's PubMedID."
+    pmid: String
+    "The Corporation for National Research Initiatives's Handle System ID."
+    hsid: String
+    "Cornell University Library's arXiv.org ID."
+    arxivid: String
+    "Cold Spring Harbor Laboratory's bioRxiv.org ID."
+    biorxivid: String
+    "Cold Spring Harbor Laboratory's medRxiv.org ID."
+    medrxivid: String
+    "U.S. Department of Education's ERIC database ID (niche)."
+    ericid: String
+    "CERN's INSPIRE-HEP ID."
+    ihepid: String
+    "Open Archives Initiative's OAI-PMH ID."
+    oaipmhid: String
+    "CNRS (France)'s HAL ID."
+    halid: String
+    "CERN's Zenodo Record ID."
+    zenodoid: String
+    "Elsevier's SCOPUS database EID (proprietary)."
+    scopuseid: String
+    "Clarivate's Web of Science Accession Number (UT) (proprietary)."
+    wsan: String
+    "American Psychological Association's PsycINFO Accession Number (proprietary/niche)."
+    pinfoan: String
     "The URL for the publication online."
     url: URL
     "Flag to indicate that url content is cached on this application server."
@@ -1067,6 +1093,32 @@ input PublicationInput {
     doi: String
     "The International Standard Book Number."
     isbn: String
+    "The U.S. National Library of Medicine's PubMedID."
+    pmid: String
+    "The Corporation for National Research Initiatives's Handle System ID."
+    hsid: String
+    "Cornell University Library's arXiv.org ID."
+    arxivid: String
+    "Cold Spring Harbor Laboratory's bioRxiv.org ID."
+    biorxivid: String
+    "Cold Spring Harbor Laboratory's medRxiv.org ID."
+    medrxivid: String
+    "U.S. Department of Education's ERIC database ID (niche)."
+    ericid: String
+    "CERN's INSPIRE-HEP ID."
+    ihepid: String
+    "Open Archives Initiative's OAI-PMH ID."
+    oaipmhid: String
+    "CNRS (France)'s HAL ID."
+    halid: String
+    "CERN's Zenodo Record ID."
+    zenodoid: String
+    "Elsevier's SCOPUS database EID (proprietary)."
+    scopuseid: String
+    "Clarivate's Web of Science Accession Number (UT) (proprietary)."
+    wsan: String
+    "American Psychological Association's PsycINFO Accession Number (proprietary/niche)."
+    pinfoan: String
     "The URL for the publication online."
     url: URL
     "The date the publication was accessed when compiling the database."

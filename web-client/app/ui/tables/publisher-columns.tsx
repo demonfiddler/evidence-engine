@@ -29,7 +29,7 @@ const selectColumn = rawSelectColumn as ColumnDef<Publisher>
 
 export const columns: ColumnDef<Publisher>[] = [
   selectColumn,
-  ... trackedEntityColumns,
+  ... trackedEntityColumns as ColumnDef<Publisher>[],
   {
     id: "name",
     accessorKey: "name",

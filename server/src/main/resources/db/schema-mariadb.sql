@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS "entity" (
   CONSTRAINT "FK_entity_status" FOREIGN KEY ("status") REFERENCES "status_kind" ("code") ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT "FK_entity_created_by_user" FOREIGN KEY ("created_by_user_id") REFERENCES "user" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT "FK_entity_updated_by_user" FOREIGN KEY ("updated_by_user_id") REFERENCES "user" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT `CC_rating` CHECK ("rating" BETWEEN 1 AND 5)
+	CONSTRAINT "CC_rating" CHECK ("rating" BETWEEN 1 AND 5)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Base table for all tracked and linkable entities';
 
 -- Dumping structure for table evidence_engine.claim
@@ -154,7 +154,7 @@ CREATE TABLE IF NOT EXISTS "journal" (
   FULLTEXT KEY "journal_fulltext" ("title","abbreviation","url","issn","notes"),
   CONSTRAINT "FK_journal_entity" FOREIGN KEY ("id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT "FK_journal_publisher" FOREIGN KEY ("publisher_id") REFERENCES "publisher" ("id") ON UPDATE CASCADE,
-  CONSTRAINT "CC_journal_issn" CHECK ("issn" regexp '^[0-9]{4}-[0-9]{3}[0-9X]$')
+  CONSTRAINT "CC_journal_issn" CHECK ("issn" regexp '^(\\d{4}-\\d{3}[\\dX])?$')
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Definitive list of journal titles, abbreviations, etc.';
 
 -- Dumping structure for table evidence_engine.log
@@ -231,20 +231,60 @@ CREATE TABLE IF NOT EXISTS "publication" (
   "abstract" text DEFAULT NULL COMMENT 'Abstract from the article',
   "notes" text DEFAULT NULL COMMENT 'Added notes about the publication',
   "peer_reviewed" bit(1) DEFAULT b'0' COMMENT 'Whether the article was peer-reviewed',
-  "doi" varchar(255) DEFAULT NULL COMMENT 'Digital Object Identifier',
+  "doi" varchar(100) DEFAULT NULL COMMENT 'Digital Object Identifier',
   "isbn" varchar(20) DEFAULT NULL COMMENT 'International Standard Book Number (printed publications only)',
+	"pmid" varchar(10) DEFAULT NULL COMMENT 'The U.S. National Library of Medicine''s PubMedID',
+	"hsid" varchar(12) DEFAULT NULL COMMENT 'The Corporation for National Research Initiatives''s Handle System ID',
+	"arxivid" varchar(15) DEFAULT NULL COMMENT 'Cornell University Library''s arXiv.org ID',
+	"biorxivid" varchar(20) DEFAULT NULL COMMENT 'Cold Spring Harbor Laboratory''s bioRxiv.org ID',
+	"medrxivid" varchar(20) DEFAULT NULL COMMENT 'Cold Spring Harbor Laboratory''s medRxiv.org ID',
+	"ericid" varchar(8) DEFAULT NULL COMMENT 'U.S. Department of Education''s ERIC database ID (niche)',
+	"ihepid" varchar(10) DEFAULT NULL COMMENT 'CERN''s INSPIRE-HEP ID',
+	"oaipmhid" varchar(50) DEFAULT NULL COMMENT 'Open Archives Initiative''s OAI-PMH ID',
+	"halid" varchar(20) DEFAULT NULL COMMENT 'CNRS (France)''s HAL ID',
+	"zenodoid" varchar(10) DEFAULT NULL COMMENT 'CERN''s Zenodo Record ID',
+	"scopuseid" varchar(16) DEFAULT NULL COMMENT 'Elsevier''s SCOPUS database EID (proprietary)',
+	"wsan" varchar(25) DEFAULT NULL COMMENT 'Clarivate''s Web of Science Accession Number (UT) (proprietary)',
+	"pinfoan" varchar(30) DEFAULT NULL COMMENT 'American Psychological Association''s PsycINFO Accession Number (proprietary/niche)',
   "url" varchar(200) DEFAULT NULL COMMENT 'URL of the publication',
   "cached" bit(1) NOT NULL DEFAULT b'0' COMMENT 'Flag to indicate that url content is cached on this application server',
   "accessed" date DEFAULT NULL COMMENT 'Date a web page was accessed',
   PRIMARY KEY ("id") USING BTREE,
   UNIQUE KEY "publication_doi" ("doi") USING BTREE,
 	UNIQUE KEY "publication_isbn" ("isbn") USING BTREE,
+  UNIQUE KEY "publication_pmid" ("pmid") USING BTREE,
+  UNIQUE KEY "publication_hsid" ("hsid") USING BTREE,
+  UNIQUE KEY "publication_arxivid" ("arxivid") USING BTREE,
+  UNIQUE KEY "publication_biorxivid" ("biorxivid") USING BTREE,
+  UNIQUE KEY "publication_medrxivid" ("medrxivid") USING BTREE,
+  UNIQUE KEY "publication_ericid" ("ericid") USING BTREE,
+  UNIQUE KEY "publication_ihepid" ("ihepid") USING BTREE,
+  UNIQUE KEY "publication_oaipmhid" ("oaipmhid") USING BTREE,
+  UNIQUE KEY "publication_halid" ("halid") USING BTREE,
+  UNIQUE KEY "publication_zenodoid" ("zenodoid") USING BTREE,
+  UNIQUE KEY "publication_scopuseid" ("scopuseid") USING BTREE,
+  UNIQUE KEY "publication_wsan" ("wsan") USING BTREE,
+  UNIQUE KEY "publication_pinfoan" ("pinfoan") USING BTREE,
   KEY "FK_publication_journal" ("journal_id"),
   KEY "FK_publication_publication_kind" ("kind"),
-  FULLTEXT KEY "publication_fulltext" ("title","authors","abstract","notes","doi","isbn","url"),
+  FULLTEXT KEY "publication_fulltext" ("title","authors","abstract","notes","doi","isbn","pmid","hsid","arxivid","biorxivid","medrxivid","ericid","ihepid","oaipmhid","halid","zenodoid","scopuseid","wsan","pinfoan","url"),
   CONSTRAINT "FK_publication_entity" FOREIGN KEY ("id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT "FK_publication_journal" FOREIGN KEY ("journal_id") REFERENCES "journal" ("id") ON UPDATE CASCADE,
-  CONSTRAINT "FK_publication_publication_kind" FOREIGN KEY ("kind") REFERENCES "publication_kind" ("kind") ON UPDATE CASCADE
+  CONSTRAINT "FK_publication_publication_kind" FOREIGN KEY ("kind") REFERENCES "publication_kind" ("kind") ON UPDATE CASCADE,
+	CONSTRAINT "CC_publication_doi" CHECK("doi" regexp '^10\\.\\d{4,9}\/(?i)[-._;()/:A-Z0-9]+$'),
+	CONSTRAINT "CC_publication_pmid" CHECK("pmid" regexp '^\\d{1,10}$'),
+	CONSTRAINT "CC_publication_hsid" CHECK("hsid" regexp '^NIHMS\\d+$'),
+	CONSTRAINT "CC_publication_arxivid" CHECK("arxivid" regexp '^\\d{4}\\.\\d{4,5}(v\\d+)?$')
+	CONSTRAINT "CC_publication_biorxivid" CHECK("biorxivid" regexp '^10\\.1101\\/\\d+$'),
+	CONSTRAINT "CC_publication_medrxivid" CHECK("medrxivid" regexp '^10\\.1101\\/\\d+$'),
+	CONSTRAINT "CC_publication_eric" CHECK("ericid" regexp '^(?i)ED\\d{6}$'),
+	CONSTRAINT "CC_publication_ihepid" CHECK("ihepid" regexp '^\\d{6,10}$'),
+	CONSTRAINT "CC_publication_oaipmhid" CHECK("oaipmhid" regexp '^oai:[^:]+:[^:]+$'),
+	CONSTRAINT "CC_publication_halid" CHECK("halid" regexp '^hal-\\d{6,10}$'),
+	CONSTRAINT "CC_publication_zenodoid" CHECK("zenodoid" regexp '^\\d{6,10}$'),
+	CONSTRAINT "CC_publication_scopuseid" CHECK("scopuseid" regexp '^\\d{8,16}$'),
+	CONSTRAINT "CC_publication_wsan" CHECK("wsan" regexp '^[A-Z0-9]{15,25}$'),
+	CONSTRAINT "CC_publication_pinfoan" CHECK("pinfoan" regexp '^[A-Z0-9\\-]{10,30}$')
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='References to published articles, peer-reviewed or otherwise.';
 
 -- Dumping structure for table evidence_engine.publication_kind

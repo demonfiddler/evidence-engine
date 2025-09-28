@@ -31,7 +31,7 @@ const selectColumn = rawSelectColumn as ColumnDef<Topic>
 
 export const columns: ColumnDef<Topic>[] = [
   selectColumn,
-  ... trackedEntityColumns,
+  ... trackedEntityColumns as ColumnDef<Topic>[],
   {
     id: "label",
     accessorKey: "label",

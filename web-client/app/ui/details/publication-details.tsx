@@ -118,8 +118,47 @@ export default function PublicationDetails(
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="peerReviewed"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Peer reviewed</FormLabel>
+                  <FormControl>
+                    <CheckboxEx
+                      id="peerReviewed"
+                      className="col-span-1"
+                      disabled={!updating}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      help="Whether the publication was peer-reviewed"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="cached"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Cached</FormLabel>
+                  <FormControl>
+                    <CheckboxEx
+                      id="cached"
+                      disabled={!updating}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      help="Whether the publication content is cached on this server"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <DetailActions
-              className="col-start-4 row-span-7"
+              className="col-start-4 row-span-14"
               recordKind="Publication"
               record={record}
               form={form}
@@ -300,28 +339,19 @@ export default function PublicationDetails(
             />
             <FormField
               control={form.control}
-              name="doi"
+              name="abstract"
               render={({field}) => (
-                <FormItem className="col-span-2">
-                  <FormLabel>DOI</FormLabel>
+                <FormItem className="col-start-1 col-span-3">
+                  <FormLabel>Abstract</FormLabel>
                   <FormControl>
-                    {
-                      updating
-                      ? <InputEx
-                          id="doi"
-                          className="col-span-2"
-                          {...field}
-                          help="The publication's Digital Object Identifier (DOI)"
-                      />
-                      : <LinkEx
-                          className="col-span-2"
-                          href={record?.doi ? `https://doi.org/${record?.doi ?? ''}` : ''}
-                          target="_blank"
-                          help="Link via the publication's Digital Object Identifier (DOI) to its current location online"
-                      >
-                        {record?.doi ?? ''}
-                      </LinkEx>
-                    }
+                    <TextareaEx
+                      id="abstract"
+                      className="h-40 overflow-y-auto"
+                      disabled={!record && !updating}
+                      readOnly={!updating}
+                      {...field}
+                      help="Concise summary of the publication"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -329,23 +359,26 @@ export default function PublicationDetails(
             />
             <FormField
               control={form.control}
-              name="isbn"
+              name="notes"
               render={({field}) => (
-                <FormItem>
-                  <FormLabel>ISBN</FormLabel>
+                <FormItem className="col-start-1 col-span-3">
+                  <FormLabel>Notes</FormLabel>
                   <FormControl>
-                    <InputEx
-                      id="isbn"
+                    <TextareaEx
+                      id="notes"
+                      className="col-span-4 h-40 overflow-y-auto"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
-                      help="The publication's International Standard Book Number (ISBN)"
+                      help="Contributor notes about the publication"
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            <hr className="col-span-3" />
+            <p className="col-span-3">Online index identifiers</p>
             <FormField
               control={form.control}
               name="url"
@@ -359,14 +392,15 @@ export default function PublicationDetails(
                         id="url"
                         type="url"
                         {...field}
-                        help="The publication's online web address"
+                        help="The online web address"
                       />
                       : <LinkEx
+                        id="url"
                         href={record?.url ?? ''}
                         target="_blank"
-                        help="The publication's online web address"
+                        help="The online web address"
                       >
-                        {record?.url ?? ''}
+                        {record?.url ?? 'n/a'}
                       </LinkEx>
                     }
                   </FormControl>
@@ -418,19 +452,26 @@ export default function PublicationDetails(
             />
             <FormField
               control={form.control}
-              name="peerReviewed"
+              name="doi"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Peer reviewed</FormLabel>
+                  <FormLabel>DOI</FormLabel>
                   <FormControl>
-                    <CheckboxEx
-                      id="peerReviewed"
-                      className="col-span-1"
-                      disabled={!updating}
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      help="Whether the publication was peer-reviewed"
-                    />
+                    {
+                      updating
+                      ? <InputEx
+                          id="doi"
+                          {...field}
+                          help="The Digital Object Identifier (DOI)"
+                      />
+                      : <LinkEx
+                          href={record?.doi ? `https://doi.org/${record?.doi ?? ''}` : ''}
+                          target="_blank"
+                          help="The Digital Object Identifier (DOI)"
+                      >
+                        {record?.doi ?? 'n/a'}
+                      </LinkEx>
+                    }
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -438,18 +479,26 @@ export default function PublicationDetails(
             />
             <FormField
               control={form.control}
-              name="cached"
+              name="isbn"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Cached</FormLabel>
+                  <FormLabel>ISBN</FormLabel>
                   <FormControl>
-                    <CheckboxEx
-                      id="cached"
-                      disabled={!updating}
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      help="Whether the publication content is cached on this server"
-                    />
+                    {
+                      updating
+                      ? <InputEx
+                          id="isbn"
+                          {...field}
+                          help="The International Standard Book Number (ISBN)"
+                      />
+                      : <LinkEx
+                          href={record?.isbn ? `https://isbnsearch.org/isbn/${record?.isbn ?? ''}` : ''}
+                          target="_blank"
+                          help="The International Standard Book Number (ISBN)"
+                      >
+                        {record?.isbn ?? 'n/a'}
+                      </LinkEx>
+                    }
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -457,19 +506,27 @@ export default function PublicationDetails(
             />
             <FormField
               control={form.control}
-              name="abstract"
+              name="pmid"
               render={({field}) => (
-                <FormItem className="col-start-1 col-span-3">
-                  <FormLabel>Abstract</FormLabel>
+                <FormItem>
+                  <FormLabel>PubMed ID</FormLabel>
                   <FormControl>
-                    <TextareaEx
-                      id="abstract"
-                      className="h-40 overflow-y-auto"
-                      disabled={!record && !updating}
-                      readOnly={!updating}
-                      {...field}
-                      help="Concise summary of the publication"
-                    />
+                    {
+                      updating
+                      ? <InputEx
+                          id="pmid"
+                          {...field}
+                          help="The U.S. National Library of Medicine PubMed ID"
+                      />
+                      : <LinkEx
+                          id="pmid"
+                          href={record?.pmid ? `https://pubmed.ncbi.nlm.nih.gov/${record?.pmid ?? ''}` : ''}
+                          target="_blank"
+                          help="The U.S. National Library of Medicine PubMed ID"
+                      >
+                        {record?.pmid ?? 'n/a'}
+                      </LinkEx>
+                    }
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -477,19 +534,335 @@ export default function PublicationDetails(
             />
             <FormField
               control={form.control}
-              name="notes"
+              name="hsid"
               render={({field}) => (
-                <FormItem className="col-start-1 col-span-3">
-                  <FormLabel>Notes</FormLabel>
+                <FormItem>
+                  <FormLabel>Handle System ID</FormLabel>
                   <FormControl>
-                    <TextareaEx
-                      id="notes"
-                      className="col-span-4 h-40 overflow-y-auto"
-                      disabled={!record && !updating}
-                      readOnly={!updating}
-                      {...field}
-                      help="Contributor notes about the publication"
-                    />
+                    {
+                      updating
+                      ? <InputEx
+                          id="hsid"
+                          {...field}
+                          help="The Corporation for National Research Initiatives Handle System ID"
+                      />
+                      : <LinkEx
+                          id="hsid"
+                          href={record?.hsid ? `${record?.hsid ?? ''}` : ''}
+                          target="_blank"
+                          help="The Corporation for National Research Initiatives Handle System ID"
+                      >
+                        {record?.hsid ?? 'n/a'}
+                      </LinkEx>
+                    }
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="arxivid"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>arXiv ID</FormLabel>
+                  <FormControl>
+                    {
+                      updating
+                      ? <InputEx
+                          id="arxivid"
+                          {...field}
+                          help="The Cornell University Library arXiv.org ID"
+                      />
+                      : <LinkEx
+                          id="arxivid"
+                          href={record?.arxivid ? `https://arxiv.org/abs/${record?.arxivid ?? ''}` : ''}
+                          target="_blank"
+                          help="The Cornell University Library arXiv.org ID"
+                      >
+                        {record?.arxivid ?? 'n/a'}
+                      </LinkEx>
+                    }
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="biorxivid"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>bioRxiv ID</FormLabel>
+                  <FormControl>
+                    {
+                      updating
+                      ? <InputEx
+                          id="biorxivid"
+                          {...field}
+                          help="The Cold Spring Harbor Laboratory bioRxiv.org ID"
+                      />
+                      : <LinkEx
+                          id="biorxivid"
+                          href={record?.biorxivid ? `https://www.biorxiv.org/content/${record?.biorxivid ?? ''}v1` : ''}
+                          target="_blank"
+                          help="The Cold Spring Harbor Laboratory bioRxiv.org ID"
+                      >
+                        {record?.biorxivid ?? 'n/a'}
+                      </LinkEx>
+                    }
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="medrxivid"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>medRxiv ID</FormLabel>
+                  <FormControl>
+                    {
+                      updating
+                      ? <InputEx
+                          id="medrxivid"
+                          {...field}
+                          help="The Cold Spring Harbor Laboratory medRxiv.org ID"
+                      />
+                      : <LinkEx
+                          id="medrxivid"
+                          href={record?.medrxivid ? `https://www.medrxiv.org/content/${record?.medrxivid ?? ''}v1` : ''}
+                          target="_blank"
+                          help="The Cold Spring Harbor Laboratory medRxiv.org ID"
+                      >
+                        {record?.medrxivid ?? 'n/a'}
+                      </LinkEx>
+                    }
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="ericid"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>ERIC ID</FormLabel>
+                  <FormControl>
+                    {
+                      updating
+                      ? <InputEx
+                          id="ericid"
+                          {...field}
+                          help="The U.S. Department of Education ERIC database ID"
+                      />
+                      : <LinkEx
+                          id="ericid"
+                          href={record?.ericid ? `https://eric.ed.gov/?id=${record?.ericid ?? ''}` : ''}
+                          target="_blank"
+                          help="The U.S. Department of Education ERIC database ID"
+                      >
+                        {record?.ericid ?? 'n/a'}
+                      </LinkEx>
+                    }
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="ihepid"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>INSPIRE-HEP ID</FormLabel>
+                  <FormControl>
+                    {
+                      updating
+                      ? <InputEx
+                          id="ihepid"
+                          {...field}
+                          help="The CERN INSPIRE-HEP ID"
+                      />
+                      : <LinkEx
+                          id="ihepid"
+                          href={record?.ihepid ? `https://inspirehep.net/literature/${record?.ihepid ?? ''}` : ''}
+                          target="_blank"
+                          help="The CERN INSPIRE-HEP ID"
+                      >
+                        {record?.ihepid ?? 'n/a'}
+                      </LinkEx>
+                    }
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="oaipmhid"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>OAI-PMH ID</FormLabel>
+                  <FormControl>
+                    {
+                      updating
+                      ? <InputEx
+                          id="oaipmhid"
+                          {...field}
+                          help="The Open Archives Initiative OAI-PMH ID"
+                      />
+                      : <LinkEx
+                          id="oaipmhid"
+                          href={record?.oaipmhid ? `https://www.openarchives.org/OAI/2.0?verb=GetRecord&metadataPrefix=oai_dc&identifier=${record?.oaipmhid ?? ''}` : ''}
+                          target="_blank"
+                          help="The Open Archives Initiative OAI-PMH ID"
+                      >
+                        {record?.oaipmhid ?? 'n/a'}
+                      </LinkEx>
+                    }
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="halid"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>HAL ID</FormLabel>
+                  <FormControl>
+                    {
+                      updating
+                      ? <InputEx
+                          id="halid"
+                          {...field}
+                          help="The CNRS (France) HAL ID"
+                      />
+                      : <LinkEx
+                          id="halid"
+                          href={record?.halid ? `https://hal.archives-ouvertes.fr/${record?.halid ?? ''}` : ''}
+                          target="_blank"
+                          help="The CNRS (France) HAL ID"
+                      >
+                        {record?.halid ?? 'n/a'}
+                      </LinkEx>
+                    }
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="zenodoid"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Zenodo ID</FormLabel>
+                  <FormControl>
+                    {
+                      updating
+                      ? <InputEx
+                          id="zenodoid"
+                          {...field}
+                          help="The CERN Zenodo Record ID"
+                      />
+                      : <LinkEx
+                          id="zenodoid"
+                          href={record?.zenodoid ? `https://zenodo.org/record/${record?.zenodoid ?? ''}` : ''}
+                          target="_blank"
+                          help="The CERN Zenodo Record ID"
+                      >
+                        {record?.zenodoid ?? 'n/a'}
+                      </LinkEx>
+                    }
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="scopuseid"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>SCOPUS EID</FormLabel>
+                  <FormControl>
+                    {
+                      updating
+                      ? <InputEx
+                          id="scopuseid"
+                          {...field}
+                          help="The Elsevier SCOPUS database EID"
+                      />
+                      : <LinkEx
+                          id="scopuseid"
+                          href={record?.scopuseid ? `https://www.scopus.com/record/display.uri?eid=${record?.scopuseid ?? ''}` : ''}
+                          target="_blank"
+                          help="The Elsevier SCOPUS database EID"
+                      >
+                        {record?.scopuseid ?? 'n/a'}
+                      </LinkEx>
+                    }
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="wsan"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>WS Accession Number</FormLabel>
+                  <FormControl>
+                    {
+                      updating
+                      ? <InputEx
+                          id="wsan"
+                          {...field}
+                          help="The Clarivate Web of Science Accession Number (UT)"
+                      />
+                      : <LinkEx
+                          id="wsan"
+                          href={record?.wsan ? `https://www.webofscience.com/wos/woscc/full-record/${record?.wsan ?? ''}` : ''}
+                          target="_blank"
+                          help="The Clarivate Web of Science Accession Number (UT)"
+                      >
+                        {record?.wsan ?? 'n/a'}
+                      </LinkEx>
+                    }
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="pinfoan"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>PsycINFO Accession Number</FormLabel>
+                  <FormControl>
+                    {
+                      updating
+                      ? <InputEx
+                          id="pinfoan"
+                          {...field}
+                          help="The American Psychological Association PsycINFO Accession Number"
+                      />
+                      : <LinkEx
+                          id="pinfoan"
+                          href={record?.pinfoan ? `https://psycnet.apa.org/record/${record?.pinfoan ?? ''}` : ''}
+                          target="_blank"
+                          help="The American Psychological Association PsycINFO Accession Number"
+                      >
+                        {record?.pinfoan ?? 'n/a'}
+                      </LinkEx>
+                    }
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -110,6 +110,84 @@ public class PublicationInput extends AbstractTrackedEntityInput {
 	String isbn;
 
 	/**
+	 * The U.S. National Library of Medicine's PubMedID.
+	 */
+	@GraphQLScalar(fieldName = "pmid", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String pmid;
+
+	/**
+	 * The Corporation for National Research Initiatives's Handle System ID.
+	 */
+	@GraphQLScalar(fieldName = "hsid", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String hsid;
+
+	/**
+	 * Cornell University Library's arXiv.org ID.
+	 */
+	@GraphQLScalar(fieldName = "arxivid", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String arxivid;
+
+	/**
+	 * Cold Spring Harbor Laboratory's bioRxiv.org ID.
+	 */
+	@GraphQLScalar(fieldName = "biorxivid", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String biorxivid;
+
+	/**
+	 * Cold Spring Harbor Laboratory's medRxiv.org ID.
+	 */
+	@GraphQLScalar(fieldName = "medrxivid", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String medrxivid;
+
+	/**
+	 * U.S. Department of Education's ERIC database ID (niche).
+	 */
+	@GraphQLScalar(fieldName = "ericid", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String ericid;
+
+	/**
+	 * CERN's INSPIRE-HEP ID.
+	 */
+	@GraphQLScalar(fieldName = "ihepid", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String ihepid;
+
+	/**
+	 * Open Archives Initiative's OAI-PMH ID.
+	 */
+	@GraphQLScalar(fieldName = "oaipmhid", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String oaipmhid;
+
+	/**
+	 * CNRS (France)'s HAL ID.
+	 */
+	@GraphQLScalar(fieldName = "halid", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String halid;
+
+	/**
+	 * CERN's Zenodo Record ID.
+	 */
+	@GraphQLScalar(fieldName = "zenodoid", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String zenodoid;
+
+	/**
+	 * Elsevier's SCOPUS database EID (proprietary).
+	 */
+	@GraphQLScalar(fieldName = "scopuseid", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String scopuseid;
+
+	/**
+	 * Clarivate's Web of Science Accession Number (UT) (proprietary).
+	 */
+	@GraphQLScalar(fieldName = "wsan", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String wsan;
+
+	/**
+	 * American Psychological Association's PsycINFO Accession Number (proprietary/niche).
+	 */
+	@GraphQLScalar(fieldName = "pinfoan", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String pinfoan;
+
+	/**
 	 * The URL for the publication online.
 	 */
 	@GraphQLScalar(fieldName = "url", graphQLTypeSimpleName = "URL", javaClass = URL.class, listDepth = 0)
@@ -296,6 +374,188 @@ public class PublicationInput extends AbstractTrackedEntityInput {
 	}
 
 	/**
+	 * The U.S. National Library of Medicine's PubMedID.
+	 */
+	public void setPmid(String pmid) {
+		this.pmid = pmid;
+	}
+
+	/**
+	 * The U.S. National Library of Medicine's PubMedID.
+	 */
+	public String getPmid() {
+		return this.pmid;
+	}
+
+	/**
+	 * The Corporation for National Research Initiatives's Handle System ID.
+	 */
+	public void setHsid(String hsid) {
+		this.hsid = hsid;
+	}
+
+	/**
+	 * The Corporation for National Research Initiatives's Handle System ID.
+	 */
+	public String getHsid() {
+		return this.hsid;
+	}
+
+	/**
+	 * Cornell University Library's arXiv.org ID.
+	 */
+	public void setArxivid(String arxivid) {
+		this.arxivid = arxivid;
+	}
+
+	/**
+	 * Cornell University Library's arXiv.org ID.
+	 */
+	public String getArxivid() {
+		return this.arxivid;
+	}
+
+	/**
+	 * Cold Spring Harbor Laboratory's bioRxiv.org ID.
+	 */
+	public void setBiorxivid(String biorxivid) {
+		this.biorxivid = biorxivid;
+	}
+
+	/**
+	 * Cold Spring Harbor Laboratory's bioRxiv.org ID.
+	 */
+	public String getBiorxivid() {
+		return this.biorxivid;
+	}
+
+	/**
+	 * Cold Spring Harbor Laboratory's medRxiv.org ID.
+	 */
+	public void setMedrxivid(String medrxivid) {
+		this.medrxivid = medrxivid;
+	}
+
+	/**
+	 * Cold Spring Harbor Laboratory's medRxiv.org ID.
+	 */
+	public String getMedrxivid() {
+		return this.medrxivid;
+	}
+
+	/**
+	 * U.S. Department of Education's ERIC database ID (niche).
+	 */
+	public void setEricid(String ericid) {
+		this.ericid = ericid;
+	}
+
+	/**
+	 * U.S. Department of Education's ERIC database ID (niche).
+	 */
+	public String getEricid() {
+		return this.ericid;
+	}
+
+	/**
+	 * CERN's INSPIRE-HEP ID.
+	 */
+	public void setIhepid(String ihepid) {
+		this.ihepid = ihepid;
+	}
+
+	/**
+	 * CERN's INSPIRE-HEP ID.
+	 */
+	public String getIhepid() {
+		return this.ihepid;
+	}
+
+	/**
+	 * Open Archives Initiative's OAI-PMH ID.
+	 */
+	public void setOaipmhid(String oaipmhid) {
+		this.oaipmhid = oaipmhid;
+	}
+
+	/**
+	 * Open Archives Initiative's OAI-PMH ID.
+	 */
+	public String getOaipmhid() {
+		return this.oaipmhid;
+	}
+
+	/**
+	 * CNRS (France)'s HAL ID.
+	 */
+	public void setHalid(String halid) {
+		this.halid = halid;
+	}
+
+	/**
+	 * CNRS (France)'s HAL ID.
+	 */
+	public String getHalid() {
+		return this.halid;
+	}
+
+	/**
+	 * CERN's Zenodo Record ID.
+	 */
+	public void setZenodoid(String zenodoid) {
+		this.zenodoid = zenodoid;
+	}
+
+	/**
+	 * CERN's Zenodo Record ID.
+	 */
+	public String getZenodoid() {
+		return this.zenodoid;
+	}
+
+	/**
+	 * Elsevier's SCOPUS database EID (proprietary).
+	 */
+	public void setScopuseid(String scopuseid) {
+		this.scopuseid = scopuseid;
+	}
+
+	/**
+	 * Elsevier's SCOPUS database EID (proprietary).
+	 */
+	public String getScopuseid() {
+		return this.scopuseid;
+	}
+
+	/**
+	 * Clarivate's Web of Science Accession Number (UT) (proprietary).
+	 */
+	public void setWsan(String wsan) {
+		this.wsan = wsan;
+	}
+
+	/**
+	 * Clarivate's Web of Science Accession Number (UT) (proprietary).
+	 */
+	public String getWsan() {
+		return this.wsan;
+	}
+
+	/**
+	 * American Psychological Association's PsycINFO Accession Number (proprietary/niche).
+	 */
+	public void setPinfoan(String pinfoan) {
+		this.pinfoan = pinfoan;
+	}
+
+	/**
+	 * American Psychological Association's PsycINFO Accession Number (proprietary/niche).
+	 */
+	public String getPinfoan() {
+		return this.pinfoan;
+	}
+
+	/**
 	 * The URL for the publication online.
 	 */
 	public void setUrl(URL url) {
@@ -367,6 +627,32 @@ public class PublicationInput extends AbstractTrackedEntityInput {
 			+ ", " //
 			+ "isbn: " + this.isbn //
 			+ ", " //
+			+ "pmid: " + this.pmid //
+			+ ", " //
+			+ "hsid: " + this.hsid //
+			+ ", " //
+			+ "arxivid: " + this.arxivid //
+			+ ", " //
+			+ "biorxivid: " + this.biorxivid //
+			+ ", " //
+			+ "medrxivid: " + this.medrxivid //
+			+ ", " //
+			+ "ericid: " + this.ericid //
+			+ ", " //
+			+ "ihepid: " + this.ihepid //
+			+ ", " //
+			+ "oaipmhid: " + this.oaipmhid //
+			+ ", " //
+			+ "halid: " + this.halid //
+			+ ", " //
+			+ "zenodoid: " + this.zenodoid //
+			+ ", " //
+			+ "scopuseid: " + this.scopuseid //
+			+ ", " //
+			+ "wsan: " + this.wsan //
+			+ ", " //
+			+ "pinfoan: " + this.pinfoan //
+			+ ", " //
 			+ "url: " + this.url //
 			+ ", " //
 			+ "cached: " + this.cached //
@@ -397,6 +683,19 @@ public class PublicationInput extends AbstractTrackedEntityInput {
 		private Boolean peerReviewed;
 		private String doi;
 		private String isbn;
+		private String pmid;
+		private String hsid;
+		private String arxivid;
+		private String biorxivid;
+		private String medrxivid;
+		private String ericid;
+		private String ihepid;
+		private String oaipmhid;
+		private String halid;
+		private String zenodoid;
+		private String scopuseid;
+		private String wsan;
+		private String pinfoan;
 		private URL url;
 		private Boolean cached;
 		private LocalDate accessed;
@@ -498,6 +797,110 @@ public class PublicationInput extends AbstractTrackedEntityInput {
 		}
 
 		/**
+		 * The U.S. National Library of Medicine's PubMedID.
+		 */
+		public Builder withPmid(String pmidParam) {
+			this.pmid = pmidParam;
+			return this;
+		}
+
+		/**
+		 * The Corporation for National Research Initiatives's Handle System ID.
+		 */
+		public Builder withHsid(String hsidParam) {
+			this.hsid = hsidParam;
+			return this;
+		}
+
+		/**
+		 * Cornell University Library's arXiv.org ID.
+		 */
+		public Builder withArxivid(String arxividParam) {
+			this.arxivid = arxividParam;
+			return this;
+		}
+
+		/**
+		 * Cold Spring Harbor Laboratory's bioRxiv.org ID.
+		 */
+		public Builder withBiorxivid(String biorxividParam) {
+			this.biorxivid = biorxividParam;
+			return this;
+		}
+
+		/**
+		 * Cold Spring Harbor Laboratory's medRxiv.org ID.
+		 */
+		public Builder withMedrxivid(String medrxividParam) {
+			this.medrxivid = medrxividParam;
+			return this;
+		}
+
+		/**
+		 * U.S. Department of Education's ERIC database ID (niche).
+		 */
+		public Builder withEricid(String ericidParam) {
+			this.ericid = ericidParam;
+			return this;
+		}
+
+		/**
+		 * CERN's INSPIRE-HEP ID.
+		 */
+		public Builder withIhepid(String ihepidParam) {
+			this.ihepid = ihepidParam;
+			return this;
+		}
+
+		/**
+		 * Open Archives Initiative's OAI-PMH ID.
+		 */
+		public Builder withOaipmhid(String oaipmhidParam) {
+			this.oaipmhid = oaipmhidParam;
+			return this;
+		}
+
+		/**
+		 * CNRS (France)'s HAL ID.
+		 */
+		public Builder withHalid(String halidParam) {
+			this.halid = halidParam;
+			return this;
+		}
+
+		/**
+		 * CERN's Zenodo Record ID.
+		 */
+		public Builder withZenodoid(String zenodoidParam) {
+			this.zenodoid = zenodoidParam;
+			return this;
+		}
+
+		/**
+		 * Elsevier's SCOPUS database EID (proprietary).
+		 */
+		public Builder withScopuseid(String scopuseidParam) {
+			this.scopuseid = scopuseidParam;
+			return this;
+		}
+
+		/**
+		 * Clarivate's Web of Science Accession Number (UT) (proprietary).
+		 */
+		public Builder withWsan(String wsanParam) {
+			this.wsan = wsanParam;
+			return this;
+		}
+
+		/**
+		 * American Psychological Association's PsycINFO Accession Number (proprietary/niche).
+		 */
+		public Builder withPinfoan(String pinfoanParam) {
+			this.pinfoan = pinfoanParam;
+			return this;
+		}
+
+		/**
 		 * The URL for the publication online.
 		 */
 		public Builder withUrl(URL urlParam) {
@@ -536,6 +939,19 @@ public class PublicationInput extends AbstractTrackedEntityInput {
 			_object.setPeerReviewed(this.peerReviewed);
 			_object.setDoi(this.doi);
 			_object.setIsbn(this.isbn);
+			_object.setPmid(this.pmid);
+			_object.setHsid(this.hsid);
+			_object.setArxivid(this.arxivid);
+			_object.setBiorxivid(this.biorxivid);
+			_object.setMedrxivid(this.medrxivid);
+			_object.setEricid(this.ericid);
+			_object.setIhepid(this.ihepid);
+			_object.setOaipmhid(this.oaipmhid);
+			_object.setHalid(this.halid);
+			_object.setZenodoid(this.zenodoid);
+			_object.setScopuseid(this.scopuseid);
+			_object.setWsan(this.wsan);
+			_object.setPinfoan(this.pinfoan);
 			_object.setUrl(this.url);
 			_object.setCached(this.cached);
 			_object.setAccessed(this.accessed);

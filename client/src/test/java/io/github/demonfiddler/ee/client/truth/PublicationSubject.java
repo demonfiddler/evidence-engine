@@ -131,6 +131,110 @@ public class PublicationSubject extends TrackedEntitySubject<Publication> {
         return check("isbn()").that(actual.getIsbn());
     }
 
+    public void hasPmid(String pmid) {
+        pmid().isEqualTo(pmid);
+    }
+
+    public StringSubject pmid() {
+        return check("pmid()").that(actual.getPmid());
+    }
+
+    public void hasHsid(String hsid) {
+        hsid().isEqualTo(hsid);
+    }
+
+    public StringSubject hsid() {
+        return check("hsid()").that(actual.getHsid());
+    }
+
+    public void hasArxivid(String arxivid) {
+        arxivid().isEqualTo(arxivid);
+    }
+
+    public StringSubject arxivid() {
+        return check("arxivid()").that(actual.getArxivid());
+    }
+
+    public void hasBiorxivid(String biorxivid) {
+        biorxivid().isEqualTo(biorxivid);
+    }
+
+    public StringSubject biorxivid() {
+        return check("biorxivid()").that(actual.getBiorxivid());
+    }
+
+    public void hasMedrxivid(String medrxivid) {
+        medrxivid().isEqualTo(medrxivid);
+    }
+
+    public StringSubject medrxivid() {
+        return check("medrxivid()").that(actual.getMedrxivid());
+    }
+
+    public void hasEric(String ericid) {
+        ericid().isEqualTo(ericid);
+    }
+
+    public StringSubject ericid() {
+        return check("ericid()").that(actual.getEricid());
+    }
+
+    public void hasIhepid(String ihepid) {
+        ihepid().isEqualTo(ihepid);
+    }
+
+    public StringSubject ihepid() {
+        return check("ihepid()").that(actual.getIhepid());
+    }
+
+    public void hasOaipmhid(String oaipmhid) {
+        oaipmhid().isEqualTo(oaipmhid);
+    }
+
+    public StringSubject oaipmhid() {
+        return check("oaipmhid()").that(actual.getOaipmhid());
+    }
+
+    public void hasHalid(String halid) {
+        halid().isEqualTo(halid);
+    }
+
+    public StringSubject halid() {
+        return check("halid()").that(actual.getHalid());
+    }
+
+    public void hasZenodoid(String zenodoid) {
+        zenodoid().isEqualTo(zenodoid);
+    }
+
+    public StringSubject zenodoid() {
+        return check("zenodoid()").that(actual.getZenodoid());
+    }
+
+    public void hasScopuseid(String scopuseid) {
+        scopuseid().isEqualTo(scopuseid);
+    }
+
+    public StringSubject scopuseid() {
+        return check("scopuseid()").that(actual.getScopuseid());
+    }
+
+    public void hasWsan(String wsan) {
+        wsan().isEqualTo(wsan);
+    }
+
+    public StringSubject wsan() {
+        return check("wsan()").that(actual.getWsan());
+    }
+
+    public void hasPinfoan(String pinfoan) {
+        pinfoan().isEqualTo(pinfoan);
+    }
+
+    public StringSubject pinfoan() {
+        return check("pinfoan()").that(actual.getPinfoan());
+    }
+
     public void hasUrl(URL url) {
         url().isEqualTo(url);
     }

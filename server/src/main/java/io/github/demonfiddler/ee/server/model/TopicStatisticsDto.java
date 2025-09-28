@@ -110,45 +110,10 @@ public class TopicStatisticsDto {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((topicId == null) ? 0 : topicId.hashCode());
-		result = prime * result + ((entityKind == null) ? 0 : entityKind.hashCode());
-		result = prime * result + ((count == null) ? 0 : count.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		TopicStatisticsDto other = (TopicStatisticsDto)obj;
-		if (topicId == null) {
-			if (other.topicId != null)
-				return false;
-		} else if (!topicId.equals(other.topicId))
-			return false;
-		if (entityKind == null) {
-			if (other.entityKind != null)
-				return false;
-		} else if (!entityKind.equals(other.entityKind))
-			return false;
-		if (count == null) {
-			if (other.count != null)
-				return false;
-		} else if (!count.equals(other.count))
-			return false;
-		return true;
-	}
-
-	@Override
 	public String toString() {
-		return "TopicStatisticsDto[topicId=" + topicId + ", entityKind=" + entityKind + ", count=" + count + ']';
+		return "TopicStatisticsDto[topicId=" + topicId + //
+		", entityKind=" + entityKind + //
+		", count=" + count + ']';
 	}
 
 	public static Builder builder() {

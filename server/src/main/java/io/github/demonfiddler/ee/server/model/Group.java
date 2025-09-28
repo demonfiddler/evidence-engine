@@ -167,41 +167,6 @@ public class Group extends AbstractTrackedEntity {
 			+ "}"; //
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((groupname == null) ? 0 : groupname.hashCode());
-		result = prime * result + ((authorities == null) ? 0 : authorities.hashCode());
-		result = prime * result + ((members == null) ? 0 : members.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		Group other = (Group) obj;
-		if (groupname == null) {
-			if (other.groupname != null)
-				return false;
-		} else if (!groupname.equals(other.groupname))
-			return false;
-		if (authorities == null) {
-			if (other.authorities != null)
-				return false;
-		} else if (!authorities.equals(other.authorities))
-			return false;
-		if (members == null) {
-			if (other.members != null)
-				return false;
-		} else if (!members.equals(other.members))
-			return false;
-		return true;
-	}
-
 	public static Builder builder() {
 		return new Builder();
 	}

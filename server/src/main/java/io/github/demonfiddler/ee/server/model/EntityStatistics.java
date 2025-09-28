@@ -96,37 +96,6 @@ public class EntityStatistics {
 			+ "}"; //
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((entityKind == null) ? 0 : entityKind.hashCode());
-		result = prime * result + ((count == null) ? 0 : count.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		EntityStatistics other = (EntityStatistics)obj;
-		if (entityKind == null) {
-			if (other.entityKind != null)
-				return false;
-		} else if (!entityKind.equals(other.entityKind))
-			return false;
-		if (count == null) {
-			if (other.count != null)
-				return false;
-		} else if (!count.equals(other.count))
-			return false;
-		return true;
-	}
-
 	public static Builder builder() {
 		return new Builder();
 	}

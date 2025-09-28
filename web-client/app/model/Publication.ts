@@ -43,6 +43,32 @@ export default interface Publication extends ILinkableEntity {
   doi?: string | null
   /** The International Standard Book Number. */
   isbn?: string | null
+  /** The U.S. National Library of Medicine's PubMedID. */
+  pmid: string | null
+  /** The Corporation for National Research Initiatives's Handle System ID. */
+  hsid: string | null
+  /** Cornell University Library's arXiv.org ID. */
+  arxivid: string | null
+  /** Cold Spring Harbor Laboratory's bioRxiv.org ID. */
+  biorxivid: string | null
+  /** Cold Spring Harbor Laboratory's medRxiv.org ID. */
+  medrxivid: string | null
+  /** U.S. Department of Education's ERIC database ID (niche). */
+  ericid: string | null
+  /** CERN's INSPIRE-HEP ID. */
+  ihepid: string | null
+  /** Open Archives Initiative's OAI-PMH ID. */
+  oaipmhid: string | null
+  /** CNRS (France)'s HAL ID. */
+  halid: string | null
+  /** CERN's Zenodo Record ID. */
+  zenodoid: string | null
+  /** Elsevier's SCOPUS database EID (proprietary). */
+  scopuseid: string | null
+  /** Clarivate's Web of Science Accession Number (UT) (proprietary). */
+  wsan: string | null
+  /** American Psychological Association's PsycINFO Accession Number (proprietary/niche). */
+  pinfoan: string | null
   /** The URL for the publication online. */
   url?: /*URL | */string | null
   /** Flag to indicate that url content is cached on this application server. */
