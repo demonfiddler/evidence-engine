@@ -119,3 +119,5 @@ export default function Quotations() {
     </main>
   )
 }
+
+Quotations.whyDidYouRender = true

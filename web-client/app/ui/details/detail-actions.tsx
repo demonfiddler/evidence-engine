@@ -295,4 +295,4 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
   )
 }
 
-// DetailActions.whyDidYouRender = true;
+DetailActions.whyDidYouRender = true

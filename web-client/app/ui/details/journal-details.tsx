@@ -261,3 +261,5 @@ export default function JournalDetails(
     </fieldset>
   )
 }
+
+JournalDetails.whyDidYouRender = true

@@ -109,5 +109,7 @@ export default function NavLinks() {
         </CollapsibleContent>
       </Collapsible>
     </>
-  );
+  )
 }
+
+NavLinks.whyDidYouRender = true

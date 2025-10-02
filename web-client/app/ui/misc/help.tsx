@@ -48,3 +48,5 @@ export default function Help({text} : {text?: string}) {
     </HoverCard>
   )
 }
+
+Help.whyDidYouRender = true

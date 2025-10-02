@@ -40,7 +40,7 @@ import {
 import RecordKind from './model/RecordKind'
 import ILinkableEntity from './model/ILinkableEntity'
 import { getRecordLabel } from '@/lib/utils'
-import { Suspense, useCallback, useEffect, useRef } from 'react'
+import { Suspense, useCallback, useEffect, useMemo, useRef } from 'react'
 import { useSessionStorage } from 'usehooks-ts'
 import User from './model/User'
 import { ApolloProvider } from '@apollo/client'
@@ -189,7 +189,7 @@ type RecordKindValueOpt<TValue> = Omit<RecordKindValue<TValue>, "value"> & {
 }
 
 function reducer(draft: AppState, action: ReducerArg) {
-  // console.log(`reducer(action: ${JSON.stringify(action)})`)
+  // console.log(`RootLayout.reducer(action: ${JSON.stringify(action)})`)
   draft.modified = true
   switch (action.command) {
     case "flush":
@@ -358,84 +358,111 @@ export default function RootLayout({
     dispatch({command: "setDefaults", value: null})
   }, [dispatch])
 
+  // My attempts to introduce guard conditions to prevent unnecessary changes to the global context were unexpectedly
+  // thwarted by the discovery that appState.<property> already holds the new value (at least for boolean toggles). I
+  // have no idea how this is happening, since the only way to update the global context is by calling the dispatch
+  // function, and that only happens in the set*() functions below.
+
   const setSecurityPrincipal = useCallback((user?: User) => {
+    // if (!isEqual(user?.username, appState.username) || !isEqual(user?.authorities, appState.authorities))
     dispatch({command: "setSecurityPrincipal", value: user})
   }, [dispatch])
 
   const setSidebarOpen = useCallback((sidebarOpen: boolean) => {
+    // if (sidebarOpen !== appState.sidebarOpen)
     dispatch({command: "setSidebarOpen", value: sidebarOpen})
   }, [dispatch])
 
   const setLinkFilterOpen = useCallback((linkFilterOpen: boolean) => {
+    // if (linkFilterOpen !== appState.linkFilterOpen)
     dispatch({command: "setLinkFilterOpen", value: linkFilterOpen})
   }, [dispatch])
 
   const setTrackingDetailsOpen = useCallback((trackingDetailsOpen: boolean) => {
+    // if (trackingDetailsOpen !== appState.trackingDetailsOpen)
     dispatch({command: "setTrackingDetailsOpen", value: trackingDetailsOpen})
   }, [dispatch])
 
   const setMasterTopicId = useCallback((masterTopicId: string | undefined) => {
+    // if (masterTopicId !== appState.masterTopicId)
     dispatch({command: "setMasterTopicId", value: masterTopicId})
   }, [dispatch])
 
   const setMasterTopicRecursive = useCallback((recursive: boolean) => {
+    // if (recursive !== appState.masterTopicRecursive)
     dispatch({command: "setMasterTopicRecursive", value: recursive})
   }, [dispatch])
 
   const setMasterRecord = useCallback((recordKind: RecordKind, record: IBaseEntity) => {
+    // TODO: consider whether to handle label changes.
+    // if (recordKind !== appState.masterRecordKind || record.id !== appState.masterRecordId)
     dispatch({command: "setMasterRecord", value: {recordKind, value: record}})
   }, [dispatch])
 
-  const setMasterRecordId = useCallback((recordKind: RecordKind, record: string) => {
-    dispatch({command: "setMasterRecordId", value: {recordKind, value: record}})
+  const setMasterRecordId = useCallback((recordKind: RecordKind, id: string) => {
+    // if (recordKind !== appState.masterRecordKind || id !== appState.masterRecordId)
+    dispatch({command: "setMasterRecordId", value: {recordKind, value: id}})
   }, [dispatch])
 
   const setMasterRecordKind = useCallback((recordKind: RecordKind) => {
+    // if (recordKind !== appState.masterRecordKind) {
     const record = appState.selectedRecords[recordKind]
     dispatch({command: "setMasterRecord", value: {recordKind, value: record}})
+    // }
   }, [dispatch, appState])
 
   const setShowOnlyLinkedRecords = useCallback((showOnlyLinkedRecords: boolean) => {
+    // if (showOnlyLinkedRecords !== appState.showOnlyLinkedRecords)
     dispatch({command: "setShowOnlyLinkedRecords", value: showOnlyLinkedRecords})
   }, [dispatch])
 
   const setSelectedRecord = useCallback((recordKind: RecordKind, record?: ILinkableEntity) => {
+    // if (record?.id !== appState.selectedRecords[recordKind]?.id)
     dispatch({command: "setSelectedRecord", value: {recordKind, value: record}})
   }, [dispatch])
 
   const setColumnVisibility = useCallback((recordKind: RecordKind, visibility: VisibilityState) => {
+    // if (!isEqual(visibility, appState.columns[recordKind]?.visibility))
     dispatch({command: "setColumnVisibility", value: {recordKind, value: visibility}})
   }, [dispatch])
 
   const setColumnSizing = useCallback((recordKind: RecordKind, sizing: ColumnSizingState) => {
+    // if (!isEqual(sizing, appState.columns[recordKind]?.sizing))
     dispatch({command: "setColumnSizing", value: {recordKind, value: sizing}})
   }, [dispatch])
 
   const setColumnOrder = useCallback((recordKind: RecordKind, order: ColumnOrderState) => {
+    // if (!isEqual(order, appState.columns[recordKind]?.order))
     dispatch({command: "setColumnOrder", value: {recordKind, value: order}})
   }, [dispatch])
 
   const setSorting = useCallback((recordKind: RecordKind, sorting: SortingState) => {
+    // if (!isEqual(sorting, appState.queries[recordKind]?.sorting))
     dispatch({command: "setSorting", value: {recordKind, value: sorting}})
   }, [dispatch])
 
   const setFilter = useCallback((recordKind: RecordKind, filter: QueryFilter) => {
+    // if (!isEqual(filter, appState.queries[recordKind]?.filter))
     dispatch({command: "setFilter", value: {recordKind, value: filter}})
   }, [dispatch])
 
   const setPagination = useCallback((recordKind: RecordKind, pagination: PaginationState) => {
+    // if (!isEqual(pagination, appState.queries[recordKind]?.pagination))
     dispatch({command: "setPagination", value: {recordKind, value: pagination}})
   }, [dispatch])
 
   const setSelectedLinkId= useCallback((recordKind: RecordKind, selectedLinkId?: string) => {
+    // if (!isEqual(selectedLinkId, appState.queries[recordKind]?.selectedLinkId))
     dispatch({command: "setSelectedLinkId", value: {recordKind, value: selectedLinkId}})
   }, [dispatch])
 
   const setShowUsersOrMembers = useCallback((showUsersOrMembers: UsersPageRadioState) => {
+    // if (showUsersOrMembers !== appState.queries.User?.showUsersOrMembers)
     dispatch({command: "setShowUsersOrMembers", value: {recordKind: "User", value: showUsersOrMembers}})
   }, [dispatch])
 
   const setActiveSecurityPageTab = useCallback((activeTab: SecurityPageTabState) => {
+    // if (activeTab !== appState.queries.Group?.activeTab)
     dispatch({command: "setActiveTab", value: {recordKind: "Group", value: activeTab}})
   }, [dispatch])
 
@@ -447,8 +474,35 @@ export default function RootLayout({
     }
   }, [dispatch, appState])
 
-  const globalContext = {
-    ...appState,
+  const globalContext = useMemo(() => {
+    // console.log(`RootLayout.memo: updating global context`)
+    return {
+      ...appState,
+      setDefaults,
+      setSecurityPrincipal,
+      setSidebarOpen,
+      setLinkFilterOpen,
+      setTrackingDetailsOpen,
+      setMasterTopicId,
+      setMasterTopicRecursive,
+      setMasterRecordKind,
+      setMasterRecord,
+      setMasterRecordId,
+      setShowOnlyLinkedRecords,
+      setSelectedRecord,
+      setColumnVisibility,
+      setColumnSizing,
+      setColumnOrder,
+      setFilter,
+      setSorting,
+      setPagination,
+      setSelectedLinkId,
+      setShowUsersOrMembers,
+      setActiveSecurityPageTab,
+      storeAppState,
+    }
+  }, [
+    appState,
     setDefaults,
     setSecurityPrincipal,
     setSidebarOpen,
@@ -471,7 +525,7 @@ export default function RootLayout({
     setShowUsersOrMembers,
     setActiveSecurityPageTab,
     storeAppState,
-  } as GlobalContextType
+  ]) as GlobalContextType
 
   // On navigation, store the application state to session storage.
   // useEffect(() => {

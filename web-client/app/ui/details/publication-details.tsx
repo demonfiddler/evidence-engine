@@ -875,4 +875,4 @@ export default function PublicationDetails(
   )
 }
 
-// PublicationDetails.whyDidYouRender = true;
+PublicationDetails.whyDidYouRender = true

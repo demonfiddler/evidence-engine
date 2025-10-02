@@ -119,3 +119,5 @@ export default function Claims() {
     </main>
   )
 }
+
+Claims.whyDidYouRender = true

@@ -27,10 +27,11 @@ import { cn } from "@/lib/utils"
 
 type InputExProps = ComponentProps<"input"> & HelpProps & {
     delay?: number
+    clearOnEscape?: boolean
   }
 
 export default function InputEx(
-  {help, outerClassName, value, onChange, delay, ...props} : InputExProps
+  {help, outerClassName, value, onChange, delay, clearOnEscape, ...props} : InputExProps
 ) {
   const [text, setText] = useState(value)
   const [event, setEvent] = useDebounceValue<ChangeEvent<HTMLInputElement>|undefined>(undefined, delay || 0)
@@ -83,7 +84,7 @@ export default function InputEx(
     <div className={cn("flex flex-row items-center gap-1", outerClassName)}>
       <Input
         value={text}
-        onKeyDown={(e) => e.code == "Escape" && clear()}
+        onKeyDown={(e) => clearOnEscape && e.code == "Escape" && clear()}
         onChange={(e) => onChangeText(e)}
         {...props}
       />

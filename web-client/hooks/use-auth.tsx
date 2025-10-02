@@ -19,7 +19,8 @@
 
 import Authority from '@/app/model/Authority'
 import User from '@/app/model/User'
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode, useMemo } from 'react'
+import { isEqual } from '@/lib/utils'
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode, useMemo, useRef } from 'react'
 
 const GRAPHQL_ENDPOINT_URL = new URL(process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL ?? '')
 const baseUrl = getUrl('/').toString()
@@ -44,13 +45,15 @@ interface AuthContextType {
   logout: () => void;
 }
 
-export const AuthContext = createContext<AuthContextType>({
+const defaultAuth : AuthContextType = {
   loading: false,
   user: null,
   hasAuthority: (authority: string) => false,
   login: (u, p) => {throw new Error("No AuthProvider context")},
   logout: () => {throw new Error("No AuthProvider context")}
-});
+}
+
+export const AuthContext = createContext<AuthContextType>(defaultAuth);
 
 function checkResponse(response: Response, action: string) {
   // As Spring Security is presently configured:
@@ -144,6 +147,7 @@ export function AuthProvider({children} : AuthProviderProps) {
     try {
       const me = await fetchUser()
       setUser(me)
+      // console.log(`AuthProvider.initialize: user initialised to ${JSON.stringify(me)}`)
     } catch (e) {
       console.error(e)
       setUser(null)
@@ -152,9 +156,22 @@ export function AuthProvider({children} : AuthProviderProps) {
     }
   }, [])
 
-  useEffect(() => { initialize(); }, [initialize]);
+  useEffect(() => { initialize() }, [initialize]);
 
+  // const prevUser = useRef(user)
+  // if (user !== prevUser.current) {
+  //   if (isEqual(user, prevUser.current))
+  //     console.log(`AuthProvider.render: user has changed but is equal in value: ${JSON.stringify(prevUser.current)}`)
+  //   else
+  //     console.log(`AuthProvider.render: user has changed from ${JSON.stringify(prevUser.current)} to ${JSON.stringify(user)}`)
+  //   prevUser.current = user
+  // }
   const hasAuthority = useCallback((authority: Authority) => user?.authorities?.includes(authority) ?? false, [user])
+  // const prevHasAuthority = useRef(hasAuthority)
+  // if (hasAuthority !== prevHasAuthority.current) {
+  //   console.log(`AuthProvider.render: hasAuthority has changed from ${typeof prevHasAuthority.current} to ${typeof hasAuthority}`)
+  // }
+  // console.log(`AuthProvider.render: hasAuthority = ${typeof hasAuthority}`)
 
   const doLogin = useCallback(async (username: string, password: string, rememberMe: boolean) => {
     setLoading(true)
@@ -177,9 +194,16 @@ export function AuthProvider({children} : AuthProviderProps) {
     }
   }, [])
 
-  const auth = useMemo(() => {
-    return { loading, user, hasAuthority, login: doLogin, logout: doLogout }
-  }, [loading, user, hasAuthority, doLogin, doLogout])
+  // For reasons unknown, the previous useMemo approach wasn't working and (according to WhyDidYouRender) returned different objects with equal values.
+  const prevAuth = useRef(defaultAuth)
+  let auth = { loading, user, hasAuthority, login: doLogin, logout: doLogout } as AuthContextType
+  if (isEqual(auth, prevAuth.current)) {
+    // console.log(`AuthProvider.render: reusing previous auth ${JSON.stringify(prevAuth.current)}`)
+    auth = prevAuth.current
+  } else {
+    // console.log(`AuthProvider.render: auth has changed from ${JSON.stringify(prevAuth.current)} to ${JSON.stringify(auth)}`)
+    prevAuth.current = auth
+  }
 
   return (
     <AuthContext.Provider

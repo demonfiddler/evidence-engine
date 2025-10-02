@@ -115,5 +115,7 @@ export default function Publishers() {
         />
       </FormProvider>
     </main>
-  );
+  )
 }
+
+Publishers.whyDidYouRender = true

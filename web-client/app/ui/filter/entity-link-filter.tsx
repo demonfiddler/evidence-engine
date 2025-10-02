@@ -127,6 +127,7 @@ export default function EntityLinkFilter() {
   )
   const [treeData, setTreeData] = useState<TopicTreeNode[]>([])
   const topics = useMemo(() => {
+    // console.log("EntityLinkFilter.memo")
     const outTopics: Topic[] = []
     if (result.data) {
       const inTopics = result.data.topics.content ?? []
@@ -136,6 +137,7 @@ export default function EntityLinkFilter() {
   }, [result.data])
 
   useEffect(() => {
+    // console.log("EntityLinkFilter.effect")
     setTreeData(getTreeData(topics, masterTopicId))
     const masterTopic = findTopic(topics, masterTopicId)
     setTopicDescription(masterTopic?.description ?? '')
@@ -317,3 +319,5 @@ export default function EntityLinkFilter() {
     </Collapsible>
   )
 }
+
+EntityLinkFilter.whyDidYouRender = true

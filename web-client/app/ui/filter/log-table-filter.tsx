@@ -293,6 +293,8 @@ export default function LogTableFilter(
           value={entityId}
           onChange={handleEntityIdChange}
           delay={500}
+          clearOnEscape={true}
+          help="Filter the table to show only the record with the specified ID. Other filters are retained but ignored."
         />
         <ButtonEx
           variant="outline"
@@ -307,3 +309,5 @@ export default function LogTableFilter(
     </div>
   )
 }
+
+LogTableFilter.whyDidYouRender = true

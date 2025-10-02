@@ -77,3 +77,5 @@ export default function SettingsDialog(
   )
   : null
 }
+
+SettingsDialog.whyDidYouRender = true

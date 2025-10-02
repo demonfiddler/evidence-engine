@@ -245,3 +245,5 @@ export default function ProfileDialog(
   )
   : null
 }
+
+ProfileDialog.whyDidYouRender = true

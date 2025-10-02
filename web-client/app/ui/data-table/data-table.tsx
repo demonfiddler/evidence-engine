@@ -70,7 +70,7 @@ import type IPage from "@/app/model/IPage"
 import IBaseEntity from "@/app/model/IBaseEntity"
 import { ColumnState, GlobalContext, QueryState } from "@/lib/context"
 import RecordKind from "@/app/model/RecordKind"
-import { cn, getValue, isLinkableEntity } from "@/lib/utils"
+import { cn, getValue, isEqual, isLinkableEntity } from "@/lib/utils"
 import DataTableColumnHeader from "./data-table-column-header"
 import Spinner from "../misc/spinner"
 import { getExpandedRowModelEx } from "./data-table-expanded-row-model"
@@ -153,24 +153,39 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
   const {sorting, pagination} = queries[recordKind] as QueryState<QueryFilter>
   const {visibility : columnVisibility, order : columnOrder, sizing : columnSizing} = columnsMap[recordKind] as ColumnState
   const onColumnOrderChange = useCallback((updaterOrValue: Updater<ColumnOrderState>) => {
-    const order = getValue(updaterOrValue, columnOrder)
-    setColumnOrder(recordKind, order)
+    const newColumnOrder = getValue(updaterOrValue, columnOrder)
+    if (!isEqual(newColumnOrder, columnOrder)) {
+      // console.log(`DataTable.onColumnOrderChange: ${recordKind} columnOrder changed from ${JSON.stringify(columnOrder)} to ${JSON.stringify(newColumnOrder)}`)
+      setColumnOrder(recordKind, newColumnOrder)
+    }
   }, [recordKind, columnOrder, setColumnOrder])
   const onColumnSizingChange = useCallback((updaterOrValue: Updater<ColumnSizingState>) => {
-    const sizing = getValue(updaterOrValue, columnSizing)
-    setColumnSizing(recordKind, sizing)
+    const newColumnSizing = getValue(updaterOrValue, columnSizing)
+    if (!isEqual(newColumnSizing, columnSizing)) {
+      // console.log(`DataTable.onColumnSizingChange: ${recordKind} columnSizing changed from ${JSON.stringify(columnSizing)} to ${JSON.stringify(newColumnSizing)}`)
+      setColumnSizing(recordKind, newColumnSizing)
+    }
   }, [recordKind, columnSizing, setColumnSizing])
   const onColumnVisibilityChange = useCallback((updaterOrValue: Updater<VisibilityState>) => {
-    const visibility = getValue(updaterOrValue, columnVisibility)
-    setColumnVisibility(recordKind, visibility)
+    const newColumnVisibility = getValue(updaterOrValue, columnVisibility)
+    if (!isEqual(newColumnVisibility, columnVisibility)) {
+      // console.log(`DataTable.onColumnVisibilityChange: ${recordKind} columnVisibility changed from ${JSON.stringify(columnVisibility)} to ${JSON.stringify(newColumnVisibility)}`)
+      setColumnVisibility(recordKind, newColumnVisibility)
+    }
   }, [recordKind, columnVisibility, setColumnVisibility])
   const onSortingChange = useCallback((updaterOrValue: Updater<SortingState>) => {
     const newSorting = getValue(updaterOrValue, sorting)
-    setSorting(recordKind, newSorting)
+    if (!isEqual(newSorting, sorting)) {
+      // console.log(`DataTable.onSortingChange: ${recordKind} sorting changed from ${JSON.stringify(sorting)} to ${JSON.stringify(newSorting)}`)
+      setSorting(recordKind, newSorting)
+    }
   }, [recordKind, sorting, setSorting])
   const onPaginationChange = useCallback((updaterOrValue: Updater<PaginationState>) => {
     const newPagination = getValue(updaterOrValue, pagination)
-    setPagination(recordKind, newPagination)
+    if (!isEqual(newPagination, pagination)) {
+      // console.log(`DataTable.onPaginationChange: ${recordKind} pagination changed from ${JSON.stringify(pagination)} to ${JSON.stringify(newPagination)}`)
+      setPagination(recordKind, newPagination)
+    }
   }, [recordKind, pagination, setPagination])
 
   const selectedRecord = selectedRecords[recordKind]
@@ -312,13 +327,14 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
 
   const prevTotalElements = useRef(0)
   useEffect(() => {
-    const totalElements = page?.totalElements ?? 0
-    if (manualPagination && totalElements !== prevTotalElements.current) {
-      prevTotalElements.current = totalElements
+    const newTotalElements = page?.totalElements ?? 0
+    if (manualPagination && (newTotalElements !== prevTotalElements.current)) {
       table.setOptions({
         ...table.options,
-        rowCount: totalElements,
+        rowCount: newTotalElements,
       })
+      // console.log(`DataTable.effect: ${recordKind} totalElements changed from ${prevTotalElements.current} to ${newTotalElements}`)
+      prevTotalElements.current = newTotalElements
     }
   }, [manualPagination, table, page]);
 
@@ -428,4 +444,4 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
   )
 }
 
-// DataTable.whyDidYouRender = true;
+DataTable.whyDidYouRender = true

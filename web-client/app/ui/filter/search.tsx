@@ -61,9 +61,12 @@ export default function Search(
         value={text ?? ''}
         delay={500}
         onChange={(e) => onChangeText(e.target.value ?? '')}
+        clearOnEscape={true}
         help="Filter the table to show only records containing the specified text. This performs a case-insensitive match against all text fields, matching whole words unless 'Advanced' is checked."
       />
       <XMarkIcon className="w-5 h-5" onClick={() => onChangeText('')} />
     </div>
   )
 }
+
+Search.whyDidYouRender = true

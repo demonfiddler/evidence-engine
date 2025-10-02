@@ -241,3 +241,5 @@ export default function PublisherDetails(
     </fieldset>
   )
 }
+
+PublisherDetails.whyDidYouRender = true

@@ -115,3 +115,5 @@ export default function TrackingDetails(
     </div>
   )
 }
+
+TrackingDetails.whyDidYouRender = true

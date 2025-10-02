@@ -125,7 +125,7 @@ function searchParamsEqual(p1: URLSearchParams, p2: URLSearchParams) {
   return equal
 }
 
-function fixFilter<TFilter extends TrackedEntityQueryFilter | LogQueryFilter>(filter: TFilter) : TFilter {
+function fixFilter<TFilter extends TrackedEntityQueryFilter | LogQueryFilter>(filter: TFilter) : TFilter | undefined {
   let hasRecordId = false
   if (Object.hasOwn(filter, "recordId")) {
     // The filter includes a recordId, so we don't need to pass any of the other properties.
@@ -144,7 +144,7 @@ function fixFilter<TFilter extends TrackedEntityQueryFilter | LogQueryFilter>(fi
     delete leFilter.fromEntityKind
     delete leFilter.toEntityKind
   }
-  return filter
+  return isEmpty(filter) ? undefined : filter
 }
 
 export default function usePageLogic<
@@ -212,7 +212,7 @@ export default function usePageLogic<
   useEffect(() => {
     // console.log(`usePageLogic.effect2 (1)`)
     if (pathname !== prevPath.current) {
-      // console.log(`usePageLogic.effect2 (2) prevPath='${prevPath.current}' pathname='${pathname}'`)
+      // console.log(`usePageLogic.effect2 (2) path changed from '${prevPath.current}' to '${pathname}'`)
       prevPath.current = pathname;
 
       // If navigating to a URL with a query string, replace filter to match query string and store in global context.
@@ -243,24 +243,30 @@ export default function usePageLogic<
     }
   }, [loadingPathWithSearchParamsRef, pathname, filterLogic, setFilter, updateUrlQuery]);
 
+  const prevPageSort = useRef<PageableInput>({})
   const pageSort = useMemo(() => {
-    const pageSort : PageableInput = manualPagination && pagination
+    let newPageSort : PageableInput = manualPagination && pagination
       ? {
         pageNumber: pagination.pageIndex,
         pageSize: pagination.pageSize,
       }
       : {}
     if (manualSorting && sorting.length > 0) {
-      pageSort.sort = { orders: [] }
+      newPageSort.sort = { orders: [] }
       for (const s of sorting) {
-        pageSort.sort?.orders.push({
+        newPageSort.sort?.orders.push({
           property: s.id,
           direction: s.desc ? "DESC" : undefined
         })
       }
     }
-    // console.log(`${recordKind}s effect: pageSort = ${JSON.stringify(pageSort)}`)
-    return pageSort
+    if (manualPagination && !isEqual(newPageSort, prevPageSort.current)) {
+      // console.log(`usePageLogic.memo ${recordKind}s pageSort changed from ${JSON.stringify(prevPageSort.current)} to ${JSON.stringify(newPageSort)}`)
+      prevPageSort.current = newPageSort
+    } else {
+      newPageSort = prevPageSort.current
+    }
+    return newPageSort
   }, [manualPagination && pagination, manualSorting && sorting])
 
   const [readFieldName] = useMemo(() => introspect(readQuery, OperationTypeNode.QUERY), [readQuery])
@@ -290,16 +296,16 @@ export default function usePageLogic<
 
   // Whenever filter or pagination (actually) changes, update query string and ask Apollo to refetch.
   const prevFilter = useRef<TFilter>(filter);
-  const prevPageSort = useRef<PageableInput>(pageSort);
+  const prevPageSort2 = useRef<PageableInput>(pageSort);
   useEffect(() => {
     // console.log(`usePageLogic.effect3 (1)`)
     // Don't do this if we are still loading a path with search params or if neither filter nor pagination has changed.
     if (!loadingPathWithSearchParamsRef.current && (!isEqual(filter, prevFilter.current) ||
-      manualPagination && !isEqual(pageSort, prevPageSort.current))) {
+      manualPagination && !isEqual(pageSort, prevPageSort2.current))) {
 
       // console.log(`usePageLogic.effect3 (2)`)
       prevFilter.current = filter
-      prevPageSort.current = pageSort
+      prevPageSort2.current = pageSort
       updateUrlQuery()
       refetch()
     }

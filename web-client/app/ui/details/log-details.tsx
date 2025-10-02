@@ -91,3 +91,5 @@ export default function LogDetails({record}: {record: Log | undefined}) {
     </fieldset>
   )
 }
+
+LogDetails.whyDidYouRender = true

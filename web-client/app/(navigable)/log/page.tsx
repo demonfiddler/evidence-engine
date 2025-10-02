@@ -83,5 +83,7 @@ export default function Logs() {
       />
       <LogDetails record={selectedRecord} />
     </main>
-  );
+  )
 }
+
+Logs.whyDidYouRender = true

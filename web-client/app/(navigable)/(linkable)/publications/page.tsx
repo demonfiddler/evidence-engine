@@ -162,4 +162,4 @@ export default function Publications() {
   );
 }
 
-// Publications.whyDidYouRender = true;
+Publications.whyDidYouRender = true

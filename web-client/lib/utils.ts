@@ -394,44 +394,49 @@ export function isEmpty(obj: object) {
   return true
 }
 
-type KeyedObject = {
-  [key: string] : boolean | number | string | object | null | undefined
+type anything = boolean | number | string | object | null | undefined
+
+export function isObject(value: anything): boolean {
+  return value != null && typeof value === 'object';
 }
 
-export function isEqual(v1: KeyedObject | undefined, v2: KeyedObject | undefined) {
-  if (v1 === v2)
+type KeyedObject = {
+  [key: string] : anything
+}
+
+export function isEqual(v1: anything, v2: anything, path: string[] = []) {
+  if (v1 === v2) {
     return true
-  if (typeof v1 !== typeof v2)
+  }
+  if (typeof v1 !== typeof v2) {
+    // console.log(`isEqual(): different types for ${path.join(".")}: v1: ${typeof v1}, v2: ${typeof v2}`)
     return false
-  if (v1 instanceof Date && v2 instanceof Date)
-    return (v1 as Date).valueOf() === (v2 as Date).valueOf()
-  // Check all properties of v1.
-  if (typeof v1 === 'object' && typeof v2 === 'object') {
-    const v1Entries = Object.entries(v1)
-    const v2Entries = Object.entries(v2)
-    for (const [key, value] of v1Entries) {
-      if (typeof value === "object") {
-        if (!isEqual(value as KeyedObject, v2[key] as KeyedObject))
-          return false
-      } else if (v2[key] !== value) {
-        return false
-      }
-      // Record that we've checked this key.
-      const v2Idx = v2Entries.findIndex(([v2Key]) => v2Key == key)
-      if (v2Idx != -1)
-        v2Entries.splice(v2Idx, 1)
+  }
+  if (v1 instanceof Date && v2 instanceof Date) {
+    const equal = (v1 as Date).getTime() === (v2 as Date).getTime()
+    // if (!equal)
+    //   console.log(`isEqual(): different dates for ${path.join(".")}: v1: ${v1}, v2: ${v2}`)
+    return equal
+  }
+  // If both values are objects, check all their properties.
+  if (isObject(v1) && isObject(v2)) {
+    const v1Object = v1 as KeyedObject
+    const v2Object = v2 as KeyedObject
+    const v1Keys = Object.keys(v1Object)
+    const v2Keys = Object.keys(v2Object)
+    if (v1Keys.length !== v2Keys.length) {
+      // console.log(`isEqual(): unequal keys for ${path.join(".")} v1: ${JSON.stringify(v1Keys)}, v2: ${JSON.stringify(v2Keys)}`)
+      return false
     }
-    // Check any as-yet unchecked properties of v2.
-    for (const [key, value] of v2Entries) {
-      if (typeof value === "object") {
-        if (!isEqual(value as KeyedObject, v1[key] as KeyedObject))
-          return false
-      } else if (v1[key] !== value) {
+    for (const key of v1Keys) {
+      const newPath = path.slice()
+      newPath.push(key)
+      if (!isEqual(v1Object[key], v2Object[key], newPath))
         return false
-      }
     }
     return true
   }
+  // console.log(`isEqual(): unequal values for ${path.join(".")} v1: ${JSON.stringify(v1)}, v2: ${JSON.stringify(v2)}`)
   return false
 }
 

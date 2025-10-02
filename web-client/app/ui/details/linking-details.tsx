@@ -488,3 +488,5 @@ export default function LinkingDetails(
     </div>
   )
 }
+
+LinkingDetails.whyDidYouRender = true

@@ -140,3 +140,5 @@ export default function Topics() {
     </main>
   )
 }
+
+Topics.whyDidYouRender = true

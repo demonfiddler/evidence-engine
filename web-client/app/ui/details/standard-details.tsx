@@ -70,3 +70,5 @@ export default function StandardDetails(
     </Collapsible>
   )
 }
+
+StandardDetails.whyDidYouRender = true

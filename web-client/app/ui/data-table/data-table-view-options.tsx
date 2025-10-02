@@ -73,3 +73,5 @@ export default function DataTableViewOptions<T>(
     </DropdownMenu>
   )
 }
+
+DataTableViewOptions.whyDidYouRender = true

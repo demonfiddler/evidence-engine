@@ -124,3 +124,5 @@ export default function Declarations() {
     </main>
   )
 }
+
+Declarations.whyDidYouRender = true

@@ -51,5 +51,7 @@ export default function SideNav() {
         </form> */}
       </div>
     </div>
-  );
+  )
 }
+
+SideNav.whyDidYouRender = true

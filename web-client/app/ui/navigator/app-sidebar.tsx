@@ -127,3 +127,5 @@ export function AppSidebar() {
     </Sidebar>
   )
 }
+
+AppSidebar.whyDidYouRender = true

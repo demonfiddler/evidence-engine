@@ -244,3 +244,5 @@ export default function LogDialogFilter(
     </div>
   )
 }
+
+LogDialogFilter.whyDidYouRender = true

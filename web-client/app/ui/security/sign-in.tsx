@@ -160,3 +160,5 @@ export default function SignInDialog() {
     </Dialog>
   )
 }
+
+SignInDialog.whyDidYouRender = true

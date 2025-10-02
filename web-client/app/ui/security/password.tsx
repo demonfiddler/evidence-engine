@@ -179,3 +179,5 @@ export default function PasswordDialog(
   )
   : null
 }
+
+PasswordDialog.whyDidYouRender = true

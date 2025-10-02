@@ -130,3 +130,5 @@ export default function Persons() {
     </main>
   )
 }
+
+Persons.whyDidYouRender = true

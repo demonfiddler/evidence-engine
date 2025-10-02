@@ -274,10 +274,10 @@ CREATE TABLE IF NOT EXISTS "publication" (
 	CONSTRAINT "CC_publication_doi" CHECK("doi" regexp '^10\\.\\d{4,9}\/(?i)[-._;()/:A-Z0-9]+$'),
 	CONSTRAINT "CC_publication_pmid" CHECK("pmid" regexp '^\\d{1,10}$'),
 	CONSTRAINT "CC_publication_hsid" CHECK("hsid" regexp '^NIHMS\\d+$'),
-	CONSTRAINT "CC_publication_arxivid" CHECK("arxivid" regexp '^\\d{4}\\.\\d{4,5}(v\\d+)?$')
+	CONSTRAINT "CC_publication_arxivid" CHECK("arxivid" regexp '^\\d{4}\\.\\d{4,5}(v\\d+)?$'),
 	CONSTRAINT "CC_publication_biorxivid" CHECK("biorxivid" regexp '^10\\.1101\\/\\d+$'),
 	CONSTRAINT "CC_publication_medrxivid" CHECK("medrxivid" regexp '^10\\.1101\\/\\d+$'),
-	CONSTRAINT "CC_publication_eric" CHECK("ericid" regexp '^(?i)ED\\d{6}$'),
+	CONSTRAINT "CC_publication_ericid" CHECK("ericid" regexp '^(?i)ED\\d{6}$'),
 	CONSTRAINT "CC_publication_ihepid" CHECK("ihepid" regexp '^\\d{6,10}$'),
 	CONSTRAINT "CC_publication_oaipmhid" CHECK("oaipmhid" regexp '^oai:[^:]+:[^:]+$'),
 	CONSTRAINT "CC_publication_halid" CHECK("halid" regexp '^hal-\\d{6,10}$'),

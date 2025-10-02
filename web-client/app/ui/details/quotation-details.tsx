@@ -266,3 +266,5 @@ export default function QuotationDetails(
     </fieldset>
   )
 }
+
+QuotationDetails.whyDidYouRender = true

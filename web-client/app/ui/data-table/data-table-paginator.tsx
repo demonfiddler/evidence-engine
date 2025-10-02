@@ -155,3 +155,5 @@ export function DataTablePaginator<TData>({
     </div>
   )
 }
+
+DataTablePaginator.whyDidYouRender = true

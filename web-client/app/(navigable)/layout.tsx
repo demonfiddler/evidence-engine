@@ -51,5 +51,7 @@ export default function NavigableLayout({
         </footer>
       </main>
     </SidebarProvider>
-  );
+  )
 }
+
+NavigableLayout.whyDidYouRender = true

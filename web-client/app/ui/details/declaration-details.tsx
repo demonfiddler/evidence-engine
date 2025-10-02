@@ -358,3 +358,5 @@ export default function DeclarationDetails(
     </fieldset>
   )
 }
+
+DeclarationDetails.whyDidYouRender = true

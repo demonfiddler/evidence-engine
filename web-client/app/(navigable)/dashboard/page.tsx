@@ -311,4 +311,5 @@ export default function Dashboard() {
     </main>
   );
 }
-// Dashboard.whyDidYouRender = true
+
+Dashboard.whyDidYouRender = true

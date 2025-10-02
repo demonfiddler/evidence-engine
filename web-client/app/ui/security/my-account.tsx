@@ -101,3 +101,5 @@ export default function MyAccount({className} : {className: string}) {
     </div>
   )
 }
+
+MyAccount.whyDidYouRender = true

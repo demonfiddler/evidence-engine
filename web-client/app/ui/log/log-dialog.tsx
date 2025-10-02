@@ -128,3 +128,5 @@ export default function LogDialog({
     </Dialog>
   )
 }
+
+LogDialog.whyDidYouRender = true

@@ -337,3 +337,5 @@ export default function UserDetails(
     </fieldset>
   )
 }
+
+UserDetails.whyDidYouRender = true

@@ -116,5 +116,7 @@ export default function Journals() {
         />
       </FormProvider>
     </main>
-  );
+  )
 }
+
+Journals.whyDidYouRender = true

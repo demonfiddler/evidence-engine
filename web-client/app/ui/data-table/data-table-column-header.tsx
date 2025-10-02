@@ -26,10 +26,10 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from '@dnd-kit/utilities'
-import { CSSProperties } from "react"
+import { CSSProperties, HTMLAttributes, useMemo } from "react"
 import { TableHead } from "@/components/ui/table"
 
-interface DataTableColumnHeaderProps<TData, TValue> extends React.HTMLAttributes<HTMLDivElement> {
+interface DataTableColumnHeaderProps<TData, TValue> extends HTMLAttributes<HTMLDivElement> {
   table: Table<TData>
   header: Header<TData, TValue>
   column: Column<TData, TValue>
@@ -45,16 +45,20 @@ export default function DataTableColumnHeader<TData, TValue>({
 }: DataTableColumnHeaderProps<TData, TValue>) {
   const { attributes, isDragging, listeners, setNodeRef, transform } = useSortable({id: column.id})
 
-  const style: CSSProperties = {
-    opacity: isDragging ? 0.8 : 1,
-    position: 'relative',
-    transform: CSS.Translate.toString(transform), // translate instead of transform to avoid squishing
-    transition: 'width transform 0.2s ease-in-out',
-    whiteSpace: 'nowrap',
-    width: column.getSize(),
-    zIndex: isDragging ? 1 : 0,
-  }
-  
+  const style: CSSProperties = useMemo(() => {
+    return {
+      opacity: isDragging ? 0.8 : 1,
+      position: 'relative',
+      transform: CSS.Translate.toString(transform), // translate instead of transform to avoid squishing
+      transition: 'width transform 0.2s ease-in-out',
+      whiteSpace: 'nowrap',
+      width: column.getSize(),
+      zIndex: isDragging ? 1 : 0,
+    }
+  }, [isDragging, transform, column])
+
+  // console.log(`DataTableColumnHeader.render: ${title}`)
+
   return (
     <TableHead key={header.id} className="relative border box-border" style={style} ref={setNodeRef}>
       {
@@ -126,3 +130,7 @@ export default function DataTableColumnHeader<TData, TValue>({
     </TableHead>
   )
 }
+
+// Disabled because although WDYR reports 're-rendered because of hook changes: different objects thast are equal in value',
+// I have been unable to identify the source of the changed hook value. I don't think it's in EE code.
+DataTableColumnHeader.whyDidYouRender = false

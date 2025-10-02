@@ -157,7 +157,7 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
   const handleRecordIdChange = useCallback((recordId: string) => {
     // console.log(`LinkableEntityTableFilter.handleRecordIdChange: recordId='${recordId}'`)
     setRecordId(recordId)
-    updateFilter('', '', false, recordId)
+    updateFilter(status, text, advanced, recordId)
   }, [updateFilter])
 
   const handleReset = useCallback(() => {
@@ -210,7 +210,8 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
           value={recordId}
           onChange={(e) => handleRecordIdChange(e.target.value)}
           delay={500}
-          help="Filter the table to show only the record with the specified ID. Clears all other filters."
+          clearOnEscape={true}
+          help="Filter the table to show only the record with the specified ID. Other filters are retained but ignored."
         />
         <ButtonEx
           variant="outline"
@@ -232,3 +233,5 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
     </div>
   )
 }
+
+LinkableEntityTableFilter.whyDidYouRender = true

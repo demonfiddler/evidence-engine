@@ -194,3 +194,5 @@ export default function ClaimDetails(
     </fieldset>
   )
 }
+
+ClaimDetails.whyDidYouRender = true

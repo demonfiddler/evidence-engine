@@ -53,8 +53,8 @@ export default function TopicTableFilter({
       const newFilter = {
         status: status ? [status] : undefined,
         text: text || undefined,
-        advancedSearch: text && advanced || undefined,
-        parentId: treeView && !recordId ? "-1" : undefined,
+        advancedSearch: advanced || undefined,
+        parentId: treeView ? "-1" : undefined,
         recordId: recordId || undefined,
       } as TopicQueryFilter
       if (!isEqual(newFilter, filter)) {
@@ -101,20 +101,14 @@ export default function TopicTableFilter({
     updateFilter(status, text, advanced, treeView, recordId)
   }, [updateFilter, status, text, treeView, recordId])
 
-  const handleRecursiveChange = useCallback((recursive: boolean) => {
-    setTreeView(recursive)
-    updateFilter(status, text, advanced, recursive, recordId)
+  const handleTreeViewChange = useCallback((treeView: boolean) => {
+    setTreeView(treeView)
+    updateFilter(status, text, advanced, treeView, recordId)
   }, [updateFilter, status, text, advanced, recordId])
 
   const handleRecordIdChange = useCallback((recordId: string) => {
-    if (recordId) {
-      setStatus('')
-      setText('')
-      setAdvanced(false)
-      setTreeView(false)
-    }
     setRecordId(recordId)
-    updateFilter('', '', false, false, recordId)
+    updateFilter(status, text, advanced, treeView, recordId)
   }, [updateFilter])
 
   const handleReset = useCallback(() => {
@@ -163,7 +157,7 @@ export default function TopicTableFilter({
         <Checkbox
           id="recursive"
           checked={treeView}
-          onCheckedChange={handleRecursiveChange}
+          onCheckedChange={handleTreeViewChange}
         />
         <LabelEx htmlFor="recursive" help="Show topics as an expandable tree">Tree view</LabelEx>
         <InputEx
@@ -173,7 +167,8 @@ export default function TopicTableFilter({
           value={recordId}
           onChange={(e) => handleRecordIdChange(e.target.value)}
           delay={500}
-          help="Filter the table to show only the record with the specified ID. Clears all other filters."
+          clearOnEscape={true}
+          help="Filter the table to show only the record with the specified ID. Other filters are retained but ignored."
         />
         <ButtonEx
           variant="outline"
@@ -195,3 +190,5 @@ export default function TopicTableFilter({
     </div>
   )
 }
+
+TopicTableFilter.whyDidYouRender = true
