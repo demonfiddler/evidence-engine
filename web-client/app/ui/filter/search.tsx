@@ -23,22 +23,27 @@ import { SearchIcon } from "@/app/ui/icons"
 import { XMarkIcon } from "@heroicons/react/24/outline"
 import { useCallback, useEffect, useRef, useState } from "react"
 import InputEx from "../ext/input-ex"
+import { component, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(component, "[Search] ")
 
 export default function Search(
   {value, onChangeValue} :
   {value: string, onChangeValue: (value: string) => void}
 ) {
+  logger.debug("render")
+
   const [text, setText] = useState(value)
 
   // If the supplied value changes externally, update text state to match and notify supplied listener.
   const prevValue = useRef<string | number | readonly string[] | undefined>('')
   useEffect(() => {
-    // console.log("Search.effect (1)")
+    logger.trace("effect (1)")
     if (value !== prevValue.current) {
-      // console.log(`Search.effect (2): value = '${value}', prevValue='${prevValue.current}'`)
+      logger.trace("effect (2) value changed from '%s' to '%s'", prevValue.current, value)
       prevValue.current = value
       if (value !== text) {
-        // console.log(`Search.effect (3): value = '${value}', text='${text}'`)
+        logger.trace("effect (3): value = '%s', text='%s'", value, text)
         setText(value)
       }
     }
@@ -46,7 +51,7 @@ export default function Search(
 
   // If the input component value changes, update text state to match and notify supplied listener.
   const onChangeText = useCallback((s: string) => {
-    // console.log(`Search.onChangeText: s = '${s}', text='${text}'`)
+    logger.trace("onChangeText: s = '%s', text='%s'", s, text)
     setText(s)
     onChangeValue(s)
   }, [onChangeValue])

@@ -32,6 +32,9 @@ import usePageLogic from "@/hooks/use-page-logic"
 import { PublisherInput, TrackedEntityQueryFilter } from '@/app/model/schema'
 import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter'
 import useTrackedEntityQueryFilter from '@/hooks/use-tracked-entity-query-filter'
+import { LoggerEx, page } from '@/lib/logger'
+
+const logger = new LoggerEx(page, "[Publishers] ")
 
 function createFieldValues(publisher?: Publisher) : PublisherFieldValues {
   return {
@@ -57,6 +60,8 @@ function createInput(fieldValues: PublisherFieldValues, id?: string) : Publisher
 }
 
 export default function Publishers() {
+  logger.debug("render")
+
   const filterLogic = useTrackedEntityQueryFilter()
   const {
     loading,

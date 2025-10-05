@@ -23,6 +23,9 @@ import { TopicQueryFilter } from "@/app/model/schema"
 import { useCallback } from "react"
 import { QueryFilterLogic } from "./use-page-logic"
 import { createFilterImpl, createSearchParamsImpl } from "@/lib/utils"
+import { hook, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(hook, "[useTopicQueryFilter] ")
 
 type FilterValue = boolean | string | string[] | undefined
 
@@ -53,6 +56,8 @@ function convertFilterValue(key: string, value: FilterValue) : string | undefine
 }
 
 export default function useTopicQueryFilter() : QueryFilterLogic<TopicQueryFilter> {
+  logger.debug("call")
+
   const createFilter = useCallback((searchParams: URLSearchParams) => {
     return createFilterImpl<TopicQueryFilter, FilterValue>(searchParams, convertQueryValue)
   }, [])

@@ -38,6 +38,9 @@ import InputEx from "../ext/input-ex"
 import { GlobalContext, QueryState } from "@/lib/context"
 import ButtonEx from "../ext/button-ex"
 import { RotateCw } from "lucide-react"
+import { filter, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(filter, "[LogTableFilter] ")
 
 export default function LogTableFilter(
   {
@@ -45,6 +48,7 @@ export default function LogTableFilter(
     refetch,
     loadingPathWithSearchParams,
   } : DataTableFilterProps<Log>) {
+  logger.debug("render")
 
   const {queries, setFilter} = useContext(GlobalContext)
   const {filter} = queries["Log"] as QueryState<LogQueryFilter>
@@ -64,7 +68,7 @@ export default function LogTableFilter(
     transactionKind: string,
     from: Date | undefined,
     to: Date | undefined) => {
-      // console.log(`LogTableFilter.updateFilter: entityKind='${entityKind}', entityId='${entityId}', userId=${userId}, transactionKind='${transactionKind}', from='${from}', to='${to}'`)
+      logger.trace("updateFilter: entityKind=%s, entityId=%s, userId=%s, transactionKind=%s, from=%s, to=%s", entityKind, entityId, userId, transactionKind, from, to)
       if (!loadingPathWithSearchParams) {
         const newFilter = {
           entityKind: entityKind || undefined,
@@ -75,7 +79,7 @@ export default function LogTableFilter(
           to: to
         } as LogQueryFilter
         if (!isEqual(newFilter as LogQueryFilter, filter)) {
-          // console.log(`LogTableFilter.updateFilter from ${JSON.stringify(filter)} to ${JSON.stringify(newFilter)}`)
+          logger.trace("updateFilter from %o to %o", filter, newFilter)
           setFilter("Log", newFilter)
         }
       }
@@ -84,9 +88,9 @@ export default function LogTableFilter(
   // If the filter changes, refresh the UI to match.
   const prevFilter = useRef<LogQueryFilter>({})
   useEffect(() => {
-    // console.log(`LogTableFilter.effect2 (1)`)
+    logger.trace("effect2 (1)")
     if (!isEqual(filter, prevFilter.current)) {
-      // console.log(`LogTableFilter.effect2 (2): prevFilter=${JSON.stringify(prevFilter.current)}, filter=${JSON.stringify(filter)}`)
+      logger.trace("effect2 (2): filter changed from %o to %o", prevFilter.current, filter)
       prevFilter.current = filter
 
       if (entityKind !== (filter?.entityKind?.[0] ?? ''))
@@ -167,7 +171,7 @@ export default function LogTableFilter(
   if (result.error) {
     // TODO: display user-friendly error notification
     toast.error(`Operation failed:\n\n${result.error.message}`)
-    console.error(result.error)
+    logger.error("Operation failed: %o", result.error)
   }
   const users = (result.data?.users as IPage<User>)?.content
 

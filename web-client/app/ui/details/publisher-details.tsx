@@ -47,6 +47,9 @@ import InputEx from "../ext/input-ex"
 import SelectTriggerEx from "../ext/select-ex"
 import LinkEx from "../ext/link-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
+import { detail, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(detail, "[PublisherDetails] ")
 
 const countries = rawCountries as unknown as Country[]
 
@@ -62,6 +65,7 @@ export default function PublisherDetails(
     setMode: Dispatch<SetStateAction<DetailMode>>
     onFormAction: FormActionHandler<PublisherFieldValues>
   }) {
+  logger.debug("render")
 
   const form = useFormContext<PublisherFieldValues>()
   const { updating } = state

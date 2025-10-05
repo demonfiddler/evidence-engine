@@ -19,14 +19,17 @@
 
 import Authority from '@/app/model/Authority'
 import User from '@/app/model/User'
+import { hook, LoggerEx } from '@/lib/logger'
 import { isEqual } from '@/lib/utils'
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode, useMemo, useRef } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode, useRef } from 'react'
+
+const logger = new LoggerEx(hook, "[useAuth] ")
 
 const GRAPHQL_ENDPOINT_URL = new URL(process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL ?? '')
 const baseUrl = getUrl('/').toString()
 const loginUrl = getUrl("/login")
-const logoutUrl = getUrl("/logout");
-const graphQlUrl = getUrl("/graphql");
+const logoutUrl = getUrl("/logout")
+const graphQlUrl = getUrl("/graphql")
 
 function getUrl(path: string, query?: string, fragment?: string) {
   const url = new URL(path, GRAPHQL_ENDPOINT_URL)
@@ -38,11 +41,11 @@ function getUrl(path: string, query?: string, fragment?: string) {
 }
 
 interface AuthContextType {
-  loading: boolean;
-  user: User | null;
-  hasAuthority: (authority: Authority) => boolean;
-  login: (username: string, password: string, rememberMe: boolean) => Promise<void>;
-  logout: () => void;
+  loading: boolean
+  user: User | null
+  hasAuthority: (authority: Authority) => boolean
+  login: (username: string, password: string, rememberMe: boolean) => Promise<void>
+  logout: () => void
 }
 
 const defaultAuth : AuthContextType = {
@@ -50,27 +53,27 @@ const defaultAuth : AuthContextType = {
   user: null,
   hasAuthority: (authority: string) => false,
   login: (u, p) => {throw new Error("No AuthProvider context")},
-  logout: () => {throw new Error("No AuthProvider context")}
+  logout: () => {throw new Error("No AuthProvider context")},
 }
 
-export const AuthContext = createContext<AuthContextType>(defaultAuth);
+export const AuthContext = createContext<AuthContextType>(defaultAuth)
 
 function checkResponse(response: Response, action: string) {
   // As Spring Security is presently configured:
   // - POST to /login redirects to the base URL, which doesn't exist.
   // - POST to /logout redirects to the /login page, which does exist.
   if (response.status != 0 && !response.ok && !response.redirected || !(response.status == 0 && response.type == "opaqueredirect")) {
-    // console.log(`status = ${response.status}, statusText = ${response.statusText}, ok = ${response.ok}, redirected = ${response.redirected}, type = ${response.type}`)
-    throw new Error(`${action} failed: status = ${response.status}: ${response.statusText}`);
+    logger.trace("status = %d, statusText = %s, ok = %s, redirected = %s, type = %s", response.status, response.statusText, response.ok, response.redirected, response.type)
+    throw new Error(`${action} failed: status = ${response.status}: ${response.statusText}`)
   }
 }
 
 async function fetchCsrfToken() {
-  const res = await fetch(loginUrl, { credentials: 'omit' });
-  const html = await res.text();
-  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const res = await fetch(loginUrl, { credentials: 'omit' })
+  const html = await res.text()
+  const doc = new DOMParser().parseFromString(html, 'text/html')
   const _csrf = doc.evaluate('//input[@name="_csrf"]/@value', doc, null, XPathResult.STRING_TYPE, null).stringValue
-  return _csrf;
+  return _csrf
 }
 
 async function login(username: string, password: string, rememberMe: boolean) {
@@ -83,6 +86,7 @@ async function login(username: string, password: string, rememberMe: boolean) {
     body: new URLSearchParams({ username, password, _csrf, "remember-me": rememberMe ? "on" : "" }),
   });
   checkResponse(response, "Login")
+  logger.info("Signed in successfully")
 }
 
 async function logout() {
@@ -100,10 +104,10 @@ async function logout() {
   document.cookie = 'JSESSIONID=; Max-Age=0'
   document.cookie = 'remember-me=; Max-Age=0'
   checkResponse(response, "Logout")
-  console.debug("Logged out");
+  logger.info("Signed out successfully")
 }
 
-async function fetchUser() {
+async function fetchUser(requireUser: boolean) {
   const response = await fetch(graphQlUrl, {
     method: 'POST',
     credentials: 'include',
@@ -125,12 +129,11 @@ async function fetchUser() {
         }
       `
     }),
-  });
+  })
   const { data, error } = await response.json()
   if (error)
     throw new Error(error)
-  if (!data?.currentUser)
-    // FIXME: don't throw this error for anonymous users.
+  if (requireUser && !data?.currentUser)
     throw new Error("Invalid credentials")
   return data?.currentUser
 }
@@ -140,44 +143,46 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({children} : AuthProviderProps) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  logger.debug("AuthProvider render")
+
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
 
   const initialize = useCallback(async () => {
     try {
-      const me = await fetchUser()
+      const me = await fetchUser(false)
       setUser(me)
-      // console.log(`AuthProvider.initialize: user initialised to ${JSON.stringify(me)}`)
+      logger.trace("initialize: user initialised to %o", me)
     } catch (e) {
-      console.error(e)
+      logger.error("Caught exception: %o", String(e))
       setUser(null)
     } finally {
       setLoading(false)
     }
   }, [])
 
-  useEffect(() => { initialize() }, [initialize]);
+  useEffect(() => { initialize() }, [initialize])
 
   // const prevUser = useRef(user)
   // if (user !== prevUser.current) {
   //   if (isEqual(user, prevUser.current))
-  //     console.log(`AuthProvider.render: user has changed but is equal in value: ${JSON.stringify(prevUser.current)}`)
+  //     logger.trace("render: user has changed but is equal in value: %o", prevUser.current)
   //   else
-  //     console.log(`AuthProvider.render: user has changed from ${JSON.stringify(prevUser.current)} to ${JSON.stringify(user)}`)
+  //     logger.trace("render: user has changed from %o to %o", prevUser.current, user)
   //   prevUser.current = user
   // }
   const hasAuthority = useCallback((authority: Authority) => user?.authorities?.includes(authority) ?? false, [user])
   // const prevHasAuthority = useRef(hasAuthority)
   // if (hasAuthority !== prevHasAuthority.current) {
-  //   console.log(`AuthProvider.render: hasAuthority has changed from ${typeof prevHasAuthority.current} to ${typeof hasAuthority}`)
+  //   logger.trace("render: hasAuthority has changed from %s to %s", typeof prevHasAuthority.current, typeof hasAuthority)
   // }
-  // console.log(`AuthProvider.render: hasAuthority = ${typeof hasAuthority}`)
+  logger.trace("render: hasAuthority = ${typeof hasAuthority}", typeof hasAuthority)
 
   const doLogin = useCallback(async (username: string, password: string, rememberMe: boolean) => {
     setLoading(true)
     try {
       await login(username, password, rememberMe)
-      const me = await fetchUser()
+      const me = await fetchUser(true)
       setUser(me)
     } finally {
       setLoading(false)
@@ -198,10 +203,10 @@ export function AuthProvider({children} : AuthProviderProps) {
   const prevAuth = useRef(defaultAuth)
   let auth = { loading, user, hasAuthority, login: doLogin, logout: doLogout } as AuthContextType
   if (isEqual(auth, prevAuth.current)) {
-    // console.log(`AuthProvider.render: reusing previous auth ${JSON.stringify(prevAuth.current)}`)
+    logger.trace("render: reusing previous auth %o", prevAuth.current)
     auth = prevAuth.current
   } else {
-    // console.log(`AuthProvider.render: auth has changed from ${JSON.stringify(prevAuth.current)} to ${JSON.stringify(auth)}`)
+    logger.trace("render: auth has changed from %o to %o", prevAuth.current, auth)
     prevAuth.current = auth
   }
 
@@ -215,6 +220,8 @@ export function AuthProvider({children} : AuthProviderProps) {
 }
 
 export default function useAuth() : AuthContextType {
+  logger.debug("call")
+
   const ctx = useContext(AuthContext)
   if (!ctx)
     throw new Error('useAuth must be inside AuthProvider')

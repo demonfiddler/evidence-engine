@@ -17,23 +17,4 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-'use client'
-
-import { LoggerEx, page } from "@/lib/logger";
-import QuestionMarkCircleIcon from "@heroicons/react/24/outline/QuestionMarkCircleIcon"
-
-const logger = new LoggerEx(page, "[Help] ")
-
-export default function Help() {
-  logger.debug("render")
-
-  return (
-    <main className="flex flex-col m-8 gap-8 w-1/2 self-center">
-      <div className="flex flex-row items-center">
-        <QuestionMarkCircleIcon className="w-8 h-8"/>
-        &nbsp;
-        <h1>Help</h1>
-      </div>
-    </main>
-  );
-}
+export type anything = boolean | number | string | object | null | undefined

@@ -31,6 +31,9 @@ import { BaseEntityInput, LogQueryFilter } from "@/app/model/schema"
 import usePageLogic from "@/hooks/use-page-logic"
 import { LogFieldValues } from '@/app/ui/validators/log'
 import useLogQueryFilter from '@/hooks/use-log-query-filter'
+import { LoggerEx, page } from '@/lib/logger'
+
+const logger = new LoggerEx(page, "[Log] ")
 
 function createFieldValues(record?: Log) : LogFieldValues {
   return {
@@ -45,6 +48,8 @@ function createFieldValues(record?: Log) : LogFieldValues {
 }
 
 export default function Logs() {
+  logger.debug("render")
+
   const filterLogic = useLogQueryFilter()
   const {
     loading,

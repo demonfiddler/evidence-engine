@@ -27,6 +27,9 @@ import { DetailState } from "./detail-actions"
 import { formatDateTime, getRecordLabel } from "@/lib/utils"
 import InputEx from "../ext/input-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
+import { detail, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(detail, "[TrackingDetails] ")
 
 export default function TrackingDetails(
   {
@@ -38,6 +41,7 @@ export default function TrackingDetails(
     record: ITrackedEntity | undefined
     state: DetailState
   }) {
+  logger.debug("render")
 
   return (
     <div className="w-full grid grid-cols-5 mb-2 gap-2">

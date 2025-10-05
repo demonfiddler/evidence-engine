@@ -77,6 +77,9 @@ import { getExpandedRowModelEx } from "./data-table-expanded-row-model"
 import { DetailState } from "../details/detail-actions"
 import DataTableFilterProps from "./data-table-filter"
 import { QueryFilter } from "@/app/model/schema"
+import { LoggerEx, table } from "@/lib/logger"
+
+const logger = new LoggerEx(table, "[DataTable] ")
 
 function DragAlongCell<TData>({ cell }: { cell: Cell<TData, unknown> }) {
   const { isDragging, setNodeRef, transform } = useSortable({
@@ -136,6 +139,8 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
   refetch,
   loadingPathWithSearchParams,
 }: DataTableProps<TData, TValue>) {
+  logger.debug("render")
+
   const {
     selectedRecords,
     columns : columnsMap,
@@ -155,35 +160,35 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
   const onColumnOrderChange = useCallback((updaterOrValue: Updater<ColumnOrderState>) => {
     const newColumnOrder = getValue(updaterOrValue, columnOrder)
     if (!isEqual(newColumnOrder, columnOrder)) {
-      // console.log(`DataTable.onColumnOrderChange: ${recordKind} columnOrder changed from ${JSON.stringify(columnOrder)} to ${JSON.stringify(newColumnOrder)}`)
+      logger.trace("onColumnOrderChange: %s columnOrder changed from %o to %o", recordKind, columnOrder, newColumnOrder)
       setColumnOrder(recordKind, newColumnOrder)
     }
   }, [recordKind, columnOrder, setColumnOrder])
   const onColumnSizingChange = useCallback((updaterOrValue: Updater<ColumnSizingState>) => {
     const newColumnSizing = getValue(updaterOrValue, columnSizing)
     if (!isEqual(newColumnSizing, columnSizing)) {
-      // console.log(`DataTable.onColumnSizingChange: ${recordKind} columnSizing changed from ${JSON.stringify(columnSizing)} to ${JSON.stringify(newColumnSizing)}`)
+      logger.trace("onColumnSizingChange: %s columnSizing changed from %o to %o", recordKind, columnSizing, newColumnSizing)
       setColumnSizing(recordKind, newColumnSizing)
     }
   }, [recordKind, columnSizing, setColumnSizing])
   const onColumnVisibilityChange = useCallback((updaterOrValue: Updater<VisibilityState>) => {
     const newColumnVisibility = getValue(updaterOrValue, columnVisibility)
     if (!isEqual(newColumnVisibility, columnVisibility)) {
-      // console.log(`DataTable.onColumnVisibilityChange: ${recordKind} columnVisibility changed from ${JSON.stringify(columnVisibility)} to ${JSON.stringify(newColumnVisibility)}`)
+      logger.trace("onColumnVisibilityChange: %s columnVisibility changed from %o to %o", recordKind, columnVisibility, newColumnVisibility)
       setColumnVisibility(recordKind, newColumnVisibility)
     }
   }, [recordKind, columnVisibility, setColumnVisibility])
   const onSortingChange = useCallback((updaterOrValue: Updater<SortingState>) => {
     const newSorting = getValue(updaterOrValue, sorting)
     if (!isEqual(newSorting, sorting)) {
-      // console.log(`DataTable.onSortingChange: ${recordKind} sorting changed from ${JSON.stringify(sorting)} to ${JSON.stringify(newSorting)}`)
+      logger.trace("onSortingChange: %s sorting changed from %o to %o", recordKind, sorting, newSorting)
       setSorting(recordKind, newSorting)
     }
   }, [recordKind, sorting, setSorting])
   const onPaginationChange = useCallback((updaterOrValue: Updater<PaginationState>) => {
     const newPagination = getValue(updaterOrValue, pagination)
     if (!isEqual(newPagination, pagination)) {
-      // console.log(`DataTable.onPaginationChange: ${recordKind} pagination changed from ${JSON.stringify(pagination)} to ${JSON.stringify(newPagination)}`)
+      logger.trace("onPaginationChange: %s pagination changed from %o to %o", recordKind, pagination, newPagination)
       setPagination(recordKind, newPagination)
     }
   }, [recordKind, pagination, setPagination])
@@ -333,7 +338,7 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
         ...table.options,
         rowCount: newTotalElements,
       })
-      // console.log(`DataTable.effect: ${recordKind} totalElements changed from ${prevTotalElements.current} to ${newTotalElements}`)
+      logger.trace(`effect: %s totalElements changed from %d to %d`, recordKind, prevTotalElements.current, newTotalElements)
       prevTotalElements.current = newTotalElements
     }
   }, [manualPagination, table, page]);

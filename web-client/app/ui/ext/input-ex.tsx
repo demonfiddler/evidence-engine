@@ -24,6 +24,9 @@ import { ChangeEvent, ComponentProps, useCallback, useEffect, useRef, useState }
 import { useDebounceValue } from "usehooks-ts"
 import Help, { HelpProps } from "../misc/help"
 import { cn } from "@/lib/utils"
+import { component, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(component, "[InputEx] ")
 
 type InputExProps = ComponentProps<"input"> & HelpProps & {
     delay?: number
@@ -33,17 +36,19 @@ type InputExProps = ComponentProps<"input"> & HelpProps & {
 export default function InputEx(
   {help, outerClassName, value, onChange, delay, clearOnEscape, ...props} : InputExProps
 ) {
+  logger.debug("render")
+
   const [text, setText] = useState(value)
   const [event, setEvent] = useDebounceValue<ChangeEvent<HTMLInputElement>|undefined>(undefined, delay || 0)
 
   // If the supplied value changes externally, update text to match.
   const prevValue = useRef<string | number | readonly string[] | undefined>('')
   useEffect(() => {
-    // console.log(`InputEx.effect1 (1): value='${value}' prevValue='${prevValue.current}'`)
+    logger.trace("effect1 (1): value='%s' prevValue='%s'", value, prevValue.current)
     if (value !== prevValue.current) {
       prevValue.current = value
       if (value !== text) {
-        // console.log(`InputEx.effect1 (2): value='${value}' text='${text}'`)
+        logger.trace("effect1 (2): value='%s' text='%s'", value, text)
         setText(value)
         if (event && onChange) {
           event.target.value = value?.toString() ?? ''
@@ -56,17 +61,17 @@ export default function InputEx(
   // When the debounced event changes, invoke the supplied listener function.
   const prevEvent = useRef(event)
   useEffect(() => {
-    // console.log(`InputEx.effect2 (1): event.target.value='${event?.target.value}'`)
+    logger.trace("effect2 (1): event.target.value='%s'", event?.target.value)
     if (event && event !== prevEvent.current) {
       prevEvent.current = event
-      // console.log(`InputEx.effect2 (2)`)
+      logger.trace("effect2 (2)")
       onChange?.(event)
     }
   }, [event, onChange]) // previously [event]
 
   // On typing, sync the controlled text value and trigger event debouncing.
   const onChangeText = useCallback((e:  ChangeEvent<HTMLInputElement>) => {
-    // console.log(`InputEx.onChangeText: e.target.value='${e?.target.value}'`)
+    logger.trace("onChangeText: e.target.value='%s'", e?.target.value)
     setText(e.target.value ?? '')
     setEvent(e)
   }, [setEvent])

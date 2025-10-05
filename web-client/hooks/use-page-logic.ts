@@ -39,6 +39,9 @@ import useAuth from "./use-auth"
 import { introspect } from "@/lib/graphql-utils"
 import { CREATE_ENTITY_LINK } from "@/lib/graphql-queries"
 import { getRecordLinkProperties, isEmpty, isEqual } from "@/lib/utils"
+import { hook, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(hook, "[usePageLogic] ")
 
 export type Options = {[key: string]: any}
 export type FormActionHandler<TFieldValues extends FieldValues> = (command: string, fieldValues?: TFieldValues, options?: Options) => void
@@ -169,6 +172,7 @@ export default function usePageLogic<
   }
   : PageConfiguration<TData, TFilter, TFieldValues, TInput>
   ) : PageLogic<TData, TFieldValues> {
+  logger.debug("call")
 
   const router = useRouter();
   const pathname = usePathname();
@@ -202,7 +206,7 @@ export default function usePageLogic<
       if (!searchParamsEqual(newSearchParams, searchParams)) {
         // This call updates the address bar URL without doing a page reload.
         router.replace(`?${newSearchParams.toString()}`, { scroll: false })
-        // console.log(`usePageLogic.updateUrlQuery: Updated query from '${searchParams.toString()}' to '${newSearchParams.toString()}'`)
+        logger.trace("updateUrlQuery: Updated query from '%s' to '%s'", searchParams, newSearchParams)
       }
     }
   }, [loadingPathWithSearchParamsRef, filter, searchParams, router])
@@ -210,9 +214,9 @@ export default function usePageLogic<
   // Whenever path changes, adjust filter or query string as appropriate.
   const prevPath = useRef('')
   useEffect(() => {
-    // console.log(`usePageLogic.effect2 (1)`)
+    logger.trace("effect2 (1)")
     if (pathname !== prevPath.current) {
-      // console.log(`usePageLogic.effect2 (2) path changed from '${prevPath.current}' to '${pathname}'`)
+      logger.trace("effect2 (2) path changed from '%s' to '%s'", prevPath.current, pathname)
       prevPath.current = pathname;
 
       // If navigating to a URL with a query string, replace filter to match query string and store in global context.
@@ -220,7 +224,7 @@ export default function usePageLogic<
         if (filterLogic?.createFilter) {
           const newFilter = filterLogic.createFilter(searchParams)
           if (!isEqual(newFilter, filter)) {
-            // console.log(`usePageLogic.effect2 (3): searchParams=?${searchParams.toString()}, so updating filter from ${JSON.stringify(filter)} to ${JSON.stringify(newFilter)}`)
+            logger.trace("effect2 (3): searchParams=?%s, so updating filter from %o to %o", searchParams, filter, newFilter)
             setFilter(recordKind, newFilter)
           }
 
@@ -231,7 +235,7 @@ export default function usePageLogic<
             frameId2 = requestAnimationFrame(() => {
               // NOTE: there's no need to worry about cancelling the animation frames in the event that the component
               // unmounts before the frame has run, since all we are doing here is to set a field on a reference.
-              // console.log("usePageLogic.effect2 (4): cleanup")
+              logger.trace("effect2 (4): cleanup")
               loadingPathWithSearchParamsRef.current = false
             })
           })
@@ -261,7 +265,7 @@ export default function usePageLogic<
       }
     }
     if (manualPagination && !isEqual(newPageSort, prevPageSort.current)) {
-      // console.log(`usePageLogic.memo ${recordKind}s pageSort changed from ${JSON.stringify(prevPageSort.current)} to ${JSON.stringify(newPageSort)}`)
+      logger.trace("memo %ss pageSort changed from %o to %o", recordKind, prevPageSort.current, newPageSort)
       prevPageSort.current = newPageSort
     } else {
       newPageSort = prevPageSort.current
@@ -298,12 +302,12 @@ export default function usePageLogic<
   const prevFilter = useRef<TFilter>(filter);
   const prevPageSort2 = useRef<PageableInput>(pageSort);
   useEffect(() => {
-    // console.log(`usePageLogic.effect3 (1)`)
+    logger.trace("effect3 (1)")
     // Don't do this if we are still loading a path with search params or if neither filter nor pagination has changed.
     if (!loadingPathWithSearchParamsRef.current && (!isEqual(filter, prevFilter.current) ||
       manualPagination && !isEqual(pageSort, prevPageSort2.current))) {
 
-      // console.log(`usePageLogic.effect3 (2)`)
+      logger.trace("effect3 (2)")
       prevFilter.current = filter
       prevPageSort2.current = pageSort
       updateUrlQuery()
@@ -317,7 +321,7 @@ export default function usePageLogic<
   if (error) {
     // TODO: display user-friendly error notification
     toast.error(`Operation failed:\n\n${error.message}`)
-    console.error(error)
+    logger.error("Operation failed: %o", error)
   }
 
   let rawPage = readResult.loading
@@ -465,7 +469,7 @@ export default function usePageLogic<
         form?.reset(fieldValues ?? origFieldValues)
         break
       default:
-        console.error(`Unknown command '${command}'`)
+        logger.error("Unknown command: %s", command)
     }
     // Dependencies assume (reasonably) that createOp, updateOp, deleteOp, createVarName, updateVarName, deleteVarName
     // will never change during the page lifetime.
@@ -490,8 +494,6 @@ export default function usePageLogic<
       dispatch({command: "init", page: rawPage});
   }, [rawPage, dispatch]);
   */
-
-  // console.log(`${settings.recordKind}s() page: ${JSON.stringify(page)})`)
 
   const pageLogic = useMemo<PageLogic<TData, TFieldValues>>(() => {
     return {

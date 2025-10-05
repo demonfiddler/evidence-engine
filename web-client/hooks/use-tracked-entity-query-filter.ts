@@ -23,6 +23,9 @@ import { TrackedEntityQueryFilter } from "@/app/model/schema"
 import { useCallback } from "react"
 import { QueryFilterLogic } from "./use-page-logic"
 import { createFilterImpl, createSearchParamsImpl } from "@/lib/utils"
+import { hook, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(hook, "[useTrackedEntityQueryFilter] ")
 
 type FilterValue = boolean | string | string[] | undefined
 
@@ -54,6 +57,8 @@ function convertFilterValue(key: string, value: FilterValue) : string | undefine
 }
 
 export default function useTrackedEntityQueryFilter() : QueryFilterLogic<TrackedEntityQueryFilter> {
+  logger.debug("call")
+
   const createFilter = useCallback((searchParams: URLSearchParams) => {
     return createFilterImpl<TrackedEntityQueryFilter, FilterValue>(searchParams, convertQueryValue)
   }, [])

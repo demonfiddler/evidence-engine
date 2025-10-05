@@ -19,10 +19,6 @@
 
 'use client'
 
-if (process.env.NODE_ENV === 'development') {
-  // require('../wdyr');
-}
-
 import '@/app/ui/global.css'
 import { inter } from '@/app/ui/fonts'
 import { Toaster } from "@/components/ui/sonner"
@@ -40,7 +36,7 @@ import {
 import RecordKind from './model/RecordKind'
 import ILinkableEntity from './model/ILinkableEntity'
 import { getRecordLabel } from '@/lib/utils'
-import { Suspense, useCallback, useEffect, useMemo, useRef } from 'react'
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSessionStorage } from 'usehooks-ts'
 import User from './model/User'
 import { ApolloProvider } from '@apollo/client'
@@ -62,6 +58,14 @@ import { columns as publisherColumns, columnVisibility as publisherColumnVisibil
 import { columns as quotationColumns, columnVisibility as quotationColumnVisibility } from "@/app/ui/tables/quotation-columns"
 import { columns as topicColumns, columnVisibility as topicColumnVisibility } from "@/app/ui/tables/topic-columns"
 import { columns as userColumns, columnVisibility as userColumnVisibility } from "@/app/ui/tables/user-columns"
+import { layout, LoggerEx } from '@/lib/logger'
+import LoggingLevelDrawer from './ui/misc/logging-level-drawer'
+
+const logger = new LoggerEx(layout, "[RootLayout] ")
+
+if (process.env.NODE_ENV === 'development') {
+  // require('../wdyr');
+}
 
 const defaultColumnSettings = {
   None: {columns: [], visibility: {}},
@@ -189,7 +193,7 @@ type RecordKindValueOpt<TValue> = Omit<RecordKindValue<TValue>, "value"> & {
 }
 
 function reducer(draft: AppState, action: ReducerArg) {
-  // console.log(`RootLayout.reducer(action: ${JSON.stringify(action)})`)
+  logger.trace("reducer(action: %o)", action)
   draft.modified = true
   switch (action.command) {
     case "flush":
@@ -337,7 +341,7 @@ function FlushOnPathChange({flushFn} : {flushFn: () => void}) {
 
   useEffect(() => {
     if (prevPath.current !== pathname) {
-      // console.log(`Navigating from ${prevPath.current} to ${pathname}`)
+      logger.debug("Navigating from %s to %s", prevPath.current, pathname)
       flushFn();
       prevPath.current = pathname;
     }
@@ -351,6 +355,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  logger.debug("render")
+
   const [appStateSs/*, storeAppStateSs*/] = useSessionStorage<AppState>('app-state', defaultAppState)
   const [appState, dispatch] = useImmerReducer<AppState, ReducerArg>(reducer, appStateSs)
 
@@ -470,12 +476,12 @@ export default function RootLayout({
     if (appState.modified) {
       // storeAppStateSs(appState)
       dispatch({command: "flush", value: undefined})
-      // console.log("Flushed app state to session storage (would have!)")
+      logger.debug("Flushed app state to session storage (would have!)")
     }
   }, [dispatch, appState])
 
   const globalContext = useMemo(() => {
-    // console.log(`RootLayout.memo: updating global context`)
+    logger.debug("memo: refreshing global context")
     return {
       ...appState,
       setDefaults,
@@ -539,12 +545,18 @@ export default function RootLayout({
   //   return () => router.events.off('routeChangeStart', storeAppState)
   // }, [router, storeAppState])
 
+  const [logLevelsDrawerOpen, setLogLevelsDrawerOpen] = useState(false)
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLBodyElement>) => {
+    if (e.key === 'l' && e.ctrlKey && e.altKey)
+      setLogLevelsDrawerOpen(!logLevelsDrawerOpen)
+  }, [])
+
   return (
     <html lang="en">
       <head>
         <title>Evidence Engine</title>
       </head>
-      <body className={`${inter.className} antialiased`}>
+      <body className={`${inter.className} antialiased`} onKeyDown={handleKeyDown}>
         <FlushOnPathChange flushFn={storeAppState} />
         <AuthProvider>
           <ApolloProvider client={apolloClient}>
@@ -556,6 +568,7 @@ export default function RootLayout({
             </GlobalContext>
           </ApolloProvider>
         </AuthProvider>
+        <LoggingLevelDrawer open={logLevelsDrawerOpen} onOpenChange={setLogLevelsDrawerOpen} />
       </body>
     </html>
   )

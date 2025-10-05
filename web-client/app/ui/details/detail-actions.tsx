@@ -31,6 +31,9 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { GlobalContext } from "@/lib/context"
 import ButtonEx from "../ext/button-ex"
 import InputEx from "../ext/input-ex"
+import { detail, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(detail, "[DetailActions] ")
 
 export type ClickHandler = () => void
 
@@ -66,6 +69,7 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
     setMode: Dispatch<SetStateAction<DetailMode>>
     onFormAction: FormActionHandler<V>
   }) {
+  logger.debug("render")
 
   const {masterTopicId, masterRecordKind, masterRecordId, masterRecordLabel} = useContext(GlobalContext)
 
@@ -113,7 +117,7 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
   const isLinkableEntity = ["Claim", "Declaration", "Person", "Publication", "Quotation"].includes(recordKind)
 
   const handleNewOrCancel = useCallback(() => {
-    // console.log(`ENTER handleNewOrCancel(), state = ${JSON.stringify(state)}, isDirty = ${JSON.stringify(form.formState.isDirty)}, isValid = ${JSON.stringify(form.formState.isValid)}`)
+    logger.trace("ENTER handleNewOrCancel(): state = %o, isDirty = %s, isValid = %s", state, form.formState.isDirty, form.formState.isValid)
     if (state.updating) {
       // 'Cancel' logic
       if (form.formState.isDirty) {
@@ -133,7 +137,7 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
   }, [state, form, recordLabel, recordKind, onFormAction, setMode])
 
   const handleEditOrSave = useCallback(() => {
-    // console.log(`ENTER handleEditOrSave(), state = ${JSON.stringify(state)}, isDirty = ${JSON.stringify(form.formState.isDirty)}, isValid = ${JSON.stringify(form.formState.isValid)}`)
+    logger.trace("ENTER handleEditOrSave(): state = %o, isDirty = %s, isValid = %s", state, form.formState.isDirty, form.formState.isValid)
     switch (state.mode) {
       case "create":
         // 'Create' logic

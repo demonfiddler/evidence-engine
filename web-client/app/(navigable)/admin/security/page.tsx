@@ -54,6 +54,9 @@ import { GroupInput, TrackedEntityQueryFilter, UserInput } from "@/app/model/sch
 import { useMutation } from "@apollo/client"
 import LinkableEntityTableFilter from "@/app/ui/filter/linkable-entity-table-filter"
 import { GlobalContext, SecurityPageTabState } from "@/lib/context"
+import { LoggerEx, page } from "@/lib/logger"
+
+const logger = new LoggerEx(page, "[Security] ")
 
 function createAuthoritiesFieldValues(authorities?: Authority[]) {
   return {
@@ -150,6 +153,8 @@ function createDummyPage(users?: User[]) : IPage<User> | undefined {
 }
 
 export default function Security() {
+  logger.debug("render")
+
   const {
     loading: userLoading,
     page: userPage,

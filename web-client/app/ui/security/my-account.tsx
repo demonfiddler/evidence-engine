@@ -38,8 +38,13 @@ import { useState } from "react"
 import ProfileDialog from "./profile"
 import PasswordDialog from "./password"
 import SettingsDialog from "./settings"
+import { dialog, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(dialog, "[MyAccount] ")
 
 export default function MyAccount({className} : {className: string}) {
+  logger.debug("render")
+
   const {user, logout} = useAuth()
   const [passwordOpen, setPasswordOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)

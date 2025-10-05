@@ -32,6 +32,9 @@ import { toDate, toIsoDateString } from '@/lib/utils'
 import { LinkableEntityQueryFilter, QuotationInput } from '@/app/model/schema'
 import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter'
 import useLinkableEntityQueryFilter from '@/hooks/use-linkable-entity-query-filter'
+import { LoggerEx, page } from '@/lib/logger'
+
+const logger = new LoggerEx(page, "[Quotations] ")
 
 function createFieldValues(quotation?: Quotation) {
   return {
@@ -59,6 +62,8 @@ function createInput(fieldValues: QuotationFieldValues, id?: string) : Quotation
 }
 
 export default function Quotations() {
+  logger.debug("render")
+
   const filterLogic = useLinkableEntityQueryFilter()
   const {
     loading,

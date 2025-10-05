@@ -32,12 +32,17 @@ import LabelEx from "../ext/label-ex"
 import ButtonEx from "../ext/button-ex"
 import { RotateCw } from "lucide-react"
 import { isEqual } from "@/lib/utils"
+import { filter, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(filter, "[TopicTableFilter] ")
 
 export default function TopicTableFilter({
   table,
   refetch,
   loadingPathWithSearchParams,
 }: DataTableFilterProps<Topic>) {
+  logger.debug("render")
+
   const {user} = useAuth()
   const {queries, setFilter} = useContext(GlobalContext)
   const {filter} = queries["Topic"] as QueryState<TopicQueryFilter>
@@ -48,7 +53,7 @@ export default function TopicTableFilter({
   const [recordId, setRecordId] = useState(filter.recordId ?? '')
 
   const updateFilter = useCallback((status: string, text: string, advanced: boolean, treeView: boolean, recordId: string) => {
-    // console.log(`TopicTableFilter.updateFilter: status='${status}', text='${text}', advanced=${advanced}, recursive=${recursive}, recordId='${recordId}'`)
+    logger.trace("updateFilter: status=%s, text=%s, advanced=%s, recursive=%s, recordId=%s", status, text, advanced, treeView, recordId)
     if (!loadingPathWithSearchParams) {
       const newFilter = {
         status: status ? [status] : undefined,
@@ -58,7 +63,7 @@ export default function TopicTableFilter({
         recordId: recordId || undefined,
       } as TopicQueryFilter
       if (!isEqual(newFilter, filter)) {
-        // console.log(`TopicTableFilter.updateFilter from ${JSON.stringify(filter)} to ${JSON.stringify(newFilter)}`)
+        logger.trace("updateFilter from %o to %o", filter, newFilter)
         setFilter("Topic", newFilter)
       }
     }
@@ -67,9 +72,9 @@ export default function TopicTableFilter({
   // If the filter changes, refresh the UI to match.
   const prevFilter = useRef<TopicQueryFilter>({})
   useEffect(() => {
-    // console.log(`TopicTableFilter.effect1 (1)`)
+    logger.trace("effect1 (1)")
     if (!isEqual(filter, prevFilter.current)) {
-      // console.log(`TopicTableFilter.effect1 (2): prevFilter=${JSON.stringify(prevFilter.current)}, filter=${JSON.stringify(filter)}`)
+      logger.trace("effect1 (2): filter changed from %o to %o", prevFilter.current, filter)
       prevFilter.current = filter
 
       if (status !== (filter?.status?.[0] ?? ''))

@@ -39,6 +39,9 @@ import { FormActionHandler } from "@/hooks/use-page-logic"
 import InputEx from "../ext/input-ex"
 import CheckboxEx from "../ext/checkbox-ex"
 import FieldsetEx from "../ext/fieldset-ex"
+import { detail, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(detail, "[GroupDetails] ")
 
 export default function GroupDetails(
   {
@@ -52,6 +55,7 @@ export default function GroupDetails(
     setMode: Dispatch<SetStateAction<DetailMode>>
     onFormAction: FormActionHandler<GroupFieldValues>
   }) {
+  logger.debug("render")
 
   const form = useFormContext<GroupFieldValues>()
   const { updating } = state

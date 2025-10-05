@@ -36,6 +36,9 @@ import LogDialog from "../log/log-dialog"
 import SelectTriggerEx from "../ext/select-ex"
 import InputEx from "../ext/input-ex"
 import ButtonEx from "../ext/button-ex"
+import { detail, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(detail, "[LinkingDetails] ")
 
 type RecordLink = {
   id: string
@@ -83,7 +86,7 @@ function getRecordLinks(record?: ILinkableEntity, toLinks?: boolean, entityLinks
         otherRecordLabel: getRecordLabel(otherRecord?.entityKind as RecordKind, otherRecord) ?? '',
       }
       if (!recordLink.otherRecordLabel)
-        console.warn(`No label for RecordLink ${JSON.stringify(recordLink)}`)
+        logger.warn("No label for RecordLink %o", recordLink)
       results.push(recordLink)
     }
   } else {
@@ -108,6 +111,8 @@ export default function LinkingDetails(
     record: ILinkableEntity | undefined
     state: DetailState
   }) {
+  logger.debug("render")
+
   const { masterRecordKind, masterRecordId, masterRecordLabel } = useContext(GlobalContext)
   const [ selectedLinkId, setSelectedLinkId ] = useState('')
   const [ mode, setMode ] = useState("view")

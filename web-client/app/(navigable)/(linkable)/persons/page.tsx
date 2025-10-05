@@ -31,6 +31,9 @@ import usePageLogic from "@/hooks/use-page-logic"
 import { LinkableEntityQueryFilter, PersonInput } from '@/app/model/schema'
 import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter'
 import useLinkableEntityQueryFilter from '@/hooks/use-linkable-entity-query-filter'
+import { LoggerEx, page } from '@/lib/logger'
+
+const logger = new LoggerEx(page, "[Persons] ")
 
 function createFieldValues(person?: Person) : PersonFieldValues {
   return {
@@ -70,6 +73,8 @@ function createInput(fieldValues: PersonFieldValues, id?: string) : PersonInput 
 }
 
 export default function Persons() {
+  logger.debug("render")
+
   const filterLogic = useLinkableEntityQueryFilter()
   const {
     loading,

@@ -22,6 +22,9 @@
 import "@/app/globals.css"
 import '@/app/ui/global.css'
 import EntityLinkFilter from "@/app/ui/filter/entity-link-filter"
+import { layout, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(layout, "[LinkableEntityLayout] ")
 
 // export const metadata: Metadata = {
 //   title: {
@@ -37,6 +40,8 @@ export default function LinkableEntityLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  logger.debug("render")
+
   return (
     <div className="m-4">
       <EntityLinkFilter />

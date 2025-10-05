@@ -28,6 +28,9 @@ import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from '@dnd-kit/utilities'
 import { CSSProperties, HTMLAttributes, useMemo } from "react"
 import { TableHead } from "@/components/ui/table"
+import { LoggerEx, component } from "@/lib/logger"
+
+const logger = new LoggerEx(component, "[DataTableColumnHeader] ")
 
 interface DataTableColumnHeaderProps<TData, TValue> extends HTMLAttributes<HTMLDivElement> {
   table: Table<TData>
@@ -43,6 +46,8 @@ export default function DataTableColumnHeader<TData, TValue>({
   title,
   className,
 }: DataTableColumnHeaderProps<TData, TValue>) {
+  logger.debug("render %s", title)
+
   const { attributes, isDragging, listeners, setNodeRef, transform } = useSortable({id: column.id})
 
   const style: CSSProperties = useMemo(() => {
@@ -56,8 +61,6 @@ export default function DataTableColumnHeader<TData, TValue>({
       zIndex: isDragging ? 1 : 0,
     }
   }, [isDragging, transform, column])
-
-  // console.log(`DataTableColumnHeader.render: ${title}`)
 
   return (
     <TableHead key={header.id} className="relative border box-border" style={style} ref={setNodeRef}>

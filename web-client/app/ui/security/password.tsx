@@ -33,6 +33,9 @@ import { useMutation } from "@apollo/client"
 import { UPDATE_USER_PASSWORD } from "@/lib/graphql-queries"
 import z from "zod/v4"
 import { genSaltSync, hashSync } from "bcrypt-ts"
+import { dialog, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(dialog, "[PasswordDialog] ")
 
 const STRONG_PASSWORD = /^\S*(?=\S{6,})(?=\S*\d)(?=\S*[A-Z])(?=\S*[a-z])(?=\S*[!@#$%^&*? ])\S*$/
 const PASSWORD_ERROR = {error: "Password must be at least 6 characters, including at least 1 uppercase and 1 lowercase letter, 1 other letter and 1 special character."}
@@ -46,6 +49,8 @@ type PasswordFields = z.infer<typeof PasswordSchema>
 export default function PasswordDialog(
   {open, setOpen} : {open: boolean, setOpen: Dispatch<SetStateAction<boolean>>}
 ) {
+  logger.debug("render")
+
   // Workaround bug https://github.com/radix-ui/primitives/issues/3645
   // "Dialog leaves "pointer-events: none" on body after closing"
   useEffect(() => {

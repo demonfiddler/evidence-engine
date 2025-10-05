@@ -54,7 +54,10 @@ import LinkEx from "../ext/link-ex"
 import CheckboxEx from "../ext/checkbox-ex"
 import TextareaEx from "../ext/textarea-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
+import { detail, LoggerEx } from "@/lib/logger"
 const countries = rawCountries as unknown as Country[]
+
+const logger = new LoggerEx(detail, "[DeclarationDetails] ")
 
 export default function DeclarationDetails(
   {
@@ -69,6 +72,7 @@ export default function DeclarationDetails(
     setMode: Dispatch<SetStateAction<DetailMode>>
     onFormAction: FormActionHandler<DeclarationFieldValues>
   }) {
+  logger.debug("render")
 
   const form = useFormContext<DeclarationFieldValues>()
   const [open, setOpen] = useState(false)

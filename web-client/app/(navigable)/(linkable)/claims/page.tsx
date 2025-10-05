@@ -32,6 +32,9 @@ import usePageLogic from "@/hooks/use-page-logic"
 import { ClaimInput, LinkableEntityQueryFilter } from "@/app/model/schema"
 import LinkableEntityTableFilter from "@/app/ui/filter/linkable-entity-table-filter"
 import useLinkableEntityQueryFilter from "@/hooks/use-linkable-entity-query-filter"
+import { LoggerEx, page } from "@/lib/logger"
+
+const logger = new LoggerEx(page, "[Claims] ")
 
 function createFieldValues(claim?: Claim) : ClaimFieldValues {
   return {
@@ -53,6 +56,8 @@ function createInput(fieldValues: ClaimFieldValues, id?: string) : ClaimInput {
 }
 
 export default function Claims() {
+  logger.debug("render")
+
   const filterLogic = useLinkableEntityQueryFilter()
   const {
     loading,
@@ -83,7 +88,7 @@ export default function Claims() {
   // // When component is unmounted, flush application state to session storage.
   // useEffect(() => {
   //   return () => {
-  //     console.log("Claims effect cleanup")
+  //     logger.debug("Claims effect cleanup")
   //     storeAppState()
   //   }
   // }, [])

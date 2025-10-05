@@ -43,6 +43,9 @@ import TextareaEx from "../ext/textarea-ex"
 import SelectTriggerEx from "../ext/select-ex"
 import CheckboxEx from "../ext/checkbox-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
+import { detail, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(detail, "[PersonDetails] ")
 
 const countries = rawCountries as unknown as Country[]
 
@@ -59,6 +62,7 @@ export default function PersonDetails(
     setMode: Dispatch<SetStateAction<DetailMode>>
     onFormAction: FormActionHandler<PersonFieldValues>
   }) {
+  logger.debug("render")
 
   const form = useFormContext<PersonFieldValues>()
   const { updating } = state

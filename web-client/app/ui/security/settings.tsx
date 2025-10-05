@@ -24,10 +24,15 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { GlobalContext } from "@/lib/context"
 import { Cog8ToothIcon } from "@heroicons/react/24/outline"
 import { Dispatch, SetStateAction, useCallback, useContext, useEffect } from "react"
+import { dialog, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(dialog, "[SettingsDialog] ")
 
 export default function SettingsDialog(
   {open, setOpen} : {open: boolean, setOpen: Dispatch<SetStateAction<boolean>>}
 ) {
+  logger.debug("render")
+
   // Workaround bug https://github.com/radix-ui/primitives/issues/3645
   // "Dialog leaves "pointer-events: none" on body after closing"
   useEffect(() => {

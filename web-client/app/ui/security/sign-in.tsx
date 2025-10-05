@@ -31,6 +31,9 @@ import z from "zod/v4";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import useAuth from "@/hooks/use-auth";
 import { Checkbox } from "@/components/ui/checkbox";
+import { dialog, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(dialog, "[SignInDialog] ")
 
 const SignInFormSchema = z.object({
   username: z.string().min(3).max(50),
@@ -52,6 +55,8 @@ function getUrl(path: string, query?: string, fragment?: string) {
 }
 
 export default function SignInDialog() {
+  logger.debug("render")
+
   const {loading, user, login} = useAuth()
   const [signInOpen, setSignInOpen] = useState(false)
   const [formValue] = useState({

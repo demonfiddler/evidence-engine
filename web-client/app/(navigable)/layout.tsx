@@ -26,12 +26,17 @@ import { AppSidebar } from "@/app/ui//navigator/app-sidebar"
 import MyAccount from "../ui/security/my-account"
 import { GlobalContext } from "@/lib/context"
 import { useContext } from "react"
+import { layout, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(layout, "[NavigableLayout] ")
 
 export default function NavigableLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  logger.debug("render")
+
   const {sidebarOpen, setSidebarOpen} = useContext(GlobalContext)
 
   return (

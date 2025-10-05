@@ -42,6 +42,9 @@ import { FormActionHandler } from "@/hooks/use-page-logic"
 import TextareaEx from "../ext/textarea-ex"
 import ButtonEx from "../ext/button-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
+import { detail, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(detail, "[ClaimDetails] ")
 
 export default function ClaimDetails(
   {
@@ -55,6 +58,7 @@ export default function ClaimDetails(
     setMode: Dispatch<SetStateAction<DetailMode>>
     onFormAction: FormActionHandler<ClaimFieldValues>
   }) {
+  logger.debug("render")
 
   const form = useFormContext<ClaimFieldValues>()
   const [open, setOpen] = useState(false)

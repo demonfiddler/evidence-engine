@@ -37,6 +37,9 @@ import TextareaEx from "../ext/textarea-ex"
 import SelectTriggerEx from "../ext/select-ex"
 import InputEx from "../ext/input-ex"
 import useAuth from "@/hooks/use-auth"
+import { dialog, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(dialog, "[ProfileDialog] ")
 
 const countries = rawCountries as unknown as Country[]
 
@@ -55,6 +58,8 @@ type ProfileFields = z.infer<typeof ProfileSchema>
 export default function ProfileDialog(
   {open, setOpen} : {open: boolean, setOpen: Dispatch<SetStateAction<boolean>>}
 ) {
+  logger.debug("render")
+
   // Workaround bug https://github.com/radix-ui/primitives/issues/3645
   // "Dialog leaves "pointer-events: none" on body after closing"
   useEffect(() => {
@@ -108,8 +113,6 @@ export default function ProfileDialog(
       })
     }
   }, [form, updateUserProfileOp, createInput, setOpen])
-
-  // console.log("ProfileDialog: render")
 
   return open ? (
     <Dialog open={open} onOpenChange={setOpen}>

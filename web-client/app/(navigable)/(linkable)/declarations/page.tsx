@@ -32,6 +32,9 @@ import usePageLogic from "@/hooks/use-page-logic"
 import { DeclarationInput, LinkableEntityQueryFilter } from '@/app/model/schema'
 import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter'
 import useLinkableEntityQueryFilter from '@/hooks/use-linkable-entity-query-filter'
+import { LoggerEx, page } from '@/lib/logger'
+
+const logger = new LoggerEx(page, "[Declarations] ")
 
 function createFieldValues(declaration?: Declaration) : DeclarationFieldValues {
   return {
@@ -65,6 +68,8 @@ function createInput(fieldValues: DeclarationFieldValues, id?: string) : Declara
 }
 
 export default function Declarations() {
+  logger.debug("render")
+
   const filterLogic = useLinkableEntityQueryFilter()
   const {
     loading,

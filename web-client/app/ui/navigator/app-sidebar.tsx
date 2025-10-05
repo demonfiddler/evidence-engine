@@ -50,6 +50,9 @@ import {
   UserIcon,
 } from '@heroicons/react/24/outline';
 import useAuth from '@/hooks/use-auth'
+import { component, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(component, "[AppSidebar] ")
 
 const appItems = [
   { title: 'Home', url: '/', icon: HomeIcon },
@@ -71,6 +74,8 @@ const adminItems = [
 ];
 
 export function AppSidebar() {
+  logger.debug("render")
+
   const {hasAuthority} = useAuth()
   const allowAdmin = hasAuthority("ADM")
 

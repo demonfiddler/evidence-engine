@@ -47,6 +47,9 @@ import LabelEx from "../ext/label-ex"
 import { Checkbox } from "@/components/ui/checkbox"
 import { LinkableEntityQueryFilter } from "@/app/model/schema"
 import useLinkableEntityQueryFilter from "@/hooks/use-linkable-entity-query-filter"
+import { filter, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(filter, "[EntityLinkFilter] ")
 
 interface TopicTreeNode extends TreeNodeProps {
   topic: Topic
@@ -95,6 +98,8 @@ function setChecked(data: TreeNode[], currentNode: TreeNode): boolean {
 }
 
 export default function EntityLinkFilter() {
+  logger.debug("render")
+
   const {
     linkFilterOpen,
     masterTopicId,
@@ -127,7 +132,7 @@ export default function EntityLinkFilter() {
   )
   const [treeData, setTreeData] = useState<TopicTreeNode[]>([])
   const topics = useMemo(() => {
-    // console.log("EntityLinkFilter.memo")
+    logger.trace("memo")
     const outTopics: Topic[] = []
     if (result.data) {
       const inTopics = result.data.topics.content ?? []
@@ -137,7 +142,7 @@ export default function EntityLinkFilter() {
   }, [result.data])
 
   useEffect(() => {
-    // console.log("EntityLinkFilter.effect")
+    logger.trace("effect")
     setTreeData(getTreeData(topics, masterTopicId))
     const masterTopic = findTopic(topics, masterTopicId)
     setTopicDescription(masterTopic?.description ?? '')

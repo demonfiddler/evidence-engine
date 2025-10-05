@@ -23,8 +23,13 @@ import Log from "@/app/model/Log"
 import { Label } from "@/components/ui/label"
 import { formatDateTime } from "@/lib/utils"
 import InputEx from "../ext/input-ex"
+import { detail, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(detail, "[LogDetails] ")
 
 export default function LogDetails({record}: {record: Log | undefined}) {
+  logger.debug("render")
+
   return (
     <fieldset className="border shadow-lg rounded-md">
       <legend className="text-lg">&nbsp;Log Details&nbsp;</legend>

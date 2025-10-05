@@ -35,6 +35,10 @@ import useAuth from "@/hooks/use-auth"
 import InputEx from "../ext/input-ex"
 import { RotateCw } from "lucide-react"
 import RecordKind from "@/app/model/RecordKind"
+import { filter, LoggerEx } from "@/lib/logger"
+import { anything } from "@/types/types"
+
+const logger = new LoggerEx(filter, "[LinkableEntityTableFilter] ")
 
 export default function LinkableEntityTableFilter<TData, TFilter>({
   table,
@@ -43,6 +47,7 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
   refetch,
   loadingPathWithSearchParams,
 }: DataTableFilterProps<TData>) {
+  logger.debug("render")
 
   const {
     masterTopicId,
@@ -62,7 +67,7 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
   const [recordId, setRecordId] = useState(filter.recordId ?? '')
 
   const updateFilter = useCallback((status: string, text: string, advanced: boolean, recordId: string) => {
-    // console.log(`LinkableEntityTableFilter.updateFilter: status='${status}', text='${text}', advanced=${advanced}, recordId='${recordId}'`)
+    logger.trace("updateFilter: status='%s', text='%s', advanced=%s, recordId='%s'", status, text, advanced, recordId)
     if (!loadingPathWithSearchParams) {
       const newFilter = {
         status: status ? [status] : undefined,
@@ -85,7 +90,7 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
         }
       }
       if (!isEqual(newFilter as LinkableEntityQueryFilter, filter)) {
-        // console.log(`LinkableEntityTableFilter.updateFilter from ${JSON.stringify(filter)} to ${JSON.stringify(newFilter)}`)
+        logger.trace("updateFilter from %o to %o", filter, newFilter as anything)
         setFilter(recordKind, newFilter)
       }
     }
@@ -94,9 +99,9 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
   // If the filter changes, refresh the UI to match.
   const prevFilter = useRef<LinkableEntityQueryFilter>({})
   useEffect(() => {
-    // console.log(`LinkableEntityTableFilter.effect1 (1)`)
+    logger.trace("effect1 (1)")
     if (!isEqual(filter, prevFilter.current)) {
-      // console.log(`LinkableEntityTableFilter.effect1 (2): prevFilter=${JSON.stringify(prevFilter.current)}, filter=${JSON.stringify(filter)}`)
+      logger.trace("effect1 (2): filter changed from %o to %o", prevFilter.current, filter)
       prevFilter.current = filter
 
       if (status !== (filter?.status?.[0] ?? ''))
@@ -117,14 +122,14 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
   const prevMasterRecordId = useRef<string>(undefined)
   const prevShowOnlyLinkedRecords = useRef<boolean>(false)
   useEffect(() => {
-    // console.log(`LinkableEntityTableFilter.effect2 (1)`)
+    logger.trace("effect2 (1)")
     if (masterTopicId !== prevMasterTopicId.current ||
       masterTopicRecursive !== prevMasterTopicRecursive.current ||
       masterRecordKind !== prevMasterRecordKind.current ||
       masterRecordId !== prevMasterRecordId.current ||
       showOnlyLinkedRecords !== prevShowOnlyLinkedRecords.current) {
 
-      // console.log(`LinkableEntityTableFilter.effect2 (2)`)
+      logger.trace("effect2 (2)")
 
       prevMasterTopicId.current = masterTopicId
       prevMasterTopicRecursive.current = masterTopicRecursive
@@ -136,32 +141,32 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
   }, [updateFilter, status, text, advanced, recordId, masterTopicId, masterTopicRecursive, masterRecordKind, masterRecordId, showOnlyLinkedRecords])
 
   const handleStatusChange = useCallback((status: string) => {
-    // console.log(`LinkableEntityTableFilter.handleStatusChange: status='${status}'`)
+    logger.trace("handleStatusChange: status='%s'", status)
     status = status === "ALL" ? '' : status
     setStatus(status)
     updateFilter(status, text, advanced, recordId)
   }, [updateFilter, text, advanced, recordId])
 
   const handleTextChange = useCallback((text: string) => {
-    // console.log(`LinkableEntityTableFilter.handleTextChange: text='${text}'`)
+    logger.trace("handleTextChange: text='%s'", text)
     setText(text)
     updateFilter(status, text, advanced, recordId)
   }, [updateFilter, status, advanced, recordId])
 
   const handleAdvancedSearchChange = useCallback((advanced: boolean) => {
-    // console.log(`LinkableEntityTableFilter.handleAdvancedSearchChange: advanced=${advanced}`)
+    logger.trace("handleAdvancedSearchChange: advanced=%s", advanced)
     setAdvanced(advanced)
     updateFilter(status, text, advanced, recordId)
   }, [updateFilter, status, text, recordId])
 
   const handleRecordIdChange = useCallback((recordId: string) => {
-    // console.log(`LinkableEntityTableFilter.handleRecordIdChange: recordId='${recordId}'`)
+    logger.trace("handleRecordIdChange: recordId='%s'", recordId)
     setRecordId(recordId)
     updateFilter(status, text, advanced, recordId)
   }, [updateFilter])
 
   const handleReset = useCallback(() => {
-    // console.log(`LinkableEntityTableFilter.handleReset`)
+    logger.trace("handleReset")
     setStatus('')
     setText('')
     setAdvanced(false)

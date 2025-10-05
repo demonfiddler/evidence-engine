@@ -37,14 +37,17 @@ import {
 } from "@/components/ui/select"
 import StandardDetails from "./standard-details"
 import DetailActions, { DetailMode, DetailState } from "./detail-actions"
-import { Dispatch, SetStateAction, useMemo, useRef } from "react"
+import { Dispatch, SetStateAction, useMemo } from "react"
 import { useFormContext } from "react-hook-form"
 import { TopicFieldValues } from "../validators/topic"
 import { FormActionHandler } from "@/hooks/use-page-logic"
-import { flatten, isEqual } from "@/lib/utils"
+import { flatten } from "@/lib/utils"
 import InputEx from "../ext/input-ex"
 import SelectTriggerEx from "../ext/select-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
+import { detail, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(detail, "[TopicDetails] ")
 
 export default function TopicDetails(
   {
@@ -60,6 +63,7 @@ export default function TopicDetails(
     setMode: Dispatch<SetStateAction<DetailMode>>
     onFormAction: FormActionHandler<TopicFieldValues>
   }) {
+  logger.debug("render")
 
   // I thought this nonsense might be necessary because according to WhyDidYouRender, successive calls to useFormContext
   // apparently return different objects that are equal by value.
@@ -69,7 +73,7 @@ export default function TopicDetails(
   // if (isEqual(rawForm, prevForm.current)) {
   //   form = prevForm.current
   // } else {
-  //   console.log(`TopicDetails.render: form has changed`)
+  //   logger.debug("render: form has changed")
   //   form = prevForm.current = rawForm
   // }
   const form = useFormContext<TopicFieldValues>()

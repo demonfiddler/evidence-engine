@@ -43,6 +43,9 @@ import { LogFieldValues } from "../validators/log"
 import LogDialogFilter from "../filter/log-dialog-filter"
 import ButtonEx from "../ext/button-ex"
 import RecordKind from "@/app/model/RecordKind"
+import { dialog, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(dialog, "[LogDialog] ")
 
 function createFieldValues(record?: Log) : LogFieldValues {
   return {
@@ -71,6 +74,8 @@ export default function LogDialog({
   recordLabel: string
   state: DetailState
 }) {
+  logger.debug("render")
+
   const [open, setOpen] = useState(false)
 
   const {

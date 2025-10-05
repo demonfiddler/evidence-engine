@@ -44,6 +44,9 @@ import ButtonEx from "../ext/button-ex"
 import TextareaEx from "../ext/textarea-ex"
 import LinkEx from "../ext/link-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
+import { detail, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(detail, "[QuotationDetails] ")
 
 export default function QuotationDetails(
   {
@@ -57,6 +60,7 @@ export default function QuotationDetails(
     setMode: Dispatch<SetStateAction<DetailMode>>
     onFormAction: FormActionHandler<QuotationFieldValues>
   }) {
+  logger.debug("render")
 
   const form = useFormContext<QuotationFieldValues>()
   const [open, setOpen] = useState(false)

@@ -36,6 +36,9 @@ import useTopicQueryFilter from '@/hooks/use-topic-query-filter'
 import { GlobalContext } from '@/lib/context'
 import { useContext, useMemo } from 'react'
 import { useQuery } from '@apollo/client'
+import { LoggerEx, page } from '@/lib/logger'
+
+const logger = new LoggerEx(page, "[Topics] ")
 
 function createFieldValues(topic?: Topic) : TopicFieldValues {
   return {
@@ -71,6 +74,8 @@ function preparePage(rawPage: IPage<Topic> | undefined) {
 const EMPTY = [] as Topic[]
 
 export default function Topics() {
+  logger.debug("render")
+
   const { queries } = useContext(GlobalContext)
   const filter = queries["Topic"]?.filter as TopicQueryFilter
   const filterLogic = useTopicQueryFilter()

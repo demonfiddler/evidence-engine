@@ -24,6 +24,9 @@ import { GlobalContext } from "@/lib/context"
 import { createFilterImpl, createSearchParamsImpl, getRecordKind } from "@/lib/utils"
 import { useCallback, useContext } from "react"
 import { QueryFilterLogic } from "./use-page-logic"
+import { hook, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(hook, "[useLinkableEntityQueryFilter] ")
 
 type FilterValue = boolean | string | string[] | undefined
 
@@ -56,6 +59,8 @@ function convertFilterValue(filterKey: string, value: FilterValue) : string | un
 }
 
 export default function useLinkableEntityQueryFilter() : QueryFilterLogic<LinkableEntityQueryFilter> {
+  logger.debug("call")
+
   const {
     masterTopicId,
     masterTopicRecursive,

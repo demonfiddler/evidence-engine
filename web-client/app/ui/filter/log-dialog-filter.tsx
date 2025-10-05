@@ -37,6 +37,9 @@ import Spinner from "../misc/spinner"
 import { GlobalContext, QueryState } from "@/lib/context"
 import ButtonEx from "../ext/button-ex"
 import { RotateCw } from "lucide-react"
+import { filter, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(filter, "[LogDialogFilter] ")
 
 export default function LogDialogFilter(
   {
@@ -44,6 +47,7 @@ export default function LogDialogFilter(
     auxRecordId,
     refetch,
   } : DataTableFilterProps<Log>) {
+  logger.debug("render")
 
   const {queries, setFilter} = useContext(GlobalContext)
   const {filter} = queries["Log"] as QueryState<LogQueryFilter>
@@ -59,7 +63,7 @@ export default function LogDialogFilter(
     transactionKind: string,
     from: Date|undefined,
     to: Date|undefined) => {
-      // console.log(`LogDialogFilter.updateFilter: userId=${userId}, transactionKind='${transactionKind}', from='${from}', to='${to}'`)
+      logger.trace("updateFilter: userId=%s, transactionKind=%s, from=%s, to=%s", userId, transactionKind, from, to)
       const newFilter = {
         entityId: auxRecordId,
         userId: userId || undefined,
@@ -68,7 +72,7 @@ export default function LogDialogFilter(
         to: to || undefined
       } as LogQueryFilter
       if (!isEqual(newFilter, filter)) {
-        // console.log(`LogDialogFilter.updateFilter from ${JSON.stringify(filter)} to ${JSON.stringify(newFilter)}`)
+        logger.trace("updateFilter from %o to %o", filter, newFilter)
         setFilter("Log", newFilter)
       }
   }, [auxRecordId, filter, setFilter])
@@ -130,7 +134,7 @@ export default function LogDialogFilter(
   if (result.error) {
     // TODO: display user-friendly error notification
     toast.error(`Operation failed:\n\n${result.error.message}`)
-    console.error(result.error)
+    logger.error("Operation failed: %o", result.error)
   }
   const users = (result.data?.users as IPage<User>)?.content
 

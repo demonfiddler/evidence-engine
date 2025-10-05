@@ -50,6 +50,10 @@ import { DocumentNode } from "graphql"
 import { Updater } from "@tanstack/react-table"
 import EntityLink from "@/app/model/EntityLink"
 import { EntityKind } from "@/app/model/schema"
+import { anything } from "@/types/types"
+import { LoggerEx, utility } from "./logger"
+
+const logger = new LoggerEx(utility, "[utils] ")
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -394,8 +398,6 @@ export function isEmpty(obj: object) {
   return true
 }
 
-type anything = boolean | number | string | object | null | undefined
-
 export function isObject(value: anything): boolean {
   return value != null && typeof value === 'object';
 }
@@ -409,13 +411,13 @@ export function isEqual(v1: anything, v2: anything, path: string[] = []) {
     return true
   }
   if (typeof v1 !== typeof v2) {
-    // console.log(`isEqual(): different types for ${path.join(".")}: v1: ${typeof v1}, v2: ${typeof v2}`)
+    logger.trace("isEqual(): different types for %s: v1: %s, v2: %s", path.join("."), typeof v1, typeof v2)
     return false
   }
   if (v1 instanceof Date && v2 instanceof Date) {
     const equal = (v1 as Date).getTime() === (v2 as Date).getTime()
     // if (!equal)
-    //   console.log(`isEqual(): different dates for ${path.join(".")}: v1: ${v1}, v2: ${v2}`)
+    //   logger.trace("isEqual(): different dates for %s: v1: %s, v2: %s", path.join("."), v1, v2)
     return equal
   }
   // If both values are objects, check all their properties.
@@ -425,7 +427,7 @@ export function isEqual(v1: anything, v2: anything, path: string[] = []) {
     const v1Keys = Object.keys(v1Object)
     const v2Keys = Object.keys(v2Object)
     if (v1Keys.length !== v2Keys.length) {
-      // console.log(`isEqual(): unequal keys for ${path.join(".")} v1: ${JSON.stringify(v1Keys)}, v2: ${JSON.stringify(v2Keys)}`)
+      logger.trace("isEqual(): unequal keys for %s v1: %s, v2: %s", path.join("."), v1Keys, v2Keys)
       return false
     }
     for (const key of v1Keys) {
@@ -436,7 +438,7 @@ export function isEqual(v1: anything, v2: anything, path: string[] = []) {
     }
     return true
   }
-  // console.log(`isEqual(): unequal values for ${path.join(".")} v1: ${JSON.stringify(v1)}, v2: ${JSON.stringify(v2)}`)
+  logger.trace("isEqual(): unequal values for %s v1: %o, v2: %o", path.join("."), v1, v2)
   return false
 }
 

@@ -55,6 +55,9 @@ import ButtonEx from "../ext/button-ex"
 import LinkEx from "../ext/link-ex"
 import CheckboxEx from "../ext/checkbox-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
+import { detail, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(detail, "[PublicationDetails] ")
 
 type PublicationKind = {
   kind: string
@@ -75,6 +78,7 @@ export default function PublicationDetails(
     setMode: Dispatch<SetStateAction<DetailMode>>
     onFormAction: FormActionHandler<PublicationFieldValues>
   }) {
+  logger.debug("render")
 
   const form = useFormContext<PublicationFieldValues>()
   const [dateOpen, setDateOpen] = useState(false)

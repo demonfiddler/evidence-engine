@@ -19,8 +19,12 @@
 
 import { ApolloClient, createHttpLink, DocumentNode, InMemoryCache } from '@apollo/client'
 import { FieldNode, Kind, OperationDefinitionNode, OperationTypeNode } from 'graphql'
+import { LoggerEx, utility } from './logger';
 
-// console.log(`process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL=${process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL}, process.env.NEXT_PUBLIC_WEB_CLIENT_URL=${process.env.NEXT_PUBLIC_WEB_CLIENT_URL}`)
+const logger = new LoggerEx(utility, "[graphql-utils] ")
+
+logger.trace("process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL='%s', process.env.NEXT_PUBLIC_WEB_CLIENT_URL='%s'",
+  process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL, process.env.NEXT_PUBLIC_WEB_CLIENT_URL)
 
 const link = createHttpLink({
   uri: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL,
@@ -28,65 +32,65 @@ const link = createHttpLink({
 });
 
 export const apolloClient = new ApolloClient({
-    // uri: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL,
-    link,
-    cache: new InMemoryCache({
-        possibleTypes: {
-            IBaseEntity: [
-                "Claim",
-                "EntityLink",
-                "Declaration",
-                "Group",
-                "Journal",
-                "Log",
-                "Person",
-                "Publication",
-                "Publisher",
-                "Quotation",
-                "Topic",
-                "User",
-            ],
-            ITrackedEntity: [
-                "Claim",
-                "EntityLink",
-                "Declaration",
-                "Group",
-                "Journal",
-                "Person",
-                "Publication",
-                "Publisher",
-                "Quotation",
-                "Topic",
-                "User",
-            ],
-            ILinkableEntity: [
-                "Claim",
-                "Declaration",
-                "Person",
-                "Publication",
-                "Quotation",
-                "Topic"
-            ],
-            IPage: [
-                "ClaimPage",
-                "EntityLinkPage",
-                "DeclarationPage",
-                "GroupPage",
-                "JournalPage",
-                "LogPage",
-                "PersonPage",
-                "PublicationPage",
-                "PublisherPage",
-                "QuotationPage",
-                "TopicPage",
-                "UserPage",
-            ]
-        },
-        typePolicies: {
-            // See https://www.apollographql.com/docs/react/caching/cache-configuration#typepolicy-fields
-            // __TYPENAME: {...}
-        }
-    }),
+  // uri: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL,
+  link,
+  cache: new InMemoryCache({
+    possibleTypes: {
+      IBaseEntity: [
+        "Claim",
+        "EntityLink",
+        "Declaration",
+        "Group",
+        "Journal",
+        "Log",
+        "Person",
+        "Publication",
+        "Publisher",
+        "Quotation",
+        "Topic",
+        "User",
+      ],
+      ITrackedEntity: [
+        "Claim",
+        "EntityLink",
+        "Declaration",
+        "Group",
+        "Journal",
+        "Person",
+        "Publication",
+        "Publisher",
+        "Quotation",
+        "Topic",
+        "User",
+      ],
+      ILinkableEntity: [
+        "Claim",
+        "Declaration",
+        "Person",
+        "Publication",
+        "Quotation",
+        "Topic"
+      ],
+      IPage: [
+        "ClaimPage",
+        "EntityLinkPage",
+        "DeclarationPage",
+        "GroupPage",
+        "JournalPage",
+        "LogPage",
+        "PersonPage",
+        "PublicationPage",
+        "PublisherPage",
+        "QuotationPage",
+        "TopicPage",
+        "UserPage",
+      ]
+    },
+    typePolicies: {
+      // See https://www.apollographql.com/docs/react/caching/cache-configuration#typepolicy-fields
+      // __TYPENAME: {...}
+    }
+  }),
 })
 
 /**

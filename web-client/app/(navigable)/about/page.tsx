@@ -19,9 +19,14 @@
 
 'use client'
 
+import { LoggerEx, page } from "@/lib/logger";
 import InformationCircleIcon from "@heroicons/react/24/outline/InformationCircleIcon"
 
+const logger = new LoggerEx(page, "[About] ")
+
 export default function About() {
+  logger.debug("render")
+
   return (
     <main className="flex flex-col m-8 gap-8 w-1/2 self-center">
       <div className="flex flex-row items-center">

@@ -48,6 +48,9 @@ import SelectTriggerEx from "../ext/select-ex"
 import TextareaEx from "../ext/textarea-ex"
 import LinkEx from "../ext/link-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
+import { detail, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(detail, "[JournalDetails] ")
 
 const publishers = rawPublishers.content as unknown as Publisher[]
 
@@ -63,6 +66,7 @@ export default function JournalDetails(
     setMode: Dispatch<SetStateAction<DetailMode>>
     onFormAction: FormActionHandler<JournalFieldValues>
   }) {
+  logger.debug("render")
 
   const form = useFormContext<JournalFieldValues>()
   const { updating } = state

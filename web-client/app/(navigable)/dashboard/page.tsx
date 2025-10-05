@@ -51,6 +51,9 @@ import Link from "next/link"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import LabelEx from "@/app/ui/ext/label-ex"
+import { LoggerEx, page } from "@/lib/logger"
+
+const logger = new LoggerEx(page, "[Dashboard] ")
 
 interface ColumnMetaData {
   className?: string
@@ -117,6 +120,8 @@ function getUri(href: string, status?: string, topicId?: string, recursive?: boo
 }
 
 export default function Dashboard() {
+  logger.debug("render")
+
   const {user} = useAuth()
   const [status, setStatus] = useState<string>("")
   const [rollup, setRollup] = useState<string>("full")

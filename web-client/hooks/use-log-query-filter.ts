@@ -23,6 +23,9 @@ import { LogQueryFilter } from "@/app/model/schema"
 import { useCallback } from "react"
 import { QueryFilterLogic } from "./use-page-logic"
 import { createFilterImpl, createSearchParamsImpl } from "@/lib/utils"
+import { hook, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(hook, "[useLogQueryFilter] ")
 
 type FilterValue = string | string[] | Date | undefined
 
@@ -55,6 +58,8 @@ function convertFilterValue(filterKey: string, value: FilterValue) : string | un
 }
 
 export default function useLogQueryFilter() : QueryFilterLogic<LogQueryFilter> {
+  logger.debug("call")
+
   const createFilter = useCallback((searchParams: URLSearchParams) => {
     return createFilterImpl<LogQueryFilter, FilterValue>(searchParams, convertQueryValue)
   }, [])

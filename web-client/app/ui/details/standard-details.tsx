@@ -30,11 +30,15 @@ import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline"
 import RecordKind from "@/app/model/RecordKind"
 import { DetailState } from "./detail-actions"
 import { GlobalContext } from "@/lib/context"
+import { detail, LoggerEx } from "@/lib/logger"
+
+const logger = new LoggerEx(detail, "[StandardDetails] ")
 
 export default function StandardDetails(
   {recordKind, record, state, showLinkingDetails}:
   {recordKind: RecordKind, record: ITrackedEntity | undefined, state: DetailState, showLinkingDetails: boolean}
 ) {
+  logger.debug("render")
 
   const {trackingDetailsOpen, setTrackingDetailsOpen} = useContext(GlobalContext)
 
