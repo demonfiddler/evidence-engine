@@ -30,6 +30,8 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import UserIcon from '@heroicons/react/24/outline/UserIcon'
+import Autoplay from "embla-carousel-autoplay"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 
 // export const metadata: Metadata = {
 //   title: 'Dashboard',
@@ -42,7 +44,7 @@ export default function Page() {
         <p className="col-start-2 justify-self-center">Evidence Engine</p>
         <UserIcon className="justify-self-end size-4" />
       </header>
-      <div className="mt-4 flex grow flex-col gap-4 md:flex-row">
+      <div className="mt-4 flex gap-4">
         <div className="flex flex-col justify-center items-center gap-6 rounded-lg bg-gray-50 px-6 py-10 md:min-w-1/4 md:px-20">
           {/* <p className={`${lusitana.className} antialiased text-xl text-center text-gray-800 md:text-3xl md:leading-normal`}> */}
           <p className="antialiased italic text-xl text-center text-gray-800 md:text-3xl md:leading-normal">
@@ -58,7 +60,7 @@ export default function Page() {
             <span>Explore</span>
           </Link>
         </div>
-        <div>
+        <div className="flex flex-col items-center h-full">
           <div className="flex items-center justify-center p-6 md:w-5/6 md:px-28 md:py-12">
             <Image
               src="/hero-desktop.png"
@@ -75,44 +77,64 @@ export default function Page() {
               alt="Screenshots of the Evidence Engine showing desktop version"
             /> */}
           </div>
-          <div className="flex gap-8 rounded-lg bg-gray-50 px-6 py-10 md:min-w-1/6 md:px-20">
-            <Card className="size-1/3 aspect-square flex-none bg-red-50 shadow-red-200 shadow-xl transition-transform duration-300 ease-in-out transform hover:scale-105">
-              <CardHeader className="justify-center">
-                <CardTitle>The Challenge</CardTitle>
-                {/* <CardDescription>
-                  <p>Card description</p>
-                </CardDescription> */}
-              </CardHeader>
-              <CardContent className="grid grid-cols-1 gap-2 overflow-y-auto">
-                <p>Mainstream narratives on key topics are distorted by powerful vested interests. Scientists, researchers, commentators, journalists and public figures contradicting the official story are vilified, cancelled, defunded, suspended or fired.</p>
-                <p>Key human endeavours such as scientific research, education, policy making, regulation, journalism are captured and controlled by these vested interests.</p>
-                <p>Consequently, truth, health and freedom are under threat on a global scale as never before.</p>
-              </CardContent>
-              {/* <CardFooter>
-                <p>Card Footer</p>
-              </CardFooter> */}
-            </Card>
-            <Card className="size-1/3 aspect-square flex-none bg-green-50 shadow-green-200 shadow-xl transition-transform duration-300 ease-in-out transform hover:scale-105">
-              <CardHeader className="justify-center">
-                <CardTitle>Mission Statement</CardTitle>
-              </CardHeader>
-              <CardContent className="grid grid-cols-1 gap-2 overflow-y-auto">
-                <p><b>Refute</b> anti-truth, anti-human, anti-freedom mainstream narratives.</p>
-                <p><b>Focus</b> on truth, health, justice and freedom.</p>
-                <p><b>Curate</b> high-quality contrarian scientific and other evidence, making it readily accessible to researchers and activists.</p>
-              </CardContent>
-            </Card>
-            <Card className="size-1/3 aspect-square flex-none bg-blue-50 shadow-blue-200 shadow-xl transition-transform duration-300 ease-in-out transform hover:scale-105">
-              <CardHeader className="justify-center">
-                <CardTitle>Description</CardTitle>
-              </CardHeader>
-              <CardContent className="grid grid-cols-1 gap-2 overflow-y-auto">
-                <p>This online database details scientific claims, publications, declarations and quotations from leading scientists, organised within an extensible topic hierarchy.</p>
-                <p>Information in these categories is presented in searchable, sortable, pageable lists that can be exported to various formats.</p>
-                <p>The lists can be linked in various ways to show the relationships between records in each information category.</p>
-              </CardContent>
-            </Card>
-          </div>
+          <Carousel
+            className="w-1/2 h-full"
+            plugins={[
+              Autoplay({
+                delay: 5000,
+              }),
+            ]}
+            opts={{
+              loop: true
+            }}
+          >
+            <CarouselContent>
+              <CarouselItem>
+                <Card className="size-full bg-red-50 shadow-red-200 shadow-xl transition-transform duration-300 ease-in-out transform hover:scale-105">
+                  <CardHeader className="justify-center">
+                    <CardTitle>The Challenge</CardTitle>
+                    {/* <CardDescription>
+                      <p>Card description</p>
+                    </CardDescription> */}
+                  </CardHeader>
+                  <CardContent className="grid grid-cols-1 gap-2 overflow-y-auto">
+                    <p>Mainstream narratives on key topics are distorted by powerful vested interests. Scientists, researchers, commentators, journalists and public figures contradicting the official story are vilified, cancelled, defunded, suspended or fired.</p>
+                    <p>Key human endeavours such as scientific research, education, policy making, regulation, journalism are captured and controlled by these vested interests.</p>
+                    <p>Consequently, truth, health and freedom are under threat on a global scale as never before.</p>
+                  </CardContent>
+                  {/* <CardFooter>
+                    <p>Card Footer</p>
+                  </CardFooter> */}
+                </Card>
+              </CarouselItem>
+              <CarouselItem>
+                <Card className="size-full bg-green-50 shadow-green-200 shadow-xl transition-transform duration-300 ease-in-out transform hover:scale-105">
+                  <CardHeader className="justify-center">
+                    <CardTitle>Mission Statement</CardTitle>
+                  </CardHeader>
+                  <CardContent className="grid grid-cols-1 gap-2 overflow-y-auto">
+                    <p><b>Refute</b> anti-truth, anti-human, anti-freedom mainstream narratives.</p>
+                    <p><b>Focus</b> on truth, health, justice and freedom.</p>
+                    <p><b>Curate</b> high-quality contrarian scientific and other evidence, making it readily accessible to researchers and activists.</p>
+                  </CardContent>
+                </Card>
+              </CarouselItem>
+              <CarouselItem>
+                <Card className="size-full bg-blue-50 shadow-blue-200 shadow-xl transition-transform duration-300 ease-in-out transform hover:scale-105">
+                  <CardHeader className="justify-center">
+                    <CardTitle>Description</CardTitle>
+                  </CardHeader>
+                  <CardContent className="grid grid-cols-1 gap-2 overflow-y-auto">
+                    <p>This online database details scientific claims, publications, declarations and quotations from leading scientists, organised within an extensible topic hierarchy.</p>
+                    <p>Information in these categories is presented in searchable, sortable, pageable lists that can be exported to various formats.</p>
+                    <p>The lists can be linked in various ways to show the relationships between records in each information category.</p>
+                  </CardContent>
+                </Card>
+              </CarouselItem>
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
         </div>
       </div>
       <div className="grow"></div>
