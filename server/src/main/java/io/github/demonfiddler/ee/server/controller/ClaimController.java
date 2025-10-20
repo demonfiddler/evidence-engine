@@ -42,6 +42,8 @@ import graphql.GraphQLContext;
 import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateClaim;
 import io.github.demonfiddler.ee.server.model.Claim;
+import io.github.demonfiddler.ee.server.model.CommentPage;
+import io.github.demonfiddler.ee.server.model.CommentQueryFilter;
 import io.github.demonfiddler.ee.server.model.FormatKind;
 import io.github.demonfiddler.ee.server.model.LinkableEntityQueryFilter;
 import io.github.demonfiddler.ee.server.model.LogPage;
@@ -85,8 +87,8 @@ public class ClaimController {
 	}
 
 	/**
-	 * Loads the data for Claim.entityKind. It returns an Object: the data fetcher implementation may return
-	 * any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Claim.entityKind. It returns an Object: the data fetcher implementation may return any type
+	 * that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -113,8 +115,8 @@ public class ClaimController {
 	}
 
 	/**
-	 * Loads the data for Claim.status. It returns an Object: the data fetcher implementation may return any
-	 * type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Claim.status. It returns an Object: the data fetcher implementation may return any type that
+	 * is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
@@ -141,10 +143,10 @@ public class ClaimController {
 	}
 
 	/**
-	 * Loads the data for Claim.createdByUser. It is generated as the
-	 * <code>generateBatchMappingDataFetchers</code> plugin parameter is true. <br/>
-	 * @param batchLoaderEnvironment The environment for this batch loader. You can extract the GraphQLContext from
-	 * this parameter.
+	 * Loads the data for Claim.createdByUser. It is generated as the <code>generateBatchMappingDataFetchers</code>
+	 * plugin parameter is true. <br/>
+	 * @param batchLoaderEnvironment The environment for this batch loader. You can extract the GraphQLContext from this
+	 * parameter.
 	 * @param graphQLContext
 	 * @param keys The objects for which the value for the createdByUser field must be retrieved.
 	 * @return This method returns <code>${dataFetcher.batchMappingReturnType.value}</code>, as defined by the
@@ -159,10 +161,10 @@ public class ClaimController {
 	}
 
 	/**
-	 * Loads the data for Claim.updatedByUser. It is generated as the
-	 * <code>generateBatchMappingDataFetchers</code> plugin parameter is true. <br/>
-	 * @param batchLoaderEnvironment The environment for this batch loader. You can extract the GraphQLContext from
-	 * this parameter.
+	 * Loads the data for Claim.updatedByUser. It is generated as the <code>generateBatchMappingDataFetchers</code>
+	 * plugin parameter is true. <br/>
+	 * @param batchLoaderEnvironment The environment for this batch loader. You can extract the GraphQLContext from this
+	 * parameter.
 	 * @param graphQLContext
 	 * @param keys The objects for which the value for the updatedByUser field must be retrieved.
 	 * @return This method returns <code>${dataFetcher.batchMappingReturnType.value}</code>, as defined by the
@@ -177,8 +179,8 @@ public class ClaimController {
 	}
 
 	/**
-	 * Loads the data for Claim.log. It returns an Object: the data fetcher implementation may return any
-	 * type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Claim.log. It returns an Object: the data fetcher implementation may return any type that is
+	 * accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param dataLoader The {@link DataLoader} allows to load several data in one query. It allows to solve the (n+1)
@@ -209,8 +211,40 @@ public class ClaimController {
 	}
 
 	/**
-	 * Loads the data for Claim.fromEntityLinks. It returns an Object: the data fetcher implementation may
-	 * return any type that is accepted by a spring-graphql controller<BR/>
+	 * This method loads the data for Claim.comments. It returns an Object: the data fetcher implementation may return
+	 * any type that is accepted by a spring-graphql controller<BR/>
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param dataLoader The {@link DataLoader} allows to load several data in one query. It allows to solve the (n+1)
+	 * queries issues, and greatly optimizes the response time.<BR/>
+	 * You'll find more informations here:
+	 * <A HREF= "https://github.com/graphql-java/java-dataloader">https://github.com/graphql-java/java-dataloader</A>
+	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
+	 * the author attribute of the <I>origin</I>, which is an instance of {ObjectType {name:Post, fields:{Field{name:id,
+	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
+	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
+	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data model, but it
+	 * typically contains the id to use in the query.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
+	 * @param filter The parameter that will receive the field argument of the same name for the current data to fetch
+	 * @param pageSort The parameter that will receive the field argument of the same name for the current data to fetch
+	 * @return It may return any value that is valid for a spring-graphql controller, annotated by the
+	 * <code>@SchemaMapping</code> annotation
+	 */
+	@SchemaMapping(field = "comments")
+	public Object comments(DataFetchingEnvironment dataFetchingEnvironment, DataLoader<Long, CommentPage> dataLoader,
+		Claim origin, @Argument("filter") CommentQueryFilter filter, @Argument("pageSort") PageableInput pageSort) {
+
+		return this.dataFetchersDelegateClaim.comments(dataFetchingEnvironment, dataLoader, origin, filter, pageSort);
+	}
+
+	/**
+	 * Loads the data for Claim.fromEntityLinks. It returns an Object: the data fetcher implementation may return any
+	 * type that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param dataLoader The {@link DataLoader} allows to load several data in one query. It allows to solve the (n+1)
@@ -243,8 +277,8 @@ public class ClaimController {
 	}
 
 	/**
-	 * Loads the data for Claim.toEntityLinks. It returns an Object: the data fetcher implementation may
-	 * return any type that is accepted by a spring-graphql controller<BR/>
+	 * Loads the data for Claim.toEntityLinks. It returns an Object: the data fetcher implementation may return any type
+	 * that is accepted by a spring-graphql controller<BR/>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
 	 * @param dataLoader The {@link DataLoader} allows to load several data in one query. It allows to solve the (n+1)

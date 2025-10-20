@@ -31,6 +31,8 @@ import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateQuery;
 import io.github.demonfiddler.ee.server.model.Claim;
 import io.github.demonfiddler.ee.server.model.ClaimPage;
+import io.github.demonfiddler.ee.server.model.CommentPage;
+import io.github.demonfiddler.ee.server.model.CommentQueryFilter;
 import io.github.demonfiddler.ee.server.model.Declaration;
 import io.github.demonfiddler.ee.server.model.DeclarationPage;
 import io.github.demonfiddler.ee.server.model.EntityLinkPage;
@@ -59,6 +61,7 @@ import io.github.demonfiddler.ee.server.model.TopicStatisticsDto;
 import io.github.demonfiddler.ee.server.model.TrackedEntityQueryFilter;
 import io.github.demonfiddler.ee.server.model.UserPage;
 import io.github.demonfiddler.ee.server.repository.ClaimRepository;
+import io.github.demonfiddler.ee.server.repository.CommentRepository;
 import io.github.demonfiddler.ee.server.repository.DeclarationRepository;
 import io.github.demonfiddler.ee.server.repository.EntityLinkRepository;
 import io.github.demonfiddler.ee.server.repository.GroupRepository;
@@ -80,6 +83,8 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
 
     @Resource
     private ClaimRepository claimRepository;
+    @Resource
+    private CommentRepository commentRepository;
     @Resource
     private DeclarationRepository declarationRepository;
     @Resource
@@ -119,6 +124,18 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
         PageableInput pageSort) {
 
         return entityUtils.findByFilter(filter, pageSort, claimRepository, ClaimPage::new);
+    }
+
+    @Override
+    public Object commentById(DataFetchingEnvironment dataFetchingEnvironment, Long id) {
+        return commentRepository.findById(id).get();
+    }
+
+    @Override
+    public Object comments(DataFetchingEnvironment dataFetchingEnvironment, CommentQueryFilter filter,
+        PageableInput pageSort) {
+
+        return entityUtils.findByFilter(filter, pageSort, commentRepository, CommentPage::new);
     }
 
     @Override

@@ -107,6 +107,16 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 	LogPage log;
 
 	/**
+	 * Comments associated with the record.
+	 */
+	@JsonProperty("comments")
+	@GraphQLInputParameters(names = { "filter", "pageSort" }, types = { "CommentQueryFilter", "PageableInput" },
+		mandatories = { false, false }, listDepths = { 0, 0 }, itemsMandatory = { false, false })
+	@GraphQLNonScalar(fieldName = "comments", graphQLTypeSimpleName = "CommentPage",
+		javaClass = CommentPage.class, listDepth = 0)
+	CommentPage comments;
+
+	/**
 	 * The entity kind.
 	 */
 	@Override
@@ -255,6 +265,18 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 	}
 
 	@Override
+	@JsonIgnore
+	public void setComments(CommentPage comments) {
+		this.comments = comments;
+	}
+
+	@Override
+	@JsonIgnore
+	public CommentPage getComments() {
+		return this.comments;
+	}
+
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
@@ -267,6 +289,7 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 		result = prime * result
 			+ ((updatedByUser == null || updatedByUser.getId() == null) ? 0 : updatedByUser.getId().hashCode());
 		result = prime * result + ((log == null) ? 0 : log.hashCode());
+		result = prime * result + ((comments == null) ? 0 : comments.hashCode());
 		return result;
 	}
 
@@ -328,6 +351,11 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 				return false;
 		} else if (!log.equals(other.log))
 			return false;
+		if (comments == null) {
+			if (other.comments != null)
+				return false;
+		} else if (!comments.equals(other.comments))
+			return false;
 		return true;
 	}
 
@@ -346,6 +374,7 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 		private OffsetDateTime updated;
 		private User updatedByUser;
 		private LogPage log;
+		private CommentPage comments;
 
 		/**
 		 * The entity kind.
@@ -411,6 +440,14 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 			return (B)this;
 		}
 
+		/**
+		 * Comments associated with the record.
+		 */
+		public final B withComments(CommentPage commentsParam) {
+			this.comments = commentsParam;
+			return (B)this;
+		}
+
 		T build(T _object) {
 			super.build(_object);
 			_object.setEntityKind(this.entityKind);
@@ -421,6 +458,7 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 			_object.setUpdated(this.updated);
 			_object.setUpdatedByUser(this.updatedByUser);
 			_object.setLog(this.log);
+			_object.setComments(this.comments);
 			return _object;
 		}
 

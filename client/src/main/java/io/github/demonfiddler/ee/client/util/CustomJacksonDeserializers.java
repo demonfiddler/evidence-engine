@@ -28,6 +28,7 @@ import com.graphql_java_generator.client.response.AbstractCustomJacksonDeseriali
 import graphql.scalars.ExtendedScalars;
 import graphql.schema.GraphQLScalarType;
 import io.github.demonfiddler.ee.client.Claim;
+import io.github.demonfiddler.ee.client.Comment;
 import io.github.demonfiddler.ee.client.Declaration;
 import io.github.demonfiddler.ee.client.EntityLink;
 import io.github.demonfiddler.ee.client.EntityStatistics;
@@ -101,15 +102,12 @@ public class CustomJacksonDeserializers {
 	}
 
 	public static class ListEntityStatistics extends AbstractCustomJacksonDeserializer<List<EntityStatistics>> {
+
 		private static final long serialVersionUID = 1L;
 		public ListEntityStatistics() {
-			super(
-				null,
-				true,
-				EntityStatistics.class,
-				null
-			);
+			super(null, true, EntityStatistics.class, null);
 		}
+
 	}
 
 	public static class List__EnumValue extends AbstractCustomJacksonDeserializer<List<__EnumValue>> {
@@ -140,15 +138,12 @@ public class CustomJacksonDeserializers {
 	}
 
 	public static class ListTopicStatistics extends AbstractCustomJacksonDeserializer<List<TopicStatistics>> {
+
 		private static final long serialVersionUID = 1L;
 		public ListTopicStatistics() {
-			super(
-				null,
-				true,
-				TopicStatistics.class,
-				null
-			);
+			super(null, true, TopicStatistics.class, null);
 		}
+
 	}
 
 	public static class ListDeclaration extends AbstractCustomJacksonDeserializer<List<Declaration>> {
@@ -291,6 +286,15 @@ public class CustomJacksonDeserializers {
 		private static final long serialVersionUID = 1L;
 		public ListGroup() {
 			super(null, true, Group.class, null);
+		}
+
+	}
+
+	public static class ListComment extends AbstractCustomJacksonDeserializer<List<Comment>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListComment() {
+			super(null, true, Comment.class, null);
 		}
 
 	}

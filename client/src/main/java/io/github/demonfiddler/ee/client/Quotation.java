@@ -205,6 +205,8 @@ public class Quotation extends AbstractLinkableEntity {
 			+ ", " //
 			+ "log: " + this.log //
 			+ ", " //
+			+ "comments: " + this.comments //
+			+ ", " //
 			+ "fromEntityLinks: " + this.fromEntityLinks //
 			+ ", " //
 			+ "toEntityLinks: " + this.toEntityLinks //

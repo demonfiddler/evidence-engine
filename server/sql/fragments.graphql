@@ -27,17 +27,32 @@ fragment trackedEntityFields on ITrackedEntity {
   updatedByUser {
     username
   }
-  log
-  {
-    # ... pageFields
-    content {
-      timestamp
-      transactionKind
-      user {
-        username
-      }
-    }
-  }
+  # log {
+  #   ... pageFields
+  #   content {
+  #     timestamp
+  #     transactionKind
+  #     user {
+  #       username
+  #     }
+  #   }
+  # }
+  # comments {
+  #   content {
+  #     ... trackedEntityFields
+  #     entityKind
+  #     status
+  #     rating
+  #     created
+  #     createdByUser {
+  #       username
+  #     }
+  #     updated
+  #     updatedByUser {
+  #       username
+  #     }
+  #   }
+  # }
 }
 
 fragment linkableEntityFields on ILinkableEntity {
@@ -119,6 +134,18 @@ fragment claimFields on Claim {
   date
   text
   notes
+}
+
+fragment commentFields on Comment {
+  target {
+    ... on IBaseEntity {
+      id
+    }
+  }
+  parent {
+    id
+  }
+  text
 }
 
 fragment declarationFields on Declaration {

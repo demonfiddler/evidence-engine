@@ -176,7 +176,7 @@ export function AuthProvider({children} : AuthProviderProps) {
   // if (hasAuthority !== prevHasAuthority.current) {
   //   logger.trace("render: hasAuthority has changed from %s to %s", typeof prevHasAuthority.current, typeof hasAuthority)
   // }
-  logger.trace("render: hasAuthority = ${typeof hasAuthority}", typeof hasAuthority)
+  logger.trace("render: hasAuthority=%s", typeof hasAuthority)
 
   const doLogin = useCallback(async (username: string, password: string, rememberMe: boolean) => {
     setLoading(true)

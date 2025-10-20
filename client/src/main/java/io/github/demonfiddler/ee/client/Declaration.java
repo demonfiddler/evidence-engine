@@ -280,6 +280,8 @@ public class Declaration extends AbstractLinkableEntity {
 			+ ", " //
 			+ "log: " + this.log //
 			+ ", " //
+			+ "comments: " + this.comments //
+			+ ", " //
 			+ "fromEntityLinks: " + this.fromEntityLinks //
 			+ ", " //
 			+ "toEntityLinks: " + this.toEntityLinks //

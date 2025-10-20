@@ -20,6 +20,7 @@
 type RecordKind =
   "None" |
   "Claim" |
+  "Comment" |
   "Declaration" |
   "RecordLink" |
   "Group" |

@@ -207,6 +207,8 @@ public class Journal extends AbstractTrackedEntity {
 			+ ", " //
 			+ "log: " + this.log //
 			+ ", " //
+			+ "comments: " + this.comments //
+			+ ", " //
 			+ "title: " + this.title //
 			+ ", " //
 			+ "abbreviation: " + this.abbreviation //

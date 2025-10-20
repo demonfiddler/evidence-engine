@@ -91,7 +91,7 @@ function createDetailState(
   const allowDelete = hasAuthority("DEL")
   const allowUpdate = allowCreate || allowEdit
   const allowLink = hasAuthority("LNK")
-  const allowRead = hasAuthority("REA")
+  const allowRead = true // hasAuthority("REA")
   const updating = mode == "create" || mode == "edit"
 
   return {

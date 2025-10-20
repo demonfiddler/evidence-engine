@@ -34,6 +34,7 @@ import com.graphql_java_generator.util.GraphqlUtils;
 import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateMutation;
 import io.github.demonfiddler.ee.server.model.ClaimInput;
+import io.github.demonfiddler.ee.server.model.CommentInput;
 import io.github.demonfiddler.ee.server.model.DeclarationInput;
 import io.github.demonfiddler.ee.server.model.EntityLinkInput;
 import io.github.demonfiddler.ee.server.model.GroupInput;
@@ -137,6 +138,88 @@ public class MutationController {
 	@SchemaMapping(field = "deleteClaim")
 	public Object deleteClaim(DataFetchingEnvironment dataFetchingEnvironment, @Argument("claimId") Long claimId) {
 		return this.dataFetchersDelegateMutation.deleteClaim(dataFetchingEnvironment, claimId);
+	}
+
+	/**
+	 * This method loads the data for Mutation.createComment. It returns an Object: the data fetcher
+	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
+	 * the author attribute of the <I>origin</I>, which is an instance of {ObjectType {name:Post, fields:{Field{name:id,
+	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
+	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
+	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * typically contains the id to use in the query.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
+	 * @param comment The parameter that will receive the field argument of the same name for the current data to fetch
+	 * @return It may return any value that is valid for a spring-graphql controller, annotated by the
+	 * <code>@SchemaMapping</code> annotation
+	 */
+	@SchemaMapping(field = "createComment")
+	public Object createComment(DataFetchingEnvironment dataFetchingEnvironment,
+		@Argument("comment") CommentInput comment) {
+
+		return this.dataFetchersDelegateMutation.createComment(dataFetchingEnvironment, comment);
+	}
+
+	/**
+	 * This method loads the data for Mutation.updateComment. It returns an Object: the data fetcher
+	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
+	 * the author attribute of the <I>origin</I>, which is an instance of {ObjectType {name:Post, fields:{Field{name:id,
+	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
+	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
+	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * typically contains the id to use in the query.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
+	 * @param comment The parameter that will receive the field argument of the same name for the current data to fetch
+	 * @return It may return any value that is valid for a spring-graphql controller, annotated by the
+	 * <code>@SchemaMapping</code> annotation
+	 */
+	@SchemaMapping(field = "updateComment")
+	public Object updateComment(DataFetchingEnvironment dataFetchingEnvironment,
+		@Argument("comment") CommentInput comment) {
+
+		return this.dataFetchersDelegateMutation.updateComment(dataFetchingEnvironment, comment);
+	}
+
+	/**
+	 * This method loads the data for Mutation.deleteComment. It returns an Object: the data fetcher
+	 * implementation may return any type that is accepted by a spring-graphql controller<BR/>
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
+	 * the author attribute of the <I>origin</I>, which is an instance of {ObjectType {name:Post, fields:{Field{name:id,
+	 * type:ID!, params:[]},Field{name:date, type:Date!, params:[]},Field{name:author, type:Member,
+	 * params:[]},Field{name:publiclyAvailable, type:Boolean, params:[]},Field{name:title, type:String!,
+	 * params:[]},Field{name:content, type:String!, params:[]},Field{name:authorId, type:ID,
+	 * params:[]},Field{name:topicId, type:ID, params:[]}}, comments ""}. It depends on your data modle, but it
+	 * typically contains the id to use in the query.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
+	 * @param commentId The parameter that will receive the field argument of the same name for the current data to
+	 * fetch
+	 * @return It may return any value that is valid for a spring-graphql controller, annotated by the
+	 * <code>@SchemaMapping</code> annotation
+	 */
+	@SchemaMapping(field = "deleteComment")
+	public Object deleteComment(DataFetchingEnvironment dataFetchingEnvironment,
+		@Argument("commentId") Long commentId) {
+
+		return this.dataFetchersDelegateMutation.deleteComment(dataFetchingEnvironment, commentId);
 	}
 
 	/**

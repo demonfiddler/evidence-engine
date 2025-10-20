@@ -18,7 +18,6 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 import { z } from "zod/v4"
-import { Log } from "./log"
 import { IBaseEntity } from "./base-entity"
 import { EntityKind, Status } from "./enums"
 
@@ -36,7 +35,8 @@ export const ITrackedEntity = IBaseEntity.extend({
   // createdByUser: User,
   updated: z.iso.date().optional(),
   // updatedByUser: User.optional(),
-  log: z.array(Log),
+  // log: z.array(Log).optional(),
+  // comments: z.array(Comment).optional(),
 })
 
 export type ITrackedEntityFieldValues = z.infer<typeof ITrackedEntity>

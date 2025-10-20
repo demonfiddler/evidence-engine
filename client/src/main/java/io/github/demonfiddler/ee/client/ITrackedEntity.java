@@ -43,12 +43,13 @@ import io.github.demonfiddler.ee.client.util.CustomJacksonDeserializers;
 @JsonTypeInfo(use = Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "__typename", visible = true)
 @JsonSubTypes({ //
 	@Type(value = Claim.class, name = "Claim"), //
+	@Type(value = Comment.class, name = "Comment"), //
 	@Type(value = Declaration.class, name = "Declaration"), //
 	@Type(value = EntityLink.class, name = "EntityLink"), //
-	@Type(value = Group.class, name = "Group"), //
 	@Type(value = Journal.class, name = "Journal"), //
+	@Type(value = Group.class, name = "Group"), //
 	@Type(value = Person.class, name = "Person"), //
-	@Type(value = Publication.class, name = "Publication"),
+	@Type(value = Publication.class, name = "Publication"), //
 	@Type(value = Publisher.class, name = "Publisher"), //
 	@Type(value = Quotation.class, name = "Quotation"), //
 	@Type(value = Topic.class, name = "Topic"), //
@@ -81,11 +82,11 @@ public interface ITrackedEntity extends IBaseEntity {
 	String getStatus();
 
 	@JsonProperty("rating")
-	@GraphQLScalar( fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
+	@GraphQLScalar(fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
 	void setRating(Integer rating);
 
 	@JsonProperty("rating")
-	@GraphQLScalar( fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
+	@GraphQLScalar(fieldName = "rating", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
 	Integer getRating();
 
 	@JsonProperty("created")
@@ -143,5 +144,19 @@ public interface ITrackedEntity extends IBaseEntity {
 		mandatories = { false, false }, listDepths = { 0, 0 }, itemsMandatory = { false, false })
 	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage", javaClass = LogPage.class, listDepth = 0)
 	LogPage getLog();
+
+	@JsonProperty("comments")
+	@GraphQLInputParameters(names = { "filter", "pageSort" }, types = { "CommentQueryFilter", "PageableInput" },
+		mandatories = { false, false }, listDepths = { 0, 0 }, itemsMandatory = { false, false })
+	@GraphQLNonScalar(fieldName = "comments", graphQLTypeSimpleName = "CommentPage", javaClass = CommentPage.class,
+		listDepth = 0)
+	public void setComments(CommentPage comments);
+
+	@JsonProperty("comments")
+	@GraphQLInputParameters(names = { "filter", "pageSort" }, types = { "CommentQueryFilter", "PageableInput" },
+		mandatories = { false, false }, listDepths = { 0, 0 }, itemsMandatory = { false, false })
+	@GraphQLNonScalar(fieldName = "comments", graphQLTypeSimpleName = "CommentPage", javaClass = CommentPage.class,
+		listDepth = 0)
+	public CommentPage getComments();
 
 }

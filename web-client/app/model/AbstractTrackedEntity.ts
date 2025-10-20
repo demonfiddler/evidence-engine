@@ -18,6 +18,7 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 import AbstractBaseEntity from "./AbstractBaseEntity"
+import Comment from "./Comment"
 import IPage from "./IPage"
 import ITrackedEntity from "./ITrackedEntity"
 import Log from "./Log"
@@ -32,4 +33,5 @@ export default abstract class AbstractTrackedEntity extends AbstractBaseEntity i
   updated?: Date
   updatedByUser?: User
   log?: IPage<Log>
+  comments?: IPage<Comment>
 }

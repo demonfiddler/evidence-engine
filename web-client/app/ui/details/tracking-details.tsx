@@ -28,6 +28,7 @@ import { formatDateTime, getRecordLabel } from "@/lib/utils"
 import InputEx from "../ext/input-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
 import { detail, LoggerEx } from "@/lib/logger"
+import CommentsDialog from "../dialog/comments-dialog"
 
 const logger = new LoggerEx(detail, "[TrackingDetails] ")
 
@@ -79,6 +80,13 @@ export default function TrackingDetails(
         iconSize={18}
         className="ml-2 w-full"
         help="A five-star rating for the entity, interpretation depends on entity kind."
+      />
+      <CommentsDialog
+        className="col-start-5 place-items-center"
+        disabled={!record || !state.allowRead || state.mode == "create" || recordKind === "Comment"}
+        targetKind={recordKind}
+        targetId={record?.id ?? ''}
+        targetLabel={getRecordLabel(recordKind, record) ?? ''}
       />
       <Label htmlFor="created-by" className="col-start-1">Created by:</Label>
       <InputEx

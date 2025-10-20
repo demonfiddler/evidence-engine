@@ -118,6 +118,14 @@ public abstract class AbstractTrackedEntity implements ITrackedEntity {
 	LogPage log;
 
 	/**
+	* Comments associated with the record.
+	*/
+	@Transient
+	@GraphQLNonScalar(fieldName = "comments", graphQLTypeSimpleName = "CommentPage", javaClass = CommentPage.class,
+	listDepth = 0)
+	CommentPage comments;
+
+	/**
 	 * The unique claim identifier.
 	 */
 	@Override
@@ -170,7 +178,7 @@ public abstract class AbstractTrackedEntity implements ITrackedEntity {
 	public void setRating(Integer rating) {
 		this.rating = rating;
 	}
-  
+
 	/**
 	 * A five-star rating for the entity, interpretation depends on entity kind.
 	 */
@@ -264,6 +272,22 @@ public abstract class AbstractTrackedEntity implements ITrackedEntity {
 	}
 
 	/**
+	* Comments associated with the record.
+	*/
+	@Override
+	public void setComments(CommentPage comments) {
+	this.comments = comments;
+	}
+
+	/**
+	* Comments associated with the record.
+	*/
+	@Override
+	public CommentPage getComments() {
+	return this.comments;
+	}
+
+	/**
 	 * The Builder that helps building instances of this POJO.
 	 */
 	@SuppressWarnings("unchecked")
@@ -277,6 +301,7 @@ public abstract class AbstractTrackedEntity implements ITrackedEntity {
 		private OffsetDateTime updated;
 		private User updatedByUser;
 		private LogPage log;
+		private CommentPage comments;
 
 		/**
 		 * The unique record identifier.
@@ -342,6 +367,14 @@ public abstract class AbstractTrackedEntity implements ITrackedEntity {
 			return (B)this;
 		}
 
+		/**
+		 * Comments associated with the record.
+		 */
+		public final B withComments(CommentPage commentsParam) {
+			this.comments = commentsParam;
+			return (B)this;
+		}
+
 		T build(T _object) {
 			_object.setId(this.id);
 			_object.setStatus(this.status);
@@ -351,6 +384,7 @@ public abstract class AbstractTrackedEntity implements ITrackedEntity {
 			_object.setUpdated(this.updated);
 			_object.setUpdatedByUser(this.updatedByUser);
 			_object.setLog(this.log);
+			_object.setComments(this.comments);
 			return _object;
 		}
 

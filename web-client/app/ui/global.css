@@ -114,3 +114,15 @@ input[type='number']::-webkit-outer-spin-button {
     opacity: 1;
   }
 }
+
+@keyframes pulse-bg {
+  from {background-color: white;}
+  to {background-color: var(--color-sky-200);}
+}
+
+.animation-pulse-bg {
+  animation-name: pulse-bg;
+  animation-duration: 0.2s;
+  animation-iteration-count: 10;
+  animation-direction: alternate;
+}

@@ -30,7 +30,8 @@ import io.github.demonfiddler.ee.server.repository.TrackedEntityRepository;
 import jakarta.annotation.Resource;
 
 @Component
-public class DataFetchersDelegateITrackedEntityImpl extends DataFetchersDelegateITrackedEntityBaseImpl<AbstractTrackedEntity>
+public class DataFetchersDelegateITrackedEntityImpl
+    extends DataFetchersDelegateITrackedEntityBaseImpl<AbstractTrackedEntity>
     implements DataFetchersDelegateITrackedEntity<AbstractTrackedEntity> {
 
     @Resource

@@ -132,6 +132,13 @@ interface ITrackedEntity {
         "Sorts and/or paginates results."
         pageSort: PageableInput
     ): LogPage!
+    "Comments associated with the record."
+    comments(
+        "Filters results."
+        filter: CommentQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): CommentPage
 }
 
 "Interface for entities that can be linked together."
@@ -227,6 +234,13 @@ type Claim implements IBaseEntity & ITrackedEntity & ILinkableEntity {
         "Sorts and/or paginates results."
         pageSort: PageableInput
     ): LogPage!
+    "Comments associated with the record."
+    comments(
+        "Filters results."
+        filter: CommentQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): CommentPage
     "Outbound links for which the receiver is the 'linked-from' entity"
     fromEntityLinks(
         "Filters results."
@@ -294,6 +308,122 @@ type ClaimPage implements IPage {
     content: [Claim!]!
 }
 
+"A comment associated with a tracked entity."
+type Comment implements IBaseEntity & ITrackedEntity {
+    "The unique claim identifier."
+    id: ID!
+    "The entity kind."
+    entityKind(
+        "How to format the result. SHORT format is per ```EntityKind``` enum."
+        format: FormatKind = LONG
+    ): String
+    "The entity status."
+    status(
+        "How to format the result. SHORT format is per ```StatusKind``` enum."
+        format: FormatKind = LONG
+    ): String
+    "A five-star rating for the claim, indicative of significance, credibility, evidence base, etc."
+    rating: Int
+    # TODO: support date/time formatting
+    "When the record was created."
+    created: DateTime
+    "The user who created the record."
+    createdByUser: User @auth
+    # TODO: support date/time formatting
+    "When the record was last updated."
+    updated: DateTime
+    "The user who last updated the record."
+    updatedByUser: User @auth
+    "Log of transactions involving the record."
+    log(
+        "Filters results."
+        filter: LogQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): LogPage!
+    "Replies to this comment."
+    comments(
+        "Filters results."
+        filter: CommentQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): CommentPage
+    "The entity to which this comment is attached."
+    target: ITrackedEntity
+    "The parent comment to which this is a reply."
+    parent: Comment
+    "The text of the comment."
+    text: String
+}
+
+"An input for creating or updating a comment."
+input CommentInput {
+    "The comment identifier, required if updating an existing record."
+    id: ID
+    "A five-star rating for the comment, indicative of significance, credibility, evidence base, etc."
+    rating: Int
+    "The ID of the target entity with which this comment is associated."
+    targetId: ID!
+    "The ID of the parent comment to which this comment is a reply."
+    parentId: ID
+    "The text of the comment."
+    text: String!
+}
+
+"For filtering comment records."
+input CommentQueryFilter {
+    "Return only records with these status codes (default: ALL)."
+    status: [StatusKind!]
+    "Free text search string."
+    text: String
+    "Whether to search ```text``` in advanced (boolean) mode."
+    advancedSearch: Boolean = false
+    "The identifier of the single record to return."
+    recordId: ID
+    "Restrict to specific target entity kind."
+    targetKind: EntityKind
+    "Restrict to specific target entity ID."
+    targetId: ID
+    "Restrict to replies to a specific comment."
+    parentId: ID
+    "Restrict to comments created by a specific user."
+    userId: ID
+    "Timestamp of first comment to include."
+    from: DateTime
+    "Timestamp of last comment to include."
+    to: DateTime
+}
+
+"Returns paginated comment query results."
+type CommentPage implements IPage {
+    "Dummy ID required for @Entity classes"
+    dummy: ID
+    "Whether the page has content."
+    hasContent: Boolean!
+    "Whether the page is empty (no content)."
+    isEmpty: Boolean!
+    "The current page number."
+    number: Int!
+    "The page size."
+    size: Int!
+    "The number of elements on this page."
+    numberOfElements: Int!
+    "The total number of pages available."
+    totalPages: Int!
+    "The total number of records."
+    totalElements: Long!
+    "Whether this is the first page."
+    isFirst: Boolean!
+    "Whether this is the last page."
+    isLast: Boolean!
+    "Whether there is next page."
+    hasNext: Boolean!
+    "Whether there is previous page."
+    hasPrevious: Boolean!
+    "The requested pageful of records."
+    content: [Comment!]!
+}
+
 "Enumeration that allows selection of country format."
 enum CountryFormatKind {
     "ISO-3166-1 alpha-2 two-character code."
@@ -341,6 +471,13 @@ type Declaration implements IBaseEntity & ITrackedEntity & ILinkableEntity {
         "Sorts and/or paginates results."
         pageSort: PageableInput
     ): LogPage!
+    "Comments associated with the record."
+    comments(
+        "Filters results."
+        filter: CommentQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): CommentPage
     "Outbound links for which the receiver is the 'linked-from' entity"
     fromEntityLinks(
         "Filters results."
@@ -456,6 +593,8 @@ enum DeclarationKind {
 enum EntityKind {
     "Claim."
     CLA @label(label: "Claim")
+    "Comment."
+    COM @label(label: "Comment")
     "Country."
     COU @label(label: "Country")
     "Declaration."
@@ -513,6 +652,13 @@ type EntityLink implements IBaseEntity & ITrackedEntity {
         "Sorts and/or paginates results."
         pageSort: PageableInput
     ): LogPage!
+    "Comments associated with the record."
+    comments(
+        "Filters results."
+        filter: CommentQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): CommentPage
     "The 'linked-from' entity."
     fromEntity: ILinkableEntity
     "The locations within the 'linked-from' record, one per line."
@@ -633,6 +779,13 @@ type Journal implements IBaseEntity & ITrackedEntity {
         "Sorts and/or paginates results."
         pageSort: PageableInput
     ): LogPage!
+    "Comments associated with the record."
+    comments(
+        "Filters results."
+        filter: CommentQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): CommentPage
     "The full journal title."
     title: String
     "The official ISO 4 abbreviation."
@@ -803,6 +956,8 @@ type LogPage implements IPage {
 enum AuthorityKind {
     "Use administrative functions."
     ADM @label(label: "Administer")
+    "Comment on records."
+    COM @label(label: "Comment")
     "Insert new record."
     CRE @label(label: "Create")
     "Delete existing record."
@@ -850,6 +1005,13 @@ type Person implements IBaseEntity & ITrackedEntity & ILinkableEntity {
         "Sorts and/or paginates results."
         pageSort: PageableInput
     ): LogPage!
+    "Comments associated with the record."
+    comments(
+        "Filters results."
+        filter: CommentQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): CommentPage
     "Outbound links for which the receiver is the 'linked-from' entity"
     fromEntityLinks(
         "Filters results."
@@ -988,6 +1150,13 @@ type Publication implements IBaseEntity & ITrackedEntity & ILinkableEntity {
         "Sorts and/or paginates results."
         pageSort: PageableInput
     ): LogPage!
+    "Comments associated with the record."
+    comments(
+        "Filters results."
+        filter: CommentQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): CommentPage
     "Outbound links for which the receiver is the 'linked-from' entity"
     fromEntityLinks(
         "Filters results."
@@ -1308,6 +1477,13 @@ type Publisher implements IBaseEntity & ITrackedEntity {
         "Sorts and/or paginates results."
         pageSort: PageableInput
     ): LogPage!
+    "Comments associated with the record."
+    comments(
+        "Filters results."
+        filter: CommentQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): CommentPage
     "The publisher name."
     name: String
     "The publisher location."
@@ -1404,6 +1580,13 @@ type Quotation implements IBaseEntity & ITrackedEntity & ILinkableEntity {
         "Sorts and/or paginates results."
         pageSort: PageableInput
     ): LogPage!
+    "Comments associated with the record."
+    comments(
+        "Filters results."
+        filter: CommentQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): CommentPage
     "Outbound links for which the receiver is the 'linked-from' entity"
     fromEntityLinks(
         "Filters results."
@@ -1570,6 +1753,13 @@ type Topic implements IBaseEntity & ITrackedEntity & ILinkableEntity {
         "Sorts and/or paginates results."
         pageSort: PageableInput
     ): LogPage!
+    "Comments associated with the record."
+    comments(
+        "Filters results."
+        filter: CommentQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): CommentPage
     "The topic label for display in the user interface."
     label: String
     "The topic description."
@@ -1678,6 +1868,8 @@ enum TransactionKind {
     LNK @label(label: "Linked")
     "Records unlinked."
     UNL @label(label: "Unlinked")
+    "Record commented upon."
+    COM @label(label: "Commented")
 }
 
 "Describes a user of the system."
@@ -1713,6 +1905,13 @@ type User implements IBaseEntity & ITrackedEntity @auth {
         "Sorts and/or paginates results."
         pageSort: PageableInput
     ): LogPage!
+    "Comments associated with the record."
+    comments(
+        "Filters results."
+        filter: CommentQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): CommentPage
     "The (mutable?) unique user name (user-assigned)."
     username: String
     "The user's first name."
@@ -1852,6 +2051,13 @@ type Group implements IBaseEntity & ITrackedEntity @auth {
         "Sorts and/or paginates results."
         pageSort: PageableInput
     ): LogPage!
+    "Comments associated with the record."
+    comments(
+        "Filters results."
+        filter: CommentQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): CommentPage
     "The (mutable?) unique group name."
     groupname: String
     "The authorities granted to the group."
@@ -1918,6 +2124,16 @@ type Query {
     ): ClaimPage!
     "Returns a claim given its identifier."
     claimById(id: ID!): Claim
+
+    "Returns a paged list of comments."
+    comments(
+        "Filters results."
+        filter: CommentQueryFilter,
+        "Sorts and/or paginates results."
+        pageSort: PageableInput
+    ): CommentPage!
+    "Returns a comment given its identifier."
+    commentById(id: ID!): Comment
 
     "Returns a paged list of declarations."
     declarations(
@@ -2055,6 +2271,13 @@ type Mutation {
     updateClaim(claim: ClaimInput!): Claim @auth(authority: [UPD])
     "Deletes an existing claim."
     deleteClaim(claimId: ID!): Claim @auth(authority: [DEL])
+
+    "Creates a new comment."
+    createComment(comment: CommentInput!): Comment @auth(authority: [COM])
+    "Updates an existing comment."
+    updateComment(comment: CommentInput!): Comment @auth(authority: [COM])
+    "Deletes an existing comment."
+    deleteComment(commentId: ID!): Comment @auth(authority: [COM])
 
     "Creates a new declaration."
     createDeclaration(declaration: DeclarationInput!): Declaration @auth(authority: [CRE])

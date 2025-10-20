@@ -133,6 +133,8 @@ public class Claim extends AbstractLinkableEntity {
 			+ ", " //
 			+ "log: " + this.log //
 			+ ", " //
+			+ "comments: " + this.comments //
+			+ ", " //
 			+ "fromEntityLinks: " + this.fromEntityLinks //
 			+ ", " //
 			+ "toEntityLinks: " + this.toEntityLinks //

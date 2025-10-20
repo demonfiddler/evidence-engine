@@ -75,8 +75,8 @@ export default function LogTableFilter(
           entityId: entityId || undefined,
           userId: userId || undefined,
           transactionKinds: transactionKind ? [transactionKind] : undefined,
-          from: from,
-          to: to
+          from,
+          to,
         } as LogQueryFilter
         if (!isEqual(newFilter as LogQueryFilter, filter)) {
           logger.trace("updateFilter from %o to %o", filter, newFilter)

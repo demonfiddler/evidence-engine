@@ -39,6 +39,8 @@ import io.github.demonfiddler.ee.server.model.AbstractLinkableEntity;
 import io.github.demonfiddler.ee.server.model.AbstractTrackedEntity;
 import io.github.demonfiddler.ee.server.model.Claim;
 import io.github.demonfiddler.ee.server.model.ClaimInput;
+import io.github.demonfiddler.ee.server.model.Comment;
+import io.github.demonfiddler.ee.server.model.CommentInput;
 import io.github.demonfiddler.ee.server.model.Declaration;
 import io.github.demonfiddler.ee.server.model.DeclarationInput;
 import io.github.demonfiddler.ee.server.model.EntityKind;
@@ -69,6 +71,7 @@ import io.github.demonfiddler.ee.server.model.UserInput;
 import io.github.demonfiddler.ee.server.model.UserPasswordInput;
 import io.github.demonfiddler.ee.server.model.UserProfileInput;
 import io.github.demonfiddler.ee.server.repository.ClaimRepository;
+import io.github.demonfiddler.ee.server.repository.CommentRepository;
 import io.github.demonfiddler.ee.server.repository.DeclarationRepository;
 import io.github.demonfiddler.ee.server.repository.EntityLinkRepository;
 import io.github.demonfiddler.ee.server.repository.GroupRepository;
@@ -93,6 +96,8 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
 
     @Resource
     private ClaimRepository claimRepository;
+    @Resource
+    private CommentRepository commentRepository;
     @Resource
     private DeclarationRepository declarationRepository;
     @Resource
@@ -187,6 +192,12 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         log(TransactionKind.UNL, linkedEntityId, linkedEntityKind, entityId, entityKind, timestamp);
     }
 
+    private void logCommented(Comment comment) {
+        EntityKind entityKind = EntityKind.valueOf(comment.getTarget().getEntityKind());
+        OffsetDateTime timestamp = comment.getUpdated() == null ? comment.getCreated() : comment.getUpdated();
+        log(TransactionKind.COM, comment.getTarget().getId(), entityKind, null, null, timestamp);
+    }
+
     private OffsetDateTime getLatestDate(EntityLink entityLink) {
         return entityLink.getUpdated() == null //
             ? entityLink.getCreated() //
@@ -240,11 +251,11 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @Override
     @PreAuthorize("hasAuthority('CRE')")
     public Object createClaim(DataFetchingEnvironment dataFetchingEnvironment, ClaimInput input) {
-        Claim claim = new Claim();
-        claim.setRating(input.getRating());
-        claim.setDate(input.getDate());
-        claim.setNotes(input.getNotes());
-        claim.setText(input.getText());
+        Claim claim = Claim.builder() //
+            .withRating(input.getRating()) //
+            .withDate(input.getDate()) //
+            .withNotes(input.getNotes()) //
+            .withText(input.getText()).build();
         setCreatedFields(claim);
 
         claim = claimRepository.save(claim);
@@ -276,6 +287,88 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @PreAuthorize("hasAuthority('DEL')")
     public Object deleteClaim(DataFetchingEnvironment dataFetchingEnvironment, Long claimId) {
         return delete(claimId, claimRepository);
+    }
+
+    // Comment rules:
+    // 1. A new comment is created with the same status as its target entity
+    // 2. A comment cannot be updated with a different target or parent
+    // 3. A reply comment must specify the same target entity as the parent comment
+
+    @Override
+    @PreAuthorize("hasAuthority('COM')")
+    public Object createComment(DataFetchingEnvironment dataFetchingEnvironment, CommentInput input) {
+        Long targetId = input.getTargetId();
+        AbstractTrackedEntity target = trackedEntityRepository.findById(targetId)
+            .orElseThrow(() -> createEntityNotFoundException("ITrackedEntity", targetId));
+        Long parentId = input.getParentId();
+        Comment parent = parentId == null ? null : commentRepository.findById(parentId)
+            .orElseThrow(() -> createEntityNotFoundException("Comment", parentId));
+        Comment comment = Comment.builder() //
+            .withRating(input.getRating()) //
+            .withTarget(target) //
+            .withParent(parent) //
+            .withText(input.getText()) //
+            .build();
+        setCreatedFields(comment);
+        // Rule #1: A new comment has the same status as its target entity.
+        comment.setStatus(target.getStatus());
+        // Rule #3: A reply must target the same entity as the parent comment.
+        if (parent != null && !Objects.equals(targetId, parent.getTarget().getId())) {
+            throw new IllegalArgumentException(
+                "A reply comment must specify the same target entity as the parent comment");
+        }
+
+        comment = commentRepository.save(comment);
+
+        logCreated(comment);
+        logCommented(comment);
+
+        return comment;
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('COM')")
+    public Object updateComment(DataFetchingEnvironment dataFetchingEnvironment, CommentInput input) {
+        Comment comment = commentRepository.findById(input.getId())
+            .orElseThrow(() -> createEntityNotFoundException("Comment", input.getId()));
+        if (!comment.getCreatedByUser().getUsername().equals(securityUtils.getCurrentUsername())
+            && !securityUtils.hasAuthority(AuthorityKind.ADM)) {
+
+            throw new AccessDeniedException(
+                "You are not authorised to invoke the 'updateComment' mutation for Comment#" + input.getId());
+        }
+        // Rule #2: A comment cannot be updated with a different target or parent.
+        Long oldTargetId = comment.getTarget() == null ? null : comment.getTarget().getId();
+        Long oldParentId = comment.getParent() == null ? null : comment.getParent().getId();
+        if (!Objects.equals(input.getTargetId(), oldTargetId) || !Objects.equals(input.getParentId(), oldParentId))
+            throw new IllegalArgumentException("Cannot update a Comment to a different target or parent");
+
+        comment.setRating(input.getRating());
+        comment.setText(input.getText());
+        setUpdatedFields(comment);
+
+        comment = commentRepository.save(comment);
+
+        logUpdated(comment);
+        logCommented(comment);
+
+        return comment;
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('COM')")
+    public Object deleteComment(DataFetchingEnvironment dataFetchingEnvironment, Long commentId) {
+        Optional<Comment> commentOpt = commentRepository.findById(commentId);
+        if (commentOpt.isPresent()) {
+            Comment comment = commentOpt.get();
+            if (!comment.getCreatedByUser().getUsername().equals(securityUtils.getCurrentUsername())
+                && !securityUtils.hasAuthority(AuthorityKind.ADM)) {
+
+                throw new AccessDeniedException(
+                    "You are not authorised to invoke the 'deleteComment' mutation for Comment#" + commentId);
+            }
+        }
+        return delete(commentId, commentRepository);
     }
 
     @Override

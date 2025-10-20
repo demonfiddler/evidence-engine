@@ -38,6 +38,7 @@ export const apolloClient = new ApolloClient({
     possibleTypes: {
       IBaseEntity: [
         "Claim",
+        "Comment",
         "EntityLink",
         "Declaration",
         "Group",
@@ -52,6 +53,7 @@ export const apolloClient = new ApolloClient({
       ],
       ITrackedEntity: [
         "Claim",
+        "Comment",
         "EntityLink",
         "Declaration",
         "Group",
@@ -73,6 +75,7 @@ export const apolloClient = new ApolloClient({
       ],
       IPage: [
         "ClaimPage",
+        "CommentPage",
         "EntityLinkPage",
         "DeclarationPage",
         "GroupPage",

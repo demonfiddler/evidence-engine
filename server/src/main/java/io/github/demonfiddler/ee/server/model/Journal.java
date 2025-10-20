@@ -31,7 +31,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
-import jakarta.persistence.Transient;
 
 /**
  * Journal details including abbreviation, publisher, etc.
@@ -73,7 +72,7 @@ public class Journal extends AbstractTrackedEntity {
 	/**
 	 * The journal publisher.
 	 */
-	@Transient
+	// @Transient
 	@GraphQLNonScalar(fieldName = "publisher", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class,
 		listDepth = 0)
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)

@@ -276,6 +276,7 @@ INSERT INTO "declaration_kind" ("kind", "label", "description") VALUES
 
 INSERT INTO "entity_kind" ("code", "label") VALUES
 	('CLA', 'Claim'),
+	('COM', 'Comment'),
 	('COU', 'Country'),
 	('DEC', 'Declaration'),
 	('GRP', 'Group'),
@@ -290,6 +291,7 @@ INSERT INTO "entity_kind" ("code", "label") VALUES
 
 INSERT INTO "authority_kind" ("code", "label", "description") VALUES
 	('ADM', 'Administer', 'Use administrative functions'),
+	('COM', 'Comment', 'Comment on existing records'),
 	('CRE', 'Create', 'Insert new record'),
 	('DEL', 'Delete', 'Delete existing record'),
 	('LNK', 'Link', 'Link existing records'),
@@ -410,12 +412,14 @@ INSERT INTO "group_user" ("group_id", "username") VALUES
 
 INSERT INTO "group_authority" ("group_id","authority") VALUES
 	(@administrators_id,'ADM'),
+	(@administrators_id,'COM'),
 	(@administrators_id,'CRE'),
 	(@administrators_id,'DEL'),
 	(@administrators_id,'LNK'),
 	(@administrators_id,'REA'),
 	(@administrators_id,'UPD'),
 	(@administrators_id,'UPL'),
+	(@editors_id,'COM'),
 	(@editors_id,'CRE'),
 	(@editors_id,'LNK'),
 	(@editors_id,'REA'),

@@ -122,8 +122,8 @@ public class TopicQueryFilter extends TrackedEntityQueryFilter {
 	}
 
 	/**
-	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
-	 * {@link #builderForTopicQueryFilter()}
+	 * The Builder that helps building instance of this POJO. You can get an instance of this class by calling the
+	 * {@link #builderForTopicQueryFilter()} method.
 	 */
 	public static class Builder extends AbstractBuilder<Builder, TopicQueryFilter> {
 

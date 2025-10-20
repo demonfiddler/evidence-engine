@@ -1,6 +1,6 @@
 # These mutations use fragments defined in fragments.graphql
 
-query {
+query queryAllById {
   claimById(id: 4){
     id
     ... trackedEntityFields
@@ -23,13 +23,13 @@ query {
     ... trackedEntityFields
     ... journalFields
   }
-  personById() {
+  personById(id: 0) {
     id
     ... trackedEntityFields
     # ... linkableEntityFields
     ... personFields
   }
-  publicationById() {
+  publicationById(id: 0) {
     id
     ... trackedEntityFields
     # ... linkableEntityFields
@@ -59,7 +59,7 @@ query {
   }
 }
 
-{
+query claims {
   claims
   # (
   #   filter: {
@@ -97,7 +97,38 @@ query {
   }
 }
 
-{
+query comments {
+  comments
+  # (
+  #   filter: {
+  #     status: DRA
+  #     text: "test"
+  #     advancedSearch: false
+  #   }
+  #   pageSort: {
+  #     pageNumber: 1
+  #     pageSize: 3
+  #     sort: {
+  #       orders: {
+  #         property: "date"
+  #         direction: DESC
+  #         nullHandling: NULLS_LAST
+  #         ignoreCase: false
+  #       }
+  #     }
+  #   }
+  # )
+  {
+    ... pageFields
+    content {
+      id
+      ... trackedEntityFields
+      ... commentFields
+    }
+  }
+}
+
+query declarations {
   declarations
   # (
   #   filter: {
@@ -135,7 +166,7 @@ query {
   }
 }
 
-{
+query entityLinks {
   entityLinks
   # (
   #   filter: {
@@ -149,13 +180,16 @@ query {
   #   }
   # )
   {
-    id
+    ... pageFields
+    content {
+      id
     ... trackedEntityFields
     ... entityLinkFields
+    }
   }
 }
 
-{
+query journals {
   journals
   # (
   #   filter: {
@@ -187,7 +221,7 @@ query {
   }
 }
 
-{
+query log {
   log
   # (
   #   filter: {
@@ -221,7 +255,7 @@ query {
   }
 }
 
-{
+query persons {
   persons
   # (
   #   filter: {
@@ -257,7 +291,7 @@ query {
   }
 }
 
-{
+query publications {
   publications
   # (
   #   filter: {
@@ -293,7 +327,7 @@ query {
   }
 }
 
-{
+query publishers {
   publishers
   # (
   #   filter: {
@@ -324,7 +358,7 @@ query {
   }
 }
 
-{
+query quotations {
   quotations
   # (
   #   filter: {
@@ -360,7 +394,7 @@ query {
   }
 }
 
-{
+query topics {
   topics
   # (
   #   filter: {
@@ -394,7 +428,7 @@ query {
   }
 }
 
-{
+query users {
 	users
   # (
   #   filter: {
@@ -425,7 +459,7 @@ query {
 }
 
 # TO SELECT ALL ENTITIES:
-{
+query allEntities {
   claims
   {
     content {
@@ -433,6 +467,15 @@ query {
       ... trackedEntityFields
       # ... linkableEntityFields
       ... claimFields
+    }
+  }
+
+  comments
+  {
+    content {
+      id
+      ... trackedEntityFields
+      ... commentFields
     }
   }
 

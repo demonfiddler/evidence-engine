@@ -352,7 +352,7 @@ export default function LinkingDetails(
       />
       <ButtonEx
         outerClassName="justify-center w-full"
-        className="w-20 place-self-center bg-blue-500"
+        className="w-35 place-self-center bg-blue-500"
         disabled={!allowLinking || (mode == "view" && !selectedLinkId) || (mode == "edit" && !isModified())}
         onClick={handleSaveOrEdit}
         help={
@@ -387,7 +387,7 @@ export default function LinkingDetails(
       />
       <ButtonEx
         outerClassName="justify-center w-full"
-        className="w-20 place-self-center bg-blue-500"
+        className="w-35 place-self-center bg-blue-500"
         disabled={
           !allowLinking ||
           mode === "view" && (
@@ -431,7 +431,7 @@ export default function LinkingDetails(
       />
       <ButtonEx
         outerClassName="justify-center w-full"
-        className="w-20 place-self-center bg-blue-500"
+        className="w-35 place-self-center bg-blue-500"
         disabled={!allowLinking || !selectedLinkId || mode !== "view"}
         onClick={handleUnlink}
         help={

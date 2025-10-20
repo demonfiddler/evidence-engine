@@ -17,6 +17,7 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+import Comment from "./Comment"
 import IBaseEntity from "./IBaseEntity"
 import IPage from "./IPage"
 import Log from "./Log"
@@ -39,4 +40,6 @@ export default interface ITrackedEntity extends IBaseEntity {
   updatedByUser?: User
   /** Log of transactions involving the record. */
   log?: IPage<Log>
+  /** Comments associated with the record. */
+  comments?: IPage<Comment>
 }

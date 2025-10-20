@@ -122,8 +122,8 @@ public class LinkableEntityQueryFilter extends EntityLinkQueryFilter {
 	}
 
 	/**
-	 * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
-	 * {@link #builderForLinkableEntityQueryFilter()}
+	 * The Builder that helps building instance of this POJO. You can get an instance of this class by calling the
+	 * {@link #builderForLinkableEntityQueryFilter()} method.
 	 */
 	public static class Builder extends AbstractBuilder<Builder, LinkableEntityQueryFilter> {
 

@@ -189,7 +189,7 @@ public class EntityLinkQueryFilter extends TrackedEntityQueryFilter {
 
 	/**
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class by calling the
-	 * {@link #builderForEntityLinkQueryFilter()}
+	 * {@link #builderForEntityLinkQueryFilter()} method.
 	 */
 	public static class Builder extends AbstractBuilder<Builder, EntityLinkQueryFilter> {
 

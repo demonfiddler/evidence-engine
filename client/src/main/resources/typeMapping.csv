@@ -22,6 +22,7 @@ TransactionKind,io.github.demonfiddler.ee.client.TransactionKind
 Log,io.github.demonfiddler.ee.client.Log
 __DirectiveLocation,io.github.demonfiddler.ee.client.__DirectiveLocation
 ISSN,java.lang.String
+CommentPage,io.github.demonfiddler.ee.client.CommentPage
 TopicPage,io.github.demonfiddler.ee.client.TopicPage
 Publication,io.github.demonfiddler.ee.client.Publication
 AuthorityKind,io.github.demonfiddler.ee.client.AuthorityKind
@@ -29,6 +30,7 @@ ITrackedEntity,io.github.demonfiddler.ee.client.ITrackedEntity
 IBaseEntity,io.github.demonfiddler.ee.client.IBaseEntity
 SortInput,io.github.demonfiddler.ee.client.SortInput
 Float,java.lang.Double
+CommentInput,io.github.demonfiddler.ee.client.CommentInput
 CountryFormatKind,io.github.demonfiddler.ee.client.CountryFormatKind
 Long,java.lang.Long
 Country,java.lang.String
@@ -36,6 +38,7 @@ PublisherPage,io.github.demonfiddler.ee.client.PublisherPage
 TopicQueryFilter,io.github.demonfiddler.ee.client.TopicQueryFilter
 Mutation,io.github.demonfiddler.ee.client.Mutation
 ClaimPage,io.github.demonfiddler.ee.client.ClaimPage
+CommentQueryFilter,io.github.demonfiddler.ee.client.CommentQueryFilter
 Person,io.github.demonfiddler.ee.client.Person
 EntityLinkInput,io.github.demonfiddler.ee.client.EntityLinkInput
 __TypeKind,io.github.demonfiddler.ee.client.__TypeKind
@@ -63,6 +66,7 @@ StatisticsQueryFilter,io.github.demonfiddler.ee.client.StatisticsQueryFilter
 Declaration,io.github.demonfiddler.ee.client.Declaration
 Topic,io.github.demonfiddler.ee.client.Topic
 EntityKind,io.github.demonfiddler.ee.client.EntityKind
+Comment,io.github.demonfiddler.ee.client.Comment
 __Field,io.github.demonfiddler.ee.client.__Field
 __Schema,io.github.demonfiddler.ee.client.__Schema
 DeclarationInput,io.github.demonfiddler.ee.client.DeclarationInput

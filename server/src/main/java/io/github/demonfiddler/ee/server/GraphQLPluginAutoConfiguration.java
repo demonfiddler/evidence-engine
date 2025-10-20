@@ -26,8 +26,15 @@ import org.springframework.graphql.execution.BatchLoaderRegistry;
 
 import io.github.demonfiddler.ee.server.controller.ClaimController;
 import io.github.demonfiddler.ee.server.controller.ClaimPageController;
+import io.github.demonfiddler.ee.server.controller.CommentController;
+import io.github.demonfiddler.ee.server.controller.CommentPageController;
 import io.github.demonfiddler.ee.server.controller.DeclarationController;
 import io.github.demonfiddler.ee.server.controller.DeclarationPageController;
+import io.github.demonfiddler.ee.server.controller.EntityLinkController;
+import io.github.demonfiddler.ee.server.controller.EntityLinkPageController;
+import io.github.demonfiddler.ee.server.controller.EntityStatisticsController;
+import io.github.demonfiddler.ee.server.controller.GroupController;
+import io.github.demonfiddler.ee.server.controller.GroupPageController;
 import io.github.demonfiddler.ee.server.controller.IBaseEntityController;
 import io.github.demonfiddler.ee.server.controller.ILinkableEntityController;
 import io.github.demonfiddler.ee.server.controller.IPageController;
@@ -49,11 +56,6 @@ import io.github.demonfiddler.ee.server.controller.QuotationPageController;
 import io.github.demonfiddler.ee.server.controller.TopicController;
 import io.github.demonfiddler.ee.server.controller.TopicPageController;
 import io.github.demonfiddler.ee.server.controller.TopicStatisticsController;
-import io.github.demonfiddler.ee.server.controller.EntityLinkController;
-import io.github.demonfiddler.ee.server.controller.EntityLinkPageController;
-import io.github.demonfiddler.ee.server.controller.EntityStatisticsController;
-import io.github.demonfiddler.ee.server.controller.GroupController;
-import io.github.demonfiddler.ee.server.controller.GroupPageController;
 import io.github.demonfiddler.ee.server.controller.UserController;
 import io.github.demonfiddler.ee.server.controller.UserPageController;
 
@@ -88,6 +90,32 @@ public class GraphQLPluginAutoConfiguration {
 	@ConditionalOnMissingBean(name = "claimPageController")
 	ClaimPageController claimPageController(BatchLoaderRegistry registry) {
 		return new ClaimPageController(registry);
+	}
+
+	/**
+	 * Default declaration of the spring controller for the entity <code>Comment</code>. This
+	 * default spring can be overridden by declaring a Spring Bean of same type and name, that has the @Primary spring annotation.<br/>
+	 * The <code>CommentController</code> bean must be a valid bean that can be discovered by
+	 * the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be discovered. So it 
+	 * is excluded in the {@link GraphQLServerMain} configuration.
+	 */
+	@Bean
+	@ConditionalOnMissingBean(name = "commentController")
+	CommentController commentController(BatchLoaderRegistry registry) {
+		return new CommentController(registry);
+	}
+
+	/**
+	 * Default declaration of the spring controller for the entity <code>CommentPage</code>. This
+	 * default spring can be overridden by declaring a Spring Bean of same type and name, that has the @Primary spring annotation.<br/>
+	 * The <code>CommentPageController</code> bean must be a valid bean that can be discovered by
+	 * the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be discovered. So it 
+	 * is excluded in the {@link GraphQLServerMain} configuration.
+	 */
+	@Bean
+	@ConditionalOnMissingBean(name = "commentPageController")
+	CommentPageController commentPageController(BatchLoaderRegistry registry) {
+		return new CommentPageController(registry);
 	}
 
 	/**
@@ -470,7 +498,7 @@ public class GraphQLPluginAutoConfiguration {
 	/**
 	 * Default declaration of the Spring controller for the entity <code>IPage</code>. This default Spring can be
 	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
-	 * The <code>io.github.demonfiddler.ee.server.util.IPageController</code> bean must be a valid bean that can be
+	 * The <code>IPageController</code> bean must be a valid bean that can be
 	 * discovered by the <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But
 	 * it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
 	 */

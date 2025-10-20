@@ -281,6 +281,8 @@ public class User extends AbstractTrackedEntity {
 			+ ", " //
 			+ "log: " + this.log //
 			+ ", " //
+			+ "comments: " + this.comments //
+			+ ", " //
 			+ "username: " + this.username //
 			+ ", " //
 			+ "firstName: " + this.firstName //

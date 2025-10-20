@@ -60,6 +60,33 @@ public class Mutation {
 	Claim deleteClaim;
 
 	/**
+	 * Creates a new comment.
+	 */
+	@GraphQLNonScalar(fieldName = "createComment", graphQLTypeSimpleName = "Comment", javaClass = Comment.class,
+		listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[COM]" })
+	Comment createComment;
+
+	/**
+	 * Updates an existing comment.
+	 */
+	@GraphQLNonScalar(fieldName = "updateComment", graphQLTypeSimpleName = "Comment", javaClass = Comment.class,
+		listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[COM]" })
+	Comment updateComment;
+
+	/**
+	 * Deletes an existing comment.
+	 */
+	@GraphQLNonScalar(fieldName = "deleteComment", graphQLTypeSimpleName = "Comment", javaClass = Comment.class,
+		listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[COM]" })
+	Comment deleteComment;
+
+	/**
 	 * Creates a new declaration.
 	 */
 	@GraphQLNonScalar(fieldName = "createDeclaration", graphQLTypeSimpleName = "Declaration",
@@ -460,6 +487,60 @@ public class Mutation {
 		parameterValues = { "[DEL]" })
 	public Claim getDeleteClaim() {
 		return this.deleteClaim;
+	}
+
+	/**
+	 * Creates a new comment.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[COM]" })
+	public void setCreateComment(Comment createComment) {
+		this.createComment = createComment;
+	}
+
+	/**
+	 * Creates a new comment.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[COM]" })
+	public Comment getCreateComment() {
+		return this.createComment;
+	}
+
+	/**
+	 * Updates an existing comment.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[COM]" })
+	public void setUpdateComment(Comment updateComment) {
+		this.updateComment = updateComment;
+	}
+
+	/**
+	 * Updates an existing comment.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[COM]" })
+	public Comment getUpdateComment() {
+		return this.updateComment;
+	}
+
+	/**
+	 * Deletes an existing comment.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[COM]" })
+	public void setDeleteComment(Comment deleteComment) {
+		this.deleteComment = deleteComment;
+	}
+
+	/**
+	 * Deletes an existing comment.
+	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[COM]" })
+	public Comment getDeleteComment() {
+		return this.deleteComment;
 	}
 
 	/**
@@ -1176,6 +1257,12 @@ public class Mutation {
 			+ ", " //
 			+ "deleteClaim: " + this.deleteClaim //
 			+ ", " //
+			+ "createComment: " + this.createComment //
+			+ ", " //
+			+ "updateComment: " + this.updateComment //
+			+ ", " //
+			+ "deleteComment: " + this.deleteComment //
+			+ ", " //
 			+ "createDeclaration: " + this.createDeclaration //
 			+ ", " //
 			+ "updateDeclaration: " + this.updateDeclaration //
@@ -1269,6 +1356,9 @@ public class Mutation {
 		private Claim createClaim;
 		private Claim updateClaim;
 		private Claim deleteClaim;
+		private Comment createComment;
+		private Comment updateComment;
+		private Comment deleteComment;
 		private Declaration createDeclaration;
 		private Declaration updateDeclaration;
 		private Declaration deleteDeclaration;
@@ -1330,6 +1420,30 @@ public class Mutation {
 		 */
 		public Builder withDeleteClaim(Claim deleteClaimParam) {
 			this.deleteClaim = deleteClaimParam;
+			return this;
+		}
+
+		/**
+		 * Creates a new comment.
+		 */
+		public Builder withCreateComment(Comment createCommentParam) {
+			this.createComment = createCommentParam;
+			return this;
+		}
+
+		/**
+		 * Updates an existing comment.
+		 */
+		public Builder withUpdateComment(Comment updateCommentParam) {
+			this.updateComment = updateCommentParam;
+			return this;
+		}
+
+		/**
+		 * Deletes an existing comment.
+		 */
+		public Builder withDeleteComment(Comment deleteCommentParam) {
+			this.deleteComment = deleteCommentParam;
 			return this;
 		}
 
@@ -1652,6 +1766,9 @@ public class Mutation {
 			_object.setCreateClaim(this.createClaim);
 			_object.setUpdateClaim(this.updateClaim);
 			_object.setDeleteClaim(this.deleteClaim);
+			_object.setCreateComment(this.createComment);
+			_object.setUpdateComment(this.updateComment);
+			_object.setDeleteComment(this.deleteComment);
 			_object.setCreateDeclaration(this.createDeclaration);
 			_object.setUpdateDeclaration(this.updateDeclaration);
 			_object.setDeleteDeclaration(this.deleteDeclaration);

@@ -78,6 +78,26 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 	Claim claimById;
 
 	/**
+	 * Returns a paged list of comments.
+	 */
+	@JsonProperty("comments")
+	@GraphQLInputParameters(names = { "filter", "pageSort" }, types = { "CommentQueryFilter", "PageableInput" },
+		mandatories = { false, false }, listDepths = { 0, 0 }, itemsMandatory = { false, false })
+	@GraphQLNonScalar(fieldName = "comments", graphQLTypeSimpleName = "CommentPage", javaClass = CommentPage.class,
+		listDepth = 0)
+	CommentPage comments;
+
+	/**
+	 * Returns a comment given its identifier.
+	 */
+	@JsonProperty("commentById")
+	@GraphQLInputParameters(names = { "id" }, types = { "ID" }, mandatories = { true }, listDepths = { 0 },
+		itemsMandatory = { false })
+	@GraphQLNonScalar(fieldName = "commentById", graphQLTypeSimpleName = "Comment", javaClass = Comment.class,
+		listDepth = 0)
+	Comment commentById;
+
+	/**
 	 * Returns a paged list of declarations.
 	 */
 	@JsonProperty("declarations")
@@ -328,7 +348,7 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 	@GraphQLInputParameters(names = { "filter" }, types = { "TrackedEntityQueryFilter" }, mandatories = { false },
 		listDepths = { 0 }, itemsMandatory = { false })
 	@GraphQLNonScalar(fieldName = "entityStatistics", graphQLTypeSimpleName = "EntityStatistics",
-		javaClass = io.github.demonfiddler.ee.client.EntityStatistics.class, listDepth = 1)
+		javaClass = EntityStatistics.class, listDepth = 1)
 	List<EntityStatistics> entityStatistics;
 
 	/**
@@ -340,7 +360,7 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 		types = { "TopicQueryFilter", "TrackedEntityQueryFilter" }, mandatories = { false, false },
 		listDepths = { 0, 0 }, itemsMandatory = { false, false })
 	@GraphQLNonScalar(fieldName = "topicStatistics", graphQLTypeSimpleName = "TopicStatistics",
-		javaClass = io.github.demonfiddler.ee.client.TopicStatistics.class, listDepth = 1)
+		javaClass = TopicStatistics.class, listDepth = 1)
 	List<TopicStatistics> topicStatistics;
 
 	@JsonProperty("__schema")
@@ -388,6 +408,38 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 	@JsonProperty("claimById")
 	public Claim getClaimById() {
 		return this.claimById;
+	}
+
+	/**
+	 * Returns a paged list of comments.
+	 */
+	@JsonProperty("comments")
+	public void setComments(CommentPage comments) {
+		this.comments = comments;
+	}
+
+	/**
+	 * Returns a paged list of comments.
+	 */
+	@JsonProperty("comments")
+	public CommentPage getComments() {
+		return this.comments;
+	}
+
+	/**
+	 * Returns a comment given its identifier.
+	 */
+	@JsonProperty("commentById")
+	public void setCommentById(Comment commentById) {
+		this.commentById = commentById;
+	}
+
+	/**
+	 * Returns a comment given its identifier.
+	 */
+	@JsonProperty("commentById")
+	public Comment getCommentById() {
+		return this.commentById;
 	}
 
 	/**
@@ -848,6 +900,10 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 			+ ", " //
 			+ "claimById: " + this.claimById //
 			+ ", " //
+			+ "comments: " + this.comments //
+			+ ", " //
+			+ "commentById: " + this.commentById //
+			+ ", " //
 			+ "declarations: " + this.declarations //
 			+ ", " //
 			+ "declarationById: " + this.declarationById //
@@ -922,6 +978,8 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 
 		private ClaimPage claims;
 		private Claim claimById;
+		private CommentPage comments;
+		private Comment commentById;
 		private DeclarationPage declarations;
 		private Declaration declarationById;
 		private EntityLinkPage entityLinks;
@@ -965,6 +1023,22 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 		 */
 		public Builder withClaimById(Claim claimByIdParam) {
 			this.claimById = claimByIdParam;
+			return this;
+		}
+
+		/**
+		 * Returns a paged list of comments.
+		 */
+		public Builder withComments(io.github.demonfiddler.ee.client.CommentPage commentsParam) {
+			this.comments = commentsParam;
+			return this;
+		}
+
+		/**
+		 * Returns a comment given its identifier.
+		 */
+		public Builder withCommentById(io.github.demonfiddler.ee.client.Comment commentByIdParam) {
+			this.commentById = commentByIdParam;
 			return this;
 		}
 
@@ -1198,6 +1272,8 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 			Query _object = build(new Query());
 			_object.setClaims(this.claims);
 			_object.setClaimById(this.claimById);
+			_object.setComments(this.comments);
+			_object.setCommentById(this.commentById);
 			_object.setDeclarations(this.declarations);
 			_object.setDeclarationById(this.declarationById);
 			_object.setEntityLinks(this.entityLinks);

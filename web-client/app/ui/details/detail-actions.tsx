@@ -206,7 +206,7 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
         type="button"
         onClick={handleNewOrCancel}
         outerClassName="justify-center w-full"
-        className="col-start-6 w-20 place-self-center bg-blue-500"
+        className="col-start-6 w-35 place-self-center bg-blue-500"
         disabled={!state.updating && !state.allowCreate}
         help={
           state.updating
@@ -220,7 +220,7 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
         type="button"
         onClick={handleEditOrSave}
         outerClassName="justify-center w-full"
-        className="col-start-6 w-20 place-self-center bg-blue-500"
+        className="col-start-6 w-35 place-self-center bg-blue-500"
         disabled={
           !state.updating && (!state.allowEdit || !record) ||
           state.updating && (!form.formState.isDirty || !form.formState.isValid)
@@ -239,7 +239,7 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
         type="button"
         onClick={handleDelete}
         outerClassName="justify-center w-full"
-        className="col-start-6 w-20 place-self-center bg-blue-500"
+        className="col-start-6 w-35 place-self-center bg-blue-500"
         disabled={!record || !state.allowDelete || state.updating}
         help={
           record

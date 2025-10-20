@@ -104,14 +104,14 @@ public class TrackedEntityQueryFilter {
 	/**
 	 * The identifier of the single record to return.
 	 */
-	public void setRecordId(Long recordId) {
+	public final void setRecordId(Long recordId) {
 		this.recordId = recordId;
 	}
 
 	/**
 	 * The identifier of the single record to return.
 	 */
-	public Long getRecordId() {
+	public final Long getRecordId() {
 		return recordId;
 	}
 
@@ -185,7 +185,7 @@ public class TrackedEntityQueryFilter {
 
 	/**
 	 * The Builder that helps building instance of this POJO. You can get an instance of this class by calling the
-	 * {@link #builderForTrackedEntityQueryFilter()}
+	 * {@link #builderForTrackedEntityQueryFilter()} method.
 	 */
 	public static class Builder extends AbstractBuilder<Builder, TrackedEntityQueryFilter> {
 

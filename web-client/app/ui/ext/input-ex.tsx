@@ -20,7 +20,7 @@
 'use client'
 
 import { Input } from "@/components/ui/input"
-import { ChangeEvent, ComponentProps, useCallback, useEffect, useRef, useState } from "react"
+import { ChangeEvent, ComponentProps, KeyboardEvent, useCallback, useEffect, useRef, useState } from "react"
 import { useDebounceValue } from "usehooks-ts"
 import Help, { HelpProps } from "../misc/help"
 import { cn } from "@/lib/utils"
@@ -69,13 +69,6 @@ export default function InputEx(
     }
   }, [event, onChange]) // previously [event]
 
-  // On typing, sync the controlled text value and trigger event debouncing.
-  const onChangeText = useCallback((e:  ChangeEvent<HTMLInputElement>) => {
-    logger.trace("onChangeText: e.target.value='%s'", e?.target.value)
-    setText(e.target.value ?? '')
-    setEvent(e)
-  }, [setEvent])
-
   // To clear, empty text value and invoke supplied change handler immediately.
   const clear = useCallback(() => {
     setText('')
@@ -85,12 +78,26 @@ export default function InputEx(
     }
   }, [event, onChange])
 
+  // On typing, sync the controlled text value and trigger event debouncing.
+  const handleChangeText = useCallback((e:  ChangeEvent<HTMLInputElement>) => {
+    logger.trace("onChangeText: e.target.value='%s'", e?.target.value)
+    setText(e.target.value ?? '')
+    setEvent(e)
+  }, [setEvent])
+
+  const handleKeyDown = useCallback((e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.code == "Escape") {
+      e.preventDefault()
+      clear()
+    }
+  }, [clear])
+
   return (
     <div className={cn("flex flex-row items-center gap-1", outerClassName)}>
       <Input
         value={text}
-        onKeyDown={(e) => clearOnEscape && e.code == "Escape" && clear()}
-        onChange={(e) => onChangeText(e)}
+        onKeyDown={(e) => clearOnEscape && handleKeyDown(e)}
+        onChange={(e) => handleChangeText(e)}
         {...props}
       />
       <Help text={help} />

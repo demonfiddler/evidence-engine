@@ -275,7 +275,7 @@ public abstract class AbstractPage<T extends IBaseEntity> implements IBaseEntity
 		return this.hasPrevious;
 	}
 
-	public String toString() {
+	public final String toString() {
 		return getClass().getSimpleName() + " {" //
 			+ "dummy: " + this.dummy //
 			+ ", " //

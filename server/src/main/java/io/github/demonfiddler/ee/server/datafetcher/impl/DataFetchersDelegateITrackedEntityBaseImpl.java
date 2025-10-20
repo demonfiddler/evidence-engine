@@ -19,7 +19,6 @@
 
 package io.github.demonfiddler.ee.server.datafetcher.impl;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -29,15 +28,17 @@ import org.springframework.data.domain.Pageable;
 
 import graphql.GraphQLContext;
 import graphql.schema.DataFetchingEnvironment;
+import io.github.demonfiddler.ee.server.model.CommentPage;
+import io.github.demonfiddler.ee.server.model.CommentQueryFilter;
 import io.github.demonfiddler.ee.server.model.EntityKind;
 import io.github.demonfiddler.ee.server.model.FormatKind;
 import io.github.demonfiddler.ee.server.model.ITrackedEntity;
 import io.github.demonfiddler.ee.server.model.LogPage;
 import io.github.demonfiddler.ee.server.model.LogQueryFilter;
 import io.github.demonfiddler.ee.server.model.PageableInput;
-import io.github.demonfiddler.ee.server.model.AuthorityKind;
 import io.github.demonfiddler.ee.server.model.StatusKind;
 import io.github.demonfiddler.ee.server.model.User;
+import io.github.demonfiddler.ee.server.repository.CommentRepository;
 import io.github.demonfiddler.ee.server.repository.LogRepository;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
 import io.github.demonfiddler.ee.server.util.FormatUtils;
@@ -53,6 +54,8 @@ import jakarta.persistence.PersistenceContext;
 abstract class DataFetchersDelegateITrackedEntityBaseImpl<T extends ITrackedEntity> {
 
     @Resource
+    protected CommentRepository commentRepository;
+    @Resource
     protected LogRepository logRepository;
     @Resource
     protected EntityUtils entityUtils;
@@ -63,9 +66,7 @@ abstract class DataFetchersDelegateITrackedEntityBaseImpl<T extends ITrackedEnti
     @PersistenceContext
     EntityManager em;
 
-    public final Object entityKind(DataFetchingEnvironment dataFetchingEnvironment, T origin,
-        FormatKind format) {
-
+    public final Object entityKind(DataFetchingEnvironment dataFetchingEnvironment, T origin, FormatKind format) {
         EntityKind entityKind = EntityKind.valueOf(origin.getEntityKind());
         return formatUtils.formatEntityKind(entityKind, format);
     }
@@ -86,16 +87,18 @@ abstract class DataFetchersDelegateITrackedEntityBaseImpl<T extends ITrackedEnti
     public final Map<T, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<T> keys) {
 
-        return securityUtils.hasAuthority(AuthorityKind.ADM) //
-            ? entityUtils.getValuesMap(keys, ITrackedEntity::getCreatedByUser) //
-            : Collections.emptyMap();
+        // return securityUtils.hasAuthority(AuthorityKind.ADM) //
+        // ? entityUtils.getValuesMap(keys, ITrackedEntity::getCreatedByUser) //
+        // : Collections.emptyMap();
+        return entityUtils.getValuesMap(keys, ITrackedEntity::getCreatedByUser);
     }
 
     public final Map<T, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<T> keys) {
 
-        return securityUtils.hasAuthority(AuthorityKind.ADM) //
-            ? entityUtils.getValuesMap(keys, ITrackedEntity::getUpdatedByUser) : Collections.emptyMap();
+        // return securityUtils.hasAuthority(AuthorityKind.ADM) //
+        // ? entityUtils.getValuesMap(keys, ITrackedEntity::getUpdatedByUser) : Collections.emptyMap();
+        return entityUtils.getValuesMap(keys, ITrackedEntity::getUpdatedByUser);
     }
 
     public final LogPage log(DataFetchingEnvironment dataFetchingEnvironment, DataLoader<Long, LogPage> dataLoader,
@@ -107,10 +110,10 @@ abstract class DataFetchersDelegateITrackedEntityBaseImpl<T extends ITrackedEnti
     }
 
     /**
-     * Adds {@code entityKind} and {@code entityId} to {@code params} (creating it if necessary).
+     * Adds {@code entityKind} and {@code entityId} to a {@code filter} (creating it if necessary).
      * @param entity The entity (must not be null).
-     * @param filter The query filter (can be null).
-     * @return A new or updated log params.
+     * @param filter The log query filter (can be null).
+     * @return A new or updated log query filter.
      */
     protected LogQueryFilter fixFilter(ITrackedEntity entity, LogQueryFilter filter) {
         if (filter == null)
@@ -118,6 +121,27 @@ abstract class DataFetchersDelegateITrackedEntityBaseImpl<T extends ITrackedEnti
         EntityKind entityKind = entityUtils.getEntityKind(entity);
         filter.setEntityId(entity.getId());
         filter.setEntityKind(entityKind);
+        return filter;
+    }
+
+    public final Object comments(DataFetchingEnvironment dataFetchingEnvironment,
+        DataLoader<Long, CommentPage> dataLoader, T origin, CommentQueryFilter filter, PageableInput pageSort) {
+
+        filter = fixFilter(origin, filter);
+        Pageable pageable = entityUtils.toPageable(pageSort);
+        return entityUtils.toEntityPage(commentRepository.findByFilter(filter, pageable), CommentPage::new);
+    }
+
+    /**
+     * Adds {@code entityKind} and {@code entityId} to a {@code filter} (creating it if necessary).
+     * @param entity The entity (must not be null).
+     * @param filter The comment query filter (can be null).
+     * @return A new or updated comment query filter.
+     */
+    protected CommentQueryFilter fixFilter(ITrackedEntity entity, CommentQueryFilter filter) {
+        if (filter == null)
+            filter = new CommentQueryFilter();
+        filter.setTargetId(entity.getId());
         return filter;
     }
 

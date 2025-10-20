@@ -18,6 +18,7 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 import Claim from "@/app/model/Claim"
+import Comment from "@/app/model/Comment"
 import Declaration from "@/app/model/Declaration"
 import Group from "@/app/model/Group"
 import ITrackedEntity from "@/app/model/ITrackedEntity"
@@ -34,6 +35,7 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import {
   READ_CLAIMS,
+  READ_COMMENTS,
   READ_DECLARATIONS,
   READ_ENTITY_LINKS,
   READ_GROUPS,
@@ -59,7 +61,12 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatDate(date: Date | string | null | undefined/*, format?: string*/) {
+/**
+ * Formats a date or date string as a locale date.
+ * @param date The date or date string.
+ * @returns The formatted locale date or the empty string.
+ */
+export function formatDate(date: Date | string | null | undefined) {
   if (date) {
     if (typeof date == "string")
       date = new Date(date)
@@ -69,7 +76,12 @@ export function formatDate(date: Date | string | null | undefined/*, format?: st
   return ''
 }
 
-export function formatTime(date: Date | string | null | undefined/*, format?: string*/) {
+/**
+ * Formats a date or date string as a locale time.
+ * @param date The date or date string.
+ * @returns The formatted locale time or the empty string.
+ */
+export function formatTime(date: Date | string | null | undefined) {
   if (date) {
     if (typeof date == "string")
       date = new Date(date)
@@ -79,7 +91,12 @@ export function formatTime(date: Date | string | null | undefined/*, format?: st
   return ''
 }
 
-export function formatDateTime(date: Date | string | null | undefined/*, format?: string*/) {
+/**
+ * Formats a date or date string as a locale date-time.
+ * @param date The date or date string.
+ * @returns The formatted locale date-time or the empty string.
+ */
+export function formatDateTime(date: Date | string | null | undefined) {
   if (date) {
     if (typeof date == "string")
       date = new Date(date)
@@ -106,6 +123,7 @@ export function isLinkableEntity(recordKind: RecordKind) {
 const RECORD_KIND_BY_ENTITY_KIND = {
   CLA: "Claim",
   COU: "Country",
+  COM: "Comment",
   DEC: "Declaration",
   GRP: "Group",
   JOU: "Journal",
@@ -118,13 +136,14 @@ const RECORD_KIND_BY_ENTITY_KIND = {
   TOP: "Topic",
   USR: "User",
 }
-export function getRecordKind(entityKind: EntityKind) : RecordKind {
+export function getRecordKind(entityKind: EntityKind): RecordKind {
   return RECORD_KIND_BY_ENTITY_KIND[entityKind] as RecordKind
 }
 
 const ENTITY_KIND_BY_RECORD_KIND = {
   None: undefined,
   Claim: "CLA",
+  Comment: "COM",
   Country: "COU",
   Declaration: "DEC",
   Group: "GRP",
@@ -138,7 +157,7 @@ const ENTITY_KIND_BY_RECORD_KIND = {
   Topic: "TOP",
   User: "USR",
 }
-export function getEntityKind(recordKind: RecordKind) : EntityKind | undefined {
+export function getEntityKind(recordKind: RecordKind): EntityKind | undefined {
   return ENTITY_KIND_BY_RECORD_KIND[recordKind] as EntityKind | undefined
 }
 
@@ -150,6 +169,10 @@ export function getRecordLabel(recordKind: RecordKind | undefined, record?: ITra
     case "Claim": {
       const claim = record as Claim
       return `${recordKind} #${record?.id}: '${claim?.text}'`
+    }
+    case "Comment": {
+      const comment = record as Comment
+      return `${recordKind} #${record?.id}: '${comment?.text}'`
     }
     case "Declaration": {
       const declaration = record as Declaration
@@ -218,7 +241,7 @@ export function setTopicFields(path: string, parentId: string | undefined, inTop
   }
 }
 
-export function flatten(inTopics: Topic[], outTopics: Topic[]) : Topic[] {
+export function flatten(inTopics: Topic[], outTopics: Topic[]): Topic[] {
   for (const topic of inTopics) {
     outTopics.push({
       id: topic.id,
@@ -242,7 +265,7 @@ export const TO_ENTITY_LOCATIONS = "toEntityLocations"
 export type LinkableEntityQueryFilterKindProperty = "fromEntityKind" | "toEntityKind"
 export type LinkableEntityQueryFilterIdProperty = "fromEntityId" | "toEntityId"
 export type LinkableEntityQueryFilterLocationProperty = "fromEntityLocations" | "toEntityLocations"
-export type LinkableEntityQueryFilterProperty = 
+export type LinkableEntityQueryFilterProperty =
   LinkableEntityQueryFilterKindProperty |
   LinkableEntityQueryFilterIdProperty |
   LinkableEntityQueryFilterLocationProperty
@@ -263,9 +286,9 @@ const TO_FROM = [
   TO_ENTITY_LOCATIONS,
   FROM_ENTITY_LOCATIONS
 ] as LinkableEntityQueryFilterProperty[]
-type MasterRecordLink = {[key in RecordKind]?: LinkableEntityQueryFilterProperty[]}
-type RecordLinks = {[key in RecordKind]?: MasterRecordLink}
-const recordLinkProperties : RecordLinks = {
+type MasterRecordLink = { [key in RecordKind]?: LinkableEntityQueryFilterProperty[] }
+type RecordLinks = { [key in RecordKind]?: MasterRecordLink }
+const recordLinkProperties: RecordLinks = {
   Claim: {
     Claim: NONE,
     Declaration: FROM_TO,
@@ -324,13 +347,14 @@ const recordLinkProperties : RecordLinks = {
  * `[thisRecordKindProperty, otherRecordKindProperty, thisRecordIdProperty, otherRecordIdProperty, thisLocationsProperty, otherLocationsProperty]`,
  * or an empty array if no such link is supported.
  */
-export function getRecordLinkProperties(thisRecordKind: RecordKind, otherRecordKind: RecordKind) : LinkableEntityQueryFilterProperty[] {
+export function getRecordLinkProperties(thisRecordKind: RecordKind, otherRecordKind: RecordKind): LinkableEntityQueryFilterProperty[] {
   return recordLinkProperties?.[thisRecordKind]?.[otherRecordKind] ?? NONE
 }
 
 const readQueryByRecordKind = {
   None: undefined,
   Claim: READ_CLAIMS,
+  Comment: READ_COMMENTS,
   Declaration: READ_DECLARATIONS,
   RecordLink: READ_ENTITY_LINKS,
   Group: READ_GROUPS,
@@ -344,11 +368,11 @@ const readQueryByRecordKind = {
   User: READ_USERS,
 }
 
-export function getReadQuery(recordKind: RecordKind) : DocumentNode | undefined {
+export function getReadQuery(recordKind: RecordKind): DocumentNode | undefined {
   return readQueryByRecordKind[recordKind]
 }
 
-export function toDate(value: string | Date | null | undefined) : Date | undefined {
+export function toDate(value: string | Date | null | undefined): Date | undefined {
   return value instanceof Date
     ? value as Date
     : typeof value == "string"
@@ -403,7 +427,7 @@ export function isObject(value: anything): boolean {
 }
 
 type KeyedObject = {
-  [key: string] : anything
+  [key: string]: anything
 }
 
 export function isEqual(v1: anything, v2: anything, path: string[] = []) {
@@ -457,11 +481,11 @@ export function findTopic(topics: Topic[] | undefined, topicId: string | undefin
   return undefined
 }
 
-type QueryFilter<TFilterValue> = {[key:string]: TFilterValue}
+type QueryFilter<TFilterValue> = { [key: string]: TFilterValue }
 type ConvertQueryValueFn<TFilterValue> = (queryKey: string, value: string) => TFilterValue
 
 export function createFilterImpl<TFilter, TFilterValue>(searchParams: URLSearchParams,
-  convertQueryParameter: ConvertQueryValueFn<TFilterValue>) : TFilter {
+  convertQueryParameter: ConvertQueryValueFn<TFilterValue>): TFilter {
 
   const filter = {} as QueryFilter<TFilterValue>
   searchParams.forEach((value: string, key: string) => {
@@ -475,10 +499,10 @@ export function createFilterImpl<TFilter, TFilterValue>(searchParams: URLSearchP
 type ConvertFilterValueFn<TFilterValue> = (filterKey: string, value: TFilterValue) => string | undefined
 
 export function createSearchParamsImpl<TFilter, TFilterValue>(filter: TFilter,
-  convertFilterValue : ConvertFilterValueFn<TFilterValue>) : URLSearchParams {
+  convertFilterValue: ConvertFilterValueFn<TFilterValue>): URLSearchParams {
 
   const searchParams = new URLSearchParams()
-  for (const [key, value] of Object.entries(filter as {[key:string]: TFilterValue})) {
+  for (const [key, value] of Object.entries(filter as { [key: string]: TFilterValue })) {
     const queryValue = convertFilterValue(key, value)
     if (queryValue)
       searchParams.set(key, queryValue)

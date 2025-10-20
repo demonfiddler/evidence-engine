@@ -19,6 +19,7 @@
 
 package io.github.demonfiddler.ee.client;
 
+import com.graphql_java_generator.annotation.GraphQLDirective;
 import com.graphql_java_generator.annotation.GraphQLEnumType;
 
 /**
@@ -31,18 +32,27 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
 public enum AuthorityKind {
 
 	/** Use administrative functions. */
+	@GraphQLDirective(name = "@label", parameterNames = {"label"}, parameterTypes = {"String!"}, parameterValues = {"Administer"})
 	ADM("ADM", "Administer"), //
+	@GraphQLDirective(name = "@label", parameterNames = {"label"}, parameterTypes = {"String!"}, parameterValues = {"Comment"})
+	COM("COM", "Comment"), //
 	/** Insert new record. */
+	@GraphQLDirective(name = "@label", parameterNames = {"label"}, parameterTypes = {"String!"}, parameterValues = {"Create"})
 	CRE("CRE", "Create"), //
 	/** Delete existing record. */
+	@GraphQLDirective(name = "@label", parameterNames = {"label"}, parameterTypes = {"String!"}, parameterValues = {"Delete"})
 	DEL("DEL", "Delete"), //
 	/** Link/unlink existing records. */
+	@GraphQLDirective(name = "@label", parameterNames = {"label"}, parameterTypes = {"String!"}, parameterValues = {"Link"})
 	LNK("LNK", "Link"), //
 	/** Read existing record. */
+	@GraphQLDirective(name = "@label", parameterNames = {"label"}, parameterTypes = {"String!"}, parameterValues = {"Read"})
 	REA("REA", "Read"), //
 	/** Update existing record. */
+	@GraphQLDirective(name = "@label", parameterNames = {"label"}, parameterTypes = {"String!"}, parameterValues = {"Update"})
 	UPD("UPD", "Update"), //
 	/** Upload file. */
+	@GraphQLDirective(name = "@label", parameterNames = {"label"}, parameterTypes = {"String!"}, parameterValues = {"Upload"})
 	UPL("UPL", "Upload"); //
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They

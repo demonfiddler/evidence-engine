@@ -45,7 +45,10 @@ public enum TransactionKind {
 	LNK("LNK", "Linked"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Unlinked" })
-	UNL("UNL", "Unlinked"); //
+	UNL("UNL", "Unlinked"), //
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Commented" })
+	COM("COM", "Commented");
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different
@@ -59,8 +62,8 @@ public enum TransactionKind {
 	}
 
 	/**
-	 * Returns the value of this constant, as specified in the GraphQL schema. This is usually the same as the enum
-	 * item's name. But it will differ if this name is a Java reserved keyword (in which case the name is prefixed by an
+	 * Returns the value of this constant, as specified in the GraphQL schema. This is usually the same as the enum item's
+	 * name. But it will differ if this name is a Java reserved keyword (in which case the name is prefixed by an
 	 * underscore)
 	 * @return the enum constant with the specified name, as defined in the GraphQL schema
 	 */
@@ -77,12 +80,11 @@ public enum TransactionKind {
 	}
 
 	/**
-	 * Returns the enum constant of this type with the specified name (as specified in the GraphQL schema). The string
-	 * must match exactly an identifier used to declare an enum constant in this type. (Extraneous whitespace characters
-	 * are not permitted.)
-	 * @param graphQlValue The value, as defined in the GraphQL schema. This is usually the same as the enum item's
-	 * name. But it will differ if this name is a Java reserved keyword (in which case the name is prefixed by an
-	 * underscore)
+	 * Returns the enum constant of this type with the specified name (as specified in the GraphQL schema). The string must
+	 * match exactly an identifier used to declare an enum constant in this type. (Extraneous whitespace characters are not
+	 * permitted.)
+	 * @param graphQlValue The value, as defined in the GraphQL schema. This is usually the same as the enum item's name.
+	 * But it will differ if this name is a Java reserved keyword (in which case the name is prefixed by an underscore)
 	 * @return the enum constant with the specified name
 	 * @throws IllegalArgumentException if this enum type has no constant with the specified GraphQL name
 	 */

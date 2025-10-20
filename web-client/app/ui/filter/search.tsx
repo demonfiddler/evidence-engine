@@ -24,12 +24,14 @@ import { XMarkIcon } from "@heroicons/react/24/outline"
 import { useCallback, useEffect, useRef, useState } from "react"
 import InputEx from "../ext/input-ex"
 import { component, LoggerEx } from "@/lib/logger"
+import { cn } from "@/lib/utils"
+import { ClassValue } from "clsx"
 
 const logger = new LoggerEx(component, "[Search] ")
 
 export default function Search(
-  {value, onChangeValue} :
-  {value: string, onChangeValue: (value: string) => void}
+  {value, onChangeValue, className} :
+  {value: string, onChangeValue: (value: string) => void, className?: ClassValue}
 ) {
   logger.debug("render")
 
@@ -57,7 +59,7 @@ export default function Search(
   }, [onChangeValue])
 
   return (
-    <div className="flex flex-row items-center gap-2 px-2 pr-2 border rounded-md">
+    <div className={cn("flex flex-row items-center gap-2 px-2 pr-2 border rounded-md", className)}>
       <SearchIcon className="w-6 h-6" />
       <InputEx
         outerClassName="grow"

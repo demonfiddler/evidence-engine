@@ -67,6 +67,19 @@ CREATE TABLE IF NOT EXISTS "claim" (
   CONSTRAINT "FK_claim_entity" FOREIGN KEY ("id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Claims made in respect of an associated topic';
 
+-- Dumping structure for table evidence_engine.comment
+CREATE TABLE IF NOT EXISTS "comment" (
+  "id" bigint(20) unsigned NOT NULL COMMENT 'The unique comment identifier',
+  "target_id" bigint(20) unsigned NOT NULL COMMENT 'The ID of the target entity with which the comment is associated',
+  "parent_id" bigint(20) unsigned DEFAULT NULL COMMENT 'The ID of the parent comment to which this comment is a reply.',
+  "text" varchar(500) NOT NULL COMMENT 'The text of the comment',
+  PRIMARY KEY ("id"),
+  FULLTEXT KEY "comment_fulltext" ("text"),
+  CONSTRAINT "FK_comment_entity" FOREIGN KEY ("id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT "FK_comment_target" FOREIGN KEY ("target_id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT "FK_comment_parent" FOREIGN KEY ("parent_id") REFERENCES "comment" ("id") ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Comments associated with a tracked entity';
+
 -- Dumping structure for table evidence_engine.country
 CREATE TABLE IF NOT EXISTS "country" (
   "alpha_2" char(2) NOT NULL COMMENT 'ISO-3166-1 alpha-2 code',
@@ -418,7 +431,7 @@ CREATE TABLE "persistent_login" (
     "token" VARCHAR(64) NOT NULL COMMENT 'The authentication token returned as a cookie',
     "last_used" TIMESTAMP NOT NULL COMMENT 'The date/time at which the token was last used',
     PRIMARY KEY ("series")
-);
+) COMMENT='Holds login tokens that persist across HTTP sessions';
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

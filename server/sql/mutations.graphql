@@ -1,7 +1,7 @@
 # These mutations use fragments defined in fragments.graphql
 
-mutation {
-  createClaim 
+mutation createEntities {
+  createClaim
  	(
     claim: {
       text: "Test claim"
@@ -79,7 +79,7 @@ mutation {
   {
     id
     ... trackedEntityFields
-    ... publicationFields
+    ... publisherFields
   }
 
 	createPublication
@@ -114,10 +114,10 @@ mutation {
   {
     id
     ... trackedEntityFields
-    ... topicFields
+    ... quotationFields
   }
 
-  createTopic
+  createParentTopic : createTopic
   (
     topic: {
       label: "Test parent topic"
@@ -130,7 +130,7 @@ mutation {
     ... topicFields
   }
 
-  createTopic
+  creatChildTopic : createTopic
   (
     topic: {
       label: "Test child topic"
@@ -147,7 +147,7 @@ mutation {
   # TO LINK ENTITIES:
   linkTopicToClaim: createEntityLink
   (
-    link: {
+    entityLink: {
       fromEntityId: 69
       toEntityId: 5
       fromEntityLocations: "Test Topic"
@@ -162,7 +162,7 @@ mutation {
 
   linkTopicToDeclaration: createEntityLink
   (
-    link: {
+    entityLink: {
       fromEntityId: 101
       toEntityId: 6
       fromEntityLocations: "Test Topic"
@@ -177,7 +177,7 @@ mutation {
 
   linkClaimToDeclaration: createEntityLink
   (
-    link: {
+    entityLink: {
       fromEntityId: 5
       toEntityId: 6
       fromEntityLocations: "Test Claim"
@@ -192,7 +192,7 @@ mutation {
 
   linkClaimToPerson: createEntityLink
   (
-    link: {
+    entityLink: {
       fromEntityId: 5
       toEntityId: 12
       fromEntityLocations: "Test Claim"
@@ -207,7 +207,7 @@ mutation {
 
   linkDeclarationToPerson: createEntityLink
   (
-    link: {
+    entityLink: {
       fromEntityId: 6
       toEntityId: 12
       fromEntityLocations: "Test Declaration"
@@ -222,7 +222,7 @@ mutation {
 
   linkDeclarationToQuotation: createEntityLink
   (
-    link: {
+    entityLink: {
       fromEntityId: 6
       toEntityId: 43
       fromEntityLocations: "Test Declaration"
@@ -237,7 +237,7 @@ mutation {
 
   linkPublicationToPerson: createEntityLink
   (
-    link: {
+    entityLink: {
       fromEntityId: 42
       toEntityId: 12
       fromEntityLocations: "Test Publication"
@@ -252,7 +252,7 @@ mutation {
 
   linkQuotationToPerson: createEntityLink
   (
-    link: {
+    entityLink: {
       fromEntityId: 43
       toEntityId: 12
       fromEntityLocations: "Test Quotation"
@@ -267,7 +267,7 @@ mutation {
 
   linkQuotationToPublication: createEntityLink
   (
-    link: {
+    entityLink: {
       fromEntityId: 43
       toEntityId: 42
       fromEntityLocations: "Test Quotation"

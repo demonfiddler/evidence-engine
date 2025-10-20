@@ -25,6 +25,7 @@ import java.util.Optional;
 import com.graphql_java_generator.annotation.GraphQLDirective;
 
 import graphql.schema.DataFetchingEnvironment;
+import io.github.demonfiddler.ee.server.model.CommentQueryFilter;
 import io.github.demonfiddler.ee.server.model.EntityLinkQueryFilter;
 import io.github.demonfiddler.ee.server.model.LogQueryFilter;
 import io.github.demonfiddler.ee.server.model.PageableInput;
@@ -49,23 +50,22 @@ public interface DataFetchersDelegateQuery {
 	 * Returns a paged list of claims. <br/>
 	 * Loads the data for Query.claims. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.ClaimPage)</li>
+	 * <li>A resolved value of any type (typically, a ClaimPage)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a
-	 * Mono&lt;io.github.demonfiddler.ee.server.ClaimPage&gt; or a
-	 * Flux&lt;io.github.demonfiddler.ee.server.ClaimPage&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;ClaimPage&gt; or a
+	 * Flux&lt;ClaimPage&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;io.github.demonfiddler.ee.server.ClaimPage&gt;</li>
+	 * Callable&lt;ClaimPage&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.ClaimPage>. This
-	 * allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
-	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
-	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<ClaimPage>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -85,22 +85,21 @@ public interface DataFetchersDelegateQuery {
 	 * Returns a claim given its identifier. <br/>
 	 * Loads the data for Query.claimById. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.Claim)</li>
+	 * <li>A resolved value of any type (typically, a Claim)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a Mono&lt;io.github.demonfiddler.ee.server.Claim&gt;
-	 * or a Flux&lt;io.github.demonfiddler.ee.server.Claim&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Claim&gt; or a Flux&lt;Claim&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;io.github.demonfiddler.ee.server.Claim&gt;</li>
+	 * Callable&lt;Claim&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.Claim>. This allows
-	 * to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly
-	 * optimize the number of requests to the server. The principle is this one: The data loader collects all the data
-	 * to load, avoid to load several times the same data, and allows parallel execution of the queries, if multiple
-	 * queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Claim>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -114,27 +113,95 @@ public interface DataFetchersDelegateQuery {
 	Object claimById(DataFetchingEnvironment dataFetchingEnvironment, Long id);
 
 	/**
+	 * Description for the comments field: <br/>
+	 * Returns a paged list of comments. <br/>
+	 * This method loads the data for Query.comments. It may return whatever is accepted by the Spring Controller, that
+	 * is:
+	 * <ul>
+	 * <li>A resolved value of any type (typically, a CommentPage)</li>
+	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;CommentPage&gt; or a
+	 * Flux&lt;CommentPage&gt;</li>
+	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
+	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
+	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
+	 * Callable&lt;CommentPage&gt;</li>
+	 * </ul>
+	 * As a complement to the spring-graphql documentation, you may also return:
+	 * <ul>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<CommentPage>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
+	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
+	 * </ul>
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param filter The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @param pageSort The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
+	 */
+	public Object comments(DataFetchingEnvironment dataFetchingEnvironment, CommentQueryFilter filter,
+		PageableInput pageSort);
+
+	/**
+	 * Description for the commentById field: <br/>
+	 * Returns a comment given its identifier. <br/>
+	 * This method loads the data for Query.commentById. It may return whatever is accepted by the Spring Controller,
+	 * that is:
+	 * <ul>
+	 * <li>A resolved value of any type (typically, a Comment)</li>
+	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Comment&gt; or a Flux&lt;Comment&gt;</li>
+	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
+	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
+	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
+	 * Callable&lt;Comment&gt;</li>
+	 * </ul>
+	 * As a complement to the spring-graphql documentation, you may also return:
+	 * <ul>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Comment>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
+	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
+	 * </ul>
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param id The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
+	 */
+	public Object commentById(DataFetchingEnvironment dataFetchingEnvironment, Long id);
+
+	/**
 	 * Description for the declarations field: <br/>
 	 * Returns a paged list of declarations. <br/>
 	 * Loads the data for Query.declarations. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.DeclarationPage)</li>
+	 * <li>A resolved value of any type (typically, a DeclarationPage)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a
-	 * Mono&lt;io.github.demonfiddler.ee.server.DeclarationPage&gt; or a
-	 * Flux&lt;io.github.demonfiddler.ee.server.DeclarationPage&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;DeclarationPage&gt; or a
+	 * Flux&lt;DeclarationPage&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;io.github.demonfiddler.ee.server.DeclarationPage&gt;</li>
+	 * Callable&lt;DeclarationPage&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.DeclarationPage>.
-	 * This allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
-	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
-	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<DeclarationPage>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -154,23 +221,22 @@ public interface DataFetchersDelegateQuery {
 	 * Returns a declaration given its identifier. <br/>
 	 * Loads the data for Query.declarationById. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.Declaration)</li>
+	 * <li>A resolved value of any type (typically, a Declaration)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a
-	 * Mono&lt;io.github.demonfiddler.ee.server.Declaration&gt; or a
-	 * Flux&lt;io.github.demonfiddler.ee.server.Declaration&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Declaration&gt; or a
+	 * Flux&lt;Declaration&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;io.github.demonfiddler.ee.server.Declaration&gt;</li>
+	 * Callable&lt;Declaration&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.Declaration>. This
-	 * allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
-	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
-	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Declaration>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -186,23 +252,22 @@ public interface DataFetchersDelegateQuery {
 	/**
 	 * Loads the data for Query.entityLinks. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.EntityLinkPage)</li>
+	 * <li>A resolved value of any type (typically, a EntityLinkPage)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a
-	 * Mono&lt;io.github.demonfiddler.ee.server.EntityLinkPage&gt; or a
-	 * Flux&lt;io.github.demonfiddler.ee.server.EntityLinkPage&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;EntityLinkPage&gt; or a
+	 * Flux&lt;EntityLinkPage&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;io.github.demonfiddler.ee.server.EntityLinkPage&gt;</li>
+	 * Callable&lt;EntityLinkPage&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.EntityLinkPage>. This
-	 * allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
-	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
-	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<EntityLinkPage>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -222,23 +287,22 @@ public interface DataFetchersDelegateQuery {
 	 * Returns an entity link given its identifier.. <br/>
 	 * Loads the data for Query.entityLinkById. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.EntityLink)</li>
+	 * <li>A resolved value of any type (typically, a EntityLink)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a
-	 * Mono&lt;io.github.demonfiddler.ee.server.EntityLink&gt; or a
-	 * Flux&lt;io.github.demonfiddler.ee.server.EntityLink&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;EntityLink&gt; or a
+	 * Flux&lt;EntityLink&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;io.github.demonfiddler.ee.server.EntityLink&gt;</li>
+	 * Callable&lt;EntityLink&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.EntityLink>. This
-	 * allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
-	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
-	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<EntityLink>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -293,23 +357,22 @@ public interface DataFetchersDelegateQuery {
 	 * Returns a paged list of journals. <br/>
 	 * Loads the data for Query.journals. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.JournalPage)</li>
+	 * <li>A resolved value of any type (typically, a JournalPage)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a
-	 * Mono&lt;io.github.demonfiddler.ee.server.JournalPage&gt; or a
-	 * Flux&lt;io.github.demonfiddler.ee.server.JournalPage&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;JournalPage&gt; or a
+	 * Flux&lt;JournalPage&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;io.github.demonfiddler.ee.server.JournalPage&gt;</li>
+	 * Callable&lt;JournalPage&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.JournalPage>. This
-	 * allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
-	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
-	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<JournalPage>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -329,22 +392,21 @@ public interface DataFetchersDelegateQuery {
 	 * Returns a journal given its identifier. <br/>
 	 * Loads the data for Query.journalById. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.Journal)</li>
+	 * <li>A resolved value of any type (typically, a Journal)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a Mono&lt;io.github.demonfiddler.ee.server.Journal&gt;
-	 * or a Flux&lt;io.github.demonfiddler.ee.server.Journal&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Journal&gt; or a Flux&lt;Journal&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;io.github.demonfiddler.ee.server.Journal&gt;</li>
+	 * Callable&lt;Journal&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.Journal>. This allows
-	 * to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly
-	 * optimize the number of requests to the server. The principle is this one: The data loader collects all the data
-	 * to load, avoid to load several times the same data, and allows parallel execution of the queries, if multiple
-	 * queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Journal>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -362,22 +424,21 @@ public interface DataFetchersDelegateQuery {
 	 * Returns a paged list of log entries. <br/>
 	 * Loads the data for Query.log. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.LogPage)</li>
+	 * <li>A resolved value of any type (typically, a LogPage)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a Mono&lt;io.github.demonfiddler.ee.server.LogPage&gt;
-	 * or a Flux&lt;io.github.demonfiddler.ee.server.LogPage&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;LogPage&gt; or a Flux&lt;LogPage&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;io.github.demonfiddler.ee.server.LogPage&gt;</li>
+	 * Callable&lt;LogPage&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.LogPage>. This allows
-	 * to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly
-	 * optimize the number of requests to the server. The principle is this one: The data loader collects all the data
-	 * to load, avoid to load several times the same data, and allows parallel execution of the queries, if multiple
-	 * queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<LogPage>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -396,23 +457,22 @@ public interface DataFetchersDelegateQuery {
 	 * Returns a paged list of persons. <br/>
 	 * Loads the data for Query.persons. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.PersonPage)</li>
+	 * <li>A resolved value of any type (typically, a PersonPage)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a
-	 * Mono&lt;io.github.demonfiddler.ee.server.PersonPage&gt; or a
-	 * Flux&lt;io.github.demonfiddler.ee.server.PersonPage&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;PersonPage&gt; or a
+	 * Flux&lt;PersonPage&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;io.github.demonfiddler.ee.server.PersonPage&gt;</li>
+	 * Callable&lt;PersonPage&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.PersonPage>. This
-	 * allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
-	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
-	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<PersonPage>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -432,22 +492,21 @@ public interface DataFetchersDelegateQuery {
 	 * Returns a person given its identifier. <br/>
 	 * Loads the data for Query.personById. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.Person)</li>
+	 * <li>A resolved value of any type (typically, a Person)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a Mono&lt;io.github.demonfiddler.ee.server.Person&gt;
-	 * or a Flux&lt;io.github.demonfiddler.ee.server.Person&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Person&gt; or a Flux&lt;Person&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;io.github.demonfiddler.ee.server.Person&gt;</li>
+	 * Callable&lt;Person&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.Person>. This allows
-	 * to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly
-	 * optimize the number of requests to the server. The principle is this one: The data loader collects all the data
-	 * to load, avoid to load several times the same data, and allows parallel execution of the queries, if multiple
-	 * queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Person>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -465,23 +524,22 @@ public interface DataFetchersDelegateQuery {
 	 * Returns a paged list of publications. <br/>
 	 * Loads the data for Query.publications. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.PublicationPage)</li>
+	 * <li>A resolved value of any type (typically, a PublicationPage)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a
-	 * Mono&lt;io.github.demonfiddler.ee.server.PublicationPage&gt; or a
-	 * Flux&lt;io.github.demonfiddler.ee.server.PublicationPage&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;PublicationPage&gt; or a
+	 * Flux&lt;PublicationPage&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;io.github.demonfiddler.ee.server.PublicationPage&gt;</li>
+	 * Callable&lt;PublicationPage&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.PublicationPage>.
-	 * This allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
-	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
-	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<PublicationPage>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -501,23 +559,22 @@ public interface DataFetchersDelegateQuery {
 	 * Returns a publication given its identifier. <br/>
 	 * Loads the data for Query.publicationById. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.Publication)</li>
+	 * <li>A resolved value of any type (typically, a Publication)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a
-	 * Mono&lt;io.github.demonfiddler.ee.server.Publication&gt; or a
-	 * Flux&lt;io.github.demonfiddler.ee.server.Publication&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Publication&gt; or a
+	 * Flux&lt;Publication&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;io.github.demonfiddler.ee.server.Publication&gt;</li>
+	 * Callable&lt;Publication&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.Publication>. This
-	 * allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
-	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
-	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Publication>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -535,23 +592,22 @@ public interface DataFetchersDelegateQuery {
 	 * Returns a paged list of publishers. <br/>
 	 * Loads the data for Query.publishers. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.PublisherPage)</li>
+	 * <li>A resolved value of any type (typically, a PublisherPage)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a
-	 * Mono&lt;io.github.demonfiddler.ee.server.PublisherPage&gt; or a
-	 * Flux&lt;io.github.demonfiddler.ee.server.PublisherPage&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;PublisherPage&gt; or a
+	 * Flux&lt;PublisherPage&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;io.github.demonfiddler.ee.server.PublisherPage&gt;</li>
+	 * Callable&lt;PublisherPage&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.PublisherPage>. This
-	 * allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
-	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
-	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<PublisherPage>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -571,23 +627,22 @@ public interface DataFetchersDelegateQuery {
 	 * Returns a publisher given its identifier. <br/>
 	 * Loads the data for Query.publisherById. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.Publisher)</li>
+	 * <li>A resolved value of any type (typically, a Publisher)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a
-	 * Mono&lt;io.github.demonfiddler.ee.server.Publisher&gt; or a
-	 * Flux&lt;io.github.demonfiddler.ee.server.Publisher&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Publisher&gt; or a
+	 * Flux&lt;Publisher&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;io.github.demonfiddler.ee.server.Publisher&gt;</li>
+	 * Callable&lt;Publisher&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.Publisher>. This
-	 * allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
-	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
-	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Publisher>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -605,23 +660,22 @@ public interface DataFetchersDelegateQuery {
 	 * Returns a paged list of quotations. <br/>
 	 * Loads the data for Query.quotations. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.QuotationPage)</li>
+	 * <li>A resolved value of any type (typically, a QuotationPage)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a
-	 * Mono&lt;io.github.demonfiddler.ee.server.QuotationPage&gt; or a
-	 * Flux&lt;io.github.demonfiddler.ee.server.QuotationPage&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;QuotationPage&gt; or a
+	 * Flux&lt;QuotationPage&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;io.github.demonfiddler.ee.server.QuotationPage&gt;</li>
+	 * Callable&lt;QuotationPage&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.QuotationPage>. This
-	 * allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
-	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
-	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<QuotationPage>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -641,23 +695,22 @@ public interface DataFetchersDelegateQuery {
 	 * Returns a quotation given its identifier. <br/>
 	 * Loads the data for Query.quotationById. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.Quotation)</li>
+	 * <li>A resolved value of any type (typically, a Quotation)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a
-	 * Mono&lt;io.github.demonfiddler.ee.server.Quotation&gt; or a
-	 * Flux&lt;io.github.demonfiddler.ee.server.Quotation&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Quotation&gt; or a
+	 * Flux&lt;Quotation&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;io.github.demonfiddler.ee.server.Quotation&gt;</li>
+	 * Callable&lt;Quotation&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.Quotation>. This
-	 * allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
-	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
-	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Quotation>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -675,23 +728,22 @@ public interface DataFetchersDelegateQuery {
 	 * Returns a paged list of topics or sub-topics. <br/>
 	 * Loads the data for Query.topics. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.TopicPage)</li>
+	 * <li>A resolved value of any type (typically, a TopicPage)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a
-	 * Mono&lt;io.github.demonfiddler.ee.server.TopicPage&gt; or a
-	 * Flux&lt;io.github.demonfiddler.ee.server.TopicPage&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;TopicPage&gt; or a
+	 * Flux&lt;TopicPage&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;io.github.demonfiddler.ee.server.TopicPage&gt;</li>
+	 * Callable&lt;TopicPage&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.TopicPage>. This
-	 * allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
-	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
-	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<TopicPage>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -710,22 +762,21 @@ public interface DataFetchersDelegateQuery {
 	 * Returns a topic given its identifier. <br/>
 	 * Loads the data for Query.topicById. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.Topic)</li>
+	 * <li>A resolved value of any type (typically, a Topic)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a Mono&lt;io.github.demonfiddler.ee.server.Topic&gt;
-	 * or a Flux&lt;io.github.demonfiddler.ee.server.Topic&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Topic&gt; or a Flux&lt;Topic&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;io.github.demonfiddler.ee.server.Topic&gt;</li>
+	 * Callable&lt;Topic&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.Topic>. This allows
-	 * to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly
-	 * optimize the number of requests to the server. The principle is this one: The data loader collects all the data
-	 * to load, avoid to load several times the same data, and allows parallel execution of the queries, if multiple
-	 * queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Topic>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -743,23 +794,21 @@ public interface DataFetchersDelegateQuery {
 	 * Returns a paged list of users. <br/>
 	 * Loads the data for Query.users. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.UserPage)</li>
+	 * <li>A resolved value of any type (typically, a UserPage)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a
-	 * Mono&lt;io.github.demonfiddler.ee.server.UserPage&gt; or a
-	 * Flux&lt;io.github.demonfiddler.ee.server.UserPage&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;UserPage&gt; or a Flux&lt;UserPage&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;io.github.demonfiddler.ee.server.UserPage&gt;</li>
+	 * Callable&lt;UserPage&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.UserPage>. This
-	 * allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
-	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
-	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
-	 * multiple queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<UserPage>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -779,22 +828,21 @@ public interface DataFetchersDelegateQuery {
 	 * Returns a user given its identifier. <br/>
 	 * Loads the data for Query.userById. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.User)</li>
+	 * <li>A resolved value of any type (typically, a User)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a Mono&lt;io.github.demonfiddler.ee.server.User&gt; or
-	 * a Flux&lt;io.github.demonfiddler.ee.server.User&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;User&gt; or a Flux&lt;User&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;io.github.demonfiddler.ee.server.User&gt;</li>
+	 * Callable&lt;User&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.User>. This allows to
-	 * use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize
-	 * the number of requests to the server. The principle is this one: The data loader collects all the data to load,
-	 * avoid to load several times the same data, and allows parallel execution of the queries, if multiple queries are
-	 * to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<User>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -812,22 +860,21 @@ public interface DataFetchersDelegateQuery {
 	 * Returns a user given its username. <br/>
 	 * Loads the data for Query.userByUsername. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.User)</li>
+	 * <li>A resolved value of any type (typically, a User)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a Mono&lt;io.github.demonfiddler.ee.server.User&gt; or
-	 * a Flux&lt;io.github.demonfiddler.ee.server.User&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;User&gt; or a Flux&lt;User&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;io.github.demonfiddler.ee.server.User&gt;</li>
+	 * Callable&lt;User&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.User>. This allows to
-	 * use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize
-	 * the number of requests to the server. The principle is this one: The data loader collects all the data to load,
-	 * avoid to load several times the same data, and allows parallel execution of the queries, if multiple queries are
-	 * to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<User>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -915,22 +962,21 @@ public interface DataFetchersDelegateQuery {
 	 * This method loads the data for Query.groupById. It may return whatever is accepted by the Spring Controller, that
 	 * is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.Group)</li>
+	 * <li>A resolved value of any type (typically, a Group)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a Mono&lt;io.github.demonfiddler.ee.server.Group&gt;
-	 * or a Flux&lt;io.github.demonfiddler.ee.server.Group&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Group&gt; or a Flux&lt;Group&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;io.github.demonfiddler.ee.server.Group&gt;</li>
+	 * Callable&lt;Group&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.Group>. This allows
-	 * to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly
-	 * optimize the number of requests to the server. The principle is this one: The data loader collects all the data
-	 * to load, avoid to load several times the same data, and allows parallel execution of the queries, if multiple
-	 * queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Group>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -951,22 +997,21 @@ public interface DataFetchersDelegateQuery {
 	 * This method loads the data for Query.groupByGroupname. It may return whatever is accepted by the Spring
 	 * Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.Group)</li>
+	 * <li>A resolved value of any type (typically, a Group)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a Mono&lt;io.github.demonfiddler.ee.server.Group&gt;
-	 * or a Flux&lt;io.github.demonfiddler.ee.server.Group&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;Group&gt; or a Flux&lt;Group&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;io.github.demonfiddler.ee.server.Group&gt;</li>
+	 * Callable&lt;Group&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.Group>. This allows
-	 * to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly
-	 * optimize the number of requests to the server. The principle is this one: The data loader collects all the data
-	 * to load, avoid to load several times the same data, and allows parallel execution of the queries, if multiple
-	 * queries are to be run.</li>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<Group>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
 	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
@@ -998,8 +1043,7 @@ public interface DataFetchersDelegateQuery {
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance
-	 * CompletableFuture<List<io.github.demonfiddler.ee.server.EntityStatistics>>. This allows to use
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<List<EntityStatistics>>. This allows to use
 	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
 	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
 	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
@@ -1042,8 +1086,7 @@ public interface DataFetchersDelegateQuery {
 	 * </ul>
 	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
 	 * GraphQL context for this DataFetcher
-	 * @param filter The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL
-	 * schema.
+	 * @param filter The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
 	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
 	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
 	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code

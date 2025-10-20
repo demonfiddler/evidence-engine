@@ -50,6 +50,20 @@ public class Query {
 	Claim claimById;
 
 	/**
+	 * Returns a paged list of comments.
+	 */
+	@GraphQLNonScalar(fieldName = "comments", graphQLTypeSimpleName = "CommentPage", javaClass = CommentPage.class,
+		listDepth = 0)
+	CommentPage comments;
+
+	/**
+	 * Returns a comment given its identifier.
+	 */
+	@GraphQLNonScalar(fieldName = "commentById", graphQLTypeSimpleName = "Comment", javaClass = Comment.class,
+		listDepth = 0)
+	Comment commentById;
+
+	/**
 	 * Returns a paged list of declarations.
 	 */
 	@GraphQLNonScalar(fieldName = "declarations", graphQLTypeSimpleName = "DeclarationPage",
@@ -273,6 +287,34 @@ public class Query {
 	 */
 	public Claim getClaimById() {
 		return this.claimById;
+	}
+
+	/**
+	 * Returns a paged list of comments.
+	 */
+	public void setComments(CommentPage comments) {
+		this.comments = comments;
+	}
+
+	/**
+	 * Returns a paged list of comments.
+	 */
+	public CommentPage getComments() {
+		return this.comments;
+	}
+
+	/**
+	 * Returns a comment given its identifier.
+	 */
+	public void setCommentById(Comment commentById) {
+		this.commentById = commentById;
+	}
+
+	/**
+	 * Returns a comment given its identifier.
+	 */
+	public Comment getCommentById() {
+		return this.commentById;
 	}
 
 	/**
@@ -683,6 +725,10 @@ public class Query {
 			+ ", " //
 			+ "claimById: " + this.claimById //
 			+ ", " //
+			+ "comments: " + this.comments //
+			+ ", " //
+			+ "commentById: " + this.commentById //
+			+ ", " //
 			+ "declarations: " + this.declarations //
 			+ ", " //
 			+ "declarationById: " + this.declarationById //
@@ -751,6 +797,8 @@ public class Query {
 
 		private ClaimPage claims;
 		private Claim claimById;
+		private CommentPage comments;
+		private Comment commentById;
 		private DeclarationPage declarations;
 		private Declaration declarationById;
 		private EntityLinkPage entityLinks;
@@ -792,6 +840,22 @@ public class Query {
 		 */
 		public Builder withClaimById(Claim claimByIdParam) {
 			this.claimById = claimByIdParam;
+			return this;
+		}
+
+		/**
+		 * Returns a paged list of comments.
+		 */
+		public Builder withComments(CommentPage commentsParam) {
+			this.comments = commentsParam;
+			return this;
+		}
+
+		/**
+		 * Returns a comment given its identifier.
+		 */
+		public Builder withCommentById(Comment commentByIdParam) {
+			this.commentById = commentByIdParam;
 			return this;
 		}
 
@@ -1015,6 +1079,8 @@ public class Query {
 			Query _object = new Query();
 			_object.setClaims(this.claims);
 			_object.setClaimById(this.claimById);
+			_object.setComments(this.comments);
+			_object.setCommentById(this.commentById);
 			_object.setDeclarations(this.declarations);
 			_object.setDeclarationById(this.declarationById);
 			_object.setEntityLinks(this.entityLinks);

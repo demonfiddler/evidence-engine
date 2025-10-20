@@ -96,7 +96,7 @@ export default function LogDialog({
       <DialogTrigger asChild>
         <ButtonEx
           outerClassName={cn("place-self-center", className)}
-          className="w-20 bg-blue-500 text-md"
+          className="w-35 bg-blue-500 text-md"
           disabled={disabled}
           help={
             recordId

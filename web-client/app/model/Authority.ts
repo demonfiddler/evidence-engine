@@ -19,6 +19,7 @@
 
 type Authority =
   "ADM" | // Administer
+  "COM" | // Comment
   "CRE" | // Create
   "DEL" | // Delete
   "LNK" | // Link/Unlink

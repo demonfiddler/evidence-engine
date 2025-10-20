@@ -1,0 +1,12 @@
+{
+  "client": {
+    "service": {
+      "name": "evidence-engine",
+      // "url": "http://localhost:3000/graphql",
+      // This can be a string pointing to a single file or an array of strings
+      "localSchemaFile": "./server/src/main/resources/graphql/schema.graphqls"
+      // "localSchemaFile": ".\\server\\src\\main\\resources\\graphql\\schema.graphqls"
+    },
+    "includes": ["**/*.graphqls", "**/*.graphql"]
+  }
+}

@@ -45,8 +45,9 @@ import { AuthProvider } from '@/hooks/use-auth'
 import { useImmerReducer } from "use-immer"
 import { ColumnOrderState, ColumnSizingState, PaginationState, SortingState, VisibilityState } from '@tanstack/react-table'
 import IBaseEntity from './model/IBaseEntity'
-import { LinkableEntityQueryFilter, LogQueryFilter, QueryFilter, TrackedEntityQueryFilter } from './model/schema'
+import { CommentQueryFilter, LinkableEntityQueryFilter, LogQueryFilter, QueryFilter, TrackedEntityQueryFilter } from './model/schema'
 import { usePathname } from 'next/navigation'
+import { columns as commentColumns, columnVisibility as commentColumnVisibility } from "@/app/ui/tables/comment-columns"
 import { columns as claimColumns, columnVisibility as claimColumnVisibility } from "@/app/ui/tables/claim-columns"
 import { columns as declarationColumns, columnVisibility as declarationColumnVisibility } from "@/app/ui/tables/declaration-columns"
 import { columns as groupColumns, columnVisibility as groupColumnVisibility } from "@/app/ui/tables/group-columns"
@@ -69,6 +70,7 @@ if (process.env.NODE_ENV === 'development') {
 
 const defaultColumnSettings = {
   None: {columns: [], visibility: {}},
+  Comment: {columns: commentColumns, visibility: commentColumnVisibility},
   Claim: {columns: claimColumns, visibility: claimColumnVisibility},
   Declaration: {columns: declarationColumns, visibility: declarationColumnVisibility},
   Group: {columns: groupColumns, visibility: groupColumnVisibility},
@@ -101,6 +103,7 @@ function defaultAppState() {
 function defaultColumnStatesMap() {
   return {
     None: defaultColumnState("None"),
+    Comment: defaultColumnState("Comment"),
     Claim: defaultColumnState("Claim"),
     Declaration: defaultColumnState("Declaration"),
     Group: defaultColumnState("Group"),
@@ -132,6 +135,7 @@ function defaultColumnState(recordKind: RecordKind) {
 function defaultQueryStatesMap() {
   return {
     None: defaultQueryState<never>(),
+    Comment: defaultQueryState<CommentQueryFilter>(),
     Claim: defaultQueryState<LinkableEntityQueryFilter>(),
     Declaration: defaultQueryState<LinkableEntityQueryFilter>(),
     Group: defaultQueryState<TrackedEntityQueryFilter>(),

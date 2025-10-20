@@ -42,7 +42,7 @@ export default function LogDetails({record}: {record: Log | undefined}) {
           disabled={!record}
           readOnly={true}
           value={formatDateTime(record?.timestamp)}
-          help="The date and time at which the even occurred"
+          help="The date and time at which the event occurred"
         />
         <Label htmlFor="transactionKind" className="col-start-1">Transaction kind:</Label>
         <InputEx

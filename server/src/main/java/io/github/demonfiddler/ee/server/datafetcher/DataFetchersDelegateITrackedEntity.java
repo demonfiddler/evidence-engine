@@ -30,6 +30,8 @@ import org.dataloader.DataLoader;
 import graphql.GraphQLContext;
 import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.model.AbstractTrackedEntity;
+import io.github.demonfiddler.ee.server.model.CommentPage;
+import io.github.demonfiddler.ee.server.model.CommentQueryFilter;
 import io.github.demonfiddler.ee.server.model.FormatKind;
 import io.github.demonfiddler.ee.server.model.LogPage;
 import io.github.demonfiddler.ee.server.model.LogQueryFilter;
@@ -52,7 +54,7 @@ public interface DataFetchersDelegateITrackedEntity<T extends AbstractTrackedEnt
 	/**
 	 * Description for the entityKind field: <br/>
 	 * The entity kind. <br/>
-	 * Loads the data for EntityLink.entityKind. It may return whatever is accepted by the Spring Controller, that is:
+	 * Loads the data for ITrackedEntity.entityKind. It may return whatever is accepted by the Spring Controller, that is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, a String)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
@@ -131,10 +133,10 @@ public interface DataFetchersDelegateITrackedEntity<T extends AbstractTrackedEnt
 	Object status(DataFetchingEnvironment dataFetchingEnvironment, T origin, FormatKind format);
 
 	/**
-	 * Loads the data for ${dataFetcher.graphQLType}.createdByUser. It is generated as the
+	 * Loads the data for ITrackedEntity.createdByUser. It is generated as the
 	 * <code>generateBatchMappingDataFetchers</code> plugin parameter is true. <br/>
-	 * @param batchLoaderEnvironment The environment for this batch loader. You can extract the GraphQLContext from
-	 * this parameter.
+	 * @param batchLoaderEnvironment The environment for this batch loader. You can extract the GraphQLContext from this
+	 * parameter.
 	 * @param graphQLContext
 	 * @param keys The objects for which the value for the createdByUser field must be retrieved.
 	 * @return This method returns <code>${dataFetcher.batchMappingReturnType.value}</code>, as defined by the
@@ -145,10 +147,10 @@ public interface DataFetchersDelegateITrackedEntity<T extends AbstractTrackedEnt
 		List<T> keys);
 
 	/**
-	 * Loads the data for ${dataFetcher.graphQLType}.updatedByUser. It is generated as the
+	 * Loads the data for ITrackedEntity.updatedByUser. It is generated as the
 	 * <code>generateBatchMappingDataFetchers</code> plugin parameter is true. <br/>
-	 * @param batchLoaderEnvironment The environment for this batch loader. You can extract the GraphQLContext from
-	 * this parameter.
+	 * @param batchLoaderEnvironment The environment for this batch loader. You can extract the GraphQLContext from this
+	 * parameter.
 	 * @param graphQLContext
 	 * @param keys The objects for which the value for the updatedByUser field must be retrieved.
 	 * @return This method returns <code>${dataFetcher.batchMappingReturnType.value}</code>, as defined by the
@@ -203,5 +205,53 @@ public interface DataFetchersDelegateITrackedEntity<T extends AbstractTrackedEnt
 	 */
 	Object log(DataFetchingEnvironment dataFetchingEnvironment, DataLoader<Long, LogPage> dataLoader, T origin,
 		LogQueryFilter filter, PageableInput pageSort);
+
+	/**
+	 * This method loads the data for ITrackedEntity.comments. It may return whatever is accepted by the Spring
+	 * Controller, that is:
+	 * <ul>
+	 * <li>A resolved value of any type (typically, a io.github.demonfiddler.ee.server.CommentPage)</li>
+	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
+	 * described in Reactive DataFetcher. This would typically be a
+	 * Mono&lt;io.github.demonfiddler.ee.server.CommentPage&gt; or a
+	 * Flux&lt;io.github.demonfiddler.ee.server.CommentPage&gt;</li>
+	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
+	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
+	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
+	 * Callable&lt;io.github.demonfiddler.ee.server.CommentPage&gt;</li>
+	 * </ul>
+	 * As a complement to the spring-graphql documentation, you may also return:
+	 * <ul>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<io.github.demonfiddler.ee.server.CommentPage>. This
+	 * allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to
+	 * highly optimize the number of requests to the server. The principle is this one: The data loader collects all the
+	 * data to load, avoid to load several times the same data, and allows parallel execution of the queries, if
+	 * multiple queries are to be run.</li>
+	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
+	 * </ul>
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param dataLoader The {@link DataLoader} allows to load several data in one query. It allows to solve the (n+1)
+	 * queries issues, and greatly optimizes the response time.<BR/>
+	 * You'll find more informations here:
+	 * <A HREF= "https://github.com/graphql-java/java-dataloader">https://github.com/graphql-java/java-dataloader</A>
+	 * @param origin The object from which the field is fetch. In other word: the aim of this data fetcher is to fetch
+	 * the comments attribute of the <I>origin</I>, which is an instance of {InterfaceType {name:ITrackedEntity,
+	 * fields:{Field{name:entityKind, type:String, params:[format:FormatKind]},Field{name:status, type:String,
+	 * params:[format:FormatKind]},Field{name:rating, type:Int, params:[]},Field{name:created, type:DateTime,
+	 * params:[]},Field{name:createdByUser, type:User, params:[]},Field{name:updated, type:DateTime,
+	 * params:[]},Field{name:updatedByUser, type:User, params:[]},Field{name:log, type:LogPage!,
+	 * params:[filter:LogQueryFilter,pageSort:PageableInput]},Field{name:comments, type:CommentPage,
+	 * params:[filter:CommentQueryFilter,pageSort:PageableInput]}}, comments ""}. It depends on your data modle, but it
+	 * typically contains the id to use in the query.
+	 * @param filter The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @param pageSort The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
+	 */
+	Object comments(DataFetchingEnvironment dataFetchingEnvironment, DataLoader<Long, CommentPage> dataLoader, T origin,
+		CommentQueryFilter filter, PageableInput pageSort);
 
 }

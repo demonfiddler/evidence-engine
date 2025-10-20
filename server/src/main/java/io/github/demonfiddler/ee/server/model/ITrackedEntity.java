@@ -95,4 +95,12 @@ public interface ITrackedEntity extends IBaseEntity {
 	@GraphQLNonScalar(fieldName = "log", graphQLTypeSimpleName = "LogPage", javaClass = LogPage.class, listDepth = 0)
 	LogPage getLog();
 
+	@GraphQLNonScalar(fieldName = "comments", graphQLTypeSimpleName = "CommentPage", javaClass = CommentPage.class,
+	listDepth = 0)
+	void setComments(CommentPage comments);
+
+	@GraphQLNonScalar(fieldName = "comments", graphQLTypeSimpleName = "CommentPage", javaClass = CommentPage.class,
+	listDepth = 0)
+	CommentPage getComments();
+
 }

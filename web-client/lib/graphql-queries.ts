@@ -45,15 +45,18 @@ fragment trackedEntityFields on ITrackedEntity {
   rating
   created
   createdByUser {
+    firstName
+    lastName
     username
   }
   updated
   updatedByUser {
+    firstName
+    lastName
     username
   }
-  # log
-  # {
-  #   # ...pageFields
+  # log {
+  #   ...pageFields
   #   content {
   #     id
   #     timestamp
@@ -63,6 +66,13 @@ fragment trackedEntityFields on ITrackedEntity {
   #     }
   #     linkedEntityKind
   #     linkedEntityId
+  #   }
+  # }
+  # comments {
+  #   ...pageFields
+  #   content {
+  #     ...trackedEntityFields
+  #     text
   #   }
   # }
 }
@@ -116,6 +126,56 @@ fragment linkedEntityFields on ILinkableEntity {
   }
   ...on Topic {
     label
+  }
+}
+`
+
+const FRAGMENT_LABEL_FIELDS = gql`
+fragment labelFields on ITrackedEntity {
+  ... on IBaseEntity {
+    id
+  }
+  ... on ITrackedEntity {
+    entityKind
+  }
+  ...on Claim {
+    text
+  }
+  ...on Comment {
+    text
+  }
+  ...on Declaration {
+    title
+  }
+  ...on Group {
+    groupname
+  }
+  ...on Journal {
+    title
+    abbreviation
+  }
+  ...on Person {
+    firstName
+    prefix
+    lastName
+    suffix
+  }
+  ...on Publication {
+    title
+  }
+  ...on Publisher {
+    name
+  }
+  ...on Quotation {
+    text
+  }
+  ...on Topic {
+    label
+  }
+  ...on User {
+    firstName
+    lastName
+    username
   }
 }
 `
@@ -230,6 +290,39 @@ fragment claimFields on Claim {
   date
   text
   notes
+}
+`
+
+const FRAGMENT_COMMENT_FIELDS = gql`
+fragment commentFields on Comment {
+  target {
+    ...labelFields
+  }
+  parent {
+    id
+    createdByUser {
+      firstName
+      lastName
+      username
+    }
+    text
+  }
+  text
+}
+`
+
+const FRAGMENT_OWNED_COMMENT_FIELDS = gql`
+fragment commentFields on Comment {
+  parent {
+    id
+    createdByUser {
+      firstName
+      lastName
+      username
+    }
+    text
+  }
+  text
 }
 `
 
@@ -622,6 +715,80 @@ mutation DeleteClaim($id: ID!) {
     ...trackedEntityFields
     ...linkableEntityFields
     ...claimFields
+  }
+}
+`
+
+export const READ_COMMENTS = gql`
+${FRAGMENT_PAGE_FIELDS}
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_COMMENT_FIELDS}
+${FRAGMENT_LABEL_FIELDS}
+query Comments($filter: CommentQueryFilter, $pageSort: PageableInput) {
+  comments
+  (
+    filter: $filter
+    pageSort: $pageSort
+  )
+  {
+    ...pageFields
+    content {
+      ...trackedEntityFields
+      ...commentFields
+    }
+  }
+}
+`
+
+export const READ_OWNED_COMMENTS = gql`
+${FRAGMENT_PAGE_FIELDS}
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_OWNED_COMMENT_FIELDS}
+query Comments($filter: CommentQueryFilter, $pageSort: PageableInput) {
+  comments
+  (
+    filter: $filter
+    pageSort: $pageSort
+  )
+  {
+    ...pageFields
+    content {
+      ...trackedEntityFields
+      ...commentFields
+    }
+  }
+}
+`
+
+export const CREATE_COMMENT = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_OWNED_COMMENT_FIELDS}
+mutation CreateComment($input: CommentInput!) {
+  createComment(comment: $input) {
+    ...trackedEntityFields
+    ...commentFields
+  }
+}
+`
+
+export const UPDATE_COMMENT = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_OWNED_COMMENT_FIELDS}
+mutation UpdateComment($input: CommentInput!) {
+  updateComment(comment: $input) {
+    ...trackedEntityFields
+    ...commentFields
+  }
+}
+`
+
+export const DELETE_COMMENT = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_OWNED_COMMENT_FIELDS}
+mutation DeleteComment($id: ID!) {
+  deleteComment(commentId: $id) {
+    ...trackedEntityFields
+    ...commentFields
   }
 }
 `

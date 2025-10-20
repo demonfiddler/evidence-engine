@@ -145,6 +145,8 @@ public class Group extends AbstractTrackedEntity {
 			+ ", " //
 			+ "log: " + this.log //
 			+ ", " //
+			+ "comments: " + this.comments //
+			+ ", " //
 			+ "groupname: " + this.groupname //
 			+ ", " //
 			+ "authorities: " + this.authorities //

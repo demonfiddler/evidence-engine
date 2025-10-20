@@ -52,6 +52,7 @@ public class FormatUtils {
         DECLARATION_KIND_LONG.put(DeclarationKind.PETN, "Petition");
 
         ENTITY_KIND_LONG.put(EntityKind.CLA, "Claim");
+        ENTITY_KIND_LONG.put(EntityKind.COM, "Comment");
         ENTITY_KIND_LONG.put(EntityKind.COU, "Country");
         ENTITY_KIND_LONG.put(EntityKind.DEC, "Declaration");
         ENTITY_KIND_LONG.put(EntityKind.GRP, "Group");
@@ -65,6 +66,7 @@ public class FormatUtils {
         ENTITY_KIND_LONG.put(EntityKind.USR, "User");
 
         AUTHORITY_KIND_LONG.put(AuthorityKind.ADM, "Use administrative functions");
+        AUTHORITY_KIND_LONG.put(AuthorityKind.COM, "Comment on existing record");
         AUTHORITY_KIND_LONG.put(AuthorityKind.CRE, "Insert new record");
         AUTHORITY_KIND_LONG.put(AuthorityKind.DEL, "Delete existing record");
         AUTHORITY_KIND_LONG.put(AuthorityKind.LNK, "Link/unlink existing records");
@@ -140,6 +142,7 @@ public class FormatUtils {
         TRANSACTION_KIND_LONG.put(TransactionKind.LNK, "Linked");
         TRANSACTION_KIND_LONG.put(TransactionKind.UNL, "Unlinked");
         TRANSACTION_KIND_LONG.put(TransactionKind.UPD, "Updated");
+        TRANSACTION_KIND_LONG.put(TransactionKind.COM, "Commented");
     }
 
     private <T extends Enum<T>> String formatEnum(T kind, FormatKind format, Map<T, String> map) {

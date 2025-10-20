@@ -32,6 +32,7 @@ public enum EntityKind {
 
 	CLA("CLA", "Claim"), //
 	COU("COU", "Country"), //
+	COM("COM", "Comment"), //
 	DEC("DEC", "Declaration"), //
 	GRP("GRP", "Group"), //
 	JOU("JOU", "Journal"), //

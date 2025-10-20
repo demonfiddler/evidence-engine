@@ -183,6 +183,8 @@ public class Publisher extends AbstractTrackedEntity {
 			+ ", " //
 			+ "log: " + this.log //
 			+ ", " //
+			+ "comments: " + this.comments //
+			+ ", " //
 			+ "name: " + this.name //
 			+ ", " //
 			+ "location: " + this.location //

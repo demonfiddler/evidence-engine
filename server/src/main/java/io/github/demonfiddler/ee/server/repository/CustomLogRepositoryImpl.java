@@ -60,13 +60,15 @@ public class CustomLogRepositoryImpl extends AbstractCustomRepositoryImpl implem
      * @param pageable Specifies sorting and pagination, must not be {@code null}.
      * @return Query metadata.
      */
-    private QueryMetaData getQueryMetaData(@NonNull LogQueryFilter filter, @NonNull Pageable pageable) {
-        boolean hasEntityId = filter.getEntityId() != null;
-        boolean hasEntityKind = filter.getEntityKind() != null;
-        boolean hasUserId = filter.getUserId() != null;
-        boolean hasTransactionKinds = filter.getTransactionKinds() != null && !filter.getTransactionKinds().isEmpty();
-        boolean hasFrom = filter.getFrom() != null;
-        boolean hasTo = filter.getTo() != null;
+    @SuppressWarnings("null")
+    private QueryMetaData getQueryMetaData(@Nullable LogQueryFilter filter, @NonNull Pageable pageable) {
+        boolean hasFilter = filter != null;
+        boolean hasEntityId = hasFilter && filter.getEntityId() != null;
+        boolean hasEntityKind = hasFilter && filter.getEntityKind() != null;
+        boolean hasUserId = hasFilter && filter.getUserId() != null;
+        boolean hasTransactionKinds = hasFilter && filter.getTransactionKinds() != null && !filter.getTransactionKinds().isEmpty();
+        boolean hasFrom = hasFilter && filter.getFrom() != null;
+        boolean hasTo = hasFilter && filter.getTo() != null;
         boolean isPaged = pageable.isPaged();
         boolean isSorted = pageable.getSort().isSorted();
 

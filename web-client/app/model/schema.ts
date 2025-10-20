@@ -22,10 +22,10 @@ import { PublicationKind } from "../ui/validators/publication"
 import Authority from "./Authority"
 
 type DirectionKind = "ASC" | "DESC"
-type EntityKind = "CLA" | "COU" | "DEC" | "GRP" | "JOU" | "LNK" | "PER" | "PUB" | "PBR" | "QUO" | "TOP" | "USR"
+type EntityKind = "CLA" | "COM" | "COU" | "DEC" | "GRP" | "JOU" | "LNK" | "PER" | "PUB" | "PBR" | "QUO" | "TOP" | "USR"
 type NullHandlingKind = "NATIVE" | "NULLS_FIRST" | "NULLS_LAST"
 type StatusKind = "DRA" | "PUB" | "SUS" | "DEL"
-type TransactionKind = "CRE" | "UPD" | "DEL" | "LNK" | "UNL"
+type TransactionKind = "CRE" | "UPD" | "DEL" | "LNK" | "UNL" | "COM"
 
 export type {DirectionKind, EntityKind, NullHandlingKind, StatusKind, TransactionKind}
 
@@ -45,6 +45,15 @@ export type TrackedEntityQueryFilter = {
   recordId?: string
 }
 
+export type CommentQueryFilter = TrackedEntityQueryFilter & {
+  targetKind?: EntityKind
+  targetId?: string
+  parentId?: string
+  userId?: string
+  from?: Date
+  to?: Date
+}
+
 export type LinkableEntityQueryFilter = TrackedEntityQueryFilter & {
   topicId?: string
   recursive?: boolean
@@ -62,6 +71,7 @@ export type TopicQueryFilter = TrackedEntityQueryFilter & {
 export type QueryFilter =
   TrackedEntityQueryFilter |
   LinkableEntityQueryFilter |
+  CommentQueryFilter |
   TopicQueryFilter |
   LogQueryFilter
 
@@ -94,6 +104,12 @@ export interface ClaimInput extends TrackedEntityInput {
   text: string
   date: Date | string | null
   notes: string | null
+}
+
+export interface CommentInput extends TrackedEntityInput {
+  targetId?: string
+  parent?: Comment
+  text: string
 }
 
 export interface DeclarationInput extends TrackedEntityInput {

@@ -43,6 +43,15 @@ CREATE TABLE "claim" (
 );
 CALL FT_CREATE_INDEX('PUBLIC', 'claim', 'text,notes');
 
+CREATE TABLE "comment" (
+  "id" BIGINT PRIMARY KEY COMMENT 'The unique comment identifier',
+  "target_id" BIGINT NOT NULL COMMENT 'The ID of the target entity with which this comment is associated',
+  "parent_id" BIGINT DEFAULT NULL COMMENT 'The ID of the parent comment to which this comment is a reply.',
+  "text" VARCHAR(500) NOT NULL COMMENT 'The text of the comment',
+  PRIMARY KEY ("id")
+);
+CALL FT_CREATE_INDEX('PUBLIC', 'comment', 'text');
+
 CREATE TABLE "country" (
   "alpha_2" CHAR(2) PRIMARY KEYCOMMENT 'ISO-3166-1 alpha-2 code',
   "alpha_3" CHAR(3) NOT NULL UNIQUE COMMENT 'ISO-3166-1 alpha-3 code',
@@ -329,6 +338,25 @@ ALTER TABLE "entity"
 ALTER TABLE "claim"
   ADD FOREIGN KEY ("id")
   REFERENCES "entity" ("id")
+  ON UPDATE CASCADE
+  ON DELETE CASCADE;
+
+
+ALTER TABLE "comment"
+  ADD FOREIGN KEY ("id")
+  REFERENCES "entity" ("id")
+  ON UPDATE CASCADE
+  ON DELETE CASCADE;
+
+ALTER TABLE "comment"
+  ADD FOREIGN KEY ("target_id")
+  REFERENCES "entity" ("id")
+  ON UPDATE CASCADE
+  ON DELETE CASCADE;
+
+ALTER TABLE "comment"
+  ADD FOREIGN KEY ("parent_id")
+  REFERENCES "comment" ("id")
   ON UPDATE CASCADE
   ON DELETE CASCADE;
 

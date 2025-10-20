@@ -92,6 +92,11 @@ Resource & Member column entry key:
 |||+```TYPEPage```|+ALL||Extend [```AbstractPage<TYPE>```](client/src/main/java/io/github/demonfiddler/ee/client/AbstractPage.java).|
 |||+```TYPEPage.Builder```|+```build()```||Extend [```AbstractPage.Builder<Builder, TYPEPage, TYPE>```](client/src/main/java/io/github/demonfiddler/ee/client/AbstractPage.java) and ```return build(new TYPEPage());```.|
 ||web-client|~[```apolloClient```](web-client/lib/graphql-utils.ts)|~```cache.possibleTypes```||Add ```TYPE``` to ```IBaseEntity```, ```ITrackedEntity```, ```ILinkableEntity``` as appropriate and ```TYPEPage``` to ```IPage```.|
+|||~[```graphql-queries.ts```](web-client/lib/graphql-queries.ts)|+FRAGMENT_TYPE_FIELDS||A GraphQL fragment that fetches the fields specific to TYPE|
+||||+READ_TYPES||A GraphQL query that fetches TYPE instances, typically filtered and paginated|
+||||+CREATE_TYPE||A GraphQL mutation to create a TYPE instance|
+||||+UPDATE_TYPE||A GraphQL mutation to update a TYPE instance|
+||||+DELETE_TYPE||A GraphQL mutation to delete a TYPE instance|
 |||+```TYPE```|+ALL||The Apollo GraphQL ```TYPE```.|
 |||~[```TYPEInput```](web-client/app/model/schema.ts)|+ALL||Only if ```TYPE``` is updateable through GraphQL API: the corresponding GraphQL ```TYPEInput```.|
 |||+```TYPE```|+ALL||The form validation ```TYPE```.|
@@ -100,9 +105,8 @@ Resource & Member column entry key:
 |||[~```schema-h2.sql```](server/src/main/resources/db/schema-h2.sql)|+```TYPE```|||
 |||[~```schema.graphqls```](server/src/main/resources/graphql/schema.graphqls)|+```TYPE```|||
 |||[~```GraphQLPluginAutoConfiguration```](server/src/main/java/io/github/demonfiddler/ee/server/GraphQLPluginAutoConfiguration.java)|+```TYPEController()```|||
+||||+```TYPEPageController()```|||
 |||+```TYPE```|+ALL||Extend [```AbstractBaseEntity```](server/src/main/java/io/github/demonfiddler/ee/server/model/AbstractBaseEntity.java) (DOESN'T EXIST!) / [```AbstractTrackedEntity```](server/src/main/java/io/github/demonfiddler/ee/server/model/AbstractTrackedEntity.java) / [```AbstractLinkableEntity```](server/src/main/java/io/github/demonfiddler/ee/server/model/AbstractLinkableEntity.java).|
-||||+```equals()``` [^2]|||
-||||+```hashCode()``` [^2]|||
 |||+```TYPE.Builder```|+ALL||Extend [```AbstractBaseEntity.Builder```](server/src/main/java/io/github/demonfiddler/ee/server/model/AbstractBaseEntity.java) (DOESN'T EXIST!) / [```AbstractTrackedEntity.Builder```](server/src/main/java/io/github/demonfiddler/ee/server/model/AbstractTrackedEntity.java) / [```AbstractLinkableEntity.Builder```](server/src/main/java/io/github/demonfiddler/ee/server/model/AbstractLinkableEntity.java). One Builder.PROPERTY field per TYPE property.|
 ||||+```withALL()```||One Builder.withPROPERTY() method per TYPE property.|
 ||||+```build()```||One _object.setPROPERTY() call per TYPE property.|
