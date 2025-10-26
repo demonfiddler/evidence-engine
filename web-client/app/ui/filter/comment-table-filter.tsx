@@ -25,7 +25,7 @@ import { Select, SelectContent, SelectItem, SelectValue } from "@/components/ui/
 import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import { formatDate, isEqual } from "@/lib/utils"
 import { READ_USERS } from "@/lib/graphql-queries"
-import { useQuery } from "@apollo/client"
+import { useQuery } from "@apollo/client/react"
 import { toast } from "sonner"
 import IPage from "@/app/model/IPage"
 import User from "@/app/model/User"
@@ -43,6 +43,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import LabelEx from "../ext/label-ex"
 import Search from "./search"
 import useAuth from "@/hooks/use-auth"
+import { QueryResult } from "@/lib/graphql-utils"
 
 const logger = new LoggerEx(filter, "[CommentTableFilter] ")
 
@@ -227,7 +228,7 @@ export default function CommentTableFilter(
     toast.error(`Operation failed:\n\n${result.error.message}`)
     logger.error("Operation failed: %o", result.error)
   }
-  const users = (result.data?.users as IPage<User>)?.content
+  const users = (result.data as QueryResult<IPage<User>>)?.users?.content
 
   return (
     <div className="flex flex-col gap-2">

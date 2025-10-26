@@ -56,6 +56,16 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	}
 
 	/**
+	 * Authenticates the client using JSON Web Token (JWT).
+	 */
+	@JsonProperty("login")
+	@GraphQLInputParameters(names = { "username", "password" }, types = { "String", "String" },
+		mandatories = { true, true }, listDepths = { 0, 0 }, itemsMandatory = { false, false })
+	@GraphQLNonScalar(fieldName = "login", graphQLTypeSimpleName = "AuthPayload", javaClass = AuthPayload.class,
+		listDepth = 0)
+	AuthPayload login;
+
+	/**
 	 * Creates a new claim.
 	 */
 	@JsonProperty("createClaim")
@@ -520,6 +530,22 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	@GraphQLNonScalar(fieldName = "revokeGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class,
 		listDepth = 0)
 	Group revokeGroupAuthorities;
+
+	/**
+	 * Authenticates the client using JSON Web Token (JWT).
+	 */
+	@JsonProperty("login")
+	public void setLogin(AuthPayload login) {
+		this.login = login;
+	}
+
+	/**
+	 * Authenticates the client using JSON Web Token (JWT).
+	 */
+	@JsonProperty("login")
+	public AuthPayload getLogin() {
+		return this.login;
+	}
 
 	/**
 	 * Creates a new claim.
@@ -1287,6 +1313,8 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 
 	public String toString() {
 		return "Mutation {" //
+			+ "login: " + this.login //
+			+ ", " //
 			+ "createClaim: " + this.createClaim //
 			+ ", " //
 			+ "updateClaim: " + this.updateClaim //
@@ -1387,6 +1415,7 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	 */
 	public static class Builder extends AbstractGraphQLEntity.Builder<Builder, Mutation> {
 
+		private AuthPayload login;
 		private Claim createClaim;
 		private Claim updateClaim;
 		private Claim deleteClaim;
@@ -1432,6 +1461,14 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 		private Group removeGroupMember;
 		private Group grantGroupAuthorities;
 		private Group revokeGroupAuthorities;
+
+		/**
+		 * Authenticates the client using JSON Web Token (JWT).
+		 */
+		public Builder withLogin(AuthPayload loginParam) {
+			this.login = loginParam;
+			return this;
+		}
 
 		/**
 		 * Creates a new claim.
@@ -1797,6 +1834,7 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 
 		public Mutation build() {
 			Mutation _object = build(new Mutation());
+			_object.setLogin(this.login);
 			_object.setCreateClaim(this.createClaim);
 			_object.setUpdateClaim(this.updateClaim);
 			_object.setDeleteClaim(this.deleteClaim);

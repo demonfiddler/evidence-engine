@@ -19,8 +19,8 @@
 
 'use client'
 
-import '@/app/ui/global.css'
-import { inter } from '@/app/ui/fonts'
+import "@/app/ui/global.css"
+import { inter } from "@/app/ui/fonts"
 import { Toaster } from "@/components/ui/sonner"
 import {
   GlobalContext,
@@ -32,21 +32,21 @@ import {
   UsersPageRadioState,
   QueryState,
   SecurityPageTabState
-} from '@/lib/context'
-import RecordKind from './model/RecordKind'
-import ILinkableEntity from './model/ILinkableEntity'
-import { getRecordLabel } from '@/lib/utils'
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useSessionStorage } from 'usehooks-ts'
-import User from './model/User'
-import { ApolloProvider } from '@apollo/client'
-import { apolloClient } from '@/lib/graphql-utils'
-import { AuthProvider } from '@/hooks/use-auth'
+} from "@/lib/context"
+import RecordKind from "./model/RecordKind"
+import ILinkableEntity from "./model/ILinkableEntity"
+import { getRecordLabel } from "@/lib/utils"
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useSessionStorage } from "usehooks-ts"
+import User from "./model/User"
+import { ApolloProvider } from "@apollo/client/react"
+import { apolloClient } from "@/lib/graphql-utils"
+import { AuthProvider } from "@/hooks/use-auth"
 import { useImmerReducer } from "use-immer"
-import { ColumnOrderState, ColumnSizingState, PaginationState, SortingState, VisibilityState } from '@tanstack/react-table'
-import IBaseEntity from './model/IBaseEntity'
-import { CommentQueryFilter, LinkableEntityQueryFilter, LogQueryFilter, QueryFilter, TrackedEntityQueryFilter } from './model/schema'
-import { usePathname } from 'next/navigation'
+import { ColumnOrderState, ColumnSizingState, PaginationState, SortingState, VisibilityState } from "@tanstack/react-table"
+import IBaseEntity from "./model/IBaseEntity"
+import { CommentQueryFilter, LinkableEntityQueryFilter, LogQueryFilter, QueryFilter, TrackedEntityQueryFilter } from "./model/schema"
+import { usePathname } from "next/navigation"
 import { columns as commentColumns, columnVisibility as commentColumnVisibility } from "@/app/ui/tables/comment-columns"
 import { columns as claimColumns, columnVisibility as claimColumnVisibility } from "@/app/ui/tables/claim-columns"
 import { columns as declarationColumns, columnVisibility as declarationColumnVisibility } from "@/app/ui/tables/declaration-columns"
@@ -59,13 +59,13 @@ import { columns as publisherColumns, columnVisibility as publisherColumnVisibil
 import { columns as quotationColumns, columnVisibility as quotationColumnVisibility } from "@/app/ui/tables/quotation-columns"
 import { columns as topicColumns, columnVisibility as topicColumnVisibility } from "@/app/ui/tables/topic-columns"
 import { columns as userColumns, columnVisibility as userColumnVisibility } from "@/app/ui/tables/user-columns"
-import { layout, LoggerEx } from '@/lib/logger'
-import LoggingLevelDrawer from './ui/misc/logging-level-drawer'
+import { layout, LoggerEx } from "@/lib/logger"
+import LoggingLevelDrawer from "./ui/misc/logging-level-drawer"
 
 const logger = new LoggerEx(layout, "[RootLayout] ")
 
-if (process.env.NODE_ENV === 'development') {
-  // require('../wdyr');
+if (process.env.NODE_ENV === "development") {
+  // require("../wdyr");
 }
 
 const defaultColumnSettings = {
@@ -361,7 +361,7 @@ export default function RootLayout({
 }) {
   logger.debug("render")
 
-  const [appStateSs/*, storeAppStateSs*/] = useSessionStorage<AppState>('app-state', defaultAppState)
+  const [appStateSs/*, storeAppStateSs*/] = useSessionStorage<AppState>("app-state", defaultAppState)
   const [appState, dispatch] = useImmerReducer<AppState, ReducerArg>(reducer, appStateSs)
 
   const setDefaults = useCallback(() => {
@@ -545,8 +545,8 @@ export default function RootLayout({
   // }, [])
   // const router = useRouter()
   // useEffect(() => {
-  //   router.events.on('routeChangeStart', storeAppState)
-  //   return () => router.events.off('routeChangeStart', storeAppState)
+  //   router.events.on("routeChangeStart", storeAppState)
+  //   return () => router.events.off("routeChangeStart", storeAppState)
   // }, [router, storeAppState])
 
   const [logLevelsDrawerOpen, setLogLevelsDrawerOpen] = useState(false)
@@ -562,16 +562,16 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} antialiased`} onKeyDown={handleKeyDown}>
         <FlushOnPathChange flushFn={storeAppState} />
-        <AuthProvider>
-          <ApolloProvider client={apolloClient}>
+        <ApolloProvider client={apolloClient}>
+          <AuthProvider>
             <GlobalContext value={globalContext}>
               <Toaster position="top-center" expand />
               <Suspense>
                 {children}
               </Suspense>
             </GlobalContext>
-          </ApolloProvider>
-        </AuthProvider>
+          </AuthProvider>
+        </ApolloProvider>
         <LoggingLevelDrawer open={logLevelsDrawerOpen} onOpenChange={setLogLevelsDrawerOpen} />
       </body>
     </html>

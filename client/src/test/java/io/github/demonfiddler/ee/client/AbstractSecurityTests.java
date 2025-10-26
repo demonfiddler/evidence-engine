@@ -333,6 +333,8 @@ abstract class AbstractSecurityTests extends AbstractTrackedEntityTests<ITracked
         throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
         PersonInput input = PersonInput.builder() //
+            .withFirstName("Secfirst") //
+            .withLastName("Seclast") //
             .withTitle("Security title") //
             .withNotes("Security notes") //
             .build();
@@ -356,6 +358,7 @@ abstract class AbstractSecurityTests extends AbstractTrackedEntityTests<ITracked
         throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
         PublicationInput input = PublicationInput.builder() //
+            .withKind(PublicationKind.GEN) //
             .withTitle("Security title") //
             .withNotes("Security notes") //
             .build();

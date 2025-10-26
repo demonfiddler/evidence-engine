@@ -26,11 +26,10 @@ import { FormProvider, useForm } from "react-hook-form";
 import { ShieldExclamationIcon } from "@heroicons/react/24/outline";
 import { FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import z from "zod/v4";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import useAuth from "@/hooks/use-auth";
-import { Checkbox } from "@/components/ui/checkbox";
 import { dialog, LoggerEx } from "@/lib/logger"
 
 const logger = new LoggerEx(dialog, "[SignInDialog] ")
@@ -38,21 +37,9 @@ const logger = new LoggerEx(dialog, "[SignInDialog] ")
 const SignInFormSchema = z.object({
   username: z.string().min(3).max(50),
   password: z.string().min(6).max(20),
-  rememberMe: z.boolean()
 })
 
 type SignInFormFields = z.infer<typeof SignInFormSchema>
-
-const graphqlEndpointUrl = new URL(process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL ?? '')
-
-function getUrl(path: string, query?: string, fragment?: string) {
-  const url = new URL(path, graphqlEndpointUrl)
-  if (query)
-    url.search = query
-  if (fragment)
-    url.hash = fragment
-  return url
-}
 
 export default function SignInDialog() {
   logger.debug("render")
@@ -62,7 +49,6 @@ export default function SignInDialog() {
   const [formValue] = useState({
     username: '',
     password: '',
-    rememberMe: true
   })
   const [error, setError] = useState('')
   const form = useForm<SignInFormFields>({
@@ -71,13 +57,13 @@ export default function SignInDialog() {
     values: formValue,
   })
 
-  function authenticate() {
-    const {username, password, rememberMe} = form.getValues()
-    login(username, password, rememberMe)
+  const authenticate = useCallback(() => {
+    const {username, password} = form.getValues()
+    login(username, password)
       .then(
         () => {setError(''); setSignInOpen(false)},
         (reason) => setError(`Login failed: ${reason}`))
-  }
+  }, [form, login])
 
   return (
     <Dialog open={signInOpen} onOpenChange={setSignInOpen}>
@@ -87,7 +73,7 @@ export default function SignInDialog() {
       <DialogContent className="sm:max-w-[425px]">
         <Spinner loading={loading} label="Signing in..." className="absolute inset-0 bg-black/20 z-50" />
         <FormProvider {...form}>
-          <form method="post" action={getUrl("/login").toString()}>
+          <form>
             <DialogHeader>
               <DialogTitle>Sign in</DialogTitle>
               <DialogDescription>
@@ -133,21 +119,6 @@ export default function SignInDialog() {
                   )}
                 />
               </div>
-              <FormField
-                control={form.control}
-                name="rememberMe"
-                render={({field}) => (
-                  <FormItem>
-                    <FormLabel>Remember me on this computer</FormLabel>
-                      <Checkbox
-                        id="rememberMe"
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
               <p className="col-span-1 text-red-500">{error}</p>
             </div>
             <DialogFooter>

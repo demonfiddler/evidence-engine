@@ -17,7 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import { ApolloClient, createHttpLink, DocumentNode, InMemoryCache } from '@apollo/client'
+import { ApolloClient, DocumentNode, HttpLink, InMemoryCache } from '@apollo/client'
+import { SetContextLink } from '@apollo/client/link/context'
 import { FieldNode, Kind, OperationDefinitionNode, OperationTypeNode } from 'graphql'
 import { LoggerEx, utility } from './logger';
 
@@ -26,14 +27,32 @@ const logger = new LoggerEx(utility, "[graphql-utils] ")
 logger.trace("process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL='%s', process.env.NEXT_PUBLIC_WEB_CLIENT_URL='%s'",
   process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL, process.env.NEXT_PUBLIC_WEB_CLIENT_URL)
 
-const link = createHttpLink({
+export type QueryResult<TData> = {
+  [fieldName : string] : TData
+}
+
+export type MutationResult<TData> = {
+  [fieldName : string] : TData
+}
+
+const httpLink = new HttpLink({
   uri: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL,
-  credentials: 'include'
-});
+  credentials: 'omit' // Authorisation cookies unnecessary now that we're passing a JWT Bearer token.
+})
+const authLink = new SetContextLink(({ headers }) => {
+  const jwtToken = localStorage.getItem("jwt-token")
+  return jwtToken
+    ? {
+      headers: {
+        ...headers,
+        Authorization: `Bearer ${jwtToken}`,
+      },
+    }
+    : headers
+})
 
 export const apolloClient = new ApolloClient({
-  // uri: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL,
-  link,
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache({
     possibleTypes: {
       IBaseEntity: [
@@ -104,7 +123,7 @@ export const apolloClient = new ApolloClient({
  * the operation. The array is empty if no `node` was supplied.
  * @throws `Error` if `node` is specified but no matching operation could be found.
  */
-export function introspect(node: DocumentNode | undefined, operationKind: OperationTypeNode) : string[] {
+export function introspect(node: DocumentNode | undefined, operationKind: OperationTypeNode): string[] {
   if (!node)
     return []
   const opDef = node?.definitions.find(

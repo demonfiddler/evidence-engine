@@ -312,7 +312,7 @@ fragment commentFields on Comment {
 `
 
 const FRAGMENT_OWNED_COMMENT_FIELDS = gql`
-fragment commentFields on Comment {
+fragment ownedCommentFields on Comment {
   parent {
     id
     createdByUser {
@@ -654,6 +654,36 @@ query {
 `
 */
 
+export const CURRENT_USER = gql`
+query CurrentUser {
+  currentUser {
+    id
+    username
+    firstName
+    lastName
+    authorities(aggregation:ALL, format:SHORT)
+  }
+}
+`
+
+export const LOGIN = gql`
+mutation Login($username: String!, $password: String!) {
+  login(
+    username: $username
+    password: $password
+  ) {
+    token
+    user {
+        id
+        username
+        firstName
+        lastName
+        authorities(aggregation:ALL, format:SHORT)
+    }
+  }
+}
+`
+
 export const READ_CLAIMS = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
@@ -754,7 +784,7 @@ query Comments($filter: CommentQueryFilter, $pageSort: PageableInput) {
     ...pageFields
     content {
       ...trackedEntityFields
-      ...commentFields
+      ...ownedCommentFields
     }
   }
 }
@@ -766,7 +796,7 @@ ${FRAGMENT_OWNED_COMMENT_FIELDS}
 mutation CreateComment($input: CommentInput!) {
   createComment(comment: $input) {
     ...trackedEntityFields
-    ...commentFields
+    ...ownedCommentFields
   }
 }
 `
@@ -777,7 +807,7 @@ ${FRAGMENT_OWNED_COMMENT_FIELDS}
 mutation UpdateComment($input: CommentInput!) {
   updateComment(comment: $input) {
     ...trackedEntityFields
-    ...commentFields
+    ...ownedCommentFields
   }
 }
 `
@@ -788,7 +818,7 @@ ${FRAGMENT_OWNED_COMMENT_FIELDS}
 mutation DeleteComment($id: ID!) {
   deleteComment(commentId: $id) {
     ...trackedEntityFields
-    ...commentFields
+    ...ownedCommentFields
   }
 }
 `

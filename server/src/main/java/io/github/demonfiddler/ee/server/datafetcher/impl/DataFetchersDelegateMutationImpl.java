@@ -31,12 +31,16 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
 
 import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateMutation;
 import io.github.demonfiddler.ee.server.model.AbstractLinkableEntity;
 import io.github.demonfiddler.ee.server.model.AbstractTrackedEntity;
+import io.github.demonfiddler.ee.server.model.AuthPayload;
+import io.github.demonfiddler.ee.server.model.AuthorityKind;
 import io.github.demonfiddler.ee.server.model.Claim;
 import io.github.demonfiddler.ee.server.model.ClaimInput;
 import io.github.demonfiddler.ee.server.model.Comment;
@@ -44,15 +48,15 @@ import io.github.demonfiddler.ee.server.model.CommentInput;
 import io.github.demonfiddler.ee.server.model.Declaration;
 import io.github.demonfiddler.ee.server.model.DeclarationInput;
 import io.github.demonfiddler.ee.server.model.EntityKind;
+import io.github.demonfiddler.ee.server.model.EntityLink;
+import io.github.demonfiddler.ee.server.model.EntityLinkInput;
+import io.github.demonfiddler.ee.server.model.Group;
+import io.github.demonfiddler.ee.server.model.GroupInput;
 import io.github.demonfiddler.ee.server.model.ILinkableEntity;
 import io.github.demonfiddler.ee.server.model.ITrackedEntity;
 import io.github.demonfiddler.ee.server.model.Journal;
 import io.github.demonfiddler.ee.server.model.JournalInput;
-import io.github.demonfiddler.ee.server.model.EntityLinkInput;
-import io.github.demonfiddler.ee.server.model.Group;
-import io.github.demonfiddler.ee.server.model.GroupInput;
 import io.github.demonfiddler.ee.server.model.Log;
-import io.github.demonfiddler.ee.server.model.AuthorityKind;
 import io.github.demonfiddler.ee.server.model.Person;
 import io.github.demonfiddler.ee.server.model.PersonInput;
 import io.github.demonfiddler.ee.server.model.Publication;
@@ -64,7 +68,6 @@ import io.github.demonfiddler.ee.server.model.QuotationInput;
 import io.github.demonfiddler.ee.server.model.StatusKind;
 import io.github.demonfiddler.ee.server.model.Topic;
 import io.github.demonfiddler.ee.server.model.TopicInput;
-import io.github.demonfiddler.ee.server.model.EntityLink;
 import io.github.demonfiddler.ee.server.model.TransactionKind;
 import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.model.UserInput;
@@ -85,6 +88,7 @@ import io.github.demonfiddler.ee.server.repository.QuotationRepository;
 import io.github.demonfiddler.ee.server.repository.TopicRepository;
 import io.github.demonfiddler.ee.server.repository.TrackedEntityRepository;
 import io.github.demonfiddler.ee.server.repository.UserRepository;
+import io.github.demonfiddler.ee.server.security.jwt.JwtUtils;
 import io.github.demonfiddler.ee.server.util.CollectionUtils;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
 import io.github.demonfiddler.ee.server.util.SecurityUtils;
@@ -127,7 +131,11 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @Resource
     private EntityUtils entityUtils;
     @Resource
-    protected SecurityUtils securityUtils;
+    private SecurityUtils securityUtils;
+    @Resource
+    private JwtUtils jwtUtils;
+    @Resource
+    private AuthenticationManager authManager;
 
     private void setCreatedFields(ITrackedEntity entity) {
         entity.setStatus(StatusKind.DRA.name());
@@ -246,6 +254,17 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     private AuthenticationCredentialsNotFoundException createUnauthenticatedException(String mutation) {
         return new AuthenticationCredentialsNotFoundException(
             "Authentication is required for the `" + mutation + "' mutation");
+    }
+
+    @Override
+    public Object login(DataFetchingEnvironment dataFetchingEnvironment, String username, String password) {
+        /*Authentication auth = */authManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        User user = userRepository.findByUsername(username).orElseThrow();
+        String token = jwtUtils.generateToken(user);
+        return AuthPayload.builder() //
+            .withToken(token) //
+            .withUser(user) //
+            .build();
     }
 
     @Override

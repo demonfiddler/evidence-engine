@@ -31,7 +31,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { READ_ALL_STATISTICS } from "@/lib/graphql-queries"
-import { useQuery } from "@apollo/client"
+import { useQuery } from "@apollo/client/react"
 import { flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } from "@tanstack/react-table"
 import { BeakerIcon, RotateCw, UserIcon } from 'lucide-react'
 import { cn } from "@/lib/utils"
@@ -52,6 +52,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import LabelEx from "@/app/ui/ext/label-ex"
 import { LoggerEx, page } from "@/lib/logger"
+import { QueryResult } from "@/lib/graphql-utils"
 
 const logger = new LoggerEx(page, "[Dashboard] ")
 
@@ -61,12 +62,12 @@ interface ColumnMetaData {
 }
 
 const entityItems = [
-  { entityKind: "TOP", heading: "Topics", description: "Total topics (top-level + nested)", icon: Bars3BottomRightIcon, property: "topics", href: "/admin/topics"},
-  { entityKind: "CLA", heading: "Claims", description: "Total claims of fact", icon: ExclamationCircleIcon, property: "claims", href: "/claims"},
-  { entityKind: "DEC", heading: "Declarations", description: "Total declarations, public letters, etc.", icon: EnvelopeOpenIcon, property: "declarations", href: "/declarations"},
-  { entityKind: "PER", heading: "Persons", description: "Total scientists, professionals, etc.", icon: UserIcon, property: "persons", href: "/persons"},
-  { entityKind: "PUB", heading: "Publications", description: "Total scientific publications, papers, etc.", icon: BeakerIcon, property: "publications", href: "/publications"},
-  { entityKind: "QUO", heading: "Quotations", description: "Total quotations", icon: ChatBubbleBottomCenterTextIcon, property: "quotations", href: "/quotations"},
+  { entityKind: "TOP", heading: "Topics", description: "Total topics (top-level + nested)", icon: Bars3BottomRightIcon, property: "topics", href: "/admin/topics" },
+  { entityKind: "CLA", heading: "Claims", description: "Total claims of fact", icon: ExclamationCircleIcon, property: "claims", href: "/claims" },
+  { entityKind: "DEC", heading: "Declarations", description: "Total declarations, public letters, etc.", icon: EnvelopeOpenIcon, property: "declarations", href: "/declarations" },
+  { entityKind: "PER", heading: "Persons", description: "Total scientists, professionals, etc.", icon: UserIcon, property: "persons", href: "/persons" },
+  { entityKind: "PUB", heading: "Publications", description: "Total scientific publications, papers, etc.", icon: BeakerIcon, property: "publications", href: "/publications" },
+  { entityKind: "QUO", heading: "Quotations", description: "Total quotations", icon: ChatBubbleBottomCenterTextIcon, property: "quotations", href: "/quotations" },
   // { entityKind: "NOB", heading: "Nobel Prizes", description: "Total Nobel Laureates", icon: NobelPrizeIcon, property: "nobels"},
   // { entityKind: "PRO", heading: "Professors", description: "Total university professors (past and present)", icon: SchoolTeacherIcon, property: "professors"},
   // { entityKind: "PHD", heading: "Doctorates", description: "Total qualified to doctoral level", icon: AcademicCapIcon, property: "doctorates"},
@@ -122,7 +123,7 @@ function getUri(href: string, status?: string, topicId?: string, recursive?: boo
 export default function Dashboard() {
   logger.debug("render")
 
-  const {user} = useAuth()
+  const { user } = useAuth()
   const [status, setStatus] = useState<string>("")
   const [rollup, setRollup] = useState<string>("full")
 
@@ -143,9 +144,11 @@ export default function Dashboard() {
 
   useEffect(refetch, [refetch, status])
 
-  const {loading, data} = result
-  const entityStats = (data?.entityStatistics ?? result.previousData?.entityStatistics ?? empty) as unknown as EntityStatistics[]
-  const rawTopicStats = (data?.topicStatistics ?? result.previousData?.topicStatistics ?? empty) as unknown as TopicStatistics[]
+  const { loading, data } = result
+  const entityStats = ((data as QueryResult<Array<EntityStatistics>>)?.entityStatistics
+    ?? (result.previousData as QueryResult<Array<EntityStatistics>>)?.entityStatistics ?? empty) as unknown as EntityStatistics[]
+  const rawTopicStats = ((data as QueryResult<Array<TopicStatistics>>)?.topicStatistics
+    ?? (result.previousData as QueryResult<Array<TopicStatistics>>)?.topicStatistics ?? empty) as unknown as TopicStatistics[]
   const topicStats = useMemo(() => {
     let newStats;
     if (rollup === "full") {
@@ -179,7 +182,7 @@ export default function Dashboard() {
     <main className="flex flex-col items-start m-4 gap-4">
       <Spinner loading={loading} className="absolute inset-0 bg-black/20 z-50" />
       <div className="flex flex-row items-center">
-        <ChartBarIcon className="w-8 h-8"/>
+        <ChartBarIcon className="w-8 h-8" />
         &nbsp;
         <h1>Dashboard</h1>
       </div>
@@ -190,31 +193,31 @@ export default function Dashboard() {
             <div className="flex items-center gap-2">
               {
                 user
-                ? <>
-                <Label htmlFor="status">Show items with status:</Label>
-                <Select
-                  value={status}
-                  onValueChange={handleStatusChange}
-                >
-                  <SelectTriggerEx
-                    id="status"
-                    disabled={!user}
-                    help="Filter the table to show only topics and counts of linked records with this status.">
-                    <SelectValue placeholder="Status" />
-                  </SelectTriggerEx>
-                  <SelectContent>
-                    {
-                      status
-                      ? <SelectItem value="ALL">-Clear-</SelectItem>
-                      : null
-                    }
-                    <SelectItem value="DRA">Draft</SelectItem>
-                    <SelectItem value="PUB">Published</SelectItem>
-                    <SelectItem value="SUS">Suspended</SelectItem>
-                    <SelectItem value="DEL">Deleted</SelectItem>
-                  </SelectContent>
-                </Select>
-                </>: null
+                  ? <>
+                    <Label htmlFor="status">Show items with status:</Label>
+                    <Select
+                      value={status}
+                      onValueChange={handleStatusChange}
+                    >
+                      <SelectTriggerEx
+                        id="status"
+                        disabled={!user}
+                        help="Filter the table to show only topics and counts of linked records with this status.">
+                        <SelectValue placeholder="Status" />
+                      </SelectTriggerEx>
+                      <SelectContent>
+                        {
+                          status
+                            ? <SelectItem value="ALL">-Clear-</SelectItem>
+                            : null
+                        }
+                        <SelectItem value="DRA">Draft</SelectItem>
+                        <SelectItem value="PUB">Published</SelectItem>
+                        <SelectItem value="SUS">Suspended</SelectItem>
+                        <SelectItem value="DEL">Deleted</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </> : null
               }
               <Label htmlFor="">Aggregation:</Label>
               <RadioGroup defaultValue={rollup} value={rollup} onValueChange={setRollup}>
@@ -239,11 +242,11 @@ export default function Dashboard() {
           <hr />
           <h2>Topic Statistics</h2>
           <div className="flex flex-col gap-2">
-            <Table className="table-fixed box-border" style={{width: `${table.getTotalSize()}px`}}>
+            <Table className="table-fixed box-border" style={{ width: `${table.getTotalSize()}px` }}>
               <TableCaption>Topics and counts of linked records by type</TableCaption>
               <colgroup>
                 {table.getHeaderGroups().map(headerGroup => headerGroup.headers.map(header => (
-                  <col key={header.id} style={{width: `${header.getSize()}px`}} />)))
+                  <col key={header.id} style={{ width: `${header.getSize()}px` }} />)))
                 }
               </colgroup>
               <TableHeader className="border bg-cyan-50">
@@ -271,13 +274,13 @@ export default function Dashboard() {
                         >
                           {
                             (cell.column.columnDef.meta as ColumnMetaData)?.href
-                            ? <Link href={getUri((cell.column.columnDef.meta as ColumnMetaData).href ?? "/", status, row.original.topic.id, rollup === "full")}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Link>
-                            : flexRender(cell.column.columnDef.cell, cell.getContext())
+                              ? <Link href={getUri((cell.column.columnDef.meta as ColumnMetaData).href ?? "/", status, row.original.topic.id, rollup === "full")}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Link>
+                              : flexRender(cell.column.columnDef.cell, cell.getContext())
                           }
                         </TableCell>
                       ))}
                     </TableRow>
-                    ))
+                  ))
                 ) : (
                   <TableRow>
                     <TableCell className="border h-24 text-center" colSpan={columns.length}>

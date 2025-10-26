@@ -51,7 +51,7 @@ import {
 } from "@/lib/graphql-queries"
 import usePageLogic from "@/hooks/use-page-logic"
 import { GroupInput, TrackedEntityQueryFilter, UserInput } from "@/app/model/schema"
-import { useMutation } from "@apollo/client"
+import { useMutation } from "@apollo/client/react"
 import LinkableEntityTableFilter from "@/app/ui/filter/linkable-entity-table-filter"
 import { GlobalContext, SecurityPageTabState } from "@/lib/context"
 import { LoggerEx, page } from "@/lib/logger"

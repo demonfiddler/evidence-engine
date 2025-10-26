@@ -60,6 +60,7 @@ import io.github.demonfiddler.ee.client.GroupInput;
 import io.github.demonfiddler.ee.client.Journal;
 import io.github.demonfiddler.ee.client.JournalInput;
 import io.github.demonfiddler.ee.client.Mutation;
+import io.github.demonfiddler.ee.client.AuthPayload;
 import io.github.demonfiddler.ee.client.AuthorityKind;
 import io.github.demonfiddler.ee.client.Person;
 import io.github.demonfiddler.ee.client.PersonInput;
@@ -399,6 +400,300 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	public GraphQLReactiveRequest getGraphQLRequest(String fullRequest) throws GraphQLRequestPreparationException {
 		return new GraphQLReactiveRequest(fullRequest);
+	}
+
+	/**
+	 * Authenticates the client using JSON Web Token (JWT). This method executes a partial query against the GraphQL
+	 * server. That is, the query that is one of the queries defined in the GraphQL query object. The queryResponseDef
+	 * contains the part of the query that <B><U>is after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL schema):
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Map<String, Object> params = new HashMap<>();
+	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
+	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
+	 * 
+	 * 		Mono<AuthPayload> mono = executor.loginWithBindValues(
+	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 			username, // A value for login's username input parameter
+	 * 			password, // A value for login's password input parameter
+	 * 			params);
+	 * 		AuthPayload field = mono.block();
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the parameter(s) for the query/mutation. The given
+	 * queryResponseDef describes the format of the response of the server response, that is the expected fields of the
+	 * {@link Character} GraphQL type. It can be something like "{ id name }", if you want these fields of this type.
+	 * Please take a look at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
+	 * @param username Parameter for the login field of Mutation, as defined in the GraphQL schema
+	 * @param password Parameter for the login field of Mutation, as defined in the GraphQL schema
+	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
+	 * variable in the defined query/mutation, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
+	 * building the {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "login", graphQLTypeSimpleName = "AuthPayload", javaClass = AuthPayload.class)
+	public Mono<Optional<AuthPayload>> loginWithBindValues(String queryResponseDef, String username, String password,
+		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+
+		LOGGER.debug("Executing mutation 'login': {} ", queryResponseDef);
+		ObjectResponse objectResponse = getLoginResponseBuilder().withQueryResponseDef(queryResponseDef).build();
+		return loginWithBindValues(objectResponse, username, password, parameters);
+	}
+
+	/**
+	 * Authenticates the client using JSON Web Token (JWT).<br/>
+	 * This method executes a partial query against the GraphQL server. That is, the query that is one of the queries
+	 * defined in the GraphQL query object. The queryResponseDef contains the part of the query that <B><U>is
+	 * after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL schema):
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<AuthPayload> mono = executor.login(
+	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 			username, // A value for login's username input parameter
+	 * 			password, // A value for login's password input parameter
+	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 		AuthPayload field = mono.block();
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the parameter(s) for the query/mutation . The
+	 * given queryResponseDef describes the format of the response of the server response, that is the expected fields
+	 * of the {@link Character} GraphQL type. It can be something like "{ id name }", if you want these fields of this
+	 * type. Please take a look at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * @param queryResponseDef The response definition of the query/mutation, in the native GraphQL format (see here
+	 * above)
+	 * @param username Parameter for the login field of Mutation, as defined in the GraphQL schema
+	 * @param password Parameter for the login field of Mutation, as defined in the GraphQL schema
+	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
+	 * variable in the defined query/mutation, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
+	 * building the {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "login", graphQLTypeSimpleName = "AuthPayload", javaClass = AuthPayload.class)
+	public Mono<Optional<AuthPayload>> login(String queryResponseDef, String username, String password,
+		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+
+		LOGGER.debug("Executing mutation 'login': {} ", queryResponseDef);
+		ObjectResponse objectResponse = getLoginResponseBuilder().withQueryResponseDef(queryResponseDef).build();
+		return loginWithBindValues(objectResponse, username, password,
+			this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues));
+	}
+
+	/**
+	 * Authenticates the client using JSON Web Token (JWT).<br/>
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed several times
+	 * 		preparedRequest = executor.getLoginGraphQLRequest(
+	 * 			"mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<AuthPayload> mono = executor.loginWithBindValues(preparedRequest, username, // A value for login's
+	 * 																							// username input
+	 * 																							// parameter
+	 * 			password, // A value for login's password input parameter
+	 * 			params);
+	 * 		AuthPayload field = mono.block();
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
+	 * to return<br/>
+	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
+	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
+	 * {@link getLoginGraphQLRequest(String)} method.
+	 * @param username Parameter for the login field of Mutation, as defined in the GraphQL schema
+	 * @param password Parameter for the login field of Mutation, as defined in the GraphQL schema
+	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
+	 * variable in the defined query/mutation, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "login", graphQLTypeSimpleName = "AuthPayload", javaClass = AuthPayload.class)
+	public Mono<Optional<AuthPayload>> loginWithBindValues(ObjectResponse objectResponse, String username,
+		String password, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Executing mutation 'login' with parameters: {}, {} ", username, password);
+		} else if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Executing mutation 'login'");
+		}
+
+		// Given values for the BindVariables
+		Map<String, Object> parametersLocal = (parameters != null) ? parameters : new HashMap<>();
+		parametersLocal.put("mutationLoginUsername", username);
+		parametersLocal.put("mutationLoginPassword", password);
+
+		return objectResponse //
+			.execReactive(Mutation.class, parametersLocal) //
+			.map(t -> (t.getLogin() == null) ? Optional.empty() : Optional.of(t.getLogin()));
+	}
+
+	/**
+	 * Authenticates the client using JSON Web Token (JWT).<br/>
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<BR/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	MutationExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed several times
+	 * 		preparedRequest = executor.getLoginGraphQLRequest(
+	 * 			"mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		Mono<AuthPayload> mono = executor.login(preparedRequest, username, // A value for login's username input
+	 * 																			// parameter
+	 * 			password, // A value for login's password input parameter
+	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 		AuthPayload field = mono.block();
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
+	 * to return<br/>
+	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
+	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
+	 * {@link getLoginGraphQLRequest(String)} method.
+	 * @param username Parameter for the login field of Mutation, as defined in the GraphQL schema
+	 * @param password Parameter for the login field of Mutation, as defined in the GraphQL schema
+	 * @param paramsAndValues This parameter contains all the name and values for the Bind Variables defined in the
+	 * objectResponse parameter, that must be sent to the server. Optional parameter may not have a value. They will be
+	 * ignored and not sent to the server. Mandatory parameter must be provided in this argument.<BR/>
+	 * This parameter contains an even number of parameters: it must be a series of name and values : (paramName1,
+	 * paramValue1, paramName2, paramValue2...)
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "login", graphQLTypeSimpleName = "AuthPayload", javaClass = AuthPayload.class)
+	public Mono<Optional<AuthPayload>> login(ObjectResponse objectResponse, String username, String password,
+		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+
+		if (LOGGER.isTraceEnabled()) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Executing mutation 'login' with bind variables: ");
+			boolean addComma = false;
+			for (Object o : paramsAndValues) {
+				if (o != null) {
+					sb.append(o.toString());
+					if (addComma)
+						sb.append(", ");
+					addComma = true;
+				}
+			}
+			LOGGER.trace(sb.toString());
+		} else if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Executing mutation 'login' (with bind variables)");
+		}
+
+		Map<String, Object> parameters = this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues);
+		parameters.put("mutationLoginUsername", username);
+		parameters.put("mutationLoginPassword", password);
+
+		return objectResponse //
+			.execReactive(Mutation.class, parameters) //
+			.map(t -> (t.getLogin() == null) ? Optional.empty() : Optional.of(t.getLogin()));
+	}
+
+	/**
+	 * Authenticates the client using JSON Web Token (JWT).<br/>
+	 * Get the {@link Builder} for the AuthPayload, as expected by the login query/mutation.
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public Builder getLoginResponseBuilder() throws GraphQLRequestPreparationException {
+		return new Builder(this.graphQlClient, GraphQLReactiveRequest.class, "login", RequestType.mutation,
+			InputParameter.newBindParameter("", "username", "mutationLoginUsername", InputParameterType.MANDATORY,
+				"String", true, 0, false),
+			InputParameter.newBindParameter("", "password", "mutationLoginPassword", InputParameterType.MANDATORY,
+				"String", true, 0, false));
+	}
+
+	/**
+	 * Authenticates the client using JSON Web Token (JWT).<br/>
+	 * Get the {@link GraphQLReactiveRequest} for the login REACTIVE_EXECUTOR, created with the given Partial request.
+	 * @param partialRequest The Partial GraphQL request, as explained in the
+	 * <A HREF="https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin client
+	 * documentation</A>
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public GraphQLReactiveRequest getLoginGraphQLRequest(String partialRequest)
+		throws GraphQLRequestPreparationException {
+
+		return new GraphQLReactiveRequest(this.graphQlClient, partialRequest, RequestType.mutation, "login",
+			InputParameter.newBindParameter("", "username", "mutationLoginUsername", InputParameterType.MANDATORY,
+				"String", true, 0, false),
+			InputParameter.newBindParameter("", "password", "mutationLoginPassword", InputParameterType.MANDATORY,
+				"String", true, 0, false));
 	}
 
 	/**

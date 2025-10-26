@@ -24,7 +24,8 @@ import ITrackedEntity from "@/app/model/ITrackedEntity"
 import RecordKind from "@/app/model/RecordKind"
 import { BaseEntityInput, LinkableEntityQueryFilter, LogQueryFilter, PageableInput, TrackedEntityQueryFilter } from "@/app/model/schema"
 import { GlobalContext, QueryState } from "@/lib/context"
-import { DocumentNode, useMutation, useQuery } from "@apollo/client"
+import { DocumentNode } from "@apollo/client"
+import { useMutation, useQuery } from "@apollo/client/react"
 import { OperationTypeNode } from "graphql/language"
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
 import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
@@ -36,7 +37,7 @@ import IBaseEntity from "@/app/model/IBaseEntity"
 import { DetailMode, DetailState } from "@/app/ui/details/detail-actions"
 import Authority from "@/app/model/Authority"
 import useAuth from "./use-auth"
-import { introspect } from "@/lib/graphql-utils"
+import { introspect, MutationResult, QueryResult } from "@/lib/graphql-utils"
 import { CREATE_ENTITY_LINK } from "@/lib/graphql-queries"
 import { getRecordLinkProperties, isEmpty, isEqual } from "@/lib/utils"
 import { hook, LoggerEx } from "@/lib/logger"
@@ -324,9 +325,12 @@ export default function usePageLogic<
     logger.error("Operation failed: %o", error)
   }
 
-  let rawPage = readResult.loading
-    ? readResult.previousData?.[readFieldName]
-    : (readFieldName ? readResult.data?.[readFieldName] : undefined) as unknown as IPage<TData> | undefined
+  const data = (readResult.loading
+    ? readResult.previousData
+    : readResult.data) as QueryResult<IPage<TData>>
+  let rawPage = data && readFieldName
+    ? data[readFieldName]
+    : undefined
   const page = useMemo(() => preparePage?.(rawPage) ?? rawPage, [preparePage, rawPage])
 
   // TODO: re-enable reducer logic to avoid query re-execution on completion of a mutation
@@ -394,7 +398,7 @@ export default function usePageLogic<
               [createVarName]: createInput?.(fieldValues)
             },
             onCompleted: (data) => {
-              const newRecord = data[createFieldName]
+              const newRecord = (data as MutationResult<TData>)[createFieldName]
               if (options) {
                 const {
                   linkMasterTopic,

@@ -98,6 +98,8 @@ public class DataFetchersDelegateRegistry {
 	@Autowired
 	DataFetchersDelegateUserPage dataFetchersDelegateUserPage;
 	@Autowired
+	DataFetchersDelegateAuthPayload dataFetchersDelegateAuthPayload;
+	@Autowired
 	DataFetchersDelegateQuery dataFetchersDelegateQuery;
 	@Autowired
 	DataFetchersDelegateMutation dataFetchersDelegateMutation;
@@ -200,6 +202,10 @@ public class DataFetchersDelegateRegistry {
 
 	public DataFetchersDelegateUserPage getDataFetchersDelegateUserPage() {
 		return this.dataFetchersDelegateUserPage;
+	}
+
+	public DataFetchersDelegateAuthPayload getDataFetchersDelegateAuthPayload() {
+		return this.dataFetchersDelegateAuthPayload;
 	}
 
 	public DataFetchersDelegateQuery getDataFetchersDelegateQuery() {

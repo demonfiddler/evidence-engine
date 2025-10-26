@@ -29,7 +29,7 @@ import { getRecordLinkProperties, getReadQuery, getRecordLabel, TO_ENTITY_ID, se
 import RecordKind from "@/app/model/RecordKind"
 import { DetailState } from "./detail-actions"
 import { CREATE_ENTITY_LINK, DELETE_ENTITY_LINK, READ_ENTITY_LINKS, READ_TOPIC_HIERARCHY, UPDATE_ENTITY_LINK } from "@/lib/graphql-queries"
-import { useMutation, useQuery } from "@apollo/client"
+import { useMutation, useQuery } from "@apollo/client/react"
 import { GlobalContext } from "@/lib/context"
 import Topic from "@/app/model/Topic"
 import LogDialog from "../log/log-dialog"
@@ -37,6 +37,8 @@ import SelectTriggerEx from "../ext/select-ex"
 import InputEx from "../ext/input-ex"
 import ButtonEx from "../ext/button-ex"
 import { detail, LoggerEx } from "@/lib/logger"
+import { QueryResult } from "@/lib/graphql-utils"
+import IPage from "@/app/model/IPage"
 
 const logger = new LoggerEx(detail, "[LinkingDetails] ")
 
@@ -127,7 +129,7 @@ export default function LinkingDetails(
   const recordLinks = useMemo(() => getRecordLinks(record), [record])
   const allowLinking = record && state.allowLink && !state.updating
 
-  const rawTopics = (topicsResult.data?.topics.content ?? EMPTY) as Topic[]
+  const rawTopics = ((topicsResult.data as QueryResult<IPage<Topic>>)?.topics.content ?? EMPTY) as Topic[]
   const topics = useMemo(() => {
     const tmpTopics = [] as Topic[]
     setTopicFields("", undefined, rawTopics, tmpTopics)

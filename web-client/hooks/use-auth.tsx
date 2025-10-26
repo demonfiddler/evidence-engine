@@ -18,195 +18,156 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 import Authority from '@/app/model/Authority'
+import AuthPayload from '@/app/model/AuthPayload'
 import User from '@/app/model/User'
+import { CURRENT_USER, LOGIN } from '@/lib/graphql-queries'
 import { hook, LoggerEx } from '@/lib/logger'
 import { isEqual } from '@/lib/utils'
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode, useRef } from 'react'
+import { ApolloClient, ErrorLike } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client/react'
+import { createContext, useContext, useEffect, useCallback, ReactNode, useRef, useState } from 'react'
+import { useInterval, useLocalStorage } from 'usehooks-ts'
+import { jwtDecode } from "jwt-decode"
+import { toast } from 'sonner'
 
 const logger = new LoggerEx(hook, "[useAuth] ")
 
-const GRAPHQL_ENDPOINT_URL = new URL(process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_URL ?? '')
-const baseUrl = getUrl('/').toString()
-const loginUrl = getUrl("/login")
-const logoutUrl = getUrl("/logout")
-const graphQlUrl = getUrl("/graphql")
+type CurrentUserResult = {
+  currentUser?: User
+}
 
-function getUrl(path: string, query?: string, fragment?: string) {
-  const url = new URL(path, GRAPHQL_ENDPOINT_URL)
-  if (query)
-    url.search = query
-  if (fragment)
-    url.hash = fragment
-  return url
+type LoginResult = {
+  login: AuthPayload
 }
 
 interface AuthContextType {
   loading: boolean
+  error?: ErrorLike
+  jwtToken: string | null
   user: User | null
   hasAuthority: (authority: Authority) => boolean
-  login: (username: string, password: string, rememberMe: boolean) => Promise<void>
+  login: (username: string, password: string) => Promise<ApolloClient.MutateResult<LoginResult>>
   logout: () => void
 }
 
 const defaultAuth : AuthContextType = {
   loading: false,
+  error: undefined,
+  jwtToken: null,
   user: null,
   hasAuthority: (authority: string) => false,
   login: (u, p) => {throw new Error("No AuthProvider context")},
   logout: () => {throw new Error("No AuthProvider context")},
 }
 
+const echo = (s: string) =>  s
+
 export const AuthContext = createContext<AuthContextType>(defaultAuth)
-
-function checkResponse(response: Response, action: string) {
-  // As Spring Security is presently configured:
-  // - POST to /login redirects to the base URL, which doesn't exist.
-  // - POST to /logout redirects to the /login page, which does exist.
-  if (response.status != 0 && !response.ok && !response.redirected || !(response.status == 0 && response.type == "opaqueredirect")) {
-    logger.trace("status = %d, statusText = %s, ok = %s, redirected = %s, type = %s", response.status, response.statusText, response.ok, response.redirected, response.type)
-    throw new Error(`${action} failed: status = ${response.status}: ${response.statusText}`)
-  }
-}
-
-async function fetchCsrfToken() {
-  const res = await fetch(loginUrl, { credentials: 'omit' })
-  const html = await res.text()
-  const doc = new DOMParser().parseFromString(html, 'text/html')
-  const _csrf = doc.evaluate('//input[@name="_csrf"]/@value', doc, null, XPathResult.STRING_TYPE, null).stringValue
-  return _csrf
-}
-
-async function login(username: string, password: string, rememberMe: boolean) {
-  const _csrf = await fetchCsrfToken();
-  const response = await fetch(loginUrl, {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    redirect: "manual",
-    body: new URLSearchParams({ username, password, _csrf, "remember-me": rememberMe ? "on" : "" }),
-  });
-  checkResponse(response, "Login")
-  logger.info("Signed in successfully")
-}
-
-async function logout() {
-  const response = await fetch(logoutUrl, {
-    method: "POST",
-    mode: "cors",
-    headers: new Headers({
-      "Accept": "text/html,application/xhtml+xml,application/xml",
-      "Origin": baseUrl
-    }),
-    redirect: "manual",
-    cache: "no-store",
-    credentials: "include",
-  })
-  document.cookie = 'JSESSIONID=; Max-Age=0'
-  document.cookie = 'remember-me=; Max-Age=0'
-  checkResponse(response, "Logout")
-  logger.info("Signed out successfully")
-}
-
-async function fetchUser(requireUser: boolean) {
-  const response = await fetch(graphQlUrl, {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    redirect: "manual",
-    body: JSON.stringify({
-      query: `
-        query {
-          currentUser {
-            id
-            username
-            firstName
-            lastName
-            email
-            country(format:ALPHA_2)
-            notes
-            authorities(aggregation: ALL, format: SHORT)
-          }
-        }
-      `
-    }),
-  })
-  const { data, error } = await response.json()
-  if (error)
-    throw new Error(error)
-  if (requireUser && !data?.currentUser)
-    throw new Error("Invalid credentials")
-  return data?.currentUser
-}
 
 interface AuthProviderProps {
   children: ReactNode
 }
 
 export function AuthProvider({children} : AuthProviderProps) {
-  logger.debug("AuthProvider render")
+  logger.debug("AuthProvider")
 
+  // NOTE: the default (de)serializers stupidly wrap the value in double quotes (duh!)
+  const [jwtToken, setJwtToken] = useLocalStorage("jwt-token", '', { serializer: echo, deserializer: echo })
+  const [jwtExpiryInterval, setJwtExpiryInterval] = useState<number | null>(null)
   const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
+  const currentUserResult = useQuery<CurrentUserResult>(CURRENT_USER)
+  const [loginOp, loginOpResult] = useMutation<LoginResult>(LOGIN)
 
-  const initialize = useCallback(async () => {
-    try {
-      const me = await fetchUser(false)
-      setUser(me)
-      logger.trace("initialize: user initialised to %o", me)
-    } catch (e) {
-      logger.error("Caught exception: %o", String(e))
-      setUser(null)
-    } finally {
-      setLoading(false)
+  const handleExpiry = useCallback(() => {
+    logger.info("AuthProvider.handleExpiry after %s ms", jwtExpiryInterval)
+    toast.warning("Your authentication token has expired. Please sign in again to continue editing.")
+    setJwtToken('')
+    setUser(null)
+    setJwtExpiryInterval(null)
+  }, [])
+  useInterval(handleExpiry, jwtExpiryInterval)
+
+  const parseToken = useCallback((token: string | null) => {
+    logger.debug("AuthProvider.parseToken")
+    let expiryInterval = null
+    if (token) {
+      const decoded = jwtDecode(token)
+      logger.trace("AuthProvider.parseToken: token=%o", decoded)
+      if (decoded.exp) {
+        expiryInterval = decoded.exp * 1000 - Date.now()
+        if (expiryInterval <= 0) {
+          logger.debug("AuthProvider.parseToken: token has already expired")
+          setJwtToken('')
+          setUser(null)
+          expiryInterval = null
+        }
+      }
     }
+    setJwtExpiryInterval(expiryInterval)
   }, [])
 
-  useEffect(() => { initialize() }, [initialize])
+  // If there is initially a JWT token in local storage:
+  // - parse it
+  // - set an expiration timer
+  // - fetch and store the current user
+  const init = useCallback(() => {
+    logger.debug("AuthProvider.init: jwtToken=%o, user=%o", jwtToken, user)
+    if (jwtToken) {
+      parseToken(jwtToken)
+      // At first sight one might think that calling refetch() would result in a total of two executions of the
+      // CURRENT_USER query - one from the initial call to useQuery() and the second from the call to refetch().
+      // However, in practice and for reasons unknown, only one currentUser call is observed in the network log.
+      currentUserResult.refetch().then(cur => {
+        logger.debug("AuthProvider.init.refetch: currentUser=%o", user)
+        setUser(cur.data?.currentUser ?? null)
+      })
+    }
+  }, [jwtToken, user, parseToken, currentUserResult])
+  useEffect(init, [])
 
-  // const prevUser = useRef(user)
-  // if (user !== prevUser.current) {
-  //   if (isEqual(user, prevUser.current))
-  //     logger.trace("render: user has changed but is equal in value: %o", prevUser.current)
-  //   else
-  //     logger.trace("render: user has changed from %o to %o", prevUser.current, user)
-  //   prevUser.current = user
-  // }
+  const login = useCallback((username: string, password: string) => {
+    logger.debug("AuthProvider.login")
+    const loginPromise = loginOp({
+      variables: {
+        username,
+        password
+      }
+    })
+    loginPromise.then(lr => {
+      logger.trace("AuthProvider.login complete: authPayload=%o", lr.data?.login)
+      const token = lr.data?.login.token ?? ''
+      parseToken(token)
+      setJwtToken(token)
+      setUser(lr.data?.login.user ?? null)
+    })
+    return loginPromise
+  }, [loginOp, parseToken, setJwtToken])
+
+  const logout = useCallback(() => {
+    logger.debug("AuthProvider.logout")
+    setJwtToken('')
+    setJwtExpiryInterval(null)
+    setUser(null)
+    // Also clear basic auth cookies, otherwise the server could treat the client as still authenticated.
+    document.cookie = "JSESSIONID=; Max-Age=0"
+    document.cookie = "remember-me=; Max-Age=0"
+  }, [setJwtToken])
+
+  const loading = currentUserResult.loading || loginOpResult.loading
+  const error = currentUserResult.error || loginOpResult.error
+
   const hasAuthority = useCallback((authority: Authority) => user?.authorities?.includes(authority) ?? false, [user])
-  // const prevHasAuthority = useRef(hasAuthority)
-  // if (hasAuthority !== prevHasAuthority.current) {
-  //   logger.trace("render: hasAuthority has changed from %s to %s", typeof prevHasAuthority.current, typeof hasAuthority)
-  // }
-  logger.trace("render: hasAuthority=%s", typeof hasAuthority)
 
-  const doLogin = useCallback(async (username: string, password: string, rememberMe: boolean) => {
-    setLoading(true)
-    try {
-      await login(username, password, rememberMe)
-      const me = await fetchUser(true)
-      setUser(me)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  const doLogout = useCallback(async () => {
-    setLoading(true)
-    try {
-      await logout()
-    } finally {
-      setLoading(false)
-      setUser(null)
-    }
-  }, [])
+  logger.trace("AuthProvider: jwtToken=%s, user=%o", jwtToken, user)
 
   // For reasons unknown, the previous useMemo approach wasn't working and (according to WhyDidYouRender) returned different objects with equal values.
+  let auth = { loading, error, jwtToken, user, hasAuthority, login, logout } as AuthContextType
   const prevAuth = useRef(defaultAuth)
-  let auth = { loading, user, hasAuthority, login: doLogin, logout: doLogout } as AuthContextType
   if (isEqual(auth, prevAuth.current)) {
-    logger.trace("render: reusing previous auth %o", prevAuth.current)
+    logger.trace("AuthProvider: reusing previous auth %o", prevAuth.current)
     auth = prevAuth.current
   } else {
-    logger.trace("render: auth has changed from %o to %o", prevAuth.current, auth)
+    logger.trace("AuthProvider: auth has changed from %o to %o", prevAuth.current, auth)
     prevAuth.current = auth
   }
 

@@ -20,21 +20,10 @@
 package io.github.demonfiddler.ee.client.util;
 
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_SINGLETON;
-import static org.springframework.http.HttpHeaders.CONTENT_LENGTH;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.HttpHeaders.SET_COOKIE;
-import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XHTML_XML;
-import static org.springframework.http.MediaType.APPLICATION_XML;
-import static org.springframework.http.MediaType.TEXT_HTML;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
 import java.util.Objects;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,14 +31,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.graphql.client.HttpGraphQlClient;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException.Forbidden;
 
 import com.graphql_java_generator.exception.GraphQLRequestExecutionException;
 import com.graphql_java_generator.exception.GraphQLRequestPreparationException;
 
+import io.github.demonfiddler.ee.client.AuthPayload;
 import io.github.demonfiddler.ee.client.User;
 
 /**
@@ -61,17 +49,18 @@ public class Authenticator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Authenticator.class);
 
-    private static final String REQUEST_SPEC = """
+    private static final String JWT_RESPONSE_SPEC = """
         {
-            id
-            username
-            firstName
-            lastName
+            token
+            user {
+                id
+                username
+                firstName
+                lastName
+                authorities(aggregation:ALL, format:SHORT)
+            }
         }
         """;
-    private static final String LOGIN_BODY = "username=%s&password=%s&remember-me=on&_csrf=%s";
-    private static final String JSESSIONID = "JSESSIONID";
-    private static final String REMEMBER_ME = "remember-me";
 
     @Autowired
     @Qualifier("webClient")
@@ -93,8 +82,7 @@ public class Authenticator {
 
     private String url;
     private String username;
-    private String jSessionId;
-    private String rememberMe;
+    private String jwtToken;
     private User user;
 
     /** Returns the logged-in user. */
@@ -150,69 +138,29 @@ public class Authenticator {
 
         this.url = url;
         this.username = username;
-        URI baseUri = getUri(null, null, null);
-        URI loginUri = getUri("/login", null, null);
 
-        // First {@code GET} the login form in order to extract the _csrf token.
-        ResponseEntity<String> loginResponse = webClient //
-            .get() //
-            .uri(loginUri) //
-            .accept(TEXT_HTML, APPLICATION_XHTML_XML, APPLICATION_XML) //
-            .header("Origin", baseUri.toASCIIString()) //
-            .retrieve() //
-            .toEntity(String.class) //
-            .block();
-        if (LOGGER.isTraceEnabled())
-            LOGGER.trace("Retrieved login page from {}", loginUri.toASCIIString());
-        else
-            LOGGER.debug("Retrieved login page");
-
-        extractCookies(loginResponse);
-        String body = loginResponse.getBody();
-        Document loginDoc = Jsoup.parse(body);
-        String _csrf = loginDoc.selectXpath("/html/body/div/form/input[@name='_csrf']").attr("value");
-        LOGGER.trace("Found cookie JSESSIONID={}; _csrf={}", jSessionId, _csrf);
-
-        // Now we can POST the authentication request.
-        String authBody = String.format(LOGIN_BODY, username, password, _csrf);
-        ResponseEntity<Void> authResponse = webClient //
-            .post() //
-            .uri(loginUri) //
-            .accept(TEXT_HTML, APPLICATION_XHTML_XML, APPLICATION_XML) //
-            .header(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE) //
-            .header(CONTENT_LENGTH, String.valueOf(authBody.length())) //
-            .header("Origin", baseUri.toASCIIString()) //
-            .header("Cookie", JSESSIONID + '=' + jSessionId) //
-            .bodyValue(authBody) //
-            .retrieve() //
-            .toBodilessEntity() //
-            .block();
-        extractCookies(authResponse);
-        if (LOGGER.isTraceEnabled())
-            LOGGER.trace("Received authentication cookies JSESSIONID={}, remember-me={}", jSessionId, rememberMe);
-        else
-            LOGGER.debug("Received authentication response");
+        try {
+            AuthPayload authPayload = mutationExecutor.login(JWT_RESPONSE_SPEC, username, password);
+            jwtToken = authPayload.getToken();
+            user = authPayload.getUser();
+        } catch (GraphQLRequestPreparationException e) {
+            throw new IllegalStateException(e);
+        } catch (GraphQLRequestExecutionException e) {
+            throw new IllegalArgumentException("Failed to authenticate user: " + username, e);
+        }
 
         if (isAuthenticated()) {
             webClient = webClient.mutate() //
-                .defaultCookie(JSESSIONID, jSessionId) //
-                .defaultCookie(REMEMBER_ME, rememberMe) //
+                .defaultHeader(AUTHORIZATION, "Bearer " + jwtToken) //
                 .build();
             updateExecutors();
-        }
-
-        try {
-            user = queryExecutor.userByUsername(REQUEST_SPEC, username);
-        } catch (GraphQLRequestPreparationException | GraphQLRequestExecutionException e) {
-            jSessionId = rememberMe = null;
-            throw new IllegalArgumentException("Failed to retrieve user: " + username, e);
         }
 
         return isAuthenticated();
     }
 
     /**
-     * Signs out of the server and forgets authentication data.
+     * Forgets authentication data.
      */
     public void logout() {
         if (!isAuthenticated()) {
@@ -220,26 +168,9 @@ public class Authenticator {
             return;
         }
 
-        URI logoutUri = getUri("/logout", null, null);
-        try {
-            webClient //
-                .post() //
-                .uri(logoutUri) //
-                .accept(TEXT_HTML, APPLICATION_XHTML_XML, APPLICATION_XML) //
-                .retrieve() //
-                .toBodilessEntity() //
-                .block();
-        } catch (Forbidden e) {
-            // Expected on logout.
-        }
-        webClient = webClient.mutate() //
-            .defaultCookies(m -> {
-                m.remove(JSESSIONID);
-                m.remove(REMEMBER_ME);
-            }) //
-            .build();
+        webClient = webClient.mutate().defaultHeaders(m -> m.remove(AUTHORIZATION)).build();
         updateExecutors();
-        url = username = jSessionId = rememberMe = null;
+        url = username = jwtToken = null;
         user = null;
 
         LOGGER.debug("Logged out");
@@ -250,41 +181,7 @@ public class Authenticator {
      * @return {@code true} if authenticated, otherwise {@code false}.
      */
     public boolean isAuthenticated() {
-        return jSessionId != null && rememberMe != null;
-    }
-
-    private URI getUri(String path, String query, String fragment) {
-        URI uri = URI.create(url);
-        String scheme = uri.getScheme();
-        String userInfo = uri.getUserInfo();
-        String host = uri.getHost();
-        int port = uri.getPort();
-        try {
-            return new URI(scheme, userInfo, host, port, path, query, fragment);
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException("Failed to construct URI", e);
-        }
-    }
-
-    private void extractCookies(ResponseEntity<?> response) {
-        jSessionId = rememberMe = null;
-        List<String> rawCookies = response.getHeaders().get(SET_COOKIE);
-        if (rawCookies != null) {
-            for (String rawCookie : rawCookies) {
-                int equals = rawCookie.indexOf("=");
-                int semi = rawCookie.indexOf(";", equals);
-                String name = rawCookie.substring(0, equals);
-                String value = rawCookie.substring(equals + 1, semi);
-                switch (name) {
-                    case JSESSIONID:
-                        jSessionId = value;
-                        break;
-                    case REMEMBER_ME:
-                        rememberMe = value;
-                        break;
-                }
-            }
-        }
+        return jwtToken != null;
     }
 
     private void updateExecutors() {

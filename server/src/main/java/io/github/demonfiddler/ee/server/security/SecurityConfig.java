@@ -17,7 +17,7 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-package io.github.demonfiddler.ee.server;
+package io.github.demonfiddler.ee.server.security;
 
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.RememberMeAuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -51,6 +52,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import io.github.demonfiddler.ee.server.repository.JdbcTokenRepositoryImplEx;
 import io.github.demonfiddler.ee.server.repository.JdbcUserDetailsManagerEx;
+import io.github.demonfiddler.ee.server.security.jwt.JwtAuthenticationFilter;
+import io.github.demonfiddler.ee.server.security.jwt.JwtUtils;
 import io.github.demonfiddler.ee.server.util.ProfileUtils;
 
 @Configuration
@@ -65,6 +68,8 @@ public class SecurityConfig {
     @Autowired
     private ProfileUtils profileUtils;
     @Autowired
+    private JwtUtils jwtUtils;
+    @Autowired
     private DataSource dataSource;
     private JdbcUserDetailsManager userDetailsManager;
     private ProviderManager authenticationManager;
@@ -73,6 +78,7 @@ public class SecurityConfig {
     private JdbcTokenRepositoryImplEx tokenRepository;
     private PersistentTokenBasedRememberMeServices rememberMeServices;
     private UsernamePasswordAuthenticationFilter usernamePasswordAuthenticationFilter;
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
     private RememberMeAuthenticationFilter rememberMeFilter;
 
     private void init() {
@@ -90,7 +96,14 @@ public class SecurityConfig {
             usernamePasswordAuthenticationFilter = new UsernamePasswordAuthenticationFilter();
             usernamePasswordAuthenticationFilter.setAuthenticationManager(authenticationManager);
             usernamePasswordAuthenticationFilter.setRememberMeServices(rememberMeServices);
+            jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtils);
         }
+    }
+
+    @Bean
+    AuthenticationManager authenticationManager() {
+        init();
+        return authenticationManager;
     }
 
     @Bean
@@ -115,6 +128,12 @@ public class SecurityConfig {
     UsernamePasswordAuthenticationFilter usernamePasswordAuthenticationFilter() {
         init();
         return usernamePasswordAuthenticationFilter;
+    }
+
+    @Bean
+    JwtAuthenticationFilter jwtAuthenticationFilter() {
+        init();
+        return jwtAuthenticationFilter;
     }
 
     @Bean
@@ -158,20 +177,20 @@ public class SecurityConfig {
              // .subjectPrincipalRegex("CN=(.*?),") //
              // ) //
             .cors(Customizer.withDefaults()) // enables CORS support
-            .csrf(csrf -> csrf.disable())    // disables CSRF (safe for stateless APIs)
+            .csrf(csrf -> csrf.disable()) // disables CSRF (safe for stateless APIs)
             // .csrf(customizer -> customizer //
-            //     .ignoringRequestMatchers("/graphql")) //
+            // .ignoringRequestMatchers("/graphql")) //
             // .csrf(csrf -> csrf.disable()) // optional, depending on your setup
             .authenticationManager(authenticationManager) //
             .authenticationProvider(daoAuthenticationProvider) //
             .addFilterBefore(usernamePasswordAuthenticationFilter, AnonymousAuthenticationFilter.class) //
             .addFilterBefore(rememberMeFilter, UsernamePasswordAuthenticationFilter.class) //
+            .addFilterBefore(jwtAuthenticationFilter, RememberMeAuthenticationFilter.class) //
             .authorizeHttpRequests(customizer -> {
                 customizer //
                     .requestMatchers("/graphiql").authenticated() //
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // allow preflight
-                    .requestMatchers(HttpMethod.POST, "/graphql").permitAll()
-                    .anyRequest().authenticated();
+                    .requestMatchers(HttpMethod.POST, "/graphql").permitAll().anyRequest().authenticated();
             }) //
             .rememberMe(customizer -> {
                 customizer.rememberMeServices(rememberMeServices);

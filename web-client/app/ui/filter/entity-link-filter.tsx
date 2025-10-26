@@ -38,7 +38,7 @@ import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline'
 import Topic from "@/app/model/Topic"
 import { GlobalContext } from '@/lib/context'
 import { findTopic, setTopicFields } from "@/lib/utils"
-import { useQuery } from "@apollo/client"
+import { useQuery } from "@apollo/client/react"
 import { READ_TOPIC_HIERARCHY } from "@/lib/graphql-queries"
 import ButtonEx from "../ext/button-ex"
 import Help from "../misc/help"
@@ -48,6 +48,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { LinkableEntityQueryFilter } from "@/app/model/schema"
 import useLinkableEntityQueryFilter from "@/hooks/use-linkable-entity-query-filter"
 import { filter, LoggerEx } from "@/lib/logger"
+import IPage from "@/app/model/IPage"
+import { QueryResult } from "@/lib/graphql-utils"
 
 const logger = new LoggerEx(filter, "[EntityLinkFilter] ")
 
@@ -135,7 +137,7 @@ export default function EntityLinkFilter() {
     logger.trace("memo")
     const outTopics: Topic[] = []
     if (result.data) {
-      const inTopics = result.data.topics.content ?? []
+      const inTopics = (result.data as QueryResult<IPage<Topic>>).topics.content ?? []
       setTopicFields("", undefined, inTopics, outTopics)
     }
     return outTopics

@@ -24,6 +24,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.graphql.execution.BatchLoaderRegistry;
 
+import io.github.demonfiddler.ee.server.controller.AuthPayloadController;
 import io.github.demonfiddler.ee.server.controller.ClaimController;
 import io.github.demonfiddler.ee.server.controller.ClaimPageController;
 import io.github.demonfiddler.ee.server.controller.CommentController;
@@ -61,14 +62,15 @@ import io.github.demonfiddler.ee.server.controller.UserPageController;
 
 /**
  * This Spring autoconfiguration class is used to declare default beans, that can then be overridden, thanks to the
- * @Primary Spring annotation.
+ * <code>@Primary</code> Spring annotation.
  */
 @AutoConfiguration
 public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>Claim</code>. This default Spring can be
-	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>ClaimController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -81,7 +83,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>ClaimPage</code>. This default Spring can be
-	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>ClaimPageController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -93,11 +96,12 @@ public class GraphQLPluginAutoConfiguration {
 	}
 
 	/**
-	 * Default declaration of the spring controller for the entity <code>Comment</code>. This
-	 * default spring can be overridden by declaring a Spring Bean of same type and name, that has the @Primary spring annotation.<br/>
-	 * The <code>CommentController</code> bean must be a valid bean that can be discovered by
-	 * the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be discovered. So it 
-	 * is excluded in the {@link GraphQLServerMain} configuration.
+	 * Default declaration of the spring controller for the entity <code>Comment</code>. This default spring can be
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> spring
+	 * annotation.<br/>
+	 * The <code>CommentController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "commentController")
@@ -106,11 +110,12 @@ public class GraphQLPluginAutoConfiguration {
 	}
 
 	/**
-	 * Default declaration of the spring controller for the entity <code>CommentPage</code>. This
-	 * default spring can be overridden by declaring a Spring Bean of same type and name, that has the @Primary spring annotation.<br/>
-	 * The <code>CommentPageController</code> bean must be a valid bean that can be discovered by
-	 * the <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be discovered. So it 
-	 * is excluded in the {@link GraphQLServerMain} configuration.
+	 * Default declaration of the spring controller for the entity <code>CommentPage</code>. This default spring can be
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> spring
+	 * annotation.<br/>
+	 * The <code>CommentPageController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "commentPageController")
@@ -120,7 +125,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>Declaration</code>. This default Spring can be
-	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>DeclarationController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -133,7 +139,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>Declaration</code>. This default Spring can be
-	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>DeclarationPageController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -146,7 +153,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>EntityLink</code>. This default Spring can be
-	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>EntityLinkController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
@@ -159,7 +167,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>EntityLinkPage</code>. This default Spring can
-	 * be overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * be overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>EntityLinkPageController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
@@ -172,7 +181,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>Journal</code>. This default Spring can be
-	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>JournalController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -185,7 +195,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>JournalPage</code>. This default Spring can be
-	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>JournalPageController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -198,7 +209,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>Log</code>. This default Spring can be
-	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>LogController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -211,7 +223,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>LogPage</code>. This default Spring can be
-	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>LogPageController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -224,7 +237,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>Person</code>. This default Spring can be
-	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>PersonController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -237,7 +251,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>PersonPage</code>. This default Spring can be
-	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>PersonPageController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -250,7 +265,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>Publication</code>. This default Spring can be
-	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>PublicationController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -263,7 +279,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>PublicationPage</code>. This default Spring can
-	 * be overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * be overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>PublicationPageController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -276,7 +293,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>Publisher</code>. This default Spring can be
-	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>PublisherController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -289,7 +307,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>PublisherPage</code>. This default Spring can
-	 * be overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * be overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>PublisherPageController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -302,7 +321,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>Quotation</code>. This default Spring can be
-	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>QuotationController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -315,7 +335,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>QuotationPage</code>. This default Spring can
-	 * be overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * be overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>QuotationPageController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -328,7 +349,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>EntityStatistics</code>. This default Spring
-	 * can be overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * can be overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>EntityStatisticsController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
@@ -341,7 +363,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>TopicStatistics</code>. This default Spring can
-	 * be overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * be overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>TopicStatisticsController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
@@ -354,7 +377,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>Topic</code>. This default Spring can be
-	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>TopicController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -367,7 +391,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>TopicPage</code>. This default Spring can be
-	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>TopicPageController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -380,7 +405,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>User</code>. This default Spring can be
-	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>UserController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -393,7 +419,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>UserPage</code>. This default Spring can be
-	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>UserPageController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -406,7 +433,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>Group</code>. This default Spring can be
-	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>GroupController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -419,7 +447,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>GroupPage</code>. This default Spring can be
-	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>GroupPageController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -431,8 +460,23 @@ public class GraphQLPluginAutoConfiguration {
 	}
 
 	/**
+	 * Default declaration of the Spring controller for the entity <code>AuthPayload</code>. This default Spring can be
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
+	 * The <code>AuthPayloadController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 */
+	@Bean
+	@ConditionalOnMissingBean(name = "authPayloadController")
+	AuthPayloadController authPayloadController(BatchLoaderRegistry registry) {
+		return new AuthPayloadController();
+	}
+
+	/**
 	 * Default declaration of the Spring controller for the entity <code>Query</code>. This default Spring can be
-	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>QueryController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -445,7 +489,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>Mutation</code>. This default Spring can be
-	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>MutationController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -458,7 +503,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>IBaseEntity</code>. This default Spring can be
-	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>IBaseEntityController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -471,7 +517,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>ITrackedEntity</code>. This default Spring can
-	 * be overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * be overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>ITrackedEntityController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -484,7 +531,8 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>ILinkableEntity</code>. This default Spring can
-	 * be overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
+	 * be overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
 	 * The <code>ILinkableEntityController</code> bean must be a valid bean that can be discovered by the
 	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
 	 * discovered. So it is excluded in the {@link EvidenceEngineServer} configuration.
@@ -497,10 +545,11 @@ public class GraphQLPluginAutoConfiguration {
 
 	/**
 	 * Default declaration of the Spring controller for the entity <code>IPage</code>. This default Spring can be
-	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary Spring annotation.<br/>
-	 * The <code>IPageController</code> bean must be a valid bean that can be
-	 * discovered by the <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But
-	 * it must not be discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 * overridden by declaring a Spring Bean of same type and name, that has the <code>@Primary</code> Spring
+	 * annotation.<br/>
+	 * The <code>IPageController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> Spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "iPageController")

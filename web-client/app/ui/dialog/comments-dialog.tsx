@@ -34,7 +34,7 @@ import ButtonEx from "../ext/button-ex"
 import { cn, formatDate, toDate } from "@/lib/utils"
 import { dialog, LoggerEx } from "@/lib/logger"
 import { CREATE_COMMENT, DELETE_COMMENT, READ_OWNED_COMMENTS, UPDATE_COMMENT } from "@/lib/graphql-queries"
-import { useMutation, useQuery } from "@apollo/client"
+import { useMutation, useQuery } from "@apollo/client/react"
 import { CommentQueryFilter } from "@/app/model/schema"
 import { KeyboardEvent, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
@@ -51,6 +51,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import CommentDialogFilter from "../filter/comment-dialog-filter"
 import { GlobalContext, QueryState } from "@/lib/context"
 import { Toggle } from "@/components/ui/toggle"
+import { QueryResult } from "@/lib/graphql-utils"
 
 const logger = new LoggerEx(dialog, "[CommentsDialog] ")
 
@@ -166,7 +167,9 @@ export default function CommentsDialog({
       refetch()
   }, [filter, refetch])
 
-  const comments = targetId && readResult.data?.comments ? (readResult.data?.comments as IPage<Comment>).content : EMPTY
+  const comments = targetId && (readResult.data as QueryResult<IPage<Comment>>)?.comments //
+    ? ((readResult.data as QueryResult<IPage<Comment>>)?.comments).content //
+    : EMPTY
 
   const commentCreatorRef = useRef('')
   commentCreatorRef.current = ''

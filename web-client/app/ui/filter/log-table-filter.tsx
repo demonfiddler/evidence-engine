@@ -25,7 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ChangeEvent, useCallback, useContext, useEffect, useRef, useState } from "react"
 import { formatDate, isEqual } from "@/lib/utils"
 import { READ_USERS } from "@/lib/graphql-queries"
-import { useQuery } from "@apollo/client"
+import { useQuery } from "@apollo/client/react"
 import { toast } from "sonner"
 import IPage from "@/app/model/IPage"
 import User from "@/app/model/User"
@@ -39,6 +39,7 @@ import { GlobalContext, QueryState } from "@/lib/context"
 import ButtonEx from "../ext/button-ex"
 import { RotateCw } from "lucide-react"
 import { filter, LoggerEx } from "@/lib/logger"
+import { QueryResult } from "@/lib/graphql-utils"
 
 const logger = new LoggerEx(filter, "[LogTableFilter] ")
 
@@ -173,7 +174,7 @@ export default function LogTableFilter(
     toast.error(`Operation failed:\n\n${result.error.message}`)
     logger.error("Operation failed: %o", result.error)
   }
-  const users = (result.data?.users as IPage<User>)?.content
+  const users = (result.data as QueryResult<IPage<User>>)?.users?.content
 
   return (
     <div className="flex flex-col gap-2">
