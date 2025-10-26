@@ -565,7 +565,7 @@ export default function RootLayout({
         <ApolloProvider client={apolloClient}>
           <AuthProvider>
             <GlobalContext value={globalContext}>
-              <Toaster position="top-center" expand />
+              <Toaster position="top-center" duration={8000} closeButton={true} expand />
               <Suspense>
                 {children}
               </Suspense>

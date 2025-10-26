@@ -24,7 +24,7 @@ import ITrackedEntity from "@/app/model/ITrackedEntity"
 import RecordKind from "@/app/model/RecordKind"
 import { BaseEntityInput, LinkableEntityQueryFilter, LogQueryFilter, PageableInput, TrackedEntityQueryFilter } from "@/app/model/schema"
 import { GlobalContext, QueryState } from "@/lib/context"
-import { DocumentNode } from "@apollo/client"
+import { DocumentNode, ErrorLike } from "@apollo/client"
 import { useMutation, useQuery } from "@apollo/client/react"
 import { OperationTypeNode } from "graphql/language"
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
@@ -282,6 +282,7 @@ export default function usePageLogic<
   const [updateOp, updateResult] = updateMutation ? useMutation(updateMutation, { refetchQueries: [readQuery] }) : []
   const [deleteOp, deleteResult] = deleteMutation ? useMutation(deleteMutation, { refetchQueries: [readQuery] }) : []
   const [linkOp, linkResult] = useMutation(CREATE_ENTITY_LINK, { refetchQueries: [readQuery] })
+  const [error, setError] = useState<ErrorLike>()
 
   const readResult = useQuery(
     readQuery,
@@ -298,6 +299,13 @@ export default function usePageLogic<
         pageSort
     })
   }, [readResult, filter, pageSort])
+  const prevReadErrorRef = useRef<ErrorLike | undefined>(undefined)
+  useEffect(() => {
+    if (readResult.error !== prevReadErrorRef.current) {
+      prevReadErrorRef.current = readResult.error
+      setError(readResult.error)
+    }
+  }, [readResult.error, prevReadErrorRef])
 
   // Whenever filter or pagination (actually) changes, update query string and ask Apollo to refetch.
   const prevFilter = useRef<TFilter>(filter);
@@ -317,7 +325,6 @@ export default function usePageLogic<
   }, [loadingPathWithSearchParamsRef, filter, manualPagination && pageSort, updateUrlQuery, refetch]);
 
   const loading = (readResult.loading || createResult?.loading || updateResult?.loading || deleteResult?.loading || linkResult?.loading) ?? false
-  const error = readResult.error || createResult?.error || updateResult?.error || deleteResult?.error || linkResult?.error
 
   if (error) {
     // TODO: display user-friendly error notification
@@ -385,6 +392,8 @@ export default function usePageLogic<
     values: origFieldValues,
   })
   const handleFormAction = useCallback((command: string, fieldValues?: TFieldValues, options?: Options) => {
+    setError(undefined)
+
     // TODO: update Apollo cache?
     switch (command) {
       case "new":
@@ -448,6 +457,7 @@ export default function usePageLogic<
               setSelectedRecord(newRecord)
               setMode("view")
             },
+            onError: (error) => setError(error),
           })
         }
         break
@@ -460,6 +470,7 @@ export default function usePageLogic<
             onCompleted: () => {
               setMode("view")
             },
+            onError: (error) => setError(error),
           })
         }
         break
@@ -467,7 +478,8 @@ export default function usePageLogic<
         deleteOp?.({
           variables: {
             [deleteVarName]: selectedRecordId
-          }
+          },
+          onError: (error) => setError(error),
         })
       case "reset":
         form?.reset(fieldValues ?? origFieldValues)
