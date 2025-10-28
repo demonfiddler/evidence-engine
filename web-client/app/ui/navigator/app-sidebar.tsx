@@ -84,7 +84,11 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <Link className="mb-2 flex items-end justify-start rounded-md bg-blue-500 p-4 h-20 md:h-40" href="/">
+        <Link
+          className="mb-2 flex items-end justify-start rounded-md bg-blue-500 p-4 h-20 md:h-40"
+          href="/"
+          title="Navigate to the Home page"
+        >
           <div className="text-white">
             <Logo />
           </div>
@@ -98,7 +102,7 @@ export function AppSidebar() {
               {appItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link href={item.url}>
+                    <Link href={item.url} title={`Navigate to the ${item.title} page`}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>
@@ -117,7 +121,7 @@ export function AppSidebar() {
                 {adminItems.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
-                      <Link href={item.url}>
+                      <Link href={item.url} title={`Navigate to the ${item.title} page`}>
                         <item.icon />
                         <span>{item.title}</span>
                       </Link>

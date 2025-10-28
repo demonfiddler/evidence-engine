@@ -86,7 +86,7 @@ public class CustomCommentRepositoryImpl extends AbstractCustomRepositoryImpl im
         boolean isSortedOnUpdatedByUsername = false;
 
         // Unauthenticated queries should only return published results.
-        // TODO: Consider whether this is the best place to enforce the 'anonymous = Published only' rule.
+        // Consider whether this is the best place to enforce the 'anonymous = Published only' policy.
         if (securityUtils.getCurrentUsername().equals("anonymousUser")) {
             if (filter == null)
                 filter = new CommentQueryFilter();

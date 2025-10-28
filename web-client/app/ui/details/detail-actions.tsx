@@ -203,6 +203,7 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
   return (
     <div className={cn("self-start flex flex-col gap-2 items-center", className)}>
       <ButtonEx
+        id="new-cancel"
         type="button"
         onClick={handleNewOrCancel}
         outerClassName="justify-center w-full"
@@ -217,6 +218,7 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
         {state.updating ? 'Cancel' : 'New'}
       </ButtonEx>
       <ButtonEx
+        id="edit-save"
         type="button"
         onClick={handleEditOrSave}
         outerClassName="justify-center w-full"
@@ -236,6 +238,7 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
         {state.updating ? 'Save' : 'Edit'}
       </ButtonEx>
       <ButtonEx
+        id="delete"
         type="button"
         onClick={handleDelete}
         outerClassName="justify-center w-full"
@@ -251,15 +254,16 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
       </ButtonEx>
       <fieldset className={cn("border rounded-md p-2 flex flex-col gap-2", isLinkableEntity && state.mode === "create"? "" : "hidden")}>
         <legend className="text-lg">&nbsp;Create Master Links&nbsp;</legend>
-        <div className="flex gap-2" title={`Link new record to master topic`}>
+        <div className="flex gap-2">
           <Checkbox
             id="link-topic"
+            title="Link new record to master topic"
             disabled={!allowTopicLink}
             checked={linkMasterTopic}
             onCheckedChange={(cs) => setLinkMasterTopic(!!cs)}/>
           <Label className="col-span-3" htmlFor="link-topic">To master topic</Label>
         </div>
-        <Label htmlFor="this-locations" className="col-start-1">Location(s) in this record:</Label>
+        <Label htmlFor="this-locations-topic" className="col-start-1">Location(s) in this record:</Label>
         <InputEx
           id="this-locations-topic"
           type="text"
@@ -268,15 +272,16 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
           value={thisRecordLocationsForTopic}
           onChange={e => setThisRecordLocationsForTopic(e.target.value)}
         />
-        <div className="flex gap-2" title={`Link new record to master record '${masterRecordLabel}'`}>
+        <div className="flex gap-2">
           <Checkbox
             id="link-mr"
+            title={`Link new record to master record '${masterRecordLabel}'`}
             disabled={!allowMasterRecordLink}
             checked={linkMasterRecord}
             onCheckedChange={(cs) => setLinkMasterRecord(!!cs)}/>
           <Label className="col-span-3" htmlFor="link-mr">To master record</Label>
         </div>
-        <Label htmlFor="this-locations" className="col-start-1">Location(s) in this record:</Label>
+        <Label htmlFor="this-locations-master" className="col-start-1">Location(s) in this record:</Label>
         <InputEx
           id="this-locations-master"
           type="text"
@@ -285,7 +290,7 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
           value={thisRecordLocationsForMaster}
           onChange={e => setThisRecordLocationsForMaster(e.target.value)}
         />
-        <Label htmlFor="other-locations">Location(s) in other record:</Label>
+        <Label htmlFor="other-locations-master">Location(s) in other record:</Label>
         <InputEx
           id="other-locations-master"
           type="text"

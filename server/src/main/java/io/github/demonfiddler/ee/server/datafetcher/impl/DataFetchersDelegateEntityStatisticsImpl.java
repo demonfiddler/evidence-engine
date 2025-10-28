@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateEntityStatistics;
+import io.github.demonfiddler.ee.server.model.EntityKind;
 import io.github.demonfiddler.ee.server.model.EntityStatistics;
 import io.github.demonfiddler.ee.server.model.FormatKind;
 import io.github.demonfiddler.ee.server.util.FormatUtils;
@@ -38,11 +39,16 @@ public class DataFetchersDelegateEntityStatisticsImpl implements DataFetchersDel
     public Object entityKind(DataFetchingEnvironment dataFetchingEnvironment, EntityStatistics origin,
         FormatKind format) {
 
-        // FIXME: there's no elegant way to handle TLT = 'Top-Level Topic'
-        // String entityKindStr = origin.getEntityKind();
-        // EntityKind entityKind = EntityKind.valueOf(entityKindStr);
-        // return formatUtils.formatEntityKind(entityKind, format);
-        return origin.getEntityKind();
+        // This is a bit of a kludge to handle TLT = 'Topic (top-level)'
+        String entityKindStr = origin.getEntityKind();
+        if (format == FormatKind.LONG) {
+            boolean isTopicLevelTopic = entityKindStr.equals("TLT");
+            EntityKind entityKind = EntityKind.valueOf(isTopicLevelTopic ? "TOP" : entityKindStr);
+            entityKindStr = formatUtils.formatEntityKind(entityKind, format);
+            if (isTopicLevelTopic && format == FormatKind.LONG)
+                entityKindStr += " (top-level)";
+        }
+        return entityKindStr;
     }
 
 }

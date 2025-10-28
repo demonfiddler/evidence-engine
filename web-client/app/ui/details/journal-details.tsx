@@ -92,9 +92,11 @@ export default function JournalDetails(
               name="rating"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Rating</FormLabel>
+                  <FormLabel id="rating-label">Rating</FormLabel>
                   <FormControl>
                     <StarRatingBasicEx
+                      id="rating"
+                      ariaLabelledby="rating-label"
                       readOnly={!updating}
                       maxStars={5}
                       iconSize={18}
@@ -122,7 +124,7 @@ export default function JournalDetails(
               name="title"
               render={({field}) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel htmlFor="title">Title</FormLabel>
                   <FormControl>
                     <InputEx
                       id="title"
@@ -141,7 +143,7 @@ export default function JournalDetails(
               name="abbreviation"
               render={({field}) => (
                 <FormItem className="col-span-1">
-                  <FormLabel>Abbreviation</FormLabel>
+                  <FormLabel htmlFor="abbreviation">Abbreviation</FormLabel>
                   <FormControl>
                     <InputEx
                       id="abbreviation"
@@ -160,7 +162,7 @@ export default function JournalDetails(
               name="issn"
               render={({field}) => (
                 <FormItem className="col-span-1">
-                  <FormLabel>ISSN</FormLabel>
+                  <FormLabel htmlFor="issn">ISSN</FormLabel>
                   <FormControl>
                     <InputEx
                       id="issn"
@@ -180,7 +182,7 @@ export default function JournalDetails(
               name="publisherId"
               render={({ field }) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Publisher</FormLabel>
+                  <FormLabel htmlFor="publisherId">Publisher</FormLabel>
                   <Select
                     disabled={!updating}
                     value={field.value}
@@ -217,16 +219,17 @@ export default function JournalDetails(
               name="url"
               render={({field}) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>URL</FormLabel>
+                  <FormLabel htmlFor="url">URL</FormLabel>
                   <FormControl>
                     {
                       updating
                       ? <InputEx
-                          id="url"
-                          {...field}
-                          help="The journals's online web address"
-                        />
+                        id="url"
+                        {...field}
+                        help="The journals's online web address"
+                      />
                       : <LinkEx
+                        id="url"
                         href={record?.url ?? ''}
                         target="_blank"
                         help="The journals's online web address"
@@ -244,7 +247,7 @@ export default function JournalDetails(
               name="notes"
               render={({field}) => (
                 <FormItem className="col-start-1 col-span-2">
-                  <FormLabel>Notes</FormLabel>
+                  <FormLabel htmlFor="notes">Notes</FormLabel>
                   <FormControl>
                     <TextareaEx
                       id="notes"

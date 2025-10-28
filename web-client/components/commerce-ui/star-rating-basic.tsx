@@ -4,15 +4,19 @@ import { cn } from "@/lib/utils";
 import { Star } from "lucide-react";
 import * as React from "react";
 import { CSSProperties, memo, useCallback, useState } from "react";
+import { Button } from "../ui/button";
 
 export interface StarRatingBasicProps {
-  value: number;
-  onChange?: (value: number) => void;
-  className?: string;
-  iconSize?: number;
-  maxStars?: number;
-  readOnly?: boolean;
-  color?: string;
+  id?: string
+  className?: string
+  ariaLabel?: string
+  ariaLabelledby?: string
+  value: number
+  onChange?: (value: number) => void
+  iconSize?: number
+  maxStars?: number
+  readOnly?: boolean
+  color?: string
 }
 
 const StarIcon = memo(
@@ -20,15 +24,15 @@ const StarIcon = memo(
     iconSize,
     index,
     isInteractive,
-    onClick,
-    onMouseEnter,
+    // onClick,
+    // onMouseEnter,
     style,
   }: {
     index: number;
     style: CSSProperties;
     iconSize: number;
-    onClick: () => void;
-    onMouseEnter: () => void;
+    // onClick: () => void;
+    // onMouseEnter: () => void;
     isInteractive: boolean;
   }) => (
     <Star
@@ -36,8 +40,8 @@ const StarIcon = memo(
       size={iconSize}
       fill={style.fill}
       color={style.color}
-      onClick={onClick}
-      onMouseEnter={onMouseEnter}
+      // onClick={onClick}
+      // onMouseEnter={onMouseEnter}
       className={cn(
         "transition-colors duration-200",
         isInteractive && "cursor-pointer hover:scale-110"
@@ -50,6 +54,9 @@ StarIcon.displayName = "StarIcon";
 
 const StarRating_Basic = ({
   className,
+  id,
+  ariaLabel,
+  ariaLabelledby,
   color = "#e4c616",
   iconSize = 24,
   maxStars = 5,
@@ -99,15 +106,23 @@ const StarRating_Basic = ({
     return Array.from({ length: maxStars }).map((_, index) => {
       const style = getStarStyle(index);
       return (
-        <StarIcon
+        <Button
           key={index}
-          index={index}
-          style={style}
-          iconSize={iconSize}
+          type="button"
+          variant="ghost"
+          role="radio"
+          className="p-0 has-[>svg]:p-0"
           onClick={() => handleStarClick(index)}
           onMouseEnter={() => handleStarHover(index)}
-          isInteractive={!readOnly}
-        />
+          title={`Click to toggle star rating of ${index + 1}`}
+        >
+          <StarIcon
+            index={index}
+            style={style}
+            iconSize={iconSize}
+            isInteractive={!readOnly}
+          />
+        </Button>
       );
     });
   }, [
@@ -121,6 +136,10 @@ const StarRating_Basic = ({
 
   return (
     <div
+      id={id}
+      aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledby}
+      role="radiogroup"
       className={cn("flex items-center gap-x-0.5", className)}
       onMouseLeave={handleMouseLeave}
     >

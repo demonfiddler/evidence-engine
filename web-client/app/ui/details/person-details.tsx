@@ -88,9 +88,11 @@ export default function PersonDetails(
               name="rating"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Rating</FormLabel>
+                  <FormLabel id="rating-label">Rating</FormLabel>
                   <FormControl>
                     <StarRatingBasicEx
+                      id="rating"
+                      ariaLabelledby="rating-label"
                       readOnly={!updating}
                       maxStars={5}
                       iconSize={18}
@@ -109,7 +111,7 @@ export default function PersonDetails(
               name="title"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel htmlFor="title">Title</FormLabel>
                   <FormControl>
                     <InputEx
                       id="title"
@@ -129,7 +131,7 @@ export default function PersonDetails(
               name="firstName"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>First name(s)</FormLabel>
+                  <FormLabel htmlFor="firstName">First name(s)</FormLabel>
                   <FormControl>
                     <InputEx
                       id="firstName"
@@ -148,7 +150,7 @@ export default function PersonDetails(
               name="nickname"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Nickname</FormLabel>
+                  <FormLabel htmlFor="nickname">Nickname</FormLabel>
                   <FormControl>
                     <InputEx
                       id="nickname"
@@ -176,7 +178,7 @@ export default function PersonDetails(
               name="prefix"
               render={({field}) => (
                 <FormItem className="col-start-1">
-                  <FormLabel>Prefix</FormLabel>
+                  <FormLabel htmlFor="prefix">Prefix</FormLabel>
                   <FormControl>
                     <InputEx
                       id="prefix"
@@ -195,7 +197,7 @@ export default function PersonDetails(
               name="lastName"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Last name</FormLabel>
+                  <FormLabel htmlFor="lastName">Last name</FormLabel>
                   <FormControl>
                     <InputEx
                       id="lastName"
@@ -214,7 +216,7 @@ export default function PersonDetails(
               name="suffix"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Suffix</FormLabel>
+                  <FormLabel htmlFor="suffix">Suffix</FormLabel>
                   <FormControl>
                     <InputEx
                       id="suffix"
@@ -233,7 +235,7 @@ export default function PersonDetails(
               name="alias"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Alias</FormLabel>
+                  <FormLabel htmlFor="alias">Alias</FormLabel>
                   <FormControl>
                     <InputEx
                       id="alias"
@@ -253,7 +255,7 @@ export default function PersonDetails(
               name="notes"
               render={({field}) => (
                 <FormItem className="col-start-1 col-span-4">
-                  <FormLabel>Notes</FormLabel>
+                  <FormLabel htmlFor="notes">Notes</FormLabel>
                   <FormControl>
                     <TextareaEx
                       id="notes"
@@ -273,7 +275,7 @@ export default function PersonDetails(
               name="qualifications"
               render={({field}) => (
                 <FormItem className="col-start-1 col-span-4">
-                  <FormLabel>Qualifications</FormLabel>
+                  <FormLabel htmlFor="qualifications">Qualifications</FormLabel>
                   <FormControl>
                     <TextareaEx
                       id="qualifications"
@@ -293,7 +295,7 @@ export default function PersonDetails(
               name="country"
               render={({ field }) => (
                 <FormItem className="col-start-1">
-                  <FormLabel>Country</FormLabel>
+                  <FormLabel htmlFor="country">Country</FormLabel>
                   <Select
                     disabled={!updating}
                     value={field.value}
@@ -324,7 +326,7 @@ export default function PersonDetails(
               name="rating"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Rating</FormLabel>
+                  <FormLabel htmlFor="rating">Rating</FormLabel>
                   <FormControl>
                     <InputEx
                       id="rating"
@@ -345,7 +347,7 @@ export default function PersonDetails(
               name="checked"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Checked</FormLabel>
+                  <FormLabel htmlFor="checked">Checked</FormLabel>
                   <FormControl>
                     <CheckboxEx
                       id="checked"
@@ -364,7 +366,7 @@ export default function PersonDetails(
               name="published"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Published</FormLabel>
+                  <FormLabel htmlFor="published">Published</FormLabel>
                   <FormControl>
                     <CheckboxEx
                       id="published"

@@ -30,8 +30,8 @@ import { ClassValue } from "clsx"
 const logger = new LoggerEx(component, "[Search] ")
 
 export default function Search(
-  {value, onChangeValue, className} :
-  {value: string, onChangeValue: (value: string) => void, className?: ClassValue}
+  {id, value, onChangeValue, className} :
+  {id?: string, value: string, onChangeValue: (value: string) => void, className?: ClassValue}
 ) {
   logger.debug("render")
 
@@ -62,6 +62,7 @@ export default function Search(
     <div className={cn("flex flex-row items-center gap-2 px-2 pr-2 border rounded-md", className)}>
       <SearchIcon className="w-6 h-6" />
       <InputEx
+        id={id ?? "search"}
         outerClassName="grow"
         className="border-0 border-transparent"
         placeholder="Search..."

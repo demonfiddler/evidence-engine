@@ -70,8 +70,12 @@ export default function DataTableColumnHeader<TData, TValue>({
           : <div className={cn("flex flex-0 items-center", className)}>
             {
               !column.getIsPinned()
-              ? <Button variant="ghost" className={`w-2 h-full relative ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
-                {...attributes} {...listeners}>
+              ? <Button
+                variant="ghost"
+                className={`w-2 h-full relative ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
+                title="Drag to reorder columns"
+                {...attributes} {...listeners}
+              >
                 <GripVertical className="absolute left-0 text-gray-400"/>
               </Button>
               : null
@@ -82,6 +86,7 @@ export default function DataTableColumnHeader<TData, TValue>({
                 variant="ghost"
                 size="sm"
                 className="-ml-3 h-8"
+                title="Click to sort by column, Shift+click for multi-column sort"
                 onClick={column.getToggleSortingHandler()}
               >
                 <span>{title}</span>

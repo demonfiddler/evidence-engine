@@ -99,9 +99,11 @@ export default function DeclarationDetails(
               name="rating"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Rating</FormLabel>
+                  <FormLabel id="rating-label">Rating</FormLabel>
                   <FormControl>
                     <StarRatingBasicEx
+                      id="rating"
+                      ariaLabelledby="rating-label"
                       readOnly={!updating}
                       maxStars={5}
                       iconSize={18}
@@ -129,7 +131,7 @@ export default function DeclarationDetails(
               name="date"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Date</FormLabel>
+                  <FormLabel htmlFor="date">Date</FormLabel>
                   <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger id="date" asChild>
                       <FormControl>
@@ -171,7 +173,7 @@ export default function DeclarationDetails(
               name="kind"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Kind</FormLabel>
+                  <FormLabel htmlFor="kind">Kind</FormLabel>
                   <Select
                     disabled={!updating}
                     value={field.value}
@@ -202,7 +204,7 @@ export default function DeclarationDetails(
               name="title"
               render={({field}) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel htmlFor="title">Title</FormLabel>
                   <FormControl>
                     <InputEx
                       id="title"
@@ -221,17 +223,19 @@ export default function DeclarationDetails(
               name="url"
               render={({field}) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>URL</FormLabel>
+                  <FormLabel htmlFor="url">URL</FormLabel>
                   <FormControl>
                     {
                       updating
                       ? <InputEx
-                          type="url"
-                          placeholder="URL"
-                          {...field}
-                          help="The declaration's online web address"
+                        id="url"
+                        type="url"
+                        placeholder="URL"
+                        {...field}
+                        help="The declaration's online web address"
                       />
                       : <LinkEx
+                        id="url"
                         href={record?.url ?? ''}
                         target="_blank"
                         help="The declaration's online web address"
@@ -249,7 +253,7 @@ export default function DeclarationDetails(
               name="cached"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Cached</FormLabel>
+                  <FormLabel htmlFor="cached">Cached</FormLabel>
                   <FormControl>
                     <CheckboxEx
                       id="cached"
@@ -268,7 +272,7 @@ export default function DeclarationDetails(
               name="country"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Country</FormLabel>
+                  <FormLabel htmlFor="country">Country</FormLabel>
                   <Select
                     disabled={!updating}
                     value={field.value}
@@ -300,7 +304,7 @@ export default function DeclarationDetails(
               name="signatories"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Signatories</FormLabel>
+                  <FormLabel htmlFor="signatories">Signatories</FormLabel>
                   <FormControl>
                     <TextareaEx
                       id="signatories"
@@ -320,7 +324,7 @@ export default function DeclarationDetails(
               name="signatoryCount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Signatory count</FormLabel>
+                  <FormLabel htmlFor="signatoryCount">Signatory count</FormLabel>
                   <FormControl>
                     <InputEx
                       type="number"
@@ -341,7 +345,7 @@ export default function DeclarationDetails(
               name="notes"
               render={({field}) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Notes</FormLabel>
+                  <FormLabel htmlFor="notes">Notes</FormLabel>
                   <FormControl>
                     <TextareaEx
                       id="notes"

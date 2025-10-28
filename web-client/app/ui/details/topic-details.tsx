@@ -109,9 +109,11 @@ export default function TopicDetails(
               name="rating"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Rating</FormLabel>
+                  <FormLabel id="rating-label">Rating</FormLabel>
                   <FormControl>
                     <StarRatingBasicEx
+                      id="rating"
+                      ariaLabelledby="rating-label"
                       readOnly={!updating}
                       maxStars={5}
                       iconSize={18}
@@ -139,7 +141,7 @@ export default function TopicDetails(
               name="path"
               render={({field}) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Path</FormLabel>
+                  <FormLabel htmlFor="path">Path</FormLabel>
                   <FormControl>
                     <InputEx
                       id="path"
@@ -159,7 +161,7 @@ export default function TopicDetails(
               name="parentId"
               render={({ field }) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Parent</FormLabel>
+                  <FormLabel htmlFor="parentId">Parent</FormLabel>
                   <Select
                     disabled={!updating}
                     value={field.value}
@@ -167,9 +169,9 @@ export default function TopicDetails(
                   >
                     <FormControl>
                       <SelectTriggerEx
+                        id="parentId"
                         outerClassName="col-span-4"
                         className="grow"
-                        id="parentId"
                         help="The parent topic, if any"
                       >
                         <SelectValue className="col-span-4 w-full" placeholder="Specify parent" />
@@ -209,7 +211,7 @@ export default function TopicDetails(
               name="label"
               render={({field}) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Label</FormLabel>
+                  <FormLabel htmlFor="label">Label</FormLabel>
                   <FormControl>
                     <InputEx
                       id="label"
@@ -229,12 +231,12 @@ export default function TopicDetails(
               name="description"
               render={({field}) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel htmlFor="description">Description</FormLabel>
                   <FormControl>
                     <InputEx
+                      id="description"
                       outerClassName="w-full"
                       className="grow"
-                      id="description"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       placeholder="description"

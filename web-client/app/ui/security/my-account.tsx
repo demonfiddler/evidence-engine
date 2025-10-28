@@ -74,7 +74,12 @@ export default function MyAccount({className} : {className: string}) {
       <SettingsDialog open={settingsOpen} setOpen={setSettingsOpen} />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="w-8 h-8 flex items-center justify-center" disabled={!user}>
+          <Button
+            variant="ghost"
+            className="w-8 h-8 flex items-center justify-center"
+            disabled={!user}
+            title="Show user operations menu"
+          >
             <UserIcon className="size-6 stroke-2" />
           </Button>
         </DropdownMenuTrigger>

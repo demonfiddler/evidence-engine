@@ -258,14 +258,15 @@ export default function CommentTableFilter(
             </Select>
             : null
           }
-          <Search value={text} onChangeValue={handleTextChange} />
+          <Search id="searchComments" value={text} onChangeValue={handleTextChange} />
           <Checkbox
-            id="advanced"
+            id="advancedComments"
             checked={advanced}
             onCheckedChange={handleAdvancedSearchChange}
           />
-          <LabelEx htmlFor="advanced" help="Use advanced text search syntax. See MariaDB documentation at https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode">Advanced</LabelEx>
+          <LabelEx htmlFor="advancedComments" help="Use advanced text search syntax. See MariaDB documentation at https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode">Advanced</LabelEx>
           <InputEx
+            id="recordIdComments"
             outerClassName="w-40"
             className="text-right"
             placeholder="Record ID"
@@ -279,7 +280,7 @@ export default function CommentTableFilter(
             value={targetKind ?? ''}
             onValueChange={handleTargetKindChange}
           >
-            <SelectTriggerEx id="kind" help="Filter the table to show only comments on records of the specified kind.">
+            <SelectTriggerEx id="recordKindComments" help="Filter the table to show only comments on records of the specified kind.">
               <SelectValue placeholder="Target Kind" />
             </SelectTriggerEx>
             <SelectContent>
@@ -302,6 +303,7 @@ export default function CommentTableFilter(
             </SelectContent>
           </Select>
           <InputEx
+            id="targetIdComments"
             outerClassName="w-40"
             className="text-right"
             placeholder="Target ID"
@@ -312,6 +314,7 @@ export default function CommentTableFilter(
             help="Filter the table to show only comments on the record with the specified ID."
           />
           <InputEx
+            id="parentIdComments"
             outerClassName="w-40"
             className="text-right"
             placeholder="Parent ID"
@@ -325,7 +328,7 @@ export default function CommentTableFilter(
             value={userId ?? ''}
             onValueChange={handleUserIdChange}
           >
-            <SelectTriggerEx id="userId" help="Filter the table to show only comments made by the selected user.">
+            <SelectTriggerEx id="userIdComments" help="Filter the table to show only comments made by the selected user.">
               <SelectValue placeholder="User" />
             </SelectTriggerEx>
             <SelectContent>
@@ -342,7 +345,7 @@ export default function CommentTableFilter(
         </div>
         <div className="flex gap-2">
           <Popover open={fromOpen} onOpenChange={setFromOpen}>
-            <PopoverTrigger id="from" asChild>
+            <PopoverTrigger id="fromComments" asChild>
               <ButtonEx
                 variant={"outline"}
                 className="justify-start text-left font-normal"
@@ -368,7 +371,7 @@ export default function CommentTableFilter(
             </PopoverContent>
           </Popover>
           <Popover open={toOpen} onOpenChange={setToOpen}>
-            <PopoverTrigger id="to" asChild>
+            <PopoverTrigger id="toComments" asChild>
               <ButtonEx
                 variant={"outline"}
                 className="justify-start text-left font-normal"
@@ -394,6 +397,7 @@ export default function CommentTableFilter(
             </PopoverContent>
           </Popover>
           <ButtonEx
+            id="refreshComments"
             variant="outline"
             help="Refresh the table using the same filter and pagination settings."
             onClick={() => refetch()}
@@ -401,6 +405,7 @@ export default function CommentTableFilter(
             <RotateCw />
           </ButtonEx>
           <ButtonEx
+            id="resetComments"
             outerClassName="flex-grow"
             variant="outline"
             onClick={handleReset}

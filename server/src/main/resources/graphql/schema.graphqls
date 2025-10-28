@@ -532,7 +532,6 @@ input DeclarationInput {
     id: ID
     "A five-star rating for the declaration, indicative of significance, signatory eminence/count, etc."
     rating: Int
-    # TODO: consider whether to implement all topic-entity linking functionality in one place.
     "The kind of declaration."
     kind: DeclarationKind!
     "The declaration title."
@@ -1614,13 +1613,6 @@ type Quotation implements IBaseEntity & ITrackedEntity & ILinkableEntity {
     url: URL
     "Notes on the quotation."
     notes: String
-    # For now, these are all supported by parameterised top-level queries.
-#    # TODO: consider whether it is reasonable to associate multiple persons with a single quotation
-#    "The quotees."
-#    person: [Person!]!
-#    # TODO: consider whether it is reasonable to associate multiple publications with a single quotation
-#    "The source publication."
-#    publication: [Publication!]!
 }
 
 "An input for creating or updating a quotation."

@@ -35,8 +35,9 @@ import TopicTableFilter from '@/app/ui/filter/topic-table-filter'
 import useTopicQueryFilter from '@/hooks/use-topic-query-filter'
 import { GlobalContext } from '@/lib/context'
 import { useContext, useMemo } from 'react'
-import { useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import { LoggerEx, page } from '@/lib/logger'
+import { QueryResult } from '@/lib/graphql-utils'
 
 const logger = new LoggerEx(page, "[Topics] ")
 
@@ -106,7 +107,7 @@ export default function Topics() {
     filterLogic,
   })
   const allTopicsResult = useQuery(READ_TOPIC_HIERARCHY, {variables: {filter: {parentId: "-1"}}})
-  const allTopicsPage = allTopicsResult.data?.topics
+  const allTopicsPage = (allTopicsResult.data as QueryResult<IPage<Topic>>)?.topics
   const allTopics = useMemo(() => preparePage(allTopicsPage), [allTopicsPage])
 
   // const {storeAppState} = useContext(GlobalContext)

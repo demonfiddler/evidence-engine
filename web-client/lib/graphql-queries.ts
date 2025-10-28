@@ -1567,7 +1567,7 @@ mutation RevokeGroupAuthorities($groupId: ID!, $authorities: [AuthorityKind!]!) 
 
 const FRAGMENT_ENTITY_STATS_FIELDS = gql`
 fragment entityStatsFields on EntityStatistics {
-  entityKind
+  entityKind(format: SHORT)
   count
 }
 `

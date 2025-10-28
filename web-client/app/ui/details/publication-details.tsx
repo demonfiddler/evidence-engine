@@ -106,9 +106,11 @@ export default function PublicationDetails(
               name="rating"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Rating</FormLabel>
+                  <FormLabel id="rating-label">Rating</FormLabel>
                   <FormControl>
                     <StarRatingBasicEx
+                      id="rating"
+                      ariaLabelledby="rating-label"
                       readOnly={!updating}
                       maxStars={5}
                       iconSize={18}
@@ -127,7 +129,7 @@ export default function PublicationDetails(
               name="peerReviewed"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Peer reviewed</FormLabel>
+                  <FormLabel htmlFor="peerReviewed">Peer reviewed</FormLabel>
                   <FormControl>
                     <CheckboxEx
                       id="peerReviewed"
@@ -147,7 +149,7 @@ export default function PublicationDetails(
               name="cached"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Cached</FormLabel>
+                  <FormLabel htmlFor="cached">Cached</FormLabel>
                   <FormControl>
                     <CheckboxEx
                       id="cached"
@@ -175,7 +177,7 @@ export default function PublicationDetails(
               name="title"
               render={({field}) => (
                 <FormItem className="col-span-3">
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel htmlFor="title">Title</FormLabel>
                   <FormControl>
                     <InputEx
                       id="title"
@@ -194,7 +196,7 @@ export default function PublicationDetails(
               name="kind"
               render={({ field }) => (
                 <FormItem className="col-start-1">
-                  <FormLabel>Kind</FormLabel>
+                  <FormLabel htmlFor="kind">Kind</FormLabel>
                   <Select
                     disabled={!updating}
                     value={field.value}
@@ -229,7 +231,7 @@ export default function PublicationDetails(
               name="journalId"
               render={({ field }) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Journal</FormLabel>
+                  <FormLabel htmlFor="journal">Journal</FormLabel>
                   <Select
                     disabled={!updating}
                     value={field.value}
@@ -264,7 +266,7 @@ export default function PublicationDetails(
               name="authors"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Authors</FormLabel>
+                  <FormLabel htmlFor="authors">Authors</FormLabel>
                   <FormControl>
                     <TextareaEx
                       id="authors"
@@ -284,7 +286,7 @@ export default function PublicationDetails(
               name="date"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Publication date</FormLabel>
+                  <FormLabel htmlFor="date">Publication date</FormLabel>
                   <Popover open={dateOpen} onOpenChange={setDateOpen}>
                     <PopoverTrigger id="date" asChild>
                       <FormControl>
@@ -326,7 +328,7 @@ export default function PublicationDetails(
               name="year"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Publication year</FormLabel>
+                  <FormLabel htmlFor="year">Publication year</FormLabel>
                   <FormControl>
                     <InputEx
                       id="year"
@@ -346,7 +348,7 @@ export default function PublicationDetails(
               name="abstract"
               render={({field}) => (
                 <FormItem className="col-start-1 col-span-3">
-                  <FormLabel>Abstract</FormLabel>
+                  <FormLabel htmlFor="abstract">Abstract</FormLabel>
                   <FormControl>
                     <TextareaEx
                       id="abstract"
@@ -366,7 +368,7 @@ export default function PublicationDetails(
               name="notes"
               render={({field}) => (
                 <FormItem className="col-start-1 col-span-3">
-                  <FormLabel>Notes</FormLabel>
+                  <FormLabel htmlFor="notes">Notes</FormLabel>
                   <FormControl>
                     <TextareaEx
                       id="notes"
@@ -388,7 +390,7 @@ export default function PublicationDetails(
               name="url"
               render={({field}) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>URL</FormLabel>
+                  <FormLabel htmlFor="url">URL</FormLabel>
                   <FormControl>
                     {
                       updating
@@ -417,7 +419,7 @@ export default function PublicationDetails(
               name="accessed"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Accessed</FormLabel>
+                  <FormLabel htmlFor="accessed">Accessed</FormLabel>
                   <Popover open={accessedOpen} onOpenChange={setAccessedOpen}>
                     <PopoverTrigger id="accessed" asChild>
                       <FormControl>
@@ -459,7 +461,7 @@ export default function PublicationDetails(
               name="doi"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>DOI</FormLabel>
+                  <FormLabel htmlFor="doi">DOI</FormLabel>
                   <FormControl>
                     {
                       updating
@@ -486,7 +488,7 @@ export default function PublicationDetails(
               name="isbn"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>ISBN</FormLabel>
+                  <FormLabel htmlFor="isbn">ISBN</FormLabel>
                   <FormControl>
                     {
                       updating
@@ -496,6 +498,7 @@ export default function PublicationDetails(
                           help="The International Standard Book Number (ISBN)"
                       />
                       : <LinkEx
+                          id="isbn"
                           href={record?.isbn ? `https://isbnsearch.org/isbn/${record?.isbn ?? ''}` : ''}
                           target="_blank"
                           help="The International Standard Book Number (ISBN)"
@@ -513,7 +516,7 @@ export default function PublicationDetails(
               name="pmid"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>PubMed ID</FormLabel>
+                  <FormLabel htmlFor="pmid">PubMed ID</FormLabel>
                   <FormControl>
                     {
                       updating
@@ -541,7 +544,7 @@ export default function PublicationDetails(
               name="hsid"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Handle System ID</FormLabel>
+                  <FormLabel htmlFor="hsid">Handle System ID</FormLabel>
                   <FormControl>
                     {
                       updating
@@ -569,7 +572,7 @@ export default function PublicationDetails(
               name="arxivid"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>arXiv ID</FormLabel>
+                  <FormLabel htmlFor="arxivid">arXiv ID</FormLabel>
                   <FormControl>
                     {
                       updating
@@ -597,7 +600,7 @@ export default function PublicationDetails(
               name="biorxivid"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>bioRxiv ID</FormLabel>
+                  <FormLabel htmlFor="biorxivid">bioRxiv ID</FormLabel>
                   <FormControl>
                     {
                       updating
@@ -625,7 +628,7 @@ export default function PublicationDetails(
               name="medrxivid"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>medRxiv ID</FormLabel>
+                  <FormLabel htmlFor="medrxivid">medRxiv ID</FormLabel>
                   <FormControl>
                     {
                       updating
@@ -653,7 +656,7 @@ export default function PublicationDetails(
               name="ericid"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>ERIC ID</FormLabel>
+                  <FormLabel htmlFor="ericid">ERIC ID</FormLabel>
                   <FormControl>
                     {
                       updating
@@ -681,7 +684,7 @@ export default function PublicationDetails(
               name="ihepid"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>INSPIRE-HEP ID</FormLabel>
+                  <FormLabel htmlFor="ihepid">INSPIRE-HEP ID</FormLabel>
                   <FormControl>
                     {
                       updating
@@ -709,7 +712,7 @@ export default function PublicationDetails(
               name="oaipmhid"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>OAI-PMH ID</FormLabel>
+                  <FormLabel htmlFor="oaipmhid">OAI-PMH ID</FormLabel>
                   <FormControl>
                     {
                       updating
@@ -737,7 +740,7 @@ export default function PublicationDetails(
               name="halid"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>HAL ID</FormLabel>
+                  <FormLabel htmlFor="halid">HAL ID</FormLabel>
                   <FormControl>
                     {
                       updating
@@ -765,7 +768,7 @@ export default function PublicationDetails(
               name="zenodoid"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Zenodo ID</FormLabel>
+                  <FormLabel htmlFor="zenodoid">Zenodo ID</FormLabel>
                   <FormControl>
                     {
                       updating
@@ -793,7 +796,7 @@ export default function PublicationDetails(
               name="scopuseid"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>SCOPUS EID</FormLabel>
+                  <FormLabel htmlFor="scopuseid">SCOPUS EID</FormLabel>
                   <FormControl>
                     {
                       updating
@@ -821,7 +824,7 @@ export default function PublicationDetails(
               name="wsan"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>WS Accession Number</FormLabel>
+                  <FormLabel htmlFor="wsan">WS Accession Number</FormLabel>
                   <FormControl>
                     {
                       updating
@@ -849,7 +852,7 @@ export default function PublicationDetails(
               name="pinfoan"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>PsycINFO Accession Number</FormLabel>
+                  <FormLabel htmlFor="pinfoan">PsycINFO Accession Number</FormLabel>
                   <FormControl>
                     {
                       updating

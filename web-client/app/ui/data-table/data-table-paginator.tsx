@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/select"
 import { ChangeEvent, useCallback, useEffect, useState } from "react"
 import InputEx from "../ext/input-ex"
+import { Label } from "@/components/ui/label"
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>
@@ -79,7 +80,7 @@ export function DataTablePaginator<TData>({
               table.setPageSize(Number.parseInt(value))
             }}
           >
-            <SelectTrigger className="h-8 w-fit">
+            <SelectTrigger className="h-8 w-fit" title="Click to change page size">
               <SelectValue placeholder={table.getState().pagination?.pageSize} />
             </SelectTrigger>
             <SelectContent side="top">
@@ -92,8 +93,9 @@ export function DataTablePaginator<TData>({
           </Select>
         </div>
         <div className="flex items-center justify-center text-sm font-medium">
-          Page&nbsp;
+          <Label htmlFor="page-number">Page&nbsp;</Label>
           <InputEx
+            id="page-number"
             outerClassName="inline"
             className="w-14 inline text-right"
             type="number"
@@ -102,6 +104,7 @@ export function DataTablePaginator<TData>({
             value={pageNumber}
             onChange={handlePageNumberChange}
             delay={500}
+            title="Page number"
           />
           &nbsp;of&nbsp;{table.getPageCount()}
           <span>

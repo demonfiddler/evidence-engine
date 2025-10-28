@@ -1112,7 +1112,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @Override
     @PreAuthorize("hasAuthority('UPD')")
     public Object setEntityStatus(DataFetchingEnvironment dataFetchingEnvironment, Long entityId, StatusKind status) {
-        // FIXME: should setEntityStatus() return the updated entity?
+        // Maybe setEntityStatus() should return the updated entity?
         AbstractTrackedEntity entity = trackedEntityRepository.findById(entityId)
             .orElseThrow(() -> createEntityNotFoundException("ITrackedEntity", entityId));
         if (entity.getStatus().equals(status.name()))

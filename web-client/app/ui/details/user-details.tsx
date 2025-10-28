@@ -118,7 +118,7 @@ export default function UserDetails(
               name="username"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel htmlFor="username">Username</FormLabel>
                   <FormControl>
                     <InputEx
                       id="username"
@@ -138,7 +138,7 @@ export default function UserDetails(
               name="firstName"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>First name</FormLabel>
+                  <FormLabel htmlFor="firstName">First name</FormLabel>
                   <FormControl>
                     <InputEx
                       id="firstName"
@@ -179,7 +179,7 @@ export default function UserDetails(
               name="lastName"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Last name</FormLabel>
+                  <FormLabel htmlFor="lastName">Last name</FormLabel>
                   <FormControl>
                     <InputEx
                       id="lastName"
@@ -209,7 +209,7 @@ export default function UserDetails(
               name="email"
               render={({field}) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel htmlFor="email">Email</FormLabel>
                   <FormControl>
                     <InputEx
                       id="email"
@@ -230,7 +230,7 @@ export default function UserDetails(
               name="password"
               render={({field}) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel htmlFor="password">Password</FormLabel>
                   <FormControl>
                     <InputEx
                       id="password"
@@ -251,7 +251,7 @@ export default function UserDetails(
               name="country"
               render={({ field }) => (
                 <FormItem className="col-start-1">
-                  <FormLabel>Country</FormLabel>
+                  <FormLabel htmlFor="country">Country</FormLabel>
                   <Select
                     disabled={!user && !updating}
                     value={field.value}
@@ -288,7 +288,7 @@ export default function UserDetails(
               name="notes"
               render={({field}) => (
                 <FormItem className="col-start-1 col-span-2">
-                  <FormLabel>Notes</FormLabel>
+                  <FormLabel htmlFor="notes">Notes</FormLabel>
                   <FormControl>
                     <TextareaEx
                       id="notes"
@@ -318,7 +318,7 @@ export default function UserDetails(
                     name={auth.key}
                     render={({field}) => (
                       <FormItem>
-                        <FormLabel>{auth.label}</FormLabel>
+                        <FormLabel htmlFor={auth.key}>{auth.label}</FormLabel>
                         <FormControl>
                           <CheckboxEx
                             id={auth.key}

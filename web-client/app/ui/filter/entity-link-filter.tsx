@@ -217,6 +217,7 @@ export default function EntityLinkFilter() {
               <div className="flex flex-col m-2 gap-2">
                 <div className="flex flex-row items-center gap-2">
                   <DropdownTreeSelect
+                    id="masterTopic"
                     className="ee"
                     clearSearchOnChange={false}
                     data={treeData}
@@ -229,7 +230,7 @@ export default function EntityLinkFilter() {
                   />
                   <Help text="In the table below, show only records linked to this topic when 'Show only linked records' is checked" />
                 </div>
-                <Textarea placeholder="-Topic description here-" disabled={true} value={topicDescription ?? ''} />
+                <Textarea id="masterTopicDescription" placeholder="-Topic description here-" disabled={true} value={topicDescription ?? ''} />
                 <p className="text-xs text-gray-500">{`Path: ${topicPath ?? ""}`}</p>
                 <div className="flex gap-2">
                   <Checkbox id="recursive" checked={masterTopicRecursive} onCheckedChange={setMasterTopicRecursive} />
@@ -246,6 +247,8 @@ export default function EntityLinkFilter() {
               <legend className="text-sm">&nbsp;Master Record Link&nbsp;</legend>
               <div className="flex flex-col m-2 gap-2">
                 <RadioGroup
+                  id="masterRecordKind"
+                  aria-label="Master record kind"
                   className="flex flex-row"
                   value={masterRecordKind}
                   onValueChange={setMasterRecordKind}>
@@ -287,6 +290,7 @@ export default function EntityLinkFilter() {
                   />
                   <Link href={getMasterRecordUri()}>
                     <ButtonEx
+                      id="gotoMasterRecord"
                       className="bg-blue-500"
                       disabled={masterRecordKind == "None"}
                       help={

@@ -81,7 +81,7 @@ export default function GroupDetails(
               name="groupname"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Group name</FormLabel>
+                  <FormLabel htmlFor="groupname">Group name</FormLabel>
                   <FormControl>
                     <InputEx
                       id="groupname"
@@ -119,7 +119,7 @@ export default function GroupDetails(
                     name={auth.key}
                     render={({field}) => (
                       <FormItem>
-                        <FormLabel>{auth.label}</FormLabel>
+                        <FormLabel htmlFor={auth.key}>{auth.label}</FormLabel>
                         <FormControl>
                           <CheckboxEx
                             id={auth.key}

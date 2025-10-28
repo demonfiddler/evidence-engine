@@ -74,7 +74,6 @@ public class User extends AbstractTrackedEntity {
 	@GraphQLScalar(fieldName = "email", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
 	String email;
 
-	// TODO: consider whether to reveal this through the GraphQL API.
 	/**
 	 * A hash of the user's password.
 	 */
@@ -182,7 +181,6 @@ public class User extends AbstractTrackedEntity {
 		return this.email;
 	}
 
-	// TODO: consider whether to reveal this through the GraphQL API.
 	/**
 	 * A hash of the user's password.
 	 */
@@ -191,7 +189,6 @@ public class User extends AbstractTrackedEntity {
 		this.password = password;
 	}
 
-	// TODO: consider whether to reveal this through the GraphQL API.
 	/**
 	 * A hash of the user's password.
 	 */
@@ -426,7 +423,6 @@ public class User extends AbstractTrackedEntity {
 			return this;
 		}
 
-		// TODO: consider whether to reveal this through the GraphQL API.
 		/**
 		 * A hash of the user's password.
 		 */

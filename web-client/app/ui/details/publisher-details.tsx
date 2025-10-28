@@ -91,9 +91,11 @@ export default function PublisherDetails(
               name="rating"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Rating</FormLabel>
+                  <FormLabel id="rating-label">Rating</FormLabel>
                   <FormControl>
                     <StarRatingBasicEx
+                      id="rating"
+                      ariaLabelledby="rating-label"
                       readOnly={!updating}
                       maxStars={5}
                       iconSize={18}
@@ -121,7 +123,7 @@ export default function PublisherDetails(
               name="name"
               render={({field}) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel htmlFor="name">Name</FormLabel>
                   <FormControl>
                     <InputEx
                       id="name"
@@ -140,7 +142,7 @@ export default function PublisherDetails(
               name="location"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Location</FormLabel>
+                  <FormLabel htmlFor="location">Location</FormLabel>
                   <FormControl>
                     <InputEx
                       id="location"
@@ -160,7 +162,7 @@ export default function PublisherDetails(
               name="country"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Country</FormLabel>
+                  <FormLabel htmlFor="country">Country</FormLabel>
                   <Select
                     disabled={!updating}
                     value={field.value}
@@ -196,7 +198,7 @@ export default function PublisherDetails(
               name="url"
               render={({field}) => (
                 <FormItem className="col-start-1 col-span-2">
-                  <FormLabel>URL</FormLabel>
+                  <FormLabel htmlFor="url">URL</FormLabel>
                   <FormControl>
                     {
                       updating
@@ -206,6 +208,7 @@ export default function PublisherDetails(
                         help="The publisher's online web address"
                       />
                       : <LinkEx
+                        id="url"
                         href={record?.url ?? ''}
                         target="_blank"
                         help="The publisher's online web address"
@@ -223,7 +226,7 @@ export default function PublisherDetails(
               name="journalCount"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Journal count</FormLabel>
+                  <FormLabel htmlFor="journalCount">Journal count</FormLabel>
                   <FormControl>
                     <InputEx
                       id="journalCount"

@@ -133,7 +133,7 @@ export default function ProfileDialog(
                 name="firstName"
                 render={({field}) => (
                   <FormItem>
-                    <FormLabel>First name</FormLabel>
+                    <FormLabel htmlFor="firstName">First name</FormLabel>
                     <InputEx
                       id="firstName"
                       {...field}
@@ -148,7 +148,7 @@ export default function ProfileDialog(
                 name="lastName"
                 render={({field}) => (
                   <FormItem>
-                    <FormLabel>Last name</FormLabel>
+                    <FormLabel htmlFor="lastName">Last name</FormLabel>
                     <InputEx
                       id="lastName"
                       {...field}
@@ -163,7 +163,7 @@ export default function ProfileDialog(
                 name="email"
                 render={({field}) => (
                   <FormItem className="col-start-1 col-span-2">
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel htmlFor="email">Email</FormLabel>
                     <InputEx
                       id="email"
                       type="email"
@@ -179,7 +179,7 @@ export default function ProfileDialog(
                 name="country"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Country</FormLabel>
+                    <FormLabel htmlFor="country">Country</FormLabel>
                     <Select
                       value={field.value}
                       onValueChange={field.onChange}
@@ -208,7 +208,7 @@ export default function ProfileDialog(
                 name="notes"
                 render={({field}) => (
                   <FormItem className="col-start-1 col-span-2">
-                    <FormLabel>Notes</FormLabel>
+                    <FormLabel htmlFor="notes">Notes</FormLabel>
                     <FormControl>
                       <TextareaEx
                         id="notes"

@@ -88,7 +88,7 @@ export default function SignInDialog() {
                   name="username"
                   render={({field}) => (
                     <FormItem>
-                      <FormLabel>Username</FormLabel>
+                      <FormLabel htmlFor="username">Username</FormLabel>
                       <Input
                         id="username"
                         className="col-span-3"
@@ -106,7 +106,7 @@ export default function SignInDialog() {
                   name="password"
                   render={({field}) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel htmlFor="password">Password</FormLabel>
                       <Input
                         id="password"
                         type="password"

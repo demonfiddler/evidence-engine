@@ -161,7 +161,7 @@ export default function CommentDialogFilter(
   return (
     <div className="flex flex-row flex-wrap items-center max-w-full gap-2">
       <Spinner loading={result.loading} className="absolute inset-0 bg-black/20 z-50" />
-      <Search className="w-5/8" value={text} onChangeValue={handleTextChange} />
+      <Search id="searchCommentsDlg" className="w-5/8" value={text} onChangeValue={handleTextChange} />
       <Checkbox
         id="cf-advanced"
         checked={advanced}

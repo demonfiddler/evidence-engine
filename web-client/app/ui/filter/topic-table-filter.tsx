@@ -151,7 +151,7 @@ export default function TopicTableFilter({
           </Select>
           : null
         }
-        <Search value={text} onChangeValue={handleTextChange} />
+        <Search id="search" value={text} onChangeValue={handleTextChange} />
         {/* See https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode */}
         <Checkbox
           id="advanced"
@@ -166,6 +166,7 @@ export default function TopicTableFilter({
         />
         <LabelEx htmlFor="recursive" help="Show topics as an expandable tree">Tree view</LabelEx>
         <InputEx
+          id="recordId"
           outerClassName="w-28"
           className="text-right"
           placeholder="Record ID"
@@ -176,6 +177,7 @@ export default function TopicTableFilter({
           help="Filter the table to show only the record with the specified ID. Other filters are retained but ignored."
         />
         <ButtonEx
+          id="refresh"
           variant="outline"
           help="Refresh the table using the same filter and pagination settings."
           onClick={() => refetch()}
@@ -183,6 +185,7 @@ export default function TopicTableFilter({
           <RotateCw />
         </ButtonEx>
         <ButtonEx
+          id="reset"
           outerClassName="flex-grow"
           variant="outline"
           onClick={handleReset}

@@ -183,7 +183,11 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
             value={status ?? ''}
             onValueChange={handleStatusChange}
           >
-            <SelectTriggerEx id="status" help="Filter the table to show only records with this status">
+            <SelectTriggerEx
+              id="status"
+              help="Filter the table to show only records with this status"
+              title="Filter the table to show only records with this status"
+            >
               <SelectValue placeholder="Status" />
             </SelectTriggerEx>
             <SelectContent>
@@ -200,15 +204,17 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
           </Select>
           : null
         }
-        <Search value={text} onChangeValue={handleTextChange} />
+        <Search id="searchText" value={text} onChangeValue={handleTextChange} />
         {/* See https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode */}
         <Checkbox
           id="advanced"
           checked={advanced}
           onCheckedChange={handleAdvancedSearchChange}
+          title="Use advanced text search syntax. See info hover tip to the right."
         />
         <LabelEx htmlFor="advanced" help="Use advanced text search syntax. See MariaDB documentation at https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode">Advanced</LabelEx>
         <InputEx
+          id="recordId"
           outerClassName="w-28"
           className="text-right"
           placeholder="Record ID"
@@ -219,13 +225,16 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
           help="Filter the table to show only the record with the specified ID. Other filters are retained but ignored."
         />
         <ButtonEx
+          id="refresh"
           variant="outline"
           help="Refresh the table using the same filter and pagination settings."
+          title="Refresh the table using the same filter and pagination settings."
           onClick={() => refetch()}
         >
           <RotateCw />
         </ButtonEx>
         <ButtonEx
+          id="reset"
           outerClassName="flex-grow"
           variant="outline"
           onClick={handleReset}

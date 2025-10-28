@@ -270,7 +270,7 @@ export default function LogTableFilter(
           value={entityKind ?? ''}
           onValueChange={handleEntityKindChange}
         >
-          <SelectTrigger id="kind">
+          <SelectTrigger id="entityKind">
             <SelectValue placeholder="Record Kind" />
           </SelectTrigger>
           <SelectContent>
@@ -293,6 +293,7 @@ export default function LogTableFilter(
           </SelectContent>
         </Select>
         <InputEx
+          id="recordId"
           className="w-30 text-right"
           placeholder="Record ID"
           value={entityId}
@@ -302,13 +303,21 @@ export default function LogTableFilter(
           help="Filter the table to show only the record with the specified ID. Other filters are retained but ignored."
         />
         <ButtonEx
+          id="refresh"
           variant="outline"
           help="Refresh the table using the same filter and pagination settings."
           onClick={() => refetch()}
         >
           <RotateCw />
         </ButtonEx>
-        <Button variant="outline" title="Clear all filters" onClick={handleReset}>Reset</Button>
+        <Button
+          id="reset"
+          variant="outline"
+          title="Clear all filters"
+          onClick={handleReset}
+        >
+          Reset
+        </Button>
         <DataTableViewOptions table={table} />
       </div>
     </div>

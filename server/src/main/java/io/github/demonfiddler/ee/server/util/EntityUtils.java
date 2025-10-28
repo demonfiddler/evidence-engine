@@ -425,7 +425,7 @@ public class EntityUtils {
 				}
 				if (order.isIgnoreCase())
 					sql.append("LOWER(");
-				// TODO: map domain property name to database column name
+				// Consider whether we ever need to map domain property name to database column name.
 				sql.append(qualifier).append('\"').append(property).append('\"');
 				if (order.isIgnoreCase())
 					sql.append(')');
@@ -489,7 +489,7 @@ public class EntityUtils {
 		if (property.equals("createdByUsername") || property.equals("updatedByUsername"))
 			return "username";
 
-		// TODO: see if there is a better way of doing this using the JPA API.
+		// NOTE: there is no offical JPA API to do this mapping. Hibernate has an internal API but this could break.
 		StringBuilder buf = new StringBuilder(property.length());
 		for (int i = 0; i < property.length(); i++) {
 			char c = property.charAt(i);

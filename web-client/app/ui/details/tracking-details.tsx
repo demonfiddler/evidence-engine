@@ -72,8 +72,10 @@ export default function TrackingDetails(
         value={record?.status ?? ''}
         help="The record status"
       />
-      <Label htmlFor="rating">Rating:</Label>
+      <Label id="rating-readonly-label">Rating:</Label>
       <StarRatingBasicEx
+        id="rating-readonly"
+        ariaLabelledby="rating-readonly-label"
         readOnly={true}
         value={record?.rating ?? 0}
         maxStars={5}

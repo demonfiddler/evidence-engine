@@ -128,7 +128,7 @@ export default function PasswordDialog(
                 name="password1"
                 render={({field}) => (
                   <FormItem className="col-start-1">
-                    <FormLabel>New password</FormLabel>
+                    <FormLabel htmlFor="password1">New password</FormLabel>
                     <InputEx
                       id="password1"
                       type="password"
@@ -145,7 +145,7 @@ export default function PasswordDialog(
                 name="password2"
                 render={({field}) => (
                   <FormItem className="col-start-1">
-                    <FormLabel>Re-enter password</FormLabel>
+                    <FormLabel htmlFor="password2">Re-enter password</FormLabel>
                     <InputEx
                       id="password2"
                       type="password"

@@ -87,9 +87,11 @@ export default function QuotationDetails(
               name="rating"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Rating</FormLabel>
+                  <FormLabel id="rating-label">Rating</FormLabel>
                   <FormControl>
                     <StarRatingBasicEx
+                      id="rating"
+                      ariaLabelledby="rating-label"
                       readOnly={!updating}
                       maxStars={5}
                       iconSize={18}
@@ -117,7 +119,7 @@ export default function QuotationDetails(
               name="quotee"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Quotee</FormLabel>
+                  <FormLabel htmlFor="quotee">Quotee</FormLabel>
                   <FormControl>
                     <InputEx
                       id="quotee"
@@ -137,7 +139,7 @@ export default function QuotationDetails(
               name="date"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Date</FormLabel>
+                  <FormLabel htmlFor="date">Date</FormLabel>
                   <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger id="date" asChild>
                       <FormControl>
@@ -179,7 +181,7 @@ export default function QuotationDetails(
               name="text"
               render={({field}) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Quote</FormLabel>
+                  <FormLabel htmlFor="text">Quote</FormLabel>
                   <FormControl>
                     <TextareaEx
                       id="text"
@@ -199,9 +201,10 @@ export default function QuotationDetails(
               name="source"
               render={({field}) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Source</FormLabel>
+                  <FormLabel htmlFor="source">Source</FormLabel>
                   <FormControl>
                     <InputEx
+                      id="source"
                       className="col-span-4"
                       disabled={!record && !updating}
                       readOnly={!updating}
@@ -219,7 +222,7 @@ export default function QuotationDetails(
               name="url"
               render={({field}) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>URL</FormLabel>
+                  <FormLabel htmlFor="url">URL</FormLabel>
                   <FormControl>
                     {
                       updating
@@ -231,6 +234,7 @@ export default function QuotationDetails(
                         help="The online web address of the quotation"
                       />
                       : <LinkEx
+                        type="url"
                         className="col-span-4"
                         href={record?.url ?? ''}
                         target="_blank"
@@ -249,7 +253,7 @@ export default function QuotationDetails(
               name="notes"
               render={({field}) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Notes</FormLabel>
+                  <FormLabel htmlFor="notes">Notes</FormLabel>
                   <FormControl>
                     <TextareaEx
                       id="notes"

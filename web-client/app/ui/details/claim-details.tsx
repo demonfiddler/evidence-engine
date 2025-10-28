@@ -85,9 +85,11 @@ export default function ClaimDetails(
               name="rating"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Rating</FormLabel>
+                  <FormLabel id="rating-label">Rating</FormLabel>
                   <FormControl>
                     <StarRatingBasicEx
+                      id="rating"
+                      ariaLabelledby="rating-label"
                       readOnly={!updating}
                       maxStars={5}
                       iconSize={18}
@@ -106,7 +108,7 @@ export default function ClaimDetails(
               name="date"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>Date</FormLabel>
+                  <FormLabel htmlFor="date">Date</FormLabel>
                   <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger id="date" asChild>
                       <FormControl>
@@ -157,7 +159,7 @@ export default function ClaimDetails(
               name="text"
               render={({field}) => (
                 <FormItem className="col-span-4">
-                  <FormLabel>Text</FormLabel>
+                  <FormLabel htmlFor="text">Text</FormLabel>
                   <FormControl>
                     <TextareaEx
                       id="text"
@@ -177,7 +179,7 @@ export default function ClaimDetails(
               name="notes"
               render={({field}) => (
                 <FormItem className="col-span-4">
-                  <FormLabel>Notes</FormLabel>
+                  <FormLabel htmlFor="notes">Notes</FormLabel>
                   <FormControl>
                     <TextareaEx
                       id="notes"
