@@ -551,23 +551,29 @@ export default function RootLayout({
 
   const [logLevelsDrawerOpen, setLogLevelsDrawerOpen] = useState(false)
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLBodyElement>) => {
-    if (e.key === 'l' && e.ctrlKey && e.altKey)
-      setLogLevelsDrawerOpen(!logLevelsDrawerOpen)
-  }, [])
+    if (e.ctrlKey) {
+      if (e.key === "b")
+        setSidebarOpen(!appState.sidebarOpen)
+      else if (e.key === 'l' && e.altKey)
+        setLogLevelsDrawerOpen(!logLevelsDrawerOpen)
+    }
+  }, [logLevelsDrawerOpen, appState, setLogLevelsDrawerOpen, setSidebarOpen])
 
   return (
     <html lang="en">
       <head>
         <title>Evidence Engine</title>
       </head>
-      <body className={`${inter.className} antialiased`} onKeyDown={handleKeyDown}>
+      <body className={`${inter.className} antialiased relative`} onKeyDown={handleKeyDown}>
         <FlushOnPathChange flushFn={storeAppState} />
         <ApolloProvider client={apolloClient}>
           <AuthProvider>
             <GlobalContext value={globalContext}>
               <Toaster position="top-center" duration={8000} closeButton={true} expand />
               <Suspense>
-                {children}
+                <div className="relative flex flex-row overflow-y-auto h-screen w-screen">
+                  {children}
+                </div>
               </Suspense>
             </GlobalContext>
           </AuthProvider>

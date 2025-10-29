@@ -76,7 +76,7 @@ export default function TrackingDetails(
       <StarRatingBasicEx
         id="rating-readonly"
         ariaLabelledby="rating-readonly-label"
-        readOnly={true}
+        disabled={true}
         value={record?.rating ?? 0}
         maxStars={5}
         iconSize={18}

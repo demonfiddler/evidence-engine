@@ -240,7 +240,7 @@ export default function Dashboard() {
             </div>
           </div>
           <hr />
-          <h2>Topic Statistics</h2>
+          <h3>Topic Statistics</h3>
           <div className="flex flex-col gap-2">
             <Table className="table-fixed box-border" style={{ width: `${table.getTotalSize()}px` }}>
               <TableCaption>Topics and counts of linked records by type</TableCaption>
@@ -293,7 +293,7 @@ export default function Dashboard() {
             <DataTablePaginator table={table} />
           </div>
           <hr className="mt-2" />
-          <h2>Record Statistics</h2>
+          <h3>Record Statistics</h3>
           <div className="flex flex-wrap gap-4">
             {
               entityItems.map(item => (

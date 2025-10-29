@@ -15,7 +15,7 @@ export interface StarRatingBasicProps {
   onChange?: (value: number) => void
   iconSize?: number
   maxStars?: number
-  readOnly?: boolean
+  disabled?: boolean
   color?: string
 }
 
@@ -61,45 +61,45 @@ const StarRating_Basic = ({
   iconSize = 24,
   maxStars = 5,
   onChange,
-  readOnly = false,
+  disabled = false,
   value,
 }: StarRatingBasicProps) => {
   const [hoverRating, setHoverRating] = useState<number | null>(null);
 
   const handleStarClick = useCallback(
     (index: number) => {
-      if (readOnly || !onChange) return;
+      if (disabled || !onChange) return;
       const newRating = index + 1;
       onChange(newRating === value ? 0 : newRating);
     },
-    [readOnly, value, onChange]
+    [disabled, value, onChange]
   );
 
   const handleStarHover = useCallback(
     (index: number) => {
-      if (!readOnly) {
+      if (!disabled) {
         setHoverRating(index + 1);
       }
     },
-    [readOnly]
+    [disabled]
   );
 
   const handleMouseLeave = useCallback(() => {
-    if (!readOnly) {
+    if (!disabled) {
       setHoverRating(null);
     }
-  }, [readOnly]);
+  }, [disabled]);
 
   const getStarStyle = useCallback(
     (index: number) => {
       const ratingToUse =
-        !readOnly && hoverRating !== null ? hoverRating : value;
+        !disabled && hoverRating !== null ? hoverRating : value;
       return {
         color: ratingToUse > index ? color : "gray",
         fill: ratingToUse > index ? color : "transparent",
       } as CSSProperties;
     },
-    [readOnly, hoverRating, value, color]
+    [disabled, hoverRating, value, color]
   );
 
   const stars = React.useMemo(() => {
@@ -111,6 +111,7 @@ const StarRating_Basic = ({
           type="button"
           variant="ghost"
           role="radio"
+          disabled={disabled}
           className="p-0 has-[>svg]:p-0"
           onClick={() => handleStarClick(index)}
           onMouseEnter={() => handleStarHover(index)}
@@ -120,7 +121,7 @@ const StarRating_Basic = ({
             index={index}
             style={style}
             iconSize={iconSize}
-            isInteractive={!readOnly}
+            isInteractive={!disabled}
           />
         </Button>
       );
@@ -131,7 +132,7 @@ const StarRating_Basic = ({
     iconSize,
     handleStarClick,
     handleStarHover,
-    readOnly,
+    disabled,
   ]);
 
   return (

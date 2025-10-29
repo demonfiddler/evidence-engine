@@ -45,7 +45,7 @@ export const columns: ColumnDef<ITrackedEntity>[] = [
       return (
         <StarRatingBasic
           className="place-self-center"
-          readOnly={true}
+          disabled={true}
           value={getValue() as number ?? 0}
           maxStars={5}
           iconSize={12}

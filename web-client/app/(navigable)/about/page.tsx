@@ -28,7 +28,7 @@ export default function About() {
   logger.debug("render")
 
   return (
-    <main className="flex flex-col m-8 gap-8 w-1/2 self-center">
+    <main className="flex flex-col self-center m-8 gap-8 w-1/2">
       <div className="flex flex-row items-center">
         <InformationCircleIcon className="w-8 h-8"/>
         &nbsp;

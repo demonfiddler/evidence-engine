@@ -39,20 +39,25 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 
 export default function Page() {
   return (
-    <main className="flex min-h-screen flex-col">
-      <header className="grid grid-cols-3 items-center shrink-0 w-full h-12 rounded-md text-white bg-blue-500">
-        <p className="col-start-2 justify-self-center">Evidence Engine</p>
-        <UserIcon className="justify-self-end size-4" />
+    <div className="flex flex-col">
+      <header className="fixed top-0 left-0 right-0 z-10 grid grid-cols-3 items-center shrink-0 w-full h-16 text-white bg-blue-500">
+        <div></div>
+        <p className="justify-self-center"><b>The Evidence Engine</b></p>
+        <UserIcon className="justify-self-end mr-4 size-4" />
       </header>
-      <div className="mt-4 flex gap-4">
+      <footer className="fixed bottom-0 left-0 right-0 z-10 grid grid-cols-3 items-center shrink-0 w-full h-12 text-xs text-white bg-blue-500">
+        <p>&nbsp;Copyright &copy; 2024-25 Adrian Price. All rights reserved.</p>
+        <p className="justify-self-center">A <a href="https://campaign-resources.org" target="_blank" className="text-white"><i>Campaign Resources</i></a> application</p>
+      </footer>
+      <div className="fixed top-16 bottom-12 flex gap-4">
         <div className="flex flex-col justify-center items-center gap-6 rounded-lg bg-gray-50 px-6 py-10 md:min-w-1/4 md:px-20">
-          {/* <p className={`${lusitana.className} antialiased text-xl text-center text-gray-800 md:text-3xl md:leading-normal`}> */}
           <p className="antialiased italic text-xl text-center text-gray-800 md:text-3xl md:leading-normal">
             <strong>Welcome to the</strong>
           </p>
           <Logo />
-          from&nbsp;<a href="https://campaign-resources.org" target="_blank"><i>Campaign Resources</i></a>
-          <Image src="/cr-logo-favicon.svg" width="32" height="32" alt="Campaign Resources favicon" />
+          from&nbsp;<a href="https://campaign-resources.org" target="_blank">
+            <Image src="/cr-logo.svg" width="132" height="132" alt="Campaign Resources logo" />
+          </a>
           <Link
             className="justify-self-center flex items-center gap-5 rounded-lg bg-blue-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-400 md:text-base"
             href="/dashboard"
@@ -78,7 +83,7 @@ export default function Page() {
             /> */}
           </div>
           <Carousel
-            className="w-1/2 h-full"
+            className="w-2/3"
             plugins={[
               Autoplay({
                 delay: 5000,
@@ -137,11 +142,6 @@ export default function Page() {
           </Carousel>
         </div>
       </div>
-      <div className="grow"></div>
-      <footer className="grid grid-cols-3 items-center shrink-0 w-full h-12 rounded-md text-xs text-white bg-blue-500">
-        <p>&nbsp;Copyright &copy; 2024-25 Adrian Price. All rights reserved.</p>
-        <p className="justify-self-center">A <a href="https://campaign-resources.org" target="_blank" className="text-white"><i>Campaign Resources</i></a> application</p>
-      </footer>
-    </main>
+    </div>
   );
 }

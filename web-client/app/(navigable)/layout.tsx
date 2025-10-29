@@ -21,12 +21,13 @@
 
 import "@/app/globals.css"
 import '@/app/ui/global.css'
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/app/ui//navigator/app-sidebar"
 import MyAccount from "../ui/security/my-account"
 import { GlobalContext } from "@/lib/context"
 import { useContext } from "react"
 import { layout, LoggerEx } from "@/lib/logger"
+import Sidebar from "../ui/navigator/sidebar"
+import { Button } from "@/components/ui/button"
+import { PanelRightCloseIcon, PanelRightOpenIcon } from "lucide-react"
 
 const logger = new LoggerEx(layout, "[NavigableLayout] ")
 
@@ -40,22 +41,35 @@ export default function NavigableLayout({
   const {sidebarOpen, setSidebarOpen} = useContext(GlobalContext)
 
   return (
-    <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
-      <AppSidebar />
-      <main className="flex flex-col h-screen w-full">
-        <header className="grid grid-cols-3 items-center shrink-0 w-full h-12 rounded-md text-white bg-blue-500">
-          <SidebarTrigger title="Toggle sidebar (Ctrl+B)" />
-          <p className="justify-self-center">The <i>Evidence Engine</i></p>
-          <MyAccount className="justify-self-end" />
-        </header>
-        {children}
-        <div className="grow"></div>
-        <footer className="grid grid-cols-3 items-center shrink-0 w-full h-12 text-xs rounded-md text-white bg-blue-500">
-          <p>&nbsp;Copyright &copy; 2024-25 Adrian Price. All rights reserved.</p>
-          <p className="justify-self-center">A <a href="https://campaign-resources.org" target="_blank" className="text-white"><i>Campaign Resources</i></a> application</p>
-        </footer>
-      </main>
-    </SidebarProvider>
+    <div className="w-full">
+      <header className="fixed top-0 left-0 right-0 z-10 grid grid-cols-3 items-center w-full h-16 text-white bg-blue-500">
+        <Button
+          type="button"
+          variant="ghost"
+          className="w-12"
+          title="Toggle sidebar (Ctrl+B)"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+        >
+          {
+            sidebarOpen
+            ? <PanelRightOpenIcon />
+            : <PanelRightCloseIcon />
+          }
+        </Button>
+        <p className="justify-self-center"><b>The Evidence Engine</b></p>
+        <MyAccount className="justify-self-end" />
+      </header>
+      <footer className="fixed bottom-0 left-0 right-0 z-10 grid grid-cols-3 items-center w-full h-12 text-xs text-white bg-blue-500">
+        <p>&nbsp;Copyright &copy; 2024-25 Adrian Price. All rights reserved.</p>
+        <p className="justify-self-center">A <a href="https://campaign-resources.org" target="_blank" className="text-white"><i>Campaign Resources</i></a> application</p>
+      </footer>
+      <div className="fixed top-16 bottom-12 flex flex-row w-screen">
+        <Sidebar open={sidebarOpen} />
+        <div className="flex flex-col w-full overflow-y-auto">
+          {children}
+        </div>
+      </div>
+    </div>
   )
 }
 

@@ -97,7 +97,7 @@ export default function JournalDetails(
                     <StarRatingBasicEx
                       id="rating"
                       ariaLabelledby="rating-label"
-                      readOnly={!updating}
+                      disabled={!updating}
                       maxStars={5}
                       iconSize={18}
                       className="ml-2 w-full"
