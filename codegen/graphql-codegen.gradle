@@ -1,0 +1,150 @@
+// GraphQL Java Generator configuration for server codegen.
+// Because we have modified the generated code, we now generate it only
+// for reference/comparison purposes, and we don't put it on the class path.
+//sourceSets.main.java.srcDirs += '/build/generated/sources/graphqlServer'
+//sourceSets.main.resources.srcDirs += '/build/generated/resources/graphqlServer'
+generateServerCodeConf {
+//	addRelayConnections = false
+	batchMappingDataFetcherReturnType = 'MAP' // 'FLUX'
+	copyRuntimeSources = false // will go away in 2.0
+	customScalars = [
+		[
+			graphQLTypeName: 'Country',
+			javaType: 'java.lang.String',
+			graphQLScalarTypeStaticField: 'io.github.demonfiddler.ee.common.graphql.CustomScalars.COUNTRY'
+		], [
+			graphQLTypeName: 'Date',
+			javaType: 'java.time.LocalDate',
+			graphQLScalarTypeStaticField: 'graphql.scalars.ExtendedScalars.Date'
+		], [
+			graphQLTypeName: 'DateTime',
+			javaType: 'java.time.OffsetDateTime',
+			graphQLScalarTypeStaticField: 'graphql.scalars.ExtendedScalars.DateTime'
+		], [
+			graphQLTypeName: 'ISSN',
+			javaType: 'java.lang.String',
+			graphQLScalarTypeStaticField: 'io.github.demonfiddler.ee.common.graphql.CustomScalars.ISSN'
+		], [
+			graphQLTypeName: 'Long',
+			javaType: 'java.lang.Long',
+			graphQLScalarTypeStaticField: 'graphql.scalars.ExtendedScalars.GraphQLLong'
+		], [
+			graphQLTypeName: 'URI',
+			javaType: 'java.net.URI',
+			graphQLScalarTypeStaticField: 'io.github.demonfiddler.ee.common.graphql.CustomScalars.URI'
+		], [
+			graphQLTypeName: 'URL',
+			javaType: 'java.net.URL',
+			graphQLScalarTypeStaticField: 'io.github.demonfiddler.ee.common.graphql.CustomScalars.URL'
+		], [
+			graphQLTypeName: 'Void',
+			javaType: 'java.lang.Void',
+			graphQLScalarTypeStaticField: 'io.github.demonfiddler.ee.common.graphql.CustomScalars.VOID'
+		]
+	]
+//	enumPrefix = 
+//	enumSuffix = 
+	generateBatchLoaderEnvironment = true // will go away in 2.0
+	generateBatchMappingDataFetchers = true // false
+	generateDataFetcherForEveryFieldsWithArguments = true // false
+//	batchMappingMethodReturnType = ?
+//	generateDataLoaderForLists = false
+	generateJPAAnnotation = true // false
+//	ignoredSpringMappings =
+//	inputPrefix =
+//	inputSuffix = 
+//	interfacePrefix =
+//	interfaceSuffix = 
+	javaTypeForIDType = 'java.lang.Long' // 'java.util.UUID'
+//	jsonGraphqlSchemaFilename = src/main/resources/graphql/schema.graphqls
+//	maxTokens = Integer.MAX_VALUE (=2147483647)
+	packageName = 'io.github.demonfiddler.ee.server' // 'com.generated.graphql'
+//	queryMutationExecutionProtocol = 'http' | 'webSocket'
+//	scanBasePackages = 'io.github.demonfiddler.ee.server.util, io.github.demonfiddler.ee.server.impl, io.github.demonfiddler.ee.server.jpa'
+//	scanBasePackages = 'io.github.demonfiddler.ee.server'
+	schemaFileFolder = "../server/src/main/resources/graphql" // default /src/main/resources
+//	schemaFilePattern = '*.graphqls'
+	schemaPersonalizationFile = "./src/main/resources/graphql/personalization.json"
+	separateUtilityClasses = true // will go away in 2.0
+//	skipGenerationIfSchemaHasNotChanged = true // deprecated
+//	sourceEncoding = 'UTF-8'
+//	springBeanSuffix = ''
+	targetResourceFolder = "./build/generated/resources/graphqlServer"
+	targetSourceFolder = "./build/generated/sources/graphqlServer"
+//	templates = {} // see com.graphql_java_generator.plugin.CodeTemplate enum
+//	typePrefix = ''
+//	typeSuffix = ''
+//	unionPrefix = ''
+//	unionSuffix = ''
+	useJakartaEE9 = true
+}
+
+// GraphQL Java Generator configuration for client codegen.
+//sourceSets.test.java.srcDirs += '/build/generated/sources/graphqlClient'
+//sourceSets.test.resources.srcDirs += '/build/generated/resources/graphqlClient'
+generateClientCodeConf {
+	// addRelayConnections = false
+	// copyRuntimeSources = false [needs com.graphql-java-generator:graphql-java-runtime dependency]
+	customScalars = [
+		[
+			graphQLTypeName: "Country",
+			javaType: "java.lang.String",
+			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.common.graphql.CustomScalars.COUNTRY"
+		], [
+			graphQLTypeName: "Date",
+			javaType: "java.time.LocalDate",
+			graphQLScalarTypeStaticField: "graphql.scalars.ExtendedScalars.Date"
+		], [
+			graphQLTypeName: "DateTime",
+			javaType: "java.time.OffsetDateTime",
+			graphQLScalarTypeStaticField: "graphql.scalars.ExtendedScalars.DateTime"
+		], [
+			graphQLTypeName: "ISSN",
+			javaType: "java.lang.String",
+			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.common.graphql.CustomScalars.ISSN"
+		], [
+			graphQLTypeName: "Long",
+			javaType: "java.lang.Long",
+			graphQLScalarTypeStaticField: "graphql.scalars.ExtendedScalars.GraphQLLong"
+		], [
+			graphQLTypeName: "URI",
+			javaType: "java.net.URI",
+			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.common.graphql.CustomScalars.URI"
+		], [
+			graphQLTypeName: "URL",
+			javaType: "java.net.URL",
+			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.common.graphql.CustomScalars.URL"
+		], [
+			graphQLTypeName: "Void",
+			javaType: "java.lang.Void",
+			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.common.graphql.CustomScalars.VOID"
+		]
+	]
+	// javaTypeForIDType = 'java.lang.Long' // Incredibly, this setting is not supported for client codegen!
+	// enumPrefix = 
+	// enumSuffix = 
+	// generateDeprecatedRequestResponse = false
+	// inputPrefix = 
+	// inputSuffix = 
+	// interfacePrefix = 
+	// interfaceSuffix = 
+	// jsonGraphqlSchemaFilename = 
+	// maxTokens = 2147483647
+	packageName = 'io.github.demonfiddler.ee.client'
+	// queryMutationExecutionProtocol = http | webSocket
+	schemaFileFolder = "../server/src/main/resources/graphql" // default /src/main/resources
+	// schemaFilePattern = *.graphqls
+	// schemaPersonalizationFile = 
+	// separateUtilityClasses = true
+	// skipGenerationIfSchemaHasNotChanged = true
+	// sourceEncoding = UTF-8
+	// springBeanSuffix = 
+	targetResourceFolder = "./build/generated/resources/graphqlClient"
+	targetSourceFolder = "./build/generated/sources/graphqlClient"
+	// templates = 
+	// typePrefix = 
+	// typeSuffix = 
+	// unionPrefix = 
+	// unionSuffix = 
+	// useJakartaEE9 = false
+}

@@ -23,19 +23,10 @@ plugins {
 	id 'org.springframework.boot' version "${springBootVersion}"
 	id 'io.spring.dependency-management' version "${dependencyManagementPluginVersion}"
 	id 'org.asciidoctor.jvm.convert' version "${asciidoctorJvmConvertVersion}"
-	// Uncomment the next line in order to run the generateServerCode task.
-	// id "com.graphql-java-generator.graphql-gradle-plugin3" version "${graphQLPluginVersion}"
-	// id "com.netflix.dgs.codegen" version "6.3.0"
 }
 
 group = 'io.github.demonfiddler.evidence-engine'
 version = '0.0.1-SNAPSHOT'
-
-// dependencyManagement {
-// 	imports {
-// 		mavenBom "de.codecentric:spring-boot-admin-dependencies:${springBootAdminVersion}"
-// 	}
-// }
 
 dependencies {
 	implementation project(':common')
@@ -52,13 +43,8 @@ dependencies {
 //	implementation 'org.springframework.hateoas:spring-hateoas' // Necessary when hateoas used with webflux
 //	implementation 'de.codecentric:spring-boot-admin-starter-server'
 	implementation 'org.springframework.session:spring-session-core'
-//	implementation 'com.graphql-java-generator:graphql-java-common-dependencies:${graphQLPluginVersion}'
-//	implementation 'com.graphql-java-generator:graphql-java-server-dependencies:${graphQLPluginVersion}' // added per graphql-java-generator example
-//	implementation 'com.graphql-java-generator:graphql-java-dependencies' // only if copyRuntimeSources = true
 	implementation "com.graphql-java-generator:graphql-java-server-runtime:${graphQLPluginVersion}" // only if copyRuntimeSources = false
 	implementation 'com.graphql-java:graphql-java-extended-scalars:22.0'
-//	implementation 'com.github.dozermapper:dozer-core:6.5.2' // used in graphql-java-generator example
-//  implementation 'io.reactivex.rxjava2:rxjava:2.2.19' // used in graphql-java-generator example
 	implementation 'org.apache.commons:commons-collections4:4.5.0'
 	implementation 'org.apache.commons:commons-beanutils2:2.0.0-M2'
 	implementation 'org.apache.commons:commons-lang3:3.17.0'
@@ -187,6 +173,3 @@ terminateIntegrationTestServer.configure {
 		!providers.gradleProperty('skipLaunch').present
 	}
 }
-
-// Uncomment to enable GraphQL server code generation (NOTE: the generated code has been heavily modified).
-// apply from: 'codegen.gradle'

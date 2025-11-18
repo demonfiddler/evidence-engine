@@ -1,14 +1,25 @@
 plugins {
 	id 'java'
-	id "org.openapi.generator" version "7.17.0"
+	// Uncomment the following line to enable GraphQL code generation
+	// id "com.graphql-java-generator.graphql-gradle-plugin3" version "${graphQLPluginVersion}"
+	// id "com.netflix.dgs.codegen" version "${netflixDgsCodegenVersion}"
+	id "org.openapi.generator" version "${openapiGeneratorVersion}"
 }
 
 group = 'io.github.demonfiddler.evidence-engine'
 version = '0.0.1-SNAPSHOT'
 
 dependencies {
-	implementation 'org.openapitools:openapi-generator:7.17.0'
-	implementation 'org.openapitools:openapi-generator-cli:7.17.0'
+	implementation('org.openapitools:openapi-generator') {
+		version {
+			prefer "${openapiGeneratorVersion}"
+		}
+	}
+	implementation('org.openapitools:openapi-generator-cli') {
+		version {
+			prefer "${openapiGeneratorVersion}"
+		}
+	}
 }
 
 repositories {
@@ -27,10 +38,38 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+// Netflix DGS code generator configuration. See https://netflix.github.io/dgs/generating-code-from-schema/.
+// generateJava{
+// 	schemaPaths = ["${projectDir}/src/main/resources/graphql"] // List of directories containing schema files
+// 	packageName = 'io.github.demonfiddler.ee.server' // The package name to use to generate sources
+// 	// subPackageNameClient = client
+// 	// subPackageNameDatafetchers = datafetchers
+// 	// subPackageNameTypes = types
+// 	// language = java
+// 	// typeMapping (A Map where each key is a GraphQL type, and the value the FQN of a Java class)
+// 	// generateBoxedTypes = false
+// 	generateServer = true // false
+// 	// generateDataTypes = true
+// 	// generateInterfaces = false
+// 	// generatedSourcesDir = build
+// 	// includeQueries = [...]
+// 	// includeMutations = [...]
+// 	// includeSubscriptions= [...]
+// 	// skipEntityQueries = false
+// 	// shortProjectionNames = false
+// 	// maxProjectionDepth = 10
+// 	// includeEnumImports = (map)
+// 	// includeImports = mapOf(Pair("validator", "com.test.validator")),
+// 	// includeClassImports = mapOf("ValidPerson" to mapOf(Pair("BasicValidation", "com.test.validator.groups")))
+// 	// generateCustomAnnotations = false
+// 	// addGeneratedAnnotation = false
+// 	// disableDatesInGeneratedAnnotation = false
+// }
+
 openApiGenerate {
     generatorName.set("spring")
     inputSpec.set("$rootDir/server/src/main/resources/rest/openapi.yaml".replace('\\', '/'))
-    outputDir.set("$buildDir/generated/ee")
+    outputDir.set("$buildDir/generated/sources/openapiServer")
 	packageName.set("io.github.demonfiddler.ee.server.rest")
     apiPackage.set("io.github.demonfiddler.ee.server.rest.api")
     invokerPackage.set("io.github.demonfiddler.ee.server.rest.invoker")
@@ -41,3 +80,6 @@ openApiGenerate {
 openApiValidate {
     inputSpec.set("$rootDir/server/src/main/resources/rest/openapi.yaml".replace('\\', '/'))
 }
+
+// Uncomment the following line to enable GraphQL code generation (NOTE: the generated code has been heavily modified).
+// apply from: 'graphql-codegen.gradle'

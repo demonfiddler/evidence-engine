@@ -21,8 +21,6 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version "${springBootVersion}"
 	id 'io.spring.dependency-management' version "${dependencyManagementPluginVersion}"
-	// Uncomment the next line in order to run the generateClientCode task.
-	// id "com.graphql-java-generator.graphql-gradle-plugin3" version "${graphQLPluginVersion}"
 }
 
 group = 'io.github.demonfiddler.evidence-engine'
@@ -76,7 +74,6 @@ ext {
 }
 
 tasks.named('test') {
-	// N.B. Comment out the dependsOn and finalizedBy lines when running the generateClientCode task.
 	dependsOn project(':server').tasks.named('bootIntegrationTestServerBG')
 	outputs.dir snippetsDir
 	useJUnitPlatform()
@@ -87,8 +84,3 @@ tasks.named('test') {
 	systemProperty('junit.jupiter.testclass.order.default', 'org.junit.jupiter.api.ClassOrderer$OrderAnnotation')
 	finalizedBy project(':server').tasks.named('terminateIntegrationTestServer')
 }
-
-// Uncomment to enable GraphQL client code generation (NOTE: the generated code has been heavily modified).
-// N.B. when enabling this line, also enable the com.graphql-java-generator.graphql-gradle-plugin3 plugin and disable
-// the 'test' task's dependsOn and finalizedBy settings.
-// apply from: 'codegen.gradle'
