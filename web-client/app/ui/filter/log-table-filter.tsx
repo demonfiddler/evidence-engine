@@ -40,6 +40,7 @@ import ButtonEx from "../ext/button-ex"
 import { RotateCw } from "lucide-react"
 import { filter, LoggerEx } from "@/lib/logger"
 import { QueryResult } from "@/lib/graphql-utils"
+import ExportDialog from "../dialog/export-dialog"
 
 const logger = new LoggerEx(filter, "[LogTableFilter] ")
 
@@ -318,6 +319,7 @@ export default function LogTableFilter(
         >
           Reset
         </Button>
+        <ExportDialog recordKind="Log" />
         <DataTableViewOptions table={table} />
       </div>
     </div>

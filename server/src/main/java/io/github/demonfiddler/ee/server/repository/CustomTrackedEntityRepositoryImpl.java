@@ -47,9 +47,9 @@ public abstract class CustomTrackedEntityRepositoryImpl<T extends ITrackedEntity
 
     /** Describes the elements of a query. */
     private static record QueryMetaData(@Nullable TrackedEntityQueryFilter filter, @NonNull Pageable pageable,
-        String countQueryName, String selectQueryName, String entityName, boolean hasStatus, boolean hasText,
-        boolean hasTextH2, boolean hasTextMariaDB, boolean isAdvanced, boolean isPaged, boolean isSorted,
-        boolean isSortedOnCreatedByUsername, boolean isSortedOnUpdatedByUsername) {
+        String countQueryName, String selectQueryName, String entityName, boolean hasRecordId, boolean hasStatus,
+        boolean hasText, boolean hasTextH2, boolean hasTextMariaDB, boolean isAdvanced, boolean isPaged,
+        boolean isSorted, boolean isSortedOnCreatedByUsername, boolean isSortedOnUpdatedByUsername) {
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomTrackedEntityRepositoryImpl.class);
@@ -80,11 +80,12 @@ public abstract class CustomTrackedEntityRepositoryImpl<T extends ITrackedEntity
     @SuppressWarnings("null")
     private QueryMetaData getQueryMetaData(@Nullable TrackedEntityQueryFilter filter, @NonNull Pageable pageable) {
         boolean hasFilter = filter != null;
-        boolean hasText = hasFilter && filter.getText() != null && !filter.getText().isEmpty();
+        boolean hasRecordId = hasFilter && filter.getRecordId() != null;
+        boolean hasText = hasFilter && !hasRecordId && filter.getText() != null && !filter.getText().isEmpty();
         boolean hasTextH2 = hasText && profileUtils.isIntegrationTesting();
         boolean hasTextMariaDB = hasText && !profileUtils.isIntegrationTesting();
         boolean isAdvanced = hasText && filter.getAdvancedSearch();
-        boolean hasStatus = hasFilter && filter.getStatus() != null && !filter.getStatus().isEmpty();
+        boolean hasStatus = hasFilter && !hasRecordId && filter.getStatus() != null && !filter.getStatus().isEmpty();
         boolean isPaged = pageable.isPaged();
         boolean isSorted = pageable.getSort().isSorted();
         boolean isSortedOnCreatedByUsername = false;
@@ -119,6 +120,8 @@ public abstract class CustomTrackedEntityRepositoryImpl<T extends ITrackedEntity
         append(entityName, queryNames);
         countQueryName.append(".countBy");
         selectQueryName.append(".findBy");
+        if (hasRecordId)
+            append("Id", queryNames);
         if (hasStatus)
             append("Status", queryNames);
         if (hasText) {
@@ -130,8 +133,8 @@ public abstract class CustomTrackedEntityRepositoryImpl<T extends ITrackedEntity
             entityUtils.appendOrderByToQueryName(selectQueryName, pageable);
 
         return new QueryMetaData(filter, pageable, countQueryName.toString(), selectQueryName.toString(), entityName,
-            hasStatus, hasText, hasTextH2, hasTextMariaDB, isAdvanced, isPaged, isSorted, isSortedOnCreatedByUsername,
-            isSortedOnUpdatedByUsername);
+            hasRecordId, hasStatus, hasText, hasTextH2, hasTextMariaDB, isAdvanced, isPaged, isSorted,
+            isSortedOnCreatedByUsername, isSortedOnUpdatedByUsername);
     }
 
     /**
@@ -160,8 +163,11 @@ public abstract class CustomTrackedEntityRepositoryImpl<T extends ITrackedEntity
         --}
         -- if (m.hasTextMariaDB || m.hasStatus) {
         WHERE
+        -- if (m.hasRecordId) {
+            e."id" = :recordId
+        -- }
         -- if (m.hasStatus) {
-            e."status" IN (:status)
+            AND e."status" IN (:status)
         -- }
         -- if (m.hasTextMariaDB) {
             AND MATCH ("${getFulltextColumns()} AGAINST (:text"[ IN BOOLEAN MODE])
@@ -187,29 +193,38 @@ public abstract class CustomTrackedEntityRepositoryImpl<T extends ITrackedEntity
                 .append("ON ubu.\"id\" = e.\"updated_by_user_id\"");
         }
 
-        if (m.hasText || m.hasStatus) {
+        if (m.hasText || m.hasRecordId || m.hasStatus) {
             if (m.hasTextH2) {
                 selectBuf.append(NL) //
                     .append("JOIN FT_SEARCH_DATA(:text, 0, 0) ft").append(NL) //
                     .append("ON ft.\"TABLE\" = '").append(m.entityName).append('\'').append(NL) //
                     .append("    AND ft.\"KEYS\"[1] = e.\"id\"");
             }
-            boolean needsAnd = false;
-            if (m.hasTextMariaDB || m.hasStatus) {
+            if (m.hasTextMariaDB || m.hasRecordId || m.hasStatus) {
+                boolean needsAnd = false;
                 selectBuf.append(NL) //
                     .append("WHERE");
+                if (m.hasRecordId) {
+                    selectBuf.append(NL) //
+                        .append("    ");
+                    if (needsAnd)
+                        selectBuf.append("AND ");
+                    selectBuf.append("e.\"id\" = :recordId");
+                    needsAnd = true;
+                }
                 if (m.hasStatus) {
                     selectBuf.append(NL) //
-                        .append("    e.\"status\" IN (:status)");
+                        .append("    ");
+                    if (needsAnd)
+                        selectBuf.append("AND ");
+                    selectBuf.append("e.\"status\" IN (:status)");
                     needsAnd = true;
                 }
                 if (m.hasTextMariaDB) {
                     selectBuf.append(NL) //
                         .append("    ");
-                    if (needsAnd) {
-                        selectBuf.append(NL) //
-                            .append("AND ");
-                    }
+                    if (needsAnd)
+                        selectBuf.append("AND ");
                     selectBuf.append("MATCH (").append(getFulltextColumns()).append(") AGAINST (:text");
                     if (m.isAdvanced)
                         selectBuf.append(" IN BOOLEAN MODE");
@@ -256,6 +271,8 @@ public abstract class CustomTrackedEntityRepositoryImpl<T extends ITrackedEntity
         }
 
         Map<String, Object> params = new HashMap<>();
+        if (m.hasRecordId)
+            params.put("recordId", m.filter.getRecordId());
         if (m.hasStatus)
             params.put("status", m.filter.getStatus().stream().map(s -> s.name()).toList());
         if (m.hasText)

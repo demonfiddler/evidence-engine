@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS "declaration" (
   "kind" varchar(4) NOT NULL COMMENT 'The kind of declaration',
   "date" date NOT NULL COMMENT 'The date the declaration was first published',
   "title" varchar(100) NOT NULL COMMENT 'The declaration name or title',
-  "country_code" char(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for the country to which the declaration pertains',
+  "country" char(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for the country to which the declaration pertains',
   "url" varchar(200) DEFAULT NULL COMMENT 'Web URL of the original declaration',
   "cached" bit(1) NOT NULL DEFAULT b'0' COMMENT 'Flag to indicate that url content is cached on this application server',
   "signatories" text DEFAULT NULL COMMENT 'The list of signatories, one per line',
@@ -112,10 +112,10 @@ CREATE TABLE IF NOT EXISTS "declaration" (
   "notes" text DEFAULT NULL COMMENT 'Added notes about the declaration',
   PRIMARY KEY ("id"),
   KEY "FK_declaration_declaration_kind" ("kind"),
-  KEY "FK_declaration_country" ("country_code"),
+  KEY "FK_declaration_country" ("country"),
   FULLTEXT KEY "declaration_fulltext" ("title","signatories","notes"),
   CONSTRAINT "FK_declaration_entity" FOREIGN KEY ("id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT "FK_declaration_country" FOREIGN KEY ("country_code") REFERENCES "country" ("alpha_2") ON UPDATE CASCADE ON DELETE SET NULL,
+  CONSTRAINT "FK_declaration_country" FOREIGN KEY ("country") REFERENCES "country" ("alpha_2") ON UPDATE CASCADE ON DELETE SET NULL,
   CONSTRAINT "FK_declaration_declaration_kind" FOREIGN KEY ("kind") REFERENCES "declaration_kind" ("kind") ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Details of public declarations and open letters expressing climate scepticism';
 
@@ -214,7 +214,7 @@ CREATE TABLE IF NOT EXISTS "person" (
   "alias" varchar(40) DEFAULT NULL COMMENT 'Alternative last name',
   "notes" text DEFAULT NULL COMMENT 'Brief biography, notes, etc.',
   "qualifications" text DEFAULT NULL COMMENT 'Academic qualifications',
-  "country_code" char(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for country of primary professional association',
+  "country" char(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for country of primary professional association',
   "checked" bit(1) NOT NULL DEFAULT b'0' COMMENT 'Set when the person''s credentials have been checked',
   "published" bit(1) NOT NULL DEFAULT b'0' COMMENT 'Set if person has published peer-reviewed papers on climate change',
   PRIMARY KEY ("id"),
@@ -223,11 +223,11 @@ CREATE TABLE IF NOT EXISTS "person" (
   KEY "person_last_name" ("last_name") USING BTREE,
   KEY "person_qualifications" ("qualifications") USING BTREE,
   KEY "person_rating" ("rating") USING BTREE,
-  KEY "person_country" ("country_code") USING BTREE,
+  KEY "person_country" ("country") USING BTREE,
   KEY "person_notes" ("notes") USING BTREE,
   FULLTEXT KEY "person_fulltext" ("title","first_name","nickname","prefix","last_name","suffix","alias","notes","qualifications"),
   CONSTRAINT "FK_person_entity" FOREIGN KEY ("id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT "FK_person_country" FOREIGN KEY ("country_code") REFERENCES "country" ("alpha_2") ON UPDATE CASCADE ON DELETE SET NULL,
+  CONSTRAINT "FK_person_country" FOREIGN KEY ("country") REFERENCES "country" ("alpha_2") ON UPDATE CASCADE ON DELETE SET NULL,
   CONSTRAINT "CC_person_rating" CHECK ("rating" between 0 and 5)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='People who have publicly expressed contrarian/sceptical views about topic orthodoxy, whether by signing declarations, open letters or publishing science articles.';
 
@@ -312,15 +312,15 @@ CREATE TABLE IF NOT EXISTS "publisher" (
   "id"  bigint(20) unsigned NOT NULL COMMENT 'The unique publisher identifier',
   "name" varchar(200) NOT NULL COMMENT 'The publisher name',
   "location" varchar(50) DEFAULT NULL COMMENT 'The publisher location',
-  "country_code" char(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for the publisher''s country',
+  "country" char(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for the publisher''s country',
   "url" varchar(200) DEFAULT NULL COMMENT 'URL of publisher''s home page',
   "journal_count" smallint(6) unsigned DEFAULT NULL COMMENT 'The number of journals published',
   PRIMARY KEY ("id"),
-  KEY "FK_publisher_country" ("country_code") USING BTREE,
+  KEY "FK_publisher_country" ("country") USING BTREE,
   KEY "publisher_name" ("name"),
   FULLTEXT KEY "publisher_fulltext" ("name","location","url"),
   CONSTRAINT "FK_publisher_entity" FOREIGN KEY ("id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT "FK_publisher_country" FOREIGN KEY ("country_code") REFERENCES "country" ("alpha_2") ON UPDATE CASCADE
+  CONSTRAINT "FK_publisher_country" FOREIGN KEY ("country") REFERENCES "country" ("alpha_2") ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='A list of book, journal, etc. publishers. The table can contain duplicate entries in the name column, reflecting the same publisher in different locations.';
 
 -- Dumping structure for table evidence_engine.quotation
@@ -378,14 +378,14 @@ CREATE TABLE IF NOT EXISTS "user" (
   "first_name" varchar(50) NULL COMMENT 'The user''s first name',
   "last_name" varchar(50) NULL COMMENT 'The user''s last name',
   "email" varchar(100) DEFAULT NULL COMMENT 'The user''s email address, used for sign-in',
-  "country_code" char(2) DEFAULT NULL COMMENT 'ISO-3166-1 alpha-2 code for user''s country of residence',
+  "country" char(2) DEFAULT NULL COMMENT 'ISO-3166-1 alpha-2 code for user''s country of residence',
   "notes" text DEFAULT NULL COMMENT 'Added notes about the user',
   PRIMARY KEY ("id"),
   UNIQUE KEY ("username"),
-  KEY "FK_user_country" ("country_code"),
+  KEY "FK_user_country" ("country"),
   FULLTEXT KEY "user_fulltext" ("username","first_name","last_name","email","notes"),
   CONSTRAINT "FK_user_entity" FOREIGN KEY ("id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT "FK_user_country" FOREIGN KEY ("country_code") REFERENCES "country" ("alpha_2") ON UPDATE CASCADE ON DELETE SET NULL
+  CONSTRAINT "FK_user_country" FOREIGN KEY ("country") REFERENCES "country" ("alpha_2") ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Holds details of authenticatable users';
 
 -- Additional tables required by Spring Security

@@ -326,6 +326,19 @@ fragment ownedCommentFields on Comment {
 }
 `
 
+const FRAGMENT_COUNTRY_FIELDS = gql`
+fragment countryFields on Country {
+  alpha_2
+  alpha_3
+  numeric
+  iso_name
+  common_name
+  year
+  cc_tld
+  notes
+}
+`
+
 const FRAGMENT_DECLARATION_FIELDS = gql`
 fragment declarationFields on Declaration {
   kind(format: SHORT)
@@ -399,7 +412,6 @@ fragment publisherFields on Publisher {
 `
 
 const FRAGMENT_JOURNAL_FIELDS = gql`
-${FRAGMENT_PUBLISHER_FIELDS}
 fragment journalFields on Journal {
   title
   abbreviation
@@ -823,6 +835,15 @@ mutation DeleteComment($id: ID!) {
 }
 `
 
+export const READ_COUNTRIES = gql`
+${FRAGMENT_COUNTRY_FIELDS}
+query Countries {
+  countries {
+    ...countryFields
+  }
+}
+`
+
 export const READ_DECLARATIONS = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
@@ -959,6 +980,7 @@ export const READ_JOURNALS = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
 ${FRAGMENT_JOURNAL_FIELDS}
+${FRAGMENT_PUBLISHER_FIELDS}
 query Journals($filter: TrackedEntityQueryFilter, $pageSort: PageableInput) {
   journals
   (
@@ -978,6 +1000,7 @@ query Journals($filter: TrackedEntityQueryFilter, $pageSort: PageableInput) {
 export const CREATE_JOURNAL = gql`
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
 ${FRAGMENT_JOURNAL_FIELDS}
+${FRAGMENT_PUBLISHER_FIELDS}
 mutation CreateJournal($input: JournalInput!) {
   createJournal(journal: $input) {
     ...trackedEntityFields
@@ -989,6 +1012,7 @@ mutation CreateJournal($input: JournalInput!) {
 export const UPDATE_JOURNAL = gql`
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
 ${FRAGMENT_JOURNAL_FIELDS}
+${FRAGMENT_PUBLISHER_FIELDS}
 mutation UpdateJournal($input: JournalInput!) {
   updateJournal(journal: $input) {
     ...trackedEntityFields
@@ -1000,6 +1024,7 @@ mutation UpdateJournal($input: JournalInput!) {
 export const DELETE_JOURNAL = gql`
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
 ${FRAGMENT_JOURNAL_FIELDS}
+${FRAGMENT_PUBLISHER_FIELDS}
 mutation DeleteJournal($id: ID!) {
   deleteJournal(journalId: $id) {
     ...trackedEntityFields
@@ -1098,6 +1123,7 @@ ${FRAGMENT_LINKABLE_ENTITY_FIELDS}
 ${FRAGMENT_LINKED_ENTITY_FIELDS}
 ${FRAGMENT_PUBLICATION_FIELDS}
 ${FRAGMENT_JOURNAL_FIELDS}
+${FRAGMENT_PUBLISHER_FIELDS}
 query Publications($filter: LinkableEntityQueryFilter, $pageSort: PageableInput) {
   publications
   (
@@ -1120,6 +1146,7 @@ ${FRAGMENT_TRACKED_ENTITY_FIELDS}
 ${FRAGMENT_LINKABLE_ENTITY_FIELDS}
 ${FRAGMENT_LINKED_ENTITY_FIELDS}
 ${FRAGMENT_PUBLICATION_FIELDS}
+${FRAGMENT_PUBLISHER_FIELDS}
 mutation CreatePublication($input: PublicationInput!) {
   createPublication(publication: $input) {
     ...trackedEntityFields
@@ -1135,6 +1162,7 @@ ${FRAGMENT_LINKABLE_ENTITY_FIELDS}
 ${FRAGMENT_LINKED_ENTITY_FIELDS}
 ${FRAGMENT_PUBLICATION_FIELDS}
 ${FRAGMENT_JOURNAL_FIELDS}
+${FRAGMENT_PUBLISHER_FIELDS}
 mutation UpdatePublication($input: PublicationInput!) {
   updatePublication(publication: $input) {
     ...trackedEntityFields
@@ -1149,6 +1177,8 @@ ${FRAGMENT_TRACKED_ENTITY_FIELDS}
 ${FRAGMENT_LINKABLE_ENTITY_FIELDS}
 ${FRAGMENT_LINKED_ENTITY_FIELDS}
 ${FRAGMENT_PUBLICATION_FIELDS}
+${FRAGMENT_JOURNAL_FIELDS}
+${FRAGMENT_PUBLISHER_FIELDS}
 mutation DeletePublication($id: ID!) {
   deletePublication(publicationId: $id) {
     ...trackedEntityFields

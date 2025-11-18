@@ -72,7 +72,7 @@ CREATE TABLE "declaration" (
   "kind" VARCHAR(4) NOT NULL COMMENT 'The kind of declaration',
   "date" DATE NOT NULL COMMENT 'The date the declaration was first published',
   "title" VARCHAR(100) NOT NULL COMMENT 'The declaration name or title',
-  "country_code" CHAR(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for the country to which the declaration pertains',
+  "country" CHAR(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for the country to which the declaration pertains',
   "url" VARCHAR(200) DEFAULT NULL COMMENT 'Web URL of the original declaration',
   "cached" BOOLEAN DEFAULT FALSE NOT NULL COMMENT 'Flag to indicate that url content is cached on this application server',
   "signatories" VARCHAR(65535) DEFAULT NULL COMMENT 'The list of signatories, one per line',
@@ -80,7 +80,7 @@ CREATE TABLE "declaration" (
   "notes" VARCHAR(65535) DEFAULT NULL COMMENT 'Added notes about the declaration'
 );
 CREATE INDEX "FK_declaration_declaration_kind" ON "declaration" ("kind");
-CREATE INDEX "FK_declaration_country" ON "declaration" ("country_code");
+CREATE INDEX "FK_declaration_country" ON "declaration" ("country");
 CALL FT_CREATE_INDEX('PUBLIC', 'declaration', 'title,signatories,notes');
 
 CREATE TABLE "declaration_kind" (
@@ -156,7 +156,7 @@ CREATE TABLE "person" (
   "alias" VARCHAR(40) DEFAULT NULL COMMENT 'Alternative last name',
   "notes" VARCHAR(65535) DEFAULT NULL COMMENT 'Brief biography, notes, etc.',
   "qualifications" VARCHAR(65535) DEFAULT NULL COMMENT 'Academic qualifications',
-  "country_code" CHAR(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for country of primary professional association',
+  "country" CHAR(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for country of primary professional association',
   "checked" BOOLEAN DEFAULT FALSE NOT NULL COMMENT 'Set when the person''s credentials have been checked',
   "published" BOOLEAN DEFAULT FALSE NOT NULL COMMENT 'Set if person has published peer-reviewed papers on climate change'
 );
@@ -165,7 +165,7 @@ CREATE INDEX "person_first_name" ON "person" ("first_name");
 CREATE INDEX "person_last_name" ON "person" ("last_name");
 CREATE INDEX "person_qualifications" ON "person" ("qualifications");
 CREATE INDEX "person_rating" ON "person" ("rating");
-CREATE INDEX "person_country" ON "person" ("country_code");
+CREATE INDEX "person_country" ON "person" ("country");
 CREATE INDEX "person_notes" ON "person" ("notes");
 CALL FT_CREATE_INDEX('PUBLIC', 'person', 'title,first_name,nickname,prefix,last_name,suffix,alias,notes,qualifications');
 
@@ -214,11 +214,11 @@ CREATE TABLE "publisher" (
   "id" BIGINT PRIMARY KEY COMMENT 'The unique publisher identifier',
   "name" VARCHAR(200) NOT NULL COMMENT 'The publisher name',
   "location" VARCHAR(50) DEFAULT NULL COMMENT 'The publisher location',
-  "country_code" CHAR(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for the publisher''s country',
+  "country" CHAR(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for the publisher''s country',
   "url" VARCHAR(200) DEFAULT NULL COMMENT 'URL of publisher''s home page',
   "journal_count" INT DEFAULT NULL COMMENT 'The number of journals published'
 );
-CREATE INDEX "FK_publisher_country" ON "publisher" ("country_code");
+CREATE INDEX "FK_publisher_country" ON "publisher" ("country");
 CREATE INDEX "publisher_name" ON "publisher" ("name");
 CALL FT_CREATE_INDEX('PUBLIC', 'publisher', 'name,location,url');
 
@@ -266,11 +266,11 @@ CREATE TABLE "user" (
   "first_name" VARCHAR(50) NOT NULL COMMENT 'The user''s first name',
   "last_name" VARCHAR(50) NOT NULL COMMENT 'The user''s last name',
   "email" VARCHAR(100) DEFAULT NULL UNIQUE COMMENT 'The user''s email address, used for sign-in',
-  "country_code" CHAR(2) DEFAULT NULL COMMENT 'ISO-3166-1 alpha-2 code for user''s country of residence',
+  "country" CHAR(2) DEFAULT NULL COMMENT 'ISO-3166-1 alpha-2 code for user''s country of residence',
   "notes" VARCHAR(65535) DEFAULT NULL COMMENT 'Added notes about the user'
 );
 CREATE UNIQUE INDEX "username" ON "user" ("username");
-CREATE INDEX "FK_user_country" ON "user" ("country_code");
+CREATE INDEX "FK_user_country" ON "user" ("country");
 CALL FT_CREATE_INDEX('PUBLIC', 'user', 'username,first_name,last_name,email,notes');
 
 -- Additional tables required by Spring Security
@@ -368,7 +368,7 @@ ALTER TABLE "declaration"
   ON DELETE CASCADE;
 
 ALTER TABLE "declaration"
-  ADD FOREIGN KEY ("country_code") 
+  ADD FOREIGN KEY ("country") 
   REFERENCES "country" ("alpha_2")
   ON UPDATE CASCADE
   ON DELETE CASCADE;
@@ -478,7 +478,7 @@ ALTER TABLE "person"
   ON DELETE CASCADE;
 
 ALTER TABLE "person"
-  ADD FOREIGN KEY ("country_code") 
+  ADD FOREIGN KEY ("country") 
   REFERENCES "country" ("alpha_2")
   ON UPDATE CASCADE
   ON DELETE SET NULL;
@@ -508,7 +508,7 @@ ALTER TABLE "publisher"
   ON DELETE CASCADE;
 
 ALTER TABLE "publisher"
-  ADD FOREIGN KEY ("country_code") 
+  ADD FOREIGN KEY ("country") 
   REFERENCES "country" ("alpha_2")
   ON UPDATE CASCADE;
 
@@ -540,7 +540,7 @@ ALTER TABLE "user"
   ON DELETE CASCADE;
 
 ALTER TABLE "user"
-  ADD FOREIGN KEY ("country_code") 
+  ADD FOREIGN KEY ("country") 
   REFERENCES "country" ("alpha_2")
   ON UPDATE CASCADE
   ON DELETE SET NULL;

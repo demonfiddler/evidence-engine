@@ -289,29 +289,35 @@ public class EntityUtils {
 				List<Order> orders = new ArrayList<>(sortInput.getOrders().size());
 				for (OrderInput oi : sortInput.getOrders()) {
 					Order order;
-					switch (oi.getDirection()) {
-						case ASC:
-							order = Order.asc(oi.getProperty());
-							break;
-						case DESC:
-							order = Order.desc(oi.getProperty());
-							break;
-						default:
-							throw new IllegalArgumentException("Unsupported direction: " + oi.getDirection());
+					if (oi.getDirection() != null) {
+						switch (oi.getDirection()) {
+							case ASC:
+								order = Order.asc(oi.getProperty());
+								break;
+							case DESC:
+								order = Order.desc(oi.getProperty());
+								break;
+							default:
+								throw new IllegalArgumentException("Unsupported direction: " + oi.getDirection());
+						}
+					} else {
+						order = Order.asc(oi.getProperty());
 					}
-					switch (oi.getNullHandling()) {
-						case NATIVE:
-							break;
-						case NULLS_FIRST:
-							order = order.nullsFirst();
-							break;
-						case NULLS_LAST:
-							order = order.nullsLast();
-							break;
-						default:
-							throw new IllegalArgumentException("Unsupported NullHandling: " + oi.getNullHandling());
+					if (oi.getNullHandling() != null) {
+						switch (oi.getNullHandling()) {
+							case NATIVE:
+								break;
+							case NULLS_FIRST:
+								order = order.nullsFirst();
+								break;
+							case NULLS_LAST:
+								order = order.nullsLast();
+								break;
+							default:
+								throw new IllegalArgumentException("Unsupported NullHandling: " + oi.getNullHandling());
+						}
 					}
-					if (oi.getIgnoreCase())
+					if (Boolean.TRUE.equals(oi.getIgnoreCase()))
 						order = order.ignoreCase();
 					orders.add(order);
 				}
@@ -515,6 +521,42 @@ public class EntityUtils {
 		if (fieldName.startsWith("updatedByUser"))
 			return updatedByUserQualifier;
 		return joinedTableQualifier;
+	}
+
+	public String getEntityLabel(ITrackedEntity record) {
+		Long id = record.getId();
+		String entityKind = EntityKind.valueOf(record.getEntityKind()).label();
+		String text;
+		switch (record.getEntityKind()) {
+			case "CLA": {
+				Claim claim = (Claim)record;
+				text = claim.getText();
+				break;
+			}
+			case "DEC": {
+				Declaration declaration = (Declaration)record;
+				text = declaration.getTitle();
+				break;
+			}
+			case "PER": {
+				Person person = (Person)record;
+				text = person.getFirstName() + " " + person.getLastName();
+				break;
+			}
+			case "PUB": {
+				Publication publication = (Publication)record;
+				text = publication.getTitle();
+				break;
+			}
+			case "QUO": {
+				Quotation quotation = (Quotation)record;
+				text = quotation.getText();
+				break;
+			}
+			default:
+				throw new IllegalArgumentException("Unsupported entityKind: " + record.getEntityKind());
+		}
+		return String.format("%s #%d: %s", entityKind, id, text);
 	}
 
 }

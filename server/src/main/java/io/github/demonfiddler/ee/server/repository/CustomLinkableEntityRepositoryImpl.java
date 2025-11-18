@@ -47,11 +47,11 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
 
     /** Describes the elements of a query. */
     private static record QueryMetaData(LinkableEntityQueryFilter filter, Pageable pageable, String entityName,
-        String countQueryName, String selectQueryName, boolean hasTopic, boolean isRecursive, boolean hasFromEntityKind,
-        boolean hasFromEntityId, String fromEntityName, boolean hasToEntityKind, boolean hasToEntityId,
-        String toEntityName, boolean hasStatus, boolean hasText, boolean hasTextH2, boolean hasTextMariaDB,
-        boolean isAdvanced, boolean isPaged, boolean isSorted, boolean isSortedOnCreatedByUsername,
-        boolean isSortedOnUpdatedByUsername) {
+        String countQueryName, String selectQueryName, boolean hasRecordId, boolean hasTopic, boolean isRecursive,
+        boolean hasFromEntityKind, boolean hasFromEntityId, String fromEntityName, boolean hasToEntityKind,
+        boolean hasToEntityId, String toEntityName, boolean hasStatus, boolean hasText, boolean hasTextH2,
+        boolean hasTextMariaDB, boolean isAdvanced, boolean isPaged, boolean isSorted,
+        boolean isSortedOnCreatedByUsername, boolean isSortedOnUpdatedByUsername) {
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomLinkableEntityRepositoryImpl.class);
@@ -82,17 +82,18 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
     @SuppressWarnings("null")
     private QueryMetaData getQueryMetaData(@Nullable LinkableEntityQueryFilter filter, @NonNull Pageable pageable) {
         boolean hasFilter = filter != null;
-        boolean hasTopic = hasFilter && filter.getTopicId() != null;
+        boolean hasRecordId = hasFilter && filter.getRecordId() != null;
+        boolean hasTopic = hasFilter && !hasRecordId && filter.getTopicId() != null;
         boolean isRecursive = hasTopic && filter.getRecursive() != null && filter.getRecursive();
-        boolean hasFromEntityKind = hasFilter && filter.getFromEntityKind() != null;
-        boolean hasFromEntityId = hasFilter && filter.getFromEntityId() != null;
-        boolean hasToEntityKind = hasFilter && filter.getToEntityKind() != null;
-        boolean hasToEntityId = hasFilter && filter.getToEntityId() != null;
-        boolean hasStatus = hasFilter && filter.getStatus() != null && !filter.getStatus().isEmpty();
-        boolean hasText = hasFilter && filter.getText() != null && !filter.getText().isBlank();
+        boolean hasFromEntityKind = hasFilter && !hasRecordId && filter.getFromEntityKind() != null;
+        boolean hasFromEntityId = hasFilter && !hasRecordId && filter.getFromEntityId() != null;
+        boolean hasToEntityKind = hasFilter && !hasRecordId && filter.getToEntityKind() != null;
+        boolean hasToEntityId = hasFilter && !hasRecordId && filter.getToEntityId() != null;
+        boolean hasStatus = hasFilter && !hasRecordId && filter.getStatus() != null && !filter.getStatus().isEmpty();
+        boolean hasText = hasFilter && !hasRecordId && filter.getText() != null && !filter.getText().isBlank();
         boolean hasTextH2 = hasText && profileUtils.isIntegrationTesting();
         boolean hasTextMariaDB = hasText && !profileUtils.isIntegrationTesting();
-        boolean isAdvanced = hasText && filter.getAdvancedSearch();
+        boolean isAdvanced = hasText && filter.getAdvancedSearch() != null && filter.getAdvancedSearch();
         boolean isPaged = pageable.isPaged();
         boolean isSorted = pageable.getSort().isSorted();
         boolean isSortedOnCreatedByUsername = false;
@@ -132,6 +133,9 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
         append(entityName, queryNames);
         countQueryName.append(".countBy");
         selectQueryName.append(".findBy");
+        if (hasRecordId) {
+            append("Id", queryNames);
+        }
         if (hasTopic) {
             if (isRecursive)
                 append("Recursive", queryNames);
@@ -166,8 +170,8 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
         }
 
         return new QueryMetaData(filter, pageable, entityName, countQueryName.toString(), selectQueryName.toString(),
-            hasTopic, isRecursive, hasFromEntityKind, hasFromEntityId, fromEntityName, hasToEntityKind, hasToEntityId,
-            toEntityName, hasStatus, hasText, hasTextH2, hasTextMariaDB, isAdvanced, isPaged, isSorted,
+            hasRecordId, hasTopic, isRecursive, hasFromEntityKind, hasFromEntityId, fromEntityName, hasToEntityKind,
+            hasToEntityId, toEntityName, hasStatus, hasText, hasTextH2, hasTextMariaDB, isAdvanced, isPaged, isSorted,
             isSortedOnCreatedByUsername, isSortedOnUpdatedByUsername);
     }
 
@@ -325,19 +329,25 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
          * ON ubu."id" = e."updated_by_user_id"
          * --}
          *
-         * -- if (m.hasStatus || m.hasTextMariaDB)
+         * -- if (m.hasRecordId || m.hasStatus || m.hasTextMariaDB) {
          * WHERE
+         * -- if (m.hasRecordId) {
+         *   e."id" = :recordId
+         * -- }
+         *
          * -- if (m.hasStatus) {
-         * AND e."status" IN (:status)
+         *   AND e."status" IN (:status)
          * -- }
          * 
          * -- if (m.hasTextMariaDB) {
-         * AND MATCH (${fulltextEntityColumns}) AGAINST (:text IN BOOLEAN MODE)
-         * --}
+         *   AND MATCH (${fulltextEntityColumns}) AGAINST (:text IN BOOLEAN MODE)
+         * -- }
+         * -- }
          * 
          * -- if (m.isSorted)
          * ORDER BY
-         * "${sortField}" ${sortOrder}, ...
+         *   "${sortField}" ${sortOrder}, ...
+         * -- }
          * ;
          */
 
@@ -484,10 +494,18 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
         }
 
         StringBuilder whereClause = new StringBuilder();
-        if (m.hasStatus || m.hasTextMariaDB) {
+        if (m.hasRecordId || m.hasStatus || m.hasTextMariaDB) {
             whereClause.append(NL) //
                 .append("WHERE");
             needsAnd = false;
+            if (m.hasRecordId) {
+                whereClause.append(NL) //
+                    .append("    ");
+                if (needsAnd)
+                    whereClause.append("AND ");
+                whereClause.append("e.\"id\" = :recordId");
+                needsAnd = true;
+            }
             if (m.hasStatus) {
                 whereClause.append(NL) //
                     .append("    ");
@@ -551,6 +569,8 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
         }
 
         Map<String, Object> params = new HashMap<>();
+        if (m.hasRecordId)
+            params.put("recordId", m.filter.getRecordId());
         if (m.hasTopic)
             params.put("topicId", m.filter.getTopicId());
         if (m.hasFromEntityKind)

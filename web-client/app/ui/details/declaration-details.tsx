@@ -55,7 +55,12 @@ import CheckboxEx from "../ext/checkbox-ex"
 import TextareaEx from "../ext/textarea-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
 import { detail, LoggerEx } from "@/lib/logger"
+
 const countries = rawCountries as unknown as Country[]
+// import { useQuery } from "@apollo/client/react"
+// import { READ_COUNTRIES } from "@/lib/graphql-queries"
+// import IPage from "@/app/model/IPage"
+// import { QueryResult } from "@/lib/graphql-utils"
 
 const logger = new LoggerEx(detail, "[DeclarationDetails] ")
 
@@ -77,6 +82,14 @@ export default function DeclarationDetails(
   const form = useFormContext<DeclarationFieldValues>()
   const [open, setOpen] = useState(false)
   const { updating } = state
+  // const countriesResult = useQuery(READ_COUNTRIES)
+  // const countriesData = (countriesResult.loading
+  //   ? countriesResult.previousData
+  //   : countriesResult.data) as QueryResult<IPage<Country>>
+  // const rawCountries = countriesData
+  //   ? countriesData.countries
+  //   : undefined
+  // const countries = rawCountries?.content ?? []
 
   return (
     <fieldset className="border shadow-lg rounded-md">

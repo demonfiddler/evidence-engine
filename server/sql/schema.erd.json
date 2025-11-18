@@ -572,7 +572,7 @@
       "aFBjCMtgv6CsAmfBo59GN": {
         "id": "aFBjCMtgv6CsAmfBo59GN",
         "tableId": "LFBxD4i2pA5NUZ6jGXLJ_",
-        "name": "country_code",
+        "name": "country",
         "comment": "The country to which the declaration pertains",
         "dataType": "char(2)",
         "default": "NULL",

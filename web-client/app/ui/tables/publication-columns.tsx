@@ -42,6 +42,14 @@ export const columns: ColumnDef<Publication>[] = [
     header: "Title",
   },
   {
+    id: "kind",
+    accessorKey: "kind",
+    enableHiding: true,
+    enableSorting: true,
+    size: 150,
+    header: "Kind",
+  },
+  {
     id: "authors",
     accessorKey: "authors",
     enableHiding: true,
@@ -98,14 +106,6 @@ export const columns: ColumnDef<Publication>[] = [
       <a key={cell.id} href={`https://doi.org/${getValue() as string}`} target="_blank">{getValue() as string}</a>
     )
   },
-  // {
-  //   id: "isbn",
-  //   accessorKey: "isbn",
-  //   enableHiding: true,
-  //   enableSorting: true,
-  //   size: 170,
-  //   header: "ISBN",
-  // },
   {
     id: "isbn",
     accessorKey: "isbn",
@@ -178,7 +178,7 @@ export const columns: ColumnDef<Publication>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 200,
-    header: "ERIC",
+    header: "ERIC ID",
     cell: ({cell, getValue}) => (
       <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
     )

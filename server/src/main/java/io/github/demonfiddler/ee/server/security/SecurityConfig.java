@@ -189,6 +189,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(customizer -> {
                 customizer //
                     .requestMatchers("/graphiql").authenticated() //
+                    .requestMatchers("/rest/**").permitAll() //
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // allow preflight
                     .requestMatchers(HttpMethod.POST, "/graphql").permitAll().anyRequest().authenticated();
             }) //

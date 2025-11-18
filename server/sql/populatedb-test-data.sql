@@ -52,7 +52,7 @@ VALUES
 	('DRA', CURRENT_DATE(), 'Claim eight', 'Notes #8 (filtered)');
 
 INSERT INTO "declaration"
-	("status", "kind", "date", "title", "country_code", "url", "signatories", "notes")
+	("status", "kind", "date", "title", "country", "url", "signatories", "notes")
 VALUES
 	('DEL', 'OPLE', CURRENT_DATE(), 'Updated test title', 'US', 'https://updated-domain.tld', 'Martin Phillips\nOscar Diamentes\nLouise Pendros', 'Updated test notes'),
 	('DRA', 'DECL', CURRENT_DATE(), 'DECLARATION ONE', null, null, null, 'Notes #1'),

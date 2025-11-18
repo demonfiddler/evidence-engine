@@ -72,7 +72,7 @@ public class CustomCommentRepositoryImpl extends AbstractCustomRepositoryImpl im
         boolean hasText = !hasRecordId && hasFilter && filter.getText() != null && !filter.getText().isEmpty();
         boolean hasTextH2 = hasText && profileUtils.isIntegrationTesting();
         boolean hasTextMariaDB = hasText && !profileUtils.isIntegrationTesting();
-        boolean isAdvanced = hasText && filter.getAdvancedSearch();
+        boolean isAdvanced = hasText && filter.getAdvancedSearch() != null && filter.getAdvancedSearch();
         boolean hasStatus = !hasRecordId && hasFilter && filter.getStatus() != null && !filter.getStatus().isEmpty();
         boolean hasTargetKind = !hasRecordId && hasFilter && filter.getTargetKind() != null;
         boolean hasTargetId = !hasRecordId && hasFilter && filter.getTargetId() != null;

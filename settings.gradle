@@ -1,24 +1,6 @@
-rootProject.name = "evidence-engine"
-include("common")
-include("client")
-include("server")
-include("web-client")
-
-// buildCache {
-// }
-
-// plugins {
-//  id("") version "n.n.n"
-// }
-
-// pluginManagement {
-//     repositories {
-//         gradlePluginPortal()
-//     }
-// }
-
-// dependencyResolutionManagement {
-//     repositories {
-//         mavenCentral()
-//     }
-// }
+rootProject.name = 'evidence-engine'
+include 'common'
+include 'codegen'
+include 'client'
+include 'server'
+include 'web-client'

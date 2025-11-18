@@ -91,7 +91,6 @@ public class User extends AbstractTrackedEntity {
 	 * The user's country of residence.
 	 */
 	@GraphQLScalar( fieldName = "country", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-    @Column(name = "country_code")
 	String country;
 
 	/**
@@ -284,11 +283,11 @@ public class User extends AbstractTrackedEntity {
 			+ ", " //
 			+ "created: " + this.created //
 			+ ", " //
-			+ "createdByUser: " + this.createdByUser //
+			+ "createdByUserId: " + (this.createdByUser != null ? this.createdByUser.id : null) //
 			+ ", " //
 			+ "updated: " + this.updated //
 			+ ", " //
-			+ "updatedByUser: " + this.updatedByUser //
+			+ "updatedByUserId: " + (this.updatedByUser != null ? this.updatedByUser.id : null) //
 			+ ", " //
 			+ "log: " + this.log //
 			+ ", " //

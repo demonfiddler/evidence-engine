@@ -21,7 +21,7 @@
 
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
 import { Table } from "@tanstack/react-table"
-import { Settings2 } from "lucide-react"
+import { Columns3Icon } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -40,12 +40,12 @@ export default function DataTableViewOptions<T>(
         <ButtonEx
           variant="ghost"
           size="sm"
-          outerClassName="grow justify-self-end" 
+          outerClassName="justify-self-end" 
           className="ml-auto hidden h-8 lg:flex"
           help="Select the columns to display"
+          title="Select the columns to display"
         >
-          <Settings2 />
-          View
+          <Columns3Icon />
         </ButtonEx>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[150px]">
@@ -65,7 +65,7 @@ export default function DataTableViewOptions<T>(
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
-                {column.id}
+                {column.columnDef.header?.toString() ?? column.id}
               </DropdownMenuCheckboxItem>
             )
           })}

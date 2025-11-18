@@ -37,6 +37,7 @@ import { RotateCw } from "lucide-react"
 import RecordKind from "@/app/model/RecordKind"
 import { filter, LoggerEx } from "@/lib/logger"
 import { anything } from "@/types/types"
+import ExportDialog from "../dialog/export-dialog"
 
 const logger = new LoggerEx(filter, "[LinkableEntityTableFilter] ")
 
@@ -242,6 +243,7 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
         >
           Reset
         </ButtonEx>
+        <ExportDialog recordKind={recordKind} />
         <DataTableViewOptions table={table} />
       </div>
     </div>

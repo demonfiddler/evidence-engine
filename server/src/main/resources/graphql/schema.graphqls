@@ -424,6 +424,51 @@ type CommentPage implements IPage {
     content: [Comment!]!
 }
 
+# type Country {
+#     alpha_2: String
+#     alpha_3: String
+#     numeric: String
+#     isoName: String
+#     commonName: String
+#     year: String
+#     ccTld: String
+#     notes: String
+# }
+
+# type CountryPage implements IPage {
+#     "Dummy ID required for @Entity classes"
+#     dummy: ID
+#     "Whether the page has content."
+#     hasContent: Boolean!
+#     "Whether the page is empty (no content)."
+#     isEmpty: Boolean!
+#     "The current page number."
+#     number: Int!
+#     "The page size."
+#     size: Int!
+#     "The number of elements on this page."
+#     numberOfElements: Int!
+#     "The total number of pages available."
+#     totalPages: Int!
+#     "The total number of records."
+#     totalElements: Long!
+#     "Whether this is the first page."
+#     isFirst: Boolean!
+#     "Whether this is the last page."
+#     isLast: Boolean!
+#     "Whether there is next page."
+#     hasNext: Boolean!
+#     "Whether there is previous page."
+#     hasPrevious: Boolean!
+#     "The requested pageful of records."
+#     content: [Country!]!
+# }
+
+# input CountryQueryFilter {
+#     text: String
+#     advancedSearch: Boolean
+# }
+
 "Enumeration that allows selection of country format."
 enum CountryFormatKind {
     "ISO-3166-1 alpha-2 two-character code."
@@ -2134,6 +2179,14 @@ type Query {
     ): CommentPage!
     "Returns a comment given its identifier."
     commentById(id: ID!): Comment
+
+    # "Returns a paged list of countries"
+    # countries(
+    #     "Filters results."
+    #     filter: CountryQueryFilter,
+    #     "Sorts and/or paginates results."
+    #     pageSort: PageableInput
+    # ): CountryPage!
 
     "Returns a paged list of declarations."
     declarations(

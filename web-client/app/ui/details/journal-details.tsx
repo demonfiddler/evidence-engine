@@ -36,7 +36,6 @@ import {
 } from "@/components/ui/form"
 import Journal from "@/app/model/Journal"
 import Publisher from "@/app/model/Publisher"
-import rawPublishers from "@/data/publishers.json" assert {type: 'json'}
 import StandardDetails from "./standard-details"
 import DetailActions, { DetailMode, DetailState } from "./detail-actions"
 import { Dispatch, SetStateAction } from "react"
@@ -49,10 +48,12 @@ import TextareaEx from "../ext/textarea-ex"
 import LinkEx from "../ext/link-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
 import { detail, LoggerEx } from "@/lib/logger"
+import { READ_PUBLISHERS } from "@/lib/graphql-queries"
+import IPage from "@/app/model/IPage"
+import { QueryResult } from "@/lib/graphql-utils"
+import { useQuery } from "@apollo/client/react"
 
 const logger = new LoggerEx(detail, "[JournalDetails] ")
-
-const publishers = rawPublishers.content as unknown as Publisher[]
 
 export default function JournalDetails(
   {
@@ -70,6 +71,14 @@ export default function JournalDetails(
 
   const form = useFormContext<JournalFieldValues>()
   const { updating } = state
+  const publishersResult = useQuery(READ_PUBLISHERS)
+  const publishersData = (publishersResult.loading
+    ? publishersResult.previousData
+    : publishersResult.data) as QueryResult<IPage<Publisher>>
+  const rawPublishers = publishersData
+    ? publishersData.publishers
+    : undefined
+  const publishers = rawPublishers?.content ?? []
 
   return (
     <fieldset className="border shadow-lg rounded-md">
@@ -164,14 +173,25 @@ export default function JournalDetails(
                 <FormItem className="col-span-1">
                   <FormLabel htmlFor="issn">ISSN</FormLabel>
                   <FormControl>
-                    <InputEx
-                      id="issn"
-                      className="col-span-1"
-                      disabled={!record && !updating}
-                      readOnly={!updating}
-                      {...field}
-                      help="The International Standard Serial Number (ISSN)"
-                    />
+                    {
+                      updating
+                      ? <InputEx
+                        id="issn"
+                        className="col-span-1"
+                        disabled={!record && !updating}
+                        readOnly={!updating}
+                        {...field}
+                        help="The International Standard Serial Number (ISSN)"
+                      />
+                      : <LinkEx
+                          id="issn"
+                          href={record?.issn ? `https://portal.issn.org/resource/ISSN/${record.issn}` : ''}
+                          target="_blank"
+                          help="The International Standard Serial Number (ISSN)"
+                      >
+                        {record?.issn ?? 'n/a'}
+                      </LinkEx>
+                    }
                   </FormControl>
                   <FormMessage />
                 </FormItem>

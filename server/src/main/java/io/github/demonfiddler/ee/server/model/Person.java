@@ -22,7 +22,6 @@ package io.github.demonfiddler.ee.server.model;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
@@ -98,7 +97,6 @@ public class Person extends AbstractLinkableEntity {
 	 * The primary country associated with the person.
 	 */
 	@GraphQLScalar(fieldName = "country", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	@Column(name = "country_code")
 	String country;
 
 	/**

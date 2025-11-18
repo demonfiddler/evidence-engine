@@ -37,7 +37,7 @@ export const columns: ColumnDef<Comment>[] = [
     enableSorting: true,
     size: 200,
     // enableColumnFilter: false,
-    header: "Record Kind",
+    header: "Target Kind",
   },
   {
     id: "targetId",
@@ -46,7 +46,7 @@ export const columns: ColumnDef<Comment>[] = [
     enableSorting: true,
     size: 170,
     // enableColumnFilter: false,
-    header: "Record ID",
+    header: "Target ID",
   },
   {
     id: "parentId",

@@ -373,23 +373,23 @@ INSERT INTO "transaction_kind" ("code", "label", "description") VALUES
 
 INSERT INTO "entity" ("dtype", "status", "created_by_user_id") VALUES ('USR', 'PUB', NULL);
 SET @root_id = (SELECT "id" FROM "entity" WHERE "dtype" = 'USR');
-INSERT INTO "user" ("id", "username", "first_name", "last_name", "country_code", "password") VALUES
+INSERT INTO "user" ("id", "username", "first_name", "last_name", "country", "password") VALUES
 	(@root_id, 'root', 'Root', 'User', 'GB', '{bcrypt}$2a$10$xL02gfgl.dEJBRzsgics5.fglRXyl.iQBNjfyXhCU14UQf2MJUHFK');
 UPDATE "entity" SET "created_by_user_id" = @root_id WHERE "id" = @root_id;
 
 INSERT INTO "entity" ("dtype", "status", "created_by_user_id") VALUES ('USR', 'PUB', @root_id);
 SET @admin_id = @root_id + 1;
-INSERT INTO "user" ("id", "username", "first_name", "last_name", "country_code", "password") VALUES
+INSERT INTO "user" ("id", "username", "first_name", "last_name", "country", "password") VALUES
 	(@admin_id, 'admin', 'Administrative', 'User', 'GB', '{bcrypt}$2a$10$y9JB/y3fdX7.PUsOEadAi.gErBWCd.8oGn8IEE0KWjURLZEJ20GQi');
 
 INSERT INTO "entity" ("dtype", "status", "created_by_user_id") VALUES ('USR', 'PUB', @root_id);
 SET @editor_id = @admin_id + 1;
-INSERT INTO "user" ("id", "username", "first_name", "last_name", "country_code", "password") VALUES
+INSERT INTO "user" ("id", "username", "first_name", "last_name", "country", "password") VALUES
 	(@editor_id, 'editor', 'Editing', 'User', 'GB', '{bcrypt}$2a$10$Yjve/6JOwx4vbmpCv7GXO.VAqSWaO8jgxjUXYh6H/fqaKq9WOaMbm');
 
 INSERT INTO "entity" ("dtype", "status", "created_by_user_id") VALUES ('USR', 'PUB', @root_id);
 SET @user_id = @editor_id + 1;
-INSERT INTO "user" ("id", "username", "first_name", "last_name", "country_code", "password") VALUES
+INSERT INTO "user" ("id", "username", "first_name", "last_name", "country", "password") VALUES
 	(@user_id, 'user', 'Ordinary', 'User', 'GB', '{bcrypt}$2a$10$Yjve/6JOwx4vbmpCv7GXO.VAqSWaO8jgxjUXYh6H/fqaKq9WOaMbm');
 
 INSERT INTO "entity" ("dtype", "status", "created_by_user_id") VALUES ('GRP', 'PUB', @root_id);

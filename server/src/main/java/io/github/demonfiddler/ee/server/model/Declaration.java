@@ -25,7 +25,6 @@ import java.time.LocalDate;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
@@ -64,7 +63,6 @@ public class Declaration extends AbstractLinkableEntity {
 	 * The country to which the declaration relates.
 	 */
 	@GraphQLScalar(fieldName = "country", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	@Column(name = "country_code")
 	String country;
 
 	/**

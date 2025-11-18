@@ -39,7 +39,6 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select"
-import rawJournals from "@/data/journals.json" assert {type: 'json'}
 import rawPublicationKinds from "@/data/publication-kinds.json" assert {type: 'json'}
 import Journal from "@/app/model/Journal"
 import StandardDetails from "./standard-details"
@@ -56,6 +55,10 @@ import LinkEx from "../ext/link-ex"
 import CheckboxEx from "../ext/checkbox-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
 import { detail, LoggerEx } from "@/lib/logger"
+import { useQuery } from "@apollo/client/react"
+import { READ_JOURNALS } from "@/lib/graphql-queries"
+import IPage from "@/app/model/IPage"
+import { QueryResult } from "@/lib/graphql-utils"
 
 const logger = new LoggerEx(detail, "[PublicationDetails] ")
 
@@ -63,7 +66,6 @@ type PublicationKind = {
   kind: string
   label: string
 }
-const journals = rawJournals.content as unknown as Journal[]
 const publicationKinds = rawPublicationKinds as unknown as PublicationKind[]
 
 export default function PublicationDetails(
@@ -84,6 +86,14 @@ export default function PublicationDetails(
   const [dateOpen, setDateOpen] = useState(false)
   const [accessedOpen, setAccessedOpen] = useState(false)
   const { updating } = state
+  const journalsResult = useQuery(READ_JOURNALS)
+  const journalsData = (journalsResult.loading
+    ? journalsResult.previousData
+    : journalsResult.data) as QueryResult<IPage<Journal>>
+  const rawJournals = journalsData
+    ? journalsData.journals
+    : undefined
+  const journals = rawJournals?.content ?? []
 
   return (
     <fieldset className="border shadow-lg rounded-md">

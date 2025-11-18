@@ -528,11 +528,9 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         journal.setNotes(input.getNotes());
         Long publisherId = input.getPublisherId();
         if (publisherId != null) {
-            Optional<Publisher> publisherOpt = publisherRepository.findById(publisherId);
-            if (publisherOpt.isPresent()) {
-                Publisher publisher = publisherOpt.get();
-                journal.setPublisher(publisher);
-            }
+            Publisher publisher = publisherRepository.findById(publisherId)
+                .orElseThrow(() -> createEntityNotFoundException("Publisher", publisherId));
+            journal.setPublisher(publisher);
         }
         journal.setTitle(input.getTitle());
         journal.setUrl(input.getUrl());
@@ -556,11 +554,9 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         journal.setNotes(input.getNotes());
         Long publisherId = input.getPublisherId();
         if (publisherId != null) {
-            Optional<Publisher> publisherOpt = publisherRepository.findById(publisherId);
-            if (publisherOpt.isPresent()) {
-                Publisher publisher = publisherOpt.get();
-                journal.setPublisher(publisher);
-            }
+            Publisher publisher = publisherRepository.findById(publisherId)
+                .orElseThrow(() -> createEntityNotFoundException("Publisher", publisherId));
+            journal.setPublisher(publisher);
         }
         journal.setTitle(input.getTitle());
         journal.setUrl(input.getUrl());
@@ -642,8 +638,10 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @PreAuthorize("hasAuthority('CRE')")
     public Object createPublication(DataFetchingEnvironment dataFetchingEnvironment, PublicationInput input) {
         Journal journal = null;
-        if (input.getJournalId() != null)
-            journal = journalRepository.findById(input.getJournalId()).get();
+        if (input.getJournalId() != null) {
+            journal = journalRepository.findById(input.getJournalId())
+                .orElseThrow(() -> createEntityNotFoundException("Journal", input.getJournalId()));
+        }
         Publication publication = new Publication();
         publication.setRating(input.getRating());
         publication.setTitle(input.getTitle());
@@ -688,7 +686,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         Journal journal = null;
         if (input.getJournalId() != null) {
             journal = journalRepository.findById(input.getJournalId())
-                .orElseThrow(() -> createEntityNotFoundException("Journal", input.getId()));
+                .orElseThrow(() -> createEntityNotFoundException("Journal", input.getJournalId()));
         }
         Publication publication = publicationRepository.findById(input.getId())
             .orElseThrow(() -> createEntityNotFoundException("Publication", input.getId()));
@@ -836,8 +834,9 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         topic.setDescription(input.getDescription());
         Long parentId = input.getParentId();
         if (parentId != null) {
-            Optional<Topic> parentOpt = topicRepository.findById(parentId);
-            topic.setParent(parentOpt.get());
+            Topic parentTopic =
+                topicRepository.findById(parentId).orElseThrow(() -> createEntityNotFoundException("Topic", parentId));
+            topic.setParent(parentTopic);
         }
         setCreatedFields(topic);
 

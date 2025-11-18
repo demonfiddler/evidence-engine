@@ -59,10 +59,15 @@ dependencies {
 	implementation 'com.graphql-java:graphql-java-extended-scalars:22.0'
 //	implementation 'com.github.dozermapper:dozer-core:6.5.2' // used in graphql-java-generator example
 //  implementation 'io.reactivex.rxjava2:rxjava:2.2.19' // used in graphql-java-generator example
-//	implementation 'commons-logging:commons-logging'
-	implementation 'org.apache.commons:commons-collections4:4.5.0-M2'
+	implementation 'org.apache.commons:commons-collections4:4.5.0'
+	implementation 'org.apache.commons:commons-beanutils2:2.0.0-M2'
 	implementation 'org.apache.commons:commons-lang3:3.17.0'
 	implementation 'com.auth0:java-jwt:4.5.0'
+	implementation 'io.swagger.core.v3:swagger-annotations:2.2.31'
+	implementation 'io.swagger.core.v3:swagger-models:2.2.31'
+	implementation 'org.freemarker:freemarker:2.3.34'
+	implementation 'com.github.librepdf:openpdf-fonts-extra:1.3.43'
+	implementation 'com.github.librepdf:openpdf-html:3.0.0'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.graphql-java-kickstart:graphiql-spring-boot-starter:6.0.1' // added per graphql-java-generator example
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'

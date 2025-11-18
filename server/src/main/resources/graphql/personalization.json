@@ -30,10 +30,6 @@
 				{
 					"name": "updatedByUser",
 					"addAnnotation": "@jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = true)\n\t@jakarta.persistence.JoinColumn(name = \"updated_by_user_id\", nullable = true)"
-				},
-				{
-					"name": "country",
-					"addAnnotation": "@jakarta.persistence.Column(name=\"country_code\")"
 				}
 			]
 		},
@@ -136,10 +132,6 @@
 				{
 					"name": "updatedByUser",
 					"addAnnotation": "@jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = true)\n\t@jakarta.persistence.JoinColumn(name = \"updated_by_user_id\", nullable = true)"
-				},
-				{
-					"name": "country",
-					"addAnnotation": "@jakarta.persistence.Column(name=\"country_code\")"
 				}
 			]
 		},

@@ -44,6 +44,7 @@ import LabelEx from "../ext/label-ex"
 import Search from "./search"
 import useAuth from "@/hooks/use-auth"
 import { QueryResult } from "@/lib/graphql-utils"
+import ExportDialog from "../dialog/export-dialog"
 
 const logger = new LoggerEx(filter, "[CommentTableFilter] ")
 
@@ -413,6 +414,7 @@ export default function CommentTableFilter(
           >
             Reset
           </ButtonEx>
+          <ExportDialog recordKind="Comment" />
           <DataTableViewOptions table={table} />
         </div>
       </div>

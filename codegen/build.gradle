@@ -1,0 +1,43 @@
+plugins {
+	id 'java'
+	id "org.openapi.generator" version "7.17.0"
+}
+
+group = 'io.github.demonfiddler.evidence-engine'
+version = '0.0.1-SNAPSHOT'
+
+dependencies {
+	implementation 'org.openapitools:openapi-generator:7.17.0'
+	implementation 'org.openapitools:openapi-generator-cli:7.17.0'
+}
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(23)
+	}
+	sourceCompatibility = JavaVersion.VERSION_23
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+openApiGenerate {
+    generatorName.set("spring")
+    inputSpec.set("$rootDir/server/src/main/resources/rest/openapi.yaml".replace('\\', '/'))
+    outputDir.set("$buildDir/generated/ee")
+	packageName.set("io.github.demonfiddler.ee.server.rest")
+    apiPackage.set("io.github.demonfiddler.ee.server.rest.api")
+    invokerPackage.set("io.github.demonfiddler.ee.server.rest.invoker")
+    modelPackage.set("io.github.demonfiddler.ee.server.rest.model")
+    configOptions.put("dateLibrary", "java8")
+}
+
+openApiValidate {
+    inputSpec.set("$rootDir/server/src/main/resources/rest/openapi.yaml".replace('\\', '/'))
+}

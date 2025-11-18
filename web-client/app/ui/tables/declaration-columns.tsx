@@ -111,7 +111,7 @@ export const columns: ColumnDef<Declaration>[] = [
     enableHiding: true,
     enableSorting: true,
     size: 148,
-    header: "Sig. Count",
+    header: "Sig. count",
     meta: {
       className: "text-right"
     }

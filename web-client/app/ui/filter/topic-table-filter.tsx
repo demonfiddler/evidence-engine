@@ -33,6 +33,7 @@ import ButtonEx from "../ext/button-ex"
 import { RotateCw } from "lucide-react"
 import { isEqual } from "@/lib/utils"
 import { filter, LoggerEx } from "@/lib/logger"
+import ExportDialog from "../dialog/export-dialog"
 
 const logger = new LoggerEx(filter, "[TopicTableFilter] ")
 
@@ -193,6 +194,7 @@ export default function TopicTableFilter({
         >
           Reset
         </ButtonEx>
+        <ExportDialog recordKind="Topic" />
         <DataTableViewOptions table={table} />
       </div>
     </div>

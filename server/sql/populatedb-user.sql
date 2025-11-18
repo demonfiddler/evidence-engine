@@ -1,4 +1,4 @@
-INSERT INTO "user" ("id", "username", "first_name", "last_name", "country_code", "password")
+INSERT INTO "user" ("id", "username", "first_name", "last_name", "country", "password")
   VALUES (0, 'root', 'Root', 'User', 'GB', '');
 INSERT INTO "user_authority" ("user_id", "authority_code") VALUES
   (0, 'ADM'),
