@@ -52,7 +52,7 @@ public class Journal extends AbstractTrackedEntity {
 	String title;
 
 	/**
-	 * The official abbreviation.
+	 * The official ISO 4 title abbreviation, with periods.
 	 */
 	@JsonProperty("abbreviation")
 	@GraphQLScalar(fieldName = "abbreviation", graphQLTypeSimpleName = "String", javaClass = String.class,
@@ -107,7 +107,7 @@ public class Journal extends AbstractTrackedEntity {
 	}
 
 	/**
-	 * The official abbreviation.
+	 * The official ISO 4 title abbreviation, with periods.
 	 */
 	@JsonProperty("abbreviation")
 	public void setAbbreviation(String abbreviation) {
@@ -115,7 +115,7 @@ public class Journal extends AbstractTrackedEntity {
 	}
 
 	/**
-	 * The official abbreviation.
+	 * The official ISO 4 title abbreviation, with periods.
 	 */
 	@JsonProperty("abbreviation")
 	public String getAbbreviation() {
@@ -302,7 +302,7 @@ public class Journal extends AbstractTrackedEntity {
 		}
 
 		/**
-		 * The official abbreviation.
+		 * The official ISO 4 title abbreviation, with periods.
 		 */
 		public Builder withAbbreviation(String abbreviationParam) {
 			this.abbreviation = abbreviationParam;

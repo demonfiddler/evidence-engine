@@ -22,6 +22,8 @@
 import RecordKind from "@/app/model/RecordKind"
 import { Table } from "@tanstack/react-table"
 
+export type ImportAccept = {[mimeType : string] : Array<string>}
+
 export default interface DataTableFilterProps<T> {
   table: Table<T>
   recordKind: RecordKind
@@ -30,4 +32,5 @@ export default interface DataTableFilterProps<T> {
   auxRecordId?: string
   refetch: () => void
   loadingPathWithSearchParams: boolean
+  importAccept?: ImportAccept
 }

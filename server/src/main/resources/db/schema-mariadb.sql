@@ -34,6 +34,16 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 SET SQL_MODE = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION,ANSI,NO_AUTO_VALUE_ON_ZERO';
 
+CREATE TABLE "abbreviation" (
+	"word" VARCHAR(50) NOT NULL COMMENT 'The title word, prefix or suffix',
+	"is_prefix" BIT(1) NOT NULL DEFAULT b'0' COMMENT 'Whether "word" is a prefix',
+	"is_suffix" BIT(1) NOT NULL DEFAULT b'0' COMMENT 'Whether "word" is a suffix',
+	"abbreviation" VARCHAR(30) DEFAULT NULL COMMENT 'The abbreviation, if any, for "word"',
+	"languages" VARCHAR(50) NOT NULL COMMENT 'The applicable languages',
+  PRIMARY KEY ("word"),
+	INDEX "abbreviation_abbreviation" ("abbreviation") USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='The ISSN Network''s ''List of Title Word Abbreviations'' (LTWA), as used by ISO 4.';
+
 -- Dumping structure for table evidence_engine.entity
 CREATE TABLE IF NOT EXISTS "entity" (
   "id" bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'The unique entity record identifier',
@@ -154,7 +164,7 @@ CREATE TABLE IF NOT EXISTS "entity_link" (
 CREATE TABLE IF NOT EXISTS "journal" (
   "id"  bigint(20) unsigned NOT NULL COMMENT 'The journal ID',
   "title" varchar(100) NOT NULL COMMENT 'The journal, etc. title',
-  "abbreviation" varchar(50) DEFAULT NULL COMMENT 'The ISO 4 title abbreviation',
+  "abbreviation" varchar(50) DEFAULT NULL COMMENT 'The official ISO 4 title abbreviation, with periods',
   "url" varchar(200) DEFAULT NULL COMMENT 'Web link to the journal''s home page',
   "issn" char(9) DEFAULT NULL COMMENT 'The International Standard Serial Number',
   "publisher_id"  bigint(20) unsigned DEFAULT NULL COMMENT 'The ID of the publisher',

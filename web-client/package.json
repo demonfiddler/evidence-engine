@@ -54,6 +54,7 @@
     "react-day-picker": "9.8.1",
     "react-dom": "^19.0.0",
     "react-dropdown-tree-select": "^2.8.0",
+    "react-dropzone": "^14.3.8",
     "react-hook-form": "^7.55.0",
     "react-tailwindcss-select": "^1.8.5",
     "sonner": "^2.0.3",

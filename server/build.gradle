@@ -54,6 +54,7 @@ dependencies {
 	implementation 'org.freemarker:freemarker:2.3.34'
 	implementation 'com.github.librepdf:openpdf-fonts-extra:1.3.43'
 	implementation 'com.github.librepdf:openpdf-html:3.0.0'
+	implementation 'org.openapitools:jackson-databind-nullable:0.2.8'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.graphql-java-kickstart:graphiql-spring-boot-starter:6.0.1' // added per graphql-java-generator example
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'

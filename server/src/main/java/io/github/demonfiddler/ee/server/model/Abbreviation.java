@@ -17,35 +17,59 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-package io.github.demonfiddler.ee.server.repository;
+package io.github.demonfiddler.ee.server.model;
 
-import java.util.Optional;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+@Entity
+public class Abbreviation {
 
-import io.github.demonfiddler.ee.server.model.Journal;
+    @Id
+    private String word;
+    private boolean isPrefix;
+    private boolean isSuffix;
+    private String abbreviation;
+    private String languages;
 
-public interface JournalRepository extends JpaRepository<Journal, Long>, CustomJournalRepository {
+    public String getWord() {
+        return word;
+    }
 
-    /**
-     * Looks up a Journal by its ISSN.
-     * @param issn The Journal's ISSN.
-     * @return The Journal if found, otherwise empty.
-     */
-    Optional<Journal> findByIssn(String issn);
+    public void setWord(String word) {
+        this.word = word;
+    }
 
-    /**
-     * Looks up a Journal by its title.
-     * @param title The Journal title.
-     * @return The Journal if found, otherwise empty.
-     */
-    Optional<Journal> findByTitle(String title);
+    public boolean isPrefix() {
+        return isPrefix;
+    }
 
-    /**
-     * Looks up a Journal by its abbreviated title.
-     * @param abbreviation The abbreviated Journal title.
-     * @return The Journal if found, otherwise empty.
-     */
-    Optional<Journal> findByAbbreviation(String abbreviation);
+    public void setPrefix(boolean isPrefix) {
+        this.isPrefix = isPrefix;
+    }
+
+    public boolean isSuffix() {
+        return isSuffix;
+    }
+
+    public void setSuffix(boolean isSuffix) {
+        this.isSuffix = isSuffix;
+    }
+
+    public String getAbbreviation() {
+        return abbreviation;
+    }
+
+    public void setAbbreviation(String abbreviation) {
+        this.abbreviation = abbreviation;
+    }
+
+    public String getLanguages() {
+        return languages;
+    }
+
+    public void setLanguages(String languages) {
+        this.languages = languages;
+    }
 
 }

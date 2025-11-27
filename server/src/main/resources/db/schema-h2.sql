@@ -20,6 +20,17 @@
 CREATE ALIAS IF NOT EXISTS FT_INIT FOR "org.h2.fulltext.FullText.init";
 CALL FT_INIT();
 
+CREATE TABLE "abbreviation" (
+	"word" VARCHAR(50) NOT NULL COMMENT 'The title word, prefix or suffix',
+	"is_prefix" BOOLEAN DEFAULT FALSE NOT NULL COMMENT 'Whether "word" is a prefix',
+	"is_suffix" BOOLEAN DEFAULT FALSE NOT NULL COMMENT 'Whether "word" is a suffix',
+	"abbreviation" VARCHAR(30) DEFAULT NULL COMMENT 'The abbreviation, if any, for "word"',
+	"languages" VARCHAR(50) NOT NULL COMMENT 'The applicable languages',
+  PRIMARY KEY ("word")
+);
+CREATE INDEX "abbreviation_word" ON "abbreviation" ("word");
+CREATE INDEX "abbreviation_abbreviation" ON "abbreviation" ("abbreviation");
+
 CREATE TABLE "entity" (
   "id" BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT 'The unique entity record identifier',
   "dtype" CHAR(3) NOT NULL COMMENT 'The entity type discriminator',
@@ -111,7 +122,7 @@ CALL FT_CREATE_INDEX('PUBLIC', 'entity_link', 'from_entity_locations,to_entity_l
 CREATE TABLE "journal" (
   "id" BIGINT PRIMARY KEY COMMENT 'The journal ID',
   "title" VARCHAR(100) NOT NULL COMMENT 'The journal, etc. title',
-  "abbreviation" VARCHAR(50) DEFAULT NULL COMMENT 'The ISO 4 title abbreviation',
+  "abbreviation" VARCHAR(50) DEFAULT NULL COMMENT 'The official ISO 4 title abbreviation, with periods',
   "url" VARCHAR(200) DEFAULT NULL COMMENT 'Web link to the journal''s home page',
   "issn" CHAR(9) DEFAULT NULL UNIQUE CHECK ("issn" REGEXP '^\\d{4}-\\d{3}[\\dX]$') COMMENT 'The International Standard Serial Number',
   "publisher_id" BIGINT DEFAULT NULL COMMENT 'The ID of the publisher',

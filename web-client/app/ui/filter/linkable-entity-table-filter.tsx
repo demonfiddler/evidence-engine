@@ -38,6 +38,7 @@ import RecordKind from "@/app/model/RecordKind"
 import { filter, LoggerEx } from "@/lib/logger"
 import { anything } from "@/types/types"
 import ExportDialog from "../dialog/export-dialog"
+import ImportDialog from "../dialog/import-dialog"
 
 const logger = new LoggerEx(filter, "[LinkableEntityTableFilter] ")
 
@@ -47,6 +48,7 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
   isLinkableEntity,
   refetch,
   loadingPathWithSearchParams,
+  importAccept,
 }: DataTableFilterProps<TData>) {
   logger.debug("render")
 
@@ -243,6 +245,10 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
         >
           Reset
         </ButtonEx>
+        <ImportDialog
+          recordKind={recordKind}
+          accept={importAccept}
+        />
         <ExportDialog recordKind={recordKind} />
         <DataTableViewOptions table={table} />
       </div>

@@ -34,7 +34,7 @@ public final class StringUtils {
     public static int countLines(String s) {
         if (s == null || s.isEmpty())
             return 0;
-        StringTokenizer st = new StringTokenizer(s, "\n\r");
+        StringTokenizer st = new StringTokenizer(s, "\r\n");
         return st.countTokens();
     }
 
@@ -54,8 +54,17 @@ public final class StringUtils {
         return new String(c);
     }
 
+    /**
+     * Returns whether a string is {@code null} or blank.
+     * @param s The string to test.
+     * @return {@code true} if {@code s} is {@code null} or contains only spaces
+     */
+    public static boolean isBlank(String s) {
+        return s == null || s.isBlank();
+    }
+
     /** Private ctor prevents instantiation. */
     private StringUtils() {
-    }
+    }    
 
 }

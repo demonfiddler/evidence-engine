@@ -75,7 +75,7 @@ import DataTableColumnHeader from "./data-table-column-header"
 import Spinner from "../misc/spinner"
 import { getExpandedRowModelEx } from "./data-table-expanded-row-model"
 import { DetailState } from "../details/detail-actions"
-import DataTableFilterProps from "./data-table-filter"
+import DataTableFilterProps, { ImportAccept } from "./data-table-filter"
 import { QueryFilter } from "@/app/model/schema"
 import { LoggerEx, table } from "@/lib/logger"
 
@@ -118,6 +118,7 @@ interface DataTableProps<TData, TValue> {
   auxRecordId?: string
   refetch: () => void
   loadingPathWithSearchParams: boolean
+  importAccept?: ImportAccept
 }
 
 interface ColumnMetaData {
@@ -138,6 +139,7 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
   auxRecordId,
   refetch,
   loadingPathWithSearchParams,
+  importAccept,
 }: DataTableProps<TData, TValue>) {
   logger.debug("render")
 
@@ -384,6 +386,7 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
             auxRecordId={auxRecordId}
             refetch={refetch}
             loadingPathWithSearchParams={loadingPathWithSearchParams}
+            importAccept={importAccept}
           />
           <Table className="table-fixed box-border" style={{width: `${table.getTotalSize()}px`}}>
             <colgroup>

@@ -3,6 +3,7 @@
 TY  - ${record.kind}
 DB  - Evidence Engine
 DP  - Campaign Resources
+SF  - publications
 ID  - ${record.id?c}
 <#if record.title??>TI  - ${record.title}</#if>
 <#if record.authors??><#t>

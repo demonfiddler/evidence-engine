@@ -59,8 +59,6 @@ import io.github.demonfiddler.ee.server.util.ProfileUtils;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-// @EnableWebFluxSecurity
-// @EnableReactiveMethodSecurity
 public class SecurityConfig {
 
     private static final String REMEMBER_ME_KEY = "auth";
@@ -165,22 +163,8 @@ public class SecurityConfig {
 
         // Authorise application endpoints.
         http //
-             // .x509(customizer -> customizer //
-             // .authenticationDetailsSource(
-             // /*AuthenticationDetailsSource<HttpServletRequest,PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails>*/null)
-             // //
-             // .authenticationUserDetailsService(
-             // /*AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>*/ null) //
-             // .userDetailsService(/*UserDetailsService*/null) //
-             // .x509AuthenticationFilter(/*X509AuthenticationFilter*/null) //
-             // .x509PrincipalExtractor(/*X509PrincipalExtractor*/null) //
-             // .subjectPrincipalRegex("CN=(.*?),") //
-             // ) //
             .cors(Customizer.withDefaults()) // enables CORS support
             .csrf(csrf -> csrf.disable()) // disables CSRF (safe for stateless APIs)
-            // .csrf(customizer -> customizer //
-            // .ignoringRequestMatchers("/graphql")) //
-            // .csrf(csrf -> csrf.disable()) // optional, depending on your setup
             .authenticationManager(authenticationManager) //
             .authenticationProvider(daoAuthenticationProvider) //
             .addFilterBefore(usernamePasswordAuthenticationFilter, AnonymousAuthenticationFilter.class) //
@@ -189,29 +173,16 @@ public class SecurityConfig {
             .authorizeHttpRequests(customizer -> {
                 customizer //
                     .requestMatchers("/graphiql").authenticated() //
-                    .requestMatchers("/rest/**").permitAll() //
+                    .requestMatchers("/rest/**").authenticated() //
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // allow preflight
                     .requestMatchers(HttpMethod.POST, "/graphql").permitAll().anyRequest().authenticated();
             }) //
             .rememberMe(customizer -> {
                 customizer.rememberMeServices(rememberMeServices);
-                // .alwaysRemember(true) //
             }) //
             .formLogin(Customizer.withDefaults()); //
 
         return http.build();
     }
-
-    // For WebFlux Security:
-    // @Bean
-    // public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-    // http.x509(customizer -> customizer //
-    // .authenticationManager(/*ReactiveAuthenticationManager*/null) //
-    // .principalExtractor(/*X509PrincipalExtractor*/null) //
-    // .withDefaults()) //
-    // .authorizeExchange(exchanges -> exchanges.anyExchange().permitAll()) //
-    // .authenticationManager(/*ReactiveAuthenticationManager*/null);
-    // return http.build();
-    // }
 
 }

@@ -154,6 +154,7 @@ export default function Publications() {
         onRowSelectionChange={handleRowSelectionChange}
         refetch={refetch}
         loadingPathWithSearchParams={loadingPathWithSearchParams}
+        importAccept={{"application/x-research-info-systems": [".ris"]}}
       />
       <FormProvider {...form}>
         <PublicationDetails

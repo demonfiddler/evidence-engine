@@ -50,8 +50,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import ButtonEx from "../ext/button-ex"
-import { FileDownIcon } from "lucide-react"
 import useAuth from "@/hooks/use-auth"
+import { ArrowDownTrayIcon } from "@heroicons/react/24/outline"
 
 const ctFileExt = {
   "text/csv": "csv",
@@ -190,151 +190,149 @@ export default function ExportDialog<T>({ recordKind }: { recordKind: RecordKind
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <form>
-        <DialogTrigger asChild>
-          <ButtonEx
-            variant="ghost"
-            help="Export the table"
-            title="Export the table">
-            <FileDownIcon />
-          </ButtonEx>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Export {recordKind}s</DialogTitle>
-            <DialogDescription>
-              Specify how to export the table.
-            </DialogDescription>
-            <p className="text-red">{error}</p>
-          </DialogHeader>
-          <div className="flex gap-2">
-            <fieldset className="grow border-1 rounded-md p-2">
-              <legend>Format</legend>
-              <RadioGroup value={contentType} onValueChange={value => setContentType(value as ContentType)}>
-                <div className="flex gap-2">
-                  <RadioGroupItem value="text/csv" id="export-csv" />
-                  <Label htmlFor="export-csv">CSV</Label>
-                </div>
-                <div className="flex gap-2">
-                  <RadioGroupItem value="text/html" id="export-html" />
-                  <Label htmlFor="export-html">HTML</Label>
-                </div>
-                <div className="flex gap-2">
-                  <RadioGroupItem value="application/pdf" id="export-pdf" />
-                  <Label htmlFor="export-pdf">PDF</Label>
-                </div>
-                <div className="flex gap-2">
-                  <RadioGroupItem
-                    value="application/x-research-info-systems"
-                    id="export-ris"
-                    disabled={recordKind != "Publication"}
-                  />
-                  <Label htmlFor="export-ris">RIS</Label>
-                </div>
-              </RadioGroup>
-            </fieldset>
-            <fieldset className="grow flex flex-col border-1 rounded-md p-2 gap-2">
-              <legend>Include</legend>
+      <DialogTrigger asChild>
+        <ButtonEx
+          variant="ghost"
+          help="Export (download) the table"
+          title="Export (download) the table">
+          <ArrowDownTrayIcon />
+        </ButtonEx>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Export {recordKind}s</DialogTitle>
+          <DialogDescription>
+            Specify how to export the table.
+          </DialogDescription>
+          <p className="text-red-600">{error}</p>
+        </DialogHeader>
+        <div className="flex gap-2">
+          <fieldset className="grow border-1 rounded-md p-2">
+            <legend>Format</legend>
+            <RadioGroup value={contentType} onValueChange={value => setContentType(value as ContentType)}>
               <div className="flex gap-2">
-                <Checkbox
-                  id="render-table"
-                  disabled={contentType === "application/x-research-info-systems"}
-                  checked={renderTable}
-                  onCheckedChange={value => setRenderTable(!!value)}
-                />
-                <Label htmlFor="render-table">Table</Label>
+                <RadioGroupItem value="text/csv" id="export-csv" />
+                <Label htmlFor="export-csv">CSV</Label>
               </div>
               <div className="flex gap-2">
-                <Checkbox
-                  id="render-details"
-                  checked={renderDetails}
-                  onCheckedChange={value => setRenderDetails(!!value)}
-                />
-                <Label htmlFor="render-details">Details</Label>
+                <RadioGroupItem value="text/html" id="export-html" />
+                <Label htmlFor="export-html">HTML</Label>
               </div>
-            </fieldset>
-            <fieldset className="grow border-1 rounded-md p-2">
-              <legend>Pages</legend>
-              <RadioGroup value={pages} onValueChange={setPages}>
-                <div className="flex gap-2">
-                  <RadioGroupItem value="current" id="pages-current" />
-                  <Label htmlFor="pages-current">Current</Label>
-                </div>
-                <div className="flex gap-2">
-                  <RadioGroupItem value="all" id="pages-all" />
-                  <Label htmlFor="pages-all">All</Label>
-                </div>
-              </RadioGroup>
-            </fieldset>
-          </div>
-          <div className="flex gap-2">
-            <fieldset className="grow border-1 rounded-md p-2">
-              <legend>Paper Size</legend>
-              <RadioGroup
-                value={paper}
-                onValueChange={setPaper}
-                disabled={contentType === "text/csv" || contentType === "application/x-research-info-systems"}>
-                <div className="flex gap-2">
-                  <RadioGroupItem value="A3" id="paper-a3" />
-                  <Label htmlFor="paper-a3">A3</Label>
-                </div>
-                <div className="flex gap-2">
-                  <RadioGroupItem value="A4" id="paper-a4" />
-                  <Label htmlFor="paper-a4">A4</Label>
-                </div>
-              </RadioGroup>
-            </fieldset>
-            <fieldset className="grow border-1 rounded-md p-2">
-              <legend>Orientation</legend>
-              <RadioGroup
-                value={orientation}
-                onValueChange={setOrientation}
+              <div className="flex gap-2">
+                <RadioGroupItem value="application/pdf" id="export-pdf" />
+                <Label htmlFor="export-pdf">PDF</Label>
+              </div>
+              <div className="flex gap-2">
+                <RadioGroupItem
+                  value="application/x-research-info-systems"
+                  id="export-ris"
+                  disabled={recordKind != "Publication"}
+                />
+                <Label htmlFor="export-ris">RIS</Label>
+              </div>
+            </RadioGroup>
+          </fieldset>
+          <fieldset className="grow flex flex-col border-1 rounded-md p-2 gap-2">
+            <legend>Include</legend>
+            <div className="flex gap-2">
+              <Checkbox
+                id="render-table"
+                disabled={contentType === "application/x-research-info-systems"}
+                checked={renderTable}
+                onCheckedChange={value => setRenderTable(!!value)}
+              />
+              <Label htmlFor="render-table">Table</Label>
+            </div>
+            <div className="flex gap-2">
+              <Checkbox
+                id="render-details"
+                checked={renderDetails}
+                onCheckedChange={value => setRenderDetails(!!value)}
+              />
+              <Label htmlFor="render-details">Details</Label>
+            </div>
+          </fieldset>
+          <fieldset className="grow border-1 rounded-md p-2">
+            <legend>Pages</legend>
+            <RadioGroup value={pages} onValueChange={setPages}>
+              <div className="flex gap-2">
+                <RadioGroupItem value="current" id="pages-current" />
+                <Label htmlFor="pages-current">Current</Label>
+              </div>
+              <div className="flex gap-2">
+                <RadioGroupItem value="all" id="pages-all" />
+                <Label htmlFor="pages-all">All</Label>
+              </div>
+            </RadioGroup>
+          </fieldset>
+        </div>
+        <div className="flex gap-2">
+          <fieldset className="grow border-1 rounded-md p-2">
+            <legend>Paper Size</legend>
+            <RadioGroup
+              value={paper}
+              onValueChange={setPaper}
+              disabled={contentType === "text/csv" || contentType === "application/x-research-info-systems"}>
+              <div className="flex gap-2">
+                <RadioGroupItem value="A3" id="paper-a3" />
+                <Label htmlFor="paper-a3">A3</Label>
+              </div>
+              <div className="flex gap-2">
+                <RadioGroupItem value="A4" id="paper-a4" />
+                <Label htmlFor="paper-a4">A4</Label>
+              </div>
+            </RadioGroup>
+          </fieldset>
+          <fieldset className="grow border-1 rounded-md p-2">
+            <legend>Orientation</legend>
+            <RadioGroup
+              value={orientation}
+              onValueChange={setOrientation}
+              disabled={contentType === "text/csv" || contentType === "application/x-research-info-systems"}
+            >
+              <div className="flex gap-2">
+                <RadioGroupItem value="portrait" id="orientation-portrait" />
+                <Label htmlFor="orientation-portrait">Portrait</Label>
+              </div>
+              <div className="flex gap-2">
+                <RadioGroupItem value="landscape" id="orientation-landscape" />
+                <Label htmlFor="orientation-landscape">Landscape</Label>
+              </div>
+            </RadioGroup>
+          </fieldset>
+          <fieldset className="grow border-1 rounded-md p-2">
+            <legend>Font Size</legend>
+            <Select value={fontSize} onValueChange={setFontSize}>
+              <SelectTrigger id="font-size"
                 disabled={contentType === "text/csv" || contentType === "application/x-research-info-systems"}
               >
-                <div className="flex gap-2">
-                  <RadioGroupItem value="portrait" id="orientation-portrait" />
-                  <Label htmlFor="orientation-portrait">Portrait</Label>
-                </div>
-                <div className="flex gap-2">
-                  <RadioGroupItem value="landscape" id="orientation-landscape" />
-                  <Label htmlFor="orientation-landscape">Landscape</Label>
-                </div>
-              </RadioGroup>
-            </fieldset>
-            <fieldset className="grow border-1 rounded-md p-2">
-              <legend>Font Size</legend>
-              <Select value={fontSize} onValueChange={setFontSize}>
-                <SelectTrigger id="font-size"
-                  disabled={contentType === "text/csv" || contentType === "application/x-research-info-systems"}
-                >
-                  <SelectValue placeholder="Font size" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Font Size</SelectLabel>
-                    {
-                      [8, 9, 10, 11, 12, 13, 14, 15, 16].map(
-                        s => <SelectItem key={`font-${s}`} value={s.toString()}>{s}</SelectItem>)
-                    }
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </fieldset>
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button type="button" variant="outline">Cancel</Button>
-            </DialogClose>
-            <Button
-              type="button"
-              disabled={!renderTable && !renderDetails}
-              onClick={handleExport}
-            >
-              Export
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </form>
+                <SelectValue placeholder="Font size" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Font Size</SelectLabel>
+                  {
+                    [8, 9, 10, 11, 12, 13, 14, 15, 16].map(
+                      s => <SelectItem key={`font-${s}`} value={s.toString()}>{s}</SelectItem>)
+                  }
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </fieldset>
+        </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button type="button" variant="outline">Cancel</Button>
+          </DialogClose>
+          <Button
+            type="button"
+            disabled={!renderTable && !renderDetails}
+            onClick={handleExport}
+          >
+            Export
+          </Button>
+        </DialogFooter>
+      </DialogContent>
     </Dialog>
   )
 }

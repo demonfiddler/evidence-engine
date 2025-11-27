@@ -418,6 +418,7 @@ fragment journalFields on Journal {
   url
   issn
   publisher {
+    id
     ...publisherFields
   }
   notes
@@ -429,6 +430,7 @@ fragment publicationFields on Publication {
   title
   authors
   journal {
+    id
     ...journalFields
   }
   kind(format: SHORT)

@@ -43,7 +43,7 @@ tags:
       description: Find out more
       url: https://campaign-resources.org/evidence-engine.html#export-ris
 paths:
-  /export/{recordKind}:
+  /export/{exportRecordKind}:
     get: 
       tags:
         - CSV
@@ -54,7 +54,7 @@ paths:
       description: Exports an optionally filtered list to CSV, HTML, PDF or RIS
       operationId: export
       parameters:
-        - $ref: '#/components/parameters/recordKind'
+        - $ref: '#/components/parameters/exportRecordKind'
         - $ref: '#/components/parameters/recordIdOpt'
         - $ref: '#/components/parameters/contentTypeOpt'
         - $ref: '#/components/parameters/textOpt'
@@ -89,25 +89,45 @@ paths:
           $ref: '#/components/responses/ExportedContent'
         '400':
           $ref: '#/components/responses/Invalid'
+        '500':
+          $ref: '#/components/responses/Error'
+  /import/{importRecordKind}:
+    post:
+      tags:
+        - RIS
+      summary: Imports records from a file
+      description: Imports records from an uploaded file (e.g. RIS-format citations).
+      operationId: import
+      requestBody:
+        required: true
+        description: The file to be imported.
+        content:
+          # application/x-research-info-systems:
+          #   schema:
+          #     type: string
+          #     format: binary
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      parameters:
+        - $ref: '#/components/parameters/importRecordKind'
+      security:
+        - BearerAuth: ['CRE']
+      responses:
+        '200':
+          $ref: '#/components/responses/ImportSummary'
+        '400':
+          $ref: '#/components/responses/Invalid'
+        '500':
+          $ref: '#/components/responses/Error'
 components:
   parameters:
-    contentTypeOpt:
-      name: contentType
-      in: query
-      description: Overrides the HTTP request's Accept header, since browsers ignore the type attribute in, for example,
-        <a href="..." download="filename.pdf" type="application/pdf">filename.pdf</a>. In other words, there's
-        no way for an HTML link to force a browser to request the necessary content type. The
-        "application/x-research-info-systems" content type is only supported for recordKind="publications".
-      required: false
-      schema:
-        enum:
-          - application/pdf
-          - text/csv
-          - text/html
-          - application/x-research-info-systems
-        default: application/pdf
-    recordKind:
-      name: recordKind
+    exportRecordKind:
+      name: exportRecordKind
       description: The list's record type.
       in: path
       schema:
@@ -126,6 +146,21 @@ components:
           - topics
           - users
       required: true
+    contentTypeOpt:
+      name: contentType
+      in: query
+      description: Overrides the HTTP request's Accept header, since browsers ignore the type attribute in, for example,
+        <a href="..." download="filename.pdf" type="application/pdf">filename.pdf</a>. In other words, there's
+        no way for an HTML link to force a browser to request the necessary content type. The
+        "application/x-research-info-systems" content type is only supported for recordKind="publications".
+      required: false
+      schema:
+        enum:
+          - application/pdf
+          - text/csv
+          - text/html
+          - application/x-research-info-systems
+        default: application/pdf
     recordIdOpt:
       name: recordId
       description: The identifier of the single record to return. Applicable to all recordKind except logs.
@@ -167,7 +202,7 @@ components:
       description: The ID of the 'linked-from' master record. Applicable to recordKind claims, declarations, persons, publications, quotations.
       in: query
       schema:
-        $ref: '#/components/schemas/id'
+        $ref: '#/components/schemas/ID'
       required: false
     fromEntityKindOpt:
       name: fromEntityKind
@@ -188,7 +223,7 @@ components:
       description: The ID of the 'linked-to' master record. Applicable to recordKind claims, declarations, persons, publications, quotations.
       in: query
       schema:
-        $ref: '#/components/schemas/id'
+        $ref: '#/components/schemas/ID'
       required: false
     toEntityKindOpt:
       name: toEntityKind
@@ -209,7 +244,7 @@ components:
       description: The master topic identifier. Applicable to recordKind claims, declarations, persons, publications, quotations.
       in: query
       schema:
-        $ref: '#/components/schemas/id'
+        $ref: '#/components/schemas/ID'
       required: false
     recursiveOpt:
       name: recursive
@@ -241,35 +276,35 @@ components:
       description: Restrict to specific target entity ID. Applicable to recordKind comments.
       in: query
       schema:
-        $ref: '#/components/schemas/id'
+        $ref: '#/components/schemas/ID'
       required: false
     parentIdOpt:
       name: parentId
       description: Restrict to sub-topics thereof or replies to a specific comment. Applicable to recordKind comments, topics.
       in: query
       schema:
-        $ref: '#/components/schemas/id'
+        $ref: '#/components/schemas/ID'
       required: false
     userIdOpt:
       name: userId
       description: Restrict to logs for a specific user or comments created by a specific user. Applicable to recordKind comments, logs.
       in: query
       schema:
-        $ref: '#/components/schemas/id'
+        $ref: '#/components/schemas/ID'
       required: false
     fromOpt:
       name: from
       description: Timestamp of first record to include. Applicable to recordKind comments, logs.
       in: query
       schema:
-        $ref: '#/components/schemas/datetime'
+        $ref: '#/components/schemas/DateTime'
       required: false
     toOpt:
       name: to
       description: Timestamp of last record to include. Applicable to recordKind comments, logs.
       in: query
       schema:
-        $ref: '#/components/schemas/datetime'
+        $ref: '#/components/schemas/DateTime'
       required: false
     entityKindOpt:
       name: entityKind
@@ -295,7 +330,7 @@ components:
       description: Restrict to logs for this specific entity ID. Applicable to recordKind logs.
       in: query
       schema:
-        $ref: '#/components/schemas/id'
+        $ref: '#/components/schemas/ID'
       required: false
     transactionKindOpt:
       name: transactionKind
@@ -393,46 +428,69 @@ components:
         type: boolean
         default: false
       required: false
+    importRecordKind:
+      name: importRecordKind
+      description: The record type to import.
+      in: path
+      schema:
+        type: string
+        enum:
+          - publications
+      required: true
   schemas:
-    id:
+    ID:
       description: A unique object identifier.
       type: integer
       format: int64
-    # Unused, because if used, codegen creates a model enum that duplicate existing enums and have unresolvable imports.
-    entityKind:
-      description: Identifies the kind of tracked entity.
-      type: string
-      enum:
-        - CLA
-        - COM
-        - DEC
-        - GRP
-        - JOU
-        - PER
-        - PUB
-        - PBR
-        - QUO
-        - TOP
-        - USR
-    # Unused, because if used, codegen creates a model enum that duplicate existing enums and have unresolvable imports.
-    linkableEntityKind:
-      description: Identifies the kind of linkable entity.
-      type: string
-      enum:
-        - CLA
-        - DEC
-        - PER
-        - PUB
-        - QUO
-        - TOP
-    date:
+    Date:
       description: An ISO 8601 date value.
       type: string
       pattern: "^\\d{4}-\\d{2}-\\d{2}$"
-    datetime:
+    DateTime:
       description: An ISO 8601 date-time value.
       type: string
       pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{3})Z?$"
+    ImportMessage:
+      description: A message about the imported record.
+      type: object
+      properties:
+        lineNum:
+          description: The line number in the source to which the message relates.
+          type: integer
+          format: int32
+        severity:
+          description: The severity/importance of the message.
+          type: string
+          enum:
+            - info
+            - warning
+            - error
+            - fatal
+        text:
+          description: The message text.
+          type: string
+    ImportedRecord:
+      description: Summarises an imported record.
+      type: object
+      properties:
+        id:
+          description: The system-assigned identifier for a successfully imported record.
+          $ref: '#/components/schemas/ID'
+        label:
+          description: A textual label to identify the item.
+          type: string
+        result:
+          description: Describes the outcome of the import operation.
+          type: string
+          enum:
+            - imported
+            - duplicate
+            - error
+        messages:
+          description: Message relating to the imported record.
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportMessage'
   responses:
     ExportedContent:
       description: The exported list content
@@ -450,10 +508,20 @@ components:
         text/html:
           schema:
             type: string
+    ImportSummary:
+      description: File successfully uploaded. Body contains a summary of the record(s) imported or rejected.
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/ImportedRecord'
     Invalid:
       description: Bad request (e.g., invalid combination of query parameters)
+    Error:
+      description: Internal server error
   securitySchemes:
-    JWT:
+    BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT

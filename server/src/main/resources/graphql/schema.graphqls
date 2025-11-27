@@ -832,7 +832,7 @@ type Journal implements IBaseEntity & ITrackedEntity {
     ): CommentPage
     "The full journal title."
     title: String
-    "The official ISO 4 abbreviation."
+    "The official ISO 4 title abbreviation, with periods."
     abbreviation: String
     "Web link to the journal's home page."
     url: URL
@@ -852,7 +852,7 @@ input JournalInput {
     rating: Int
     "The full journal title."
     title: String!
-    "The official ISO 4 abbreviation."
+    "The official ISO 4 title abbreviation, with periods."
     abbreviation: String!
     url: URL
     "The International Standard Serial Number."
@@ -1306,7 +1306,9 @@ input PublicationInput {
     doi: String
     "The International Standard Book Number."
     isbn: String
-    "The U.S. National Library of Medicine's PubMedID."
+    # "The U.S. NIH National Library of Medicine's PubMed PMC ID."
+    # pmcid: String
+    "The U.S. NIH National Library of Medicine's PubMed ID."
     pmid: String
     "The Corporation for National Research Initiatives's Handle System ID."
     hsid: String

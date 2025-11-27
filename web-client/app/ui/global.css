@@ -126,3 +126,8 @@ input[type='number']::-webkit-outer-spin-button {
   animation-iteration-count: 10;
   animation-direction: alternate;
 }
+
+.wrap-col {
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+}

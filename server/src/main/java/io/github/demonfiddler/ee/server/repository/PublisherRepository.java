@@ -19,9 +19,19 @@
 
 package io.github.demonfiddler.ee.server.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import io.github.demonfiddler.ee.server.model.Publisher;
 
 public interface PublisherRepository extends JpaRepository<Publisher, Long>, CustomPublisherRepository {
+
+    /**
+     * Looks up a Publisher by name.
+     * @param name The Publisher name.
+     * @return The Publisher if found, otherwise empty.
+     */
+    Optional<Publisher> findByName(String name);
+
 }
