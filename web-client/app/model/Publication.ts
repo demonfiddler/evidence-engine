@@ -33,6 +33,8 @@ export default interface Publication extends ILinkableEntity {
   date?: Date | string | null
   /** The publication year. */
   year?: number | null
+	/** Keywords per publication metadata. */
+	keywords?: string | null
   /** The publication abstract. */
   abstract?: string | null
   /** User notes about the publication. */
@@ -43,7 +45,9 @@ export default interface Publication extends ILinkableEntity {
   doi?: string | null
   /** The International Standard Book Number. */
   isbn?: string | null
-  /** The U.S. National Library of Medicine's PubMedID. */
+  /** The U.S. NIH National Library of Medicine's PubMed Central ID. */
+  pmcid: string | null
+  /** The U.S. NIH National Library of Medicine's PubMed ID. */
   pmid: string | null
   /** The Corporation for National Research Initiatives's Handle System ID. */
   hsid: string | null

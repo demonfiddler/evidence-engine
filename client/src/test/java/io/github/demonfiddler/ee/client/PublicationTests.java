@@ -132,11 +132,25 @@ class PublicationTests extends AbstractLinkableEntityTests<Publication> {
 			abstract
 			notes
 			peerReviewed
-			doi
-			url
 			cached
-			isbn
+			url
 			accessed
+			doi
+			isbn
+			pmcid
+			pmid
+			hsid
+			arxivid
+			biorxivid
+			medrxivid
+			ericid
+			ihepid
+			oaipmhid
+			halid
+			zenodoid
+			scopuseid
+			wsan
+			pinfoan
 		}
 		""";
 	private static final String MINIMAL_RESPONSE_SPEC = //

@@ -93,6 +93,13 @@ public class Publication extends AbstractLinkableEntity {
 	Integer year;
 
 	/**
+	 * Keywords per publication metadata.
+	 */
+	@JsonProperty("keywords")
+	@GraphQLScalar(fieldName = "keywords", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String keywords;
+
+	/**
 	 * The publication abstract.
 	 */
 	@JsonProperty("abstract")
@@ -129,7 +136,14 @@ public class Publication extends AbstractLinkableEntity {
 	String isbn;
 
 	/**
-	 * The U.S. National Library of Medicine's PubMedID.
+	 * The U.S. National Library of Medicine's PubMed Central ID.
+	 */
+	@JsonProperty("pmcid")
+	@GraphQLScalar(fieldName = "pmcid", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String pmcid;
+
+	/**
+	 * The U.S. National Library of Medicine's PubMed ID.
 	 */
 	@JsonProperty("pmid")
 	@GraphQLScalar(fieldName = "pmid", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
@@ -339,6 +353,22 @@ public class Publication extends AbstractLinkableEntity {
 	}
 
 	/**
+	 * Keywords per publication metadata.
+	 */
+	@JsonProperty("keywords")
+	public void setKeywords(String keywords) {
+		this.keywords = keywords;
+	}
+
+	/**
+	 * Keywords per publication metadata.
+	 */
+	@JsonProperty("keywords")
+	public String getKeywords() {
+		return this.keywords;
+	}
+
+	/**
 	 * The publication abstract.
 	 */
 	@JsonProperty("abstract")
@@ -419,7 +449,23 @@ public class Publication extends AbstractLinkableEntity {
 	}
 
 	/**
-	 * The U.S. National Library of Medicine's PubMedID.
+	 * The U.S. National Library of Medicine's PubMed Central ID.
+	 */
+	@JsonProperty("pmcid")
+	public void setPmcid(String pmcid) {
+		this.pmcid = pmcid;
+	}
+
+	/**
+	 * The U.S. National Library of Medicine's PubMed Central ID.
+	 */
+	@JsonProperty("pmcid")
+	public String getPmcid() {
+		return this.pmcid;
+	}
+
+	/**
+	 * The U.S. National Library of Medicine's PubMed ID.
 	 */
 	@JsonProperty("pmid")
 	public void setPmid(String pmid) {
@@ -427,7 +473,7 @@ public class Publication extends AbstractLinkableEntity {
 	}
 
 	/**
-	 * The U.S. National Library of Medicine's PubMedID.
+	 * The U.S. National Library of Medicine's PubMed ID.
 	 */
 	@JsonProperty("pmid")
 	public String getPmid() {
@@ -712,6 +758,8 @@ public class Publication extends AbstractLinkableEntity {
 			+ ", " //
 			+ "year: " + this.year //
 			+ ", " //
+			+ "keywords: " + this.keywords //
+			+ ", " //
 			+ "_abstract: " + this._abstract //
 			+ ", " //
 			+ "notes: " + this.notes //
@@ -721,6 +769,8 @@ public class Publication extends AbstractLinkableEntity {
 			+ "doi: " + this.doi //
 			+ ", " //
 			+ "isbn: " + this.isbn //
+			+ ", " //
+			+ "pmcid: " + this.pmcid //
 			+ ", " //
 			+ "pmid: " + this.pmid //
 			+ ", " //
@@ -768,11 +818,13 @@ public class Publication extends AbstractLinkableEntity {
 		result = prime * result + ((kind == null) ? 0 : kind.hashCode());
 		result = prime * result + ((date == null) ? 0 : date.hashCode());
 		result = prime * result + ((year == null) ? 0 : year.hashCode());
+		result = prime * result + ((keywords == null) ? 0 : keywords.hashCode());
 		result = prime * result + ((_abstract == null) ? 0 : _abstract.hashCode());
 		result = prime * result + ((notes == null) ? 0 : notes.hashCode());
 		result = prime * result + ((peerReviewed == null) ? 0 : peerReviewed.hashCode());
 		result = prime * result + ((doi == null) ? 0 : doi.hashCode());
 		result = prime * result + ((isbn == null) ? 0 : isbn.hashCode());
+		result = prime * result + ((pmcid == null) ? 0 : pmcid.hashCode());
 		result = prime * result + ((pmid == null) ? 0 : pmid.hashCode());
 		result = prime * result + ((hsid == null) ? 0 : hsid.hashCode());
 		result = prime * result + ((arxivid == null) ? 0 : arxivid.hashCode());
@@ -827,6 +879,11 @@ public class Publication extends AbstractLinkableEntity {
 				return false;
 		} else if (!year.equals(other.year))
 			return false;
+		if (keywords == null) {
+			if (other.keywords != null)
+				return false;
+		} else if (!year.equals(other.year))
+			return false;
 		if (_abstract == null) {
 			if (other._abstract != null)
 				return false;
@@ -851,6 +908,11 @@ public class Publication extends AbstractLinkableEntity {
 			if (other.isbn != null)
 				return false;
 		} else if (!isbn.equals(other.isbn))
+			return false;
+		if (pmcid == null) {
+			if (other.pmcid != null)
+				return false;
+		} else if (!pmcid.equals(other.pmcid))
 			return false;
 		if (pmid == null) {
 			if (other.pmid != null)
@@ -951,11 +1013,13 @@ public class Publication extends AbstractLinkableEntity {
 		private String kind;
 		private LocalDate date;
 		private Integer year;
+		private String keywords;
 		private String _abstract;
 		private String notes;
 		private Boolean peerReviewed;
 		private String doi;
 		private String isbn;
+		private String pmcid;
 		private String pmid;
 		private String hsid;
 		private String arxivid;
@@ -1022,6 +1086,14 @@ public class Publication extends AbstractLinkableEntity {
 		}
 
 		/**
+		 * Keywords per publication metadata.
+		 */
+		public Builder withKeywords(String keywordsParam) {
+			this.keywords = keywordsParam;
+			return this;
+		}
+
+		/**
 		 * The publication abstract.
 		 */
 		public Builder withAbstract(String _abstractParam) {
@@ -1058,6 +1130,14 @@ public class Publication extends AbstractLinkableEntity {
 		 */
 		public Builder withIsbn(String isbnParam) {
 			this.isbn = isbnParam;
+			return this;
+		}
+
+		/**
+		 * The U.S. National Library of Medicine's PubMed Central ID.
+		 */
+		public Builder withPmcid(String pmcidParam) {
+			this.pmcid = pmcidParam;
 			return this;
 		}
 
@@ -1198,11 +1278,13 @@ public class Publication extends AbstractLinkableEntity {
 			_object.setKind(this.kind);
 			_object.setDate(this.date);
 			_object.setYear(this.year);
+			_object.setKeywords(this.keywords);
 			_object.setAbstract(this._abstract);
 			_object.setNotes(this.notes);
 			_object.setPeerReviewed(this.peerReviewed);
 			_object.setDoi(this.doi);
 			_object.setIsbn(this.isbn);
+			_object.setPmcid(this.pmcid);
 			_object.setPmid(this.pmid);
 			_object.setHsid(this.hsid);
 			_object.setArxivid(this.arxivid);

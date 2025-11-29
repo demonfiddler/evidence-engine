@@ -842,6 +842,8 @@ type Journal implements IBaseEntity & ITrackedEntity {
     publisher: Publisher
     "Notes about the journal."
     notes: String
+    "Whether the journal publishes peer-reviewed articles."
+    peerReviewed: Boolean
 }
 
 "An input for creating or updating a journal."
@@ -861,6 +863,8 @@ input JournalInput {
     publisherId: Long
     "Notes about the journal."
     notes: String
+    "Whether the journal publishes peer-reviewed articles."
+    peerReviewed: Boolean
 }
 
 "Returns paginated query results."
@@ -1231,6 +1235,8 @@ type Publication implements IBaseEntity & ITrackedEntity & ILinkableEntity {
     date: Date
     "The publication year."
     year: Int
+    "Keywords per publication metadata."
+    keywords: String
     "The publication abstract."
     abstract: String
     "User notes about the publication."
@@ -1241,7 +1247,9 @@ type Publication implements IBaseEntity & ITrackedEntity & ILinkableEntity {
     doi: String
     "The International Standard Book Number."
     isbn: String
-    "The U.S. National Library of Medicine's PubMedID."
+    "The U.S. NIH National Library of Medicine's PubMed Central ID."
+    pmcid: String
+    "The U.S. NIH National Library of Medicine's PubMed ID."
     pmid: String
     "The Corporation for National Research Initiatives's Handle System ID."
     hsid: String
@@ -1296,6 +1304,8 @@ input PublicationInput {
     date: Date
     "The publication year."
     year: Int
+    "Keywords per publication metadata."
+    keywords: String
     "The publication abstract."
     abstract: String
     "User notes about the publication."
@@ -1306,8 +1316,8 @@ input PublicationInput {
     doi: String
     "The International Standard Book Number."
     isbn: String
-    # "The U.S. NIH National Library of Medicine's PubMed PMC ID."
-    # pmcid: String
+    "The U.S. NIH National Library of Medicine's PubMed Central ID."
+    pmcid: String
     "The U.S. NIH National Library of Medicine's PubMed ID."
     pmid: String
     "The Corporation for National Research Initiatives's Handle System ID."
@@ -1543,6 +1553,8 @@ type Publisher implements IBaseEntity & ITrackedEntity {
     url: URL
     "The number of journals published."
     journalCount: Int
+    "Notes on the publisher."
+    notes: String
 }
 
 "An input for creating or updating a publisher."
@@ -1561,6 +1573,8 @@ input PublisherInput {
     url: URL
     "The number of journals published."
     journalCount: Int
+    "Notes on the publisher."
+    notes: String
 }
 
 "Returns paginated publisher query results."

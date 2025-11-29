@@ -40,8 +40,10 @@ public class PublisherColumns {
         (rec, raw) -> RenderUtils.instance.renderCountry(rec.getCountry()));
     private static final Column<Publisher> JOURNAL_COUNT =
         new Column<>("journalCount", "Journal Count", ColumnType.NUMBER, SINGLE, null);
+    private static final Column<Publisher> NOTES = new Column<>("notes", "Notes", ColumnType.STRING, FULL, null);
 
-    public static final List<Column<Publisher>> OWN_COLUMNS = List.of(NAME, URL, LOCATION, COUNTRY, JOURNAL_COUNT);
+    public static final List<Column<Publisher>> OWN_COLUMNS =
+        List.of(NAME, URL, LOCATION, COUNTRY, JOURNAL_COUNT, NOTES);
     public static final List<Column<Publisher>> OWN_DEFAULT_COLUMNS = List.of(NAME, LOCATION, COUNTRY);
     public static final List<Column<? extends IBaseEntity>> ALL_DEFAULT_COLUMNS =
         new CompositeList<>(List.of(TrackedEntityColumns.ALL_DEFAULT_COLUMNS, OWN_DEFAULT_COLUMNS));

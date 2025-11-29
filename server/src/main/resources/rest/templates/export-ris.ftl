@@ -24,6 +24,8 @@ AU  - ${author}
 <#if record.doi??>DI  - ${record.doi}</#if><#lt>
 <#if record.date??>DA  - ${utils.renderRisDate(record.date)}</#if><#lt>
 <#if record.year??>YR  - ${record.year?c}</#if><#lt>
+<#if record.keywords??>KW  - ${record.keywords?c}</#if><#lt>
+<#if record.pmcid??>PMCID  - ${record.pmcid}</#if><#lt>
 <#if record.pmid??>PMID  - ${record.pmid}</#if><#lt>
 <#if record.abstract??>AB  - ${record.abstract}</#if><#lt>
 <#if record.notes??>PA  - ${record.notes}</#if><#lt>

@@ -91,6 +91,13 @@ public class Journal extends AbstractTrackedEntity {
 	String notes;
 
 	/**
+	 * Whether the journal publishes peer-reviewed articles.
+	 */
+	@JsonProperty("peerReviewed")
+	@GraphQLScalar( fieldName = "peerReviewed", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class, listDepth = 0)
+	Boolean peerReviewed;
+
+	/**
 	 * The full journal title.
 	 */
 	@JsonProperty("title")
@@ -186,6 +193,22 @@ public class Journal extends AbstractTrackedEntity {
 		return this.notes;
 	}
 
+	/**
+	 * Whether the journal publishes peer-reviewed articles.
+	 */
+	@JsonProperty("peerReviewed")
+	public void setPeerReviewed(Boolean peerReviewed) {
+		this.peerReviewed = peerReviewed;
+	}
+
+	/**
+	 * Whether the journal publishes peer-reviewed articles.
+	 */
+	@JsonProperty("peerReviewed")
+	public Boolean getPeerReviewed() {
+		return this.peerReviewed;
+	}
+
 	@Override
 	public String toString() {
 		return "Journal {" //
@@ -221,6 +244,8 @@ public class Journal extends AbstractTrackedEntity {
 			+ ", " //
 			+ "notes: " + this.notes //
 			+ ", " //
+			+ "peerReviewed: " + this.peerReviewed //
+			+ ", " //
 			+ "__typename: " + this.__typename //
 			+ "}";
 	}
@@ -235,6 +260,7 @@ public class Journal extends AbstractTrackedEntity {
 		result = prime * result + ((issn == null) ? 0 : issn.hashCode());
 		result = prime * result + ((publisher == null) ? 0 : publisher.hashCode());
 		result = prime * result + ((notes == null) ? 0 : notes.hashCode());
+		result = prime * result + ((peerReviewed == null) ? 0 : peerReviewed.hashCode());
 		return result;
 	}
 
@@ -273,6 +299,11 @@ public class Journal extends AbstractTrackedEntity {
 				return false;
 		} else if (!notes.equals(other.notes))
 			return false;
+		if (peerReviewed == null) {
+			if (other.peerReviewed != null)
+				return false;
+		} else if (!peerReviewed.equals(other.peerReviewed))
+			return false;
 		return true;
 	}
 
@@ -292,6 +323,7 @@ public class Journal extends AbstractTrackedEntity {
 		private String issn;
 		private Publisher publisher;
 		private String notes;
+		private Boolean peerReviewed;
 
 		/**
 		 * The full journal title.
@@ -341,6 +373,14 @@ public class Journal extends AbstractTrackedEntity {
 			return this;
 		}
 
+		/**
+		 * Whether the journal publishes peer-reviewed articles
+		 */
+		public Builder withPeerReviewed(Boolean peerReviewedParam) {
+			this.peerReviewed = peerReviewedParam;
+			return this;
+		}
+
 		@Override
 		public Journal build() {
 			Journal _object = build(new Journal());
@@ -350,6 +390,7 @@ public class Journal extends AbstractTrackedEntity {
 			_object.setIssn(this.issn);
 			_object.setPublisher(this.publisher);
 			_object.setNotes(this.notes);
+			_object.setPeerReviewed(this.peerReviewed);
 			return _object;
 		}
 

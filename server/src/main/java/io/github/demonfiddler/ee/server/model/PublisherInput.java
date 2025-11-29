@@ -64,6 +64,12 @@ public class PublisherInput extends AbstractTrackedEntityInput {
 	Integer journalCount;
 
 	/**
+	 * Notes on the publisher.
+	 */
+	@GraphQLScalar(fieldName = "notes", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String notes;
+
+	/**
 	 * The publisher name.
 	 */
 	public void setName(String name) {
@@ -133,6 +139,20 @@ public class PublisherInput extends AbstractTrackedEntityInput {
 		return this.journalCount;
 	}
 
+	/**
+	 * Notes on the publisher.
+	 */
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	/**
+	 * Notes on the publisher.
+	 */
+	public String getNotes() {
+		return this.notes;
+	}
+
 	public String toString() {
 		return "PublisherInput {" //
 			+ "id: " + this.id //
@@ -148,6 +168,8 @@ public class PublisherInput extends AbstractTrackedEntityInput {
 			+ "url: " + this.url //
 			+ ", " //
 			+ "journalCount: " + this.journalCount //
+			+ ", " //
+			+ "notes: " + this.notes //
 			+ "}"; //
 	}
 
@@ -166,6 +188,7 @@ public class PublisherInput extends AbstractTrackedEntityInput {
 		private String country;
 		private URL url;
 		private Integer journalCount;
+		private String notes;
 
 		/**
 		 * The publisher name.
@@ -207,6 +230,14 @@ public class PublisherInput extends AbstractTrackedEntityInput {
 			return this;
 		}
 
+		/**
+		 * Notes on the publisher.
+		 */
+		public Builder withNotes(String notesParam) {
+			this.notes = notesParam;
+			return this;
+		}
+
 		@Override
 		public PublisherInput build() {
 			PublisherInput _object = build(new PublisherInput());
@@ -215,6 +246,7 @@ public class PublisherInput extends AbstractTrackedEntityInput {
 			_object.setCountry(this.country);
 			_object.setUrl(this.url);
 			_object.setJournalCount(this.journalCount);
+			_object.setNotes(this.notes);
 			return _object;
 		}
 

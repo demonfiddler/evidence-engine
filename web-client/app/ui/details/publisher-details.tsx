@@ -48,6 +48,7 @@ import SelectTriggerEx from "../ext/select-ex"
 import LinkEx from "../ext/link-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
 import { detail, LoggerEx } from "@/lib/logger"
+import TextareaEx from "../ext/textarea-ex"
 
 const logger = new LoggerEx(detail, "[PublisherDetails] ")
 
@@ -103,6 +104,27 @@ export default function PublisherDetails(
                       value={field.value ?? 0}
                       onChange={field.onChange}
                       help="A five-star rating for the publisher, indicative of prestige, reputation, impact, quality, etc."
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="journalCount"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel htmlFor="journalCount">Journal count</FormLabel>
+                  <FormControl>
+                    <InputEx
+                      id="journalCount"
+                      type="number"
+                      className="col-span-1"
+                      disabled={!record && !updating}
+                      readOnly={!updating}
+                      {...field}
+                      help="The number of journals published by this organisation"
                     />
                   </FormControl>
                   <FormMessage />
@@ -223,19 +245,18 @@ export default function PublisherDetails(
             />
             <FormField
               control={form.control}
-              name="journalCount"
+              name="notes"
               render={({field}) => (
-                <FormItem>
-                  <FormLabel htmlFor="journalCount">Journal count</FormLabel>
+                <FormItem className="col-start-1 col-span-2">
+                  <FormLabel htmlFor="notes">Notes</FormLabel>
                   <FormControl>
-                    <InputEx
-                      id="journalCount"
-                      type="number"
-                      className="col-span-1"
+                    <TextareaEx
+                      id="notes"
+                      className="h-40 overflow-y-auto"
                       disabled={!record && !updating}
                       readOnly={!updating}
                       {...field}
-                      help="The number of journals published by this organisation"
+                      help="Notes about the publisher"
                     />
                   </FormControl>
                   <FormMessage />

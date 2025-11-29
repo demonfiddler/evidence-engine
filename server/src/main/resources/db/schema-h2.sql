@@ -126,7 +126,8 @@ CREATE TABLE "journal" (
   "url" VARCHAR(200) DEFAULT NULL COMMENT 'Web link to the journal''s home page',
   "issn" CHAR(9) DEFAULT NULL UNIQUE CHECK ("issn" REGEXP '^\\d{4}-\\d{3}[\\dX]$') COMMENT 'The International Standard Serial Number',
   "publisher_id" BIGINT DEFAULT NULL COMMENT 'The ID of the publisher',
-  "notes" VARCHAR(200) DEFAULT NULL COMMENT 'A brief description of the journal'
+  "notes" VARCHAR(200) DEFAULT NULL COMMENT 'A brief description of the journal',
+  "peer_reviewed" BOOLEAN DEFAULT NULL COMMENT 'Whether the journal publishes peer-reviewed articles',
 );
 CREATE UNIQUE INDEX "journal_issn" ON "journal" ("issn");
 CREATE INDEX "journal_title" ON "journal" ("title");
@@ -188,14 +189,16 @@ CREATE TABLE "publication" (
   "kind" VARCHAR(6) NOT NULL COMMENT 'The kind of publication',
   "date" DATE DEFAULT NULL COMMENT 'Publication date',
   "year" SMALLINT DEFAULT NULL COMMENT 'Publication year',
+	"keywords" VARCHAR(255) DEFAULT NULL COMMENT 'Keywords per publication metadata',
 	"location" VARCHAR(50) DEFAULT NULL COMMENT 'The location of the relevant section within the publication',
   "abstract" VARCHAR(65535) DEFAULT NULL COMMENT 'Abstract from the article',
   "notes" VARCHAR(65535) DEFAULT NULL COMMENT 'Added notes about the publication',
   "peer_reviewed" BOOLEAN DEFAULT FALSE NOT NULL COMMENT 'Whether the article was peer-reviewed',
   "doi" VARCHAR(100) DEFAULT NULL UNIQUE CHECK("doi" REGEXP '^(10\\.\\d{4,9}/(?i)[-._;()/:A-Z0-9]+)$') COMMENT 'Digital Object Identifier',
   "isbn" VARCHAR(20) DEFAULT NULL UNIQUE CHECK("isbn" REGEXP '^(?=(?:\d[- ]?){13}$|(?:\\d[- ]?){9}[\dXx]$)\\d{1,5}[- ]?\\d{1,7}[- ]?\\d{1,7}[- ]?[\\dXx]$') COMMENT 'International Standard Book Number (printed publications only)',
-	"pmid" VARCHAR(10) DEFAULT NULL UNIQUE CHECK("pmid" REGEXP '^\\d{1,10}$') COMMENT 'The U.S. National Library of Medicine''s PubMedID',
-	"hsid" VARCHAR(12) DEFAULT NULL UNIQUE CHECK("hsid" REGEXP '^NIHMS\\d+$') COMMENT 'The Corporation for National Research Initiatives''s Handle System ID',
+	"pmcid" VARCHAR(10) DEFAULT NULL UNIQUE CHECK("pmid" REGEXP '^PMC\\d{7}$') COMMENT 'The U.S. National Library of Medicine''s PubMed Central ID',
+	"pmid" VARCHAR(10) DEFAULT NULL UNIQUE CHECK("pmid" REGEXP '^\\d{1,10}$') COMMENT 'The U.S. National Library of Medicine''s PubMed ID',
+	"hsid" VARCHAR(12) DEFAULT NULL UNIQUE CHECK("hsid" REGEXP '^[^/]+/.+$') COMMENT 'The Corporation for National Research Initiatives''s Handle System ID',
 	"arxivid" VARCHAR(15) DEFAULT NULL UNIQUE CHECK("arxivid" REGEXP '^\\d{4}\\.\\d{4,5}(v\\d+)?$') COMMENT 'Cornell University Library''s arXiv.org ID',
 	"biorxivid" VARCHAR(20) DEFAULT NULL UNIQUE CHECK("biorxivid" REGEXP '^10\\.1101\\/\\d+$') COMMENT 'Cold Spring Harbor Laboratory''s bioRxiv.org ID',
 	"medrxivid" VARCHAR(20) DEFAULT NULL UNIQUE CHECK("medrxivid" REGEXP '^10\\.1101\\/\\d+$') COMMENT 'Cold Spring Harbor Laboratory''s medRxiv.org ID',
@@ -214,7 +217,7 @@ CREATE TABLE "publication" (
 CREATE UNIQUE INDEX "publication_doi" ON "publication" ("doi");
 CREATE INDEX "FK_publication_journal" ON "publication" ("journal_id");
 CREATE INDEX "FK_publication_publication_kind" ON "publication" ("kind");
-CALL FT_CREATE_INDEX('PUBLIC', 'publication', 'title,authors,abstract,notes,doi,isbn,pmid,hsid,arxivid,biorxivid,medrxivid,ericid,ihepid,oaipmhid,halid,zenodoid,scopuseid,wsan,pinfoan,url');
+CALL FT_CREATE_INDEX('PUBLIC', 'publication', 'title,authors,abstract,notes,keywords,doi,isbn,pmid,hsid,arxivid,biorxivid,medrxivid,ericid,ihepid,oaipmhid,halid,zenodoid,scopuseid,wsan,pinfoan,url');
 
 CREATE TABLE "publication_kind" (
   "kind" VARCHAR(10) PRIMARY KEY COMMENT 'The publication type per TY field in RIS specification',
@@ -227,11 +230,12 @@ CREATE TABLE "publisher" (
   "location" VARCHAR(50) DEFAULT NULL COMMENT 'The publisher location',
   "country" CHAR(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for the publisher''s country',
   "url" VARCHAR(200) DEFAULT NULL COMMENT 'URL of publisher''s home page',
-  "journal_count" INT DEFAULT NULL COMMENT 'The number of journals published'
+  "journal_count" INT DEFAULT NULL COMMENT 'The number of journals published',
+	"notes" VARCHAR(65535) DEFAULT NULL COMMENT 'Notes on the publisher'
 );
 CREATE INDEX "FK_publisher_country" ON "publisher" ("country");
 CREATE INDEX "publisher_name" ON "publisher" ("name");
-CALL FT_CREATE_INDEX('PUBLIC', 'publisher', 'name,location,url');
+CALL FT_CREATE_INDEX('PUBLIC', 'publisher', 'name,location,url,notes');
 
 CREATE TABLE "quotation" (
   "id" BIGINT PRIMARY KEY COMMENT 'Unique quotation identifier',

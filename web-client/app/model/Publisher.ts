@@ -30,4 +30,6 @@ export default interface Publisher extends ITrackedEntity {
   url?: /*URL | */string | null
   /** The number of journals published. */
   journalCount?: number
+  /** Notes on the publisher. */
+  notes: string | null
 }

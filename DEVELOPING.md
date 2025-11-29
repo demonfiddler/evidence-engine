@@ -47,7 +47,7 @@ The authors use Visual Studio Code with a selection of appropriate extensions:
 
 ## Quick Checklist
 
-The following tables summarise what needs to be done and where, in order to add a new type, property, query or mutation to the system. The uppercase placeholders TYPE, PROPERTY/ALL, QUERY and MUTATION should be replaced by the actual, appropriately-cased type, property, query or mutation name(s), following the Java/JavaBean conventions for naming types, fields and property accessor methods. Existing workspace resources are hyperlinked for convenience. See also the corresponding spreadsheet, with a live 'Checklist' page that can be copied and edited for each additional TYPE/PROPERTY/QUERY/MUTATION. ALL signifies 'for all properties'.
+The following tables summarise what needs to be done and where, in order to add a new type, property, query or mutation to the system. The uppercase placeholders TYPE, PROPERTY/ALL, QUERY and MUTATION should be replaced by the actual, appropriately-cased type, property, query or mutation name(s), following the Java/JavaBean conventions for naming types, fields and property accessor methods. Existing workspace resources are hyperlinked for convenience. See also the corresponding spreadsheet, with a live 'Checklist' page that can be duplicated and edited for each additional TYPE/PROPERTY/QUERY/MUTATION. ALL signifies 'for all properties'. Please note that due to the complexity of the codebase, these guidelines are probably not exhaustive.
 
 ### Table 1: Locations of Type Files
 
@@ -91,6 +91,8 @@ Resource & Member column entry key:
 ||||+```build()```||One ```_object.setPROPERTY()``` call per ```TYPEInput``` property.|
 |||+```TYPEPage```|+ALL||Extend [```AbstractPage<TYPE>```](client/src/main/java/io/github/demonfiddler/ee/client/AbstractPage.java).|
 |||+```TYPEPage.Builder```|+```build()```||Extend [```AbstractPage.Builder<Builder, TYPEPage, TYPE>```](client/src/main/java/io/github/demonfiddler/ee/client/AbstractPage.java) and ```return build(new TYPEPage());```.|
+|||+```TYPETests```|+ALL||JUnit tests.|
+|||+```TYPESubject```|+ALL||Google Truth extension for testing.|
 ||web-client|~[```apolloClient```](web-client/lib/graphql-utils.ts)|~```cache.possibleTypes```||Add ```TYPE``` to ```IBaseEntity```, ```ITrackedEntity```, ```ILinkableEntity``` as appropriate and ```TYPEPage``` to ```IPage```.|
 |||~[```graphql-queries.ts```](web-client/lib/graphql-queries.ts)|+FRAGMENT_TYPE_FIELDS||A GraphQL fragment that fetches the fields specific to TYPE|
 ||||+READ_TYPES||A GraphQL query that fetches TYPE instances, typically filtered and paginated|
@@ -139,19 +141,24 @@ Resource & Member column entry key:
 |||~```TYPEInput.Builder```|+```PROPERTY```||Only if ```PROPERTY``` is included in ```TYPEInput```.|
 ||||+```withPROPERTY()```|||
 ||||~```build()```||Call ```_object.setPROPERTY(this.PROPERTY)```.|
+|||~```TYPETests```|||Update JUnit tests to exercise ```PROPERTY```.|
+|||~```TYPESubject```|+```hasPROPERTY()```||Google Truth extension for testing.|
+||||+```PROPERTY()```|||
 ||web-client|~```TYPE```|+```PROPERTY```||The Apollo GraphQL ```TYPE```.```PROPERTY```.|
 |||~```TYPE```|+```PROPERTY```||The form validation ```TYPE```.```PROPERTY```.|
-|||~[```TYPEInput```](web-client/app/model/schema.ts)|+```PROPERTY```||Only if ```TYPE``` is updateable through GraphQL API: the corresponding GraphQL ```TYPEInput```.|
-|||~```TYPEs```|+```PROPERTY```||If ```TYPE``` has a corresponding app page and ```PROPERTY``` appears on that page.|
-||server|~[```schema-mariadb.sql```](server/src/main/resources/db/schema-mariadb.sql)|+```TYPE.PROPERTY```|||
-|||~[```schema-h2.sql```](server/src/main/resources/db/schema-h2.sql)|+```TYPE.PROPERTY```|||
+|||~[```schema.ts```](web-client/app/model/schema.ts)|+```TYPEInput.PROPERTY```||Only if ```TYPE``` is updateable through GraphQL API: the corresponding GraphQL ```TYPEInput```.|
+|||~```TYPEs```|~```createFieldValues()```||The ```TYPEs``` page|
+||||~```createInput()```|||
+|||~[```graphql-queries.ts```](web-client/lib/graphql-queries.ts)|+```PROPERTY```||Add to appropriate ```TYPEFields``` fragment(s).|
+|||~```TYPEDetails```|+```PROPERTY```||Add the new property to the details component.|
+|||~```TYPE-columns.ts```|+```PROPERTY```||Add the new property to the ```columns``` array and ```columnVisibility``` object|
+||server|~[```schema-mariadb.sql```](server/src/main/resources/db/schema-mariadb.sql)|+```TYPE.PROPERTY```||If a text field, add to FULLTEXT index.|
+|||~[```schema-h2.sql```](server/src/main/resources/db/schema-h2.sql)|+```TYPE.PROPERTY```||If a text field, add to FT_CREATE_INDEX call.|
 |||~[```schema.graphqls```](server/src/main/resources/graphql/schema.graphqls)|+```TYPE.PROPERTY```|||
 ||||+```TYPEInput.PROPERTY```||Only if ```PROPERTY``` is included in ```TYPEInput```.|
 |||~```TYPE```|+```PROPERTY```|||
 ||||+```getPROPERTY()```|||
 ||||+```setPROPERTY()```|||
-||||+```equals()``` [^2]|||
-||||+```hashCode()``` [^2]|||
 ||||+```toString()``` [^2]|||
 |||~```TYPE.Builder```|+```PROPERTY```|||
 ||||+```withPROPERTY()```|||
@@ -163,11 +170,14 @@ Resource & Member column entry key:
 |||~```TYPEInput.Builder```|+```PROPERTY```||Only if ```PROPERTY``` is included in ```TYPEInput```.|
 ||||+```withPROPERTY()```|||
 ||||~```build()```||Call ```_object.setPROPERTY(this.PROPERTY)```.|
-|||~```TYPEController```|+```PROPERTY()```|||
+|||~```TYPEController```|+```PROPERTY()```||Only for structured or parameterised properties.|
 |||~```DataFetchersDelegateTYPE```|+```PROPERTY()```||Only for structured or parameterised properties.|
 |||~```DataFetchersDelegateTYPEImpl```|+```PROPERTY()```||Only for structured or parameterised properties.|
 |||~[```DataFetchersDelegateMutationImpl```](server/src/main/java/io/github/demonfiddler/ee/server/datafetcher/impl/DataFetchersDelegateMutationImpl.java)|~```createTYPE()```||Handle new property.|
 ||||~```updateTYPE()```||Handle new property.|
+|||~[```ImportApiController```](server/src/main/java/io/github/demonfiddler/ee/server/rest/api/ImportApiController.java)|~```importTYPEs()```||Importable types only: handle new property.|
+|||~[```export-ris.ftl```](server/src/main/resources/rest/templates/export-ris.ftl)|||Exportable types only: handle new property.|
+|||~```TYPEColumns```|```OWN_COLUMNS```||If TYPE is exportable, add column descriptor.|
 |[Query](#adding-a-query)|client|~[```Query```](client/src/main/java/io/github/demonfiddler/ee/client/Query.java)|+```QUERY```|||
 ||||+```setQUERY()```|||
 ||||+```getQUERY()```|||

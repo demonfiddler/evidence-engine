@@ -106,6 +106,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 				issn
 				publisher
 				notes
+				peerReviewed
 			}
 			""";
 	private static final String MINIMAL_RESPONSE_SPEC = //

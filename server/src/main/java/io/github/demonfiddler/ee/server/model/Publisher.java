@@ -69,6 +69,12 @@ public class Publisher extends AbstractTrackedEntity {
 	@GraphQLScalar(fieldName = "journalCount", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
 	Integer journalCount;
 
+	/**
+	 * Notes on the publisher.
+	 */
+	@GraphQLScalar(fieldName = "notes", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String notes;
+
 	@Override
 	public String getEntityKind() {
 		return EntityKind.PBR.name();
@@ -144,6 +150,20 @@ public class Publisher extends AbstractTrackedEntity {
 		return this.journalCount;
 	}
 
+	/**
+	 * Notes on the publisher.
+	 */
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	/**
+	 * Notes on the publisher.
+	 */
+	public String getNotes() {
+		return this.notes;
+	}
+
 	public String toString() {
 		return "Publisher {" //
 			+ "id: " + this.id //
@@ -173,6 +193,8 @@ public class Publisher extends AbstractTrackedEntity {
 			+ "url: " + this.url //
 			+ ", " //
 			+ "journalCount: " + this.journalCount //
+			+ ", " //
+			+ "notes: " + this.notes //
 			+ "}"; //
 	}
 
@@ -191,6 +213,7 @@ public class Publisher extends AbstractTrackedEntity {
 		private String country;
 		private URL url;
 		private Integer journalCount;
+		private String notes;
 
 		/**
 		 * The publisher name.
@@ -232,6 +255,14 @@ public class Publisher extends AbstractTrackedEntity {
 			return this;
 		}
 
+		/**
+		 * Notes on the publisher.
+		 */
+		public Builder withNotes(String notesParam) {
+			this.notes = notesParam;
+			return this;
+		}
+
 		@Override
 		public Publisher build() {
 			Publisher _object = build(new Publisher());
@@ -240,6 +271,7 @@ public class Publisher extends AbstractTrackedEntity {
 			_object.setCountry(this.country);
 			_object.setUrl(this.url);
 			_object.setJournalCount(this.journalCount);
+			_object.setNotes(this.notes);
 			return _object;
 		}
 

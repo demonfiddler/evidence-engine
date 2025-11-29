@@ -83,6 +83,13 @@ public class Publisher extends AbstractTrackedEntity {
 	Integer journalCount;
 
 	/**
+	 * Notes on the publisher.
+	 */
+	@JsonProperty("notes")
+	@GraphQLScalar(fieldName = "notes", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String notes;
+
+	/**
 	 * The publisher name.
 	 */
 	@JsonProperty("name")
@@ -162,6 +169,22 @@ public class Publisher extends AbstractTrackedEntity {
 		return this.journalCount;
 	}
 
+	/**
+	 * Notes on the publisher.
+	 */
+	@JsonProperty("notes")
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	/**
+	 * Notes on the publisher.
+	 */
+	@JsonProperty("notes")
+	public String getNotes() {
+		return this.notes;
+	}
+
 	@Override
 	public String toString() {
 		return "Publisher {" //
@@ -195,6 +218,8 @@ public class Publisher extends AbstractTrackedEntity {
 			+ ", " //
 			+ "journalCount: " + this.journalCount //
 			+ ", " //
+			+ "notes: " + this.notes //
+			+ ", " //
 			+ "__typename: " + this.__typename //
 			+ "}";
 	}
@@ -208,6 +233,7 @@ public class Publisher extends AbstractTrackedEntity {
 		result = prime * result + ((country == null) ? 0 : country.hashCode());
 		result = prime * result + ((url == null) ? 0 : url.hashCode());
 		result = prime * result + ((journalCount == null) ? 0 : journalCount.hashCode());
+		result = prime * result + ((notes == null) ? 0 : notes.hashCode());
 		return result;
 	}
 
@@ -241,6 +267,11 @@ public class Publisher extends AbstractTrackedEntity {
 				return false;
 		} else if (!journalCount.equals(other.journalCount))
 			return false;
+		if (notes == null) {
+			if (other.notes != null)
+				return false;
+		} else if (!notes.equals(other.notes))
+			return false;
 		return true;
 	}
 
@@ -259,6 +290,7 @@ public class Publisher extends AbstractTrackedEntity {
 		private String country;
 		private URL url;
 		private Integer journalCount;
+		private String notes;
 
 		/**
 		 * The publisher name.
@@ -300,6 +332,14 @@ public class Publisher extends AbstractTrackedEntity {
 			return this;
 		}
 
+		/**
+		 * Notes on the publisher.
+		 */
+		public Builder withNotes(String notesParam) {
+			this.notes = notesParam;
+			return this;
+		}
+
 		@Override
 		public Publisher build() {
 			Publisher _object = build(new Publisher());
@@ -308,6 +348,7 @@ public class Publisher extends AbstractTrackedEntity {
 			_object.setCountry(this.country);
 			_object.setUrl(this.url);
 			_object.setJournalCount(this.journalCount);
+			_object.setNotes(this.notes);
 			return _object;
 		}
 

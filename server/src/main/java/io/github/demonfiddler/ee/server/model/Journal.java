@@ -85,6 +85,12 @@ public class Journal extends AbstractTrackedEntity {
 	@GraphQLScalar(fieldName = "notes", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
 	String notes;
 
+	/**
+	 * Whether the journal publishes peer-reviewed articles.
+	 */
+	@GraphQLScalar( fieldName = "peerReviewed", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class, listDepth = 0)
+	Boolean peerReviewed;
+
 	@Override
 	public String getEntityKind() {
 		return EntityKind.JOU.name();
@@ -174,6 +180,20 @@ public class Journal extends AbstractTrackedEntity {
 		return this.notes;
 	}
 
+	/**
+	 * Whether the journal publishes peer-reviewed articles.
+	 */
+	public void setPeerReviewed(Boolean peerReviewed) {
+		this.peerReviewed = peerReviewed;
+	}
+
+	/**
+	 * Whether the journal publishes peer-reviewed articles.
+	 */
+	public Boolean getPeerReviewed() {
+		return this.peerReviewed;
+	}
+
 	public String toString() {
 		return "Journal {" //
 			+ "id: " + this.id //
@@ -205,6 +225,8 @@ public class Journal extends AbstractTrackedEntity {
 			+ "publisher: " + this.publisher //
 			+ ", " //
 			+ "notes: " + this.notes //
+			+ ", " //
+			+ "peerReviewed: " + this.peerReviewed //
 			+ "}"; //
 	}
 
@@ -224,6 +246,7 @@ public class Journal extends AbstractTrackedEntity {
 		private String issn;
 		private Publisher publisher;
 		private String notes;
+		private Boolean peerReviewed;
 
 		/**
 		 * The full journal title.
@@ -273,6 +296,14 @@ public class Journal extends AbstractTrackedEntity {
 			return this;
 		}
 
+		/**
+		 * Whether the journal publishes peer-reviewed articles
+		 */
+		public Builder withPeerReviewed(Boolean peerReviewedParam) {
+			this.peerReviewed = peerReviewedParam;
+			return this;
+		}
+
 		@Override
 		public Journal build() {
 			Journal _object = build(new Journal());
@@ -282,6 +313,7 @@ public class Journal extends AbstractTrackedEntity {
 			_object.setIssn(this.issn);
 			_object.setPublisher(this.publisher);
 			_object.setNotes(this.notes);
+			_object.setPeerReviewed(this.peerReviewed);
 			return _object;
 		}
 

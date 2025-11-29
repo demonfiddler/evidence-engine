@@ -23,6 +23,7 @@ import static com.google.common.truth.Truth.assertAbout;
 
 import java.net.URL;
 
+import com.google.common.truth.BooleanSubject;
 import com.google.common.truth.FailureMetadata;
 import com.google.common.truth.StringSubject;
 import com.google.common.truth.Subject;
@@ -85,6 +86,14 @@ public class JournalSubject extends TrackedEntitySubject<Journal> {
 
     public StringSubject notes() {
         return check("notes()").that(actual.getNotes());
+    }
+
+    public void hasPeerReviewed(Boolean peerReviewed) {
+        notes().isEqualTo(peerReviewed);
+    }
+
+    public BooleanSubject peerReviewed() {
+        return check("peerReviewed()").that(actual.getPeerReviewed());
     }
 
 }

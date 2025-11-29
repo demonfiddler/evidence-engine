@@ -33,4 +33,6 @@ export default interface Journal extends ITrackedEntity {
   publisher?: Publisher | null
   /** Notes about the journal. */
   notes?: string | null
+	/** Whether the journal publishes peer-reviewed articles. */
+	peerReviewed?: boolean | null
 }

@@ -26,7 +26,8 @@ export const JournalSchema = Rateable.extend({
   url: z.url().min(10).max(200).or(z.string().length(0)).optional(),
   issn: z.string().regex(/(?:^[0-9]{4}-[0-9]{3}[0-9X]$)?/).optional(),
   publisherId: z.string().regex(/^\d*$/).optional(),
-  notes: z.string().max(200).optional()
+  notes: z.string().max(200).optional(),
+  peerReviewed: z.boolean().or(z.literal("indeterminate")),
 })
 
 export type JournalFieldValues = z.infer<typeof JournalSchema>

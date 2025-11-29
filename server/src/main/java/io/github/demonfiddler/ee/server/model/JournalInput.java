@@ -68,6 +68,13 @@ public class JournalInput extends AbstractTrackedEntityInput {
 	String notes;
 
 	/**
+	 * Whether the journal publishes peer-reviewed articles.
+	 */
+	@GraphQLScalar(fieldName = "peerReviewed", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class,
+		listDepth = 0)
+	Boolean peerReviewed;
+
+	/**
 	 * The full journal title.
 	 */
 	public void setTitle(String title) {
@@ -145,6 +152,20 @@ public class JournalInput extends AbstractTrackedEntityInput {
 		return this.notes;
 	}
 
+	/**
+	 * Whether the journal publishes peer-reviewed articles.
+	 */
+	public void setPeerReviewed(Boolean peerReviewed) {
+		this.peerReviewed = peerReviewed;
+	}
+
+	/**
+	 * Whether the journal publishes peer-reviewed articles.
+	 */
+	public Boolean getPeerReviewed() {
+		return this.peerReviewed;
+	}
+
 	public String toString() {
 		return "JournalInput {" //
 			+ "id: " + this.id //
@@ -162,6 +183,8 @@ public class JournalInput extends AbstractTrackedEntityInput {
 			+ "publisherId: " + this.publisherId //
 			+ ", " //
 			+ "notes: " + this.notes //
+			+ ", " //
+			+ "peerReviewed: " + this.peerReviewed //
 			+ "}"; //
 	}
 
@@ -181,6 +204,7 @@ public class JournalInput extends AbstractTrackedEntityInput {
 		private String issn;
 		private Long publisherId;
 		private String notes;
+		private Boolean peerReviewed;
 
 		/**
 		 * The full journal title.
@@ -227,6 +251,14 @@ public class JournalInput extends AbstractTrackedEntityInput {
 			return this;
 		}
 
+		/**
+		 * Whether the journal publishes peer-reviewed articles
+		 */
+		public Builder withPeerReviewed(Boolean peerReviewedParam) {
+			this.peerReviewed = peerReviewedParam;
+			return this;
+		}
+
 		@Override
 		public JournalInput build() {
 			JournalInput _object = build(new JournalInput());
@@ -236,6 +268,7 @@ public class JournalInput extends AbstractTrackedEntityInput {
 			_object.setIssn(this.issn);
 			_object.setPublisherId(this.publisherId);
 			_object.setNotes(this.notes);
+			_object.setPeerReviewed(this.peerReviewed);
 			return _object;
 		}
 

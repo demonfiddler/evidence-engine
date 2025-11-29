@@ -77,6 +77,14 @@ export const columns: ColumnDef<Publisher>[] = [
       className: "text-right"
     }
   },
+  {
+    id: "notes",
+    accessorKey: "notes",
+    enableHiding: true,
+    enableSorting: false,
+    size: 400,
+    header: "Notes",
+  },
   actionColumn
 ]
 
@@ -86,5 +94,6 @@ export const columnVisibility = {
   location: true,
   country: true,
   url: false,
-  journalCount: false
+  journalCount: false,
+  notes: false,
 }

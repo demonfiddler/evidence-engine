@@ -94,6 +94,13 @@ public class PublisherInput extends AbstractTrackedEntityInput {
 	@GraphQLScalar(fieldName = "journalCount", graphQLTypeSimpleName = "Int", javaClass = Integer.class, listDepth = 0)
 	Integer journalCount;
 
+	/**
+	 * Notes on the publisher.
+	 */
+	@JsonProperty("notes")
+	@GraphQLScalar(fieldName = "notes", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String notes;
+
 	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
 	 * The unique publisher identifier.
@@ -212,6 +219,22 @@ public class PublisherInput extends AbstractTrackedEntityInput {
 		return this.journalCount;
 	}
 
+	/**
+	 * Notes on the publisher.
+	 */
+	@JsonProperty("notes")
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	/**
+	 * Notes on the publisher.
+	 */
+	@JsonProperty("notes")
+	public String getNotes() {
+		return this.notes;
+	}
+
 	public String toString() {
 		return "PublisherInput {" //
 			+ "id: " + this.id //
@@ -227,6 +250,8 @@ public class PublisherInput extends AbstractTrackedEntityInput {
 			+ "url: " + this.url //
 			+ ", " //
 			+ "journalCount: " + this.journalCount //
+			+ ", " //
+			+ "notes: " + this.notes //
 			+ "}";
 	}
 
@@ -245,6 +270,7 @@ public class PublisherInput extends AbstractTrackedEntityInput {
 		private String country;
 		private URL url;
 		private Integer journalCount;
+		private String notes;
 
 		/**
 		 * The publisher name.
@@ -286,6 +312,14 @@ public class PublisherInput extends AbstractTrackedEntityInput {
 			return this;
 		}
 
+		/**
+		 * Notes on the publisher.
+		 */
+		public Builder withNotes(String notesParam) {
+			this.notes = notesParam;
+			return this;
+		}
+
 		@Override
 		public PublisherInput build() {
 			PublisherInput _object = build(new PublisherInput());
@@ -294,6 +328,7 @@ public class PublisherInput extends AbstractTrackedEntityInput {
 			_object.setCountry(this.country);
 			_object.setUrl(this.url);
 			_object.setJournalCount(this.journalCount);
+			_object.setNotes(this.notes);
 			return _object;
 		}
 

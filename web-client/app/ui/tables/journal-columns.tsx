@@ -23,6 +23,9 @@ import { ColumnDef } from "@tanstack/react-table"
 import Journal from "@/app/model/Journal"
 import { columns as trackedEntityColumns, columnVisibility as trackedEntityColumnVisibility } from "./tracked-entity-columns"
 import { actionColumn as rawActionColumn, selectColumn as rawSelectColumn } from "./extra-columns"
+import { Checkbox } from "@/components/ui/checkbox"
+import { SquareCheckIcon, SquareIcon, SquareMinusIcon } from "lucide-react"
+import CheckboxEx from "../ext/checkbox-ex"
 
 const actionColumn = rawActionColumn as ColumnDef<Journal>
 const selectColumn = rawSelectColumn as ColumnDef<Journal>
@@ -78,7 +81,7 @@ export const columns: ColumnDef<Journal>[] = [
       <div key={cell.id} className="font-medium">{
         row.original.publisher
         ? `${row.original.publisher?.id} : ${row.original.publisher?.name}`
-        : <></>
+        : null
       }
       </div>
     )
@@ -90,6 +93,31 @@ export const columns: ColumnDef<Journal>[] = [
     enableSorting: false,
     size: 400,
     header: "Notes",
+  },
+  {
+    id: "peerReviewed",
+    accessorKey: "peerReviewed",
+    enableHiding: true,
+    enableSorting: true,
+    size: 164,
+    header: "Peer Reviewed",
+    // cell: ({row, cell}) => {
+    //   row.original.peerReviewed == null
+    //   ? <SquareMinusIcon />
+    //   : row.original.peerReviewed == true
+    //   ? <SquareCheckIcon />
+    //   : <SquareIcon />
+    // },
+    cell: ({row, cell}) => (
+      <CheckboxEx
+        outerClassName="justify-center"
+        disabled={true}
+        checked={typeof row.original.peerReviewed === "boolean" ? row.original.peerReviewed : "indeterminate"}
+      />
+    ),
+    meta: {
+      className: "text-center"
+    }
   },
   actionColumn
 ]

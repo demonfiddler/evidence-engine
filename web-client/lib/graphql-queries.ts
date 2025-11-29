@@ -408,6 +408,7 @@ fragment publisherFields on Publisher {
   country(format: ALPHA_2)
   url
   journalCount
+  notes
 }
 `
 
@@ -422,6 +423,7 @@ fragment journalFields on Journal {
     ...publisherFields
   }
   notes
+  peerReviewed
 }
 `
 
@@ -436,11 +438,13 @@ fragment publicationFields on Publication {
   kind(format: SHORT)
   date
   year
+  keywords
   abstract
   notes
   peerReviewed
   doi
   isbn
+  pmcid
   pmid
   hsid
   arxivid

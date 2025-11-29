@@ -43,7 +43,8 @@ function createFieldValues(journal?: Journal) : JournalFieldValues {
     url: journal?.url ?? '',
     issn: journal?.issn ?? '',
     publisherId: journal?.publisher?.id ?? '',
-    notes: journal?.notes ?? ''
+    notes: journal?.notes ?? '',
+    peerReviewed: journal?.peerReviewed ?? "indeterminate",
   }
 }
 
@@ -56,7 +57,8 @@ function createInput(fieldValues: JournalFieldValues, id?: string) : JournalInpu
     url: fieldValues.url || null,
     issn: fieldValues.issn || null,
     publisherId: fieldValues.publisherId || null,
-    notes: fieldValues.notes || null
+    notes: fieldValues.notes || null,
+    peerReviewed: fieldValues.peerReviewed === "indeterminate" ? null : fieldValues.peerReviewed,
   }
 }
 

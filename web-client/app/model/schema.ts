@@ -136,6 +136,7 @@ export interface JournalInput extends TrackedEntityInput {
   issn: string | null
   publisherId: string | null
   notes: string | null
+  peerReviewed: boolean | null
 }
 
 export interface PersonInput extends TrackedEntityInput {
@@ -155,17 +156,19 @@ export interface PersonInput extends TrackedEntityInput {
 
 export interface PublicationInput extends TrackedEntityInput {
   authorNames: string | null // TODO: rename to authors
-  // authorIds: string[] | null // TODO: remove from schema.graphql
+  // authorIds: string[] | null // TODO: remove from schema.graphqls
   title: string
   journalId: string | null
   kind: PublicationKind
   date: Date | string | null
   year: number | null
+  keywords: string | null
   abstract: string | null
   notes: string | null
   peerReviewed: boolean
   doi: string | null
   isbn: string | null
+  pmcid: string | null
   pmid: string | null
   hsid: string | null
   arxivid: string | null
@@ -190,6 +193,7 @@ export interface PublisherInput extends TrackedEntityInput {
   country: string | null // TODO: use Country type
   url: string | null
   journalCount: number | null
+  notes: string | null
 }
 
 export interface QuotationInput extends TrackedEntityInput {

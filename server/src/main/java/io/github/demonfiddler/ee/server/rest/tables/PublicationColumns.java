@@ -44,6 +44,7 @@ public class PublicationColumns {
     private static final Column<Publication> DATE = new Column<>("date", "Date", ColumnType.DATE, SINGLE, null);
     private static final Column<Publication> YEAR = new Column<>("year", "Year", ColumnType.NUMBER, SINGLE,
         (rec, raw) -> rec.getYear() != null ? rec.getYear().toString() : "");
+    private static final Column<Publication> KEYWORDS = new Column<>("keywords", "Keywords", ColumnType.STRING, FULL, null);
     private static final Column<Publication> ABSTRACT =
         new Column<>("abstract", "Abstract", ColumnType.STRING, FULL, null);
     private static final Column<Publication> DOI = new Column<>("doi", "DOI", ColumnType.STRING, SINGLE, (rec, raw) -> {
@@ -55,6 +56,12 @@ public class PublicationColumns {
             String isbn = rec.getIsbn() != null ? rec.getIsbn() : "";
             return raw ? isbn : !isbn.isEmpty()
                 ? RenderUtils.instance.renderUrl("https://isbnsearch.org/isbn/" + isbn, isbn, raw) : "";
+        });
+    private static final Column<Publication> PMCID =
+        new Column<>("pmcid", "PubMedCentral ID", ColumnType.STRING, SINGLE, (rec, raw) -> {
+            String pmcid = rec.getPmcid() != null ? rec.getPmcid() : "";
+            return raw ? pmcid : !pmcid.isEmpty()
+                ? RenderUtils.instance.renderUrl("https://pmc.ncbi.nlm.nih.gov/articles/" + pmcid, pmcid, raw) : "";
         });
     private static final Column<Publication> PMID =
         new Column<>("pmid", "PubMed ID", ColumnType.STRING, SINGLE, (rec, raw) -> {
@@ -140,8 +147,8 @@ public class PublicationColumns {
     private static final Column<Publication> PEER_REVIEWED =
         new Column<>("peerReviewed", "Peer Reviewed", ColumnType.BOOLEAN, SINGLE, null);
 
-    public static final List<Column<Publication>> OWN_COLUMNS = List.of(TITLE, KIND, AUTHORS, JOURNAL, DATE, YEAR,
-        ABSTRACT, DOI, ISBN, PMID, HSID, ARXIVID, BIORXIVXID, MEDRXIVID, ERICID, IHEPID, OAIPMHID, HALID, ZENODOID,
+    public static final List<Column<Publication>> OWN_COLUMNS = List.of(TITLE, KIND, AUTHORS, JOURNAL, DATE, YEAR, KEYWORDS,
+        ABSTRACT, DOI, ISBN, PMCID, PMID, HSID, ARXIVID, BIORXIVXID, MEDRXIVID, ERICID, IHEPID, OAIPMHID, HALID, ZENODOID,
         SCOPUSEID, WSAN, PINFOAN, URL, ACCESSED, NOTES, CACHED, PEER_REVIEWED);
     public static final List<Column<Publication>> OWN_DEFAULT_COLUMNS = List.of(TITLE, KIND, YEAR);
     public static final List<Column<? extends IBaseEntity>> ALL_COLUMNS =

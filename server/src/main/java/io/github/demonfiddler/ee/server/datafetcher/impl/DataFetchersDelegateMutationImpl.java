@@ -526,6 +526,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         journal.setAbbreviation(input.getAbbreviation());
         journal.setIssn(input.getIssn());
         journal.setNotes(input.getNotes());
+        journal.setPeerReviewed(input.getPeerReviewed());
         Long publisherId = input.getPublisherId();
         if (publisherId != null) {
             Publisher publisher = publisherRepository.findById(publisherId)
@@ -552,6 +553,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         journal.setAbbreviation(input.getAbbreviation());
         journal.setIssn(input.getIssn());
         journal.setNotes(input.getNotes());
+        journal.setPeerReviewed(input.getPeerReviewed());
         Long publisherId = input.getPublisherId();
         if (publisherId != null) {
             Publisher publisher = publisherRepository.findById(publisherId)
@@ -650,9 +652,11 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         publication.setAbstract(input.getAbstract());
         publication.setDate(input.getDate());
         publication.setYear(input.getYear());
+        publication.setKeywords(input.getKeywords());
         publication.setKind(input.getKind() == null ? null : input.getKind().name());
         publication.setDoi(input.getDoi());
         publication.setIsbn(input.getIsbn());
+        publication.setPmcid(input.getPmcid());
         publication.setPmid(input.getPmid());
         publication.setHsid(input.getHsid());
         publication.setArxivid(input.getArxivid());
@@ -697,9 +701,11 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         publication.setAbstract(input.getAbstract());
         publication.setDate(input.getDate());
         publication.setYear(input.getYear());
+        publication.setKeywords(input.getKeywords());
         publication.setKind(input.getKind() == null ? null : input.getKind().name());
         publication.setDoi(input.getDoi());
         publication.setIsbn(input.getIsbn());
+        publication.setPmcid(input.getPmcid());
         publication.setPmid(input.getPmid());
         publication.setHsid(input.getHsid());
         publication.setArxivid(input.getArxivid());
@@ -743,6 +749,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         publisher.setLocation(input.getLocation());
         publisher.setName(input.getName());
         publisher.setUrl(input.getUrl());
+        publisher.setNotes(input.getNotes());
         setCreatedFields(publisher);
 
         publisher = publisherRepository.save(publisher);
@@ -763,6 +770,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         publisher.setLocation(input.getLocation());
         publisher.setName(input.getName());
         publisher.setUrl(input.getUrl());
+        publisher.setNotes(input.getNotes());
         setUpdatedFields(publisher);
 
         publisher = publisherRepository.save(publisher);

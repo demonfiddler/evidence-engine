@@ -355,6 +355,25 @@ export default function PublicationDetails(
             />
             <FormField
               control={form.control}
+              name="keywords"
+              render={({field}) => (
+                <FormItem className="col-span-3">
+                  <FormLabel htmlFor="keywords">Keywords</FormLabel>
+                  <FormControl>
+                    <InputEx
+                      id="keywords"
+                      disabled={!record && !updating}
+                      readOnly={!updating}
+                      {...field}
+                      help="Keywords per publication metadata"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="abstract"
               render={({field}) => (
                 <FormItem className="col-start-1 col-span-3">
@@ -410,14 +429,16 @@ export default function PublicationDetails(
                         {...field}
                         help="The online web address"
                       />
-                      : <LinkEx
+                      : record?.url
+                      ? <LinkEx
                         id="url"
-                        href={record?.url ?? ''}
+                        href={record.url}
                         target="_blank"
                         help="The online web address"
                       >
-                        {record?.url ?? 'n/a'}
+                        {record.url}
                       </LinkEx>
+                      : <span className="text-gray-400">-Not set-</span>
                     }
                   </FormControl>
                   <FormMessage />
@@ -480,13 +501,15 @@ export default function PublicationDetails(
                           {...field}
                           help="The Digital Object Identifier (DOI)"
                       />
-                      : <LinkEx
-                          href={record?.doi ? `https://doi.org/${record?.doi ?? ''}` : ''}
+                      : record?.doi
+                      ? <LinkEx
+                          href={`https://doi.org/${record.doi}`}
                           target="_blank"
                           help="The Digital Object Identifier (DOI)"
                       >
-                        {record?.doi ?? 'n/a'}
+                        {record.doi}
                       </LinkEx>
+                      : <span className="text-gray-400">-Not set-</span>
                     }
                   </FormControl>
                   <FormMessage />
@@ -507,14 +530,46 @@ export default function PublicationDetails(
                           {...field}
                           help="The International Standard Book Number (ISBN)"
                       />
-                      : <LinkEx
+                      : record?.isbn
+                      ? <LinkEx
                           id="isbn"
-                          href={record?.isbn ? `https://isbnsearch.org/isbn/${record?.isbn ?? ''}` : ''}
+                          href={`https://isbnsearch.org/isbn/${record.isbn}`}
                           target="_blank"
                           help="The International Standard Book Number (ISBN)"
                       >
-                        {record?.isbn ?? 'n/a'}
+                        {record.isbn}
                       </LinkEx>
+                      : <span className="text-gray-400">-Not set-</span>
+                    }
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="pmcid"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel htmlFor="pmcid">PubMedCentral ID</FormLabel>
+                  <FormControl>
+                    {
+                      updating
+                      ? <InputEx
+                          id="pmcid"
+                          {...field}
+                          help="The U.S. NIH National Library of Medicine PubMed Central ID"
+                      />
+                      : record?.pmcid
+                      ? <LinkEx
+                          id="pmcid"
+                          href={`https://pmc.ncbi.nlm.nih.gov/articles/${record.pmcid}`}
+                          target="_blank"
+                          help="The U.S. NIH National Library of Medicine PubMed Central ID"
+                      >
+                        {record.pmcid}
+                      </LinkEx>
+                      : <span className="text-gray-400">-Not set-</span>
                     }
                   </FormControl>
                   <FormMessage />
@@ -533,16 +588,18 @@ export default function PublicationDetails(
                       ? <InputEx
                           id="pmid"
                           {...field}
-                          help="The U.S. National Library of Medicine PubMed ID"
+                          help="The U.S. NIH National Library of Medicine PubMed ID"
                       />
-                      : <LinkEx
+                      : record?.pmid
+                      ? <LinkEx
                           id="pmid"
-                          href={record?.pmid ? `https://pubmed.ncbi.nlm.nih.gov/${record?.pmid ?? ''}` : ''}
+                          href={`https://pubmed.ncbi.nlm.nih.gov/${record.pmid}`}
                           target="_blank"
-                          help="The U.S. National Library of Medicine PubMed ID"
+                          help="The U.S. NIH National Library of Medicine PubMed ID"
                       >
-                        {record?.pmid ?? 'n/a'}
+                        {record.pmid}
                       </LinkEx>
+                      : <span className="text-gray-400">-Not set-</span>
                     }
                   </FormControl>
                   <FormMessage />
@@ -563,14 +620,16 @@ export default function PublicationDetails(
                           {...field}
                           help="The Corporation for National Research Initiatives Handle System ID"
                       />
-                      : <LinkEx
+                      : record?.hsid
+                      ? <LinkEx
                           id="hsid"
-                          href={record?.hsid ? `${record?.hsid ?? ''}` : ''}
+                          href={`https://hdl.handle.net/${record.hsid}`}
                           target="_blank"
                           help="The Corporation for National Research Initiatives Handle System ID"
                       >
                         {record?.hsid ?? 'n/a'}
                       </LinkEx>
+                      : <span className="text-gray-400">-Not set-</span>
                     }
                   </FormControl>
                   <FormMessage />
@@ -591,14 +650,16 @@ export default function PublicationDetails(
                           {...field}
                           help="The Cornell University Library arXiv.org ID"
                       />
-                      : <LinkEx
+                      : record?.arxivid
+                      ? <LinkEx
                           id="arxivid"
-                          href={record?.arxivid ? `https://arxiv.org/abs/${record?.arxivid ?? ''}` : ''}
+                          href={`https://arxiv.org/abs/${record.arxivid}`}
                           target="_blank"
                           help="The Cornell University Library arXiv.org ID"
                       >
-                        {record?.arxivid ?? 'n/a'}
+                        {record.arxivid}
                       </LinkEx>
+                      : <span className="text-gray-400">-Not set-</span>
                     }
                   </FormControl>
                   <FormMessage />
@@ -619,14 +680,16 @@ export default function PublicationDetails(
                           {...field}
                           help="The Cold Spring Harbor Laboratory bioRxiv.org ID"
                       />
-                      : <LinkEx
+                      : record?.biorxivid
+                      ? <LinkEx
                           id="biorxivid"
-                          href={record?.biorxivid ? `https://www.biorxiv.org/content/${record?.biorxivid ?? ''}v1` : ''}
+                          href={`https://www.biorxiv.org/content/${record.biorxivid}v1`}
                           target="_blank"
                           help="The Cold Spring Harbor Laboratory bioRxiv.org ID"
                       >
-                        {record?.biorxivid ?? 'n/a'}
+                        {record.biorxivid}
                       </LinkEx>
+                      : <span className="text-gray-400">-Not set-</span>
                     }
                   </FormControl>
                   <FormMessage />
@@ -647,14 +710,16 @@ export default function PublicationDetails(
                           {...field}
                           help="The Cold Spring Harbor Laboratory medRxiv.org ID"
                       />
-                      : <LinkEx
+                      : record?.medrxivid
+                      ? <LinkEx
                           id="medrxivid"
-                          href={record?.medrxivid ? `https://www.medrxiv.org/content/${record?.medrxivid ?? ''}v1` : ''}
+                          href={`https://www.medrxiv.org/content/${record.medrxivid}v1`}
                           target="_blank"
                           help="The Cold Spring Harbor Laboratory medRxiv.org ID"
                       >
-                        {record?.medrxivid ?? 'n/a'}
+                        {record.medrxivid}
                       </LinkEx>
+                      : <span className="text-gray-400">-Not set-</span>
                     }
                   </FormControl>
                   <FormMessage />
@@ -675,14 +740,16 @@ export default function PublicationDetails(
                           {...field}
                           help="The U.S. Department of Education ERIC database ID"
                       />
-                      : <LinkEx
+                      : record?.ericid
+                      ? <LinkEx
                           id="ericid"
-                          href={record?.ericid ? `https://eric.ed.gov/?id=${record?.ericid ?? ''}` : ''}
+                          href={`https://eric.ed.gov/?id=${record.ericid}`}
                           target="_blank"
                           help="The U.S. Department of Education ERIC database ID"
                       >
-                        {record?.ericid ?? 'n/a'}
+                        {record.ericid}
                       </LinkEx>
+                      : <span className="text-gray-400">-Not set-</span>
                     }
                   </FormControl>
                   <FormMessage />
@@ -703,14 +770,16 @@ export default function PublicationDetails(
                           {...field}
                           help="The CERN INSPIRE-HEP ID"
                       />
-                      : <LinkEx
+                      : record?.ihepid
+                      ? <LinkEx
                           id="ihepid"
-                          href={record?.ihepid ? `https://inspirehep.net/literature/${record?.ihepid ?? ''}` : ''}
+                          href={`https://inspirehep.net/literature/${record.ihepid}`}
                           target="_blank"
                           help="The CERN INSPIRE-HEP ID"
                       >
-                        {record?.ihepid ?? 'n/a'}
+                        {record.ihepid}
                       </LinkEx>
+                      : <span className="text-gray-400">-Not set-</span>
                     }
                   </FormControl>
                   <FormMessage />
@@ -731,14 +800,16 @@ export default function PublicationDetails(
                           {...field}
                           help="The Open Archives Initiative OAI-PMH ID"
                       />
-                      : <LinkEx
+                      : record?.oaipmhid
+                      ? <LinkEx
                           id="oaipmhid"
-                          href={record?.oaipmhid ? `https://www.openarchives.org/OAI/2.0?verb=GetRecord&metadataPrefix=oai_dc&identifier=${record?.oaipmhid ?? ''}` : ''}
+                          href={`https://www.openarchives.org/OAI/2.0?verb=GetRecord&metadataPrefix=oai_dc&identifier=${record?.oaipmhid}`}
                           target="_blank"
                           help="The Open Archives Initiative OAI-PMH ID"
                       >
-                        {record?.oaipmhid ?? 'n/a'}
+                        {record.oaipmhid}
                       </LinkEx>
+                      : <span className="text-gray-400">-Not set-</span>
                     }
                   </FormControl>
                   <FormMessage />
@@ -759,14 +830,16 @@ export default function PublicationDetails(
                           {...field}
                           help="The CNRS (France) HAL ID"
                       />
-                      : <LinkEx
+                      : record?.halid
+                      ? <LinkEx
                           id="halid"
-                          href={record?.halid ? `https://hal.archives-ouvertes.fr/${record?.halid ?? ''}` : ''}
+                          href={`https://hal.archives-ouvertes.fr/${record.halid}`}
                           target="_blank"
                           help="The CNRS (France) HAL ID"
                       >
-                        {record?.halid ?? 'n/a'}
+                        {record.halid}
                       </LinkEx>
+                      : <span className="text-gray-400">-Not set-</span>
                     }
                   </FormControl>
                   <FormMessage />
@@ -787,14 +860,16 @@ export default function PublicationDetails(
                           {...field}
                           help="The CERN Zenodo Record ID"
                       />
-                      : <LinkEx
+                      : record?.zenodoid
+                      ? <LinkEx
                           id="zenodoid"
-                          href={record?.zenodoid ? `https://zenodo.org/record/${record?.zenodoid ?? ''}` : ''}
+                          href={`https://zenodo.org/record/${record.zenodoid}`}
                           target="_blank"
                           help="The CERN Zenodo Record ID"
                       >
-                        {record?.zenodoid ?? 'n/a'}
+                        {record.zenodoid}
                       </LinkEx>
+                      : <span className="text-gray-400">-Not set-</span>
                     }
                   </FormControl>
                   <FormMessage />
@@ -815,14 +890,16 @@ export default function PublicationDetails(
                           {...field}
                           help="The Elsevier SCOPUS database EID"
                       />
-                      : <LinkEx
+                      : record?.scopuseid
+                      ? <LinkEx
                           id="scopuseid"
-                          href={record?.scopuseid ? `https://www.scopus.com/record/display.uri?eid=${record?.scopuseid ?? ''}` : ''}
+                          href={`https://www.scopus.com/record/display.uri?eid=${record.scopuseid}`}
                           target="_blank"
                           help="The Elsevier SCOPUS database EID"
                       >
-                        {record?.scopuseid ?? 'n/a'}
+                        {record.scopuseid}
                       </LinkEx>
+                      : <span className="text-gray-400">-Not set-</span>
                     }
                   </FormControl>
                   <FormMessage />
@@ -843,14 +920,16 @@ export default function PublicationDetails(
                           {...field}
                           help="The Clarivate Web of Science Accession Number (UT)"
                       />
-                      : <LinkEx
+                      : record?.wsan
+                      ? <LinkEx
                           id="wsan"
-                          href={record?.wsan ? `https://www.webofscience.com/wos/woscc/full-record/${record?.wsan ?? ''}` : ''}
+                          href={`https://www.webofscience.com/wos/woscc/full-record/${record.wsan}`}
                           target="_blank"
                           help="The Clarivate Web of Science Accession Number (UT)"
                       >
-                        {record?.wsan ?? 'n/a'}
+                        {record.wsan}
                       </LinkEx>
+                      : <span className="text-gray-400">-Not set-</span>
                     }
                   </FormControl>
                   <FormMessage />
@@ -871,14 +950,16 @@ export default function PublicationDetails(
                           {...field}
                           help="The American Psychological Association PsycINFO Accession Number"
                       />
-                      : <LinkEx
+                      : record?.pinfoan
+                      ? <LinkEx
                           id="pinfoan"
-                          href={record?.pinfoan ? `https://psycnet.apa.org/record/${record?.pinfoan ?? ''}` : ''}
+                          href={`https://psycnet.apa.org/record/${record.pinfoan}`}
                           target="_blank"
                           help="The American Psychological Association PsycINFO Accession Number"
                       >
-                        {record?.pinfoan ?? 'n/a'}
+                        {record.pinfoan}
                       </LinkEx>
+                      : <span className="text-gray-400">-Not set-</span>
                     }
                   </FormControl>
                   <FormMessage />

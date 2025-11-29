@@ -103,6 +103,7 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 			country
 			url
 			journalCount
+			notes
 		}
 		""";
 	private static final String MINIMAL_RESPONSE_SPEC = //

@@ -91,6 +91,14 @@ public class PublicationSubject extends TrackedEntitySubject<Publication> {
         return check("year()").that(actual.getYear());
     }
 
+    public void hasKeywords(String keywords) {
+        title().isEqualTo(keywords);
+    }
+
+    public StringSubject keywords() {
+        return check("keywords()").that(actual.getKeywords());
+    }
+
     public void hasAbstract(String _abstract) {
         _abstract().isEqualTo(_abstract);
     }
@@ -129,6 +137,14 @@ public class PublicationSubject extends TrackedEntitySubject<Publication> {
 
     public StringSubject isbn() {
         return check("isbn()").that(actual.getIsbn());
+    }
+
+    public void hasPmcid(String pmcid) {
+        pmcid().isEqualTo(pmcid);
+    }
+
+    public StringSubject pmcid() {
+        return check("pmcid()").that(actual.getPmcid());
     }
 
     public void hasPmid(String pmid) {

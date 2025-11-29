@@ -44,6 +44,7 @@ function createFieldValues(publisher?: Publisher) : PublisherFieldValues {
     country: publisher?.country ?? '',
     url: publisher?.url ?? '',
     journalCount: publisher?.journalCount ?? '',
+    notes: publisher?.notes ?? '',
   }
 }
 
@@ -56,6 +57,7 @@ function createInput(fieldValues: PublisherFieldValues, id?: string) : Publisher
     country: fieldValues.country || null,
     url: fieldValues.url || null,
     journalCount: toInteger(fieldValues.journalCount),
+    notes: fieldValues.notes || null,
   }
 }
 

@@ -115,6 +115,7 @@ public class ImportApiController implements ImportApi {
             Journal journalByIssn = null;
             StringBuilder authors = new StringBuilder();
             StringBuilder notes = new StringBuilder();
+            StringBuilder keywords = new StringBuilder();
             ImportedRecord importedRecord = null;
             int lineNum = 0;
             String line;
@@ -275,6 +276,14 @@ public class ImportApiController implements ImportApi {
                             }
                         }
                         break;
+                    case "K1": //Keyword.[15]
+                    case "KW": //Keyword/phrase. Must be at most 255 characters long. May be repeated any number of times to add multiple keywords.[6][14][9][26][8][16][17][18][19][20]
+                        if (builder != null) {
+                            if (!keywords.isEmpty())
+                                keywords.append(' ');
+                            keywords.append(value);
+                        }
+                        break;
                     case "JF": //Full name of journal/periodical.[9][25][8][13][15][16][17][18][20]
                     case "T2": //Secondary title, journal, periodical, publication title, code, title of weblog, series title, book title, image source program, conference name, dictionary title, periodical title, encyclopedia title, committee, program, title number, magazine, collection title, album title, newspaper, published source, title of show, section title, academic department, or full journal name.[6][14][9][23][8][13][15][16][18][19][20] Subtitle.[16]
                         if (builder != null) {
@@ -329,12 +338,12 @@ public class ImportApiController implements ImportApi {
                             }
                         }
                         break;
-                    case "PMCID": //PMCID.[15] regex: PMC<?:\d+) url: https://pmc.ncbi.nlm.nih.gov/articles/
+                    case "PMCID": //PMCID.[15] regex: ^PMC\d{7}$ url: https://pmc.ncbi.nlm.nih.gov/articles/
                         // TODO: regex PMCID validation
-                        // if (builder != null)
-                        //     builder.withPmcid(value);
+                        if (builder != null)
+                            builder.withPmcid(value);
                         break;
-                    case "PMID": //PMID.[15] regex:  url: https://pubmed.ncbi.nlm.nih.gov/
+                    case "PMID": //PMID.[15] regex: ^/d{1,10}$ url: https://pubmed.ncbi.nlm.nih.gov/
                         // TODO: regex PMID validation
                         if (builder != null)
                             builder.withPmid(value);
@@ -428,8 +437,6 @@ public class ImportApiController implements ImportApi {
                     case "H2": //Location (call number).[16]
                     case "ID": //Reference identifier, may be limited to 20 alphanumeric characters.[9][23][8][15][18][19]
                     case "IP": //Identifying phrase.[15]
-                    case "K1": //Keyword.[15]
-                    case "KW": //Keyword/phrase. Must be at most 255 characters long. May be repeated any number of times to add multiple keywords.[6][14][9][26][8][16][17][18][19][20]
                     case "L4": //Figure, e.g. URL or file attachments.[6][14][18][19][20] Images.[9][22] Internet link.[16] Local file.[18]
                     case "LA": //Language.[6][14][15][18][19][20]
                     case "LB": //Label.[6][14][18][20]
@@ -456,6 +463,8 @@ public class ImportApiController implements ImportApi {
                                     builder.withAuthorNames(authors.toString());
                                 if (!notes.isEmpty())
                                     builder.withNotes(notes.toString());
+                                if (!keywords.isEmpty())
+                                    builder.withKeywords(keywords.toString());
 
                                 if (publisher == null && publisherName != null) {
                                     PublisherInput input = PublisherInput.builder() //
@@ -577,6 +586,7 @@ public class ImportApiController implements ImportApi {
                         journalByIssn = null;
                         authors.setLength(0);
                         notes.setLength(0);
+                        keywords.setLength(0);
                         importedRecord = null;
                         break;
                     default:

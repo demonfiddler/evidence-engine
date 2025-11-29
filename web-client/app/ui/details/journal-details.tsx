@@ -52,6 +52,7 @@ import { READ_PUBLISHERS } from "@/lib/graphql-queries"
 import IPage from "@/app/model/IPage"
 import { QueryResult } from "@/lib/graphql-utils"
 import { useQuery } from "@apollo/client/react"
+import CheckboxEx from "../ext/checkbox-ex"
 
 const logger = new LoggerEx(detail, "[JournalDetails] ")
 
@@ -113,6 +114,25 @@ export default function JournalDetails(
                       value={field.value ?? 0}
                       onChange={field.onChange}
                       help="A five-star rating for the journal, indicative of prestige, impact, circulation, etc."
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="peerReviewed"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel htmlFor="peerReviewed">Peer Reviewed</FormLabel>
+                  <FormControl>
+                    <CheckboxEx
+                      id="peerReviewed"
+                      disabled={!updating}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      help="Whether the journal publishes peer-reviewed articles"
                     />
                   </FormControl>
                   <FormMessage />

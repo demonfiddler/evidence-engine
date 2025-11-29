@@ -88,6 +88,14 @@ export const columns: ColumnDef<Publication>[] = [
     }
   },
   {
+    id: "keywords",
+    accessorKey: "keywords",
+    enableHiding: true,
+    enableSorting: false,
+    size: 200,
+    header: "Keywords",
+  },
+  {
     id: "abstract",
     accessorKey: "abstract",
     enableHiding: true,
@@ -118,6 +126,17 @@ export const columns: ColumnDef<Publication>[] = [
     )
   },
   {
+    id: "pmcid",
+    accessorKey: "pmcid",
+    enableHiding: true,
+    enableSorting: true,
+    size: 200,
+    header: "PubMed C. ID",
+    cell: ({cell, getValue}) => (
+      <a key={cell.id} href={`https://pmc.ncbi.nlm.nih.gov/articles/${getValue() as string}`} target="_blank">{getValue() as string}</a>
+    )
+  },
+  {
     id: "pmid",
     accessorKey: "pmid",
     enableHiding: true,
@@ -125,7 +144,7 @@ export const columns: ColumnDef<Publication>[] = [
     size: 200,
     header: "PubMed ID",
     cell: ({cell, getValue}) => (
-      <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
+      <a key={cell.id} href={`https://pubmed.ncbi.nlm.nih.gov/${getValue() as string}`} target="_blank">{getValue() as string}</a>
     )
   },
   {
@@ -136,7 +155,7 @@ export const columns: ColumnDef<Publication>[] = [
     size: 200,
     header: "HS ID",
     cell: ({cell, getValue}) => (
-      <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
+      <a key={cell.id} href={`https://hdl.handle.net/${getValue() as string}`} target="_blank">{getValue() as string}</a>
     )
   },
   {
@@ -147,7 +166,7 @@ export const columns: ColumnDef<Publication>[] = [
     size: 200,
     header: "ArXiv ID",
     cell: ({cell, getValue}) => (
-      <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
+      <a key={cell.id} href={`https://arxiv.org/abs/${getValue() as string}`} target="_blank">{getValue() as string}</a>
     )
   },
   {
@@ -158,7 +177,7 @@ export const columns: ColumnDef<Publication>[] = [
     size: 200,
     header: "BioRxiv ID",
     cell: ({cell, getValue}) => (
-      <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
+      <a key={cell.id} href={`https://www.biorxiv.org/content/${getValue() as string}`} target="_blank">{getValue() as string}</a>
     )
   },
   {
@@ -169,7 +188,7 @@ export const columns: ColumnDef<Publication>[] = [
     size: 200,
     header: "MedRxiv ID",
     cell: ({cell, getValue}) => (
-      <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
+      <a key={cell.id} href={`https://www.medrxiv.org/content/${getValue() as string}`} target="_blank">{getValue() as string}</a>
     )
   },
   {
@@ -180,7 +199,7 @@ export const columns: ColumnDef<Publication>[] = [
     size: 200,
     header: "ERIC ID",
     cell: ({cell, getValue}) => (
-      <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
+      <a key={cell.id} href={`https://eric.ed.gov/?id=${getValue() as string}`} target="_blank">{getValue() as string}</a>
     )
   },
   {
@@ -191,7 +210,7 @@ export const columns: ColumnDef<Publication>[] = [
     size: 200,
     header: "IHEP ID",
     cell: ({cell, getValue}) => (
-      <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
+      <a key={cell.id} href={`https://inspirehep.net/literature/${getValue() as string}`} target="_blank">{getValue() as string}</a>
     )
   },
   {
@@ -202,7 +221,7 @@ export const columns: ColumnDef<Publication>[] = [
     size: 200,
     header: "OAI-PMH ID",
     cell: ({cell, getValue}) => (
-      <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
+      <a key={cell.id} href={`https://www.openarchives.org/OAI/2.0?verb=GetRecord&metadataPrefix=oai_dc&identifier=${getValue() as string}`} target="_blank">{getValue() as string}</a>
     )
   },
   {
@@ -213,7 +232,7 @@ export const columns: ColumnDef<Publication>[] = [
     size: 200,
     header: "HAL ID",
     cell: ({cell, getValue}) => (
-      <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
+      <a key={cell.id} href={`https://hal.archives-ouvertes.fr/${getValue() as string}`} target="_blank">{getValue() as string}</a>
     )
   },
   {
@@ -224,7 +243,7 @@ export const columns: ColumnDef<Publication>[] = [
     size: 200,
     header: "Zenodo ID",
     cell: ({cell, getValue}) => (
-      <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
+      <a key={cell.id} href={`https://zenodo.org/record/${getValue() as string}`} target="_blank">{getValue() as string}</a>
     )
   },
   {
@@ -235,7 +254,7 @@ export const columns: ColumnDef<Publication>[] = [
     size: 200,
     header: "Scopus EID",
     cell: ({cell, getValue}) => (
-      <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
+      <a key={cell.id} href={`https://www.scopus.com/record/display.uri?eid=${getValue() as string}`} target="_blank">{getValue() as string}</a>
     )
   },
   {
@@ -245,6 +264,9 @@ export const columns: ColumnDef<Publication>[] = [
     enableSorting: true,
     size: 200,
     header: "WSAN",
+    cell: ({cell, getValue}) => (
+      <a key={cell.id} href={`https://www.webofscience.com/wos/woscc/full-record/${getValue() as string}`} target="_blank">{getValue() as string}</a>
+    )
   },
   {
     id: "pinfoan",
@@ -254,7 +276,7 @@ export const columns: ColumnDef<Publication>[] = [
     size: 200,
     header: "PInfoAN",
     cell: ({cell, getValue}) => (
-      <a key={cell.id} href={`${getValue() as string}`} target="_blank">{getValue() as string}</a>
+      <a key={cell.id} href={`https://psycnet.apa.org/record/${getValue() as string}`} target="_blank">{getValue() as string}</a>
     )
   },
   {
@@ -331,9 +353,11 @@ export const columnVisibility = {
   kind: true,
   date: false,
   year: true,
+  keywords: false,
   abstract: false,
   doi: false,
   isbn: false,
+  pmcid: false,
   pmid: false,
   hsid: false,
   arxivid: false,

@@ -84,4 +84,12 @@ public class PublisherSubject extends TrackedEntitySubject<Publisher> {
         return check("journalCount()").that(actual.getJournalCount());
     }
 
+    public void hasNotes(String notes) {
+        notes().isEqualTo(notes);
+    }
+
+    public StringSubject notes() {
+        return check("notes()").that(actual.getNotes());
+    }
+
 }
