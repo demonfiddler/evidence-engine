@@ -28,7 +28,8 @@ export const DeclarationKindSchema = z.enum([
 
 export const DeclarationSchema = Rateable.extend({
   kind: DeclarationKindSchema,
-  date: z.date().max(Date.now(), {error: "Declaration date cannot be in the future"}).optional(),
+  date: z.date({message: "Declaration date is required"})
+    .max(Date.now(), {message: "Declaration date cannot be in the future"}),
   title: z.string().min(10).max(100),
   country: z.string().uppercase().length(2).optional(),
   url: z.url().min(10).max(200).or(z.string().length(0)).optional(),

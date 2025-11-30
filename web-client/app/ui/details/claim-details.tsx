@@ -131,6 +131,7 @@ export default function ClaimDetails(
                     <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
                         mode="single"
+                        required={true}
                         captionLayout="dropdown"
                         weekStartsOn={1}
                         selected={field.value}

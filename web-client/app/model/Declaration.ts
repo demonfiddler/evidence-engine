@@ -25,7 +25,7 @@ export default interface Declaration extends ILinkableEntity {
   /** The declaration name or title. */
   title?: string
   /** The date the declaration was published. */
-  date?: Date | string | null
+  date?: Date
   /** The country to which the declaration relates. */
   country?: string | null
   /** The URL for the declaration online. */

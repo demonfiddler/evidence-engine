@@ -40,7 +40,8 @@ function createFieldValues(claim?: Claim) : ClaimFieldValues {
   return {
     rating: claim?.rating ?? 0,
     text: claim?.text ?? '',
-    date: toDate(claim?.date),
+    // HACK ALERT for #36: pretend that date is always set but it'll actually be undefined for a new Claim.
+    date: toDate(claim?.date) as Date,
     notes: claim?.notes ?? ''
   }
 }

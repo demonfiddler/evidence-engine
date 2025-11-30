@@ -78,14 +78,15 @@ export const PublicationKindSchema = z.enum([
   "UNPB",
   "VIDEO",
   "WEB"
-])
+], {message: "Publication kind is required"})
 
 export const PublicationSchema = Rateable.extend({
   title: z.string().min(10).max(200),
   authors: z.string().min(10).max(2000),
   journalId: z.string().length(0).or(z.string().regex(/^\d*$/)),
   kind: PublicationKindSchema,
-  date: z.date().max(Date.now(), { error: "Publication date cannot be in the future" }).optional(),
+  date: z.date({message: "Publication date is required"})
+    .max(Date.now(), { message: "Publication date cannot be in the future" }),
   year: z.string().regex(/^(?:19|20)\d{2}$/).or(z.uint32().min(1900).max(2099)),
   keywords: z.string().max(255),
   abstract: z.string(),

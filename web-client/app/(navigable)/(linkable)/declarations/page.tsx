@@ -40,7 +40,8 @@ function createFieldValues(declaration?: Declaration) : DeclarationFieldValues {
   return {
     rating: declaration?.rating ?? 0,
     kind: declaration?.kind as DeclarationKind ?? '',
-    date: toDate(declaration?.date),
+    // HACK ALERT for #36: pretend that date is always set, but it'll actually be undefined for a new Declaration.
+    date: toDate(declaration?.date) as Date,
     title: declaration?.title ?? '',
     country: declaration?.country ?? '',
     url: declaration?.url ?? '',

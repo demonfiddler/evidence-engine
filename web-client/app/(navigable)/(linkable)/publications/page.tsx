@@ -43,7 +43,8 @@ function createFieldValues(publication?: Publication) : PublicationFieldValues {
     authors: publication?.authors ?? '',
     journalId: publication?.journal?.id ?? '',
     kind: publication?.kind as unknown as PublicationKind ?? '',
-    date: toDate(publication?.date),
+    // HACK ALERT for #36: pretend that date is always set, but it'll actually be undefined for a new Publication.
+    date: toDate(publication?.date) as Date,
     year: publication?.year ?? '',
     keywords: publication?.keywords ?? '',
     abstract: publication?.abstract ?? '',

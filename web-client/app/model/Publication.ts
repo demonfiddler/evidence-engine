@@ -30,7 +30,7 @@ export default interface Publication extends ILinkableEntity {
   /** The publication kind. */
   kind?: string
   /** The publication date. */
-  date?: Date | string | null
+  date?: Date
   /** The publication year. */
   year?: number | null
 	/** Keywords per publication metadata. */
