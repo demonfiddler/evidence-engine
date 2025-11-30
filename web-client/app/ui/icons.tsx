@@ -172,20 +172,16 @@ export function MessageSquareQuoteIconEx(props: SVGProps<SVGSVGElement>) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      // class="lucide lucide-message-square-quote-icon lucide-message-square-quote"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       >
         <g transform="matrix(-1,0,0,1,30,0)">
           <path d="M14 14a2 2 0 0 0 2-2V8h-2"/>
-          {/* <path d="M14,14C15.097,14 16,13.097 16,12L16,8L14,8" /> */}
         </g>
         <path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/>
-        {/* <path d="M22,17C22,18.097 21.097,19 20,19L6.828,19C6.298,19 5.789,19.211 5.414,19.586L3.212,21.788C3.079,21.921 2.898,21.996 2.71,21.996C2.321,21.996 2,21.675 2,21.286L2,5C2,3.903 2.903,3 4,3L20,3C21.097,3 22,3.903 22,5L22,17Z" /> */}
         <g transform="matrix(-1,0,0,1,18,0)">
           <path d="M8 14a2 2 0 0 0 2-2V8H8"/>
-          {/* <path d="M8,14C9.097,14 10,13.097 10,12L10,8L8,8"/> */}
         </g>
     </svg>
   )
