@@ -52,6 +52,7 @@ import { Label } from "@/components/ui/label"
 import ButtonEx from "../ext/button-ex"
 import useAuth from "@/hooks/use-auth"
 import { DownloadIcon } from "lucide-react"
+import Spinner from "../misc/spinner"
 
 const ctFileExt = {
   "text/csv": "csv",
@@ -76,6 +77,7 @@ export default function ExportDialog<T>({ recordKind }: { recordKind: RecordKind
   const [orientation, setOrientation] = useState("portrait")
   const [fontSize, setFontSize] = useState("12")
   const [isOpen, setIsOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const getHref = useCallback(() => {
     const newSearchParams = new URLSearchParams(searchParams)
@@ -152,6 +154,7 @@ export default function ExportDialog<T>({ recordKind }: { recordKind: RecordKind
     // returns published records to unauthenticated users).
     // location.assign(getHref())
 
+    setIsLoading(true)
     const headers : HeadersInit = {
       "Accept": contentType
     }
@@ -164,6 +167,7 @@ export default function ExportDialog<T>({ recordKind }: { recordKind: RecordKind
     .then(res => res.blob())
     .then(blob => {
       setError("")
+      setIsLoading(false)
       setIsOpen(false)
       console.log(`blob.type = ${blob.type}`)
       const url = URL.createObjectURL(blob)
@@ -185,6 +189,7 @@ export default function ExportDialog<T>({ recordKind }: { recordKind: RecordKind
       URL.revokeObjectURL(url)
     }).catch((reason) => {
       setError(reason)
+      setIsLoading(false)
     })
   }, [getHref])
 
@@ -206,6 +211,7 @@ export default function ExportDialog<T>({ recordKind }: { recordKind: RecordKind
           </DialogDescription>
           <p className="text-red-600">{error}</p>
         </DialogHeader>
+        <Spinner loading={isLoading} label="Exporting..." />
         <div className="flex gap-2">
           <fieldset className="grow border-1 rounded-md p-2">
             <legend>Format</legend>

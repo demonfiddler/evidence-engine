@@ -58,6 +58,7 @@ import { GlobalContext } from "@/lib/context";
 import { toast } from "sonner";
 import { dialog, LoggerEx } from "@/lib/logger";
 import { CheckIcon, CircleAlertIcon, CircleXIcon, CopyMinusIcon, InfoIcon, UploadIcon, XIcon } from "lucide-react";
+import Spinner from "../misc/spinner";
 
 const logger = new LoggerEx(dialog, "[ImportDialog] ")
 
@@ -83,6 +84,7 @@ type ImportedRecord = {
 export default function ImportDialog({recordKind, accept} : ImportDialogProps) {
   const { jwtToken, hasAuthority } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [files, setFiles] = useState<File[] | undefined>()
   const [importedRecords, setImportedRecords] = useState<ImportedRecord[]>([])
@@ -113,6 +115,7 @@ export default function ImportDialog({recordKind, accept} : ImportDialogProps) {
       return
 
     setImportedRecords([])
+    setIsLoading(true)
     const headers : HeadersInit = {
       "Authorization": `Bearer ${jwtToken}`,
     }
@@ -137,10 +140,14 @@ export default function ImportDialog({recordKind, accept} : ImportDialogProps) {
       logger.trace("ImportedRecords: %o", importedRecords)
       setError("")
       setImportedRecords(importedRecords)
+      setIsLoading(false)
       api?.scrollTo(1)
       toast.info(`${(importedRecords as ImportedRecord[]).filter(rec => rec.result === "imported").length} ${recordKind}s imported`)
     }) //
-    .catch(error => setError(error.message))
+    .catch(error => {
+      setError(error.message)
+      setIsLoading(false)
+    })
   }, [files, jwtToken, getHref, api])
 
   const handleCopy = useCallback(() => {
@@ -180,6 +187,7 @@ export default function ImportDialog({recordKind, accept} : ImportDialogProps) {
           </DialogDescription>
           <p className="text-red-600">{error}</p>
         </DialogHeader>
+        <Spinner loading={isLoading} label="Importing..." />
         <Carousel setApi={setApi} className="flex flex-col w-7/8 h-full min-h-0 [&>div[data-slot=carousel-content]]:grow">
           <CarouselContent className="w-full h-full max-h-full">
             <CarouselItem className="h-full max-h-full">
