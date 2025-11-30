@@ -20,7 +20,6 @@
 'use client'
 
 import { useCallback, useContext, useMemo } from "react"
-import { ShieldCheckIcon, UserIcon, UsersIcon } from '@heroicons/react/24/outline'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
@@ -55,6 +54,7 @@ import { useMutation } from "@apollo/client/react"
 import LinkableEntityTableFilter from "@/app/ui/filter/linkable-entity-table-filter"
 import { GlobalContext, SecurityPageTabState } from "@/lib/context"
 import { LoggerEx, page } from "@/lib/logger"
+import { ShieldCheckIcon, UserIcon, UsersIcon } from "lucide-react"
 
 const logger = new LoggerEx(page, "[Security] ")
 

@@ -19,7 +19,6 @@
 
 'use client'
 
-import { ChatBubbleBottomCenterTextIcon } from '@heroicons/react/24/outline'
 import QuotationDetails from "@/app/ui/details/quotation-details"
 import DataTable from "@/app/ui/data-table/data-table"
 import { columns } from "@/app/ui/tables/quotation-columns"
@@ -33,6 +32,7 @@ import { LinkableEntityQueryFilter, QuotationInput } from '@/app/model/schema'
 import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter'
 import useLinkableEntityQueryFilter from '@/hooks/use-linkable-entity-query-filter'
 import { LoggerEx, page } from '@/lib/logger'
+import { MessageSquareQuoteIconEx } from "@/app/ui/icons"
 
 const logger = new LoggerEx(page, "[Quotations] ")
 
@@ -96,7 +96,7 @@ export default function Quotations() {
   return (
     <main className="flex flex-col items-start m-4 gap-4">
       <div className="flex flex-row items-center">
-        <ChatBubbleBottomCenterTextIcon className="w-8 h-8"/>
+        <MessageSquareQuoteIconEx className="w-8 h-8"/>
         &nbsp;
         <h1>Quotations</h1>
       </div>

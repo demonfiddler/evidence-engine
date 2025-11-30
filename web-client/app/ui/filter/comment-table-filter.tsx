@@ -31,12 +31,10 @@ import IPage from "@/app/model/IPage"
 import User from "@/app/model/User"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
-import { CalendarIcon, ChevronDownIcon } from "@heroicons/react/24/outline"
 import Spinner from "../misc/spinner"
 import InputEx from "../ext/input-ex"
 import { GlobalContext, QueryState } from "@/lib/context"
 import ButtonEx from "../ext/button-ex"
-import { RotateCw } from "lucide-react"
 import { filter, LoggerEx } from "@/lib/logger"
 import SelectTriggerEx from "../ext/select-ex"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -45,6 +43,7 @@ import Search from "./search"
 import useAuth from "@/hooks/use-auth"
 import { QueryResult } from "@/lib/graphql-utils"
 import ExportDialog from "../dialog/export-dialog"
+import { CalendarIcon, ChevronDownIcon, RotateCwIcon } from "lucide-react"
 
 const logger = new LoggerEx(filter, "[CommentTableFilter] ")
 
@@ -403,7 +402,7 @@ export default function CommentTableFilter(
             help="Refresh the table using the same filter and pagination settings."
             onClick={() => refetch()}
           >
-            <RotateCw />
+            <RotateCwIcon />
           </ButtonEx>
           <ButtonEx
             id="resetComments"

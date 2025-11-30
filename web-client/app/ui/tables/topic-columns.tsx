@@ -23,7 +23,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import Topic from "@/app/model/Topic"
 import { columns as trackedEntityColumns, columnVisibility as trackedEntityColumnVisibility } from "./tracked-entity-columns"
 import { actionColumn as rawActionColumn, expandColumn as rawExpandColumn, selectColumn as rawSelectColumn } from "./extra-columns"
-import { ArrowTurnDownRightIcon } from "@heroicons/react/24/outline"
+import { CornerDownRightIcon } from "lucide-react"
 
 const actionColumn = rawActionColumn as ColumnDef<Topic>
 const expandColumn = rawExpandColumn as ColumnDef<Topic>
@@ -40,7 +40,7 @@ export const columns: ColumnDef<Topic>[] = [
     // enableColumnFilter: false,
     size: 240,
     header: "Label",
-    cell: ({ row, cell, getValue }) => <div key={cell.id} className="flex flex-row" style={{paddingLeft: `${row.depth}rem`}}>{row.depth > 0 ? <ArrowTurnDownRightIcon className="w-4 h-4" /> : <></>}{getValue<string>()}</div>
+    cell: ({ row, cell, getValue }) => <div key={cell.id} className="flex flex-row" style={{paddingLeft: `${row.depth}rem`}}>{row.depth > 0 ? <CornerDownRightIcon className="w-4 h-4" /> : <></>}{getValue<string>()}</div>
   },
   expandColumn,
   {

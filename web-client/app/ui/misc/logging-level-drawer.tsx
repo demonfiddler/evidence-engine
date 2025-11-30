@@ -25,7 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { layout, page, detail, dialog, filter, component, table, hook, utility, LoggerEx } from "@/lib/logger"
-import { ArrowLongLeftIcon, ArrowLongRightIcon } from "@heroicons/react/24/outline"
+import { MoveLeftIcon, MoveRightIcon, SlidersHorizontalIcon } from "lucide-react"
 import { Logger } from "pino"
 import { useCallback, useReducer, useState } from "react"
 
@@ -99,7 +99,7 @@ export default function LoggingLevelDrawer(
       <DrawerContent className="w-1/2 bottom-0 translate-x-1/2 transform">
         <div className="mx-auto w-full">
           <DrawerHeader>
-            <DrawerTitle>Logging Levels</DrawerTitle>
+            <DrawerTitle><SlidersHorizontalIcon className="inline" />&nbsp;Logging Levels</DrawerTitle>
             <DrawerDescription>Set client-side logging levels. Open the browser console or developer tools to see logger output.</DrawerDescription>
           </DrawerHeader>
           <div>
@@ -109,9 +109,9 @@ export default function LoggingLevelDrawer(
                   <TableHead className="text-lg">Logger</TableHead>
                   <TableHead className="relative">
                     <div className="grid grid-cols-3 absolute w-6/7 left-1/14 top-0">
-                      <span className="justify-self-start self-end text-xs text-gray-400"><ArrowLongLeftIcon className="inline size-6"/>increasing severity</span>
+                      <span className="justify-self-start self-end text-xs text-gray-400"><MoveLeftIcon className="inline size-6"/>increasing severity</span>
                       <span className="justify-self-center text-lg">Level</span>
-                      <span className="justify-self-end self-end text-xs text-gray-400">increasing verbosity<ArrowLongRightIcon className="inline size-6"/></span>
+                      <span className="justify-self-end self-end text-xs text-gray-400">increasing verbosity<MoveRightIcon className="inline size-6"/></span>
                     </div>
                   </TableHead>
                 </TableRow>

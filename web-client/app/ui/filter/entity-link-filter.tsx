@@ -34,7 +34,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline'
 import Topic from "@/app/model/Topic"
 import { GlobalContext } from '@/lib/context'
 import { findTopic, setTopicFields } from "@/lib/utils"
@@ -50,6 +49,7 @@ import useLinkableEntityQueryFilter from "@/hooks/use-linkable-entity-query-filt
 import { filter, LoggerEx } from "@/lib/logger"
 import IPage from "@/app/model/IPage"
 import { QueryResult } from "@/lib/graphql-utils"
+import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react'
 
 const logger = new LoggerEx(filter, "[EntityLinkFilter] ")
 

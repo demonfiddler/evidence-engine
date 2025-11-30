@@ -26,7 +26,6 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import Spinner from "../misc/spinner"
 import { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
-import { UserIcon } from "@heroicons/react/24/outline"
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
 import z from "zod/v4"
 import { useMutation } from "@apollo/client/react"
@@ -38,6 +37,7 @@ import SelectTriggerEx from "../ext/select-ex"
 import InputEx from "../ext/input-ex"
 import useAuth from "@/hooks/use-auth"
 import { dialog, LoggerEx } from "@/lib/logger"
+import { UserPenIcon } from "lucide-react"
 
 const logger = new LoggerEx(dialog, "[ProfileDialog] ")
 
@@ -121,10 +121,9 @@ export default function ProfileDialog(
         <FormProvider {...form}>
           <form>
             <DialogHeader>
-              <DialogTitle>User Profile</DialogTitle>
+              <DialogTitle><UserPenIcon className="inline" />&nbsp;User Profile</DialogTitle>
               <DialogDescription className="py-4">
-                <UserIcon className="w-6 h-6 inline" />
-                &nbsp;Update your details then click &apos;Save&apos;.
+                Update your details then click &apos;Save&apos;.
               </DialogDescription>
             </DialogHeader>
             <div className="grid grid-cols-2 gap-4">

@@ -22,7 +22,6 @@
 import useAuth from "@/hooks/use-auth"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { UserIcon } from '@heroicons/react/24/outline'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,6 +38,7 @@ import ProfileDialog from "./profile"
 import PasswordDialog from "./password"
 import SettingsDialog from "./settings"
 import { dialog, LoggerEx } from "@/lib/logger"
+import { LogOutIcon, SettingsIcon, ShieldAlertIcon, UserIcon, UserPenIcon } from "lucide-react"
 
 const logger = new LoggerEx(dialog, "[MyAccount] ")
 
@@ -89,21 +89,21 @@ export default function MyAccount({className} : {className: string}) {
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem onSelect={handleProfile}>
-              Profile
+              <UserPenIcon className="inline" />&nbsp;Profile
               <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={handleChangePassword}>
-              Change Password
+              <ShieldAlertIcon className="inline" />&nbsp;Change Password
               <DropdownMenuShortcut>⌘C</DropdownMenuShortcut>
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={handleSettings}>
-              Settings
+              <SettingsIcon className="inline" />&nbsp;Settings
               <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onSelect={handleSignout}>
-            Sign out
+            <LogOutIcon className="inline" />&nbsp;Sign out
             <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuContent>

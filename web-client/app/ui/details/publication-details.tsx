@@ -32,7 +32,6 @@ import {
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn, formatDate } from "@/lib/utils"
-import { CalendarIcon } from "@heroicons/react/24/outline"
 import {
   Select,
   SelectContent,
@@ -59,6 +58,7 @@ import { useQuery } from "@apollo/client/react"
 import { READ_JOURNALS } from "@/lib/graphql-queries"
 import IPage from "@/app/model/IPage"
 import { QueryResult } from "@/lib/graphql-utils"
+import { CalendarIcon } from "lucide-react"
 
 const logger = new LoggerEx(detail, "[PublicationDetails] ")
 

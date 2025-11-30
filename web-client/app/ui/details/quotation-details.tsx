@@ -32,7 +32,6 @@ import {
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn, formatDate } from "@/lib/utils"
-import { CalendarIcon } from "@heroicons/react/24/outline"
 import StandardDetails from "./standard-details"
 import DetailActions, { DetailMode, DetailState } from "./detail-actions"
 import { Dispatch, SetStateAction, useState } from "react"
@@ -45,6 +44,7 @@ import TextareaEx from "../ext/textarea-ex"
 import LinkEx from "../ext/link-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
 import { detail, LoggerEx } from "@/lib/logger"
+import { CalendarIcon } from "lucide-react"
 
 const logger = new LoggerEx(detail, "[QuotationDetails] ")
 

@@ -26,11 +26,11 @@ import { useContext } from "react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Button } from "@/components/ui/button"
 import ITrackedEntity from "@/app/model/ITrackedEntity"
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline"
 import RecordKind from "@/app/model/RecordKind"
 import { DetailState } from "./detail-actions"
 import { GlobalContext } from "@/lib/context"
 import { detail, LoggerEx } from "@/lib/logger"
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 
 const logger = new LoggerEx(detail, "[StandardDetails] ")
 

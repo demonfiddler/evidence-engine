@@ -38,7 +38,6 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select"
-import { CalendarIcon } from "@heroicons/react/24/outline"
 import Country from "@/app/model/Country"
 import rawCountries from "@/data/countries.json" assert {type: 'json'}
 import StandardDetails from "./standard-details"
@@ -55,6 +54,7 @@ import CheckboxEx from "../ext/checkbox-ex"
 import TextareaEx from "../ext/textarea-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
 import { detail, LoggerEx } from "@/lib/logger"
+import { CalendarIcon } from "lucide-react"
 
 const countries = rawCountries as unknown as Country[]
 // import { useQuery } from "@apollo/client/react"

@@ -54,10 +54,10 @@ import {
 } from "@/components/ui/table"
 import { Dropzone, DropzoneContent, DropzoneEmptyState } from '@/components/ui/shadcn-io/dropzone';
 import { ImportAccept } from "../data-table/data-table-filter";
-import { ArrowUpTrayIcon, CheckIcon, ExclamationCircleIcon, InformationCircleIcon, XCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { GlobalContext } from "@/lib/context";
 import { toast } from "sonner";
 import { dialog, LoggerEx } from "@/lib/logger";
+import { CheckIcon, CircleAlertIcon, CircleXIcon, CopyMinusIcon, InfoIcon, UploadIcon, XIcon } from "lucide-react";
 
 const logger = new LoggerEx(dialog, "[ImportDialog] ")
 
@@ -169,12 +169,12 @@ export default function ImportDialog({recordKind, accept} : ImportDialogProps) {
           disabled={!accept || !jwtToken || !hasAuthority("CRE")}
           help="Import (upload) a file"
           title="Import (upload) a file">
-          <ArrowUpTrayIcon />
+          <UploadIcon />
         </ButtonEx>
       </DialogTrigger>
       <DialogContent className="flex flex-col items-center w-2/3 h-2/3 min-h-0 overflow-hidden">
         <DialogHeader>
-          <DialogTitle className="text-center">Import {recordKind}s</DialogTitle>
+          <DialogTitle className="text-center"><UploadIcon className="inline" />&nbsp;Import {recordKind}s</DialogTitle>
           <DialogDescription>
             Import {recordKind}s from a file
           </DialogDescription>
@@ -247,9 +247,9 @@ export default function ImportDialog({recordKind, accept} : ImportDialogProps) {
                               rec.result === "imported"
                               ? <CheckIcon className="inline size-6 stroke-2 text-green-600" />
                               : rec.result === "duplicate"
-                              ? <XMarkIcon className="inline size-6 stroke-2 text-red-600" />
+                              ? <CopyMinusIcon className="inline size-6 stroke-2 text-red-600" />
                               : rec.result === "error"
-                              ? <XMarkIcon className="inline size-6 stroke-2 text-red-600" />
+                              ? <XIcon className="inline size-6 stroke-2 text-red-600" />
                               : null
                             }&nbsp;{rec.result}
                           </TableCell>
@@ -260,11 +260,11 @@ export default function ImportDialog({recordKind, accept} : ImportDialogProps) {
                               <TableCell className="align-top border">
                                 {
                                   rec.messages[0].severity === "info"
-                                  ? <InformationCircleIcon className="inline size-6 text-blue-600" />
+                                  ? <InfoIcon className="inline size-6 text-blue-600" />
                                   : rec.messages[0].severity === "warning"
-                                  ? <ExclamationCircleIcon className="inline size-6 text-orange-600" />
+                                  ? <CircleAlertIcon className="inline size-6 text-orange-600" />
                                   : rec.messages[0].severity === "error"
-                                  ? <XCircleIcon className="inline size-6 text-red-600" />
+                                  ? <CircleXIcon className="inline size-6 text-red-600" />
                                   : null
                                 }&nbsp;{rec.messages[0].severity}
                               </TableCell>
@@ -281,11 +281,11 @@ export default function ImportDialog({recordKind, accept} : ImportDialogProps) {
                               <TableCell key={`${recIdx}-${msgIdx}-5`} className="align-top border">
                                 {
                                   msg.severity === "info"
-                                  ? <InformationCircleIcon className="inline size-6 text-blue-600" />
+                                  ? <InfoIcon className="inline size-6 text-blue-600" />
                                   : msg.severity === "warning"
-                                  ? <ExclamationCircleIcon className="inline size-6 text-orange-600" />
+                                  ? <CircleAlertIcon className="inline size-6 text-orange-600" />
                                   : msg.severity === "error"
-                                  ? <XCircleIcon className="inline size-6 text-red-600" />
+                                  ? <CircleXIcon className="inline size-6 text-red-600" />
                                   : null
                                 }&nbsp;{msg.severity}
                               </TableCell>

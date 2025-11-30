@@ -19,7 +19,6 @@
 
 'use client'
 
-import { ListBulletIcon } from '@heroicons/react/24/outline'
 import LogDetails from "@/app/ui/details/log-details"
 import DataTable from "@/app/ui/data-table/data-table"
 import { columns } from "@/app/ui/tables/log-columns"
@@ -32,6 +31,7 @@ import usePageLogic from "@/hooks/use-page-logic"
 import { LogFieldValues } from '@/app/ui/validators/log'
 import useLogQueryFilter from '@/hooks/use-log-query-filter'
 import { LoggerEx, page } from '@/lib/logger'
+import { FileClockIcon } from 'lucide-react'
 
 const logger = new LoggerEx(page, "[Log] ")
 
@@ -70,7 +70,7 @@ export default function Logs() {
   return (
     <main className="flex flex-col items-start m-4 gap-4">
       <div className="flex flex-row items-center">
-        <ListBulletIcon className="w-8 h-8"/>
+        <FileClockIcon className="w-8 h-8"/>
         &nbsp;
         <h1>Logs</h1>
       </div>

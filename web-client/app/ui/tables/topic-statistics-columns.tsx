@@ -21,8 +21,8 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { expandColumn as rawExpandColumn } from "./extra-columns"
-import { ArrowTurnDownRightIcon } from "@heroicons/react/24/outline"
 import TopicStatistics from "@/app/model/TopicStatistics"
+import { CornerDownRightIcon } from "lucide-react"
 
 const expandColumn = rawExpandColumn as ColumnDef<TopicStatistics>
 
@@ -52,7 +52,7 @@ export const columns: ColumnDef<TopicStatistics>[] = [
     accessorFn: row => row.topic.label,
     size: 240,
     header: "Label",
-    cell: ({ row, cell, getValue }) => <div key={cell.id} className="flex flex-row" style={{paddingLeft: `${row.depth}rem`}}>{row.depth > 0 ? <ArrowTurnDownRightIcon className="w-4 h-4" /> : <></>}{getValue<string>()}</div>
+    cell: ({ row, cell, getValue }) => <div key={cell.id} className="flex flex-row" style={{paddingLeft: `${row.depth}rem`}}>{row.depth > 0 ? <CornerDownRightIcon className="w-4 h-4" /> : <></>}{getValue<string>()}</div>
   },
   expandColumn,
   {

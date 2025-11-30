@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Star } from "lucide-react";
+import { StarIcon } from "lucide-react";
 import * as React from "react";
 import { CSSProperties, memo, useCallback, useState } from "react";
 import { Button } from "../ui/button";
@@ -19,7 +19,7 @@ export interface StarRatingBasicProps {
   color?: string
 }
 
-const StarIcon = memo(
+const StarIconEx = memo(
   ({
     iconSize,
     index,
@@ -35,7 +35,7 @@ const StarIcon = memo(
     // onMouseEnter: () => void;
     isInteractive: boolean;
   }) => (
-    <Star
+    <StarIcon
       key={index}
       size={iconSize}
       fill={style.fill}
@@ -50,7 +50,7 @@ const StarIcon = memo(
     />
   )
 );
-StarIcon.displayName = "StarIcon";
+StarIconEx.displayName = "StarIcon";
 
 const StarRating_Basic = ({
   className,
@@ -117,7 +117,7 @@ const StarRating_Basic = ({
           onMouseEnter={() => handleStarHover(index)}
           title={`Click to toggle star rating of ${index + 1}`}
         >
-          <StarIcon
+          <StarIconEx
             index={index}
             style={style}
             iconSize={iconSize}

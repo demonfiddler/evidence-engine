@@ -22,9 +22,9 @@
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { GlobalContext } from "@/lib/context"
-import { Cog8ToothIcon } from "@heroicons/react/24/outline"
 import { Dispatch, SetStateAction, useCallback, useContext, useEffect } from "react"
 import { dialog, LoggerEx } from "@/lib/logger"
+import { SettingsIcon } from "lucide-react"
 
 const logger = new LoggerEx(dialog, "[SettingsDialog] ")
 
@@ -59,15 +59,14 @@ export default function SettingsDialog(
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>
-            <Cog8ToothIcon className="w-6 h-6 inline" />
-            &nbsp;Settings
+            <SettingsIcon className="inline" />&nbsp;Settings
           </DialogTitle>
           <DialogDescription className="py-4">
             You can clear all page, toggle, filter, sorting, pagination, etc. settings.
           </DialogDescription>
         </DialogHeader>
-        <Button className="w-20 justify-self-center" onClick={clearSettings}>Clear</Button>
         <DialogFooter>
+          <Button type="button" className="w-20 justify-self-center" onClick={clearSettings}>Clear</Button>
           <DialogClose asChild>
             <Button
               type="button"

@@ -19,7 +19,6 @@
 
 'use client'
 
-import { ExclamationCircleIcon } from "@heroicons/react/24/outline"
 import ClaimDetails from "@/app/ui/details/claim-details"
 import DataTable from "@/app/ui/data-table/data-table"
 import { columns } from "@/app/ui/tables/claim-columns"
@@ -33,6 +32,7 @@ import { ClaimInput, LinkableEntityQueryFilter } from "@/app/model/schema"
 import LinkableEntityTableFilter from "@/app/ui/filter/linkable-entity-table-filter"
 import useLinkableEntityQueryFilter from "@/hooks/use-linkable-entity-query-filter"
 import { LoggerEx, page } from "@/lib/logger"
+import { BookOpenCheckIcon } from "lucide-react"
 
 const logger = new LoggerEx(page, "[Claims] ")
 
@@ -96,7 +96,7 @@ export default function Claims() {
   return (
     <main className="flex flex-col items-start m-4 gap-4">
       <div className="flex flex-row items-center">
-        <ExclamationCircleIcon className="w-8 h-8"/>
+        <BookOpenCheckIcon className="w-8 h-8"/>
         &nbsp;
         <h1>Claims</h1>
       </div>

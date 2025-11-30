@@ -26,7 +26,6 @@ import { FormProvider, useForm } from "react-hook-form"
 import { FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import InputEx from "../ext/input-ex"
 import { Button } from "@/components/ui/button"
-import { ShieldExclamationIcon } from "@heroicons/react/24/outline"
 import useAuth from "@/hooks/use-auth"
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
 import { useMutation } from "@apollo/client/react"
@@ -34,6 +33,7 @@ import { UPDATE_USER_PASSWORD } from "@/lib/graphql-queries"
 import z from "zod/v4"
 import { genSaltSync, hashSync } from "bcrypt-ts"
 import { dialog, LoggerEx } from "@/lib/logger"
+import { ShieldAlertIcon } from "lucide-react"
 
 const logger = new LoggerEx(dialog, "[PasswordDialog] ")
 
@@ -115,7 +115,7 @@ export default function PasswordDialog(
           <form>
             <DialogHeader>
               <DialogTitle>
-                <ShieldExclamationIcon className="w-6 h-6 inline" />
+                <ShieldAlertIcon className="inline" />
                 &nbsp;Change Password
               </DialogTitle>
               <DialogDescription className="py-4">

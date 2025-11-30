@@ -29,9 +29,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import UserIcon from '@heroicons/react/24/outline/UserIcon'
 import Autoplay from "embla-carousel-autoplay"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
+import { UserIcon } from 'lucide-react'
 
 // export const metadata: Metadata = {
 //   title: 'Dashboard',

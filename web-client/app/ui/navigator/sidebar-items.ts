@@ -18,39 +18,39 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 import {
-  Bars3BottomRightIcon,
-  BeakerIcon,
-  BuildingOfficeIcon,
-  ChartBarIcon,
-  ChatBubbleBottomCenterTextIcon,
-  ChatBubbleLeftRightIcon,
-  EnvelopeOpenIcon,
-  ExclamationCircleIcon,
-  HomeIcon,
-  InformationCircleIcon,
-  ListBulletIcon,
+  BookOpenCheckIcon,
+  Building2Icon,
+  ChartColumnIcon,
+  CircleQuestionMarkIcon,
+  FileClockIcon,
+  FlaskConicalIcon,
+  FolderTreeIcon,
+  HouseIcon,
+  InfoIcon,
+  ScrollTextIcon,
+  MessagesSquareIcon,
   NewspaperIcon,
-  QuestionMarkCircleIcon,
   ShieldCheckIcon,
-  UserIcon,
-} from '@heroicons/react/24/outline';
+  UsersIcon
+} from 'lucide-react';
+import { MessageSquareQuoteIconEx } from '../icons';
 
 export const appItems = [
-  { label: "Home", href: "/", icon: HomeIcon },
-  { label: "Dashboard", href: "/dashboard", icon: ChartBarIcon },
-  { label: "Claims", href: "/claims", icon: ExclamationCircleIcon },
-  { label: "Publications", href: "/publications", icon: BeakerIcon },
-  { label: "Persons", href: "/persons", icon: UserIcon },
-  { label: "Declarations", href: "/declarations", icon: EnvelopeOpenIcon },
-  { label: "Quotations", href: "/quotations", icon: ChatBubbleBottomCenterTextIcon },
-  { label: "Comments", href: "/comments", icon: ChatBubbleLeftRightIcon },
-  { label: "Log", href: "/log", icon: ListBulletIcon },
-  { label: "Help", href: "/help", icon: QuestionMarkCircleIcon },
-  { label: "About", href: "/about", icon: InformationCircleIcon },
+  { label: "Home", href: "/", icon: HouseIcon },
+  { label: "Dashboard", href: "/dashboard", icon: ChartColumnIcon },
+  { label: "Claims", href: "/claims", icon: BookOpenCheckIcon },
+  { label: "Publications", href: "/publications", icon: FlaskConicalIcon },
+  { label: "Persons", href: "/persons", icon: UsersIcon },
+  { label: "Declarations", href: "/declarations", icon: ScrollTextIcon },
+  { label: "Quotations", href: "/quotations", icon: MessageSquareQuoteIconEx },
+  { label: "Comments", href: "/comments", icon: MessagesSquareIcon },
+  { label: "Log", href: "/log", icon: FileClockIcon },
+  { label: "Help", href: "/help", icon: CircleQuestionMarkIcon },
+  { label: "About", href: "/about", icon: InfoIcon },
 ]
 export const adminItems = [
-  { label: "Topics", href: "/admin/topics", icon: Bars3BottomRightIcon },
+  { label: "Topics", href: "/admin/topics", icon: FolderTreeIcon },
   { label: "Journals", href: "/admin/journals", icon: NewspaperIcon },
-  { label: "Publishers", href: "/admin/publishers", icon: BuildingOfficeIcon },
+  { label: "Publishers", href: "/admin/publishers", icon: Building2Icon },
   { label: "Security", href: "/admin/security", icon: ShieldCheckIcon },
 ]

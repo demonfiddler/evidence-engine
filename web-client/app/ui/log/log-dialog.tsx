@@ -30,7 +30,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import ListBulletIcon from "@heroicons/react/24/outline/ListBulletIcon"
 import { useState } from "react"
 import Log from "@/app/model/Log"
 import { ownColumns as columns } from "@/app/ui/tables/log-columns"
@@ -44,6 +43,7 @@ import LogDialogFilter from "../filter/log-dialog-filter"
 import ButtonEx from "../ext/button-ex"
 import RecordKind from "@/app/model/RecordKind"
 import { dialog, LoggerEx } from "@/lib/logger"
+import { FileClockIcon } from "lucide-react"
 
 const logger = new LoggerEx(dialog, "[LogDialog] ")
 
@@ -107,10 +107,9 @@ export default function LogDialog({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Record Log</DialogTitle>
+          <DialogTitle><FileClockIcon className="inline" />&nbsp;{recordKind} Log</DialogTitle>
           <DialogDescription>
-            <ListBulletIcon className="w-6 h-6 inline" />
-            &nbsp;{recordLabel}
+            Log for {recordLabel}
           </DialogDescription>
         </DialogHeader>
         <DataTable<Log, unknown>

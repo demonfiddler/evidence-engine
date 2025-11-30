@@ -19,7 +19,6 @@
 
 'use client'
 
-import { BuildingOfficeIcon } from '@heroicons/react/24/outline'
 import PublisherDetails from "@/app/ui/details/publisher-details"
 import DataTable from "@/app/ui/data-table/data-table"
 import { columns } from "@/app/ui/tables/publisher-columns"
@@ -33,6 +32,7 @@ import { PublisherInput, TrackedEntityQueryFilter } from '@/app/model/schema'
 import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter'
 import useTrackedEntityQueryFilter from '@/hooks/use-tracked-entity-query-filter'
 import { LoggerEx, page } from '@/lib/logger'
+import { Building2Icon } from 'lucide-react'
 
 const logger = new LoggerEx(page, "[Publishers] ")
 
@@ -96,7 +96,7 @@ export default function Publishers() {
   return (
     <main className="flex flex-col items-start m-4 gap-4">
       <div className="flex flex-row items-center">
-        <BuildingOfficeIcon className="w-8 h-8"/>
+        <Building2Icon className="w-8 h-8"/>
         &nbsp;
         <h1>Publishers</h1>
       </div>

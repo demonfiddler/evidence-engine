@@ -33,7 +33,7 @@ import ButtonEx from "../ext/button-ex"
 import LabelEx from "../ext/label-ex"
 import useAuth from "@/hooks/use-auth"
 import InputEx from "../ext/input-ex"
-import { RotateCw } from "lucide-react"
+import { RotateCwIcon } from "lucide-react"
 import RecordKind from "@/app/model/RecordKind"
 import { filter, LoggerEx } from "@/lib/logger"
 import { anything } from "@/types/types"
@@ -234,7 +234,7 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
           title="Refresh the table using the same filter and pagination settings."
           onClick={() => refetch()}
         >
-          <RotateCw />
+          <RotateCwIcon />
         </ButtonEx>
         <ButtonEx
           id="reset"

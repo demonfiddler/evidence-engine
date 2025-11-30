@@ -20,7 +20,7 @@
 'use client'
 
 import { LoggerEx, page } from "@/lib/logger";
-import InformationCircleIcon from "@heroicons/react/24/outline/InformationCircleIcon"
+import { InfoIcon } from "lucide-react";
 
 const logger = new LoggerEx(page, "[About] ")
 
@@ -30,7 +30,7 @@ export default function About() {
   return (
     <main className="flex flex-col self-center m-8 gap-8 w-1/2">
       <div className="flex flex-row items-center">
-        <InformationCircleIcon className="w-8 h-8"/>
+        <InfoIcon className="w-8 h-8"/>
         &nbsp;
         <h1>About</h1>
       </div>

@@ -19,7 +19,6 @@
 
 'use client'
 
-import { NewspaperIcon } from '@heroicons/react/24/outline'
 import JournalDetails from "@/app/ui/details/journal-details"
 import DataTable from "@/app/ui/data-table/data-table"
 import { columns } from "@/app/ui/tables/journal-columns"
@@ -32,6 +31,7 @@ import { JournalInput, TrackedEntityQueryFilter } from '@/app/model/schema'
 import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter'
 import useTrackedEntityQueryFilter from '@/hooks/use-tracked-entity-query-filter'
 import { LoggerEx, page } from '@/lib/logger'
+import { NewspaperIcon } from 'lucide-react'
 
 const logger = new LoggerEx(page, "[Journals] ")
 

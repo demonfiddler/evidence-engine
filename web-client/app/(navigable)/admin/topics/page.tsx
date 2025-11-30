@@ -19,7 +19,6 @@
 
 'use client'
 
-import { Bars3BottomRightIcon } from '@heroicons/react/24/outline'
 import TopicDetails from "@/app/ui/details/topic-details"
 import DataTable from "@/app/ui/data-table/data-table"
 import { columns } from "@/app/ui/tables/topic-columns"
@@ -38,6 +37,7 @@ import { useContext, useMemo } from 'react'
 import { useQuery } from '@apollo/client/react'
 import { LoggerEx, page } from '@/lib/logger'
 import { QueryResult } from '@/lib/graphql-utils'
+import { FolderTreeIcon } from 'lucide-react'
 
 const logger = new LoggerEx(page, "[Topics] ")
 
@@ -116,7 +116,7 @@ export default function Topics() {
   return (
     <main className="flex flex-col items-start m-4 gap-4">
       <div className="flex flex-row items-center">
-        <Bars3BottomRightIcon className="w-8 h-8"/>
+        <FolderTreeIcon className="w-8 h-8"/>
         &nbsp;
         <h1>Topics</h1>
       </div>

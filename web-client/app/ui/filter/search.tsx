@@ -20,12 +20,12 @@
 'use client'
 
 import { SearchIcon } from "@/app/ui/icons"
-import { XMarkIcon } from "@heroicons/react/24/outline"
 import { useCallback, useEffect, useRef, useState } from "react"
 import InputEx from "../ext/input-ex"
 import { component, LoggerEx } from "@/lib/logger"
 import { cn } from "@/lib/utils"
 import { ClassValue } from "clsx"
+import { XIcon } from "lucide-react"
 
 const logger = new LoggerEx(component, "[Search] ")
 
@@ -72,7 +72,7 @@ export default function Search(
         clearOnEscape={true}
         help="Filter the table to show only records containing the specified text. This performs a case-insensitive match against all text fields, matching whole words unless 'Advanced' is checked."
       />
-      <XMarkIcon className="w-5 h-5" onClick={() => onChangeText('')} />
+      <XIcon className="w-5 h-5 text-gray-400" onClick={() => onChangeText('')} />
     </div>
   )
 }

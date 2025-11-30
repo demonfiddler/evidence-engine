@@ -20,7 +20,7 @@
 'use client'
 
 import { Column, Header, Table } from "@tanstack/react-table"
-import { ArrowDown, ArrowUp, ChevronsUpDown, GripVertical } from "lucide-react"
+import { ArrowDownIcon, ArrowUpIcon, ChevronsUpDownIcon, GripVerticalIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -76,7 +76,7 @@ export default function DataTableColumnHeader<TData, TValue>({
                 title="Drag to reorder columns"
                 {...attributes} {...listeners}
               >
-                <GripVertical className="absolute left-0 text-gray-400"/>
+                <GripVerticalIcon className="absolute left-0 text-gray-400"/>
               </Button>
               : null
             }
@@ -93,10 +93,10 @@ export default function DataTableColumnHeader<TData, TValue>({
                 <div className="flex text-gray-400">
                   {
                     column.getIsSorted() === "asc"
-                    ? <ArrowUp />
+                    ? <ArrowUpIcon />
                     : column.getIsSorted() === "desc"
-                      ? <ArrowDown />
-                      : <ChevronsUpDown />
+                      ? <ArrowDownIcon />
+                      : <ChevronsUpDownIcon />
                   }
                   {column.getSortIndex() != -1
                     ? <Badge variant="outline">{column.getSortIndex() + 1}</Badge>

@@ -19,7 +19,6 @@
 
 'use client'
 
-import { EnvelopeOpenIcon } from '@heroicons/react/24/outline'
 import DeclarationDetails from "@/app/ui/details/declaration-details"
 import DataTable from "@/app/ui/data-table/data-table"
 import { columns } from "@/app/ui/tables/declaration-columns"
@@ -33,6 +32,7 @@ import { DeclarationInput, LinkableEntityQueryFilter } from '@/app/model/schema'
 import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter'
 import useLinkableEntityQueryFilter from '@/hooks/use-linkable-entity-query-filter'
 import { LoggerEx, page } from '@/lib/logger'
+import { ScrollTextIcon } from 'lucide-react'
 
 const logger = new LoggerEx(page, "[Declarations] ")
 
@@ -102,7 +102,7 @@ export default function Declarations() {
   return (
     <main className="flex flex-col items-start m-4 gap-4">
       <div className="flex flex-row items-center">
-        <EnvelopeOpenIcon className="w-8 h-8"/>
+        <ScrollTextIcon className="w-8 h-8"/>
         &nbsp;
         <h1>Declarations</h1>
       </div>

@@ -19,7 +19,6 @@
 
 'use client'
 
-import ChartBarIcon from "@heroicons/react/24/outline/ChartBarIcon"
 import TopicStatistics from "@/app/model/TopicStatistics"
 import {
   Table,
@@ -33,7 +32,15 @@ import {
 import { READ_ALL_STATISTICS } from "@/lib/graphql-queries"
 import { useQuery } from "@apollo/client/react"
 import { flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } from "@tanstack/react-table"
-import { BeakerIcon, RotateCw, UserIcon } from 'lucide-react'
+import {
+  BookOpenCheckIcon,
+  ChartColumnIcon,
+  FlaskConicalIcon,
+  FolderTreeIcon,
+  ScrollTextIcon,
+  RotateCwIcon,
+  UsersIcon
+} from 'lucide-react'
 import { cn } from "@/lib/utils"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { Select, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
@@ -45,7 +52,6 @@ import ButtonEx from "@/app/ui/ext/button-ex"
 import SelectTriggerEx from "@/app/ui/ext/select-ex"
 import Spinner from "@/app/ui/misc/spinner"
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
-import { Bars3BottomRightIcon, ExclamationCircleIcon, EnvelopeOpenIcon, ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline"
 import { columns } from "@/app/ui/tables/topic-statistics-columns"
 import Link from "next/link"
 import { Label } from "@/components/ui/label"
@@ -53,6 +59,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import LabelEx from "@/app/ui/ext/label-ex"
 import { LoggerEx, page } from "@/lib/logger"
 import { QueryResult } from "@/lib/graphql-utils"
+import { MessageSquareQuoteIconEx } from "@/app/ui/icons"
 
 const logger = new LoggerEx(page, "[Dashboard] ")
 
@@ -62,12 +69,12 @@ interface ColumnMetaData {
 }
 
 const entityItems = [
-  { entityKind: "TOP", heading: "Topics", description: "Total topics (top-level + nested)", icon: Bars3BottomRightIcon, property: "topics", href: "/admin/topics" },
-  { entityKind: "CLA", heading: "Claims", description: "Total claims of fact", icon: ExclamationCircleIcon, property: "claims", href: "/claims" },
-  { entityKind: "DEC", heading: "Declarations", description: "Total declarations, public letters, etc.", icon: EnvelopeOpenIcon, property: "declarations", href: "/declarations" },
-  { entityKind: "PER", heading: "Persons", description: "Total scientists, professionals, etc.", icon: UserIcon, property: "persons", href: "/persons" },
-  { entityKind: "PUB", heading: "Publications", description: "Total scientific publications, papers, etc.", icon: BeakerIcon, property: "publications", href: "/publications" },
-  { entityKind: "QUO", heading: "Quotations", description: "Total quotations", icon: ChatBubbleBottomCenterTextIcon, property: "quotations", href: "/quotations" },
+  { entityKind: "TOP", heading: "Topics", description: "Total topics (top-level + nested)", icon: FolderTreeIcon, property: "topics", href: "/admin/topics" },
+  { entityKind: "CLA", heading: "Claims", description: "Total claims of fact", icon: BookOpenCheckIcon, property: "claims", href: "/claims" },
+  { entityKind: "DEC", heading: "Declarations", description: "Total declarations, public letters, etc.", icon: ScrollTextIcon, property: "declarations", href: "/declarations" },
+  { entityKind: "PER", heading: "Persons", description: "Total scientists, professionals, etc.", icon: UsersIcon, property: "persons", href: "/persons" },
+  { entityKind: "PUB", heading: "Publications", description: "Total scientific publications, papers, etc.", icon: FlaskConicalIcon, property: "publications", href: "/publications" },
+  { entityKind: "QUO", heading: "Quotations", description: "Total quotations", icon: MessageSquareQuoteIconEx, property: "quotations", href: "/quotations" },
   // { entityKind: "NOB", heading: "Nobel Prizes", description: "Total Nobel Laureates", icon: NobelPrizeIcon, property: "nobels"},
   // { entityKind: "PRO", heading: "Professors", description: "Total university professors (past and present)", icon: SchoolTeacherIcon, property: "professors"},
   // { entityKind: "PHD", heading: "Doctorates", description: "Total qualified to doctoral level", icon: AcademicCapIcon, property: "doctorates"},
@@ -182,7 +189,7 @@ export default function Dashboard() {
     <main className="flex flex-col items-start m-4 gap-4">
       <Spinner loading={loading} className="absolute inset-0 bg-black/20 z-50" />
       <div className="flex flex-row items-center">
-        <ChartBarIcon className="w-8 h-8" />
+        <ChartColumnIcon className="w-8 h-8" />
         &nbsp;
         <h1>Dashboard</h1>
       </div>
@@ -235,7 +242,7 @@ export default function Dashboard() {
                 help="Refresh the table using the same filter settings."
                 onClick={() => refetch()}
               >
-                <RotateCw />
+                <RotateCwIcon />
               </ButtonEx>
             </div>
           </div>

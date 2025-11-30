@@ -19,7 +19,6 @@
 
 'use client'
 
-import { ListBulletIcon } from '@heroicons/react/24/outline'
 import CommentDetails from "@/app/ui/details/comment-details"
 import DataTable from "@/app/ui/data-table/data-table"
 import { columns } from "@/app/ui/tables/comment-columns"
@@ -31,6 +30,7 @@ import usePageLogic from "@/hooks/use-page-logic"
 import { CommentFieldValues } from '@/app/ui/validators/comment'
 import useCommentQueryFilter from '@/hooks/use-comment-query-filter'
 import { LoggerEx, page } from '@/lib/logger'
+import { MessagesSquareIcon } from 'lucide-react'
 
 const logger = new LoggerEx(page, "[Comments] ")
 
@@ -70,7 +70,7 @@ export default function Comments() {
   return (
     <main className="flex flex-col items-start m-4 gap-4">
       <div className="flex flex-row items-center">
-        <ListBulletIcon className="w-8 h-8"/>
+        <MessagesSquareIcon className="w-8 h-8"/>
         &nbsp;
         <h1>Comments</h1>
       </div>

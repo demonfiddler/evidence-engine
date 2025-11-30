@@ -23,7 +23,6 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import Spinner from "../misc/spinner";
 import { FormProvider, useForm } from "react-hook-form";
-import { ShieldExclamationIcon } from "@heroicons/react/24/outline";
 import { FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useCallback, useState } from "react";
@@ -31,6 +30,7 @@ import z from "zod/v4";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import useAuth from "@/hooks/use-auth";
 import { dialog, LoggerEx } from "@/lib/logger"
+import { LogInIcon, ShieldAlertIcon } from "lucide-react";
 
 const logger = new LoggerEx(dialog, "[SignInDialog] ")
 
@@ -68,17 +68,18 @@ export default function SignInDialog() {
   return (
     <Dialog open={signInOpen} onOpenChange={setSignInOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" className="text-md" disabled={!!user}>{user?.username ?? "Sign in"}</Button>
+        <Button variant="ghost" className="text-md" disabled={!!user}>
+          { user?.username ?? <span><LogInIcon className="inline" />&nbsp;Sign in</span> }
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <Spinner loading={loading} label="Signing in..." className="absolute inset-0 bg-black/20 z-50" />
         <FormProvider {...form}>
           <form>
             <DialogHeader>
-              <DialogTitle>Sign in</DialogTitle>
+              <DialogTitle><LogInIcon className="inline" />&nbsp;Sign in</DialogTitle>
               <DialogDescription>
-                <ShieldExclamationIcon className="w-6 h-6 inline" />
-                &nbsp;Provide your credentials then click &apos;Sign in&apos;.
+                Provide your credentials then click &apos;Sign in&apos;.
               </DialogDescription>
             </DialogHeader>
             <div className="grid grid-cols-1 gap-4">

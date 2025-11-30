@@ -51,7 +51,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import ButtonEx from "../ext/button-ex"
 import useAuth from "@/hooks/use-auth"
-import { ArrowDownTrayIcon } from "@heroicons/react/24/outline"
+import { DownloadIcon } from "lucide-react"
 
 const ctFileExt = {
   "text/csv": "csv",
@@ -195,12 +195,12 @@ export default function ExportDialog<T>({ recordKind }: { recordKind: RecordKind
           variant="ghost"
           help="Export (download) the table"
           title="Export (download) the table">
-          <ArrowDownTrayIcon />
+          <DownloadIcon />
         </ButtonEx>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Export {recordKind}s</DialogTitle>
+          <DialogTitle><DownloadIcon className="inline" />&nbsp;Export {recordKind}s</DialogTitle>
           <DialogDescription>
             Specify how to export the table.
           </DialogDescription>

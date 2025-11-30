@@ -42,8 +42,16 @@ import IPage from "@/app/model/IPage"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import useAuth from "@/hooks/use-auth"
 import { Textarea } from "@/components/ui/textarea"
-import { ArrowUturnLeftIcon, /*ListBulletIcon, */MagnifyingGlassIcon, PaperAirplaneIcon, PencilIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline"
-import { CircleChevronDownIcon } from "lucide-react"
+import {
+  CircleChevronDownIcon,
+  SearchIcon,
+  SendHorizontalIcon,
+  PencilIcon,
+  ReplyIcon,
+  Trash2Icon,
+  XIcon,
+  MessagesSquareIcon
+} from "lucide-react"
 import User from "@/app/model/User"
 import Spinner from "../misc/spinner"
 import { format } from "date-fns"
@@ -386,7 +394,7 @@ export default function CommentsDialog({
       <SheetContent className="w-100" onInteractOutside={(e) => e.preventDefault()}>
         <Spinner loading={loading} className="absolute inset-0 bg-black/20 z-50" />
         <SheetHeader className="border-b-1">
-          <SheetTitle>Comments</SheetTitle>
+          <SheetTitle><MessagesSquareIcon className="inline" />&nbsp;Comments</SheetTitle>
           {/* <SheetDescription></SheetDescription> */}
           <Collapsible
             open={commentFilterOpen}
@@ -409,7 +417,7 @@ export default function CommentsDialog({
                     onPressedChange={setCommentFilterOpen}
                     title="Toggle filter controls"
                   >
-                    <MagnifyingGlassIcon />
+                    <SearchIcon />
                   </Toggle>
                 </div>
               </CollapsibleTrigger>
@@ -481,7 +489,7 @@ export default function CommentsDialog({
                       disabled={isEditing()}
                       onClick={() => handleShowLog(comment)}
                     >
-                      <ListBulletIcon className="stroke-blue-400 stroke-2 size-4" />
+                      <FileClock className="stroke-blue-400 stroke-2 size-4" />
                     </Button> */}
                     {
                       canEdit(comment)
@@ -493,7 +501,7 @@ export default function CommentsDialog({
                           disabled={isEditing()}
                           onClick={() => handleDelete(comment)}
                         >
-                          <TrashIcon className="stroke-blue-400 stroke-2 size-4" />
+                          <Trash2Icon className="stroke-blue-400 stroke-2 size-4" />
                         </Button>
                         : null
                     }
@@ -521,7 +529,7 @@ export default function CommentsDialog({
                           disabled={isEditing()}
                           onClick={() => handleReply(comment)}
                         >
-                          <ArrowUturnLeftIcon className="stroke-blue-400 stroke-3 size-4" />
+                          <ReplyIcon className="stroke-blue-400 stroke-3 size-4" />
                         </Button>
                         : null
                     }
@@ -559,7 +567,7 @@ export default function CommentsDialog({
                             <span>{comment.text}</span>
                           </div>
                           <Button className="" variant="ghost" title="Cancel" onClick={handleCancel}>
-                            <XMarkIcon className="size-6" />
+                            <XIcon className="size-6" />
                           </Button>
                         </div>
                         : null
@@ -567,13 +575,13 @@ export default function CommentsDialog({
                     {
                       parent && !comment
                         ? <div className="flex gap-4 border-t-1 w-full">
-                          <ArrowUturnLeftIcon className="stroke-blue-400 stroke-4 size-8" />
+                          <ReplyIcon className="stroke-blue-400 stroke-4 size-8" />
                           <div className="flex flex-col grow">
                             <span className="font-bold text-blue-400">Reply to {formatName(parent.createdByUser, false)}</span>
                             <span className="text-nowrap overflow-hidden">{parent.text}</span>
                           </div>
                           <Button className="" variant="ghost" title="Cancel" onClick={handleCancel}>
-                            <XMarkIcon className="size-6" />
+                            <XIcon className="size-6" />
                           </Button>
                         </div>
                         : null
@@ -593,7 +601,7 @@ export default function CommentsDialog({
                         disabled={!canSave()}
                         onClick={handleSave}
                       >
-                        <PaperAirplaneIcon className="text-blue-400 fill-blue-100 size-8" />
+                        <SendHorizontalIcon className="text-blue-400 fill-blue-100 size-8" />
                       </Button>
                     </div>
                   </div>

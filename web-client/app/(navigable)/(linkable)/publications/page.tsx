@@ -19,7 +19,6 @@
 
 'use client'
 
-import { BeakerIcon } from '@heroicons/react/24/outline'
 import PublicationDetails from "@/app/ui/details/publication-details"
 import DataTable from "@/app/ui/data-table/data-table"
 import { columns } from "@/app/ui/tables/publication-columns"
@@ -33,6 +32,7 @@ import { LinkableEntityQueryFilter, PublicationInput } from '@/app/model/schema'
 import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter'
 import useLinkableEntityQueryFilter from '@/hooks/use-linkable-entity-query-filter'
 import { LoggerEx, page } from '@/lib/logger'
+import { FlaskConicalIcon } from 'lucide-react'
 
 const logger = new LoggerEx(page, "[Publications] ")
 
@@ -142,7 +142,7 @@ export default function Publications() {
   return (
     <main className="flex flex-col items-start m-4 gap-4">
       <div className="flex flex-row items-center">
-        <BeakerIcon className="w-8 h-8"/>
+        <FlaskConicalIcon className="w-8 h-8"/>
         &nbsp;
         <h1>Publications</h1>
       </div>

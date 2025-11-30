@@ -23,8 +23,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import Journal from "@/app/model/Journal"
 import { columns as trackedEntityColumns, columnVisibility as trackedEntityColumnVisibility } from "./tracked-entity-columns"
 import { actionColumn as rawActionColumn, selectColumn as rawSelectColumn } from "./extra-columns"
-import { Checkbox } from "@/components/ui/checkbox"
-import { SquareCheckIcon, SquareIcon, SquareMinusIcon } from "lucide-react"
+// import { SquareCheckIcon, SquareIcon, SquareMinusIcon } from "lucide-react"
 import CheckboxEx from "../ext/checkbox-ex"
 
 const actionColumn = rawActionColumn as ColumnDef<Journal>
