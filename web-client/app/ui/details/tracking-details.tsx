@@ -22,15 +22,36 @@
 import ITrackedEntity from "@/app/model/ITrackedEntity"
 import { Label } from "@/components/ui/label"
 import LogDialog from "../log/log-dialog"
-import RecordKind from "@/app/model/RecordKind"
+import { RecordKind } from "@/app/model/RecordKinds"
 import { DetailState } from "./detail-actions"
-import { formatDateTime, getRecordLabel } from "@/lib/utils"
+import { formatDateTime, getRecordKind, getRecordLabel } from "@/lib/utils"
 import InputEx from "../ext/input-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
 import { detail, LoggerEx } from "@/lib/logger"
 import CommentsDialog from "../dialog/comments-dialog"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import ButtonEx from "../ext/button-ex"
+import { useCallback, useContext, useMemo } from "react"
+import { toast } from "sonner"
+import { GlobalContext } from "@/lib/context"
+import useAuth from "@/hooks/use-auth"
+import { ChevronDownIcon } from "lucide-react"
+import { useMutation } from "@apollo/client/react"
+import { UPDATE_ENTITY_STATUS } from "@/lib/graphql-queries"
 
 const logger = new LoggerEx(detail, "[TrackingDetails] ")
+
+const statusCodeForVerb = {
+  draft: "DRA",
+  delete: "DEL",
+  publish: "PUB",
+  suspend: "SUS"
+}
 
 export default function TrackingDetails(
   {
@@ -42,7 +63,44 @@ export default function TrackingDetails(
     record: ITrackedEntity | undefined
     state: DetailState
   }) {
+  const {hasAuthority} = useAuth()
+  const {setStatusDialogOpen, setStatusDialogItem} = useContext(GlobalContext)
+  const recordLabel = useMemo(() => getRecordLabel(recordKind, record), [recordKind, record])
+  const [updateStatusOp/*, updateStatusResult*/] = useMutation(UPDATE_ENTITY_STATUS, {refetchQueries: [/*readRecordsQuery*/]})
+
   logger.debug("render")
+
+  const handleChangeStatus = useCallback((verb: string) => {
+    if (!record)
+      return
+
+    switch (verb) {
+      case "delete":
+      case "draft":
+      case "suspend":
+        if (confirm(`Confirm ${verb} '${recordLabel}'?`)) {
+          const status = statusCodeForVerb[verb]
+          toast.info(`Changing '${recordLabel}' status to ${status}...`)
+          updateStatusOp({
+            variables: {
+              entityId: record.id,
+              status
+            },
+            onCompleted: (/*data, clientOptions*/) => {
+              toast.info(`'${recordLabel}' status changed to ${status}`)
+            },
+            onError: (error/*, clientOptions*/) => {
+              toast.error(error.message)
+            }
+          })
+        }
+        break
+      case "publish":
+        setStatusDialogOpen(true)
+        setStatusDialogItem(0)
+        break
+    }
+  }, [])
 
   return (
     <div className="w-full grid grid-cols-5 mb-2 gap-2">
@@ -108,6 +166,30 @@ export default function TrackingDetails(
         value={formatDateTime(record?.created)}
         help="The date and time at which the record was created"
       />
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <ButtonEx 
+            outerClassName="place-self-center"
+            className="w-35 bg-blue-500 text-white text-md"
+            variant="outline"
+            disabled={!hasAuthority("UPD") || !record}
+            help={
+              record
+              ? `Change status of '${recordLabel}'`
+              : `No ${recordKind} selected`
+            }
+          >
+            Status
+            <ChevronDownIcon className="inline"/>
+          </ButtonEx>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem disabled={record?.status === "Draft"} onClick={() => handleChangeStatus("draft")}>Draft</DropdownMenuItem>
+          <DropdownMenuItem disabled={record?.status === "Deleted"} onClick={() => handleChangeStatus("delete")}>Delete</DropdownMenuItem>
+          <DropdownMenuItem disabled={record?.status === "Suspended"} onClick={() => handleChangeStatus("suspend")}>Suspend</DropdownMenuItem>
+          <DropdownMenuItem disabled={record?.status === "Published"} onClick={() => handleChangeStatus("publish")}>Publish...</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
       <Label htmlFor="updated-by" className="col-start-1">Updated by:</Label>
       <InputEx
         id="updated-by"

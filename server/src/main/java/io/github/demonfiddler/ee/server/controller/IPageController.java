@@ -54,10 +54,10 @@ public class IPageController {
 		// Registering the data loaders is useless if @BatchMapping is used. But we need it here, for backward
 		// compatibility with code developed against previous plugin versions
 		registry.forTypePair(Long.class, IPage.class).registerMappedBatchLoader((keysSet, env) -> {
-			List<java.lang.Long> keys = new ArrayList<>(keysSet.size());
+			List<Long> keys = new ArrayList<>(keysSet.size());
 			keys.addAll(keysSet);
 			return Mono.fromCallable(() -> {
-				Map<java.lang.Long, IPage> map = new HashMap<>();
+				Map<Long, IPage> map = new HashMap<>();
 				// Values are returned in the same order as the keys list
 				List<IPage> values = this.dataFetchersDelegateIPage.batchLoader(keys, env);
 				for (int i = 0; i < keys.size(); i += 1) {

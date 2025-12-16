@@ -19,7 +19,7 @@
 
 'use client'
 
-import RecordKind from "@/app/model/RecordKind"
+import { RecordKind } from "@/app/model/RecordKinds"
 import { GlobalContext } from "@/lib/context"
 import { usePathname, useSearchParams } from "next/navigation"
 import { useCallback, useContext, useEffect, useRef, useState } from "react"
@@ -213,7 +213,7 @@ export default function ExportDialog<T>({ recordKind }: { recordKind: RecordKind
         </DialogHeader>
         <Spinner loading={isLoading} label="Exporting..." />
         <div className="flex gap-2">
-          <fieldset className="grow border-1 rounded-md p-2">
+          <fieldset className="grow border rounded-md p-2">
             <legend>Format</legend>
             <RadioGroup value={contentType} onValueChange={value => setContentType(value as ContentType)}>
               <div className="flex gap-2">
@@ -238,7 +238,7 @@ export default function ExportDialog<T>({ recordKind }: { recordKind: RecordKind
               </div>
             </RadioGroup>
           </fieldset>
-          <fieldset className="grow flex flex-col border-1 rounded-md p-2 gap-2">
+          <fieldset className="grow flex flex-col border rounded-md p-2 gap-2">
             <legend>Include</legend>
             <div className="flex gap-2">
               <Checkbox
@@ -258,7 +258,7 @@ export default function ExportDialog<T>({ recordKind }: { recordKind: RecordKind
               <Label htmlFor="render-details">Details</Label>
             </div>
           </fieldset>
-          <fieldset className="grow border-1 rounded-md p-2">
+          <fieldset className="grow border rounded-md p-2">
             <legend>Pages</legend>
             <RadioGroup value={pages} onValueChange={setPages}>
               <div className="flex gap-2">
@@ -273,7 +273,7 @@ export default function ExportDialog<T>({ recordKind }: { recordKind: RecordKind
           </fieldset>
         </div>
         <div className="flex gap-2">
-          <fieldset className="grow border-1 rounded-md p-2">
+          <fieldset className="grow border rounded-md p-2">
             <legend>Paper Size</legend>
             <RadioGroup
               value={paper}
@@ -289,7 +289,7 @@ export default function ExportDialog<T>({ recordKind }: { recordKind: RecordKind
               </div>
             </RadioGroup>
           </fieldset>
-          <fieldset className="grow border-1 rounded-md p-2">
+          <fieldset className="grow border rounded-md p-2">
             <legend>Orientation</legend>
             <RadioGroup
               value={orientation}
@@ -306,7 +306,7 @@ export default function ExportDialog<T>({ recordKind }: { recordKind: RecordKind
               </div>
             </RadioGroup>
           </fieldset>
-          <fieldset className="grow border-1 rounded-md p-2">
+          <fieldset className="grow border rounded-md p-2">
             <legend>Font Size</legend>
             <Select value={fontSize} onValueChange={setFontSize}>
               <SelectTrigger id="font-size"

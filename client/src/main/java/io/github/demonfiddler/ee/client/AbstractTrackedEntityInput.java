@@ -34,7 +34,7 @@ public abstract class AbstractTrackedEntityInput extends AbstractBaseEntityInput
 	//   * A five-star rating for the link, indicative of significancce, credibility, evidence base, etc.
  	//  */
 	// @JsonProperty("rating")
-	// public void setRating(java.lang.Integer rating) {
+	// public void setRating(Integer rating) {
 	// 	this.rating = rating;
 	// }
 

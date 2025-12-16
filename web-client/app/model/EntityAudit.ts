@@ -17,20 +17,31 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-type RecordKind =
-  "None" |
-  "Claim" |
-  "Comment" |
-  "Declaration" |
-  "RecordLink" |
-  "Group" |
-  "Journal" |
-  "Log" |
-  "Person" |
-  "Publication" |
-  "Publisher" |
-  "Quotation" |
-  "Topic" |
-  "User"
+import FieldAudit from "./FieldAudit";
+import ITrackedEntity from "./ITrackedEntity";
+import LinkAudit from "./LinkAudit";
 
-export default RecordKind
+/**
+ * Holds aggregated audit information for an entity.
+ */
+export default interface EntityAudit {
+	/**
+	 * The entity to which the audit relates.
+	 */
+	entity: ITrackedEntity
+
+	/**
+	 * Link audit information. Only populated if entity is an ILinkableEntity
+	 */
+	linkAudit: LinkAudit
+
+	/**
+	 * Field audit information.
+	 */
+	fieldAudit: FieldAudit
+
+	/**
+	 * Whether the entity meets the standard required for publication.
+	 */
+	pass: boolean
+}

@@ -54,7 +54,7 @@ import CheckboxEx from "../ext/checkbox-ex"
 import TextareaEx from "../ext/textarea-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
 import { detail, LoggerEx } from "@/lib/logger"
-import { CalendarIcon } from "lucide-react"
+import { CalendarIcon, NotebookTabsIcon } from "lucide-react"
 
 const countries = rawCountries as unknown as Country[]
 // import { useQuery } from "@apollo/client/react"
@@ -98,13 +98,7 @@ export default function DeclarationDetails(
       <Form {...form}>
         <form>
           <FormDescription>
-            <span className="text-lg pt-2 pb-4">
-              &nbsp;&nbsp;{state.mode == "create"
-                ? "Details for new Declaration"
-                : record
-                  ? `Details for selected Declaration #${record?.id}`
-                  : "-Select a Declaration in the list above to see its details-"
-            }</span>
+            <span className="text-black text-lg ml-2"><NotebookTabsIcon className="inline" />&nbsp;Details</span>
           </FormDescription>
           <div className="grid grid-cols-3 ml-2 mr-2 mt-4 mb-4 gap-4 items-start">
             <FormField

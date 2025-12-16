@@ -57,6 +57,7 @@ import io.github.demonfiddler.ee.client.EntityLink;
 import io.github.demonfiddler.ee.client.EntityLinkInput;
 import io.github.demonfiddler.ee.client.Group;
 import io.github.demonfiddler.ee.client.GroupInput;
+import io.github.demonfiddler.ee.client.ITrackedEntity;
 import io.github.demonfiddler.ee.client.Journal;
 import io.github.demonfiddler.ee.client.JournalInput;
 import io.github.demonfiddler.ee.client.Mutation;
@@ -1722,6 +1723,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 		parameterValues = { "[COM]" })
 	public Mono<Optional<Comment>> createCommentWithBindValues(ObjectResponse objectResponse, CommentInput comment,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Executing mutation 'createComment' with parameters: {} ", comment);
 		} else if (LOGGER.isDebugEnabled()) {
@@ -4383,6 +4385,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 		parameterValues = { "[CRE]" })
 	public Mono<Optional<Journal>> createJournalWithBindValues(ObjectResponse objectResponse, JournalInput journal,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Executing mutation 'createJournal' with parameters: {} ", journal);
 		} else if (LOGGER.isDebugEnabled()) {
@@ -9485,12 +9488,12 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
 	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
 	 * 
-	 * 		Mono<Boolean> mono = executor.setEntityStatusWithBindValues(
+	 * 		Mono<ITrackedEntity> mono = executor.setEntityStatusWithBindValues(
 	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
 	 * 			entityId, // A value for setEntityStatus's entityId input parameter
 	 * 			status, // A value for setEntityStatus's status input parameter
 	 * 			params);
-	 * 		Boolean field = mono.block();
+	 * 		ITrackedEntity field = mono.block();
 	 * 	}
 	 * 
 	 * }
@@ -9513,12 +9516,13 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLScalar(fieldName = "setEntityStatus", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class)
+	@GraphQLNonScalar(fieldName = "setEntityStatus", graphQLTypeSimpleName = "ITrackedEntity",
+		javaClass = ITrackedEntity.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
-	public Mono<Optional<Boolean>> setEntityStatusWithBindValues(String queryResponseDef, Long entityId,
+	public Mono<Optional<ITrackedEntity>> setEntityStatusWithBindValues(String queryResponseDef, Long entityId,
 		StatusKind status, Map<String, Object> parameters)
-		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 
 		LOGGER.debug("Executing mutation 'setEntityStatus': {} ", queryResponseDef);
 		ObjectResponse objectResponse =
@@ -9541,14 +9545,14 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * 	MutationExecutor executor;
 	 * 
 	 * 	void myMethod() {
-	 * 		Mono<Boolean> mono = executor.setEntityStatus(
+	 * 		Mono<ITrackedEntity> mono = executor.setEntityStatus(
 	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
 	 * 			entityId, // A value for setEntityStatus's entityId input parameter
 	 * 			status, // A value for setEntityStatus's status input parameter
 	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
-	 * 		Boolean field = mono.block();
+	 * 		ITrackedEntity field = mono.block();
 	 * 	}
 	 * 
 	 * }
@@ -9572,11 +9576,12 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLScalar(fieldName = "setEntityStatus", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class)
+	@GraphQLNonScalar(fieldName = "setEntityStatus", graphQLTypeSimpleName = "ITrackedEntity",
+		javaClass = ITrackedEntity.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
-	public Mono<Optional<Boolean>> setEntityStatus(String queryResponseDef, Long entityId, StatusKind status,
-		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+	public Mono<Optional<ITrackedEntity>> setEntityStatus(String queryResponseDef, Long entityId, StatusKind status,
+		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 
 		LOGGER.debug("Executing mutation 'setEntityStatus': {} ", queryResponseDef);
 		ObjectResponse objectResponse =
@@ -9610,15 +9615,15 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * 	}
 	 * 
 	 * 	void myMethod() {
-	 * 		Mono<Boolean> mono = executor.setEntityStatusWithBindValues(preparedRequest, entityKind, // A value for
-	 * 																									// setEntityStatus's
-	 * 																									// entityKind
-	 * 																									// input
-	 * 																									// parameter
-	 * 			entityId, // A value for setEntityStatus's entityId input parameter
+	 * 		Mono<ITrackedEntity> mono = executor.setEntityStatusWithBindValues(preparedRequest, entityId, // A value
+	 * 																										// for
+	 * 																										// setEntityStatus's
+	 * 																										// entityId
+	 * 																										// input
+	 * 																										// parameter
 	 * 			status, // A value for setEntityStatus's status input parameter
 	 * 			params);
-	 * 		Boolean field = mono.block();
+	 * 		ITrackedEntity field = mono.block();
 	 * 	}
 	 * 
 	 * }
@@ -9636,10 +9641,12 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLScalar(fieldName = "setEntityStatus", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class)
+	@GraphQLNonScalar(fieldName = "setEntityStatus", graphQLTypeSimpleName = "ITrackedEntity",
+		javaClass = ITrackedEntity.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
-	public Mono<Optional<Boolean>> setEntityStatusWithBindValues(ObjectResponse objectResponse, Long entityId,
+	@SuppressWarnings("static-method")
+	public Mono<Optional<ITrackedEntity>> setEntityStatusWithBindValues(ObjectResponse objectResponse, Long entityId,
 		StatusKind status, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 
 		if (LOGGER.isTraceEnabled()) {
@@ -9682,13 +9689,15 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * 	}
 	 * 
 	 * 	void myMethod() {
-	 * 		Mono<Boolean> mono = executor.setEntityStatus(preparedRequest, entityId, // A value for setEntityStatus's
-	 * 																					// entityId input parameter
+	 * 		Mono<ITrackedEntity> mono = executor.setEntityStatus(preparedRequest, entityId, // A value for
+	 * 																						// setEntityStatus's
+	 * 																						// entityId input
+	 * 																						// parameter
 	 * 			status, // A value for setEntityStatus's status input parameter
 	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
 	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
-	 * 		Boolean field = mono.block();
+	 * 		ITrackedEntity field = mono.block();
 	 * 	}
 	 * 
 	 * }
@@ -9709,11 +9718,12 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
-	@GraphQLScalar(fieldName = "setEntityStatus", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class)
+	@GraphQLNonScalar(fieldName = "setEntityStatus", graphQLTypeSimpleName = "ITrackedEntity",
+		javaClass = ITrackedEntity.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
-	public Mono<Optional<Boolean>> setEntityStatus(ObjectResponse objectResponse, Long entityId, StatusKind status,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+	public Mono<Optional<ITrackedEntity>> setEntityStatus(ObjectResponse objectResponse, Long entityId,
+		StatusKind status, Object... paramsAndValues) throws GraphQLRequestExecutionException {
 
 		if (LOGGER.isTraceEnabled()) {
 			StringBuilder sb = new StringBuilder();
@@ -9742,16 +9752,16 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 
 	/**
 	 * Sets entity status.<br/>
-	 * Get the {@link Builder} for the Boolean, as expected by the setEntityStatus query/mutation.
+	 * Get the {@link Builder} for the ITrackedEntity, as expected by the setEntityStatus query/mutation.
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
 	public Builder getSetEntityStatusResponseBuilder() throws GraphQLRequestPreparationException {
 		return new Builder(this.graphQlClient, GraphQLReactiveRequest.class, "setEntityStatus", RequestType.mutation,
-			InputParameter.newBindParameter("", "entityId", "mutationSetEntityStatusEntityId", MANDATORY, "ID", true, 0,
-				false),
-			InputParameter.newBindParameter("", "status", "mutationSetEntityStatusStatus", MANDATORY, "StatusKind",
-				true, 0, false));
+			InputParameter.newBindParameter("", "entityId", "mutationSetEntityStatusEntityId",
+				InputParameterType.MANDATORY, "ID", true, 0, false),
+			InputParameter.newBindParameter("", "status", "mutationSetEntityStatusStatus", InputParameterType.MANDATORY,
+				"StatusKind", true, 0, false));
 	}
 
 	/**
@@ -9768,10 +9778,10 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 		throws GraphQLRequestPreparationException {
 
 		return new GraphQLReactiveRequest(this.graphQlClient, partialRequest, RequestType.mutation, "setEntityStatus",
-			InputParameter.newBindParameter("", "entityId", "mutationSetEntityStatusEntityId", MANDATORY, "ID", true, 0,
-				false),
-			InputParameter.newBindParameter("", "status", "mutationSetEntityStatusStatus", MANDATORY, "StatusKind",
-				true, 0, false));
+			InputParameter.newBindParameter("", "entityId", "mutationSetEntityStatusEntityId",
+				InputParameterType.MANDATORY, "ID", true, 0, false),
+			InputParameter.newBindParameter("", "status", "mutationSetEntityStatusStatus", InputParameterType.MANDATORY,
+				"StatusKind", true, 0, false));
 	}
 
 	/**
@@ -11885,6 +11895,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<Group>> createGroupWithBindValues(String queryResponseDef, GroupInput group,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+
 		LOGGER.debug("Executing mutation 'createGroup': {} ", queryResponseDef);
 		ObjectResponse objectResponse = getCreateGroupResponseBuilder().withQueryResponseDef(queryResponseDef).build();
 		return createGroupWithBindValues(objectResponse, group, parameters);
@@ -11939,6 +11950,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<Group>> createGroup(String queryResponseDef, GroupInput group, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+
 		LOGGER.debug("Executing mutation 'createGroup': {} ", queryResponseDef);
 		ObjectResponse objectResponse = getCreateGroupResponseBuilder().withQueryResponseDef(queryResponseDef).build();
 		return createGroupWithBindValues(objectResponse, group,
@@ -11997,6 +12009,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<Group>> createGroupWithBindValues(ObjectResponse objectResponse, GroupInput group,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Executing mutation 'createGroup' with parameters: {} ", group);
 		} else if (LOGGER.isDebugEnabled()) {
@@ -12068,6 +12081,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<Group>> createGroup(ObjectResponse objectResponse, GroupInput group, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
+
 		if (LOGGER.isTraceEnabled()) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("Executing mutation 'createGroup' with bind variables: ");
@@ -12117,6 +12131,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	public GraphQLReactiveRequest getCreateGroupGraphQLRequest(String partialRequest)
 		throws GraphQLRequestPreparationException {
+
 		return new GraphQLReactiveRequest(this.graphQlClient, partialRequest, RequestType.mutation, "createGroup",
 			InputParameter.newBindParameter("", "group", "mutationCreateGroupGroup", InputParameterType.MANDATORY,
 				"GroupInput", true, 0, false));
@@ -12171,6 +12186,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<Group>> updateGroupWithBindValues(String queryResponseDef, GroupInput group,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+
 		LOGGER.debug("Executing mutation 'updateGroup': {} ", queryResponseDef);
 		ObjectResponse objectResponse = getUpdateGroupResponseBuilder().withQueryResponseDef(queryResponseDef).build();
 		return updateGroupWithBindValues(objectResponse, group, parameters);
@@ -12225,6 +12241,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<Group>> updateGroup(String queryResponseDef, GroupInput group, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+
 		LOGGER.debug("Executing mutation 'updateGroup': {} ", queryResponseDef);
 		ObjectResponse objectResponse = getUpdateGroupResponseBuilder().withQueryResponseDef(queryResponseDef).build();
 		return updateGroupWithBindValues(objectResponse, group,
@@ -12283,6 +12300,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<Group>> updateGroupWithBindValues(ObjectResponse objectResponse, GroupInput group,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Executing mutation 'updateGroup' with parameters: {} ", group);
 		} else if (LOGGER.isDebugEnabled()) {
@@ -12354,6 +12372,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 		parameterValues = { "[ADM]" })
 	public Mono<Optional<Group>> updateGroup(ObjectResponse objectResponse, GroupInput group, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
+
 		if (LOGGER.isTraceEnabled()) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("Executing mutation 'updateGroup' with bind variables: ");
@@ -12403,6 +12422,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	public GraphQLReactiveRequest getUpdateGroupGraphQLRequest(String partialRequest)
 		throws GraphQLRequestPreparationException {
+
 		return new GraphQLReactiveRequest(this.graphQlClient, partialRequest, RequestType.mutation, "updateGroup",
 			InputParameter.newBindParameter("", "group", "mutationUpdateGroupGroup", InputParameterType.MANDATORY,
 				"GroupInput", true, 0, false));
@@ -12455,8 +12475,9 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLNonScalar(fieldName = "deleteGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<Group>> deleteGroupWithBindValues(String queryResponseDef, String groupId,
+	public Mono<Optional<Group>> deleteGroupWithBindValues(String queryResponseDef, Long groupId,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+
 		LOGGER.debug("Executing mutation 'deleteGroup': {} ", queryResponseDef);
 		ObjectResponse objectResponse = getDeleteGroupResponseBuilder().withQueryResponseDef(queryResponseDef).build();
 		return deleteGroupWithBindValues(objectResponse, groupId, parameters);
@@ -12509,8 +12530,9 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLNonScalar(fieldName = "deleteGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<Group>> deleteGroup(String queryResponseDef, String groupId, Object... paramsAndValues)
+	public Mono<Optional<Group>> deleteGroup(String queryResponseDef, Long groupId, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+
 		LOGGER.debug("Executing mutation 'deleteGroup': {} ", queryResponseDef);
 		ObjectResponse objectResponse = getDeleteGroupResponseBuilder().withQueryResponseDef(queryResponseDef).build();
 		return deleteGroupWithBindValues(objectResponse, groupId,
@@ -12567,8 +12589,9 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLNonScalar(fieldName = "deleteGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<Group>> deleteGroupWithBindValues(ObjectResponse objectResponse, String groupId,
+	public Mono<Optional<Group>> deleteGroupWithBindValues(ObjectResponse objectResponse, Long groupId,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Executing mutation 'deleteGroup' with parameters: {} ", groupId);
 		} else if (LOGGER.isDebugEnabled()) {
@@ -12638,8 +12661,9 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLNonScalar(fieldName = "deleteGroup", graphQLTypeSimpleName = "Group", javaClass = Group.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<Group>> deleteGroup(ObjectResponse objectResponse, String groupId, Object... paramsAndValues)
+	public Mono<Optional<Group>> deleteGroup(ObjectResponse objectResponse, Long groupId, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
+
 		if (LOGGER.isTraceEnabled()) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("Executing mutation 'deleteGroup' with bind variables: ");
@@ -12689,6 +12713,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	public GraphQLReactiveRequest getDeleteGroupGraphQLRequest(String partialRequest)
 		throws GraphQLRequestPreparationException {
+
 		return new GraphQLReactiveRequest(this.graphQlClient, partialRequest, RequestType.mutation, "deleteGroup",
 			InputParameter.newBindParameter("", "groupId", "mutationDeleteGroupGroupId", InputParameterType.MANDATORY,
 				"ID", true, 0, false));
@@ -12743,8 +12768,9 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLNonScalar(fieldName = "addGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<Group>> addGroupMemberWithBindValues(String queryResponseDef, String groupId, String userId,
+	public Mono<Optional<Group>> addGroupMemberWithBindValues(String queryResponseDef, Long groupId, Long userId,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+
 		LOGGER.debug("Executing mutation 'addGroupMember': {} ", queryResponseDef);
 		ObjectResponse objectResponse =
 			getAddGroupMemberResponseBuilder().withQueryResponseDef(queryResponseDef).build();
@@ -12800,8 +12826,9 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLNonScalar(fieldName = "addGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<Group>> addGroupMember(String queryResponseDef, String groupId, String userId,
+	public Mono<Optional<Group>> addGroupMember(String queryResponseDef, Long groupId, Long userId,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+
 		LOGGER.debug("Executing mutation 'addGroupMember': {} ", queryResponseDef);
 		ObjectResponse objectResponse =
 			getAddGroupMemberResponseBuilder().withQueryResponseDef(queryResponseDef).build();
@@ -12862,8 +12889,9 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLNonScalar(fieldName = "addGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<Group>> addGroupMemberWithBindValues(ObjectResponse objectResponse, String groupId,
-		String userId, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+	public Mono<Optional<Group>> addGroupMemberWithBindValues(ObjectResponse objectResponse, Long groupId, Long userId,
+		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Executing mutation 'addGroupMember' with parameters: {}, {} ", groupId, userId);
 		} else if (LOGGER.isDebugEnabled()) {
@@ -12936,8 +12964,9 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLNonScalar(fieldName = "addGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<Group>> addGroupMember(ObjectResponse objectResponse, String groupId, String userId,
+	public Mono<Optional<Group>> addGroupMember(ObjectResponse objectResponse, Long groupId, Long userId,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+
 		if (LOGGER.isTraceEnabled()) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("Executing mutation 'addGroupMember' with bind variables: ");
@@ -13046,8 +13075,9 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLNonScalar(fieldName = "removeGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<Group>> removeGroupMemberWithBindValues(String queryResponseDef, String groupId, String userId,
+	public Mono<Optional<Group>> removeGroupMemberWithBindValues(String queryResponseDef, Long groupId, Long userId,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+
 		LOGGER.debug("Executing mutation 'removeGroupMember': {} ", queryResponseDef);
 		ObjectResponse objectResponse =
 			getRemoveGroupMemberResponseBuilder().withQueryResponseDef(queryResponseDef).build();
@@ -13103,8 +13133,9 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLNonScalar(fieldName = "removeGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<Group>> removeGroupMember(String queryResponseDef, String groupId, String userId,
+	public Mono<Optional<Group>> removeGroupMember(String queryResponseDef, Long groupId, Long userId,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+
 		LOGGER.debug("Executing mutation 'removeGroupMember': {} ", queryResponseDef);
 		ObjectResponse objectResponse =
 			getRemoveGroupMemberResponseBuilder().withQueryResponseDef(queryResponseDef).build();
@@ -13165,8 +13196,9 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLNonScalar(fieldName = "removeGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<Group>> removeGroupMemberWithBindValues(ObjectResponse objectResponse, String groupId,
-		String userId, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+	public Mono<Optional<Group>> removeGroupMemberWithBindValues(ObjectResponse objectResponse, Long groupId,
+		Long userId, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Executing mutation 'removeGroupMember' with parameters: {}, {} ", groupId, userId);
 		} else if (LOGGER.isDebugEnabled()) {
@@ -13240,8 +13272,9 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLNonScalar(fieldName = "removeGroupMember", graphQLTypeSimpleName = "Group", javaClass = Group.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<Group>> removeGroupMember(ObjectResponse objectResponse, String groupId, String userId,
+	public Mono<Optional<Group>> removeGroupMember(ObjectResponse objectResponse, Long groupId, Long userId,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+
 		if (LOGGER.isTraceEnabled()) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("Executing mutation 'removeGroupMember' with bind variables: ");
@@ -13351,9 +13384,10 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLNonScalar(fieldName = "grantGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<Group>> grantGroupAuthoritiesWithBindValues(String queryResponseDef, String groupId,
+	public Mono<Optional<Group>> grantGroupAuthoritiesWithBindValues(String queryResponseDef, Long groupId,
 		List<AuthorityKind> authorities, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+
 		LOGGER.debug("Executing mutation 'grantGroupAuthorities': {} ", queryResponseDef);
 		ObjectResponse objectResponse =
 			getGrantGroupAuthoritiesResponseBuilder().withQueryResponseDef(queryResponseDef).build();
@@ -13409,9 +13443,10 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLNonScalar(fieldName = "grantGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<Group>> grantGroupAuthorities(String queryResponseDef, String groupId,
+	public Mono<Optional<Group>> grantGroupAuthorities(String queryResponseDef, Long groupId,
 		List<AuthorityKind> authorities, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+
 		LOGGER.debug("Executing mutation 'grantGroupAuthorities': {} ", queryResponseDef);
 		ObjectResponse objectResponse =
 			getGrantGroupAuthoritiesResponseBuilder().withQueryResponseDef(queryResponseDef).build();
@@ -13473,8 +13508,9 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLNonScalar(fieldName = "grantGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<Group>> grantGroupAuthoritiesWithBindValues(ObjectResponse objectResponse, String groupId,
+	public Mono<Optional<Group>> grantGroupAuthoritiesWithBindValues(ObjectResponse objectResponse, Long groupId,
 		List<AuthorityKind> authorities, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Executing mutation 'grantGroupAuthorities' with parameters: {}, {} ", groupId, authorities);
 		} else if (LOGGER.isDebugEnabled()) {
@@ -13549,8 +13585,9 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLNonScalar(fieldName = "grantGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<Group>> grantGroupAuthorities(ObjectResponse objectResponse, String groupId,
+	public Mono<Optional<Group>> grantGroupAuthorities(ObjectResponse objectResponse, Long groupId,
 		List<AuthorityKind> authorities, Object... paramsAndValues) throws GraphQLRequestExecutionException {
+
 		if (LOGGER.isTraceEnabled()) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("Executing mutation 'grantGroupAuthorities' with bind variables: ");
@@ -13663,9 +13700,10 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLNonScalar(fieldName = "revokeGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<Group>> revokeGroupAuthoritiesWithBindValues(String queryResponseDef, String groupId,
+	public Mono<Optional<Group>> revokeGroupAuthoritiesWithBindValues(String queryResponseDef, Long groupId,
 		List<AuthorityKind> authorities, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+
 		LOGGER.debug("Executing mutation 'revokeGroupAuthorities': {} ", queryResponseDef);
 		ObjectResponse objectResponse =
 			getRevokeGroupAuthoritiesResponseBuilder().withQueryResponseDef(queryResponseDef).build();
@@ -13722,9 +13760,10 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLNonScalar(fieldName = "revokeGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<Group>> revokeGroupAuthorities(String queryResponseDef, String groupId,
+	public Mono<Optional<Group>> revokeGroupAuthorities(String queryResponseDef, Long groupId,
 		List<AuthorityKind> authorities, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+
 		LOGGER.debug("Executing mutation 'revokeGroupAuthorities': {} ", queryResponseDef);
 		ObjectResponse objectResponse =
 			getRevokeGroupAuthoritiesResponseBuilder().withQueryResponseDef(queryResponseDef).build();
@@ -13787,8 +13826,9 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLNonScalar(fieldName = "revokeGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<Group>> revokeGroupAuthoritiesWithBindValues(ObjectResponse objectResponse, String groupId,
+	public Mono<Optional<Group>> revokeGroupAuthoritiesWithBindValues(ObjectResponse objectResponse, Long groupId,
 		List<AuthorityKind> authorities, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Executing mutation 'revokeGroupAuthorities' with parameters: {}, {} ", groupId, authorities);
 		} else if (LOGGER.isDebugEnabled()) {
@@ -13864,8 +13904,9 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLNonScalar(fieldName = "revokeGroupAuthorities", graphQLTypeSimpleName = "Group", javaClass = Group.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[ADM]" })
-	public Mono<Optional<Group>> revokeGroupAuthorities(ObjectResponse objectResponse, String groupId,
+	public Mono<Optional<Group>> revokeGroupAuthorities(ObjectResponse objectResponse, Long groupId,
 		List<AuthorityKind> authorities, Object... paramsAndValues) throws GraphQLRequestExecutionException {
+
 		if (LOGGER.isTraceEnabled()) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("Executing mutation 'revokeGroupAuthorities' with bind variables: ");

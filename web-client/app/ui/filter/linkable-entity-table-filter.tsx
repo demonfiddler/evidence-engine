@@ -34,7 +34,7 @@ import LabelEx from "../ext/label-ex"
 import useAuth from "@/hooks/use-auth"
 import InputEx from "../ext/input-ex"
 import { RotateCwIcon } from "lucide-react"
-import RecordKind from "@/app/model/RecordKind"
+import { LinkableEntityKind, RecordKind } from "@/app/model/RecordKinds"
 import { filter, LoggerEx } from "@/lib/logger"
 import { anything } from "@/types/types"
 import ExportDialog from "../dialog/export-dialog"
@@ -85,7 +85,8 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
           leFilter.recursive = masterTopicRecursive
         }
         if (masterRecordId) {
-          const [, otherRecordKindProperty,, otherRecordIdProperty] = getRecordLinkProperties(recordKind, masterRecordKind)
+          const [, otherRecordKindProperty,, otherRecordIdProperty] =
+            getRecordLinkProperties(recordKind as LinkableEntityKind, masterRecordKind as LinkableEntityKind)
           if (otherRecordIdProperty) {
             leFilter[otherRecordKindProperty as LinkableEntityQueryFilterIdProperty] = getEntityKind(masterRecordKind)
             leFilter[otherRecordIdProperty as LinkableEntityQueryFilterIdProperty] = masterRecordId

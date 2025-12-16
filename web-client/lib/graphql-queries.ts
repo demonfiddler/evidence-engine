@@ -100,11 +100,12 @@ fragment trackedEntityFieldsPolymorphic on ITrackedEntity {
 
 const FRAGMENT_LINKED_ENTITY_FIELDS = gql`
 fragment linkedEntityFields on ILinkableEntity {
-  ... on IBaseEntity {
+  ...on IBaseEntity {
     id
   }
-  ... on ITrackedEntity {
+  ...on ITrackedEntity {
     entityKind
+    status
   }
   ...on Claim {
     text
@@ -132,10 +133,10 @@ fragment linkedEntityFields on ILinkableEntity {
 
 const FRAGMENT_LABEL_FIELDS = gql`
 fragment labelFields on ITrackedEntity {
-  ... on IBaseEntity {
+  ...on IBaseEntity {
     id
   }
-  ... on ITrackedEntity {
+  ...on ITrackedEntity {
     entityKind
   }
   ...on Claim {
@@ -183,77 +184,23 @@ fragment labelFields on ITrackedEntity {
 const FRAGMENT_LINKABLE_ENTITY_FIELDS = gql`
 fragment linkableEntityFields on ILinkableEntity {
   fromEntityLinks
-  # (
-  #   filter: {
-  #     topicId: 0
-  #     recursive: false
-  #     fromEntityKind: CLA
-  #     fromEntityId: 0
-  #     toEntityKind: PUB
-  #     toEntityId: 0
-  #     status: [DRA]
-  #     text: "test"
-  #     advancedSearch: false
-  #   }
-  #   pageSort: {
-  #     sort: {
-  #       orders: [
-  #         {
-  #           property: "id"
-  #           direction: ASC
-  #           ignoreCase: false
-  #           nullHandling: NATIVE
-  #         }
-  #       ]
-  #     }
-  #   }
-  # )
   {
-    # ...pageFields
     content {
-      id
+      ...trackedEntityFields
       toEntity {
         ...linkedEntityFields
       }
-      ...trackedEntityFields
       fromEntityLocations
       toEntityLocations
     }
   }
   toEntityLinks
-  # (
-  #   filter: {
-  #     topicId: 0
-  #     recursive: false
-  #     fromEntityKind: CLA
-  #     fromEntityId: 0
-  #     toEntityKind: PUB
-  #     toEntityId: 0
-  #     status: [DRA]
-  #     text: "test"
-  #     advancedSearch: false
-  #   }
-  #   pageSort: {
-  #     sort: {
-  #       orders: [
-  #         {
-  #           property: "id"
-  #           direction: ASC
-  #           ignoreCase: false
-  #           nullHandling: NATIVE
-  #         }
-  #       ]
-  #     }
-  #   }
-  # )
   {
-    # ...pageFields
     content {
-      id
+      ...trackedEntityFields
       fromEntity {
         ...linkedEntityFields
       }
-      ...trackedEntityFields
       fromEntityLocations
       toEntityLocations
     }
@@ -281,9 +228,54 @@ fragment linkableEntityFieldsPolymorphic on ILinkableEntity {
   ...on Quotation {
     ...quotationFields
   }
+  ...on Topic {
+    ...topicFields
+  }
 }
 `
 */
+
+const FRAGMENT_TRACKED_ENTITY_FIELDS_POLYMORPHIC = gql`
+fragment trackedEntityFieldsPolymorphic on ITrackedEntity {
+  ...trackedEntityFields
+  ...on ILinkableEntity {
+    ...linkableEntityFields
+  }
+  ...on Claim {
+    ...claimFields
+  }
+  ...on Comment {
+    ...commentFields
+  }
+  ...on Declaration {
+    ...declarationFields
+  }
+  ...on Group {
+    ...groupFields
+  }
+  ...on Journal {
+    ...journalFields
+  }
+  ...on Person {
+    ...personFields
+  }
+  ...on Publication {
+    ...publicationFields
+  }
+  ...on Publisher {
+    ...publisherFields
+  }
+  ...on Quotation {
+    ...quotationFields
+  }
+  ...on Topic {
+    ...topicFields
+  }
+  ...on User {
+    ...userFields
+  }
+}
+`
 
 const FRAGMENT_CLAIM_FIELDS = gql`
 fragment claimFields on Claim {
@@ -326,18 +318,18 @@ fragment ownedCommentFields on Comment {
 }
 `
 
-const FRAGMENT_COUNTRY_FIELDS = gql`
-fragment countryFields on Country {
-  alpha_2
-  alpha_3
-  numeric
-  iso_name
-  common_name
-  year
-  cc_tld
-  notes
-}
-`
+// const FRAGMENT_COUNTRY_FIELDS = gql`
+// fragment countryFields on Country {
+//   alpha_2
+//   alpha_3
+//   numeric
+//   iso_name
+//   common_name
+//   year
+//   cc_tld
+//   notes
+// }
+// `
 
 const FRAGMENT_DECLARATION_FIELDS = gql`
 fragment declarationFields on Declaration {
@@ -355,16 +347,16 @@ fragment declarationFields on Declaration {
 
 const FRAGMENT_ENTITY_LINK_FIELDS = gql`
 fragment entityLinkFields on EntityLink {
+  ...trackedEntityFields
   fromEntity {
     ...trackedEntityFields
     ...linkableEntityFields
   }
+  fromEntityLocations
   toEntity {
     ...trackedEntityFields
     ...linkableEntityFields
   }
-  ...trackedEntityFields
-  fromEntityLocations
   toEntityLocations
 }
 `
@@ -702,6 +694,33 @@ mutation Login($username: String!, $password: String!) {
 }
 `
 
+export const UPDATE_ENTITY_STATUS = gql`
+${FRAGMENT_TRACKED_ENTITY_FIELDS}
+${FRAGMENT_LINKABLE_ENTITY_FIELDS}
+${FRAGMENT_LINKED_ENTITY_FIELDS}
+${FRAGMENT_CLAIM_FIELDS}
+${FRAGMENT_COMMENT_FIELDS}
+${FRAGMENT_LABEL_FIELDS}
+${FRAGMENT_DECLARATION_FIELDS}
+${FRAGMENT_GROUP_FIELDS}
+${FRAGMENT_JOURNAL_FIELDS}
+${FRAGMENT_PERSON_FIELDS}
+${FRAGMENT_PUBLICATION_FIELDS}
+${FRAGMENT_PUBLISHER_FIELDS}
+${FRAGMENT_QUOTATION_FIELDS}
+${FRAGMENT_TOPIC_FIELDS}
+${FRAGMENT_USER_FIELDS}
+${FRAGMENT_TRACKED_ENTITY_FIELDS_POLYMORPHIC}
+mutation UpdateEntityStatus($entityId: ID!, $status: StatusKind!) {
+  setEntityStatus(
+    entityId: $entityId
+    status: $status
+  ) {
+    ...trackedEntityFieldsPolymorphic
+  }
+}
+`
+
 export const READ_CLAIMS = gql`
 ${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
@@ -841,14 +860,14 @@ mutation DeleteComment($id: ID!) {
 }
 `
 
-export const READ_COUNTRIES = gql`
-${FRAGMENT_COUNTRY_FIELDS}
-query Countries {
-  countries {
-    ...countryFields
-  }
-}
-`
+// export const READ_COUNTRIES = gql`
+// ${FRAGMENT_COUNTRY_FIELDS}
+// query Countries {
+//   countries {
+//     ...countryFields
+//   }
+// }
+// `
 
 export const READ_DECLARATIONS = gql`
 ${FRAGMENT_PAGE_FIELDS}
@@ -916,26 +935,23 @@ mutation DeleteDeclaration($id: ID!) {
 `
 
 export const READ_ENTITY_LINKS = gql`
+${FRAGMENT_PAGE_FIELDS}
 ${FRAGMENT_TRACKED_ENTITY_FIELDS}
 ${FRAGMENT_ENTITY_LINK_FIELDS}
 ${FRAGMENT_LINKABLE_ENTITY_FIELDS}
 ${FRAGMENT_LINKED_ENTITY_FIELDS}
-query {
+query EntityLinks($filter: EntityLinkQueryFilter, $pageSort: PageableInput) {
   entityLinks
-  # (
-  #   filter: {
-  #     fromEntityKind: FFF
-  #     fromEntityId: 0
-  #     toEntityKind: TTT
-  #     toEntityId: 0
-  #     status: SSS
-  #     text: "test"
-  #     advancedSearch: false
-  #   }
-  # )
+  (
+    filter: $filter
+    pageSort: $pageSort
+  )
   {
-    ...trackedEntityFields
-    ...entityLinkFields
+    ...pageFields
+    content {
+      ...trackedEntityFields
+      ...entityLinkFields
+    }
   }
 }
 `
@@ -1707,6 +1723,59 @@ query AllStatistics($filter: StatisticsQueryFilter) {
   }
   entityStatistics(filter: $filter) {
     ...entityStatsFields
+  }
+}
+`
+
+export const READ_ENTITY_AUDIT = gql`
+query EntityAudit($id: ID!) {
+  audit(id: $id) {
+    entity {
+      ...on IBaseEntity {
+        id
+      }
+      entityKind(format: SHORT)
+      status
+    }
+    fieldAudit {
+      fields {
+        fieldName
+        message
+        severity
+        pass
+      }
+      groups {
+        fields {
+          fieldName
+          message
+          severity
+          pass
+        }
+        message
+        severity
+        pass
+      }
+      pass
+    }
+    linkAudit {
+      links {
+        linkedEntityKind(format: LONG)
+        min
+        actual
+        pass
+      }
+      groups {
+        links {
+          linkedEntityKind(format: LONG)
+          min
+          actual
+          pass
+        }
+        pass
+      }
+      pass
+    }
+    pass
   }
 }
 `

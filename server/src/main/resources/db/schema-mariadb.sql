@@ -255,7 +255,7 @@ CREATE TABLE IF NOT EXISTS "publication" (
 	"location" VARCHAR(50) DEFAULT NULL COMMENT 'The location of the relevant section within the publication',
   "abstract" text DEFAULT NULL COMMENT 'Abstract from the article',
   "notes" text DEFAULT NULL COMMENT 'Added notes about the publication',
-  "peer_reviewed" bit(1) DEFAULT b'0' COMMENT 'Whether the article was peer-reviewed',
+  "peer_reviewed" bit(1) DEFAULT NULL COMMENT 'Whether the article was peer-reviewed',
   "doi" varchar(100) DEFAULT NULL COMMENT 'Digital Object Identifier',
   "isbn" varchar(20) DEFAULT NULL COMMENT 'International Standard Book Number (printed publications only)',
 	"pmcid" VARCHAR(10) DEFAULT NULL COMMENT 'The U.S. National Library of Medicine''s PubMed Central ID',

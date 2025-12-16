@@ -53,18 +53,18 @@ public interface DataFetchersDelegateUser extends DataFetchersDelegateITrackedEn
 	 * This method loads the data for User.country. It may return whatever is accepted by the Spring Controller, that
 	 * is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a java.lang.String)</li>
+	 * <li>A resolved value of any type (typically, a String)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
-	 * described in Reactive DataFetcher. This would typically be a Mono&lt;java.lang.String&gt; or a
-	 * Flux&lt;java.lang.String&gt;</li>
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;String&gt; or a
+	 * Flux&lt;String&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
 	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
-	 * Callable&lt;java.lang.String&gt;</li>
+	 * Callable&lt;String&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<java.lang.String>. This allows to use
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<String>. This allows to use
 	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
 	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
 	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
@@ -103,16 +103,16 @@ public interface DataFetchersDelegateUser extends DataFetchersDelegateITrackedEn
 	 * This method loads the data for User.authorities. It may return whatever is 
 	 * accepted by the Spring Controller, that is:
 	 * <ul>
-	 * <li>A resolved value of any type (typically, a List<java.lang.String>)</li>
+	 * <li>A resolved value of any type (typically, a List<String>)</li>
 	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as described in Reactive DataFetcher. 
-	 * This would typically be a Mono&lt;List<java.lang.String>&gt; or a Flux&lt;List<java.lang.String>&gt;</li>
+	 * This would typically be a Mono&lt;List<String>&gt; or a Flux&lt;List<String>&gt;</li>
 	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
 	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work, AnnotatedControllerConfigurer must be 
-	 *     configured with an Executor. This would typically by a Callable&lt;List<java.lang.String>&gt;</li>
+	 *     configured with an Executor. This would typically by a Callable&lt;List<String>&gt;</li>
 	 * </ul>
 	 * As a complement to the spring-graphql documentation, you may also return:
 	 * <ul>
-	 * <li>A CompletableFuture<?>, for instance CompletableFuture<List<java.lang.String>>. This 
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<List<String>>. This 
 	 *     allows to use <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
 	 *     number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid to load several 
 	 *     times the same data, and allows parallel execution of the queries, if multiple queries are to be run.</li>

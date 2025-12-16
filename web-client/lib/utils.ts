@@ -28,7 +28,7 @@ import Person from "@/app/model/Person"
 import Publication from "@/app/model/Publication"
 import Publisher from "@/app/model/Publisher"
 import Quotation from "@/app/model/Quotation"
-import RecordKind from "@/app/model/RecordKind"
+import { LinkableEntityKind, RecordKind } from "@/app/model/RecordKinds"
 import Topic from "@/app/model/Topic"
 import User from "@/app/model/User"
 import { clsx, type ClassValue } from "clsx"
@@ -54,6 +54,7 @@ import EntityLink from "@/app/model/EntityLink"
 import { EntityKind } from "@/app/model/schema"
 import { anything } from "@/types/types"
 import { LoggerEx, utility } from "./logger"
+import ILinkableEntity from "@/app/model/ILinkableEntity"
 
 const logger = new LoggerEx(utility, "[utils] ")
 
@@ -347,8 +348,67 @@ const recordLinkProperties: RecordLinks = {
  * `[thisRecordKindProperty, otherRecordKindProperty, thisRecordIdProperty, otherRecordIdProperty, thisLocationsProperty, otherLocationsProperty]`,
  * or an empty array if no such link is supported.
  */
-export function getRecordLinkProperties(thisRecordKind: RecordKind, otherRecordKind: RecordKind): LinkableEntityQueryFilterProperty[] {
+export function getRecordLinkProperties(thisRecordKind: LinkableEntityKind, otherRecordKind: LinkableEntityKind): LinkableEntityQueryFilterProperty[] {
   return recordLinkProperties?.[thisRecordKind]?.[otherRecordKind] ?? NONE
+}
+
+export type RecordLink = {
+  id: string
+  status: string,
+  created: string,
+  createdByUser: string,
+  updated?: string,
+  updatedByUser?: string,
+  thisRecordIsToEntity: boolean
+  thisRecordId: string
+  thisLocations: string
+  otherRecordKind: LinkableEntityKind
+  otherRecordId: string
+  otherLocations: string
+  otherRecordLabel: string
+}
+
+export function getLinkLabel(recordKind: LinkableEntityKind, link?: RecordLink) {
+  return link
+    ? `RecordLink #${link?.id} (${recordKind} #${link?.thisRecordId} <—> ${link?.otherRecordKind} #${link?.otherRecordId})`
+    : "Selected Record Link"
+}
+
+export function getRecordLinks(record?: ILinkableEntity, toLinks?: boolean, entityLinks?: EntityLink[], results?: RecordLink[]) : RecordLink[] {
+  if (entityLinks) {
+    if (!record || !results)
+      throw new Error("record, entityLinks and results must all be passed")
+    for (const entityLink of entityLinks) {
+      if (!entityLink.id)
+        continue
+      const otherRecord = toLinks ? entityLink.fromEntity : entityLink.toEntity
+      const recordLink = {
+        id: entityLink.id,
+        status: entityLink.status || '',
+        created: entityLink.created?.toLocaleString() || '',
+        createdByUser: entityLink.createdByUser?.username || '',
+        updated: entityLink.updated?.toLocaleString() || '',
+        updatedByUser: entityLink.updatedByUser?.username || '',
+        thisRecordIsToEntity: toLinks ?? false,
+        thisRecordId: record?.id ?? '',
+        thisLocations: (toLinks ? entityLink.toEntityLocations : entityLink.fromEntityLocations) ?? '',
+        otherLocations: (toLinks ? entityLink.fromEntityLocations : entityLink.toEntityLocations) ?? '',
+        otherRecordKind: (otherRecord?.entityKind ?? '') as LinkableEntityKind,
+        otherRecordId: otherRecord?.id ?? '',
+        otherRecordLabel: getRecordLabel(otherRecord?.entityKind as RecordKind, otherRecord) ?? '',
+      }
+      // if (!recordLink.otherRecordLabel)
+      //   logger.warn("No label for RecordLink %o", recordLink)
+      results.push(recordLink)
+    }
+  } else {
+    results = []
+    if (record?.fromEntityLinks?.content)
+      getRecordLinks(record, false, record.fromEntityLinks.content, results)
+    if (record?.toEntityLinks?.content)
+      getRecordLinks(record, true, record.toEntityLinks.content, results)
+  }
+  return results
 }
 
 const readQueryByRecordKind = {

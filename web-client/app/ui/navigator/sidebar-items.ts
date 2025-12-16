@@ -23,15 +23,15 @@ import {
   ChartColumnIcon,
   CircleQuestionMarkIcon,
   FileClockIcon,
-  FlaskConicalIcon,
   FolderTreeIcon,
   HouseIcon,
   InfoIcon,
-  ScrollTextIcon,
+  LibraryIcon,
   MessagesSquareIcon,
   NewspaperIcon,
+  ScrollTextIcon,
   ShieldCheckIcon,
-  UsersIcon
+  UserIcon
 } from 'lucide-react';
 import { MessageSquareQuoteIconEx } from '../icons';
 
@@ -39,8 +39,8 @@ export const appItems = [
   { label: "Home", href: "/", icon: HouseIcon },
   { label: "Dashboard", href: "/dashboard", icon: ChartColumnIcon },
   { label: "Claims", href: "/claims", icon: BookOpenCheckIcon },
-  { label: "Publications", href: "/publications", icon: FlaskConicalIcon },
-  { label: "Persons", href: "/persons", icon: UsersIcon },
+  { label: "Publications", href: "/publications", icon: LibraryIcon },
+  { label: "Persons", href: "/persons", icon: UserIcon },
   { label: "Declarations", href: "/declarations", icon: ScrollTextIcon },
   { label: "Quotations", href: "/quotations", icon: MessageSquareQuoteIconEx },
   { label: "Comments", href: "/comments", icon: MessagesSquareIcon },

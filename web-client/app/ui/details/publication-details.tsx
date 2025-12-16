@@ -58,7 +58,7 @@ import { useQuery } from "@apollo/client/react"
 import { READ_JOURNALS } from "@/lib/graphql-queries"
 import IPage from "@/app/model/IPage"
 import { QueryResult } from "@/lib/graphql-utils"
-import { CalendarIcon } from "lucide-react"
+import { CalendarIcon, NotebookTabsIcon } from "lucide-react"
 
 const logger = new LoggerEx(detail, "[PublicationDetails] ")
 
@@ -102,13 +102,7 @@ export default function PublicationDetails(
       <Form {...form}>
         <form>
           <FormDescription>
-            <span className="text-lg pt-2 pb-4">
-              &nbsp;&nbsp;{state.mode == "create"
-                ? "Details for new Publication"
-                : record
-                  ? `Details for selected Publication #${record?.id}`
-                  : "-Select a Publication in the list above to see its details-"
-            }</span>
+            <span className="text-black text-lg ml-2"><NotebookTabsIcon className="inline" />&nbsp;Details</span>
           </FormDescription>
           <div className="grid grid-cols-4 ml-2 mr-2 mt-4 mb-4 gap-4 items-start">
             <FormField

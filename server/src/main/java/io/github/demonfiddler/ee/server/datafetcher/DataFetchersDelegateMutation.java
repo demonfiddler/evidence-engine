@@ -1097,8 +1097,40 @@ public interface DataFetchersDelegateMutation {
 	Object deleteTopic(DataFetchingEnvironment dataFetchingEnvironment, Long topicId);
 
 	/**
-	 * Sets entity status.
+	 * Description for the setEntityStatus field: <br/>
+	 * Sets entity status. <br/>
+	 * This method loads the data for Mutation.setEntityStatus. It may return whatever is accepted by the Spring
+	 * Controller, that is:
+	 * <ul>
+	 * <li>A resolved value of any type (typically, a ITrackedEntity)</li>
+	 * <li>Mono and Flux for asynchronous value(s). Supported for controller methods and for any DataFetcher as
+	 * described in Reactive DataFetcher. This would typically be a Mono&lt;ITrackedEntity&gt; or a
+	 * Flux&lt;ITrackedEntity&gt;</li>
+	 * <li>Kotlin coroutine and Flow are adapted to Mono and Flux</li>
+	 * <li>java.util.concurrent.Callable to have the value(s) produced asynchronously. For this to work,
+	 * AnnotatedControllerConfigurer must be configured with an Executor. This would typically by a
+	 * Callable&lt;ITrackedEntity&gt;</li>
+	 * </ul>
+	 * As a complement to the spring-graphql documentation, you may also return:
+	 * <ul>
+	 * <li>A CompletableFuture<?>, for instance CompletableFuture<ITrackedEntity>. This allows to use
+	 * <A HREF="https://github.com/graphql-java/java-dataloader">graphql-java java-dataloader</A> to highly optimize the
+	 * number of requests to the server. The principle is this one: The data loader collects all the data to load, avoid
+	 * to load several times the same data, and allows parallel execution of the queries, if multiple queries are to be
+	 * run.</li>
+	 * <li>A Publisher (instead of a Flux), for Subscription for instance</li>
+	 * </ul>
+	 * @param dataFetchingEnvironment The GraphQL {@link DataFetchingEnvironment}. It gives you access to the full
+	 * GraphQL context for this DataFetcher
+	 * @param entityId The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @param status The input parameter sent in the query by the GraphQL consumer, as defined in the GraphQL schema.
+	 * @throws NoSuchElementException This method may return a {@link NoSuchElementException} exception. In this case,
+	 * the exception is trapped by the calling method, and the return is consider as null. This allows to use the
+	 * {@link Optional#get()} method directly, without caring of whether or not there is a value. The generated code
+	 * will take care of the {@link NoSuchElementException} exception.
 	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[UPD]" })
 	Object setEntityStatus(DataFetchingEnvironment dataFetchingEnvironment, Long entityId, StatusKind status);
 
 	/**

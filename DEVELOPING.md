@@ -24,24 +24,24 @@ The authors use Visual Studio Code with a selection of appropriate extensions:
 
 ## Generate Client Code
 
-- Edit the client [build.gradle](/client/build.gradle) file and uncomment:
+- Edit the codegen [build.gradle](/codegen/build.gradle) file and uncomment:
     - ```id "com.graphql-java-generator.graphql-gradle-plugin3"``` at the top of the file
-    - ```apply from: 'codegen.gradle'``` at the bottom of the file.
-- Also, in the ```tasks.named('test')``` section comment out:
+    - ```apply from: 'graphql-codegen.gradle'``` at the bottom of the file.
+<!-- - Also, in the ```tasks.named('test')``` section comment out:
     - ```dependsOn project(':server').tasks.named('bootIntegrationTestServerBG')```
-    - ```finalizedBy project(':server').tasks.named('terminateIntegrationTestServer')```
-- Execute ```./gradlew client:generateClientCode```.
+    - ```finalizedBy project(':server').tasks.named('terminateIntegrationTestServer')``` -->
+- Execute ```./gradlew codegen:generateClientCode```.
 - Revert the changes using Undo (Ctrl+Z), Save (Ctrl+S).
-- Find the generated code at ```client/build/generated/sources/graphqlClient/io/github/demonfiddler/ee/client```.
+- Find the generated code at ```codegen/build/generated/sources/graphqlClient/io/github/demonfiddler/ee/client```.
 
 ## Generate Server Code
 
-- Edit the server [build.gradle](/server/build.gradle) file and uncomment:
+- Edit the codegen [build.gradle](/codegen/build.gradle) file and uncomment:
     - ```id "com.graphql-java-generator.graphql-gradle-plugin3"``` at the top of the file
-    - ```apply from: 'codegen.gradle'``` at the bottom of the file
-- Execute ```./gradlew server:generateServerCode```
+    - ```apply from: 'graphql-codegen.gradle'``` at the bottom of the file
+- Execute ```./gradlew codegen:generateServerCode```
 - Revert the changes using Undo (Ctrl+Z), Save (Ctrl+S).
-- Find the generated code at ```server/build/generated/sources/graphqlGradlePlugin/io/github/demonfiddler/ee/server```
+- Find the generated code at ```codegen/build/generated/sources/graphqlServer/io/github/demonfiddler/ee/server```
 
 # Modifying the Schema
 
@@ -53,18 +53,18 @@ The following tables summarise what needs to be done and where, in order to add 
 
 |Project|Resource|Generated|Source|Notes|
 |-------|--------|---------|------|-----|
-|client|```TYPE.java```|```client/build/generated/sources/graphqlClient/io/github/demonfiddler/ee/client/```|```client/src/main/java/io/github/demonfiddler/ee/client/```||
-||```TYPEInput.java```|```client/build/generated/sources/graphqlClient/io/github/demonfiddler/ee/client/```|```client/src/main/java/io/github/demonfiddler/ee/client/```||
-||```TYPEPage.java```|```client/build/generated/sources/graphqlClient/io/github/demonfiddler/ee/client/```|```client/src/main/java/io/github/demonfiddler/ee/client/```||
+|client|```TYPE.java```|```codegen/build/generated/sources/graphqlClient/io/github/demonfiddler/ee/client/```|```client/src/main/java/io/github/demonfiddler/ee/client/```||
+||```TYPEInput.java```|```codegen/build/generated/sources/graphqlClient/io/github/demonfiddler/ee/client/```|```client/src/main/java/io/github/demonfiddler/ee/client/```||
+||```TYPEPage.java```|```codegen/build/generated/sources/graphqlClient/io/github/demonfiddler/ee/client/```|```client/src/main/java/io/github/demonfiddler/ee/client/```||
 |web-client|```TYPE.ts```|n/a|```web-client/app/model/```|```TYPE``` as processed by Apollo GraphQL|
 ||```TYPE.ts```|n/a|```web-client/app/ui/validators/```|```TYPE``` as edited/validated in a form|
 ||```TYPEInput```|n/a|[```web-client/app/model/schema.ts```](web-client/app/model/schema.ts)||
 ||```page.tsx```|n/a|```web-client/app/(navigable)[/(linkable)]/TYPEs/```|If the ```TYPE``` has a corresponding app page|
-|server|```TYPE.java```|```server/build/generated/sources/graphqlGradlePlugin/io/github/demonfiddler/ee/server/```|```server/src/main/java/io/github/demonfiddler/ee/server/model/```||
-||```TYPEInput.java```|```server/build/generated/sources/graphqlGradlePlugin/io/github/demonfiddler/ee/server/```|```server/src/main/java/io/github/demonfiddler/ee/server/model/```||
-||```TYPEPage.java```|```server/build/generated/sources/graphqlGradlePlugin/io/github/demonfiddler/ee/server/```|```server/src/main/java/io/github/demonfiddler/ee/server/model/```||
-||```TYPEController.java```|```server/build/generated/sources/graphqlGradlePlugin/io/github/demonfiddler/ee/server/util/```|```server/src/main/java/io/github/demonfiddler/ee/server/controller/```||
-||```DataFetchersDelegateTYPE.java```|```server/build/generated/sources/graphqlGradlePlugin/io/github/demonfiddler/ee/server/util/```|```server/src/main/java/io/github/demonfiddler/ee/server/datafetcher/```||
+|server|```TYPE.java```|```codegen/build/generated/sources/graphqlServer/io/github/demonfiddler/ee/server/```|```server/src/main/java/io/github/demonfiddler/ee/server/model/```||
+||```TYPEInput.java```|```codegen/build/generated/sources/graphqlServer/io/github/demonfiddler/ee/server/```|```server/src/main/java/io/github/demonfiddler/ee/server/model/```||
+||```TYPEPage.java```|```codegen/build/generated/sources/graphqlServer/io/github/demonfiddler/ee/server/```|```server/src/main/java/io/github/demonfiddler/ee/server/model/```||
+||```TYPEController.java```|```codegen/build/generated/sources/graphqlServer/io/github/demonfiddler/ee/server/util/```|```server/src/main/java/io/github/demonfiddler/ee/server/controller/```||
+||```DataFetchersDelegateTYPE.java```|```codegen/build/generated/sources/graphqlServer/io/github/demonfiddler/ee/server/util/```|```server/src/main/java/io/github/demonfiddler/ee/server/datafetcher/```||
 ||```DataFetchersDelegateTYPEImpl.java```|n/a|```server/src/main/java/io/github/demonfiddler/ee/server/datafetcher/impl/```|Manually coded|
 
 ### Table 2: Adding a New Type, Property, Query or Mutation

@@ -262,6 +262,13 @@ public class Query {
 	List<TopicStatisticsDto> topicStatistics;
 
 	/**
+	 * Returns audit information on the specified entity.
+	 */
+	@GraphQLNonScalar(fieldName = "audit", graphQLTypeSimpleName = "EntityAudit", javaClass = EntityAudit.class,
+		listDepth = 0)
+	EntityAudit audit;
+
+	/**
 	 * Returns a paged list of claims.
 	 */
 	public void setClaims(ClaimPage claims) {
@@ -719,6 +726,20 @@ public class Query {
 		return this.topicStatistics;
 	}
 
+	/**
+	 * Returns audit information on the specified entity.
+	 */
+	public void setAudit(EntityAudit audit) {
+		this.audit = audit;
+	}
+
+	/**
+	 * Returns audit information on the specified entity.
+	 */
+	public EntityAudit getAudit() {
+		return this.audit;
+	}
+
 	public String toString() {
 		return "Query {" //
 			+ "claims: " + this.claims //
@@ -782,6 +803,8 @@ public class Query {
 			+ "entityStatistics: " + this.entityStatistics //
 			+ ", " //
 			+ "topicStatistics: " + this.topicStatistics //
+			+ ", " //
+			+ "audit: " + this.audit //
 			+ "}"; //
 	}
 
@@ -826,6 +849,7 @@ public class Query {
 		private Group groupByGroupname;
 		private List<EntityStatistics> entityStatistics;
 		private List<TopicStatisticsDto> topicStatistics;
+		private EntityAudit audit;
 
 		/**
 		 * Returns a paged list of claims.
@@ -1075,6 +1099,14 @@ public class Query {
 			return this;
 		}
 
+		/**
+		 * Returns audit information on the specified entity.
+		 */
+		public Builder withAudit(EntityAudit auditParam) {
+			this.audit = auditParam;
+			return this;
+		}
+
 		public Query build() {
 			Query _object = new Query();
 			_object.setClaims(this.claims);
@@ -1108,6 +1140,7 @@ public class Query {
 			_object.setGroupByGroupname(this.groupByGroupname);
 			_object.setEntityStatistics(this.entityStatistics);
 			_object.setTopicStatistics(this.topicStatistics);
+			_object.setAudit(this.audit);
 			return _object;
 		}
 

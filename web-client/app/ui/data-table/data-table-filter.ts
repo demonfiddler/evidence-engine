@@ -19,7 +19,7 @@
 
 'use client'
 
-import RecordKind from "@/app/model/RecordKind"
+import { RecordKind } from "@/app/model/RecordKinds"
 import { Table } from "@tanstack/react-table"
 
 export type ImportAccept = {[mimeType : string] : Array<string>}

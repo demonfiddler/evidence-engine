@@ -304,11 +304,11 @@ public class Mutation {
 	/**
 	 * Sets entity status.
 	 */
-	@GraphQLScalar(fieldName = "setEntityStatus", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class,
-		listDepth = 0)
+	@GraphQLNonScalar(fieldName = "setEntityStatus", graphQLTypeSimpleName = "ITrackedEntity",
+		javaClass = ITrackedEntity.class, listDepth = 0)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
-	Boolean setEntityStatus;
+	ITrackedEntity setEntityStatus;
 
 	/**
 	 * Creates a new user.
@@ -980,7 +980,7 @@ public class Mutation {
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
-	public void setSetEntityStatus(Boolean setEntityStatus) {
+	public void setSetEntityStatus(ITrackedEntity setEntityStatus) {
 		this.setEntityStatus = setEntityStatus;
 	}
 
@@ -989,7 +989,7 @@ public class Mutation {
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
-	public Boolean getSetEntityStatus() {
+	public ITrackedEntity getSetEntityStatus() {
 		return this.setEntityStatus;
 	}
 
@@ -1383,7 +1383,7 @@ public class Mutation {
 		private Topic createTopic;
 		private Topic updateTopic;
 		private Topic deleteTopic;
-		private Boolean setEntityStatus;
+		private ITrackedEntity setEntityStatus;
 		private User createUser;
 		private User updateUser;
 		private User updateUserPassword;
@@ -1642,7 +1642,7 @@ public class Mutation {
 		/**
 		 * Sets entity status.
 		 */
-		public Builder withSetEntityStatus(Boolean setEntityStatusParam) {
+		public Builder withSetEntityStatus(ITrackedEntity setEntityStatusParam) {
 			this.setEntityStatus = setEntityStatusParam;
 			return this;
 		}

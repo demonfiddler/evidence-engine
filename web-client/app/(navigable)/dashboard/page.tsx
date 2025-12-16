@@ -35,11 +35,11 @@ import { flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } fro
 import {
   BookOpenCheckIcon,
   ChartColumnIcon,
-  FlaskConicalIcon,
+  LibraryIcon,
   FolderTreeIcon,
   ScrollTextIcon,
   RotateCwIcon,
-  UsersIcon
+  UserIcon
 } from 'lucide-react'
 import { cn } from "@/lib/utils"
 import { useCallback, useEffect, useMemo, useState } from "react"
@@ -72,8 +72,8 @@ const entityItems = [
   { entityKind: "TOP", heading: "Topics", description: "Total topics (top-level + nested)", icon: FolderTreeIcon, property: "topics", href: "/admin/topics" },
   { entityKind: "CLA", heading: "Claims", description: "Total claims of fact", icon: BookOpenCheckIcon, property: "claims", href: "/claims" },
   { entityKind: "DEC", heading: "Declarations", description: "Total declarations, public letters, etc.", icon: ScrollTextIcon, property: "declarations", href: "/declarations" },
-  { entityKind: "PER", heading: "Persons", description: "Total scientists, professionals, etc.", icon: UsersIcon, property: "persons", href: "/persons" },
-  { entityKind: "PUB", heading: "Publications", description: "Total scientific publications, papers, etc.", icon: FlaskConicalIcon, property: "publications", href: "/publications" },
+  { entityKind: "PER", heading: "Persons", description: "Total scientists, professionals, etc.", icon: UserIcon, property: "persons", href: "/persons" },
+  { entityKind: "PUB", heading: "Publications", description: "Total scientific publications, papers, etc.", icon: LibraryIcon, property: "publications", href: "/publications" },
   { entityKind: "QUO", heading: "Quotations", description: "Total quotations", icon: MessageSquareQuoteIconEx, property: "quotations", href: "/quotations" },
   // { entityKind: "NOB", heading: "Nobel Prizes", description: "Total Nobel Laureates", icon: NobelPrizeIcon, property: "nobels"},
   // { entityKind: "PRO", heading: "Professors", description: "Total university professors (past and present)", icon: SchoolTeacherIcon, property: "professors"},
@@ -314,7 +314,7 @@ export default function Dashboard() {
                       {entityStats.find(s => s.entityKind === item.entityKind)?.count || "0"}
                     </CardContent>
                     <CardFooter className="text-center">
-                      <p className="flex-grow text-center">{item.description}</p>
+                      <p className="grow text-center">{item.description}</p>
                     </CardFooter>
                   </Card>
                 </Link>

@@ -54,6 +54,7 @@ import io.github.demonfiddler.ee.client.CommentPage;
 import io.github.demonfiddler.ee.client.CommentQueryFilter;
 import io.github.demonfiddler.ee.client.Declaration;
 import io.github.demonfiddler.ee.client.DeclarationPage;
+import io.github.demonfiddler.ee.client.EntityAudit;
 import io.github.demonfiddler.ee.client.EntityLink;
 import io.github.demonfiddler.ee.client.EntityLinkPage;
 import io.github.demonfiddler.ee.client.EntityLinkQueryFilter;
@@ -7800,6 +7801,234 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "topicStatistics",
 			InputParameter.newBindParameter("", "filter", "queryTopicStatisticsFilter", InputParameterType.OPTIONAL,
 				"StatisticsQueryFilter", false, 0, false));
+	}
+
+	/**
+	 * Returns audit information on the specified entity.<br/>
+	 * This method executes a partial query on the audit query against the GraphQL server. That is, the query is one of
+	 * the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part of the query
+	 * that follows the field name.<br/>
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the expected fields of the
+	 * <code>audit</code> of the Query query type. It can be something like "{ id name }", or "" for a scalar. Please
+	 * take a look at the StarWars, Forum and other samples for more complex queries.<br/>
+	 * Here is a sample on how to use it:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		Map<String, Object> params = new HashMap<>();
+	 * 		params.put("param", paramValue); // param is optional, as it is marked by a "?" in the request
+	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
+	 * 
+	 * 		EntityAudit audit = executor.auditWithBindValues(
+	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 			id, // A value for audit's id input parameter
+	 * 			params);
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
+	 * @param id Parameter for the audit field of Query, as defined in the GraphQL schema
+	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
+	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
+	 * building the {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "audit", graphQLTypeSimpleName = "EntityAudit", javaClass = EntityAudit.class)
+	public EntityAudit auditWithBindValues(String queryResponseDef, String id, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+
+		return getValueFromMonoOptional(
+			this.queryReactiveExecutor.auditWithBindValues(queryResponseDef, id, parameters));
+	}
+
+	/**
+	 * Returns audit information on the specified entity.<br/>
+	 * This method executes a partial query on the audit query against the GraphQL server. That is, the query is one of
+	 * the field of the Query type defined in the GraphQL schema. The queryResponseDef contains the part of the query
+	 * that follows the field name.<br/>
+	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method takes care of writing the query name, and the parameter(s) for the query. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the expected fields of the
+	 * <code>audit</code> of the Query query type. It can be something like "{ id name }", or "" for a scalar. Please
+	 * take a look at the StarWars, Forum and other samples for more complex queries.<br/>
+	 * Here is a sample on how to use it:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	@Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	void myMethod() {
+	 * 		EntityAudit audit = executor.audit(
+	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 			id, // A value for audit's id input parameter
+	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
+	 * @param id Parameter for the audit field of Query, as defined in the GraphQL schema
+	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
+	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
+	 * building the {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "audit", graphQLTypeSimpleName = "EntityAudit", javaClass = EntityAudit.class)
+	public EntityAudit audit(String queryResponseDef, String id, Object... paramsAndValues)
+		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
+
+		return getValueFromMonoOptional(this.queryReactiveExecutor.audit(queryResponseDef, id, paramsAndValues));
+	}
+
+	/**
+	 * Returns audit information on the specified entity.<br/>
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<br/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed several times
+	 * 		preparedRequest = executor.getAuditGraphQLRequest(
+	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		EntityAudit audit = executor.auditWithBindValues(preparedRequest, id, // A value for audit's id input
+	 * 																				// parameter
+	 * 			params);
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
+	 * to return<br/>
+	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
+	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
+	 * {@link getAuditGraphQLRequest(String)} method.
+	 * @param id Parameter for the audit field of Query, as defined in the GraphQL schema
+	 * @param parameters The list of values, for the bind variables declared in the request you defined. If there is no
+	 * bind variable in the defined Query, this argument may be null or an empty {@link Map}
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "audit", graphQLTypeSimpleName = "EntityAudit", javaClass = EntityAudit.class)
+	public EntityAudit auditWithBindValues(ObjectResponse objectResponse, String id, Map<String, Object> parameters)
+		throws GraphQLRequestExecutionException {
+
+		return getValueFromMonoOptional(this.queryReactiveExecutor.auditWithBindValues(objectResponse, id, parameters));
+	}
+
+	/**
+	 * Returns audit information on the specified entity.<br/>
+	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<br/>
+	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * <I>parameters</I> argument to pass the list of values.<br/>
+	 * Here is a sample:
+	 * 
+	 * <PRE>
+	 * &#64;Component // This class must be a spring component
+	 * public class MyClass {
+	 * 
+	 * 	&#64;Autowired
+	 * 	QueryExecutor executor;
+	 * 
+	 * 	GraphQLRequest preparedRequest;
+	 * 
+	 * 	@PostConstruct
+	 * 	public void setup() {
+	 * 		// Preparation of the query, so that it is prepared once then executed several times
+	 * 		preparedRequest = executor.getAuditGraphQLRequest(
+	 * 			"query { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 	}
+	 * 
+	 * 	void myMethod() {
+	 * 		EntityAudit audit = executor.audit(preparedRequest, id, // A value for audit's id input parameter
+	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		);
+	 * 	}
+	 * 
+	 * }
+	 * </PRE>
+	 * 
+	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
+	 * to return<br/>
+	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
+	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
+	 * {@link getAuditGraphQLRequest(String)} method.
+	 * @param id Parameter for the audit field of Query, as defined in the GraphQL schema
+	 * @param paramsAndValues This parameter contains all the name and values for the Bind Variables defined in the
+	 * objectResponse parameter, that must be sent to the server. Optional parameter may not have a value. They will be
+	 * ignored and not sent to the server. Mandatory parameter must be provided in this argument.<br/>
+	 * This parameter contains an even number of parameters: it must be a series of name and values : (paramName1,
+	 * paramValue1, paramName2, paramValue2...)
+	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
+	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 */
+	@GraphQLNonScalar(fieldName = "audit", graphQLTypeSimpleName = "EntityAudit", javaClass = EntityAudit.class)
+	public EntityAudit audit(ObjectResponse objectResponse, String id, Object... paramsAndValues)
+		throws GraphQLRequestExecutionException {
+
+		return getValueFromMonoOptional(this.queryReactiveExecutor.audit(objectResponse, id, paramsAndValues));
+	}
+
+	/**
+	 * Returns audit information on the specified entity.<br/>
+	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the EntityAudit, as expected by the audit
+	 * query.
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public Builder getAuditResponseBuilder() throws GraphQLRequestPreparationException {
+		return this.queryReactiveExecutor.getAuditResponseBuilder();
+	}
+
+	/**
+	 * Returns audit information on the specified entity.<br/>
+	 * Get the {@link GraphQLRequest} for the audit EXECUTOR, created with the given Partial request.
+	 * @param partialRequest The Partial GraphQL request, as explained in the
+	 * <A HREF="https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin client
+	 * documentation</A>
+	 * @return
+	 * @throws GraphQLRequestPreparationException
+	 */
+	public GraphQLRequest getAuditGraphQLRequest(String partialRequest) throws GraphQLRequestPreparationException {
+		return new GraphQLRequest(this.graphQlClient, partialRequest, RequestType.query, "audit", InputParameter
+			.newBindParameter("", "id", "queryAuditId", InputParameterType.MANDATORY, "ID", true, 0, false));
 	}
 
 	/**

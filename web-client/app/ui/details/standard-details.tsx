@@ -26,11 +26,11 @@ import { useContext } from "react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Button } from "@/components/ui/button"
 import ITrackedEntity from "@/app/model/ITrackedEntity"
-import RecordKind from "@/app/model/RecordKind"
+import { RecordKind } from "@/app/model/RecordKinds"
 import { DetailState } from "./detail-actions"
 import { GlobalContext } from "@/lib/context"
 import { detail, LoggerEx } from "@/lib/logger"
-import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
+import { ChevronDownIcon, ChevronUpIcon, ClipboardClockIcon } from "lucide-react"
 
 const logger = new LoggerEx(detail, "[StandardDetails] ")
 
@@ -43,35 +43,47 @@ export default function StandardDetails(
   const {trackingDetailsOpen, setTrackingDetailsOpen} = useContext(GlobalContext)
 
   return (
-    <Collapsible
-      open={trackingDetailsOpen}
-      onOpenChange={setTrackingDetailsOpen}
-      className="ml-2 mr-2 space-y-2"
-    >
-      <span className="text-lg">Tracking</span>
-      <CollapsibleTrigger asChild>
-        <Button variant="ghost" size="sm">
-          {
-            trackingDetailsOpen
-            ? <ChevronUpIcon className="h-4 w-4" />
-            : <ChevronDownIcon className="h-4 w-4" />
-          }
-          <span className="sr-only">Toggle</span>
-        </Button>
-      </CollapsibleTrigger>
-      <CollapsibleContent className="flex flex-col w-full space-y-2">
-        <TrackingDetails recordKind={recordKind} record={record} state={state} />
+    <>
+      <span className="pt-2 pb-4 ml-2 mt-2 mb-4">
         {
-          showLinkingDetails
-          ? <>
-              <hr />
-              <LinkingDetails recordKind={recordKind} record={record as ILinkableEntity} state={state} />
-            </>
-          : <></>
+          state.mode == "create"
+          ? `Details for new ${recordKind}`
+          : record
+            ? `Details for selected ${recordKind} #${record?.id}`
+            : `-Select a ${recordKind} in the list above to see its details-`
         }
-      </CollapsibleContent>
-      <hr className="border-1" />
-    </Collapsible>
+      </span>
+      <hr className="ml-2 mr-2" />
+      <Collapsible
+        open={trackingDetailsOpen}
+        onOpenChange={setTrackingDetailsOpen}
+        className="ml-2 mr-2 space-y-2"
+      >
+        <span className="text-lg"><ClipboardClockIcon className="inline" />&nbsp;Tracking</span>
+        <CollapsibleTrigger asChild>
+          <Button variant="ghost" size="sm">
+            {
+              trackingDetailsOpen
+              ? <ChevronUpIcon className="h-4 w-4" />
+              : <ChevronDownIcon className="h-4 w-4" />
+            }
+            <span className="sr-only">Toggle</span>
+          </Button>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="flex flex-col w-full space-y-2">
+          <TrackingDetails recordKind={recordKind} record={record} state={state} />
+          {
+            showLinkingDetails
+            ? <>
+                <hr />
+                <LinkingDetails recordKind={recordKind} record={record as ILinkableEntity} state={state} />
+              </>
+            : <></>
+          }
+        </CollapsibleContent>
+        <hr className="border" />
+      </Collapsible>
+    </>
   )
 }
 

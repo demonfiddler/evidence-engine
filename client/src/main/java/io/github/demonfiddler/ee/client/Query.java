@@ -363,6 +363,16 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 		javaClass = TopicStatistics.class, listDepth = 1)
 	List<TopicStatistics> topicStatistics;
 
+	/**
+	 * Returns audit information on the specified entity.
+	 */
+	@JsonProperty("audit")
+	@GraphQLInputParameters(names = { "id" }, types = { "ID" }, mandatories = { true }, listDepths = { 0 },
+		itemsMandatory = { false })
+	@GraphQLNonScalar(fieldName = "audit", graphQLTypeSimpleName = "EntityAudit", javaClass = EntityAudit.class,
+		listDepth = 0)
+	EntityAudit audit;
+
 	@JsonProperty("__schema")
 	@GraphQLNonScalar(fieldName = "__schema", graphQLTypeSimpleName = "__Schema", javaClass = __Schema.class,
 		listDepth = 0)
@@ -874,6 +884,22 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 		return this.topicStatistics;
 	}
 
+	/**
+	 * Returns audit information on the specified entity.
+	 */
+	@JsonProperty("audit")
+	public void setAudit(EntityAudit audit) {
+		this.audit = audit;
+	}
+
+	/**
+	 * Returns audit information on the specified entity.
+	 */
+	@JsonProperty("audit")
+	public EntityAudit getAudit() {
+		return this.audit;
+	}
+
 	@JsonProperty("__schema")
 	public void set__schema(__Schema __schema) {
 		this.__schema = __schema;
@@ -958,6 +984,8 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 			+ ", " //
 			+ "topicStatistics: " + this.topicStatistics //
 			+ ", " //
+			+ "audit: " + this.audit //
+			+ ", " //
 			+ "__schema: " + this.__schema //
 			+ ", " //
 			+ "__type: " + this.__type //
@@ -1007,6 +1035,7 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 		private Group groupByGroupname;
 		private List<EntityStatistics> entityStatistics;
 		private List<TopicStatistics> topicStatistics;
+		private EntityAudit audit;
 		private __Schema __schema;
 		private __Type __type;
 
@@ -1258,6 +1287,14 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 			return this;
 		}
 
+		/**
+		 * Returns audit information on the specified entity.
+		 */
+		public Builder withAudit(EntityAudit auditParam) {
+			this.audit = auditParam;
+			return this;
+		}
+
 		public Builder with__schema(__Schema __schemaParam) {
 			this.__schema = __schemaParam;
 			return this;
@@ -1301,6 +1338,7 @@ public class Query extends AbstractGraphQLEntity implements GraphQLRequestObject
 			_object.setGroupByGroupname(this.groupByGroupname);
 			_object.setEntityStatistics(this.entityStatistics);
 			_object.setTopicStatistics(this.topicStatistics);
+			_object.setAudit(this.audit);
 			_object.set__schema(this.__schema);
 			_object.set__type(this.__type);
 			return _object;

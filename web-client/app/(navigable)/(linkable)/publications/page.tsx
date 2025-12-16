@@ -32,7 +32,7 @@ import { LinkableEntityQueryFilter, PublicationInput } from '@/app/model/schema'
 import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-filter'
 import useLinkableEntityQueryFilter from '@/hooks/use-linkable-entity-query-filter'
 import { LoggerEx, page } from '@/lib/logger'
-import { FlaskConicalIcon } from 'lucide-react'
+import { LibraryIcon } from 'lucide-react'
 
 const logger = new LoggerEx(page, "[Publications] ")
 
@@ -143,7 +143,7 @@ export default function Publications() {
   return (
     <main className="flex flex-col items-start m-4 gap-4">
       <div className="flex flex-row items-center">
-        <FlaskConicalIcon className="w-8 h-8"/>
+        <LibraryIcon className="w-8 h-8"/>
         &nbsp;
         <h1>Publications</h1>
       </div>

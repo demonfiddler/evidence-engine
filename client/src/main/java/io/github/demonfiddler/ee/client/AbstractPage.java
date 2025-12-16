@@ -325,7 +325,7 @@ public abstract class AbstractPage<T extends IGraphQLObject> extends AbstractGra
 	}
 
 	public final String toString() {
-		return getClass().getSimpleName() // $NON-NLS-1$
+		return getClass().getSimpleName() //
 			+ " {" //
 			+ "dummy: " + this.getDummy() //
 			+ ", " //

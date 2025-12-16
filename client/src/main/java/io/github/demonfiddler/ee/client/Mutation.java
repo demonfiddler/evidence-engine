@@ -380,10 +380,12 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	 */
 	@JsonProperty("setEntityStatus")
 	@GraphQLInputParameters(names = { "entityId", "status" }, types = { "ID", "StatusKind" },
-		mandatories = { true, true, true }, listDepths = { 0, 0, 0 }, itemsMandatory = { false, false, false })
-	@GraphQLScalar(fieldName = "setEntityStatus", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class,
-		listDepth = 0)
-	Boolean setEntityStatus;
+		mandatories = { true, true }, listDepths = { 0, 0 }, itemsMandatory = { false, false })
+	@GraphQLNonScalar(fieldName = "setEntityStatus", graphQLTypeSimpleName = "ITrackedEntity",
+		javaClass = ITrackedEntity.class, listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[UPD]" })
+	ITrackedEntity setEntityStatus;
 
 	/**
 	 * Creates a new user.
@@ -1054,16 +1056,20 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	/**
 	 * Sets entity status.
 	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[UPD]" })
 	@JsonProperty("setEntityStatus")
-	public void setSetEntityStatus(Boolean setEntityStatus) {
+	public void setSetEntityStatus(ITrackedEntity setEntityStatus) {
 		this.setEntityStatus = setEntityStatus;
 	}
 
 	/**
 	 * Sets entity status.
 	 */
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
+		parameterValues = { "[UPD]" })
 	@JsonProperty("setEntityStatus")
-	public Boolean getSetEntityStatus() {
+	public ITrackedEntity getSetEntityStatus() {
 		return this.setEntityStatus;
 	}
 
@@ -1446,7 +1452,7 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 		private Topic createTopic;
 		private Topic updateTopic;
 		private Topic deleteTopic;
-		private Boolean setEntityStatus;
+		private ITrackedEntity setEntityStatus;
 		private User createUser;
 		private User updateUser;
 		private User updateUserPassword;
@@ -1713,7 +1719,7 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 		/**
 		 * Sets entity status.
 		 */
-		public Builder withSetEntityStatus(Boolean setEntityStatusParam) {
+		public Builder withSetEntityStatus(ITrackedEntity setEntityStatusParam) {
 			this.setEntityStatus = setEntityStatusParam;
 			return this;
 		}

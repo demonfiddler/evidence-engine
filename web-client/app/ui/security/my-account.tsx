@@ -89,15 +89,15 @@ export default function MyAccount({className} : {className: string}) {
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem onSelect={handleProfile}>
-              <UserPenIcon className="inline" />&nbsp;Profile
+              <UserPenIcon className="inline" />&nbsp;Profile...
               <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={handleChangePassword}>
-              <ShieldAlertIcon className="inline" />&nbsp;Change Password
+              <ShieldAlertIcon className="inline" />&nbsp;Change Password...
               <DropdownMenuShortcut>⌘C</DropdownMenuShortcut>
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={handleSettings}>
-              <SettingsIcon className="inline" />&nbsp;Settings
+              <SettingsIcon className="inline" />&nbsp;Settings...
               <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
             </DropdownMenuItem>
           </DropdownMenuGroup>

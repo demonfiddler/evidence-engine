@@ -49,7 +49,7 @@ import useLinkableEntityQueryFilter from "@/hooks/use-linkable-entity-query-filt
 import { filter, LoggerEx } from "@/lib/logger"
 import IPage from "@/app/model/IPage"
 import { QueryResult } from "@/lib/graphql-utils"
-import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react'
+import { ChevronDownIcon, ChevronUpIcon, FunnelIcon, LinkIcon, SquareCheckIcon, SquareIcon } from 'lucide-react'
 
 const logger = new LoggerEx(filter, "[EntityLinkFilter] ")
 
@@ -197,7 +197,14 @@ export default function EntityLinkFilter() {
       <div>
         <div className="flex flex-row items-center space-x-4 px-4">
           <span className="text-lg">
-            Filter by Links
+            <FunnelIcon className="inline" />
+            <LinkIcon className="inline" />
+            &nbsp;Filter by Links&nbsp;
+            {
+              showOnlyLinkedRecords
+              ? <SquareCheckIcon className="inline" />
+              : <SquareIcon className="inline" />
+            }
           </span>
           <CollapsibleTrigger className="justify-self-end" asChild>
             <Button variant="ghost" size="default">

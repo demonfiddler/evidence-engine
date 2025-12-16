@@ -41,7 +41,7 @@ import { READ_LOGS } from "@/lib/graphql-queries"
 import { LogFieldValues } from "../validators/log"
 import LogDialogFilter from "../filter/log-dialog-filter"
 import ButtonEx from "../ext/button-ex"
-import RecordKind from "@/app/model/RecordKind"
+import { RecordKind } from "@/app/model/RecordKinds"
 import { dialog, LoggerEx } from "@/lib/logger"
 import { FileClockIcon } from "lucide-react"
 
@@ -103,9 +103,9 @@ export default function LogDialog({
             ? `Show log for ${recordLabel}`
             : `No ${recordKind} selected`
           }
-        >Show log</ButtonEx>
+        >Log...</ButtonEx>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="w-1/2 max-w-none!">
         <DialogHeader>
           <DialogTitle><FileClockIcon className="inline" />&nbsp;{recordKind} Log</DialogTitle>
           <DialogDescription>

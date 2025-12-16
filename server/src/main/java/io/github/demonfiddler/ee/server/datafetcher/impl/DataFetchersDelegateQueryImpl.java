@@ -39,6 +39,7 @@ import io.github.demonfiddler.ee.server.model.EntityLinkPage;
 import io.github.demonfiddler.ee.server.model.EntityLinkQueryFilter;
 import io.github.demonfiddler.ee.server.model.EntityStatistics;
 import io.github.demonfiddler.ee.server.model.GroupPage;
+import io.github.demonfiddler.ee.server.model.ITrackedEntity;
 import io.github.demonfiddler.ee.server.model.JournalPage;
 import io.github.demonfiddler.ee.server.model.LinkableEntityQueryFilter;
 import io.github.demonfiddler.ee.server.model.LogPage;
@@ -73,10 +74,13 @@ import io.github.demonfiddler.ee.server.repository.PublisherRepository;
 import io.github.demonfiddler.ee.server.repository.QuotationRepository;
 import io.github.demonfiddler.ee.server.repository.StatisticsRepository;
 import io.github.demonfiddler.ee.server.repository.TopicRepository;
+import io.github.demonfiddler.ee.server.repository.TrackedEntityRepository;
 import io.github.demonfiddler.ee.server.repository.UserRepository;
+import io.github.demonfiddler.ee.server.util.AuditUtils;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
 import io.github.demonfiddler.ee.server.util.SecurityUtils;
 import jakarta.annotation.Resource;
+import jakarta.persistence.EntityNotFoundException;
 
 @Component
 public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery {
@@ -90,6 +94,8 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     @Resource
     private EntityLinkRepository entityLinkRepository;
     @Resource
+    private GroupRepository groupRepository;
+    @Resource
     private JournalRepository journalRepository;
     @Resource
     private LogRepository logRepository;
@@ -102,17 +108,19 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     @Resource
     private QuotationRepository quotationRepository;
     @Resource
+    private StatisticsRepository statisticsRepository;
+    @Resource
     private TopicRepository topicRepository;
     @Resource
+    private TrackedEntityRepository trackedEntityRepository;
+    @Resource
     private UserRepository userRepository;
-    @Resource
-    private GroupRepository groupRepository;
-    @Resource
-    private StatisticsRepository statisticsRepository;
     @Resource
     private EntityUtils entityUtils;
     @Resource
     private SecurityUtils securityUtils;
+    @Resource
+    private AuditUtils auditUtils;
 
     @Override
     public Claim claimById(DataFetchingEnvironment dataFetchingEnvironment, Long id) {
@@ -291,8 +299,12 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     }
 
     private boolean matchesFilter(Topic topic, StatisticsQueryFilter filter) {
-        return filter.getStatus() == null ||
-            filter.getStatus().contains(StatusKind.fromGraphQlValue(topic.getStatus()));
+        return filter.getStatus() == null
+            || filter.getStatus().contains(StatusKind.fromGraphQlValue(topic.getStatus()));
+    }
+
+    private EntityNotFoundException createEntityNotFoundException(String type, Long id) {
+        return new EntityNotFoundException(type + " not found with id: " + id);
     }
 
     @Override
@@ -337,6 +349,16 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
         }
 
         return stats.values();
+    }
+
+    @Override
+    public Object audit(DataFetchingEnvironment dataFetchingEnvironment, Long id) {
+        if (id == 0L)
+            return null;
+
+        ITrackedEntity entity = trackedEntityRepository.findById(id) //
+            .orElseThrow(() -> createEntityNotFoundException("ITrackedEntity", id));
+        return auditUtils.audit(entity);
     }
 
 }

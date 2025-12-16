@@ -33,7 +33,7 @@ import {
   QueryState,
   SecurityPageTabState
 } from "@/lib/context"
-import RecordKind from "./model/RecordKind"
+import { RecordKind } from "./model/RecordKinds"
 import ILinkableEntity from "./model/ILinkableEntity"
 import { getRecordLabel } from "@/lib/utils"
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -91,6 +91,8 @@ function defaultAppState() {
     sidebarOpen: true,
     linkFilterOpen: false,
     trackingDetailsOpen: false,
+    statusDialogOpen: false,
+    statusDialogItem: 0,
     masterTopicRecursive: true,
     masterRecordKind: "None",
     showOnlyLinkedRecords: false,
@@ -161,7 +163,7 @@ function defaultQueryState<TFilter>() {
 function defaultPagination() {
   return {
     pageIndex: 0,
-    pageSize: 10
+    pageSize: 5
   } as PaginationState
 }
 
@@ -171,8 +173,9 @@ type ReducerArg = {
     undefined |
     null |
     boolean |
-    User |
     string |
+    number |
+    User |
     RecordKindValueOpt<SelectedRecord> |
     RecordKindValueOpt<IBaseEntity> |
     RecordKindValue<VisibilityState> |
@@ -209,6 +212,8 @@ function reducer(draft: AppState, action: ReducerArg) {
       draft.sidebarOpen = defaults.sidebarOpen
       draft.linkFilterOpen = defaults.linkFilterOpen
       draft.trackingDetailsOpen = defaults.trackingDetailsOpen
+      draft.statusDialogOpen = defaults.statusDialogOpen
+      draft.statusDialogItem = defaults.statusDialogItem
       draft.masterTopicId = defaults.masterTopicId
       draft.masterTopicRecursive = defaults.masterTopicRecursive
       draft.masterRecordKind = defaults.masterRecordKind
@@ -235,6 +240,14 @@ function reducer(draft: AppState, action: ReducerArg) {
     }
     case "setTrackingDetailsOpen": {
       draft.trackingDetailsOpen = action.value as boolean
+      break
+    }
+    case "setStatusDialogOpen": {
+      draft.statusDialogOpen = action.value as boolean
+      break
+    }
+    case "setStatusDialogItem": {
+      draft.statusDialogItem = action.value as number
       break
     }
     case "setMasterTopicId": {
@@ -393,6 +406,16 @@ export default function RootLayout({
     dispatch({command: "setTrackingDetailsOpen", value: trackingDetailsOpen})
   }, [dispatch])
 
+  const setStatusDialogOpen = useCallback((statusDialogOpen: boolean) => {
+    // if (statusDialogOpen !== appState.statusDialogOpen)
+    dispatch({command: "setStatusDialogOpen", value: statusDialogOpen})
+  }, [dispatch])
+
+  const setStatusDialogItem = useCallback((statusDialogItem: number) => {
+    // if (setStatusDialogItem !== appState.setStatusDialogItem)
+    dispatch({command: "setStatusDialogItem", value: statusDialogItem})
+  }, [dispatch])
+
   const setMasterTopicId = useCallback((masterTopicId: string | undefined) => {
     // if (masterTopicId !== appState.masterTopicId)
     dispatch({command: "setMasterTopicId", value: masterTopicId})
@@ -493,6 +516,8 @@ export default function RootLayout({
       setSidebarOpen,
       setLinkFilterOpen,
       setTrackingDetailsOpen,
+      setStatusDialogOpen,
+      setStatusDialogItem,
       setMasterTopicId,
       setMasterTopicRecursive,
       setMasterRecordKind,
@@ -518,6 +543,8 @@ export default function RootLayout({
     setSidebarOpen,
     setLinkFilterOpen,
     setTrackingDetailsOpen,
+    setStatusDialogOpen,
+    setStatusDialogItem,
     setMasterTopicId,
     setMasterTopicRecursive,
     setMasterRecordKind,

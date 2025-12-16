@@ -36,7 +36,7 @@ public enum EntityKind {
 	CLA("CLA", "Claim"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Comment" })
-	COM("COM", "Comment"), //$NON-NLS-1$
+	COM("COM", "Comment"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Country" })
 	COU("COU", "Country"), //

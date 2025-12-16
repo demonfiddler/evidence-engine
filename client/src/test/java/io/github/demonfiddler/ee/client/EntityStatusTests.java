@@ -76,10 +76,10 @@ public class EntityStatusTests extends AbstractGraphQLTests {
             for (int i = list == TopicTests.topics ? 2 : 1; i < list.size(); i++) {
                 ITrackedEntity entity = list.get(i);
                 Long entityId = entity.getId();
-                Boolean result = mutationExecutor.setEntityStatus("", entityId, PUB);
-                if (result)
-                    entity.setStatus(StatusKind.PUB.label());
-                assertThat(result).isTrue();
+                ITrackedEntity result = mutationExecutor.setEntityStatus("", entityId, PUB);
+                assertThat(result).isNotNull();
+                assertThat(result.getStatus()).isEqualTo("PUB");
+                entity.setStatus(StatusKind.PUB.label());
             }
         }
     }

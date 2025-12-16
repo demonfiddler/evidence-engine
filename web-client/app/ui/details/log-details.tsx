@@ -24,6 +24,7 @@ import { Label } from "@/components/ui/label"
 import { formatDateTime } from "@/lib/utils"
 import InputEx from "../ext/input-ex"
 import { detail, LoggerEx } from "@/lib/logger"
+import { NotebookTabsIcon } from "lucide-react"
 
 const logger = new LoggerEx(detail, "[LogDetails] ")
 
@@ -34,6 +35,7 @@ export default function LogDetails({record}: {record: Log | undefined}) {
     <fieldset className="border shadow-lg rounded-md">
       <legend className="text-lg">&nbsp;Log Details&nbsp;</legend>
       <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Log #${record?.id}` : "-Select a log entry in the list above to see its details-"}</p>
+      <span className="text-black text-lg ml-2"><NotebookTabsIcon className="inline" />&nbsp;Details</span>
       <div className="grid grid-cols-4 ml-2 mr-2 mb-2 gap-2">
         <Label htmlFor="timestamp" className="col-start-1">Timestamp:</Label>
         <InputEx

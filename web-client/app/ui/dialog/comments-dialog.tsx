@@ -20,7 +20,7 @@
 'use client'
 
 import Comment from "@/app/model/Comment"
-import RecordKind from "@/app/model/RecordKind"
+import { RecordKind } from "@/app/model/RecordKinds"
 import { Button } from "@/components/ui/button"
 import {
   Sheet,
@@ -388,12 +388,12 @@ export default function CommentsDialog({
               : `No ${targetKind} selected`
           }
         >
-          Show comments
+          Comments...
         </ButtonEx>
       </SheetTrigger>
       <SheetContent className="w-100" onInteractOutside={(e) => e.preventDefault()}>
         <Spinner loading={loading} className="absolute inset-0 bg-black/20 z-50" />
-        <SheetHeader className="border-b-1">
+        <SheetHeader className="border-b">
           <SheetTitle><MessagesSquareIcon className="inline" />&nbsp;Comments</SheetTitle>
           {/* <SheetDescription></SheetDescription> */}
           <Collapsible
@@ -560,7 +560,7 @@ export default function CommentsDialog({
                   <div className="flex flex-col w-full">
                     {
                       comment && !parent
-                        ? <div className="flex gap-4 border-t-1 w-full">
+                        ? <div className="flex gap-4 border-t w-full">
                           <PencilIcon className="stroke-blue-400 stroke-3 size-8" />
                           <div className="flex flex-col grow">
                             <span className="font-bold text-blue-400">Edit comment</span>
@@ -574,7 +574,7 @@ export default function CommentsDialog({
                     }
                     {
                       parent && !comment
-                        ? <div className="flex gap-4 border-t-1 w-full">
+                        ? <div className="flex gap-4 border-t w-full">
                           <ReplyIcon className="stroke-blue-400 stroke-4 size-8" />
                           <div className="flex flex-col grow">
                             <span className="font-bold text-blue-400">Reply to {formatName(parent.createdByUser, false)}</span>

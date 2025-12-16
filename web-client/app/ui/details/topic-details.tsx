@@ -46,6 +46,7 @@ import InputEx from "../ext/input-ex"
 import SelectTriggerEx from "../ext/select-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
 import { detail, LoggerEx } from "@/lib/logger"
+import { NotebookTabsIcon } from "lucide-react"
 
 const logger = new LoggerEx(detail, "[TopicDetails] ")
 
@@ -95,13 +96,7 @@ export default function TopicDetails(
       <Form {...form}>
         <form>
           <FormDescription>
-            <span className="text-lg pt-2 pb-4">
-              &nbsp;&nbsp;{state.mode == "create"
-                ? "Details for new Topic"
-                : record
-                  ? `Details for selected Topic #${record?.id}`
-                  : "-Select a Topic in the list above to see its details-"
-            }</span>
+            <span className="text-black text-lg ml-2"><NotebookTabsIcon className="inline" />&nbsp;Details</span>
           </FormDescription>
           <div className="grid grid-cols-5 ml-2 mr-2 mt-4 mb-4 gap-4 items-center">
             <FormField

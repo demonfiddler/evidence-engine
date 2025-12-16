@@ -31,7 +31,9 @@ public class CustomPublicationRepositoryImpl extends CustomLinkableEntityReposit
 
     @Override
     protected String getFulltextColumns() {
-        return "\"title\", \"authors\", \"abstract\", \"notes\", \"doi\", \"isbn\", \"url\"";
+        return "\"title\",\"authors\",\"abstract\",\"keywords\",\"notes\",\"doi\",\"isbn\",\"pmcid\",\"pmid\","
+            + "\"hsid\",\"arxivid\",\"biorxivid\",\"medrxivid\",\"ericid\",\"ihepid\",\"oaipmhid\",\"halid\","
+            + "\"zenodoid\",\"scopuseid\",\"wsan\",\"pinfoan\",\"url\"";
     }
 
 }

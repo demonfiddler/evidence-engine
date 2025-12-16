@@ -20,7 +20,7 @@
 import { createContext } from 'react'
 
 import ILinkableEntity from "../app/model/ILinkableEntity"
-import RecordKind from "../app/model/RecordKind"
+import { RecordKind } from "../app/model/RecordKinds"
 import Authority from '@/app/model/Authority'
 import User from '@/app/model/User'
 import {
@@ -134,12 +134,16 @@ export type ToggleState = {
   sidebarOpen: boolean
   linkFilterOpen: boolean
   trackingDetailsOpen: boolean
+  statusDialogOpen: boolean
+  statusDialogItem: number
 }
 
 export type ToggleStateSetters = {
   setSidebarOpen: (sidebarOpen: boolean) => void
   setLinkFilterOpen: (linkFilterOpen: boolean) => void
   setTrackingDetailsOpen: (trackingDetailsOpen: boolean) => void
+  setStatusDialogOpen: (statusDialogOpen: boolean) => void
+  setStatusDialogItem: (statusDialogItem: number) => void
 }
 
 export type StorageState = {
@@ -189,6 +193,8 @@ export const GlobalContext = createContext<GlobalContextType>({
   linkFilterOpen: false,
   showOnlyLinkedRecords: false,
   trackingDetailsOpen: false,
+  statusDialogOpen: false,
+  statusDialogItem: 0,
   masterTopicRecursive: true,
   masterRecordKind: "None",
   selectedRecords: {},
@@ -199,6 +205,8 @@ export const GlobalContext = createContext<GlobalContextType>({
   setSidebarOpen: () => {throw new Error("setSidebarOpen() not supported in default GlobalContext")},
   setLinkFilterOpen: () => {throw new Error("setLinkFilterOpen() not supported in default GlobalContext")},
   setTrackingDetailsOpen: () => {throw new Error("setTrackingDetailsOpen() not supported in default GlobalContext")},
+  setStatusDialogOpen: () => {throw new Error("setStatusDialogOpen() not supported in default GlobalContext")},
+  setStatusDialogItem: () => {throw new Error("setStatusDialogItem() not supported in default GlobalContext")},
   setMasterTopicId: () => {throw new Error("setMasterTopicId() not supported in default GlobalContext")},
   setMasterTopicRecursive: () => {throw new Error("setMasterTopicRecursive() not supported in default GlobalContext")},
   setMasterRecordKind: () => {throw new Error("setMasterRecordKind() not supported in default GlobalContext")},

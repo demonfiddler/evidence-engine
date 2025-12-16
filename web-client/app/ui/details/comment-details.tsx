@@ -20,28 +20,15 @@
 'use client'
 
 import Comment from "@/app/model/Comment"
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
 import StandardDetails from "./standard-details"
-import DetailActions, { DetailMode, DetailState } from "./detail-actions"
-import { Dispatch, SetStateAction } from "react"
-import { useFormContext } from "react-hook-form"
-import { CommentFieldValues } from "../validators/comment"
-import { FormActionHandler } from "@/hooks/use-page-logic"
+import { DetailState } from "./detail-actions"
 import TextareaEx from "../ext/textarea-ex"
-import StarRatingBasicEx from "../ext/star-rating-ex"
 import { detail, LoggerEx } from "@/lib/logger"
 import { Label } from "@/components/ui/label"
 import InputEx from "../ext/input-ex"
 import { getRecordLabel } from "@/lib/utils"
-import RecordKind from "@/app/model/RecordKind"
+import { RecordKind } from "@/app/model/RecordKinds"
+import { NotebookTabsIcon } from "lucide-react"
 
 const logger = new LoggerEx(detail, "[CommentDetails] ")
 
@@ -58,8 +45,8 @@ export default function CommentDetails(
   return (
     <fieldset className="border shadow-lg rounded-md">
       <legend className="text-lg">&nbsp;Comment Details&nbsp;</legend>
-      <p className="pt-2 pb-4">&nbsp;&nbsp;{record ? `Details for selected Comment #${record?.id}` : "-Select a comment in the list above to see its details-"}</p>
       <StandardDetails recordKind="Comment" record={record} state={state} showLinkingDetails={false} />
+      <span className="text-black text-lg ml-2"><NotebookTabsIcon className="inline" />&nbsp;Details</span>
       <div className="grid grid-cols-5 m-2 gap-2">
         <Label htmlFor="target" className="col-start-1">Target:</Label>
         <InputEx

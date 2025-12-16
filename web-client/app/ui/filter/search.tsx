@@ -70,7 +70,7 @@ export default function Search(
         delay={500}
         onChange={(e) => onChangeText(e.target.value ?? '')}
         clearOnEscape={true}
-        help="Filter the table to show only records containing the specified text. This performs a case-insensitive match against all text fields, matching whole words unless 'Advanced' is checked."
+        help="Filter the list to show only records containing the specified text. This performs a case-insensitive match against all text fields, matching whole words unless 'Advanced' is checked."
       />
       <XIcon className="w-5 h-5 text-gray-400" onClick={() => onChangeText('')} />
     </div>

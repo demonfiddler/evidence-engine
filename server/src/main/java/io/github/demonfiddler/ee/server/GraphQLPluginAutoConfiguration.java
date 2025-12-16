@@ -31,9 +31,12 @@ import io.github.demonfiddler.ee.server.controller.CommentController;
 import io.github.demonfiddler.ee.server.controller.CommentPageController;
 import io.github.demonfiddler.ee.server.controller.DeclarationController;
 import io.github.demonfiddler.ee.server.controller.DeclarationPageController;
+import io.github.demonfiddler.ee.server.controller.EntityAuditController;
 import io.github.demonfiddler.ee.server.controller.EntityLinkController;
 import io.github.demonfiddler.ee.server.controller.EntityLinkPageController;
 import io.github.demonfiddler.ee.server.controller.EntityStatisticsController;
+import io.github.demonfiddler.ee.server.controller.FieldAuditController;
+import io.github.demonfiddler.ee.server.controller.FieldGroupAuditEntryController;
 import io.github.demonfiddler.ee.server.controller.GroupController;
 import io.github.demonfiddler.ee.server.controller.GroupPageController;
 import io.github.demonfiddler.ee.server.controller.IBaseEntityController;
@@ -42,6 +45,9 @@ import io.github.demonfiddler.ee.server.controller.IPageController;
 import io.github.demonfiddler.ee.server.controller.ITrackedEntityController;
 import io.github.demonfiddler.ee.server.controller.JournalController;
 import io.github.demonfiddler.ee.server.controller.JournalPageController;
+import io.github.demonfiddler.ee.server.controller.LinkAuditController;
+import io.github.demonfiddler.ee.server.controller.LinkAuditEntryController;
+import io.github.demonfiddler.ee.server.controller.LinkGroupAuditEntryController;
 import io.github.demonfiddler.ee.server.controller.LogController;
 import io.github.demonfiddler.ee.server.controller.LogPageController;
 import io.github.demonfiddler.ee.server.controller.MutationController;
@@ -205,6 +211,85 @@ public class GraphQLPluginAutoConfiguration {
 	@ConditionalOnMissingBean(name = "journalPageController")
 	JournalPageController journalPageController(BatchLoaderRegistry registry) {
 		return new JournalPageController(registry);
+	}
+
+	/**
+	 * Default declaration of the spring controller for the entity <code>EntityAudit</code>. This default spring can be
+	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary spring annotation.<br/>
+	 * The <code>EntityAuditController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 */
+	@Bean
+	@ConditionalOnMissingBean(name = "entityAuditController")
+	EntityAuditController entityAuditController(BatchLoaderRegistry registry) {
+		return new EntityAuditController();
+	}
+
+	/**
+	 * Default declaration of the spring controller for the entity <code>LinkAudit</code>. This default spring can be
+	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary spring annotation.<br/>
+	 * The <code>LinkAuditController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 */
+	@Bean
+	@ConditionalOnMissingBean(name = "linkAuditController")
+	LinkAuditController linkAuditController(BatchLoaderRegistry registry) {
+		return new LinkAuditController();
+	}
+
+	/**
+	 * Default declaration of the spring controller for the entity <code>LinkAuditEntry</code>. This default spring can
+	 * be overridden by declaring a Spring Bean of same type and name, that has the @Primary spring annotation.<br/>
+	 * The <code>LinkAuditEntryController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 */
+	@Bean
+	@ConditionalOnMissingBean(name = "linkAuditEntryController")
+	LinkAuditEntryController linkAuditEntryController(BatchLoaderRegistry registry) {
+		return new LinkAuditEntryController();
+	}
+
+	/**
+	 * Default declaration of the spring controller for the entity <code>LinkGroupAuditEntry</code>. This default spring
+	 * can be overridden by declaring a Spring Bean of same type and name, that has the @Primary spring annotation.<br/>
+	 * The <code>LinkGroupAuditEntryController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 */
+	@Bean
+	@ConditionalOnMissingBean(name = "linkGroupAuditEntryController")
+	LinkGroupAuditEntryController linkGroupAuditEntryController(BatchLoaderRegistry registry) {
+		return new LinkGroupAuditEntryController();
+	}
+
+	/**
+	 * Default declaration of the spring controller for the entity <code>FieldAudit</code>. This default spring can be
+	 * overridden by declaring a Spring Bean of same type and name, that has the @Primary spring annotation.<br/>
+	 * The <code>FieldAuditController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 */
+	@Bean
+	@ConditionalOnMissingBean(name = "fieldAuditController")
+	FieldAuditController fieldAuditController(BatchLoaderRegistry registry) {
+		return new FieldAuditController();
+	}
+
+	/**
+	 * Default declaration of the spring controller for the entity <code>FieldGroupAuditEntry</code>. This default
+	 * spring can be overridden by declaring a Spring Bean of same type and name, that has the @Primary spring
+	 * annotation.<br/>
+	 * The <code>FieldGroupAuditEntryController</code> bean must be a valid bean that can be discovered by the
+	 * <code>AnnotatedControllerConfigurer</code> spring configurer, for this configurer to work. But it must not be
+	 * discovered. So it is excluded in the {@link GraphQLServerMain} configuration.
+	 */
+	@Bean
+	@ConditionalOnMissingBean(name = "fieldGroupAuditEntryController")
+	FieldGroupAuditEntryController fieldGroupAuditEntryController(BatchLoaderRegistry registry) {
+		return new FieldGroupAuditEntryController();
 	}
 
 	/**

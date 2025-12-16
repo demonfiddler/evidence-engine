@@ -44,6 +44,7 @@ import SelectTriggerEx from "../ext/select-ex"
 import CheckboxEx from "../ext/checkbox-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
 import { detail, LoggerEx } from "@/lib/logger"
+import { NotebookTabsIcon } from "lucide-react"
 
 const logger = new LoggerEx(detail, "[PersonDetails] ")
 
@@ -74,13 +75,7 @@ export default function PersonDetails(
       <Form {...form}>
         <form>
           <FormDescription>
-            <span className="text-lg pt-2 pb-4">
-              &nbsp;&nbsp;{state.mode == "create"
-                ? "Details for new Person"
-                : record
-                  ? `Details for selected Person #${record?.id}`
-                  : "-Select a Person in the list above to see his/her details-"
-            }</span>
+            <span className="text-black text-lg ml-2"><NotebookTabsIcon className="inline" />&nbsp;Details</span>
           </FormDescription>
           <div className="grid grid-cols-5 ml-2 mr-2 mt-4 mb-4 gap-2">
             <FormField

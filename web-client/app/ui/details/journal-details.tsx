@@ -53,6 +53,7 @@ import IPage from "@/app/model/IPage"
 import { QueryResult } from "@/lib/graphql-utils"
 import { useQuery } from "@apollo/client/react"
 import CheckboxEx from "../ext/checkbox-ex"
+import { NotebookTabsIcon } from "lucide-react"
 
 const logger = new LoggerEx(detail, "[JournalDetails] ")
 
@@ -88,13 +89,7 @@ export default function JournalDetails(
       <Form {...form}>
         <form>
           <FormDescription>
-            <span className="text-lg pt-2 pb-4">
-              &nbsp;&nbsp;{state.mode == "create"
-                ? "Details for new Journal"
-                : record
-                  ? `Details for selected Journal #${record?.id}`
-                  : "-Select a Journal in the list above to see its details-"
-            }</span>
+            <span className="text-black text-lg ml-2"><NotebookTabsIcon className="inline" />&nbsp;Details</span>
           </FormDescription>
           <div className="grid grid-cols-3 ml-2 mr-2 mt-4 mb-4 gap-4">
             <FormField

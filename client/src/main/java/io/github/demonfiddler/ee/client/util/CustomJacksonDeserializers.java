@@ -32,8 +32,12 @@ import io.github.demonfiddler.ee.client.Comment;
 import io.github.demonfiddler.ee.client.Declaration;
 import io.github.demonfiddler.ee.client.EntityLink;
 import io.github.demonfiddler.ee.client.EntityStatistics;
+import io.github.demonfiddler.ee.client.FieldAuditEntry;
+import io.github.demonfiddler.ee.client.FieldGroupAuditEntry;
 import io.github.demonfiddler.ee.client.Group;
 import io.github.demonfiddler.ee.client.Journal;
+import io.github.demonfiddler.ee.client.LinkAuditEntry;
+import io.github.demonfiddler.ee.client.LinkGroupAuditEntry;
 import io.github.demonfiddler.ee.client.Log;
 import io.github.demonfiddler.ee.client.Person;
 import io.github.demonfiddler.ee.client.Publication;
@@ -295,6 +299,42 @@ public class CustomJacksonDeserializers {
 		private static final long serialVersionUID = 1L;
 		public ListComment() {
 			super(null, true, Comment.class, null);
+		}
+
+	}
+
+	public static class ListLinkAuditEntry extends AbstractCustomJacksonDeserializer<List<LinkAuditEntry>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListLinkAuditEntry() {
+			super(null, true, LinkAuditEntry.class, null);
+		}
+
+	}
+
+	public static class ListLinkGroupAuditEntry extends AbstractCustomJacksonDeserializer<List<LinkGroupAuditEntry>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListLinkGroupAuditEntry() {
+			super(null, true, LinkGroupAuditEntry.class, null);
+		}
+
+	}
+
+	public static class ListFieldAuditEntry extends AbstractCustomJacksonDeserializer<List<FieldAuditEntry>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListFieldAuditEntry() {
+			super(null, true, FieldAuditEntry.class, null);
+		}
+
+	}
+
+	public static class ListFieldGroupAuditEntry extends AbstractCustomJacksonDeserializer<List<FieldGroupAuditEntry>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListFieldGroupAuditEntry() {
+			super(null, true, FieldGroupAuditEntry.class, null);
 		}
 
 	}

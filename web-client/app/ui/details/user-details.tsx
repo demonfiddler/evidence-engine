@@ -54,6 +54,7 @@ import CheckboxEx from "../ext/checkbox-ex"
 import ButtonEx from "../ext/button-ex"
 import FieldsetEx from "../ext/fieldset-ex"
 import { detail, LoggerEx } from "@/lib/logger"
+import { NotebookTabsIcon } from "lucide-react"
 
 const logger = new LoggerEx(detail, "[UserDetails] ")
 
@@ -104,13 +105,7 @@ export default function UserDetails(
       <Form {...form}>
         <form>
           <FormDescription>
-            <span className="text-lg pt-2 pb-4">
-              &nbsp;&nbsp;{state.mode == "create"
-                ? "Details for new User"
-                : user
-                  ? `Details for selected User #${user?.id}`
-                  : "-Select a User in the list above to see its details-"
-            }</span>
+            <span className="text-black text-lg ml-2"><NotebookTabsIcon className="inline" />&nbsp;Details</span>
           </FormDescription>
           <div className="grid grid-cols-3 ml-2 mr-2 mt-4 mb-4 gap-4 items-center">
             <FormField

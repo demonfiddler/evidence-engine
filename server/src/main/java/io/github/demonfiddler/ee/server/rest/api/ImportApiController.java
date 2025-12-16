@@ -532,9 +532,9 @@ public class ImportApiController implements ImportApi {
                                         "No Journal specified for Publication (missing JF/T2/JA/J2/JO/SN tag?)");
                                 }
 
-                                // TODO: set PeerReviewed = TRUE if this is a peer-reviewed journal.
                                 if (journal != null) {
                                     builder.withJournalId(journal.getId());
+                                    builder.withPeerReviewed(journal.getPeerReviewed());
                                     if (journalExists && journal.getPublisher() == null) {
                                         addMessage(importedRecord, lineNum, WARNING,
                                             "No Publisher associated with existing Journal# " + journal.getId());

@@ -27,6 +27,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -50,6 +52,7 @@ import io.github.demonfiddler.ee.server.model.DeclarationInput;
 import io.github.demonfiddler.ee.server.model.EntityKind;
 import io.github.demonfiddler.ee.server.model.EntityLink;
 import io.github.demonfiddler.ee.server.model.EntityLinkInput;
+import io.github.demonfiddler.ee.server.model.EntityLinkQueryFilter;
 import io.github.demonfiddler.ee.server.model.Group;
 import io.github.demonfiddler.ee.server.model.GroupInput;
 import io.github.demonfiddler.ee.server.model.ILinkableEntity;
@@ -1119,16 +1122,34 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @Override
     @PreAuthorize("hasAuthority('UPD')")
     public Object setEntityStatus(DataFetchingEnvironment dataFetchingEnvironment, Long entityId, StatusKind status) {
-        // Maybe setEntityStatus() should return the updated entity?
         AbstractTrackedEntity entity = trackedEntityRepository.findById(entityId)
             .orElseThrow(() -> createEntityNotFoundException("ITrackedEntity", entityId));
+        return setEntityStatus(dataFetchingEnvironment, entity, status);
+    }
+
+    private Object setEntityStatus(DataFetchingEnvironment dataFetchingEnvironment, AbstractTrackedEntity entity,
+        StatusKind status) {
+
         if (entity.getStatus().equals(status.name()))
-            return false;
+            return entity;
+
+        if (entity instanceof ILinkableEntity) {
+            // Cascade the status update to all outbound entity links with the same status as the entity.
+            StatusKind curStatus = StatusKind.valueOf(entity.getStatus());
+            EntityLinkQueryFilter filter = EntityLinkQueryFilter.builderForEntityLinkQueryFilter() //
+                .withFromEntityId(entity.getId()) //
+                .withStatus(List.of(curStatus)) //
+                .build();
+            Page<EntityLink> matchingLinks = entityLinkRepository.findByFilter(filter, Pageable.unpaged());
+            for (EntityLink entityLink : matchingLinks.getContent())
+                setEntityStatus(dataFetchingEnvironment, entityLink, status);
+        }
+
         entity.setStatus(status.name());
         setUpdatedFields(entity);
         logUpdated(entity);
-        trackedEntityRepository.save(entity);
-        return true;
+
+        return trackedEntityRepository.save(entity);
     }
 
 }

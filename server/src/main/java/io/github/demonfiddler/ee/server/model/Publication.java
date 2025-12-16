@@ -126,9 +126,8 @@ public class Publication extends AbstractLinkableEntity {
 	/**
 	 * The U.S. NIH National Library of Medicine's PubMed Central ID.
 	 */
-	@GraphQLScalar(fieldName = "pmcid", graphQLTypeSimpleName = "String", javaClass = java.lang.String.class,
-		listDepth = 0)
-	java.lang.String pmcid;
+	@GraphQLScalar(fieldName = "pmcid", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
+	String pmcid;
 
 	/**
 	 * The U.S. NIH National Library of Medicine's PubMed ID.
@@ -860,7 +859,7 @@ public class Publication extends AbstractLinkableEntity {
 		/**
 		 * The U.S. NIH National Library of Medicine's PubMed Central ID.
 		 */
-		public Builder withPmcid(java.lang.String pmcidParam) {
+		public Builder withPmcid(String pmcidParam) {
 			this.pmcid = pmcidParam;
 			return this;
 		}

@@ -24,10 +24,11 @@ import Authority from "./Authority"
 type DirectionKind = "ASC" | "DESC"
 type EntityKind = "CLA" | "COM" | "COU" | "DEC" | "GRP" | "JOU" | "LNK" | "PER" | "PUB" | "PBR" | "QUO" | "TOP" | "USR"
 type NullHandlingKind = "NATIVE" | "NULLS_FIRST" | "NULLS_LAST"
+type SeverityKind = "INFO" | "WARNING" | "ERROR"
 type StatusKind = "DRA" | "PUB" | "SUS" | "DEL"
 type TransactionKind = "CRE" | "UPD" | "DEL" | "LNK" | "UNL" | "COM"
 
-export type {DirectionKind, EntityKind, NullHandlingKind, StatusKind, TransactionKind}
+export type {DirectionKind, EntityKind, NullHandlingKind, SeverityKind, StatusKind, TransactionKind}
 
 export type LogQueryFilter = {
   entityKind?: EntityKind

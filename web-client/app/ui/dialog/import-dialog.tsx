@@ -19,7 +19,7 @@
 
 'use client'
 
-import RecordKind from "@/app/model/RecordKind";
+import { RecordKind } from "@/app/model/RecordKinds";
 import useAuth from "@/hooks/use-auth";
 import { useCallback, useContext, useState } from "react";
 import { Button } from "@/components/ui/button"

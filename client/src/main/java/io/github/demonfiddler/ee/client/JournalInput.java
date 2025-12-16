@@ -240,7 +240,7 @@ public class JournalInput extends AbstractTrackedEntityInput {
 	  * Whether the journal publishes peer-reviewed articles
  	 */
 	@JsonProperty("peerReviewed")
-	public void setPeerReviewed(java.lang.Boolean peerReviewed) {
+	public void setPeerReviewed(Boolean peerReviewed) {
 		this.peerReviewed = peerReviewed;
 	}
 

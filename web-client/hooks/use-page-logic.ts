@@ -21,7 +21,7 @@
 
 import IPage from "@/app/model/IPage"
 import ITrackedEntity from "@/app/model/ITrackedEntity"
-import RecordKind from "@/app/model/RecordKind"
+import { LinkableEntityKind, RecordKind } from "@/app/model/RecordKinds"
 import { BaseEntityInput, LinkableEntityQueryFilter, LogQueryFilter, PageableInput, TrackedEntityQueryFilter } from "@/app/model/schema"
 import { GlobalContext, QueryState } from "@/lib/context"
 import { DocumentNode, ErrorLike } from "@apollo/client"
@@ -432,7 +432,7 @@ export default function usePageLogic<
                     otherRecordIdProperty,
                     thisLocationsProperty,
                     otherLocationsProperty,
-                  ] = getRecordLinkProperties(recordKind, masterRecordKind)
+                  ] = getRecordLinkProperties(recordKind as LinkableEntityKind, masterRecordKind as LinkableEntityKind)
                   masterRecordLinkInput = {
                     [thisRecordIdProperty]: newRecord.id,
                     [otherRecordIdProperty]: masterRecordId,

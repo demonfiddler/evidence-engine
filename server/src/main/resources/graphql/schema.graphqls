@@ -923,6 +923,95 @@ input LinkableEntityQueryFilter {
     recordId: ID
 }
 
+"Message severities."
+enum SeverityKind {
+    "An informational message."
+    INFO
+    "A warning message."
+    WARNING
+    "An error message."
+    ERROR
+}
+
+"Holds aggregated audit information for an entity."
+type EntityAudit {
+    "The entity to which the audit relates."
+    entity: ITrackedEntity
+    "Field audit information."
+    fieldAudit: FieldAudit
+    "Link audit information. Only populated if entity is an ILinkableEntity"
+    linkAudit: LinkAudit
+    "Whether the entity meets the standard required for publication."
+    pass: Boolean
+}
+
+"Holds aggregated link audit information."
+type LinkAudit {
+    "The individual link audit entries."
+    links: [LinkAuditEntry!]
+    "Link group audit entries."
+    groups: [LinkGroupAuditEntry!]
+    "Whether the links meet the standard required for publication."
+    pass: Boolean
+}
+
+"An individual link audit entry."
+type LinkAuditEntry {
+    "The linked entity kind."
+    linkedEntityKind(
+        "How to format the result. SHORT format is per ```EntityKind``` enum."
+        format: FormatKind = SHORT
+    ): String
+    "The required minimum number of links."
+    min: Int
+    "The actual number of links."
+    actual: Int
+    "Whether the link meets the standard required for publication."
+    pass: Boolean
+}
+
+"Holds link group audit information. At least one link in the group must be present."
+type LinkGroupAuditEntry {
+    "Link group audit entries."
+    links: [LinkAuditEntry!]
+    "Whether the link group meets the standard required for publication."
+    pass: Boolean
+}
+
+"Holds aggregated field audit information."
+type FieldAudit {
+    "The individual field audit entries."
+    fields: [FieldAuditEntry!]
+    "Field group audit entries."
+    groups: [FieldGroupAuditEntry!]
+    "Whether the fields meet the standard required for publication."
+    pass: Boolean
+}
+
+"An individual field audit entry."
+type FieldAuditEntry {
+    "The field name."
+    fieldName: String
+    "A message about the field."
+    message: String
+    "The message severity level."
+    severity: SeverityKind
+    "Whether the field meets the standard required for publication."
+    pass: Boolean
+}
+
+"Holds field group audit information. At least one field in the group must be set."
+type FieldGroupAuditEntry {
+    "Field group audit entries."
+    fields: [FieldAuditEntry!]
+    "A message about the field group."
+    message: String
+    "The message severity level."
+    severity: SeverityKind
+    "Whether the field group meets the standard required for publication."
+    pass: Boolean
+}
+
 # TODO: See whether GraphQL has any hook points to perform logging
 "A log entry to show who changed what and when."
 type Log implements IBaseEntity {
@@ -2330,6 +2419,9 @@ type Query {
         "Selects the entities to include."
         filter: StatisticsQueryFilter
     ): [TopicStatistics!]
+
+    "Returns audit information on the specified entity."
+    audit(id: ID!): EntityAudit!
 }
 
 "Available mutations."
@@ -2408,7 +2500,7 @@ type Mutation {
     deleteTopic(topicId: ID!): Topic @auth(authority: [DEL])
 
     "Sets entity status."
-    setEntityStatus(entityId: ID!, status: StatusKind!) : Boolean @auth(authority: [UPD])
+    setEntityStatus(entityId: ID!, status: StatusKind!) : ITrackedEntity @auth(authority: [UPD])
 
     "Creates a new user."
     createUser(user: UserInput!): User @auth(authority: [ADM])
