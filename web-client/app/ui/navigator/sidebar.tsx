@@ -36,16 +36,16 @@ export default function Sidebar({open} : SidebarProps) {
 
   return (
     <div
-      className={open ? "flex flex-col w-50 p-2 pt-4 border-r-1 bg-gray-50" : "w-0 none overflow-clip"}
+      className={open ? "flex flex-col w-50 border-r bg-gray-50" : "w-0 none overflow-clip"}
       data-slot="sidebar-container"
     >
-      <div className="flex place-content-center border-b-1 h-20" data-slot="sidebar-header">
+      <div className="flex place-content-center border-b h-24" data-slot="sidebar-header">
         <Link href="/" title="Navigate to the Evidence Engine home page">
-          <Image src="/logo.svg" alt="The Evidence Engine logo" width={100} height={100} className="" />
+          <Image src="/logo.svg" alt="The Evidence Engine logo" width={120} height={120} className="" />
         </Link>
       </div>
       <div className="grow shrink overflow-y-auto">
-        <h3 className="mt-4">Pages</h3> {
+        <h3 className="ml-3 mt-3">Pages</h3> {
         appItems.map((link) => {
           const LinkIcon = link.icon;
           return (
@@ -53,7 +53,7 @@ export default function Sidebar({open} : SidebarProps) {
               key={link.label}
               href={link.href}
               className={clsx(
-                'flex h-[40px] grow items-center justify-center gap-2 rounded-md p-3 text-sm font-medium hover:bg-sky-50 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3',
+                'flex h-10 grow items-center justify-center gap-2 rounded-md p-3 text-sm font-medium hover:bg-sky-50 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3',
                 {
                   'bg-sky-100 text-blue-600': pathname === link.href,
                 },
@@ -67,7 +67,7 @@ export default function Sidebar({open} : SidebarProps) {
         {
           hasAuthority("ADM")
           ? <>
-            <h3 className="mt-4">Administration</h3> {
+            <h3 className="ml-3 mt-3">Administration</h3> {
               adminItems.map((link) => {
                 const LinkIcon = link.icon;
                 return (
@@ -75,7 +75,7 @@ export default function Sidebar({open} : SidebarProps) {
                     key={link.label}
                     href={link.href}
                     className={clsx(
-                      'flex h-[48px] grow items-center justify-center gap-2 rounded-md p-3 text-sm font-medium hover:bg-sky-50 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3',
+                      'flex h-12 grow items-center justify-center gap-2 rounded-md p-3 text-sm font-medium hover:bg-sky-50 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3',
                       {
                         'bg-sky-100 text-blue-600': pathname === link.href,
                       },
@@ -91,7 +91,7 @@ export default function Sidebar({open} : SidebarProps) {
           : null
         }
       </div>
-      <div className="flex place-content-center border-t-1 h-20" data-slot="sidebar-footer">
+      <div className="flex place-content-center items-center border-t h-24" data-slot="sidebar-footer">
         <Link href="https://campaign-resources.org" target="_blank" title="Navigate to the Campaign Resources home page">
           <Image src="/cr-logo.svg" alt="The Campaign Resources logo" width={100} height={100} className="" />
         </Link>
