@@ -176,7 +176,6 @@ CREATE INDEX "person_title" ON "person" ("title");
 CREATE INDEX "person_first_name" ON "person" ("first_name");
 CREATE INDEX "person_last_name" ON "person" ("last_name");
 CREATE INDEX "person_qualifications" ON "person" ("qualifications");
-CREATE INDEX "person_rating" ON "person" ("rating");
 CREATE INDEX "person_country" ON "person" ("country");
 CREATE INDEX "person_notes" ON "person" ("notes");
 CALL FT_CREATE_INDEX('PUBLIC', 'person', 'title,first_name,nickname,prefix,last_name,suffix,alias,notes,qualifications');
@@ -414,6 +413,13 @@ ALTER TABLE "entity_link"
   ON DELETE CASCADE;
 
 
+ALTER TABLE "group"
+  ADD FOREIGN KEY ("id")
+  REFERENCES "entity" ("id")
+  ON UPDATE CASCADE
+  ON DELETE CASCADE;
+
+
 ALTER TABLE "group_authority"
   ADD FOREIGN KEY ("group_id")
   REFERENCES "group" ("id")
@@ -423,7 +429,8 @@ ALTER TABLE "group_authority"
 ALTER TABLE "group_authority"
   ADD FOREIGN KEY ("authority")
   REFERENCES "authority_kind" ("code")
-  ON UPDATE CASCADE;
+  ON UPDATE CASCADE
+  ON DELETE CASCADE;
 
 
 ALTER TABLE "group_user"
@@ -449,13 +456,14 @@ ALTER TABLE "journal"
   ADD FOREIGN KEY ("publisher_id") 
   REFERENCES "publisher" ("id")
   ON UPDATE CASCADE
-  ON DELETE CASCADE;
+  ON DELETE SET NULL;
 
 
 ALTER TABLE "log"
   ADD FOREIGN KEY ("transaction_kind")
   REFERENCES "transaction_kind" ("code")
-  ON UPDATE CASCADE;
+  ON UPDATE CASCADE
+  ON DELETE CASCADE;
 
 ALTER TABLE "log"
   ADD FOREIGN KEY ("user_id")
@@ -472,7 +480,8 @@ ALTER TABLE "log"
 ALTER TABLE "log"
   ADD FOREIGN KEY ("entity_kind")
   REFERENCES "entity_kind" ("code")
-  ON UPDATE CASCADE;
+  ON UPDATE CASCADE
+  ON DELETE CASCADE;
 
 ALTER TABLE "log"
   ADD FOREIGN KEY ("linked_entity_id")
@@ -483,7 +492,8 @@ ALTER TABLE "log"
 ALTER TABLE "log"
   ADD FOREIGN KEY ("linked_entity_kind")
   REFERENCES "entity_kind" ("code")
-  ON UPDATE CASCADE;
+  ON UPDATE CASCADE
+  ON DELETE CASCADE;
 
 
 ALTER TABLE "person"
@@ -508,12 +518,14 @@ ALTER TABLE "publication"
 ALTER TABLE "publication"
   ADD FOREIGN KEY ("kind") 
   REFERENCES "publication_kind" ("kind")
-  ON UPDATE CASCADE;
+  ON UPDATE CASCADE
+  ON DELETE CASCADE;
 
 ALTER TABLE "publication"
   ADD FOREIGN KEY ("journal_id") 
   REFERENCES "journal" ("id")
-  ON UPDATE CASCADE;
+  ON UPDATE CASCADE
+  ON DELETE SET NULL;
 
 
 ALTER TABLE "publisher"
@@ -525,7 +537,8 @@ ALTER TABLE "publisher"
 ALTER TABLE "publisher"
   ADD FOREIGN KEY ("country") 
   REFERENCES "country" ("alpha_2")
-  ON UPDATE CASCADE;
+  ON UPDATE CASCADE
+  ON DELETE SET NULL;
 
 
 ALTER TABLE "quotation"

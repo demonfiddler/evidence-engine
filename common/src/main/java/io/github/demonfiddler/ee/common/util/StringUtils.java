@@ -26,6 +26,8 @@ import java.util.StringTokenizer;
  */
 public final class StringUtils {
 
+    public static final String NL = System.getProperty("line.separator");
+
     /**
      * Counts the number of lines in a string.
      * @param s The string.

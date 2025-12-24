@@ -137,7 +137,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000"));
+        config.setAllowedOrigins(List.of("http://localhost:3000", "https://editor.swagger.io/"));
         config.setAllowedMethods(List.of("GET", "POST", "OPTIONS"));
         config.setAllowedHeaders(List.of("Content-Type", "Authorization"));
         config.setAllowCredentials(true); // optional, depending on your needs
@@ -173,7 +173,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(customizer -> {
                 customizer //
                     .requestMatchers("/graphiql").authenticated() //
-                    .requestMatchers("/rest/**").authenticated() //
+                    .requestMatchers("/rest/**").permitAll() //.authenticated() //
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // allow preflight
                     .requestMatchers(HttpMethod.POST, "/graphql").permitAll().anyRequest().authenticated();
             }) //

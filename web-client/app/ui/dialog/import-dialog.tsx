@@ -95,7 +95,7 @@ export default function ImportDialog({recordKind, accept} : ImportDialogProps) {
   const getHref = useCallback(() => {
     const href = `${process.env.NEXT_PUBLIC_SERVER_URL}/rest/import/${recordKind.toLowerCase()}s`
     console.log(`href='${href}'`)
-    return `${process.env.NEXT_PUBLIC_SERVER_URL}/rest/import/${recordKind.toLowerCase()}s`
+    return href
   }, [recordKind])
 
   const handleDrop = useCallback((files: File[]) => {
@@ -114,6 +114,7 @@ export default function ImportDialog({recordKind, accept} : ImportDialogProps) {
     if (!files || files.length == 0 || !jwtToken)
       return
 
+    setError("")
     setImportedRecords([])
     setIsLoading(true)
     const headers : HeadersInit = {
@@ -140,14 +141,12 @@ export default function ImportDialog({recordKind, accept} : ImportDialogProps) {
       logger.trace("ImportedRecords: %o", importedRecords)
       setError("")
       setImportedRecords(importedRecords)
-      setIsLoading(false)
       api?.scrollTo(1)
       toast.info(`${(importedRecords as ImportedRecord[]).filter(rec => rec.result === "imported").length} ${recordKind}s imported`)
     }) //
     .catch(error => {
       setError(error.message)
-      setIsLoading(false)
-    })
+    }).finally(() => setIsLoading(false))
   }, [files, jwtToken, getHref, api])
 
   const handleCopy = useCallback(() => {

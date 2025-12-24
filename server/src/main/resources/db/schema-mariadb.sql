@@ -34,7 +34,7 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 SET SQL_MODE = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION,ANSI,NO_AUTO_VALUE_ON_ZERO';
 
-CREATE TABLE "abbreviation" (
+CREATE TABLE IF NOT EXISTS "abbreviation" (
 	"word" VARCHAR(50) NOT NULL COMMENT 'The title word, prefix or suffix',
 	"is_prefix" BIT(1) NOT NULL DEFAULT b'0' COMMENT 'Whether "word" is a prefix',
 	"is_suffix" BIT(1) NOT NULL DEFAULT b'0' COMMENT 'Whether "word" is a suffix',
@@ -126,7 +126,7 @@ CREATE TABLE IF NOT EXISTS "declaration" (
   FULLTEXT KEY "declaration_fulltext" ("title","signatories","notes"),
   CONSTRAINT "FK_declaration_entity" FOREIGN KEY ("id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT "FK_declaration_country" FOREIGN KEY ("country") REFERENCES "country" ("alpha_2") ON UPDATE CASCADE ON DELETE SET NULL,
-  CONSTRAINT "FK_declaration_declaration_kind" FOREIGN KEY ("kind") REFERENCES "declaration_kind" ("kind") ON UPDATE CASCADE
+  CONSTRAINT "FK_declaration_declaration_kind" FOREIGN KEY ("kind") REFERENCES "declaration_kind" ("kind") ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Details of public declarations and open letters expressing climate scepticism';
 
 -- Dumping structure for table evidence_engine.declaration_kind
@@ -196,12 +196,12 @@ CREATE TABLE IF NOT EXISTS "log" (
   KEY "log_linked_entity" ("linked_entity_kind","linked_entity_id"),
   KEY "FK_log_transaction_kind" ("transaction_kind"),
   KEY "log_user" ("user_id") USING BTREE,
-  CONSTRAINT "FK_log_transaction_kind" FOREIGN KEY ("transaction_kind") REFERENCES "transaction_kind" ("code") ON UPDATE CASCADE,
+  CONSTRAINT "FK_log_transaction_kind" FOREIGN KEY ("transaction_kind") REFERENCES "transaction_kind" ("code") ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT "FK_log_user_id" FOREIGN KEY ("user_id") REFERENCES "user" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT "FK_log_entity_id" FOREIGN KEY ("entity_id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT "FK_log_entity_kind" FOREIGN KEY ("entity_kind") REFERENCES "entity_kind" ("code") ON UPDATE CASCADE,
+  CONSTRAINT "FK_log_entity_kind" FOREIGN KEY ("entity_kind") REFERENCES "entity_kind" ("code") ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT "FK_log_linked_entity_id" FOREIGN KEY ("linked_entity_id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT "FK_log_linked_entity_kind" FOREIGN KEY ("linked_entity_kind") REFERENCES "entity_kind" ("code") ON UPDATE CASCADE
+  CONSTRAINT "FK_log_linked_entity_kind" FOREIGN KEY ("linked_entity_kind") REFERENCES "entity_kind" ("code") ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='A log of all transactions';
 
 -- Dumping structure for table evidence_engine.authority_kind
@@ -233,13 +233,11 @@ CREATE TABLE IF NOT EXISTS "person" (
   KEY "person_first_name" ("first_name") USING BTREE,
   KEY "person_last_name" ("last_name") USING BTREE,
   KEY "person_qualifications" ("qualifications") USING BTREE,
-  KEY "person_rating" ("rating") USING BTREE,
   KEY "person_country" ("country") USING BTREE,
   KEY "person_notes" ("notes") USING BTREE,
   FULLTEXT KEY "person_fulltext" ("title","first_name","nickname","prefix","last_name","suffix","alias","notes","qualifications"),
   CONSTRAINT "FK_person_entity" FOREIGN KEY ("id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT "FK_person_country" FOREIGN KEY ("country") REFERENCES "country" ("alpha_2") ON UPDATE CASCADE ON DELETE SET NULL,
-  CONSTRAINT "CC_person_rating" CHECK ("rating" between 0 and 5)
+  CONSTRAINT "FK_person_country" FOREIGN KEY ("country") REFERENCES "country" ("alpha_2") ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='People who have publicly expressed contrarian/sceptical views about topic orthodoxy, whether by signing declarations, open letters or publishing science articles.';
 
 -- Dumping structure for table evidence_engine.publication
@@ -296,8 +294,8 @@ CREATE TABLE IF NOT EXISTS "publication" (
   KEY "FK_publication_publication_kind" ("kind"),
   FULLTEXT KEY "publication_fulltext" ("title","authors","abstract","keywords","notes","doi","isbn","pmcid","pmid","hsid","arxivid","biorxivid","medrxivid","ericid","ihepid","oaipmhid","halid","zenodoid","scopuseid","wsan","pinfoan","url"),
   CONSTRAINT "FK_publication_entity" FOREIGN KEY ("id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT "FK_publication_journal" FOREIGN KEY ("journal_id") REFERENCES "journal" ("id") ON UPDATE CASCADE,
-  CONSTRAINT "FK_publication_publication_kind" FOREIGN KEY ("kind") REFERENCES "publication_kind" ("kind") ON UPDATE CASCADE,
+  CONSTRAINT "FK_publication_journal" FOREIGN KEY ("journal_id") REFERENCES "journal" ("id") ON UPDATE CASCADE ON DELETE SET NULL,
+  CONSTRAINT "FK_publication_publication_kind" FOREIGN KEY ("kind") REFERENCES "publication_kind" ("kind") ON UPDATE CASCADE ON DELETE CASCADE,
 	CONSTRAINT "CC_publication_doi" CHECK("doi" regexp '^10\\.\\d{4,9}\/(?i)[-._;()/:A-Z0-9]+$'),
 	CONSTRAINT "CC_publication_pmcid" CHECK("pmcid" regexp '^PMC\\d{7}$'),
 	CONSTRAINT "CC_publication_pmid" CHECK("pmid" regexp '^\\d{1,10}$'),
@@ -336,7 +334,7 @@ CREATE TABLE IF NOT EXISTS "publisher" (
   KEY "publisher_name" ("name"),
   FULLTEXT KEY "publisher_fulltext" ("name","location","url","notes"),
   CONSTRAINT "FK_publisher_entity" FOREIGN KEY ("id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT "FK_publisher_country" FOREIGN KEY ("country") REFERENCES "country" ("alpha_2") ON UPDATE CASCADE
+  CONSTRAINT "FK_publisher_country" FOREIGN KEY ("country") REFERENCES "country" ("alpha_2") ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='A list of book, journal, etc. publishers. The table can contain duplicate entries in the name column, reflecting the same publisher in different locations.';
 
 -- Dumping structure for table evidence_engine.quotation
@@ -411,7 +409,7 @@ CREATE TABLE IF NOT EXISTS "user_authority" (
 	"authority" CHAR(3) NOT NULL COMMENT 'The granted authority code',
 	UNIQUE KEY "user_authority" ("user_id", "username", "authority"),
 	CONSTRAINT "FK_user_authority_user_id" FOREIGN KEY ("user_id") REFERENCES "user" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT "FK_user_authority_username" FOREIGN KEY ("username") REFERENCES "user" ("username") ON UPDATE CASCADE ON DELETE CASCADE
+	CONSTRAINT "FK_user_authority_username" FOREIGN KEY ("username") REFERENCES "user" ("username") ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT "FK_user_authority_authority" FOREIGN KEY ("authority") REFERENCES "authority_kind" ("code") ON UPDATE CASCADE ON DELETE CASCADE
 ) COMMENT='Holds authorities granted to users';
 
@@ -420,7 +418,8 @@ CREATE TABLE IF NOT EXISTS "group" (
 	"groupname" VARCHAR(50) NOT NULL COMMENT 'The group name',
 	PRIMARY KEY ("id"),
   UNIQUE KEY "group_groupname" ("groupname"),
-  FULLTEXT KEY "group_fulltext" ("groupname")
+  FULLTEXT KEY "group_fulltext" ("groupname"),
+ 	CONSTRAINT "FK_group_entity" FOREIGN KEY ("id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE
 ) COMMENT='Holds groups to which users can belong';
 
 CREATE TABLE IF NOT EXISTS "group_authority" (
@@ -428,7 +427,7 @@ CREATE TABLE IF NOT EXISTS "group_authority" (
 	"authority" CHAR(3) NOT NULL COMMENT 'The granted authority code',
 	UNIQUE KEY "group_authority" ("group_id", "authority"),
 	CONSTRAINT "FK_group_authority_group" FOREIGN KEY ("group_id") REFERENCES "group" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT "FK_group_authority_authority" FOREIGN KEY ("authority") REFERENCES "authority_kind" ("code") ON UPDATE CASCADE
+  CONSTRAINT "FK_group_authority_authority" FOREIGN KEY ("authority") REFERENCES "authority_kind" ("code") ON UPDATE CASCADE ON DELETE CASCADE
 ) COMMENT='Holds authorities granted to groups';
 
 CREATE TABLE IF NOT EXISTS "group_user" (
@@ -441,13 +440,164 @@ CREATE TABLE IF NOT EXISTS "group_user" (
   CONSTRAINT "FK_group_user_user" FOREIGN KEY ("username") REFERENCES "user" ("username") ON UPDATE CASCADE ON DELETE CASCADE
 ) COMMENT='Defines group membership';
 
-CREATE TABLE "persistent_login" (
+CREATE TABLE IF NOT EXISTS "persistent_login" (
     "series" VARCHAR(64) COMMENT 'Encoded random number used to detect cookie stealing',
     "username" VARCHAR(64) NOT NULL COMMENT 'The authenticated username',
     "token" VARCHAR(64) NOT NULL COMMENT 'The authentication token returned as a cookie',
     "last_used" TIMESTAMP NOT NULL COMMENT 'The date/time at which the token was last used',
     PRIMARY KEY ("series")
 ) COMMENT='Holds login tokens that persist across HTTP sessions';
+
+DELIMITER //
+
+CREATE PROCEDURE export_table_to_csv(
+    IN p_table_name VARCHAR(255),
+    IN p_output_path VARCHAR(1024)
+)
+COMMENT 'Exports a table to a CSV format that can be read by import_table_from_csv'
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE col_name VARCHAR(255);
+    DECLARE col_type VARCHAR(255);
+    DECLARE select_list TEXT DEFAULT '';
+    DECLARE header_list TEXT DEFAULT '';
+
+    DECLARE cur CURSOR FOR
+        SELECT COLUMN_NAME, DATA_TYPE
+        FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = p_table_name
+        ORDER BY ORDINAL_POSITION;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    OPEN cur;
+
+    read_loop: LOOP
+        FETCH cur INTO col_name, col_type;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        -- Header row
+        SET header_list = CONCAT(
+            header_list,
+            IF(header_list = '', '', ','),
+            '''', col_name, ''''
+        );
+
+        -- BIT → INT conversion (no alias)
+        IF col_type = 'bit' THEN
+            SET select_list = CONCAT(
+                select_list,
+                IF(select_list = '', '', ','),
+                '"', col_name, '" + 0'
+            );
+        ELSE
+            SET select_list = CONCAT(
+                select_list,
+                IF(select_list = '', '', ','),
+                '"', col_name, '"'
+            );
+        END IF;
+    END LOOP;
+
+    CLOSE cur;
+
+    SET @sql = CONCAT(
+        'SELECT ', header_list, '\n',
+        'UNION ALL\n',
+        'SELECT ', select_list, '\n',
+        'FROM "', p_table_name, '"\n',
+        'INTO OUTFILE ''', p_output_path, '''\n',
+        'FIELDS TERMINATED BY '',''\n',
+        'OPTIONALLY ENCLOSED BY ''"''\n',
+        'ESCAPED BY ''''\n',
+        'LINES TERMINATED BY ''\n'';'
+    );
+
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END//
+
+DELIMITER ;
+
+
+DELIMITER //
+
+CREATE PROCEDURE import_table_from_csv(
+    IN p_table_name VARCHAR(255),
+    IN p_input_path VARCHAR(1024)
+)
+COMMENT 'Imports a table from the CSV format produced by export_table_to_csv'
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE col_name VARCHAR(255);
+    DECLARE col_type VARCHAR(255);
+    DECLARE col_list TEXT DEFAULT '';
+    DECLARE set_list TEXT DEFAULT '';
+
+    DECLARE cur CURSOR FOR
+        SELECT COLUMN_NAME, DATA_TYPE
+        FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = p_table_name
+        ORDER BY ORDINAL_POSITION;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    OPEN cur;
+
+    read_loop: LOOP
+        FETCH cur INTO col_name, col_type;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        IF col_type = 'bit' THEN
+            SET col_list = CONCAT(
+                col_list,
+                IF(col_list = '', '', ','),
+                '@v_', col_name
+            );
+
+            SET set_list = CONCAT(
+                set_list,
+                IF(set_list = '', '', ','),
+                '"', col_name, '" = CAST(@v_', col_name, ' AS UNSIGNED)'
+            );
+        ELSE
+            SET col_list = CONCAT(
+                col_list,
+                IF(col_list = '', '', ','),
+                '"', col_name, '"'
+            );
+        END IF;
+    END LOOP;
+
+    CLOSE cur;
+
+    SET @sql = CONCAT(
+        'LOAD DATA LOCAL INFILE ''', p_input_path, '''\n',
+        'INTO TABLE "', p_table_name, '"\n',
+        'CHARACTER SET utf8mb4\n',
+        'FIELDS TERMINATED BY '',''\n',
+        'OPTIONALLY ENCLOSED BY ''"''\n',
+        'ESCAPED BY ''''\n',
+        'LINES TERMINATED BY ''\n''\n',
+        'IGNORE 1 LINES\n',
+        '(', col_list, ')\n',
+        IF(set_list = '', '', CONCAT('SET ', set_list, '\n'))
+    );
+
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END//
+
+DELIMITER ;
+
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

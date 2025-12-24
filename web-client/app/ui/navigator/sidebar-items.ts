@@ -22,6 +22,7 @@ import {
   Building2Icon,
   ChartColumnIcon,
   CircleQuestionMarkIcon,
+  DatabaseBackupIcon,
   FileClockIcon,
   FolderTreeIcon,
   HouseIcon,
@@ -53,4 +54,5 @@ export const adminItems = [
   { label: "Journals", href: "/admin/journals", icon: NewspaperIcon },
   { label: "Publishers", href: "/admin/publishers", icon: Building2Icon },
   { label: "Security", href: "/admin/security", icon: ShieldCheckIcon },
+  { label: "Backup", href: "/admin/backup", icon: DatabaseBackupIcon },
 ]

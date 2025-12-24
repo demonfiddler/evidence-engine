@@ -178,6 +178,8 @@ export default function ExportDialog<T>({ recordKind }: { recordKind: RecordKind
       // location.assign(url)
       // setTimeout(() => URL.revokeObjectURL(url), 10000);
 
+      // TODO: handle HTTP codes other than 200 (e.g., 302 Found -> "Please Login")
+
       // This approach works better as it gives us full control over filename, etc.
       const fileExt = ctFileExt[contentType]
       let timestamp = new Date().toISOString()
@@ -189,8 +191,7 @@ export default function ExportDialog<T>({ recordKind }: { recordKind: RecordKind
       URL.revokeObjectURL(url)
     }).catch((reason) => {
       setError(reason)
-      setIsLoading(false)
-    })
+    }).finally(() => setIsLoading(false))
   }, [getHref])
 
   return (
