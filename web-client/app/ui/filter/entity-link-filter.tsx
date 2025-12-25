@@ -202,8 +202,8 @@ export default function EntityLinkFilter() {
             &nbsp;Filter by Links&nbsp;
             {
               showOnlyLinkedRecords
-              ? <SquareCheckIcon className="inline" />
-              : <SquareIcon className="inline" />
+              ? <SquareCheckIcon className="inline text-gray-400" />
+              : <SquareIcon className="inline text-gray-400" />
             }
           </span>
           <CollapsibleTrigger className="justify-self-end" asChild>
