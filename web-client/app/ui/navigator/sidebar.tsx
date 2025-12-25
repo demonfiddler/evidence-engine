@@ -45,25 +45,26 @@ export default function Sidebar({open} : SidebarProps) {
         </Link>
       </div>
       <div className="grow shrink overflow-y-auto">
-        <h3 className="ml-3 mt-3">Pages</h3> {
-        appItems.map((link) => {
-          const LinkIcon = link.icon;
-          return (
-            <Link
-              key={link.label}
-              href={link.href}
-              className={clsx(
-                'flex h-10 grow items-center justify-center gap-2 rounded-md p-3 text-sm font-medium hover:bg-sky-50 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3',
-                {
-                  'bg-sky-100 text-blue-600': pathname === link.href,
-                },
-              )}
-            >
-              <LinkIcon className="w-6" />
-              <p className="hidden md:block">{link.label}</p>
-            </Link>
-          );
-        })}
+        {
+          appItems.map((link) => {
+            const LinkIcon = link.icon;
+            return (
+              <Link
+                key={link.label}
+                href={link.href}
+                className={clsx(
+                  'flex h-10 grow items-center justify-center gap-2 rounded-md p-3 text-sm font-medium hover:bg-sky-50 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3',
+                  {
+                    'bg-sky-100 text-blue-600': pathname === link.href,
+                  },
+                )}
+              >
+                <LinkIcon className="w-6" />
+                <p className="hidden md:block">{link.label}</p>
+              </Link>
+            );
+          })
+        }
         {
           hasAuthority("ADM")
           ? <>

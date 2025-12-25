@@ -511,7 +511,7 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
           disabled={!record}
           onClick={() => setStatusDialogItem(2)}
           help={`Manage links for ${recordLabel}`}>
-          Links...
+          Manage...
         </ButtonEx>
       </DialogTrigger>
       <DialogContent className="flex flex-col items-center w-5/6 min-w-0 max-w-none! h-5/6 min-h-0 max-h-none! overflow-hidden">
@@ -528,7 +528,7 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
             Manage status for {recordLabel}
           </DialogDescription>
           <fieldset className="grow-0 w-90 self-center p-2 border rounded-md">
-            <legend>Page</legend>
+            <legend>&nbsp;Page&nbsp;</legend>
             <RadioGroup
               className="flex justify-center"
               value={statusDialogItem.toString()}
@@ -565,8 +565,8 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
                       <TableHead className="border">Field name</TableHead>
                       <TableHead className="border">Rule</TableHead>
                       <TableHead className="border">Severity</TableHead>
-                      <TableHead className="border">Message</TableHead>
-                      <TableHead className="text-center border">Check</TableHead>
+                      <TableHead className="border">Check</TableHead>
+                      <TableHead className="text-center border">Result</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody className="max-h-full border">
@@ -663,7 +663,7 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
                       <TableHead className="border">Rule</TableHead>
                       <TableHead className="text-right border">Minimum</TableHead>
                       <TableHead className="text-right border">Actual</TableHead>
-                      <TableHead className="text-center border">Check</TableHead>
+                      <TableHead className="text-center border">Result</TableHead>
                       <TableHead className="text-center border">Action</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -769,7 +769,7 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
               <form>
                 <div className="flex">
                   <fieldset className="border rounded-md ml-1 p-2 gap-2">
-                    <legend>{`Link ${recordKind} with:`}</legend>
+                    <legend>&nbsp;Link with:&nbsp;</legend>
                     <RadioGroup
                       value={otherRecordKind}
                       onValueChange={value => handleOtherRecordKindChange(value as LinkableEntityKind)}
@@ -800,7 +800,7 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
                   </fieldset>
                   <div className="flex flex-col">
                     <fieldset className="grow border rounded-md ml-1 p-2 gap-2">
-                      <legend>{`Search for ${otherRecordKind ?? "record"}s to link`}</legend>
+                      <legend>&nbsp;{`Search for ${otherRecordKind ?? "record"}s to link`}&nbsp;</legend>
                       <div className="flex items-center gap-2 mb-2">
                         <Select
                           value={filterStatus ?? ''}
@@ -879,9 +879,11 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
                             help="A list of matching records"
                           >
                             <SelectValue placeholder={
-                              otherRecords.length ?? 0 > 0
+                              otherRecordKind
+                              ? otherRecords.length ?? 0 > 0
                               ? "-Select a record to link-"
-                              : "-No matching records-"}
+                              : "-No matching records-"
+                              : "-Select a linked record kind-"}
                             />
                           </SelectTriggerEx>
                           <SelectContent>
@@ -916,7 +918,7 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
                       </div>
                     </fieldset>
                     <fieldset className="flex border rounded-md ml-1 p-2 gap-2">
-                      <legend>{`Existing ${otherRecordKind} links`}</legend>
+                      <legend>&nbsp;{`Existing ${otherRecordKind ?? "record"} links`}&nbsp;</legend>
                       <Select
                         disabled={!record || mode !== "view"}
                         value={selectedLinkId ?? ''}
@@ -931,9 +933,11 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
                           <SelectValue
                             placeholder=
                               {
-                                filteredRecordLinks.length ?? 0 > 0
+                                otherRecordKind
+                                ? filteredRecordLinks.length ?? 0 > 0
                                 ? "-Select a record link-"
                                 : "-No record links-"
+                                : "-Select a linked record kind-"
                               }
                           />
                         </SelectTriggerEx>
@@ -971,7 +975,7 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
                   </div>
                 </div>
                 <fieldset className="grid grid-cols-5 border rounded-md ml-1 p-2 gap-2">
-                  <legend>Link Details</legend>
+                  <legend>&nbsp;Link Details&nbsp;</legend>
                   <Label className="col-start-1" htmlFor="link-id">Link ID:</Label>
                   <InputEx
                     id="link-id"
