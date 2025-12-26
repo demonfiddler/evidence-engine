@@ -23,7 +23,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
-import { adminItems, appItems } from "./sidebar-items";
+import { categories } from "./sidebar-items";
 import useAuth from "@/hooks/use-auth";
 
 type SidebarProps ={
@@ -46,50 +46,41 @@ export default function Sidebar({open} : SidebarProps) {
       </div>
       <div className="grow shrink overflow-y-auto">
         {
-          appItems.map((link) => {
-            const LinkIcon = link.icon;
-            return (
-              <Link
-                key={link.label}
-                href={link.href}
-                className={clsx(
-                  'flex h-10 grow items-center justify-center gap-2 rounded-md p-3 text-sm font-medium hover:bg-sky-50 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3',
-                  {
-                    'bg-sky-100 text-blue-600': pathname === link.href,
-                  },
-                )}
-              >
-                <LinkIcon className="w-6" />
-                <p className="hidden md:block">{link.label}</p>
-              </Link>
-            );
+          categories.map(category => {
+            return !category.authority || hasAuthority(category.authority)
+            ? <>
+              <div className="flex items-center mt-3">
+                {
+                  (() => {
+                    const CategoryIcon = category.icon
+                    return <CategoryIcon className="inline size-6" />
+                  })()
+                }
+                <p className="text-lg ml-3">{category.label}</p>
+              </div>
+              {
+                category.items.map(item => {
+                  const LinkIcon = item.icon
+                  return (
+                    <Link
+                      key={item.label}
+                      href={item.href}
+                      className={clsx(
+                        'flex h-9 grow items-center justify-center gap-2 rounded-md p-3 text-sm font-medium hover:bg-sky-50 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3',
+                        {
+                          'bg-sky-100 text-blue-600': pathname === item.href,
+                        },
+                      )}
+                    >
+                      <LinkIcon className="w-6" />
+                      <p className="hidden md:block">{item.label}</p>
+                    </Link>
+                  )
+                })
+              }
+            </>
+            : null
           })
-        }
-        {
-          hasAuthority("ADM")
-          ? <>
-            <h3 className="ml-3 mt-3">Administration</h3> {
-              adminItems.map((link) => {
-                const LinkIcon = link.icon;
-                return (
-                  <Link
-                    key={link.label}
-                    href={link.href}
-                    className={clsx(
-                      'flex h-12 grow items-center justify-center gap-2 rounded-md p-3 text-sm font-medium hover:bg-sky-50 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3',
-                      {
-                        'bg-sky-100 text-blue-600': pathname === link.href,
-                      },
-                    )}
-                  >
-                    <LinkIcon className="w-6" />
-                    <p className="hidden md:block">{link.label}</p>
-                  </Link>
-                )
-              })
-            }
-          </>
-          : null
         }
       </div>
       <div className="flex place-content-center items-center border-t h-24" data-slot="sidebar-footer">

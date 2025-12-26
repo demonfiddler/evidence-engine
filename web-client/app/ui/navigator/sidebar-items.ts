@@ -19,40 +19,65 @@
 
 import {
   BookOpenCheckIcon,
+  BookOpenTextIcon,
   Building2Icon,
   ChartColumnIcon,
   CircleQuestionMarkIcon,
   DatabaseBackupIcon,
+  DatabaseZapIcon,
   FileClockIcon,
   FolderTreeIcon,
   HouseIcon,
   InfoIcon,
   LibraryIcon,
+  LockIcon,
   MessagesSquareIcon,
   NewspaperIcon,
   ScrollTextIcon,
   ShieldCheckIcon,
+  TableOfContentsIcon,
   UserIcon
 } from 'lucide-react';
 import { MessageSquareQuoteIconEx } from '../icons';
+import Authority from '@/app/model/Authority';
 
-export const appItems = [
-  { label: "Home", href: "/", icon: HouseIcon },
-  { label: "Dashboard", href: "/dashboard", icon: ChartColumnIcon },
-  { label: "Claims", href: "/claims", icon: BookOpenCheckIcon },
-  { label: "Publications", href: "/publications", icon: LibraryIcon },
-  { label: "Persons", href: "/persons", icon: UserIcon },
-  { label: "Declarations", href: "/declarations", icon: ScrollTextIcon },
-  { label: "Quotations", href: "/quotations", icon: MessageSquareQuoteIconEx },
-  { label: "Comments", href: "/comments", icon: MessagesSquareIcon },
-  { label: "Log", href: "/log", icon: FileClockIcon },
-  { label: "Help", href: "/help", icon: CircleQuestionMarkIcon },
-  { label: "About", href: "/about", icon: InfoIcon },
-]
-export const adminItems = [
-  { label: "Topics", href: "/admin/topics", icon: FolderTreeIcon },
-  { label: "Journals", href: "/admin/journals", icon: NewspaperIcon },
-  { label: "Publishers", href: "/admin/publishers", icon: Building2Icon },
-  { label: "Security", href: "/admin/security", icon: ShieldCheckIcon },
-  { label: "Backup", href: "/admin/backup", icon: DatabaseBackupIcon },
+export const categories = [
+  {
+    label: "General",
+    icon: TableOfContentsIcon,
+    items: [
+      { label: "Home", href: "/", icon: HouseIcon },
+      { label: "Dashboard", href: "/dashboard", icon: ChartColumnIcon },
+      { label: "Comments", href: "/comments", icon: MessagesSquareIcon },
+      { label: "Log", href: "/log", icon: FileClockIcon },
+      { label: "Help", href: "/help", icon: CircleQuestionMarkIcon },
+      { label: "About", href: "/about", icon: InfoIcon },
+    ],
+  }, {
+    label: "Records",
+    icon: DatabaseZapIcon,
+    items: [
+      { label: "Claims", href: "/claims", icon: BookOpenCheckIcon },
+      { label: "Declarations", href: "/declarations", icon: ScrollTextIcon },
+      { label: "Persons", href: "/persons", icon: UserIcon },
+      { label: "Publications", href: "/publications", icon: LibraryIcon },
+      { label: "Quotations", href: "/quotations", icon: MessageSquareQuoteIconEx },
+      { label: "Topics", href: "/topics", icon: FolderTreeIcon },
+    ],
+  }, {
+    label: "Sources",
+    icon: BookOpenTextIcon,
+    items: [
+      { label: "Journals", href: "/journals", icon: NewspaperIcon },
+      { label: "Publishers", href: "/publishers", icon: Building2Icon },
+    ],
+  }, {
+    label: "Administration",
+    icon: LockIcon,
+    authority: 'ADM' as Authority,
+    items: [
+      { label: "Security", href: "/admin/security", icon: ShieldCheckIcon },
+      { label: "Backup", href: "/admin/backup", icon: DatabaseBackupIcon },
+    ],
+  },
 ]

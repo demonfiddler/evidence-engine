@@ -27,7 +27,7 @@ import { useContext } from "react"
 import { layout, LoggerEx } from "@/lib/logger"
 import Sidebar from "../ui/navigator/sidebar"
 import { Button } from "@/components/ui/button"
-import { PanelRightCloseIcon, PanelRightOpenIcon } from "lucide-react"
+import { GithubIcon, PanelRightCloseIcon, PanelRightOpenIcon } from "lucide-react"
 
 const logger = new LoggerEx(layout, "[NavigableLayout] ")
 
@@ -57,7 +57,10 @@ export default function NavigableLayout({
           }
         </Button>
         <p className="justify-self-center"><b>The Evidence Engine</b></p>
-        <MyAccount className="justify-self-end" />
+        <div className="justify-self-end flex items-center mr-2">
+          <MyAccount className="justify-self-end" />
+          <a href="https://github.com/demonfiddler/evidence-engine" target="_blank" title="Source code on GitHub"><GithubIcon className="justify-self-end inline text-white"/></a>
+        </div>
       </header>
       <footer className="fixed bottom-0 left-0 right-0 z-10 grid grid-cols-3 items-center w-full h-12 text-xs text-white bg-blue-500">
         <p>&nbsp;Copyright &copy; 2024-25 Adrian Price. All rights reserved.</p>

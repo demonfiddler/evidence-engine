@@ -69,7 +69,7 @@ interface ColumnMetaData {
 }
 
 const entityItems = [
-  { entityKind: "TOP", heading: "Topics", description: "Total topics (top-level + nested)", icon: FolderTreeIcon, property: "topics", href: "/admin/topics" },
+  { entityKind: "TOP", heading: "Topics", description: "Total topics (top-level + nested)", icon: FolderTreeIcon, property: "topics", href: "/topics" },
   { entityKind: "CLA", heading: "Claims", description: "Total claims of fact", icon: BookOpenCheckIcon, property: "claims", href: "/claims" },
   { entityKind: "DEC", heading: "Declarations", description: "Total declarations, public letters, etc.", icon: ScrollTextIcon, property: "declarations", href: "/declarations" },
   { entityKind: "PER", heading: "Persons", description: "Total scientists, professionals, etc.", icon: UserIcon, property: "persons", href: "/persons" },
