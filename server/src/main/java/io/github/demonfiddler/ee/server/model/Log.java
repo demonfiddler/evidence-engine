@@ -76,29 +76,18 @@ public class Log implements IBaseEntity {
 	String transactionKind;
 
 	/**
-	 * The kind of entity affected.
+	 * The entity affected.
 	 */
-	@GraphQLScalar(fieldName = "entityKind", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
-	String entityKind;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "entity_id", insertable = false, updatable = false)
+	AbstractTrackedEntity entity;
 
 	/**
-	 * The ID of the entity affected.
+	 * The linked/unlinked entity (where applicable).
 	 */
-	@GraphQLScalar(fieldName = "entityId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
-	Long entityId;
-
-	/**
-	 * The kind of entity linked/unlinked (where applicable).
-	 */
-	@GraphQLScalar(fieldName = "linkedEntityKind", graphQLTypeSimpleName = "String", javaClass = String.class,
-		listDepth = 0)
-	String linkedEntityKind;
-
-	/**
-	 * The ID of the entity linked/unlinked (where applicable).
-	 */
-	@GraphQLScalar(fieldName = "linkedEntityId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
-	Long linkedEntityId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "linked_entity_id", insertable = false, updatable = false)
+	AbstractTrackedEntity linkedEntity;
 
 	/**
 	 * The unique identifier for the log entry.
@@ -161,57 +150,57 @@ public class Log implements IBaseEntity {
 	/**
 	 * The kind of entity affected.
 	 */
-	public void setEntityKind(String entityKind) {
-		this.entityKind = entityKind;
-	}
-
-	/**
-	 * The kind of entity affected.
-	 */
 	public String getEntityKind() {
-		return this.entityKind;
-	}
-
-	/**
-	 * The ID of the entity affected.
-	 */
-	public void setEntityId(Long entityId) {
-		this.entityId = entityId;
+		return entity != null ? entity.getEntityKind() : null;
 	}
 
 	/**
 	 * The ID of the entity affected.
 	 */
 	public Long getEntityId() {
-		return this.entityId;
+		return entity != null ? entity.getId() : null;
 	}
 
 	/**
-	 * The kind of entity linked/unlinked (where applicable).
+	 * The entity affected.
 	 */
-	public void setLinkedEntityKind(String linkedEntityKind) {
-		this.linkedEntityKind = linkedEntityKind;
+	public void setEntity(AbstractTrackedEntity entity) {
+		this.entity = entity;
+	}
+
+	/**
+	 * The entity affected.
+	 */
+	public AbstractTrackedEntity getEntity() {
+		return this.entity;
 	}
 
 	/**
 	 * The kind of entity linked/unlinked (where applicable).
 	 */
 	public String getLinkedEntityKind() {
-		return this.linkedEntityKind;
-	}
-
-	/**
-	 * The ID of the entity linked/unlinked (where applicable).
-	 */
-	public void setLinkedEntityId(Long linkedEntityId) {
-		this.linkedEntityId = linkedEntityId;
+		return linkedEntity != null ? linkedEntity.getEntityKind() : null;
 	}
 
 	/**
 	 * The ID of the entity linked/unlinked (where applicable).
 	 */
 	public Long getLinkedEntityId() {
-		return this.linkedEntityId;
+		return linkedEntity != null ? linkedEntity.getId() : null;
+	}
+
+	/**
+	 * The ID of the entity linked/unlinked (where applicable).
+	 */
+	public void setLinkedEntity(AbstractTrackedEntity linkedEntity) {
+		this.linkedEntity = linkedEntity;
+	}
+
+	/**
+	 * The ID of the entity linked/unlinked (where applicable).
+	 */
+	public AbstractTrackedEntity getLinkedEntity() {
+		return linkedEntity;
 	}
 
 	public String toString() {
@@ -224,13 +213,13 @@ public class Log implements IBaseEntity {
 			+ ", " //
 			+ "transactionKind: " + this.transactionKind //
 			+ ", " //
-			+ "entityKind: " + this.entityKind //
+			+ "entityKind: " + this.getEntityKind() //
 			+ ", " //
-			+ "entityId: " + this.entityId //
+			+ "entityId: " + this.entity.getId() //
 			+ ", " //
-			+ "linkedEntityKind: " + this.linkedEntityKind //
+			+ "linkedEntityKind: " + this.getLinkedEntityKind() //
 			+ ", " //
-			+ "linkedEntityId: " + this.linkedEntityId //
+			+ "linkedEntityId: " + (this.linkedEntity != null ? this.linkedEntity.getId() : null) //
 			+ "}"; //
 	}
 
@@ -248,10 +237,8 @@ public class Log implements IBaseEntity {
 		private OffsetDateTime timestamp;
 		private User user;
 		private String transactionKind;
-		private String entityKind;
-		private Long entityId;
-		private String linkedEntityKind;
-		private Long linkedEntityId;
+		private AbstractTrackedEntity entity;
+		private AbstractTrackedEntity linkedEntity;
 
 		/**
 		 * The unique identifier for the log entry.
@@ -286,34 +273,18 @@ public class Log implements IBaseEntity {
 		}
 
 		/**
-		 * The kind of entity affected.
-		 */
-		public Builder withEntityKind(String entityKindParam) {
-			this.entityKind = entityKindParam;
-			return this;
-		}
-
-		/**
 		 * The ID of the entity affected.
 		 */
-		public Builder withEntityId(Long entityIdParam) {
-			this.entityId = entityIdParam;
-			return this;
-		}
-
-		/**
-		 * The kind of entity linked/unlinked (where applicable).
-		 */
-		public Builder withLinkedEntityKind(String linkedEntityKindParam) {
-			this.linkedEntityKind = linkedEntityKindParam;
+		public Builder withEntity(AbstractTrackedEntity entity) {
+			this.entity = entity;
 			return this;
 		}
 
 		/**
 		 * The ID of the entity linked/unlinked (where applicable).
 		 */
-		public Builder withLinkedEntityId(Long linkedEntityIdParam) {
-			this.linkedEntityId = linkedEntityIdParam;
+		public Builder withLinkedEntity(AbstractTrackedEntity linkedEntityParam) {
+			this.linkedEntity = linkedEntityParam;
 			return this;
 		}
 
@@ -323,10 +294,8 @@ public class Log implements IBaseEntity {
 			_object.setTimestamp(this.timestamp);
 			_object.setUser(this.user);
 			_object.setTransactionKind(this.transactionKind);
-			_object.setEntityKind(this.entityKind);
-			_object.setEntityId(this.entityId);
-			_object.setLinkedEntityKind(this.linkedEntityKind);
-			_object.setLinkedEntityId(this.linkedEntityId);
+			_object.setEntity(this.entity);
+			_object.setLinkedEntity(this.linkedEntity);
 			return _object;
 		}
 

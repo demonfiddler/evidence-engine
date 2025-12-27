@@ -187,21 +187,17 @@ CREATE TABLE IF NOT EXISTS "log" (
   "timestamp" datetime NOT NULL DEFAULT current_timestamp() COMMENT 'The date and time at which the log entry was made',
   "user_id"  bigint(20) unsigned NOT NULL DEFAULT 0 COMMENT 'The ID of the user who made the change',
   "transaction_kind" char(3) NOT NULL COMMENT 'The kind of change that was made',
-  "entity_kind" char(3) NOT NULL COMMENT 'The kind of entity affected by the change',
   "entity_id" bigint(20) unsigned NOT NULL COMMENT 'The ID of the affected entity',
-  "linked_entity_kind" char(3) DEFAULT NULL COMMENT 'The kind of entity that was linked/unlinked',
   "linked_entity_id" bigint(20) unsigned DEFAULT NULL COMMENT 'The ID of the entity that was linked/unlinked',
   PRIMARY KEY ("id"),
-  KEY "log_entity" ("entity_kind","entity_id"),
-  KEY "log_linked_entity" ("linked_entity_kind","linked_entity_id"),
+  KEY "log_entity" ("entity_id"),
+  KEY "log_linked_entity" ("linked_entity_id"),
   KEY "FK_log_transaction_kind" ("transaction_kind"),
   KEY "log_user" ("user_id") USING BTREE,
   CONSTRAINT "FK_log_transaction_kind" FOREIGN KEY ("transaction_kind") REFERENCES "transaction_kind" ("code") ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT "FK_log_user_id" FOREIGN KEY ("user_id") REFERENCES "user" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT "FK_log_entity_id" FOREIGN KEY ("entity_id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT "FK_log_entity_kind" FOREIGN KEY ("entity_kind") REFERENCES "entity_kind" ("code") ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT "FK_log_linked_entity_id" FOREIGN KEY ("linked_entity_id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT "FK_log_linked_entity_kind" FOREIGN KEY ("linked_entity_kind") REFERENCES "entity_kind" ("code") ON UPDATE CASCADE ON DELETE CASCADE
+  CONSTRAINT "FK_log_linked_entity_id" FOREIGN KEY ("linked_entity_id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='A log of all transactions';
 
 -- Dumping structure for table evidence_engine.authority_kind

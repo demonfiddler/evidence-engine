@@ -140,14 +140,12 @@ CREATE TABLE "log" (
   "timestamp" TIMESTAMP DEFAULT current_timestamp() NOT NULL COMMENT 'The date and time at which the log entry was made',
   "user_id" BIGINT DEFAULT 0 NOT NULL COMMENT 'The ID of the user who made the change',
   "transaction_kind" CHAR(3) NOT NULL COMMENT 'The kind of change that was made',
-  "entity_kind" CHAR(3) NOT NULL COMMENT 'The kind of entity affected by the change',
   "entity_id" BIGINT NOT NULL COMMENT 'The ID of the affected entity',
-  "linked_entity_kind" CHAR(3) DEFAULT NULL COMMENT 'The kind of entity that was linked/unlinked',
   "linked_entity_id" BIGINT DEFAULT NULL COMMENT 'The ID of the entity that was linked/unlinked'
 );
 CREATE INDEX "log_user" ON "log" ("user_id");
-CREATE INDEX "log_entity" ON "log" ("entity_kind","entity_id");
-CREATE INDEX "log_linked_entity" ON "log" ("linked_entity_kind","linked_entity_id");
+CREATE INDEX "log_entity" ON "log" (/*"entity_kind",*/"entity_id");
+CREATE INDEX "log_linked_entity" ON "log" (/*"linked_entity_kind",*/"linked_entity_id");
 CREATE INDEX "FK_log_transaction_kind" ON "log" ("transaction_kind");
 
 CREATE TABLE "authority_kind" (
@@ -478,20 +476,8 @@ ALTER TABLE "log"
   ON DELETE CASCADE;
 
 ALTER TABLE "log"
-  ADD FOREIGN KEY ("entity_kind")
-  REFERENCES "entity_kind" ("code")
-  ON UPDATE CASCADE
-  ON DELETE CASCADE;
-
-ALTER TABLE "log"
   ADD FOREIGN KEY ("linked_entity_id")
   REFERENCES "entity" ("id")
-  ON UPDATE CASCADE
-  ON DELETE CASCADE;
-
-ALTER TABLE "log"
-  ADD FOREIGN KEY ("linked_entity_kind")
-  REFERENCES "entity_kind" ("code")
   ON UPDATE CASCADE
   ON DELETE CASCADE;
 
