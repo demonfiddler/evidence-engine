@@ -318,27 +318,6 @@ export default function PersonDetails(
             />
             <FormField
               control={form.control}
-              name="rating"
-              render={({field}) => (
-                <FormItem>
-                  <FormLabel htmlFor="rating">Rating</FormLabel>
-                  <FormControl>
-                    <InputEx
-                      id="rating"
-                      type="number"
-                      disabled={!record && !updating}
-                      readOnly={!updating}
-                      placeholder="rating"
-                      {...field}
-                      help="A star-rating to reflect the person's eminence and credibility"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name="checked"
               render={({field}) => (
                 <FormItem>

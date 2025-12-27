@@ -59,7 +59,7 @@ class QuotationTests extends AbstractLinkableEntityTests<Quotation> {
 		"""
 		{
 			id
-			status
+			status(format: LONG)
 			created
 			createdByUser {
 				id
@@ -88,9 +88,9 @@ class QuotationTests extends AbstractLinkableEntityTests<Quotation> {
 				hasPrevious
 				content {
 					timestamp
-					transactionKind
+					transactionKind(format: LONG)
 					entityId
-					entityKind
+					entityKind(format: LONG)
 					user {
 						id
 						username
@@ -155,7 +155,7 @@ class QuotationTests extends AbstractLinkableEntityTests<Quotation> {
 	static void ensureExpectedQuotations() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		if (quotations == null) {
 			QueryExecutor queryExecutor = SpringContext.getApplicationContext().getBean(QueryExecutor.class);
-			String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+			String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 			List<Quotation> content = queryExecutor.quotations(responseSpec, null, null).getContent();
 			if (content.isEmpty()) {
 				LOGGER.error("Failed to initialise quotations list from server");
@@ -258,7 +258,7 @@ class QuotationTests extends AbstractLinkableEntityTests<Quotation> {
 	@EnabledIf("io.github.demonfiddler.ee.client.QuotationTests#hasExpectedQuotation")
 	void createQuotations() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		// Create another eight quotations and store them all in an array together with the previously created one.
-		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted("");
+		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		final int quotationCount = 8;
 		List<Quotation> quotations = new ArrayList<>(quotationCount + 1);
 		Quotation quotation0 = new Quotation();
@@ -295,7 +295,7 @@ class QuotationTests extends AbstractLinkableEntityTests<Quotation> {
 	@Order(6)
 	@EnabledIf("io.github.demonfiddler.ee.client.QuotationTests#hasExpectedQuotations")
 	void readQuotations() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		QuotationPage actuals = queryExecutor.quotations(responseSpec, null, null);
 
 		checkPage(actuals, quotations.size(), 1, quotations.size(), 0, false, false, true, true, quotations, true);
@@ -305,7 +305,7 @@ class QuotationTests extends AbstractLinkableEntityTests<Quotation> {
 	@Order(7)
 	@EnabledIf("io.github.demonfiddler.ee.client.QuotationTests#hasExpectedQuotations")
 	void readQuotationsFiltered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -329,7 +329,7 @@ class QuotationTests extends AbstractLinkableEntityTests<Quotation> {
 	@Order(8)
 	@EnabledIf("io.github.demonfiddler.ee.client.QuotationTests#hasExpectedQuotations")
 	void readQuotationsSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput order = OrderInput.builder() //
 			.withProperty("text") //
 			.build();
@@ -362,7 +362,7 @@ class QuotationTests extends AbstractLinkableEntityTests<Quotation> {
 	@Order(9)
 	@EnabledIf("io.github.demonfiddler.ee.client.QuotationTests#hasExpectedQuotations")
 	void readQuotationsSortedIgnoreCase() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput order = OrderInput.builder() //
 			.withProperty("text") //
 			.withIgnoreCase(true) //
@@ -392,7 +392,7 @@ class QuotationTests extends AbstractLinkableEntityTests<Quotation> {
 	@Order(10)
 	@EnabledIf("io.github.demonfiddler.ee.client.QuotationTests#hasExpectedQuotations")
 	void readQuotationsSortedNullOrdered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput notesOrder = OrderInput.builder() //
 			.withProperty("notes") //
 			.withNullHandling(NullHandlingKind.NULLS_FIRST) //
@@ -459,7 +459,7 @@ class QuotationTests extends AbstractLinkableEntityTests<Quotation> {
 	@Order(11)
 	@EnabledIf("io.github.demonfiddler.ee.client.QuotationTests#hasExpectedQuotations")
 	void readQuotationsFilteredSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -494,7 +494,7 @@ class QuotationTests extends AbstractLinkableEntityTests<Quotation> {
 	@Order(12)
 	@EnabledIf("io.github.demonfiddler.ee.client.QuotationTests#hasExpectedQuotations")
 	void readQuotationsFilteredSortedNullHandling() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("quotation") //
 			.build();
@@ -560,7 +560,7 @@ class QuotationTests extends AbstractLinkableEntityTests<Quotation> {
 	@EnabledIf("io.github.demonfiddler.ee.client.QuotationTests#hasExpectedQuotations")
 	void readQuotationsPaged() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
 		// NOTE: assume that records are returned in the same order as the unpaged query.
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		PageableInput pageSort = PageableInput.builder() //
 			.withPageNumber(0) //
 			.withPageSize(4) //
@@ -585,7 +585,7 @@ class QuotationTests extends AbstractLinkableEntityTests<Quotation> {
 	@Order(14)
 	@EnabledIf("io.github.demonfiddler.ee.client.QuotationTests#hasExpectedQuotations")
 	void readQuotationsPagedFiltered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -608,7 +608,7 @@ class QuotationTests extends AbstractLinkableEntityTests<Quotation> {
 	@Order(15)
 	@EnabledIf("io.github.demonfiddler.ee.client.QuotationTests#hasExpectedQuotations")
 	void readQuotationsPagedSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput order = OrderInput.builder() //
 			.withProperty("text") //
 			.build();
@@ -702,7 +702,7 @@ class QuotationTests extends AbstractLinkableEntityTests<Quotation> {
 	@Order(16)
 	@EnabledIf("io.github.demonfiddler.ee.client.QuotationTests#hasExpectedQuotations")
 	void readQuotationsPagedFilteredSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();

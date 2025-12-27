@@ -59,7 +59,7 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 		"""
 		{
 			id
-			status
+			status(format: LONG)
 			created
 			createdByUser {
 				id
@@ -88,9 +88,9 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 				hasPrevious
 				content {
 					timestamp
-					transactionKind
+					transactionKind(format: LONG)
 					entityId
-					entityKind
+					entityKind(format: LONG)
 					user {
 						id
 						username
@@ -156,7 +156,7 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 	static void ensureExpectedTopics() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		if (topics == null) {
 			QueryExecutor queryExecutor = SpringContext.getApplicationContext().getBean(QueryExecutor.class);
-			String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+			String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 			List<Topic> content = queryExecutor.topics(responseSpec, null, null).getContent();
 			if (content.isEmpty()) {
 				LOGGER.error("Failed to initialise topics list from server");
@@ -305,7 +305,7 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 	@EnabledIf("io.github.demonfiddler.ee.client.TopicTests#hasExpectedTopic")
 	void createTopics() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		// Create another eight topics and store them all in an array together with the previously created one.
-		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted("");
+		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		final int topicCount = 8;
 		List<Topic> topics = new ArrayList<>(topicCount + 2);
 		Topic topic0 = new Topic();
@@ -359,7 +359,7 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 	@Order(6)
 	@EnabledIf("io.github.demonfiddler.ee.client.TopicTests#hasExpectedTopics")
 	void readTopics() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		TopicPage actuals = queryExecutor.topics(responseSpec, null, null);
 
 		checkPage(actuals, topics.size(), 1, topics.size(), 0, false, false, true, true, topics, true);
@@ -369,7 +369,7 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 	@Order(7)
 	@EnabledIf("io.github.demonfiddler.ee.client.TopicTests#hasExpectedTopics")
 	void readTopicsFiltered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		TopicQueryFilter filter = TopicQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -400,7 +400,7 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 	@Order(8)
 	@EnabledIf("io.github.demonfiddler.ee.client.TopicTests#hasExpectedTopics")
 	void readTopicsSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput order = OrderInput.builder() //
 			.withProperty("label") //
 			.build();
@@ -433,7 +433,7 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 	@Order(9)
 	@EnabledIf("io.github.demonfiddler.ee.client.TopicTests#hasExpectedTopics")
 	void readTopicsSortedIgnoreCase() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput order = OrderInput.builder() //
 			.withProperty("label") //
 			.withIgnoreCase(true) //
@@ -463,7 +463,7 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 	@Order(10)
 	@EnabledIf("io.github.demonfiddler.ee.client.TopicTests#hasExpectedTopics")
 	void readTopicsSortedNullOrdered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput descriptionOrder = OrderInput.builder() //
 			.withProperty("description") //
 			.withNullHandling(NullHandlingKind.NULLS_FIRST) //
@@ -532,7 +532,7 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 	@Order(11)
 	@EnabledIf("io.github.demonfiddler.ee.client.TopicTests#hasExpectedTopics")
 	void readTopicsFilteredSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		TopicQueryFilter filter = TopicQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -567,7 +567,7 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 	@Order(12)
 	@EnabledIf("io.github.demonfiddler.ee.client.TopicTests#hasExpectedTopics")
 	void readTopicsFilteredSortedNullHandling() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		TopicQueryFilter filter = TopicQueryFilter.builder() //
 			.withText("topic") //
 			.build();
@@ -633,7 +633,7 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 	@EnabledIf("io.github.demonfiddler.ee.client.TopicTests#hasExpectedTopics")
 	void readTopicsPaged() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
 		// NOTE: assume that records are returned in the same order as the unpaged query.
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		PageableInput pageSort = PageableInput.builder() //
 			.withPageNumber(0) //
 			.withPageSize(4) //
@@ -658,7 +658,7 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 	@Order(14)
 	@EnabledIf("io.github.demonfiddler.ee.client.TopicTests#hasExpectedTopics")
 	void readTopicsPagedFiltered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		TopicQueryFilter filter = TopicQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -681,7 +681,7 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 	@Order(15)
 	@EnabledIf("io.github.demonfiddler.ee.client.TopicTests#hasExpectedTopics")
 	void readTopicsPagedSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput order = OrderInput.builder() //
 			.withProperty("label") //
 			.build();
@@ -775,7 +775,7 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 	@Order(16)
 	@EnabledIf("io.github.demonfiddler.ee.client.TopicTests#hasExpectedTopics")
 	void readTopicsPagedFilteredSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		TopicQueryFilter filter = TopicQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -847,7 +847,7 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 	@Order(17)
 	@EnabledIf("io.github.demonfiddler.ee.client.TopicTests#hasExpectedTopics")
 	void readTopicsRecursive() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		TopicQueryFilter filter = TopicQueryFilter.builder() //
 			.withParentId(-1L) //
 			.withRecursive(true) //
@@ -889,7 +889,7 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 	@Order(18)
 	@EnabledIf("io.github.demonfiddler.ee.client.TopicTests#hasExpectedTopics")
 	void readTopicsRecursiveFilteredStatus() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		TopicQueryFilter filter = TopicQueryFilter.builder() //
 			.withParentId(topics.get(2).getId()) //
 			.withRecursive(true) //
@@ -924,7 +924,7 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 	@Order(19)
 	@EnabledIf("io.github.demonfiddler.ee.client.TopicTests#hasExpectedTopics")
 	void readTopicsRecursiveFilteredText() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		TopicQueryFilter filter = TopicQueryFilter.builder() //
 			.withParentId(topics.get(2).getId()) //
 			.withRecursive(true) //
@@ -949,7 +949,7 @@ class TopicTests extends AbstractTrackedEntityTests<Topic> {
 	@Order(20)
 	@EnabledIf("io.github.demonfiddler.ee.client.TopicTests#hasExpectedTopics")
 	void readTopicsRecursiveFilteredStatusText() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		TopicQueryFilter filter = TopicQueryFilter.builder() //
 			.withParentId(topics.get(2).getId()) //
 			.withRecursive(true) //

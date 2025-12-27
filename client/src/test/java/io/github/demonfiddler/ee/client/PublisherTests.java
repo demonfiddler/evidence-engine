@@ -58,7 +58,7 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 		"""
 		{
 			id
-			status
+			status(format: LONG)
 			created
 			createdByUser {
 				id
@@ -87,9 +87,9 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 				hasPrevious
 				content {
 					timestamp
-					transactionKind
+					transactionKind(format: LONG)
 					entityId
-					entityKind
+					entityKind(format: LONG)
 					user {
 						id
 						username
@@ -100,7 +100,7 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 			}
 			name
 			location
-			country
+			country(format: COMMON_NAME)
 			url
 			journalCount
 			notes
@@ -154,7 +154,7 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 	static void ensureExpectedPublishers() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		if (publishers == null) {
 			QueryExecutor queryExecutor = SpringContext.getApplicationContext().getBean(QueryExecutor.class);
-			String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+			String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 			List<Publisher> content = queryExecutor.publishers(responseSpec, null, null).getContent();
 			if (content.isEmpty()) {
 				LOGGER.error("Failed to initialise publishers list from server");
@@ -249,7 +249,7 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 	@EnabledIf("io.github.demonfiddler.ee.client.PublisherTests#hasExpectedPublisher")
 	void createPublishers() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		// Create another eight publishers and store them all in an array together with the previously created one.
-		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted("");
+		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		final int publisherCount = 8;
 		List<Publisher> publishers = new ArrayList<>(publisherCount + 1);
 		Publisher publisher0 = new Publisher();
@@ -282,7 +282,7 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 	@Order(6)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublisherTests#hasExpectedPublishers")
 	void readPublishers() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		PublisherPage actuals = queryExecutor.publishers(responseSpec, null, null);
 
 		checkPage(actuals, publishers.size(), 1, publishers.size(), 0, false, false, true, true, publishers, true);
@@ -292,7 +292,7 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 	@Order(7)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublisherTests#hasExpectedPublishers")
 	void readPublishersFiltered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		TrackedEntityQueryFilter filter = TrackedEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -316,7 +316,7 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 	@Order(8)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublisherTests#hasExpectedPublishers")
 	void readPublishersSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput order = OrderInput.builder() //
 			.withProperty("name") //
 			.build();
@@ -349,7 +349,7 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 	@Order(9)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublisherTests#hasExpectedPublishers")
 	void readPublishersSortedIgnoreCase() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput order = OrderInput.builder() //
 			.withProperty("name") //
 			.withIgnoreCase(true) //
@@ -379,7 +379,7 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 	@Order(10)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublisherTests#hasExpectedPublishers")
 	void readPublishersSortedNullOrdered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput locationOrder = OrderInput.builder() //
 			.withProperty("location") //
 			.withNullHandling(NullHandlingKind.NULLS_FIRST) //
@@ -446,7 +446,7 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 	@Order(11)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublisherTests#hasExpectedPublishers")
 	void readPublishersFilteredSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		TrackedEntityQueryFilter filter = TrackedEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -481,7 +481,7 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 	@Order(12)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublisherTests#hasExpectedPublishers")
 	void readPublishersFilteredSortedNullHandling() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		TrackedEntityQueryFilter filter = TrackedEntityQueryFilter.builder() //
 			.withText("publisher") //
 			.build();
@@ -547,7 +547,7 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 	@EnabledIf("io.github.demonfiddler.ee.client.PublisherTests#hasExpectedPublishers")
 	void readPublishersPaged() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
 		// NOTE: assume that records are returned in the same order as the unpaged query.
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		PageableInput pageSort = PageableInput.builder() //
 			.withPageNumber(0) //
 			.withPageSize(4) //
@@ -571,7 +571,7 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 	@Order(14)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublisherTests#hasExpectedPublishers")
 	void readPublishersPagedFiltered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		TrackedEntityQueryFilter filter = TrackedEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -594,7 +594,7 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 	@Order(15)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublisherTests#hasExpectedPublishers")
 	void readPublishersPagedSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput order = OrderInput.builder() //
 			.withProperty("name") //
 			.build();
@@ -688,7 +688,7 @@ class PublisherTests extends AbstractTrackedEntityTests<Publisher> {
 	@Order(16)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublisherTests#hasExpectedPublishers")
 	void readPublishersPagedFilteredSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		TrackedEntityQueryFilter filter = TrackedEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();

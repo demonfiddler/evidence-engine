@@ -106,12 +106,12 @@ interface ITrackedEntity {
     "The entity kind."
     entityKind(
         "How to format the result. SHORT format is per ```EntityKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "The entity status."
     status(
         "How to format the result. SHORT format is per ```StatusKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "A five-star rating for the entity, interpretation depends on entity kind."
     rating: Int
@@ -208,12 +208,12 @@ type Claim implements IBaseEntity & ITrackedEntity & ILinkableEntity {
     "The entity kind."
     entityKind(
         "How to format the result. SHORT format is per ```EntityKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "The entity status."
     status(
         "How to format the result. SHORT format is per ```StatusKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "A five-star rating for the claim, indicative of significance, credibility, evidence base, etc."
     rating: Int
@@ -315,12 +315,12 @@ type Comment implements IBaseEntity & ITrackedEntity {
     "The entity kind."
     entityKind(
         "How to format the result. SHORT format is per ```EntityKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "The entity status."
     status(
         "How to format the result. SHORT format is per ```StatusKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "A five-star rating for the claim, indicative of significance, credibility, evidence base, etc."
     rating: Int
@@ -490,12 +490,12 @@ type Declaration implements IBaseEntity & ITrackedEntity & ILinkableEntity {
     "The entity kind."
     entityKind(
         "How to format the result. SHORT format is per ```EntityKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "The entity status."
     status(
         "How to format the result. SHORT format is per ```StatusKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "A five-star rating for the declaration, indicative of significance, signatory eminence/count, etc."
     rating: Int
@@ -540,7 +540,7 @@ type Declaration implements IBaseEntity & ITrackedEntity & ILinkableEntity {
     "The kind of declaration."
     kind(
         "How to format the result. SHORT format is per ```DeclarationKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "The declaration name or title."
     title: String
@@ -550,7 +550,7 @@ type Declaration implements IBaseEntity & ITrackedEntity & ILinkableEntity {
     "The country to which the declaration relates."
     country(
         "How to format the result."
-        format: CountryFormatKind = COMMON_NAME
+        format: CountryFormatKind = ALPHA_2
     ): String
     "The URL for the declaration online."
     url: URL
@@ -670,12 +670,12 @@ type EntityLink implements IBaseEntity & ITrackedEntity {
     "The entity kind."
     entityKind(
         "How to format the result. SHORT format is per ```EntityKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "The entity status."
     status(
         "How to format the result. SHORT format is per ```StatusKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "A five-star rating for the link, indicative of significancce, credibility, evidence base, etc."
     rating: Int
@@ -797,12 +797,12 @@ type Journal implements IBaseEntity & ITrackedEntity {
     "The entity kind."
     entityKind(
         "How to format the result. SHORT format is per ```EntityKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "The entity status."
     status(
         "How to format the result. SHORT format is per ```StatusKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "A five-star rating for the journal, indicative of prestige, impact, circulation, etc."
     rating: Int
@@ -1025,19 +1025,19 @@ type Log implements IBaseEntity {
     "The kind of transaction."
     transactionKind(
         "How to format the result. SHORT format is per ```TransactionKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "The kind of entity affected."
     entityKind(
         "How to format the result. SHORT format is per ```EntityKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "The ID of the entity affected."
     entityId: Long
     "The kind of entity linked/unlinked (where applicable)."
     linkedEntityKind(
         "How to format the result. SHORT format is per ```EntityKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "The ID of the entity linked/unlinked (where applicable)."
     linkedEntityId: Long
@@ -1116,12 +1116,12 @@ type Person implements IBaseEntity & ITrackedEntity & ILinkableEntity {
     "The entity kind."
     entityKind(
         "How to format the result. SHORT format is per ```EntityKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "The entity status."
     status(
         "How to format the result. SHORT format is per ```StatusKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "A five-star rating for the person, intended to reflect eminence, credibility, experience, qualifications, publications, etc."
     rating: Int
@@ -1184,7 +1184,7 @@ type Person implements IBaseEntity & ITrackedEntity & ILinkableEntity {
     "The primary country associated with the person."
     country(
         "How to format the result."
-        format: CountryFormatKind = COMMON_NAME
+        format: CountryFormatKind = ALPHA_2
     ): String
     "Whether the person's credentials have been checked."
     checked: Boolean
@@ -1261,12 +1261,12 @@ type Publication implements IBaseEntity & ITrackedEntity & ILinkableEntity {
     "The entity kind."
     entityKind(
         "How to format the result. SHORT format is per ```EntityKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "The entity status."
     status(
         "How to format the result. SHORT format is per ```StatusKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "A five-star rating for the publication, indicative of impact, quality, credibility, citations, etc."
     rating: Int
@@ -1317,7 +1317,7 @@ type Publication implements IBaseEntity & ITrackedEntity & ILinkableEntity {
     "The publication kind."
     kind(
         "How to format the result. SHORT format is per ```PublicationKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     # TODO: support date formatting
     "The publication date."
@@ -1596,12 +1596,12 @@ type Publisher implements IBaseEntity & ITrackedEntity {
     "The entity kind."
     entityKind(
         "How to format the result. SHORT format is per ```EntityKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "The entity status."
     status(
         "How to format the result. SHORT format is per ```StatusKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "A five-star rating for the publisher, indicative of prestige, reputation, impact, quality, etc."
     rating: Int
@@ -1636,7 +1636,7 @@ type Publisher implements IBaseEntity & ITrackedEntity {
     "The publisher country."
     country(
         "How to format the result."
-        format: CountryFormatKind = COMMON_NAME
+        format: CountryFormatKind = ALPHA_2
     ): String
     "URL of publisher's home page."
     url: URL
@@ -1703,12 +1703,12 @@ type Quotation implements IBaseEntity & ITrackedEntity & ILinkableEntity {
     "The entity kind."
     entityKind(
         "How to format the result. SHORT format is per ```EntityKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "The entity status."
     status(
         "How to format the result. SHORT format is per ```StatusKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "A five-star rating for the quotation, indicative of impact, credibility, etc."
     rating: Int
@@ -1828,7 +1828,7 @@ type EntityStatistics {
     "The entity kind."
     entityKind(
         "How to format the result. SHORT format is per ```EntityKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "The number of entities of that kind."
     count: Long
@@ -1869,12 +1869,12 @@ type Topic implements IBaseEntity & ITrackedEntity & ILinkableEntity {
     "The entity kind"
     entityKind(
         "How to format the result. SHORT format is per ```EntityKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "The entity status."
     status(
         "How to format the result. SHORT format is per ```StatusKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "A five-star rating for the topic, indicative of significance, evidence base, etc."
     rating: Int
@@ -2021,12 +2021,12 @@ type User implements IBaseEntity & ITrackedEntity @auth {
     "The entity kind."
     entityKind(
         "How to format the result. SHORT format is per ```EntityKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "The entity status."
     status(
         "How to format the result. SHORT format is per ```StatusKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "A five-star rating for the user, indicative of contributions, quality, etc."
     rating: Int
@@ -2068,7 +2068,7 @@ type User implements IBaseEntity & ITrackedEntity @auth {
     "The user's country of residence."
     country(
         "How to format the result."
-        format: CountryFormatKind = COMMON_NAME
+        format: CountryFormatKind = ALPHA_2
     ): String
     "Added notes about the user."
     notes: String
@@ -2077,7 +2077,7 @@ type User implements IBaseEntity & ITrackedEntity @auth {
         "How to aggregate authorities."
         aggregation: AggregationKind = OWN
         "How to format the results. SHORT format is per ```AuthorityKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): [String!]! @auth(authority: [ADM])
     "The groups of which the user is a member."
     groups: [Group!] @auth(authority: [ADM])
@@ -2167,12 +2167,12 @@ type Group implements IBaseEntity & ITrackedEntity @auth {
     "The entity kind."
     entityKind(
         "How to format the result. SHORT format is per ```EntityKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "The entity status."
     status(
         "How to format the result. SHORT format is per ```StatusKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): String
     "A five-star rating for the group, though as yet unsure whether/how to use this."
     rating: Int
@@ -2205,7 +2205,7 @@ type Group implements IBaseEntity & ITrackedEntity @auth {
     "The authorities granted to the group."
     authorities(
         "How to format the results. SHORT format is per ```AuthorityKind``` enum."
-        format: FormatKind = LONG
+        format: FormatKind = SHORT
     ): [String!]! @auth(authority: [ADM])
     "The members of the group."
     members: [User!] @auth(authority: [ADM])

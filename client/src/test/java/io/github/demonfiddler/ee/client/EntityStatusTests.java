@@ -44,12 +44,18 @@ import com.graphql_java_generator.exception.GraphQLRequestPreparationException;
 @TestInstance(Lifecycle.PER_CLASS)
 public class EntityStatusTests extends AbstractGraphQLTests {
 
+	private static final String MINIMAL_RESPONSE_SPEC = """
+        {
+            id
+            status%s
+        }
+        """;
     private static final String MINIMAL_PAGED_RESPONSE = """
         {
             size
             content {
                 id
-                status
+                status(format: LONG)
             }
         }
         """;
@@ -72,11 +78,12 @@ public class EntityStatusTests extends AbstractGraphQLTests {
     @Order(1)
     @EnabledIf("io.github.demonfiddler.ee.client.TestState#hasExpectedEntities")
     void publishEntities() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+        String responseSpec = MINIMAL_RESPONSE_SPEC.formatted("(format: SHORT)");
         for (List<? extends ITrackedEntity> list : TestState.getExpectedTrackedEntities()) {
             for (int i = list == TopicTests.topics ? 2 : 1; i < list.size(); i++) {
                 ITrackedEntity entity = list.get(i);
                 Long entityId = entity.getId();
-                ITrackedEntity result = mutationExecutor.setEntityStatus("", entityId, PUB);
+                ITrackedEntity result = mutationExecutor.setEntityStatus(responseSpec, entityId, PUB);
                 assertThat(result).isNotNull();
                 assertThat(result.getStatus()).isEqualTo("PUB");
                 entity.setStatus(StatusKind.PUB.label());

@@ -56,7 +56,7 @@ class ClaimTests extends AbstractLinkableEntityTests<Claim> {
 		"""
 			{
 				id
-				status
+				status(format: LONG)
 				created
 				createdByUser {
 					id
@@ -85,9 +85,9 @@ class ClaimTests extends AbstractLinkableEntityTests<Claim> {
 					hasPrevious
 					content {
 						timestamp
-						transactionKind
+						transactionKind(format: LONG)
 						entityId
-						entityKind
+						entityKind(format: LONG)
 						user {
 							id
 							username
@@ -149,7 +149,7 @@ class ClaimTests extends AbstractLinkableEntityTests<Claim> {
 	static void ensureExpectedClaims() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		if (claims == null) {
 			QueryExecutor queryExecutor = SpringContext.getApplicationContext().getBean(QueryExecutor.class);
-			String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+			String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 			List<Claim> content = queryExecutor.claims(responseSpec, null, null).getContent();
 			if (content.isEmpty()) {
 				LOGGER.error("Failed to initialise claims list from server");
@@ -240,7 +240,7 @@ class ClaimTests extends AbstractLinkableEntityTests<Claim> {
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaim")
 	void createClaims() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		// Create another eight claims and store them all in an array together with the previously created one.
-		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted("");
+		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		final int claimCount = 8;
 		List<Claim> claims = new ArrayList<>(claimCount + 1);
 		Claim claim0 = new Claim();
@@ -274,7 +274,7 @@ class ClaimTests extends AbstractLinkableEntityTests<Claim> {
 	@Order(6)
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaims")
 	void readClaims() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		ClaimPage actuals = queryExecutor.claims(responseSpec, null, null);
 
 		checkPage(actuals, claims.size(), 1, claims.size(), 0, false, false, true, true, claims, true);
@@ -284,7 +284,7 @@ class ClaimTests extends AbstractLinkableEntityTests<Claim> {
 	@Order(7)
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaims")
 	void readClaimsFiltered() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -308,7 +308,7 @@ class ClaimTests extends AbstractLinkableEntityTests<Claim> {
 	@Order(8)
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaims")
 	void readClaimsSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput order = OrderInput.builder() //
 			.withProperty("text") //
 			.build();
@@ -342,7 +342,7 @@ class ClaimTests extends AbstractLinkableEntityTests<Claim> {
 	@Order(9)
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaims")
 	void readClaimsSortedIgnoreCase() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput order = OrderInput.builder() //
 			.withProperty("text") //
 			.withIgnoreCase(true) //
@@ -373,7 +373,7 @@ class ClaimTests extends AbstractLinkableEntityTests<Claim> {
 	@Order(10)
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaims")
 	void readClaimsSortedNullOrdered() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput notesOrder = OrderInput.builder() //
 			.withProperty("notes") //
 			.withNullHandling(NullHandlingKind.NULLS_FIRST) //
@@ -440,7 +440,7 @@ class ClaimTests extends AbstractLinkableEntityTests<Claim> {
 	@Order(11)
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaims")
 	void readClaimsFilteredSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -476,7 +476,7 @@ class ClaimTests extends AbstractLinkableEntityTests<Claim> {
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaims")
 	void readClaimsFilteredSortedNullHandling()
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("claim") //
 			.build();
@@ -543,7 +543,7 @@ class ClaimTests extends AbstractLinkableEntityTests<Claim> {
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaims")
 	void readClaimsPaged() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		// NOTE: assume that records are returned in the same order as the unpaged query.
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		PageableInput pageSort = PageableInput.builder() //
 			.withPageNumber(0) //
 			.withPageSize(4) //
@@ -567,7 +567,7 @@ class ClaimTests extends AbstractLinkableEntityTests<Claim> {
 	@Order(14)
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaims")
 	void readClaimsPagedFiltered() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -590,7 +590,7 @@ class ClaimTests extends AbstractLinkableEntityTests<Claim> {
 	@Order(15)
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaims")
 	void readClaimsPagedSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput order = OrderInput.builder() //
 			.withProperty("text") //
 			.build();
@@ -684,7 +684,7 @@ class ClaimTests extends AbstractLinkableEntityTests<Claim> {
 	@Order(16)
 	@EnabledIf("io.github.demonfiddler.ee.client.ClaimTests#hasExpectedClaims")
 	void readClaimsPagedFilteredSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();

@@ -39,6 +39,8 @@ import com.google.common.collect.Range;
 @TestInstance(PER_CLASS)
 abstract class AbstractTrackedEntityTests<T extends ITrackedEntity> extends AbstractGraphQLTests {
 
+	static final String FORMAT_LONG = "(format: LONG)";
+
 	static final OffsetDateTime[] LOG_DATES = new OffsetDateTime[3];
 
 	@BeforeAll

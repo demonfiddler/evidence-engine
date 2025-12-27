@@ -81,7 +81,7 @@ class PublicationTests extends AbstractLinkableEntityTests<Publication> {
 		"""
 		{
 			id
-			status
+			status(format: LONG)
 			created
 			createdByUser {
 				id
@@ -110,9 +110,9 @@ class PublicationTests extends AbstractLinkableEntityTests<Publication> {
 				hasPrevious
 				content {
 					timestamp
-					transactionKind
+					transactionKind(format: LONG)
 					entityId
-					entityKind
+					entityKind(format: LONG)
 					user {
 						id
 						username
@@ -126,7 +126,7 @@ class PublicationTests extends AbstractLinkableEntityTests<Publication> {
 			journal {
 				id
 			}
-			kind
+			kind(format: LONG)
 			date
 			year
 			abstract
@@ -158,7 +158,7 @@ class PublicationTests extends AbstractLinkableEntityTests<Publication> {
 		{
 			id
 			status%s
-			kind
+			kind(format: LONG)
 			title
 			abstract
 			notes
@@ -181,7 +181,7 @@ class PublicationTests extends AbstractLinkableEntityTests<Publication> {
 			content {
 				id
 				status%s
-				kind
+				kind(format: LONG)
 				title
 				abstract
 				notes
@@ -203,7 +203,7 @@ class PublicationTests extends AbstractLinkableEntityTests<Publication> {
 	static void ensureExpectedPublications() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		if (publications == null) {
 			QueryExecutor queryExecutor = SpringContext.getApplicationContext().getBean(QueryExecutor.class);
-			String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+			String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 			List<Publication> content = queryExecutor.publications(responseSpec, null, null).getContent();
 			if (content.isEmpty()) {
 				LOGGER.error("Failed to initialise publications list from server");
@@ -328,7 +328,7 @@ class PublicationTests extends AbstractLinkableEntityTests<Publication> {
 	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublication")
 	void createPublications() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		// Create another eight publications and store them all in an array together with the previously created one.
-		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted("");
+		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		final int publicationCount = 8;
 		List<Publication> publications = new ArrayList<>(publicationCount + 1);
 		Publication publication0 = new Publication();
@@ -369,7 +369,7 @@ class PublicationTests extends AbstractLinkableEntityTests<Publication> {
 	@Order(6)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
 	void readPublications() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		PublicationPage actuals = queryExecutor.publications(responseSpec, null, null);
 
 		checkPage(actuals, publications.size(), 1, publications.size(), 0, false, false, true, true, publications, true);
@@ -379,7 +379,7 @@ class PublicationTests extends AbstractLinkableEntityTests<Publication> {
 	@Order(7)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
 	void readPublicationsFiltered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -403,7 +403,7 @@ class PublicationTests extends AbstractLinkableEntityTests<Publication> {
 	@Order(8)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
 	void readPublicationsSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput order = OrderInput.builder() //
 			.withProperty("title") //
 			.build();
@@ -436,7 +436,7 @@ class PublicationTests extends AbstractLinkableEntityTests<Publication> {
 	@Order(9)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
 	void readPublicationsSortedIgnoreCase() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput order = OrderInput.builder() //
 			.withProperty("title") //
 			.withIgnoreCase(true) //
@@ -467,7 +467,7 @@ class PublicationTests extends AbstractLinkableEntityTests<Publication> {
 	@Order(10)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
 	void readPublicationsSortedNullOrdered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput notesOrder = OrderInput.builder() //
 			.withProperty("notes") //
 			.withNullHandling(NullHandlingKind.NULLS_FIRST) //
@@ -534,7 +534,7 @@ class PublicationTests extends AbstractLinkableEntityTests<Publication> {
 	@Order(11)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
 	void readPublicationsFilteredSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -569,7 +569,7 @@ class PublicationTests extends AbstractLinkableEntityTests<Publication> {
 	@Order(12)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
 	void readPublicationsFilteredSortedNullHandling() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("publication") //
 			.build();
@@ -636,7 +636,7 @@ class PublicationTests extends AbstractLinkableEntityTests<Publication> {
 	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
 	void readPublicationsPaged() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
 		// NOTE: assume that records are returned in the same order as the unpaged query.
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		PageableInput pageSort = PageableInput.builder() //
 			.withPageNumber(0) //
 			.withPageSize(4) //
@@ -660,7 +660,7 @@ class PublicationTests extends AbstractLinkableEntityTests<Publication> {
 	@Order(14)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
 	void readPublicationsPagedFiltered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -683,7 +683,7 @@ class PublicationTests extends AbstractLinkableEntityTests<Publication> {
 	@Order(15)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
 	void readPublicationsPagedSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput order = OrderInput.builder() //
 			.withProperty("title") //
 			.build();
@@ -777,7 +777,7 @@ class PublicationTests extends AbstractLinkableEntityTests<Publication> {
 	@Order(16)
 	@EnabledIf("io.github.demonfiddler.ee.client.PublicationTests#hasExpectedPublications")
 	void readPublicationsPagedFilteredSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();

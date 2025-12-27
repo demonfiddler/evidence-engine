@@ -60,7 +60,7 @@ class DeclarationTests extends AbstractLinkableEntityTests<Declaration> {
 		"""
 		{
 			id
-			status
+			status(format: LONG)
 			created
 			createdByUser {
 				id
@@ -89,9 +89,9 @@ class DeclarationTests extends AbstractLinkableEntityTests<Declaration> {
 				hasPrevious
 				content {
 					timestamp
-					transactionKind
+					transactionKind(format: LONG)
 					entityId
-					entityKind
+					entityKind(format: LONG)
 					user {
 						id
 						username
@@ -100,10 +100,10 @@ class DeclarationTests extends AbstractLinkableEntityTests<Declaration> {
 					}
 				}
 			}
-			kind
+			kind(format: LONG)
 			title
 			date
-			country
+			country(format: COMMON_NAME)
 			url
 			cached
 			signatories
@@ -115,9 +115,9 @@ class DeclarationTests extends AbstractLinkableEntityTests<Declaration> {
 		"""
 		{
 			id
-			status
+			status%s
 			date
-			kind
+			kind(format: LONG)
 			title
 			notes
 		}
@@ -140,7 +140,7 @@ class DeclarationTests extends AbstractLinkableEntityTests<Declaration> {
 				id
 				status%s
 				date
-				kind
+				kind(format: LONG)
 				title
 				notes
 			}
@@ -161,7 +161,7 @@ class DeclarationTests extends AbstractLinkableEntityTests<Declaration> {
 	static void ensureExpectedDeclarations() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		if (declarations == null) {
 			QueryExecutor queryExecutor = SpringContext.getApplicationContext().getBean(QueryExecutor.class);
-			String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+			String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 			List<Declaration> content = queryExecutor.declarations(responseSpec, null, null).getContent();
 			if (content.isEmpty()) {
 				LOGGER.error("Failed to initialise declations list from server");
@@ -268,6 +268,7 @@ class DeclarationTests extends AbstractLinkableEntityTests<Declaration> {
 	@EnabledIf("io.github.demonfiddler.ee.client.DeclarationTests#hasExpectedDeclaration")
 	void createDeclarations() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		// Create another eight declarations and store them all in an array together with the previously created one.
+		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		final int declarationCount = 8;
 		List<Declaration> declarations = new ArrayList<>(declarationCount + 1);
 		Declaration declaration0 = new Declaration();
@@ -294,7 +295,7 @@ class DeclarationTests extends AbstractLinkableEntityTests<Declaration> {
 				.withTitle(title) //
 				.withNotes(notes) //
 				.build();
-			declarations.add(mutationExecutor.createDeclaration(MINIMAL_RESPONSE_SPEC, input));
+			declarations.add(mutationExecutor.createDeclaration(responseSpec, input));
 		}
 		DeclarationTests.declarations = declarations;
 	}
@@ -303,7 +304,7 @@ class DeclarationTests extends AbstractLinkableEntityTests<Declaration> {
 	@Order(6)
 	@EnabledIf("io.github.demonfiddler.ee.client.DeclarationTests#hasExpectedDeclarations")
 	void readDeclarations() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		DeclarationPage actuals = queryExecutor.declarations(responseSpec, null, null);
 
 		checkPage(actuals, declarations.size(), 1, declarations.size(), 0, false, false, true, true, declarations, true);
@@ -313,7 +314,7 @@ class DeclarationTests extends AbstractLinkableEntityTests<Declaration> {
 	@Order(7)
 	@EnabledIf("io.github.demonfiddler.ee.client.DeclarationTests#hasExpectedDeclarations")
 	void readDeclarationsFiltered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -339,7 +340,7 @@ class DeclarationTests extends AbstractLinkableEntityTests<Declaration> {
 	@Order(8)
 	@EnabledIf("io.github.demonfiddler.ee.client.DeclarationTests#hasExpectedDeclarations")
 	void readDeclarationsSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput order = OrderInput.builder() //
 			.withProperty("title") //
 			.build();
@@ -372,7 +373,7 @@ class DeclarationTests extends AbstractLinkableEntityTests<Declaration> {
 	@Order(9)
 	@EnabledIf("io.github.demonfiddler.ee.client.DeclarationTests#hasExpectedDeclarations")
 	void readDeclarationsSortedIgnoreCase() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput order = OrderInput.builder() //
 			.withProperty("title") //
 			.withIgnoreCase(true) //
@@ -403,7 +404,7 @@ class DeclarationTests extends AbstractLinkableEntityTests<Declaration> {
 	@Order(10)
 	@EnabledIf("io.github.demonfiddler.ee.client.DeclarationTests#hasExpectedDeclarations")
 	void readDeclarationsSortedNullOrdered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput notesOrder = OrderInput.builder() //
 			.withProperty("notes") //
 			.withNullHandling(NullHandlingKind.NULLS_FIRST) //
@@ -472,7 +473,7 @@ class DeclarationTests extends AbstractLinkableEntityTests<Declaration> {
 	@Order(11)
 	@EnabledIf("io.github.demonfiddler.ee.client.DeclarationTests#hasExpectedDeclarations")
 	void readDeclarationsFilteredSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -506,7 +507,7 @@ class DeclarationTests extends AbstractLinkableEntityTests<Declaration> {
 	@Order(12)
 	@EnabledIf("io.github.demonfiddler.ee.client.DeclarationTests#hasExpectedDeclarations")
 	void readDeclarationsFilteredSortedNullHandling() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("declaration") //
 			.build();
@@ -572,7 +573,7 @@ class DeclarationTests extends AbstractLinkableEntityTests<Declaration> {
 	@Order(13)
 	@EnabledIf("io.github.demonfiddler.ee.client.DeclarationTests#hasExpectedDeclarations")
 	void readDeclarationsPaged() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		// NOTE: assume that records are returned in the same order as the unpaged query.
 		PageableInput pageSort = PageableInput.builder() //
 			.withPageNumber(0) //
@@ -598,7 +599,7 @@ class DeclarationTests extends AbstractLinkableEntityTests<Declaration> {
 	@Order(14)
 	@EnabledIf("io.github.demonfiddler.ee.client.DeclarationTests#hasExpectedDeclarations")
 	void readDeclarationsPagedFiltered() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -621,7 +622,7 @@ class DeclarationTests extends AbstractLinkableEntityTests<Declaration> {
 	@Order(15)
 	@EnabledIf("io.github.demonfiddler.ee.client.DeclarationTests#hasExpectedDeclarations")
 	void readDeclarationsPagedSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput order = OrderInput.builder() //
 			.withProperty("title") //
 			.build();
@@ -715,7 +716,7 @@ class DeclarationTests extends AbstractLinkableEntityTests<Declaration> {
 	@Order(16)
 	@EnabledIf("io.github.demonfiddler.ee.client.DeclarationTests#hasExpectedDeclarations")
 	void readDeclarationsPagedFilteredSorted() throws GraphQLRequestPreparationException , GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();

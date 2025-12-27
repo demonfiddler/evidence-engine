@@ -40,8 +40,8 @@ fragment trackedEntityFields on ITrackedEntity {
   ...on IBaseEntity {
     id
   }
-  entityKind
-  status
+  entityKind(format: LONG)
+  status(format: LONG)
   rating
   created
   createdByUser {
@@ -104,8 +104,8 @@ fragment linkedEntityFields on ILinkableEntity {
     id
   }
   ...on ITrackedEntity {
-    entityKind
-    status
+    entityKind(format: LONG)
+    status(format: LONG)
   }
   ...on Claim {
     text
@@ -137,7 +137,7 @@ fragment labelFields on ITrackedEntity {
     id
   }
   ...on ITrackedEntity {
-    entityKind
+    entityKind(format: LONG)
   }
   ...on Claim {
     text
@@ -368,10 +368,10 @@ fragment logFields on Log {
   user {
     username
   }
-  transactionKind
-  entityKind
+  transactionKind(format: LONG)
+  entityKind(format: LONG)
   entityId
-  linkedEntityKind
+  linkedEntityKind(format: LONG)
   linkedEntityId
 }
 `
@@ -1638,7 +1638,7 @@ const FRAGMENT_TOPIC_STATS_FIELDS = gql`
 fragment topicStatsFields on TopicStatistics {
   topic {
     id
-    status
+    status(format: LONG)
     label
     description
   }
@@ -1735,7 +1735,7 @@ query EntityAudit($id: ID!) {
         id
       }
       entityKind(format: SHORT)
-      status
+      status(format: LONG)
     }
     fieldAudit {
       fields {

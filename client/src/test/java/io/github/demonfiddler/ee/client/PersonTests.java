@@ -55,7 +55,7 @@ class PersonTests extends AbstractLinkableEntityTests<Person> {
 		"""
 			{
 				id
-				status
+				status(format: LONG)
 				created
 				createdByUser {
 					id
@@ -84,9 +84,9 @@ class PersonTests extends AbstractLinkableEntityTests<Person> {
 					hasPrevious
 					content {
 						timestamp
-						transactionKind
+						transactionKind(format: LONG)
 						entityId
-						entityKind
+						entityKind(format: LONG)
 						user {
 							id
 							username
@@ -104,7 +104,7 @@ class PersonTests extends AbstractLinkableEntityTests<Person> {
 				alias
 				notes
 				qualifications
-				country
+				country(format: COMMON_NAME)
 				rating
 				checked
 				published
@@ -162,7 +162,7 @@ class PersonTests extends AbstractLinkableEntityTests<Person> {
 	static void ensureExpectedPersons() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		if (persons == null) {
 			QueryExecutor queryExecutor = SpringContext.getApplicationContext().getBean(QueryExecutor.class);
-			String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+			String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 			List<Person> content = queryExecutor.persons(responseSpec, null, null).getContent();
 			if (content.isEmpty()) {
 				LOGGER.error("Failed to initialise persons list from server");
@@ -281,7 +281,7 @@ class PersonTests extends AbstractLinkableEntityTests<Person> {
 	@EnabledIf("io.github.demonfiddler.ee.client.PersonTests#hasExpectedPerson")
 	void createPersons() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		// Create another eight persons and store them all in an array together with the previously created one.
-		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted("");
+		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		final int personCount = 8;
 		List<Person> persons = new ArrayList<>(personCount + 1);
 		Person person0 = new Person();
@@ -325,7 +325,7 @@ class PersonTests extends AbstractLinkableEntityTests<Person> {
 	@Order(6)
 	@EnabledIf("io.github.demonfiddler.ee.client.PersonTests#hasExpectedPersons")
 	void readPersons() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		PersonPage actuals = queryExecutor.persons(responseSpec, null, null);
 
 		checkPage(actuals, persons.size(), 1, persons.size(), 0, false, false, true, true, persons, true);
@@ -335,7 +335,7 @@ class PersonTests extends AbstractLinkableEntityTests<Person> {
 	@Order(7)
 	@EnabledIf("io.github.demonfiddler.ee.client.PersonTests#hasExpectedPersons")
 	void readPersonsFiltered() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -359,7 +359,7 @@ class PersonTests extends AbstractLinkableEntityTests<Person> {
 	@Order(8)
 	@EnabledIf("io.github.demonfiddler.ee.client.PersonTests#hasExpectedPersons")
 	void readPersonsSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput order = OrderInput.builder() //
 			.withProperty("qualifications") //
 			.build();
@@ -392,7 +392,7 @@ class PersonTests extends AbstractLinkableEntityTests<Person> {
 	@Order(9)
 	@EnabledIf("io.github.demonfiddler.ee.client.PersonTests#hasExpectedPersons")
 	void readPersonsSortedIgnoreCase() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput order = OrderInput.builder() //
 			.withProperty("qualifications") //
 			.withIgnoreCase(true) //
@@ -424,7 +424,7 @@ class PersonTests extends AbstractLinkableEntityTests<Person> {
 	@Order(10)
 	@EnabledIf("io.github.demonfiddler.ee.client.PersonTests#hasExpectedPersons")
 	void readPersonsSortedNullHandling() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput notesOrder = OrderInput.builder() //
 			.withProperty("notes") //
 			.withNullHandling(NullHandlingKind.NULLS_FIRST) //
@@ -492,7 +492,7 @@ class PersonTests extends AbstractLinkableEntityTests<Person> {
 	@Order(11)
 	@EnabledIf("io.github.demonfiddler.ee.client.PersonTests#hasExpectedPersons")
 	void readPersonsFilteredSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -528,7 +528,7 @@ class PersonTests extends AbstractLinkableEntityTests<Person> {
 	@EnabledIf("io.github.demonfiddler.ee.client.PersonTests#hasExpectedPersons")
 	void readPersonsFilteredSortedNullHandling()
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("person") //
 			.build();
@@ -596,7 +596,7 @@ class PersonTests extends AbstractLinkableEntityTests<Person> {
 	@EnabledIf("io.github.demonfiddler.ee.client.PersonTests#hasExpectedPersons")
 	void readPersonsPaged() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		// NOTE: assume that records are returned in database primary key order.
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		PageableInput pageSort = PageableInput.builder() //
 			.withPageNumber(0) //
 			.withPageSize(4) //
@@ -620,7 +620,7 @@ class PersonTests extends AbstractLinkableEntityTests<Person> {
 	@Order(14)
 	@EnabledIf("io.github.demonfiddler.ee.client.PersonTests#hasExpectedPersons")
 	void readPersonsPagedFiltered() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -647,7 +647,7 @@ class PersonTests extends AbstractLinkableEntityTests<Person> {
 	@Order(15)
 	@EnabledIf("io.github.demonfiddler.ee.client.PersonTests#hasExpectedPersons")
 	void readPersonsPagedSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput order = OrderInput.builder() //
 			.withProperty("qualifications") //
 			.build();
@@ -741,7 +741,7 @@ class PersonTests extends AbstractLinkableEntityTests<Person> {
 	@Order(16)
 	@EnabledIf("io.github.demonfiddler.ee.client.PersonTests#hasExpectedPersons")
 	void readPersonsPagedFilteredSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		LinkableEntityQueryFilter filter = LinkableEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();

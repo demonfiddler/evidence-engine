@@ -54,7 +54,7 @@ import io.github.demonfiddler.ee.client.util.QueryExecutor;
 abstract class AbstractGraphQLTests {
 
 	static record EntityMetaData(String name, EntityKind kind) {
-	};
+	}
 
 	static final String NL = System.lineSeparator();
 	static final boolean CASE_INSENSITIVE = Boolean.getBoolean("ee.test.case-insensitive");

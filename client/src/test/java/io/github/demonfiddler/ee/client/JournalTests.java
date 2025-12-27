@@ -60,7 +60,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 		"""
 			{
 				id
-				status
+				status(format: LONG)
 				created
 				createdByUser {
 					id
@@ -89,9 +89,9 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 					hasPrevious
 					content {
 						timestamp
-						transactionKind
+						transactionKind(format: LONG)
 						entityId
-						entityKind
+						entityKind(format: LONG)
 						user {
 							id
 							username
@@ -155,7 +155,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 	static void ensureExpectedJournals() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		if (journals == null) {
 			QueryExecutor queryExecutor = SpringContext.getApplicationContext().getBean(QueryExecutor.class);
-			String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+			String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 			List<Journal> content = queryExecutor.journals(responseSpec, null, null).getContent();
 			if (content.isEmpty()) {
 				LOGGER.error("Failed to initialise journals list from server");
@@ -261,7 +261,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournal")
 	void createJournals() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		// Create another eight journals and store them all in an array together with the previously created one.
-		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted("");
+		String responseSpec = MINIMAL_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		final int journalCount = 8;
 		List<Journal> journals = new ArrayList<>(journalCount + 1);
 		Journal journal0 = new Journal();
@@ -294,7 +294,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 	@Order(6)
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournals")
 	void readJournals() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		JournalPage actuals = queryExecutor.journals(responseSpec, null, null);
 
 		checkPage(actuals, journals.size(), 1, journals.size(), 0, false, false, true, true, journals, true);
@@ -304,7 +304,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 	@Order(7)
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournals")
 	void readJournalsFiltered() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		TrackedEntityQueryFilter filter = TrackedEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -328,7 +328,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 	@Order(8)
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournals")
 	void readJournalsSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput order = OrderInput.builder() //
 			.withProperty("title") //
 			.build();
@@ -361,7 +361,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 	@Order(9)
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournals")
 	void readJournalsSortedIgnoreCase() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput order = OrderInput.builder() //
 			.withProperty("title") //
 			.withIgnoreCase(true) //
@@ -391,7 +391,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 	@Order(10)
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournals")
 	void readJournalsSortedNullOrdered() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput notesOrder = OrderInput.builder() //
 			.withProperty("notes") //
 			.withNullHandling(NullHandlingKind.NULLS_FIRST) //
@@ -460,7 +460,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 	@Order(11)
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournals")
 	void readJournalsFilteredSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		TrackedEntityQueryFilter filter = TrackedEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -496,7 +496,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournals")
 	void readJournalsFilteredSortedNullHandling()
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		TrackedEntityQueryFilter filter = TrackedEntityQueryFilter.builder() //
 			.withText("journal") //
 			.build();
@@ -563,7 +563,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournals")
 	void readJournalsPaged() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 		// NOTE: assume that records are returned in the same order as the unpaged query.
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		PageableInput pageSort = PageableInput.builder() //
 			.withPageNumber(0) //
 			.withPageSize(4) //
@@ -587,7 +587,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 	@Order(14)
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournals")
 	void readJournalsPagedFiltered() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		TrackedEntityQueryFilter filter = TrackedEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
@@ -610,7 +610,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 	@Order(15)
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournals")
 	void readJournalsPagedSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		OrderInput order = OrderInput.builder() //
 			.withProperty("title") //
 			.build();
@@ -704,7 +704,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 	@Order(16)
 	@EnabledIf("io.github.demonfiddler.ee.client.JournalTests#hasExpectedJournals")
 	void readJournalsPagedFilteredSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-		String responseSpec = PAGED_RESPONSE_SPEC.formatted("");
+		String responseSpec = PAGED_RESPONSE_SPEC.formatted(FORMAT_LONG);
 		TrackedEntityQueryFilter filter = TrackedEntityQueryFilter.builder() //
 			.withText("filtered") //
 			.build();
