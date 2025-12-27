@@ -101,7 +101,7 @@ export default function GroupDetails(
               onFormAction={onFormAction}
             />
             <FieldsetEx
-              className="grid grid-cols-7 border rounded-md p-4 gap-4"
+              className="grid grid-cols-8 border rounded-md p-4 gap-4"
               disabled={!updating}
               help="Authorities to grant to the group"
             >

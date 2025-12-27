@@ -300,7 +300,7 @@ export default function UserDetails(
             />
             <FieldsetEx
               outerClassName="col-start-1 col-span-2"
-              className="grid grid-cols-7 border rounded-md p-4 gap-4"
+              className="grid grid-cols-8 border rounded-md p-4 gap-4"
               disabled={!user && !updating}
               help="Authorities to grant to the user"
             >

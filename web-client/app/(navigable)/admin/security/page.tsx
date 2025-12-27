@@ -61,6 +61,7 @@ const logger = new LoggerEx(page, "[Security] ")
 function createAuthoritiesFieldValues(authorities?: Authority[]) {
   return {
     adm: authorities?.includes("ADM") ?? false,
+    com: authorities?.includes("COM") ?? false,
     cre: authorities?.includes("CRE") ?? false,
     del: authorities?.includes("DEL") ?? false,
     lnk: authorities?.includes("LNK") ?? false,
@@ -74,6 +75,8 @@ function createAuthorities(formValue: AuthoritiesFieldValues) {
   const authorities: Authority[] = []
   if (formValue.adm)
     authorities.push("ADM")
+  if (formValue.com)
+    authorities.push("COM")
   if (formValue.cre)
     authorities.push("CRE")
   if (formValue.del)

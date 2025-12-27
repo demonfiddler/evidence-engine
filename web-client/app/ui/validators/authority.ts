@@ -21,6 +21,7 @@ import { z } from "zod/v4"
 
 export const Authority = z.enum([
   "ADM",
+  "COM",
   "CRE",
   "DEL",
   "LNK",
@@ -31,6 +32,7 @@ export const Authority = z.enum([
 
 export const AuthoritiesSchema = z.object({
   adm: z.boolean(),
+  com: z.boolean(),
   cre: z.boolean(),
   del: z.boolean(),
   lnk: z.boolean(),
