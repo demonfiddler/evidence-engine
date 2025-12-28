@@ -18,7 +18,7 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 export type AuthorityUI = {
-  key: "adm" | "com" | "cre" | "del" | "lnk" | "rea" | "upd" | "upl"
+  key: "adm" | "chg" | "com" | "cre" | "lnk" | "rea" | "upd" | "upl"
   label: string
   description: string
 }
@@ -27,9 +27,9 @@ export type AuthorityUI = {
 
 export const authorities : AuthorityUI[] = [
   {key: "adm", label: "Administer", description: "Administer system"},
+  {key: "chg", label: "Change", description: "Change record status"},
   {key: "com", label: "Comment", description: "Comment on records"},
   {key: "cre", label: "Create", description: "Create records"},
-  {key: "del", label: "Delete", description: "Delete records"},
   {key: "lnk", label: "Link", description: "Link/unlink records"},
   {key: "rea", label: "Read", description: "Read records"},
   {key: "upd", label: "Update", description: "Update records"},

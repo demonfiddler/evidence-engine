@@ -32,23 +32,33 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
 public enum TransactionKind {
 
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Commented" })
+	COM("COM", "Commented"),
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Created" })
 	CRE("CRE", "Created"), //
-	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
-		parameterValues = { "Updated" })
-	UPD("UPD", "Updated"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Deleted" })
 	DEL("DEL", "Deleted"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Drafted" })
+	DRA("DRA", "Drafted"), //
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Linked" })
 	LNK("LNK", "Linked"), //
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Published" })
+	PUB("PUB", "Published"), //
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Suspended" })
+	SUS("SUS", "Suspended"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Unlinked" })
 	UNL("UNL", "Unlinked"), //
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
-		parameterValues = { "Commented" })
-	COM("COM", "Commented");
+		parameterValues = { "Updated" })
+	UPD("UPD", "Updated") //
+	;
 
 	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
 	// are different

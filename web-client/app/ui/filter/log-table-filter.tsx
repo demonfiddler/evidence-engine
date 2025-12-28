@@ -259,11 +259,15 @@ export default function LogTableFilter(
               ? <SelectItem value="ALL">-Clear-</SelectItem>
               : null
             }
+            <SelectItem value="COM">Commented</SelectItem>
             <SelectItem value="CRE">Created</SelectItem>
-            <SelectItem value="UPD">Updated</SelectItem>
             <SelectItem value="DEL">Deleted</SelectItem>
+            <SelectItem value="DRA">Drafted</SelectItem>
             <SelectItem value="LNK">Linked</SelectItem>
+            <SelectItem value="PUB">Published</SelectItem>
+            <SelectItem value="SUS">Suspended</SelectItem>
             <SelectItem value="UNL">Unlinked</SelectItem>
+            <SelectItem value="UPD">Updated</SelectItem>
           </SelectContent>
         </Select>
         <Select

@@ -37,9 +37,9 @@ import {
   ShieldCheckIcon,
   TableOfContentsIcon,
   UserIcon
-} from 'lucide-react';
-import { MessageSquareQuoteIconEx } from '../icons';
-import Authority from '@/app/model/Authority';
+} from 'lucide-react'
+import { MessageSquareQuoteIconEx } from '../icons'
+import { AuthorityKind } from '@/app/model/schema'
 
 export const categories = [
   {
@@ -74,7 +74,7 @@ export const categories = [
   }, {
     label: "Administration",
     icon: LockIcon,
-    authority: 'ADM' as Authority,
+    authority: 'ADM' as AuthorityKind,
     items: [
       { label: "Security", href: "/admin/security", icon: ShieldCheckIcon },
       { label: "Backup", href: "/admin/backup", icon: DatabaseBackupIcon },

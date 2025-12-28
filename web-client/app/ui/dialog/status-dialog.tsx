@@ -819,10 +819,10 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
                               ? <SelectItem value="ALL">-Clear-</SelectItem>
                               : null
                             }
+                            <SelectItem value="DEL">Deleted</SelectItem>
                             <SelectItem value="DRA">Draft</SelectItem>
                             <SelectItem value="PUB">Published</SelectItem>
                             <SelectItem value="SUS">Suspended</SelectItem>
-                            <SelectItem value="DEL">Deleted</SelectItem>
                           </SelectContent>
                         </Select>
                         <Search id="searchText" value={filterText} onChangeValue={handleTextChange} />

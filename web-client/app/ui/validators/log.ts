@@ -18,16 +18,8 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 import { z } from "zod/v4"
-import { EntityKind } from "./enums"
+import { EntityKind, TransactionKind } from "./enums"
 import { ID } from "./id"
-
-const TransactionKind = z.enum([
-  "CRE",
-  "DEL",
-  "LNK",
-  "UNL",
-  "UPD",
-])
 
 export const Log = z.object({
   timestamp: z.iso.datetime().optional(),

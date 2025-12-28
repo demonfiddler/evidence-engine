@@ -1093,12 +1093,12 @@ type LogPage implements IPage {
 enum AuthorityKind {
     "Use administrative functions."
     ADM @label(label: "Administer")
+    "Change record status."
+    CHG @label(label: "Status")
     "Comment on records."
     COM @label(label: "Comment")
     "Insert new record."
     CRE @label(label: "Create")
-    "Delete existing record."
-    DEL @label(label: "Delete")
     "Link/unlink existing records."
     LNK @label(label: "Link")
     "Read existing record."
@@ -1852,14 +1852,14 @@ input StatisticsQueryFilter {
 
 "Enumeration of ITrackedEntity status codes."
 enum StatusKind {
+    "Record is deleted."
+    DEL @label(label: "Deleted")
     "Record is draft/new."
     DRA @label(label: "Draft")
     "Record is published/active."
     PUB @label(label: "Published")
     "Record is suspended/disabled/hidden."
     SUS @label(label: "Suspended")
-    "Record is deleted."
-    DEL @label(label: "Deleted")
 }
 
 "A node in the topic hierarchy tree."
@@ -2000,18 +2000,24 @@ input TrackedEntityQueryFilter {
 
 "Enumeration of the possible transaction kinds."
 enum TransactionKind {
-    "Record created."
-    CRE @label(label: "Created")
-    "Record updated."
-    UPD @label(label: "Updated")
-    "Record deleted."
-    DEL @label(label: "Deleted")
-    "Records linked."
-    LNK @label(label: "Linked")
-    "Records unlinked."
-    UNL @label(label: "Unlinked")
     "Record commented upon."
     COM @label(label: "Commented")
+    "Record created."
+    CRE @label(label: "Created")
+    "Record deleted."
+    DEL @label(label: "Deleted")
+    "Record drafted."
+    DRA @label(label: "Drafted")
+    "Records linked."
+    LNK @label(label: "Linked")
+    "Record published."
+    PUB @label(label: "Published")
+    "Record suspended."
+    SUS @label(label: "Suspended")
+    "Records unlinked."
+    UNL @label(label: "Unlinked")
+    "Record updated."
+    UPD @label(label: "Updated")
 }
 
 "Describes a user of the system."
@@ -2434,7 +2440,7 @@ type Mutation {
     "Updates an existing claim."
     updateClaim(claim: ClaimInput!): Claim @auth(authority: [UPD])
     "Deletes an existing claim."
-    deleteClaim(claimId: ID!): Claim @auth(authority: [DEL])
+    deleteClaim(claimId: ID!): Claim @auth(authority: [CHG])
 
     "Creates a new comment."
     createComment(comment: CommentInput!): Comment @auth(authority: [COM])
@@ -2448,7 +2454,7 @@ type Mutation {
     "Updates an existing declaration."
     updateDeclaration(declaration: DeclarationInput!): Declaration @auth(authority: [UPD])
     "Deletes an existing declaration."
-    deleteDeclaration(declarationId: ID!): Declaration @auth(authority: [DEL])
+    deleteDeclaration(declarationId: ID!): Declaration @auth(authority: [CHG])
 
     "Creates an entity link."
     createEntityLink(entityLink: EntityLinkInput!) : EntityLink @auth(authority: [LNK])
@@ -2462,45 +2468,45 @@ type Mutation {
     "Updates an existing journal."
     updateJournal(journal: JournalInput!): Journal @auth(authority: [UPD])
     "Deletes an existing journal."
-    deleteJournal(journalId: ID!): Journal @auth(authority: [DEL])
+    deleteJournal(journalId: ID!): Journal @auth(authority: [CHG])
 
     "Creates a new person."
     createPerson(person: PersonInput!): Person @auth(authority: [CRE])
     "Updates an existing person."
     updatePerson(person: PersonInput!): Person @auth(authority: [UPD])
     "Deletes an existing person."
-    deletePerson(personId: ID!): Person @auth(authority: [DEL])
+    deletePerson(personId: ID!): Person @auth(authority: [CHG])
 
     "Creates a new publication."
     createPublication(publication: PublicationInput!): Publication @auth(authority: [CRE])
     "Updates an existing publication."
     updatePublication(publication: PublicationInput!): Publication @auth(authority: [UPD])
     "Deletes an existing publication."
-    deletePublication(publicationId: ID!): Publication @auth(authority: [DEL])
+    deletePublication(publicationId: ID!): Publication @auth(authority: [CHG])
 
     "Creates a new publisher."
     createPublisher(publisher: PublisherInput!): Publisher @auth(authority: [CRE])
     "Updates an existing publisher."
     updatePublisher(publisher: PublisherInput!): Publisher @auth(authority: [UPD])
     "Deletes an existing publisher."
-    deletePublisher(publisherId: ID!): Publisher @auth(authority: [DEL])
+    deletePublisher(publisherId: ID!): Publisher @auth(authority: [CHG])
 
     "Creates a new quotation."
     createQuotation(quotation: QuotationInput!): Quotation @auth(authority: [CRE])
     "Updates an existing quotation."
     updateQuotation(quotation: QuotationInput!): Quotation @auth(authority: [UPD])
     "Deletes an existing quotation."
-    deleteQuotation(quotationId: ID!): Quotation @auth(authority: [DEL])
+    deleteQuotation(quotationId: ID!): Quotation @auth(authority: [CHG])
 
     "Creates a new topic."
     createTopic(topic: TopicInput!): Topic @auth(authority: [CRE])
     "Updates an existing topic."
     updateTopic(topic: TopicInput!): Topic @auth(authority: [UPD])
     "Deletes an existing topic."
-    deleteTopic(topicId: ID!): Topic @auth(authority: [DEL])
+    deleteTopic(topicId: ID!): Topic @auth(authority: [CHG])
 
     "Sets entity status."
-    setEntityStatus(entityId: ID!, status: StatusKind!) : ITrackedEntity @auth(authority: [UPD])
+    setEntityStatus(entityId: ID!, status: StatusKind!) : ITrackedEntity @auth(authority: [CHG])
 
     "Creates a new user."
     createUser(user: UserInput!): User @auth(authority: [ADM])

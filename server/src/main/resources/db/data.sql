@@ -291,9 +291,9 @@ INSERT INTO "entity_kind" ("code", "label") VALUES
 
 INSERT INTO "authority_kind" ("code", "label", "description") VALUES
 	('ADM', 'Administer', 'Use administrative functions'),
+	('CHG', 'Change', 'Change record status'),
 	('COM', 'Comment', 'Comment on existing records'),
 	('CRE', 'Create', 'Insert new record'),
-	('DEL', 'Delete', 'Delete existing record'),
 	('LNK', 'Link', 'Link existing records'),
 	('REA', 'Read', 'Read existing record'),
 	('UPD', 'Update', 'Update existing record'),
@@ -365,11 +365,15 @@ INSERT INTO "status_kind" ("code", "label", "description") VALUES
 	('SUS', 'Suspended', 'The record is suspended/disabled/hidden from ordinary users');
 
 INSERT INTO "transaction_kind" ("code", "label", "description") VALUES
-	('CRE', 'Create', 'A new record was created'),
-	('DEL', 'Delete', 'A record was marked as deleted'),
-	('LNK', 'Link', 'One record was linked to another'),
-	('UNL', 'Unlink', 'Two linked records were unlinked'),
-	('UPD', 'Update', 'A record was updated');
+	('COM', 'Created', 'A new record was created'),
+	('CRE', 'Created', 'A new record was created'),
+	('DEL', 'Deleted', 'A record was marked as deleted'),
+	('DRA', 'Drafted', 'A record was marked as a draft'),
+	('LNK', 'Linked', 'Two record were linked'),
+	('PUB', 'Published', 'A record was published'),
+	('SUS', 'Suspended', 'A record was marked as suspended'),
+	('UNL', 'Unlinked', 'Two linked records were unlinked'),
+	('UPD', 'Updated', 'A record was updated');
 
 INSERT INTO "entity" ("dtype", "status", "created_by_user_id") VALUES ('USR', 'PUB', NULL);
 SET @root_id = (SELECT "id" FROM "entity" WHERE "dtype" = 'USR');
@@ -412,9 +416,9 @@ INSERT INTO "group_user" ("group_id", "username") VALUES
 
 INSERT INTO "group_authority" ("group_id","authority") VALUES
 	(@administrators_id,'ADM'),
+	(@administrators_id,'CHG'),
 	(@administrators_id,'COM'),
 	(@administrators_id,'CRE'),
-	(@administrators_id,'DEL'),
 	(@administrators_id,'LNK'),
 	(@administrators_id,'REA'),
 	(@administrators_id,'UPD'),

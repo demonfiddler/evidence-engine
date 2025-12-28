@@ -394,7 +394,10 @@ components:
           - COM
           - CRE
           - DEL
+          - DRA
           - LNK
+          - PUB
+          - SUS
           - UNL
           - UPD
       required: false

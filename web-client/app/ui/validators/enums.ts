@@ -19,6 +19,17 @@
 
 import { z } from "zod/v4"
 
+export const AuthorityKind = z.enum([
+  "ADM",
+  "CHG",
+  "COM",
+  "CRE",
+  "LNK",
+  "REA",
+  "UPD",
+  "UPL"
+])
+
 export const EntityKind = z.enum([
   "CLA",
   "COU",
@@ -34,9 +45,22 @@ export const EntityKind = z.enum([
   "USR",
 ])
 
-export const Status = z.enum([
+export const StatusKind = z.enum([
   "DEL",
   "DRA",
   "PUB",
   "SUS",
 ])
+
+export const TransactionKind = z.enum([
+  "COM",
+  "CRE",
+  "DEL",
+  "DRA",
+  "LNK",
+  "PUB",
+  "SUS",
+  "UNL",
+  "UPD",
+])
+

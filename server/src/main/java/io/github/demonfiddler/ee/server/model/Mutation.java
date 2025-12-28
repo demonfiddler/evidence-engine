@@ -56,7 +56,7 @@ public class Mutation {
 	 */
 	@GraphQLScalar(fieldName = "deleteClaim", graphQLTypeSimpleName = "Claim", javaClass = Claim.class, listDepth = 0)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	Claim deleteClaim;
 
 	/**
@@ -110,7 +110,7 @@ public class Mutation {
 	@GraphQLScalar(fieldName = "deleteDeclaration", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class, listDepth = 0)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	Declaration deleteDeclaration;
 
 	/**
@@ -164,7 +164,7 @@ public class Mutation {
 	@GraphQLScalar(fieldName = "deleteJournal", graphQLTypeSimpleName = "Journal", javaClass = Journal.class,
 		listDepth = 0)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	Journal deleteJournal;
 
 	/**
@@ -191,7 +191,7 @@ public class Mutation {
 	@GraphQLScalar(fieldName = "deletePerson", graphQLTypeSimpleName = "Person", javaClass = Person.class,
 		listDepth = 0)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	Person deletePerson;
 
 	/**
@@ -218,7 +218,7 @@ public class Mutation {
 	@GraphQLScalar(fieldName = "deletePublication", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class, listDepth = 0)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	Publication deletePublication;
 
 	/**
@@ -245,7 +245,7 @@ public class Mutation {
 	@GraphQLScalar(fieldName = "deletePublisher", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class,
 		listDepth = 0)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	Publisher deletePublisher;
 
 	/**
@@ -272,7 +272,7 @@ public class Mutation {
 	@GraphQLScalar(fieldName = "deleteQuotation", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class,
 		listDepth = 0)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	Quotation deleteQuotation;
 
 	/**
@@ -298,7 +298,7 @@ public class Mutation {
 	 */
 	@GraphQLScalar(fieldName = "deleteTopic", graphQLTypeSimpleName = "Topic", javaClass = Topic.class, listDepth = 0)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	Topic deleteTopic;
 
 	/**
@@ -307,7 +307,7 @@ public class Mutation {
 	@GraphQLNonScalar(fieldName = "setEntityStatus", graphQLTypeSimpleName = "ITrackedEntity",
 		javaClass = ITrackedEntity.class, listDepth = 0)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[UPD]" })
+		parameterValues = { "[CHG]" })
 	ITrackedEntity setEntityStatus;
 
 	/**
@@ -475,7 +475,7 @@ public class Mutation {
 	 * Deletes an existing claim.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public void setDeleteClaim(Claim deleteClaim) {
 		this.deleteClaim = deleteClaim;
 	}
@@ -484,7 +484,7 @@ public class Mutation {
 	 * Deletes an existing claim.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Claim getDeleteClaim() {
 		return this.deleteClaim;
 	}
@@ -583,7 +583,7 @@ public class Mutation {
 	 * Deletes an existing declaration.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public void setDeleteDeclaration(Declaration deleteDeclaration) {
 		this.deleteDeclaration = deleteDeclaration;
 	}
@@ -592,7 +592,7 @@ public class Mutation {
 	 * Deletes an existing declaration.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Declaration getDeleteDeclaration() {
 		return this.deleteDeclaration;
 	}
@@ -691,7 +691,7 @@ public class Mutation {
 	 * Deletes an existing journal.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public void setDeleteJournal(Journal deleteJournal) {
 		this.deleteJournal = deleteJournal;
 	}
@@ -700,7 +700,7 @@ public class Mutation {
 	 * Deletes an existing journal.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Journal getDeleteJournal() {
 		return this.deleteJournal;
 	}
@@ -745,7 +745,7 @@ public class Mutation {
 	 * Deletes an existing person.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public void setDeletePerson(Person deletePerson) {
 		this.deletePerson = deletePerson;
 	}
@@ -754,7 +754,7 @@ public class Mutation {
 	 * Deletes an existing person.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Person getDeletePerson() {
 		return this.deletePerson;
 	}
@@ -799,7 +799,7 @@ public class Mutation {
 	 * Deletes an existing publication.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public void setDeletePublication(Publication deletePublication) {
 		this.deletePublication = deletePublication;
 	}
@@ -808,7 +808,7 @@ public class Mutation {
 	 * Deletes an existing publication.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Publication getDeletePublication() {
 		return this.deletePublication;
 	}
@@ -853,7 +853,7 @@ public class Mutation {
 	 * Deletes an existing publisher.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public void setDeletePublisher(Publisher deletePublisher) {
 		this.deletePublisher = deletePublisher;
 	}
@@ -862,7 +862,7 @@ public class Mutation {
 	 * Deletes an existing publisher.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Publisher getDeletePublisher() {
 		return this.deletePublisher;
 	}
@@ -907,7 +907,7 @@ public class Mutation {
 	 * Deletes an existing quotation.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public void setDeleteQuotation(Quotation deleteQuotation) {
 		this.deleteQuotation = deleteQuotation;
 	}
@@ -916,7 +916,7 @@ public class Mutation {
 	 * Deletes an existing quotation.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Quotation getDeleteQuotation() {
 		return this.deleteQuotation;
 	}
@@ -961,7 +961,7 @@ public class Mutation {
 	 * Deletes an existing topic.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public void setDeleteTopic(Topic deleteTopic) {
 		this.deleteTopic = deleteTopic;
 	}
@@ -970,7 +970,7 @@ public class Mutation {
 	 * Deletes an existing topic.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Topic getDeleteTopic() {
 		return this.deleteTopic;
 	}
@@ -979,7 +979,7 @@ public class Mutation {
 	 * Sets entity status.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[UPD]" })
+		parameterValues = { "[CHG]" })
 	public void setSetEntityStatus(ITrackedEntity setEntityStatus) {
 		this.setEntityStatus = setEntityStatus;
 	}
@@ -988,7 +988,7 @@ public class Mutation {
 	 * Sets entity status.
 	 */
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[UPD]" })
+		parameterValues = { "[CHG]" })
 	public ITrackedEntity getSetEntityStatus() {
 		return this.setEntityStatus;
 	}

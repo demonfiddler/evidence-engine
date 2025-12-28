@@ -1317,7 +1317,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deleteClaim", graphQLTypeSimpleName = "Claim", javaClass = Claim.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Claim>> deleteClaimWithBindValues(String queryResponseDef, Long claimId,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
@@ -1372,7 +1372,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deleteClaim", graphQLTypeSimpleName = "Claim", javaClass = Claim.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Claim>> deleteClaim(String queryResponseDef, Long claimId, Object... paramsAndValues)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
@@ -1430,7 +1430,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deleteClaim", graphQLTypeSimpleName = "Claim", javaClass = Claim.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Claim>> deleteClaimWithBindValues(ObjectResponse objectResponse, Long claimId,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 
@@ -1500,7 +1500,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deleteClaim", graphQLTypeSimpleName = "Claim", javaClass = Claim.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Claim>> deleteClaim(ObjectResponse objectResponse, Long claimId, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
 
@@ -3077,7 +3077,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLScalar(fieldName = "deleteDeclaration", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Declaration>> deleteDeclarationWithBindValues(String queryResponseDef, Long declarationId,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
@@ -3134,7 +3134,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLScalar(fieldName = "deleteDeclaration", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Declaration>> deleteDeclaration(String queryResponseDef, Long declarationId,
 		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
@@ -3198,7 +3198,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLScalar(fieldName = "deleteDeclaration", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Declaration>> deleteDeclarationWithBindValues(ObjectResponse objectResponse,
 		Long declarationId, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 
@@ -3271,7 +3271,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLScalar(fieldName = "deleteDeclaration", graphQLTypeSimpleName = "Declaration",
 		javaClass = Declaration.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Declaration>> deleteDeclaration(ObjectResponse objectResponse, Long declarationId,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
 
@@ -4846,7 +4846,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deleteJournal", graphQLTypeSimpleName = "Journal", javaClass = Journal.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Journal>> deleteJournalWithBindValues(String queryResponseDef, Long journalId,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
@@ -4902,7 +4902,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deleteJournal", graphQLTypeSimpleName = "Journal", javaClass = Journal.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Journal>> deleteJournal(String queryResponseDef, Long journalId, Object... paramsAndValues)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
@@ -4963,7 +4963,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deleteJournal", graphQLTypeSimpleName = "Journal", javaClass = Journal.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Journal>> deleteJournalWithBindValues(ObjectResponse objectResponse, Long journalId,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 
@@ -5033,7 +5033,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deleteJournal", graphQLTypeSimpleName = "Journal", javaClass = Journal.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Journal>> deleteJournal(ObjectResponse objectResponse, Long journalId,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
 
@@ -5713,7 +5713,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deletePerson", graphQLTypeSimpleName = "Person", javaClass = Person.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Person>> deletePersonWithBindValues(String queryResponseDef, Long personId,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
@@ -5768,7 +5768,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deletePerson", graphQLTypeSimpleName = "Person", javaClass = Person.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Person>> deletePerson(String queryResponseDef, Long personId, Object... paramsAndValues)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
@@ -5827,7 +5827,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deletePerson", graphQLTypeSimpleName = "Person", javaClass = Person.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Person>> deletePersonWithBindValues(ObjectResponse objectResponse, Long personId,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 
@@ -5897,7 +5897,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deletePerson", graphQLTypeSimpleName = "Person", javaClass = Person.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Person>> deletePerson(ObjectResponse objectResponse, Long personId, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
 
@@ -6602,7 +6602,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLScalar(fieldName = "deletePublication", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Publication>> deletePublicationWithBindValues(String queryResponseDef, Long publicationId,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
@@ -6659,7 +6659,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLScalar(fieldName = "deletePublication", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Publication>> deletePublication(String queryResponseDef, Long publicationId,
 		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
@@ -6723,7 +6723,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLScalar(fieldName = "deletePublication", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Publication>> deletePublicationWithBindValues(ObjectResponse objectResponse,
 		Long publicationId, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 
@@ -6796,7 +6796,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	@GraphQLScalar(fieldName = "deletePublication", graphQLTypeSimpleName = "Publication",
 		javaClass = Publication.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Publication>> deletePublication(ObjectResponse objectResponse, Long publicationId,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
 
@@ -7483,7 +7483,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deletePublisher", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Publisher>> deletePublisherWithBindValues(String queryResponseDef, Long publisherId,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
@@ -7539,7 +7539,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deletePublisher", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Publisher>> deletePublisher(String queryResponseDef, Long publisherId,
 		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
@@ -7601,7 +7601,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deletePublisher", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Publisher>> deletePublisherWithBindValues(ObjectResponse objectResponse, Long publisherId,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 
@@ -7673,7 +7673,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deletePublisher", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Publisher>> deletePublisher(ObjectResponse objectResponse, Long publisherId,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
 
@@ -8361,7 +8361,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deleteQuotation", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Quotation>> deleteQuotationWithBindValues(String queryResponseDef, Long quotationId,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
@@ -8417,7 +8417,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deleteQuotation", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Quotation>> deleteQuotation(String queryResponseDef, Long quotationId,
 		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
@@ -8479,7 +8479,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deleteQuotation", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Quotation>> deleteQuotationWithBindValues(ObjectResponse objectResponse, Long quotationId,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 
@@ -8551,7 +8551,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deleteQuotation", graphQLTypeSimpleName = "Quotation", javaClass = Quotation.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Quotation>> deleteQuotation(ObjectResponse objectResponse, Long quotationId,
 		Object... paramsAndValues) throws GraphQLRequestExecutionException {
 
@@ -9229,7 +9229,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deleteTopic", graphQLTypeSimpleName = "Topic", javaClass = Topic.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Topic>> deleteTopicWithBindValues(String queryResponseDef, Long topicId,
 		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
@@ -9284,7 +9284,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deleteTopic", graphQLTypeSimpleName = "Topic", javaClass = Topic.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Topic>> deleteTopic(String queryResponseDef, Long topicId, Object... paramsAndValues)
 		throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
@@ -9342,7 +9342,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deleteTopic", graphQLTypeSimpleName = "Topic", javaClass = Topic.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Topic>> deleteTopicWithBindValues(ObjectResponse objectResponse, Long topicId,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 
@@ -9412,7 +9412,7 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 */
 	@GraphQLScalar(fieldName = "deleteTopic", graphQLTypeSimpleName = "Topic", javaClass = Topic.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[DEL]" })
+		parameterValues = { "[CHG]" })
 	public Mono<Optional<Topic>> deleteTopic(ObjectResponse objectResponse, Long topicId, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
 

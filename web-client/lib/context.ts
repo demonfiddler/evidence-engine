@@ -21,7 +21,6 @@ import { createContext } from 'react'
 
 import ILinkableEntity from "../app/model/ILinkableEntity"
 import { RecordKind } from "../app/model/RecordKinds"
-import Authority from '@/app/model/Authority'
 import User from '@/app/model/User'
 import {
   ColumnOrderState,
@@ -31,7 +30,7 @@ import {
   Updater,
   VisibilityState
 } from '@tanstack/react-table';
-import { QueryFilter } from '@/app/model/schema'
+import { AuthorityKind, QueryFilter } from '@/app/model/schema'
 
 export type MasterLinkState = {
   masterTopicId?: string
@@ -70,7 +69,7 @@ export type SelectedRecordsStateSetters = {
 
 export type SecurityState = {
   username?: string
-  authorities?: Authority[]
+  authorities?: AuthorityKind[]
 }
 
 export type SecurityStateSetters = {

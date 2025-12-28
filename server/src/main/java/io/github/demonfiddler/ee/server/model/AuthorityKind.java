@@ -35,6 +35,10 @@ public enum AuthorityKind {
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Administer" })
 	ADM("ADM", "Administer"), //
+	/** Change record status. */
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Change" })
+	CHG("CHG", "Change"), //
 	/** Comment on a tracked entity. */
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Comment" })
@@ -43,10 +47,6 @@ public enum AuthorityKind {
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Create" })
 	CRE("CRE", "Create"), //
-	/** Delete existing record. */
-	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
-		parameterValues = { "Delete" })
-	DEL("DEL", "Delete"), //
 	/** Link/unlink existing records. */
 	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
 		parameterValues = { "Link" })

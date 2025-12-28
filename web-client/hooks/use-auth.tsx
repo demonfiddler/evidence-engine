@@ -17,7 +17,6 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import Authority from '@/app/model/Authority'
 import AuthPayload from '@/app/model/AuthPayload'
 import User from '@/app/model/User'
 import { CURRENT_USER, LOGIN } from '@/lib/graphql-queries'
@@ -29,6 +28,7 @@ import { createContext, useContext, useEffect, useCallback, ReactNode, useRef, u
 import { useInterval, useLocalStorage } from 'usehooks-ts'
 import { jwtDecode } from "jwt-decode"
 import { toast } from 'sonner'
+import { AuthorityKind } from '@/app/model/schema'
 
 const logger = new LoggerEx(hook, "[useAuth] ")
 
@@ -45,7 +45,7 @@ interface AuthContextType {
   error?: ErrorLike
   jwtToken: string | null
   user: User | null
-  hasAuthority: (authority: Authority) => boolean
+  hasAuthority: (authority: AuthorityKind) => boolean
   login: (username: string, password: string) => Promise<ApolloClient.MutateResult<LoginResult>>
   logout: () => void
 }
@@ -156,7 +156,7 @@ export function AuthProvider({children} : AuthProviderProps) {
   const loading = currentUserResult.loading || loginOpResult.loading
   const error = currentUserResult.error || loginOpResult.error
 
-  const hasAuthority = useCallback((authority: Authority) => user?.authorities?.includes(authority) ?? false, [user])
+  const hasAuthority = useCallback((authority: AuthorityKind) => user?.authorities?.includes(authority) ?? false, [user])
 
   logger.trace("AuthProvider: jwtToken=%s, user=%o", jwtToken, user)
 

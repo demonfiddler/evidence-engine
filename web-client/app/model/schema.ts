@@ -19,16 +19,16 @@
 
 import { DeclarationKind } from "../ui/validators/declaration"
 import { PublicationKind } from "../ui/validators/publication"
-import Authority from "./Authority"
 
+type AuthorityKind = "ADM" | "CHG" | "COM" | "CRE" | "LNK" | "REA" | "UPD" | "UPL"
 type DirectionKind = "ASC" | "DESC"
 type EntityKind = "CLA" | "COM" | "COU" | "DEC" | "GRP" | "JOU" | "LNK" | "PER" | "PUB" | "PBR" | "QUO" | "TOP" | "USR"
 type NullHandlingKind = "NATIVE" | "NULLS_FIRST" | "NULLS_LAST"
 type SeverityKind = "INFO" | "WARNING" | "ERROR"
-type StatusKind = "DRA" | "PUB" | "SUS" | "DEL"
-type TransactionKind = "CRE" | "UPD" | "DEL" | "LNK" | "UNL" | "COM"
+type StatusKind = "DEL" | "DRA" | "PUB" | "SUS"
+type TransactionKind = "CRE" | "COM" | "DEL" | "DRA" | "LNK" | "PUB" | "SUS" | "UPD" | "UNL"
 
-export type {DirectionKind, EntityKind, NullHandlingKind, SeverityKind, StatusKind, TransactionKind}
+export type {AuthorityKind, DirectionKind, EntityKind, NullHandlingKind, SeverityKind, StatusKind, TransactionKind}
 
 export type LogQueryFilter = {
   entityKind?: EntityKind
@@ -213,7 +213,7 @@ export interface TopicInput extends TrackedEntityInput {
 }
 
 export interface SecurityPrincipalInput extends TrackedEntityInput {
-  authorities: Authority[]
+  authorities: AuthorityKind[]
 }
 
 export interface UserInput extends SecurityPrincipalInput {

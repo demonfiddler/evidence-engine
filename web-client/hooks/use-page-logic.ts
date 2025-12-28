@@ -22,7 +22,7 @@
 import IPage from "@/app/model/IPage"
 import ITrackedEntity from "@/app/model/ITrackedEntity"
 import { LinkableEntityKind, RecordKind } from "@/app/model/RecordKinds"
-import { BaseEntityInput, LinkableEntityQueryFilter, LogQueryFilter, PageableInput, TrackedEntityQueryFilter } from "@/app/model/schema"
+import { AuthorityKind, BaseEntityInput, LinkableEntityQueryFilter, LogQueryFilter, PageableInput, TrackedEntityQueryFilter } from "@/app/model/schema"
 import { GlobalContext, QueryState } from "@/lib/context"
 import { DocumentNode, ErrorLike } from "@apollo/client"
 import { useMutation, useQuery } from "@apollo/client/react"
@@ -35,7 +35,6 @@ import { toast } from "sonner"
 import z from "zod/v4"
 import IBaseEntity from "@/app/model/IBaseEntity"
 import { DetailMode, DetailState } from "@/app/ui/details/detail-actions"
-import Authority from "@/app/model/Authority"
 import useAuth from "./use-auth"
 import { introspect, MutationResult, QueryResult } from "@/lib/graphql-utils"
 import { CREATE_ENTITY_LINK } from "@/lib/graphql-queries"
@@ -83,13 +82,13 @@ type PageLogic<TData extends ITrackedEntity, TFieldValues extends FieldValues> =
 // }
 
 function createDetailState(
-  hasAuthority: (authority: Authority) => boolean,
+  hasAuthority: (authority: AuthorityKind) => boolean,
   mode: DetailMode
 ): DetailState {
 
   const allowCreate = hasAuthority("CRE")
   const allowEdit = hasAuthority("UPD")
-  const allowDelete = hasAuthority("DEL")
+  const allowDelete = hasAuthority("CHG")
   const allowUpdate = allowCreate || allowEdit
   const allowLink = hasAuthority("LNK")
   const allowRead = true // hasAuthority("REA")

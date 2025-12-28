@@ -17,10 +17,10 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-import Authority from "./Authority"
 import ITrackedEntity from "./ITrackedEntity"
+import { AuthorityKind } from "./schema"
 
 export default interface SecurityPrincipal extends ITrackedEntity {
   /** The authorities granted to the security principal. */
-  authorities?: Authority[]
+  authorities?: AuthorityKind[]
 }

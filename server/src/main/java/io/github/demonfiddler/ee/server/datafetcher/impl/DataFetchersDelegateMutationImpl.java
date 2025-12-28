@@ -177,10 +177,6 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         log(TransactionKind.UPD, entity, entity.getUpdated());
     }
 
-    private <T extends ITrackedEntity> void logDeleted(T entity) {
-        log(TransactionKind.DEL, entity, entity.getUpdated());
-    }
-
     private void logLinked(EntityLink entityLink, ILinkableEntity entity, ILinkableEntity linkedEntity) {
         OffsetDateTime timestamp = getLatestDate(entityLink);
         log(TransactionKind.LNK, entity, linkedEntity, timestamp);
@@ -216,7 +212,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         setUpdatedFields(entity);
         entity = repository.save(entity);
 
-        logDeleted(entity);
+        log(TransactionKind.DEL, entity, entity.getUpdated());
 
         return entity;
     }
@@ -295,7 +291,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
-    @PreAuthorize("hasAuthority('DEL')")
+    @PreAuthorize("hasAuthority('CHG')")
     public Object deleteClaim(DataFetchingEnvironment dataFetchingEnvironment, Long claimId) {
         return delete(claimId, claimRepository);
     }
@@ -430,7 +426,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
-    @PreAuthorize("hasAuthority('DEL')")
+    @PreAuthorize("hasAuthority('CHG')")
     public Object deleteDeclaration(DataFetchingEnvironment dataFetchingEnvironment, Long declarationId) {
         return delete(declarationId, declarationRepository);
     }
@@ -496,7 +492,8 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         EntityLink entityLink = entityLinkRepository.getReferenceById(entityLinkId);
         entityLink.setStatus(StatusKind.DEL.name());
         setUpdatedFields(entityLink);
-        logDeleted(entityLink);
+
+        log(TransactionKind.DEL, entityLink, entityLink.getUpdated());
 
         ILinkableEntity fromEntity = entityLink.getFromEntity();
         ILinkableEntity toEntity = entityLink.getToEntity();
@@ -559,7 +556,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
-    @PreAuthorize("hasAuthority('DEL')")
+    @PreAuthorize("hasAuthority('CHG')")
     public Object deleteJournal(DataFetchingEnvironment dataFetchingEnvironment, Long journalId) {
         return delete(journalId, journalRepository);
     }
@@ -618,7 +615,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
-    @PreAuthorize("hasAuthority('DEL')")
+    @PreAuthorize("hasAuthority('CHG')")
     public Object deletePerson(DataFetchingEnvironment dataFetchingEnvironment, Long personId) {
         return delete(personId, personRepository);
     }
@@ -721,7 +718,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
-    @PreAuthorize("hasAuthority('DEL')")
+    @PreAuthorize("hasAuthority('CHG')")
     public Object deletePublication(DataFetchingEnvironment dataFetchingEnvironment, Long publicationId) {
         return delete(publicationId, publicationRepository);
     }
@@ -768,7 +765,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
-    @PreAuthorize("hasAuthority('DEL')")
+    @PreAuthorize("hasAuthority('CHG')")
     public Object deletePublisher(DataFetchingEnvironment dataFetchingEnvironment, Long publisherId) {
         return delete(publisherId, publisherRepository);
     }
@@ -815,7 +812,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
-    @PreAuthorize("hasAuthority('DEL')")
+    @PreAuthorize("hasAuthority('CHG')")
     public Object deleteQuotation(DataFetchingEnvironment dataFetchingEnvironment, Long quotationId) {
         return delete(quotationId, quotationRepository);
     }
@@ -868,7 +865,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
-    @PreAuthorize("hasAuthority('DEL')")
+    @PreAuthorize("hasAuthority('CHG')")
     public Object deleteTopic(DataFetchingEnvironment dataFetchingEnvironment, Long topicId) {
         return delete(topicId, topicRepository);
     }
@@ -1104,7 +1101,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     @Override
-    @PreAuthorize("hasAuthority('UPD')")
+    @PreAuthorize("hasAuthority('CHG')")
     public Object setEntityStatus(DataFetchingEnvironment dataFetchingEnvironment, Long entityId, StatusKind status) {
         AbstractTrackedEntity entity = trackedEntityRepository.findById(entityId)
             .orElseThrow(() -> createEntityNotFoundException("ITrackedEntity", entityId));
@@ -1131,10 +1128,13 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
 
         entity.setStatus(status.name());
         setUpdatedFields(entity);
-        if (status == StatusKind.DEL)
-            logDeleted(entity);
-        else
-            logUpdated(entity);
+        TransactionKind txnKind = switch (status) {
+            case DEL -> TransactionKind.DEL;
+            case DRA -> TransactionKind.DRA;
+            case PUB -> TransactionKind.PUB;
+            case SUS -> TransactionKind.SUS;
+        };
+        log(txnKind, entity, entity.getUpdated());
 
         return trackedEntityRepository.save(entity);
     }

@@ -34,7 +34,6 @@ import GroupDetails from "@/app/ui/details/group-details"
 import UserDetails from "@/app/ui/details/user-details"
 import { GroupFieldValues, GroupSchema } from "@/app/ui/validators/group"
 import { UserFieldValues, UserSchema } from "@/app/ui/validators/user"
-import Authority from "@/app/model/Authority"
 import { AuthoritiesFieldValues } from "@/app/ui/validators/authority"
 import {
   CREATE_GROUP,
@@ -49,7 +48,7 @@ import {
   REMOVE_GROUP_MEMBER,
 } from "@/lib/graphql-queries"
 import usePageLogic from "@/hooks/use-page-logic"
-import { GroupInput, TrackedEntityQueryFilter, UserInput } from "@/app/model/schema"
+import { AuthorityKind, GroupInput, TrackedEntityQueryFilter, UserInput } from "@/app/model/schema"
 import { useMutation } from "@apollo/client/react"
 import LinkableEntityTableFilter from "@/app/ui/filter/linkable-entity-table-filter"
 import { GlobalContext, SecurityPageTabState } from "@/lib/context"
@@ -58,12 +57,12 @@ import { ShieldCheckIcon, UserIcon, UsersIcon } from "lucide-react"
 
 const logger = new LoggerEx(page, "[Security] ")
 
-function createAuthoritiesFieldValues(authorities?: Authority[]) {
+function createAuthoritiesFieldValues(authorities?: AuthorityKind[]) {
   return {
     adm: authorities?.includes("ADM") ?? false,
+    chg: authorities?.includes("CHG") ?? false,
     com: authorities?.includes("COM") ?? false,
     cre: authorities?.includes("CRE") ?? false,
-    del: authorities?.includes("DEL") ?? false,
     lnk: authorities?.includes("LNK") ?? false,
     rea: authorities?.includes("REA") ?? false,
     upd: authorities?.includes("UPD") ?? false,
@@ -72,15 +71,15 @@ function createAuthoritiesFieldValues(authorities?: Authority[]) {
 }
 
 function createAuthorities(formValue: AuthoritiesFieldValues) {
-  const authorities: Authority[] = []
+  const authorities: AuthorityKind[] = []
   if (formValue.adm)
     authorities.push("ADM")
+  if (formValue.chg)
+    authorities.push("CHG")
   if (formValue.com)
     authorities.push("COM")
   if (formValue.cre)
     authorities.push("CRE")
-  if (formValue.del)
-    authorities.push("DEL")
   if (formValue.lnk)
     authorities.push("LNK")
   if (formValue.rea)

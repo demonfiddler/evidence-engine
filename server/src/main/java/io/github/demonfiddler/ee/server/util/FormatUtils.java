@@ -66,9 +66,9 @@ public class FormatUtils {
         ENTITY_KIND_LONG.put(EntityKind.USR, "User");
 
         AUTHORITY_KIND_LONG.put(AuthorityKind.ADM, "Use administrative functions");
+        AUTHORITY_KIND_LONG.put(AuthorityKind.CHG, "Change record status");
         AUTHORITY_KIND_LONG.put(AuthorityKind.COM, "Comment on existing record");
         AUTHORITY_KIND_LONG.put(AuthorityKind.CRE, "Insert new record");
-        AUTHORITY_KIND_LONG.put(AuthorityKind.DEL, "Delete existing record");
         AUTHORITY_KIND_LONG.put(AuthorityKind.LNK, "Link/unlink existing records");
         AUTHORITY_KIND_LONG.put(AuthorityKind.REA, "Read existing record");
         AUTHORITY_KIND_LONG.put(AuthorityKind.UPD, "Update existing record");
@@ -139,7 +139,10 @@ public class FormatUtils {
 
         TRANSACTION_KIND_LONG.put(TransactionKind.CRE, "Created");
         TRANSACTION_KIND_LONG.put(TransactionKind.DEL, "Deleted");
+        TRANSACTION_KIND_LONG.put(TransactionKind.DRA, "Drafted");
         TRANSACTION_KIND_LONG.put(TransactionKind.LNK, "Linked");
+        TRANSACTION_KIND_LONG.put(TransactionKind.PUB, "Published");
+        TRANSACTION_KIND_LONG.put(TransactionKind.SUS, "Suspended");
         TRANSACTION_KIND_LONG.put(TransactionKind.UNL, "Unlinked");
         TRANSACTION_KIND_LONG.put(TransactionKind.UPD, "Updated");
         TRANSACTION_KIND_LONG.put(TransactionKind.COM, "Commented");

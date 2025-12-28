@@ -32,73 +32,80 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
 public enum AuthorityKind {
 
 	/** Use administrative functions. */
-	@GraphQLDirective(name = "@label", parameterNames = {"label"}, parameterTypes = {"String!"}, parameterValues = {"Administer"})
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Administer" })
 	ADM("ADM", "Administer"), //
-	@GraphQLDirective(name = "@label", parameterNames = {"label"}, parameterTypes = {"String!"}, parameterValues = {"Comment"})
+	/** Change record status. */
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Change" })
+	CHG("CHG", "Change"), //
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Comment" })
 	COM("COM", "Comment"), //
 	/** Insert new record. */
-	@GraphQLDirective(name = "@label", parameterNames = {"label"}, parameterTypes = {"String!"}, parameterValues = {"Create"})
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Create" })
 	CRE("CRE", "Create"), //
-	/** Delete existing record. */
-	@GraphQLDirective(name = "@label", parameterNames = {"label"}, parameterTypes = {"String!"}, parameterValues = {"Delete"})
-	DEL("DEL", "Delete"), //
 	/** Link/unlink existing records. */
-	@GraphQLDirective(name = "@label", parameterNames = {"label"}, parameterTypes = {"String!"}, parameterValues = {"Link"})
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Link" })
 	LNK("LNK", "Link"), //
 	/** Read existing record. */
-	@GraphQLDirective(name = "@label", parameterNames = {"label"}, parameterTypes = {"String!"}, parameterValues = {"Read"})
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Read" })
 	REA("REA", "Read"), //
 	/** Update existing record. */
-	@GraphQLDirective(name = "@label", parameterNames = {"label"}, parameterTypes = {"String!"}, parameterValues = {"Update"})
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Update" })
 	UPD("UPD", "Update"), //
 	/** Upload file. */
-	@GraphQLDirective(name = "@label", parameterNames = {"label"}, parameterTypes = {"String!"}, parameterValues = {"Upload"})
+	@GraphQLDirective(name = "@label", parameterNames = { "label" }, parameterTypes = { "String!" },
+		parameterValues = { "Upload" })
 	UPL("UPL", "Upload"); //
 
-	// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
-	// are different when the value in the GraphQL schema is a Java reserved keyword.
-	private final String graphQlValue;
-	private final String label;
+// The graphQlValue is needed on server side, to map the enum value to the value defined in the GraphQL schema. They
+// are different when the value in the GraphQL schema is a Java reserved keyword.
+private final String graphQlValue;
+private final String label;
 
-	private AuthorityKind(String graphQlValue, String label) {
-		this.graphQlValue = graphQlValue;
-		this.label = label;
+private AuthorityKind(String graphQlValue, String label) {
+	this.graphQlValue = graphQlValue;
+	this.label = label;
+}
+
+/**
+ * Returns the value of this constant, as specified in the GraphQL schema. This is usually the same as the enum item's
+ * name. But it will differ if this name is a Java reserved keyword (in which case the name is prefixed by an
+ * underscore)
+ * @return the enum constant with the specified name, as defined in the GraphQL schema
+ */
+public String graphQlValue() {
+	return this.graphQlValue;
+}
+
+public String getLabel() {
+	return label;
+}
+
+/**
+ * Returns the enum constant of this type with the specified name (as specified in the GraphQL schema). The string must
+ * match exactly an identifier used to declare an enum constant in this type. (Extraneous whitespace characters are not
+ * permitted.)
+ * @param graphQlValue The value, as defined in the GraphQL schema. This is usually the same as the enum item's name.
+ * But it will differ if this name is a Java reserved keyword (in which case the name is prefixed by an underscore)
+ * @return the enum constant with the specified name
+ * @throws IllegalArgumentException if this enum type has no constant with the specified GraphQL name
+ */
+public static AuthorityKind fromGraphQlValue(String graphQlValue) {
+	if (graphQlValue == null) {
+		return null;
 	}
-
-	/**
-	 * Returns the value of this constant, as specified in the GraphQL schema. This is usually the same as the enum
-	 * item's name. But it will differ if this name is a Java reserved keyword (in which case the name is prefixed by an
-	 * underscore)
-	 * @return the enum constant with the specified name, as defined in the GraphQL schema
-	 */
-	public String graphQlValue() {
-		return this.graphQlValue;
-	}
-
-	public String getLabel() {
-		return label;
-	}
-
-	/**
-	 * Returns the enum constant of this type with the specified name (as specified in the GraphQL schema). The string
-	 * must match exactly an identifier used to declare an enum constant in this type. (Extraneous whitespace characters
-	 * are not permitted.)
-	 * @param graphQlValue The value, as defined in the GraphQL schema. This is usually the same as the enum item's
-	 * name. But it will differ if this name is a Java reserved keyword (in which case the name is prefixed by an
-	 * underscore)
-	 * @return the enum constant with the specified name
-	 * @throws IllegalArgumentException if this enum type has no constant with the specified GraphQL name
-	 */
-	public static AuthorityKind fromGraphQlValue(String graphQlValue) {
-		if (graphQlValue == null) {
-			return null;
+	for (AuthorityKind e : AuthorityKind.values()) {
+		if (e.graphQlValue().equals(graphQlValue)) {
+			return e;
 		}
-		for (AuthorityKind e : AuthorityKind.values()) {
-			if (e.graphQlValue().equals(graphQlValue)) {
-				return e;
-			}
-		}
-		throw new IllegalArgumentException("No AuthorityKind exists with '" + graphQlValue + "' as a GraphQL value");
 	}
+	throw new IllegalArgumentException("No AuthorityKind exists with '" + graphQlValue + "' as a GraphQL value");
+}
 
 }

@@ -19,7 +19,7 @@
 
 import { z } from "zod/v4"
 import { IBaseEntity } from "./base-entity"
-import { EntityKind, Status } from "./enums"
+import { EntityKind, StatusKind } from "./enums"
 
 const RATING_ERROR = "Rating must be a number between 1 and 5"
 
@@ -29,7 +29,7 @@ export const Rateable = z.object({
 
 export const ITrackedEntity = IBaseEntity.extend({
   entityKind: EntityKind,
-  status: Status,
+  status: StatusKind,
   rating: z.number().min(0, {error: RATING_ERROR}).max(5, {error: RATING_ERROR}).optional(),
   created: z.iso.date(),
   // createdByUser: User,
