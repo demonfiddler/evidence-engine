@@ -1131,7 +1131,10 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
 
         entity.setStatus(status.name());
         setUpdatedFields(entity);
-        logUpdated(entity);
+        if (status == StatusKind.DEL)
+            logDeleted(entity);
+        else
+            logUpdated(entity);
 
         return trackedEntityRepository.save(entity);
     }

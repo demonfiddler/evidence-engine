@@ -24,7 +24,6 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 
 /**
  * Interface for entities with a unique system-generated identifier.
@@ -35,12 +34,10 @@ import jakarta.persistence.Id;
 @GraphQLInterfaceType("IBaseEntity")
 public interface IBaseEntity {
 
-	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
 	void setId(Long id);
 
-	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@GraphQLScalar(fieldName = "id", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
 	Long getId();

@@ -24,7 +24,7 @@ import { Label } from "@/components/ui/label"
 import LogDialog from "../log/log-dialog"
 import { RecordKind } from "@/app/model/RecordKinds"
 import { DetailState } from "./detail-actions"
-import { formatDateTime, getRecordKind, getRecordLabel } from "@/lib/utils"
+import { formatDateTime, getRecordLabel } from "@/lib/utils"
 import InputEx from "../ext/input-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
 import { detail, LoggerEx } from "@/lib/logger"
@@ -184,10 +184,10 @@ export default function TrackingDetails(
           </ButtonEx>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem disabled={record?.status === "Draft"} onClick={() => handleChangeStatus("draft")}>Draft</DropdownMenuItem>
-          <DropdownMenuItem disabled={record?.status === "Deleted"} onClick={() => handleChangeStatus("delete")}>Delete</DropdownMenuItem>
-          <DropdownMenuItem disabled={record?.status === "Suspended"} onClick={() => handleChangeStatus("suspend")}>Suspend</DropdownMenuItem>
-          <DropdownMenuItem disabled={record?.status === "Published"} onClick={() => handleChangeStatus("publish")}>Publish...</DropdownMenuItem>
+          <DropdownMenuItem disabled={record?.status === "Draft" || !hasAuthority('UPD')} onClick={() => handleChangeStatus("draft")}>Draft</DropdownMenuItem>
+          <DropdownMenuItem disabled={record?.status === "Deleted" || !hasAuthority('DEL')} onClick={() => handleChangeStatus("delete")}>Delete</DropdownMenuItem>
+          <DropdownMenuItem disabled={record?.status === "Suspended" || !hasAuthority('UPD')} onClick={() => handleChangeStatus("suspend")}>Suspend</DropdownMenuItem>
+          <DropdownMenuItem disabled={record?.status === "Published" || !hasAuthority('UPD')} onClick={() => handleChangeStatus("publish")}>Publish...</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
       <Label htmlFor="updated-by" className="col-start-1">Updated by:</Label>

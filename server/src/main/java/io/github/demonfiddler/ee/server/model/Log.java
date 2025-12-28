@@ -26,6 +26,7 @@ import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -33,6 +34,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Transient;
 
 /**
  * A log entry to show who changed what and when
@@ -62,10 +64,10 @@ public class Log implements IBaseEntity {
 	/**
 	 * The user who made the change.
 	 */
-	@GraphQLNonScalar(fieldName = "user", graphQLTypeSimpleName = "User", javaClass = User.class, listDepth = 0)
-	@GraphQLDirective(name = "@auth", parameterNames = {}, parameterTypes = {}, parameterValues = {})
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "user_id", nullable = false)
+	@GraphQLNonScalar(fieldName = "user", graphQLTypeSimpleName = "User", javaClass = User.class, listDepth = 0)
+	@GraphQLDirective(name = "@auth", parameterNames = {}, parameterTypes = {}, parameterValues = {})
 	User user;
 
 	/**
@@ -75,18 +77,26 @@ public class Log implements IBaseEntity {
 		listDepth = 0)
 	String transactionKind;
 
+	@Column(name = "entity_id", nullable = false, insertable=false, updatable=false)
+	@GraphQLScalar(fieldName = "entityId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
+	Long entityId;
+
 	/**
 	 * The entity affected.
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "entity_id", insertable = false, updatable = false)
+	@JoinColumn(name = "entity_id")
 	AbstractTrackedEntity entity;
+
+	@Column(name = "linked_entity_id", insertable=false, updatable=false)
+	@GraphQLScalar(fieldName = "linkedEntityId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
+	Long linkedEntityId;
 
 	/**
 	 * The linked/unlinked entity (where applicable).
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "linked_entity_id", insertable = false, updatable = false)
+	@JoinColumn(name = "linked_entity_id")
 	AbstractLinkableEntity linkedEntity;
 
 	/**
@@ -150,6 +160,7 @@ public class Log implements IBaseEntity {
 	/**
 	 * The kind of entity affected.
 	 */
+	@Transient
 	public String getEntityKind() {
 		return entity != null ? entity.getEntityKind() : null;
 	}
@@ -157,8 +168,9 @@ public class Log implements IBaseEntity {
 	/**
 	 * The ID of the entity affected.
 	 */
+	@Transient
 	public Long getEntityId() {
-		return entity != null ? entity.getId() : null;
+		return entityId;
 	}
 
 	/**
@@ -178,6 +190,7 @@ public class Log implements IBaseEntity {
 	/**
 	 * The kind of entity linked/unlinked (where applicable).
 	 */
+	@Transient
 	public String getLinkedEntityKind() {
 		return linkedEntity != null ? linkedEntity.getEntityKind() : null;
 	}
@@ -185,8 +198,9 @@ public class Log implements IBaseEntity {
 	/**
 	 * The ID of the entity linked/unlinked (where applicable).
 	 */
+	@Transient
 	public Long getLinkedEntityId() {
-		return linkedEntity != null ? linkedEntity.getId() : null;
+		return linkedEntityId;
 	}
 
 	/**
@@ -215,11 +229,11 @@ public class Log implements IBaseEntity {
 			+ ", " //
 			+ "entityKind: " + this.getEntityKind() //
 			+ ", " //
-			+ "entityId: " + this.entity.getId() //
+			+ "entityId: " + this.entityId //
 			+ ", " //
 			+ "linkedEntityKind: " + this.getLinkedEntityKind() //
 			+ ", " //
-			+ "linkedEntityId: " + (this.linkedEntity != null ? this.linkedEntity.getId() : null) //
+			+ "linkedEntityId: " + this.linkedEntityId //
 			+ "}"; //
 	}
 
