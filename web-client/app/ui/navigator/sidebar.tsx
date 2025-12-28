@@ -46,24 +46,25 @@ export default function Sidebar({open} : SidebarProps) {
       </div>
       <div className="grow shrink overflow-y-auto">
         {
-          categories.map(category => {
+          categories.map((category, categoryIdx) => {
             return !category.authority || hasAuthority(category.authority)
-            ? <>
-              <div className="flex items-center mt-3">
-                {
+            ? <div key={categoryIdx}>
+              <div className="flex justify-center mt-3">
+                {/*
+                  // I think it looks cleaner without the category icon and with the category label centred.
                   (() => {
                     const CategoryIcon = category.icon
                     return <CategoryIcon className="inline size-6" />
                   })()
-                }
-                <p className="text-lg ml-3">{category.label}</p>
+                */}
+                <p className="text-lg">{category.label}</p>
               </div>
               {
-                category.items.map(item => {
+                category.items.map((item, itemIdx) => {
                   const LinkIcon = item.icon
                   return (
                     <Link
-                      key={item.label}
+                      key={itemIdx}
                       href={item.href}
                       className={clsx(
                         'flex h-9 grow items-center justify-center gap-2 rounded-md p-3 text-sm font-medium hover:bg-sky-50 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3',
@@ -78,7 +79,7 @@ export default function Sidebar({open} : SidebarProps) {
                   )
                 })
               }
-            </>
+            </div>
             : null
           })
         }
