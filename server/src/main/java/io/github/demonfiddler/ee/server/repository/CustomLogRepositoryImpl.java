@@ -93,9 +93,8 @@ public class CustomLogRepositoryImpl extends AbstractCustomRepositoryImpl implem
             append("From", queryNames);
         if (hasTo)
             append("To", queryNames);
-        if (isSorted) {
+        if (isSorted)
             entityUtils.appendOrderByToQueryName(selectQueryName, pageable);
-        }
 
         return new QueryMetaData(filter, pageable, countQueryName.toString(), selectQueryName.toString(), hasEntityId,
             hasEntityKind, hasUserId, hasTransactionKinds, hasFrom, hasTo, isPaged, isSorted);
@@ -110,51 +109,69 @@ public class CustomLogRepositoryImpl extends AbstractCustomRepositoryImpl implem
      */
     private QueryPair defineNamedQueries(QueryMetaData m) {
         StringBuilder selectBuf = new StringBuilder();
-        selectBuf.append(" FROM \"log\"");
+        selectBuf.append(NL) //
+            .append("FROM \"log\" l");
+        if (m.hasEntityKind) {
+            selectBuf.append(NL) //
+                .append("JOIN \"entity\" e ON e.\"id\" = l.\"entity_id\"");
+        }
         boolean needsAnd = false;
         if (m.hasEntityId || m.hasEntityKind || m.hasUserId || m.hasTransactionKinds || m.hasFrom || m.hasTo) {
-            selectBuf.append(" WHERE");
+            selectBuf.append(NL) //
+                .append("WHERE");
         }
         if (m.hasEntityId) {
-            selectBuf.append(" \"entity_id\" = :entityId");
+            selectBuf.append(NL) //
+                .append("  l.\"entity_id\" = :entityId");
             needsAnd = true;
         }
         if (m.hasEntityKind) {
+            selectBuf.append(NL) //
+                .append("    ");
             if (needsAnd)
-                selectBuf.append(" AND");
-            selectBuf.append(" \"entity_kind\" = :entityKind");
+                selectBuf.append("AND ");
+            selectBuf.append("e.\"dtype\" = :entityKind");
             needsAnd = true;
         }
         if (m.hasUserId) {
+            selectBuf.append(NL) //
+                .append("    ");
             if (needsAnd)
-                selectBuf.append(" AND");
-            selectBuf.append(" \"user_id\" = :userId");
+                selectBuf.append("AND ");
+            selectBuf.append("l.\"user_id\" = :userId");
             needsAnd = true;
         }
         if (m.hasTransactionKinds) {
+            selectBuf.append(NL) //
+                .append("    ");
             if (needsAnd)
-                selectBuf.append(" AND");
-            selectBuf.append(" \"transaction_kind\" IN (:transactionKinds)");
+                selectBuf.append("AND ");
+            selectBuf.append("l.\"transaction_kind\" IN (:transactionKinds)");
             needsAnd = true;
         }
         if (m.hasFrom) {
+            selectBuf.append(NL) //
+                .append("    ");
             if (needsAnd)
-                selectBuf.append(" AND");
-            selectBuf.append(" \"timestamp\" >= :from");
+                selectBuf.append("AND ");
+            selectBuf.append("l.\"timestamp\" >= :from");
             needsAnd = true;
         }
         if (m.hasTo) {
+            selectBuf.append(NL) //
+                .append("    ");
             if (needsAnd)
-                selectBuf.append(" AND");
-            selectBuf.append(" \"timestamp\" <= :to");
+                selectBuf.append("AND ");
+            selectBuf.append("l.\"timestamp\" <= :to");
             needsAnd = true;
         }
         StringBuffer countBuf = new StringBuffer(selectBuf);
         countBuf.insert(0, "SELECT COUNT(*)");
         countBuf.append(';');
-        selectBuf.insert(0, "SELECT *");
+        selectBuf.insert(0, "SELECT l.*");
         if (m.isSorted)
-            entityUtils.appendOrderByClause(selectBuf, m.pageable, "", "", "", "", false);
+            entityUtils.appendOrderByClause(selectBuf, m.pageable, "l.", "e.", "", "", true);
+        selectBuf.append(';');
 
         // NOTE: since the COUNT query does not include an ORDER BY clause, multiple executions of the same SELECT query
         // with different ORDER BY clauses will result in the registration of multiple identical COUNT queries, each of
