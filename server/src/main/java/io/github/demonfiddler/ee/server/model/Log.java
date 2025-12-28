@@ -87,7 +87,7 @@ public class Log implements IBaseEntity {
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "linked_entity_id", insertable = false, updatable = false)
-	AbstractTrackedEntity linkedEntity;
+	AbstractLinkableEntity linkedEntity;
 
 	/**
 	 * The unique identifier for the log entry.
@@ -192,14 +192,14 @@ public class Log implements IBaseEntity {
 	/**
 	 * The ID of the entity linked/unlinked (where applicable).
 	 */
-	public void setLinkedEntity(AbstractTrackedEntity linkedEntity) {
+	public void setLinkedEntity(AbstractLinkableEntity linkedEntity) {
 		this.linkedEntity = linkedEntity;
 	}
 
 	/**
 	 * The ID of the entity linked/unlinked (where applicable).
 	 */
-	public AbstractTrackedEntity getLinkedEntity() {
+	public AbstractLinkableEntity getLinkedEntity() {
 		return linkedEntity;
 	}
 
@@ -238,7 +238,7 @@ public class Log implements IBaseEntity {
 		private User user;
 		private String transactionKind;
 		private AbstractTrackedEntity entity;
-		private AbstractTrackedEntity linkedEntity;
+		private AbstractLinkableEntity linkedEntity;
 
 		/**
 		 * The unique identifier for the log entry.
@@ -283,7 +283,7 @@ public class Log implements IBaseEntity {
 		/**
 		 * The ID of the entity linked/unlinked (where applicable).
 		 */
-		public Builder withLinkedEntity(AbstractTrackedEntity linkedEntityParam) {
+		public Builder withLinkedEntity(AbstractLinkableEntity linkedEntityParam) {
 			this.linkedEntity = linkedEntityParam;
 			return this;
 		}

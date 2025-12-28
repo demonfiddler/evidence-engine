@@ -49,7 +49,6 @@ import io.github.demonfiddler.ee.server.model.Comment;
 import io.github.demonfiddler.ee.server.model.CommentInput;
 import io.github.demonfiddler.ee.server.model.Declaration;
 import io.github.demonfiddler.ee.server.model.DeclarationInput;
-import io.github.demonfiddler.ee.server.model.EntityKind;
 import io.github.demonfiddler.ee.server.model.EntityLink;
 import io.github.demonfiddler.ee.server.model.EntityLinkInput;
 import io.github.demonfiddler.ee.server.model.EntityLinkQueryFilter;
@@ -156,22 +155,17 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     private void log(TransactionKind txnKind, ITrackedEntity entity, OffsetDateTime timestamp) {
-        log(txnKind, entity.getId(), entityUtils.getEntityKind(entity), null, null, timestamp);
+        log(txnKind, entity, null, timestamp);
     }
 
-    private void log(TransactionKind txnKind, Long entityId, EntityKind entityKind, Long linkedEntityId,
-        EntityKind linkedEntityKind, OffsetDateTime timestamp) {
-
+    private void log(TransactionKind txnKind, ITrackedEntity entity, ILinkableEntity linkedEntity, OffsetDateTime timestamp) {
         Log log = new Log();
         log.setTransactionKind(txnKind.name());
         log.setTimestamp(timestamp);
         log.setUser(getCurrentUser().get());
-        log.setEntityId(entityId);
-        log.setEntityKind(entityKind.name());
-        if (linkedEntityId != null && linkedEntityKind != null) {
-            log.setLinkedEntityId(linkedEntityId);
-            log.setLinkedEntityKind(linkedEntityKind.name());
-        }
+        log.setEntity((AbstractTrackedEntity)entity);
+        if (linkedEntity != null)
+            log.setLinkedEntity((AbstractLinkableEntity)linkedEntity);
         logRepository.save(log);
     }
 
@@ -187,26 +181,21 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         log(TransactionKind.DEL, entity, entity.getUpdated());
     }
 
-    private void logLinked(EntityLink entityLink, Long entityId, EntityKind entityKind, Long linkedEntityId,
-        EntityKind linkedEntityKind) {
-
+    private void logLinked(EntityLink entityLink, ILinkableEntity entity, ILinkableEntity linkedEntity) {
         OffsetDateTime timestamp = getLatestDate(entityLink);
-        log(TransactionKind.LNK, entityId, entityKind, linkedEntityId, linkedEntityKind, timestamp);
-        log(TransactionKind.LNK, linkedEntityId, linkedEntityKind, entityId, entityKind, timestamp);
+        log(TransactionKind.LNK, entity, linkedEntity, timestamp);
+        log(TransactionKind.LNK, linkedEntity, entity, timestamp);
     }
 
-    private void logUnlinked(EntityLink entityLink, Long entityId, EntityKind entityKind, Long linkedEntityId,
-        EntityKind linkedEntityKind) {
-
+    private void logUnlinked(EntityLink entityLink, ILinkableEntity entity, ILinkableEntity linkedEntity) {
         OffsetDateTime timestamp = getLatestDate(entityLink);
-        log(TransactionKind.UNL, entityId, entityKind, linkedEntityId, linkedEntityKind, timestamp);
-        log(TransactionKind.UNL, linkedEntityId, linkedEntityKind, entityId, entityKind, timestamp);
+        log(TransactionKind.UNL, entity, linkedEntity, timestamp);
+        log(TransactionKind.UNL, linkedEntity, entity, timestamp);
     }
 
     private void logCommented(Comment comment) {
-        EntityKind entityKind = EntityKind.valueOf(comment.getTarget().getEntityKind());
         OffsetDateTime timestamp = comment.getUpdated() == null ? comment.getCreated() : comment.getUpdated();
-        log(TransactionKind.COM, comment.getTarget().getId(), entityKind, null, null, timestamp);
+        log(TransactionKind.COM, comment.getTarget(), null, timestamp);
     }
 
     private OffsetDateTime getLatestDate(EntityLink entityLink) {
@@ -463,9 +452,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         setCreatedFields(entityLink);
         entityLink = entityLinkRepository.save(entityLink);
         logCreated(entityLink);
-        EntityKind fromEntityKind = EntityKind.valueOf(fromEntity.getEntityKind());
-        EntityKind toEntityKind = EntityKind.valueOf(toEntity.getEntityKind());
-        logLinked(entityLink, input.getFromEntityId(), fromEntityKind, input.getToEntityId(), toEntityKind);
+        logLinked(entityLink, fromEntity, toEntity);
         return entityLink;
     }
 
@@ -491,10 +478,8 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
                 entityLink.setFromEntity(newFromEntity);
             if (toEntityChanged)
                 entityLink.setToEntity(newToEntity);
-            logUnlinked(entityLink, oldFromEntity.getId(), entityUtils.getEntityKind(oldFromEntity),
-                oldToEntity.getId(), entityUtils.getEntityKind(oldToEntity));
-            logLinked(entityLink, input.getFromEntityId(), entityUtils.getEntityKind(newFromEntity),
-                input.getToEntityId(), entityUtils.getEntityKind(newToEntity));
+            logUnlinked(entityLink, oldFromEntity, oldToEntity);
+            logLinked(entityLink, newFromEntity, newToEntity);
         }
         entityLink.setFromEntityLocations(input.getFromEntityLocations());
         entityLink.setToEntityLocations(input.getToEntityLocations());
@@ -515,8 +500,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
 
         ILinkableEntity fromEntity = entityLink.getFromEntity();
         ILinkableEntity toEntity = entityLink.getToEntity();
-        logUnlinked(entityLink, fromEntity.getId(), entityUtils.getEntityKind(fromEntity), toEntity.getId(),
-            entityUtils.getEntityKind(toEntity));
+        logUnlinked(entityLink, fromEntity, toEntity);
 
         return entityLinkRepository.save(entityLink);
     }
