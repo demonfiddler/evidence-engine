@@ -43,5 +43,5 @@ export default interface Person extends ILinkableEntity {
   /** Whether the person's credentials have been checked. */
   checked?: boolean
   /** Whether the person has authored any peer-reviewed publications. */
-  published?: boolean
+  published?: boolean | null
 }

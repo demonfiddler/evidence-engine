@@ -168,7 +168,7 @@ CREATE TABLE "person" (
   "qualifications" VARCHAR(65535) DEFAULT NULL COMMENT 'Academic qualifications',
   "country" CHAR(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for country of primary professional association',
   "checked" BOOLEAN DEFAULT FALSE NOT NULL COMMENT 'Set when the person''s credentials have been checked',
-  "published" BOOLEAN DEFAULT FALSE NOT NULL COMMENT 'Set if person has published peer-reviewed papers on climate change'
+  "published" BOOLEAN DEFAULT NULL COMMENT 'Set if person has published peer-reviewed papers on climate change'
 );
 CREATE INDEX "person_title" ON "person" ("title");
 CREATE INDEX "person_first_name" ON "person" ("first_name");
@@ -190,7 +190,7 @@ CREATE TABLE "publication" (
 	"location" VARCHAR(50) DEFAULT NULL COMMENT 'The location of the relevant section within the publication',
   "abstract" VARCHAR(65535) DEFAULT NULL COMMENT 'Abstract from the article',
   "notes" VARCHAR(65535) DEFAULT NULL COMMENT 'Added notes about the publication',
-  "peer_reviewed" BOOLEAN DEFAULT FALSE NOT NULL COMMENT 'Whether the article was peer-reviewed',
+  "peer_reviewed" BOOLEAN DEFAULT NULL COMMENT 'Whether the article was peer-reviewed',
   "doi" VARCHAR(100) DEFAULT NULL UNIQUE CHECK("doi" REGEXP '^(10\\.\\d{4,9}/(?i)[-._;()/:A-Z0-9]+)$') COMMENT 'Digital Object Identifier',
   "isbn" VARCHAR(20) DEFAULT NULL UNIQUE CHECK("isbn" REGEXP '^(?=(?:\d[- ]?){13}$|(?:\\d[- ]?){9}[\dXx]$)\\d{1,5}[- ]?\\d{1,7}[- ]?\\d{1,7}[- ]?[\\dXx]$') COMMENT 'International Standard Book Number (printed publications only)',
 	"pmcid" VARCHAR(10) DEFAULT NULL UNIQUE CHECK("pmid" REGEXP '^PMC\\d{7}$') COMMENT 'The U.S. National Library of Medicine''s PubMed Central ID',

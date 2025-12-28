@@ -40,7 +40,7 @@ export default interface Publication extends ILinkableEntity {
   /** User notes about the publication. */
   notes?: string | null
   /** Whether the publication has been peer reviewed. */
-  peerReviewed?: boolean
+  peerReviewed?: boolean | null
   /** The Digital Object Identifier. */
   doi?: string | null
   /** The International Standard Book Number. */

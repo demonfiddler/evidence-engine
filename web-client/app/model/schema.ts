@@ -152,7 +152,7 @@ export interface PersonInput extends TrackedEntityInput {
   qualifications: string | null
   country: string | null // TODO: use Country type
   checked: boolean
-  published: boolean
+  published: boolean | null
 }
 
 export interface PublicationInput extends TrackedEntityInput {
@@ -166,7 +166,7 @@ export interface PublicationInput extends TrackedEntityInput {
   keywords: string | null
   abstract: string | null
   notes: string | null
-  peerReviewed: boolean
+  peerReviewed: boolean | null
   doi: string | null
   isbn: string | null
   pmcid: string | null

@@ -32,7 +32,7 @@ export const PersonSchema = Rateable.extend({
   qualifications: z.string().optional(),
   country: z.string().uppercase().length(2).optional(),
   checked: z.boolean(),
-  published: z.boolean()
+  published: z.boolean().or(z.literal("indeterminate")),
 })
 
 export type PersonFieldValues = z.infer<typeof PersonSchema>

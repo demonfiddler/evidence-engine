@@ -24,6 +24,7 @@ import Person from "@/app/model/Person"
 import { columns as trackedEntityColumns, columnVisibility as trackedEntityColumnVisibility } from "./tracked-entity-columns"
 import { actionColumn as rawActionColumn, selectColumn as rawSelectColumn } from "./extra-columns"
 import { Checkbox } from "@/components/ui/checkbox"
+import CheckboxEx from "../ext/checkbox-ex"
 
 const actionColumn = rawActionColumn as ColumnDef<Person>
 const selectColumn = rawSelectColumn as ColumnDef<Person>
@@ -138,9 +139,10 @@ export const columns: ColumnDef<Person>[] = [
     size: 146,
     header: "Published",
     cell: ({row, cell}) => (
-      <Checkbox
+      <CheckboxEx
         key={cell.id}
-        checked={row.original.published}
+        outerClassName="justify-center"
+        checked={row.original.published ?? "indeterminate"}
         aria-label="Author of peer-reviewed publications"
       />
     ),

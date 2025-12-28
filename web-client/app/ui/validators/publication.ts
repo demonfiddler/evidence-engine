@@ -91,7 +91,7 @@ export const PublicationSchema = Rateable.extend({
   keywords: z.string().max(255),
   abstract: z.string(),
   notes: z.string(),
-  peerReviewed: z.boolean(),
+  peerReviewed: z.boolean().or(z.literal("indeterminate")),
   doi: z.string().length(0).or(z.string().min(8).max(100).regex(/^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i)),
   isbn: z.string().length(0).or(z.string().min(10).max(17)/*.regex(/^(?:\d{9}X$|^\d{10})$/|/^(?:97[89])\d{10}$/)*/),
   pmcid: z.string().length(0).or(z.string().length(10).regex(/^PMC\d{7}$/)),

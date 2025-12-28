@@ -25,6 +25,7 @@ import { columns as trackedEntityColumns, columnVisibility as trackedEntityColum
 import { actionColumn as rawActionColumn, selectColumn as rawSelectColumn } from "./extra-columns"
 import { Checkbox } from "@/components/ui/checkbox"
 import { formatDate } from "@/lib/utils"
+import CheckboxEx from "../ext/checkbox-ex"
 
 const actionColumn = rawActionColumn as ColumnDef<Publication>
 const selectColumn = rawSelectColumn as ColumnDef<Publication>
@@ -332,9 +333,10 @@ export const columns: ColumnDef<Publication>[] = [
     size: 146,
     header: "Peer Rev'd",
     cell: ({row, cell}) => (
-      <Checkbox
+      <CheckboxEx
         key={cell.id}
-        checked={row.original.peerReviewed}
+        outerClassName="justify-center"
+        checked={row.original.peerReviewed ?? "indeterminate"}
         aria-label="Content has been peer reviewed"
       />
     ),

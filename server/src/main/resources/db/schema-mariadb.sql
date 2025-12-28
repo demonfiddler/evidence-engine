@@ -223,7 +223,7 @@ CREATE TABLE IF NOT EXISTS "person" (
   "qualifications" text DEFAULT NULL COMMENT 'Academic qualifications',
   "country" char(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for country of primary professional association',
   "checked" bit(1) NOT NULL DEFAULT b'0' COMMENT 'Set when the person''s credentials have been checked',
-  "published" bit(1) NOT NULL DEFAULT b'0' COMMENT 'Set if person has published peer-reviewed papers on climate change',
+  "published" bit(1) DEFAULT NULL COMMENT 'Set if person has published peer-reviewed papers on climate change',
   PRIMARY KEY ("id"),
   KEY "person_title" ("title") USING BTREE,
   KEY "person_first_name" ("first_name") USING BTREE,

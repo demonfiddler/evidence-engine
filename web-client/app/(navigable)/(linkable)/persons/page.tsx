@@ -49,7 +49,7 @@ function createFieldValues(person?: Person) : PersonFieldValues {
     qualifications: person?.qualifications ?? '',
     country: person?.country ?? '',
     checked: person?.checked ?? false,
-    published: person?.published ?? false
+    published: person?.published ?? "indeterminate"
   }
 }
 
@@ -68,7 +68,7 @@ function createInput(fieldValues: PersonFieldValues, id?: string) : PersonInput 
     qualifications: fieldValues.qualifications || null,
     country: fieldValues.country || null,
     checked: fieldValues.checked ?? false,
-    published: fieldValues.published ?? false
+    published: fieldValues.published === "indeterminate" ? null : fieldValues.published,
   }
 }
 
