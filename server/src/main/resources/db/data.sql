@@ -365,7 +365,7 @@ INSERT INTO "status_kind" ("code", "label", "description") VALUES
 	('SUS', 'Suspended', 'The record is suspended/disabled/hidden from ordinary users');
 
 INSERT INTO "transaction_kind" ("code", "label", "description") VALUES
-	('COM', 'Created', 'A new record was created'),
+	('COM', 'Commented', 'A record was commented on'),
 	('CRE', 'Created', 'A new record was created'),
 	('DEL', 'Deleted', 'A record was marked as deleted'),
 	('DRA', 'Drafted', 'A record was marked as a draft'),
@@ -398,15 +398,15 @@ INSERT INTO "user" ("id", "username", "first_name", "last_name", "country", "pas
 
 INSERT INTO "entity" ("dtype", "status", "created_by_user_id") VALUES ('GRP', 'PUB', @root_id);
 SET @administrators_id = (SELECT "id" FROM "entity" WHERE "dtype" = 'GRP');
-INSERT INTO "group" ("id", "groupname") VALUES (@administrators_id, 'Administrators'),
+INSERT INTO "group" ("id", "groupname") VALUES (@administrators_id, 'Administrators');
 
 INSERT INTO "entity" ("dtype", "status", "created_by_user_id") VALUES ('GRP', 'PUB', @root_id);
-SET @editors_id = @administrators_id + 1
-INSERT INTO "group" ("id", "groupname") VALUES (@editors_id, 'Editors'),
+SET @editors_id = @administrators_id + 1;
+INSERT INTO "group" ("id", "groupname") VALUES (@editors_id, 'Editors');
 
 INSERT INTO "entity" ("dtype", "status", "created_by_user_id") VALUES ('GRP', 'PUB', @root_id);
-SET @users_id = @editors_id + 1
-INSERT INTO "group" ("id", "groupname") VALUES (@users_id, 'Users'),
+SET @users_id = @editors_id + 1;
+INSERT INTO "group" ("id", "groupname") VALUES (@users_id, 'Users');
 
 INSERT INTO "group_user" ("group_id", "username") VALUES
 	(@administrators_id,'root'),
