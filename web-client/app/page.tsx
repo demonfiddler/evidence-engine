@@ -30,20 +30,43 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import Autoplay from "embla-carousel-autoplay"
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
-import { UserIcon } from 'lucide-react'
+import { Carousel, CarouselApi, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
+import { GithubIcon, UserIcon, } from 'lucide-react'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { useEffect, useState } from 'react'
 
 // export const metadata: Metadata = {
 //   title: 'Dashboard',
 // };
 
 export default function Page() {
+  const [api, setApi] = useState<CarouselApi>()
+  const [item, setItem] = useState(0)
+
+  // Bidirectionally sync carousel scroll state with item state
+  useEffect(() => {
+    if (!api)
+      return
+    const onSelect = () => setItem(api.selectedScrollSnap())
+    api.on("select", onSelect)
+    return () => {
+      api.off("select", onSelect)
+    }
+  }, [api])
+
+  useEffect(() => {
+    api?.scrollTo(item)
+  }, [api, item])
+
   return (
     <div className="flex flex-col">
       <header className="fixed top-0 left-0 right-0 z-10 grid grid-cols-3 items-center shrink-0 w-full h-16 text-white bg-blue-500">
         <div></div>
         <p className="justify-self-center"><b>The Evidence Engine</b></p>
-        <UserIcon className="justify-self-end mr-4 size-4" />
+        <div className="justify-self-end flex items-center mr-2">
+          <UserIcon className="justify-self-end mr-2 size-6" />
+          <a href="https://github.com/demonfiddler/evidence-engine" target="_blank" title="Source code on GitHub"><GithubIcon className="justify-self-end inline size-6 text-white"/></a>
+        </div>
       </header>
       <footer className="fixed bottom-0 left-0 right-0 z-10 grid grid-cols-3 items-center shrink-0 w-full h-12 text-xs text-white bg-blue-500">
         <p>&nbsp;Copyright &copy; 2024-25 Adrian Price. All rights reserved.</p>
@@ -79,19 +102,20 @@ export default function Page() {
               width={560}
               height={620}
               className="block md:hidden"
-              alt="Screenshots of the Evidence Engine showing desktop version"
+              alt="Screenshots of the Evidence Engine showing mobile version"
             /> */}
           </div>
           <Carousel
             className="w-2/3"
             plugins={[
               Autoplay({
-                delay: 5000,
+                delay: 8000,
               }),
             ]}
             opts={{
               loop: true
             }}
+            setApi={setApi}
           >
             <CarouselContent>
               <CarouselItem>
@@ -140,6 +164,15 @@ export default function Page() {
             <CarouselPrevious />
             <CarouselNext />
           </Carousel>
+          <RadioGroup
+            className="flex mt-2"
+            value={item.toString()}
+            onValueChange={(value) => setItem(Number.parseInt(value))}
+          >
+            <RadioGroupItem value="0" title="Challenge"></RadioGroupItem>
+            <RadioGroupItem value="1" title="Mission"></RadioGroupItem>
+            <RadioGroupItem value="2" title="Description"></RadioGroupItem>
+          </RadioGroup>
         </div>
       </div>
     </div>
