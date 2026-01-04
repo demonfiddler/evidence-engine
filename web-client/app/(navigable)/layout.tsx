@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------------------------------------------------
  * Evidence Engine: A system for managing evidence on arbitrary scientific topics.
  * Comprises an SQL database, GraphQL public API, Java app server, Java and web clients.
- * Copyright © 2024-25 Adrian Price. All rights reserved.
+ * Copyright © 2024-26 Adrian Price. All rights reserved.
  *
  * This file is part of Evidence Engine.
  *
@@ -63,7 +63,7 @@ export default function NavigableLayout({
         </div>
       </header>
       <footer className="fixed bottom-0 left-0 right-0 z-10 grid grid-cols-3 items-center w-full h-12 text-xs text-white bg-blue-500">
-        <p>&nbsp;Copyright &copy; 2024-25 Adrian Price. All rights reserved.</p>
+        <p>&nbsp;Copyright &copy; 2024-26 Adrian Price. All rights reserved.</p>
         <p className="justify-self-center">A <a href="https://campaign-resources.org" target="_blank" className="text-white"><i>Campaign Resources</i></a> application</p>
       </footer>
       <div className="fixed top-16 bottom-12 flex flex-row w-screen">
