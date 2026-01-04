@@ -17,6 +17,9 @@
 -- If not, see <https://www.gnu.org/licenses/>. 
 -- ----------------------------------------------------------------------------------------------------------------------
 
+INSERT INTO "config" ("property", "subscript", "value") VALUES
+	("schema_version", 0, "1");
+
 INSERT INTO "country" ("alpha_2", "alpha_3", "numeric", "iso_name", "common_name", "year", "cc_tld", "notes") VALUES
 	('AD', 'AND', '020', 'Andorra', 'Andorra', '1974', '.ad', NULL),
 	('AE', 'ARE', '784', 'United Arab Emirates', 'United Arab Emirates', '1974', '.ae', 'Formerly Trucial States'),

@@ -19,8 +19,14 @@
 
 package io.github.demonfiddler.ee.server.rest.util;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +53,7 @@ public class BackupUtils {
     public static final String[] APPDATA_TABLES_BACKUP = { //
         "claim", //
         "comment", //
+        "config", //
         "declaration", //
         "entity", //
         "entity_link", //
@@ -74,6 +81,7 @@ public class BackupUtils {
     public static final String[] APPDATA_TABLES_RESTORE = { //
         "claim", //
         "comment", //
+        "config", //
         "declaration", //
         "entity_link", //
         "group", //
@@ -101,14 +109,14 @@ public class BackupUtils {
     /**
      * Recursively deletes a file/directory.
      * @param file The file/directory to delete.
-     * @param keep For a directory, delete the contents but retain the directory itself.
+     * @param empty For a directory, delete the contents but retain the directory itself.
      */
-    public void deleteFile(File file, boolean keep) {
+    public void deleteFile(File file, boolean empty) {
         try {
             if (file.isDirectory()) {
                 for (File child : file.listFiles())
                     deleteFile(child, false);
-                if (!keep)
+                if (!empty)
                     file.delete();
             } else {
                 file.delete();
@@ -120,6 +128,41 @@ public class BackupUtils {
                 // Ignore
             }
         }
+    }
+
+    public Map<String, String> readConfiguration(File configFile) throws IOException {
+        Map<String, String> config = new LinkedHashMap<>();
+        try (BufferedReader rdr = new BufferedReader(new FileReader(configFile, Charset.forName("UTF-8")))) {
+            String line;
+            int lineNum = 0;
+            while ((line = rdr.readLine()) != null) {
+                if (lineNum++ == 0)
+                    continue;
+                StringTokenizer tok = new StringTokenizer(line, ",");
+                if (tok.countTokens() == 3) {
+                    String property = unquote(tok.nextToken());
+                    String subscript = unquote(tok.nextToken());
+                    String value = unquote(tok.nextToken());
+                    if (subscript.equals("0")) {
+                        config.put(property, value);
+                        LOGGER.trace("readConfiguration: read property {} = \"value\"", property, value);
+                    } else {
+                        LOGGER.warn("readConfiguration: ignoring multi-valued property {}[{}] = \"{}\"", property, subscript, value);
+                    }
+                } else {
+                    LOGGER.error("readConfiguration: malformed line #{}: {}", lineNum, line);
+                }
+            }
+        }
+        LOGGER.debug("readConfiguration: returning {}", config);
+
+        return config;
+    }
+
+    private String unquote(String s) {
+        int start = s.charAt(0) == '"' ? 1 : 0;
+        int end = s.charAt(s.length() - 1) == '"' ? s.length() - 1 : s.length();
+        return s.substring(start, end);
     }
 
 }

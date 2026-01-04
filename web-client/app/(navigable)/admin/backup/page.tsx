@@ -130,8 +130,10 @@ export default function BackupRestore() {
       body: formData,
     }) //
     .then(response => {
-      if (!response.ok)
-        throw new Error(`Upload failed: ${response.status} (${response.statusText})`)
+      if (!response.ok) {
+        response.text().then(value => setError(value))
+        return
+      }
 
       toast.info("Database restore completed successfully")
       setFiles(undefined)
@@ -158,7 +160,7 @@ export default function BackupRestore() {
       </p>
       <p className="w-1/2">
         <AlertTriangleIcon className="inline text-red-600" />
-        Be aware that a backup set includes <b>all application data, including security principals</b> (user, groups and their granted authorities)
+        Be aware that a backup set includes <b>all application data</b>, including <b>security principals</b> (user, groups and their granted authorities)
         and that the restore operation <b>completely replaces</b> all existing application records. There is currently no support for merging
         existing records with those from a different database.
       </p>

@@ -56,6 +56,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import io.github.demonfiddler.ee.server.rest.model.BackupKind;
 import io.github.demonfiddler.ee.server.rest.util.BackupUtils;
+import io.github.demonfiddler.ee.server.rest.util.DatabaseUtils;
 import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -73,16 +74,18 @@ public class RestoreApiController implements RestoreApi {
     private final PlatformTransactionManager txManager;
     private final JdbcTemplate jdbcTemplate;
     private final BackupUtils backupUtils;
+    private final DatabaseUtils databaseUtils;
     @Value("${data.server.tmpdir}")
     private String tmpDir;
 
     @Autowired
     public RestoreApiController(NativeWebRequest request, PlatformTransactionManager txManager,
-        JdbcTemplate jdbcTemplate, BackupUtils backupUtils) {
+        JdbcTemplate jdbcTemplate, BackupUtils backupUtils, DatabaseUtils databaseUtils) {
         this.request = request;
         this.txManager = txManager;
         this.jdbcTemplate = jdbcTemplate;
         this.backupUtils = backupUtils;
+        this.databaseUtils = databaseUtils;
     }
 
     @Override
@@ -134,8 +137,8 @@ public class RestoreApiController implements RestoreApi {
             }
         } catch (IOException e) {
             LOGGER.error("Error unzipping backup set", e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("<html><body>400: Bad Request<br>Unable to read backup set</body></html>");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
+                .body("400 Bad Request: Unable to read backup set");
         }
 
         // First check that the backup set contains all the required files.
@@ -146,8 +149,26 @@ public class RestoreApiController implements RestoreApi {
         if (!missingFilenames.isEmpty()) {
             String errmsg = "Files missing from backup set: " + missingFilenames;
             LOGGER.error(errmsg);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("<html><body>400: Bad Request<br>" + errmsg + "</body></html>");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
+                .body("400 Bad Request: " + errmsg);
+        }
+
+        // Check that the backup set's database schema version matches that of this server.
+        File configFile = new File(outputDir, "config.csv");
+        try {
+            Map<String, String> config = backupUtils.readConfiguration(configFile);
+            int schemaVersion = Integer.parseInt(config.getOrDefault("schema_version", "0"));
+            if (!databaseUtils.checkDatabaseSchemaVersion(schemaVersion)) {
+                String errmsg = "Backup set has an incompatible schema version; expected: "
+                    + DatabaseUtils.CURRENT_SCHEMA_VERSION + ", actual: " + schemaVersion;
+                LOGGER.error(errmsg);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
+                    .body("400 Bad Request: " + errmsg);
+            }
+        } catch (IOException | NumberFormatException e) {
+            LOGGER.error("Error reading backup set configuration", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
+                .body("400 Bad Request: Unable to read configuration from backup set");
         }
 
         // The entire restore operation must be performed transactionally.
@@ -167,8 +188,8 @@ public class RestoreApiController implements RestoreApi {
 
                         String errmsg = "Error deleting from table: " + table;
                         LOGGER.error(errmsg, e);
-                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                            .body("<html><body>500: Internal Server Error<br>" + errmsg + "</body></html>");
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
+                            .body("500 Internal Server Error: " + errmsg);
                     }
                 }
                 restoreTables(STATIC_TABLES, outputPath);
@@ -182,8 +203,8 @@ public class RestoreApiController implements RestoreApi {
 
                 String errmsg = "Error deleting existing data from table: entity";
                 LOGGER.error(errmsg, e);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("<html><body>500: Internal Server Error<br>" + errmsg + "</body></html>");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
+                    .body("500 Internal Server Error: " + errmsg);
             }
 
             // Restore entity + user tables together (with RI constraints temporarily disabled).
@@ -195,8 +216,8 @@ public class RestoreApiController implements RestoreApi {
 
                 String errmsg = "Error restoring entity tables";
                 LOGGER.error(errmsg, e);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("<html><body>500: Internal Server Error<br>" + errmsg + "</body></html>");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
+                    .body("500 Internal Server Error: " + errmsg);
             } finally {
                 try {
                     jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS=1;");
@@ -205,8 +226,8 @@ public class RestoreApiController implements RestoreApi {
 
                     String errmsg = "Error setting FOREIGN_KEY_CHECKS=1";
                     LOGGER.error(errmsg, e);
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("<html><body>500: Internal Server Error<br>" + errmsg + "</body></html>");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
+                        .body("500 Internal Server Error: " + errmsg);
                 }
             }
 
@@ -216,10 +237,10 @@ public class RestoreApiController implements RestoreApi {
             } catch (DataAccessException e) {
                 txManager.rollback(status);
 
-                String errmsg = "Error application data tables";
+                String errmsg = "Error restoring application data tables";
                 LOGGER.error(errmsg, e);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("<html><body>500: Internal Server Error<br>" + errmsg + "</body></html>");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
+                    .body("500 Internal Server Error: " + errmsg);
             }
             txManager.commit(status);
         } catch (Throwable t) {
@@ -237,7 +258,7 @@ public class RestoreApiController implements RestoreApi {
         for (String table : tables) {
             String csvFilename = table + ".csv";
             if (!csvFilenames.contains(csvFilename))
-                missingFilenames.add(csvFilename + " missing from backup set");
+                missingFilenames.add(csvFilename);
         }
     }
 

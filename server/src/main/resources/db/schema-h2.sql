@@ -31,6 +31,13 @@ CREATE TABLE "abbreviation" (
 CREATE INDEX "abbreviation_word" ON "abbreviation" ("word");
 CREATE INDEX "abbreviation_abbreviation" ON "abbreviation" ("abbreviation");
 
+CREATE TABLE "config" (
+  "property" VARCHAR(20) NOT NULL COMMENT 'The property name',
+  "subscript" TINYINT(4) NOT NULL DEFAULT '0' COMMENT 'For a multi-valued property, the unique item index',
+  "value" VARCHAR(255) NULL DEFAULT NULL COMMENT 'The property value as a string',
+  PRIMARY KEY ("property", "subscript")
+);
+
 CREATE TABLE "entity" (
   "id" BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT 'The unique entity record identifier',
   "dtype" CHAR(3) NOT NULL COMMENT 'The entity type discriminator',

@@ -44,6 +44,13 @@ CREATE TABLE IF NOT EXISTS "abbreviation" (
 	INDEX "abbreviation_abbreviation" ("abbreviation") USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='The ISSN Network''s ''List of Title Word Abbreviations'' (LTWA), as used by ISO 4.';
 
+CREATE TABLE "config" (
+    "property" VARCHAR(20) NOT NULL COMMENT 'The property name',
+    "subscript" TINYINT(4) NOT NULL DEFAULT '0' COMMENT 'For a multi-valued property, the unique item index',
+    "value" VARCHAR(255) NULL DEFAULT NULL COMMENT 'The property value as a string',
+    PRIMARY KEY ("property", "subscript")
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='A general purpose lookup table for persisting dynamic configuration properties';
+
 -- Dumping structure for table evidence_engine.entity
 CREATE TABLE IF NOT EXISTS "entity" (
   "id" bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'The unique entity record identifier',
@@ -245,7 +252,7 @@ CREATE TABLE IF NOT EXISTS "publication" (
   "kind" varchar(6) NOT NULL COMMENT 'The kind of publication',
   "date" date DEFAULT NULL COMMENT 'Publication date',
   "year" year(4) DEFAULT NULL COMMENT 'Publication year',
-	`keywords` VARCHAR(255) DEFAULT NULL COMMENT 'Keywords per publication metadata',
+	"keywords" VARCHAR(255) DEFAULT NULL COMMENT 'Keywords per publication metadata',
 	"location" VARCHAR(50) DEFAULT NULL COMMENT 'The location of the relevant section within the publication',
   "abstract" text DEFAULT NULL COMMENT 'Abstract from the article',
   "notes" text DEFAULT NULL COMMENT 'Added notes about the publication',
