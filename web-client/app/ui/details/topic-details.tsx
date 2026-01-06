@@ -82,11 +82,8 @@ export default function TopicDetails(
   const { updating } = state
 
   const flatTopics = useMemo(() => {
-    const flattened = flatten(topics, /*"", */[])
-    // FIXME: A topic can't be its own ancestor
-    const topicIdx = flattened.findIndex(t => t.id == record?.id)
-    flattened.splice(topicIdx, 1)
-    return flattened
+    // A topic can't be its own ancestor, so exclude this record and all of its descendants.
+    return flatten(record, topics, [])
   }, [topics, record])
 
   return (

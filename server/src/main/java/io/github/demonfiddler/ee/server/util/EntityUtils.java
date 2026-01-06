@@ -19,6 +19,13 @@
 
 package io.github.demonfiddler.ee.server.util;
 
+import static io.github.demonfiddler.ee.server.model.EntityKind.CLA;
+import static io.github.demonfiddler.ee.server.model.EntityKind.DEC;
+import static io.github.demonfiddler.ee.server.model.EntityKind.PER;
+import static io.github.demonfiddler.ee.server.model.EntityKind.PUB;
+import static io.github.demonfiddler.ee.server.model.EntityKind.QUO;
+import static io.github.demonfiddler.ee.server.model.EntityKind.TOP;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -48,7 +55,6 @@ import io.github.demonfiddler.ee.common.util.StringUtils;
 import io.github.demonfiddler.ee.server.model.Claim;
 import io.github.demonfiddler.ee.server.model.Country;
 import io.github.demonfiddler.ee.server.model.Declaration;
-// import io.github.demonfiddler.ee.server.model.Group;
 import io.github.demonfiddler.ee.server.model.EntityKind;
 import io.github.demonfiddler.ee.server.model.EntityLink;
 import io.github.demonfiddler.ee.server.model.Group;
@@ -84,6 +90,15 @@ public class EntityUtils {
 	private static final BidiMap<Class<?>, String> ENTITY_NAMES = new DualHashBidiMap<>();
 	private static final Collection<String> BASE_TABLE_FIELDS =
 		List.of("id", "dtype", "status", "rating", "created", "createdByUserId", "updated", "updatedByUserId");
+	/** Maps 'from' entity kind to legal 'to' entity kinds. */
+	private static final Map<EntityKind, Collection<EntityKind>> ENTITY_KIND_LINK_MAP = Map.of( //
+		CLA, List.of(DEC, PER, PUB, QUO), //
+		DEC, List.of(PER, QUO), //
+		PER, List.of(), //
+		PUB, List.of(PER), //
+		QUO, List.of(PER, PUB), //
+		TOP, List.of(CLA, DEC, PER, PUB, QUO) //
+	);
 
 	static {
 		ENTITY_KINDS.put(Claim.class, EntityKind.CLA);
@@ -113,8 +128,8 @@ public class EntityUtils {
 		ENTITY_NAMES.put(User.class, "user");
 	}
 
-    @Resource
-    SecurityUtils securityUtils;
+	@Resource
+	private SecurityUtils securityUtils;
 
 	/**
 	 * Converts an {@link Iterable} of a given source class into a list of a given target class.
@@ -178,11 +193,21 @@ public class EntityUtils {
 
 	/**
 	 * Returns the {@code EntityKind} for the given entity.
-	 * @param entityClass The entity.
+	 * @param entity The entity.
 	 * @return The corresponding entity kind.
 	 */
 	public EntityKind getEntityKind(ITrackedEntity entity) {
 		return EntityKind.valueOf(entity.getEntityKind());
+	}
+
+	/**
+	 * Returns whether {@code entity} has a specified entity kind.
+	 * @param entity The entity.
+	 * @param entityKind The entity kind.
+	 * @return {@code true} if {@code entity} has the specified {@code entityKind}.
+	 */
+	public boolean hasEntityKind(ITrackedEntity entity, EntityKind entityKind) {
+		return getEntityKind(entity) == entityKind;
 	}
 
 	/**
@@ -557,6 +582,10 @@ public class EntityUtils {
 				throw new IllegalArgumentException("Unsupported entityKind: " + record.getEntityKind());
 		}
 		return String.format("%s #%d: %s", entityKind, id, text);
+	}
+
+	public Collection<EntityKind> getToEntityKinds(EntityKind fromEntityKind) {
+		return ENTITY_KIND_LINK_MAP.getOrDefault(fromEntityKind, Collections.emptyList());
 	}
 
 }

@@ -56,7 +56,7 @@ import { dialog, LoggerEx } from "@/lib/logger"
 import { CheckIcon, CircleAlertIcon, CircleXIcon, InfoIcon, LinkIcon, LucideProps, RectangleEllipsisIcon, RotateCwIcon, SearchIcon, XIcon } from "lucide-react"
 import Spinner from "../misc/spinner"
 import ILinkableEntity from "@/app/model/ILinkableEntity"
-import { cn, formatDateTime, getReadQuery, getRecordLabel, getRecordLinkProperties, getRecordLinks, isEqual, RecordLink, TO_ENTITY_ID } from "@/lib/utils"
+import { cn, flatten, formatDateTime, getReadQuery, getRecordLabel, getRecordLinkProperties, getRecordLinks, isEqual, RecordLink, TO_ENTITY_ID } from "@/lib/utils"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import Search from "../filter/search"
@@ -83,6 +83,7 @@ import EntityAudit from "@/app/model/EntityAudit"
 import useAuth from "@/hooks/use-auth"
 import ITrackedEntity from "@/app/model/ITrackedEntity"
 import { GlobalContext } from "@/lib/context"
+import Topic from "@/app/model/Topic"
 
 const logger = new LoggerEx(dialog, "[StatusDialog] ")
 
@@ -109,8 +110,46 @@ function isTextEditing(el: Element | null) {
   )
 }
 
-const EMPTY_DATA = {content: []}
-const EMPTY_RESULT = {data: EMPTY_DATA, previousData: EMPTY_DATA, loading: false, refetch: () => {}}
+const EMPTY_SET = new Set<string>()
+
+/** Adds all ancestors of topicId to topicAxis. */
+function addAncestors(topicAxis: Set<string>, topicTrees: Topic[], topicId: string) : boolean {
+  for (const topic of topicTrees) {
+    if (!topic.id)
+      continue
+    if (topic.id === topicId ||
+      topic.children && topic.children.length > 0 && addAncestors(topicAxis, topic.children, topicId)) {
+
+      topicAxis.add(topic.id)
+      return true
+    }
+  }
+  return false
+}
+
+/** Adds all descendants of topicId to topicAxis. */
+function addDescendants(topicAxis: Set<string>, topicTrees: Topic[], topicId: string, addAll: boolean) {
+  for (const topic of topicTrees) {
+    if (!topic.id)
+      continue
+    const add = addAll || topic.id === topicId
+    if (add)
+      topicAxis.add(topic.id)
+    if (topic.children && topic.children.length > 0)
+      addDescendants(topicAxis, topic.children, topicId, add)
+  }
+}
+
+/** Returns a list containing all the topics referenced from filteredRecordLinks, their ancestors and descendants. */
+function getTopicAxis(topicTree: Topic[], filteredRecordLinks: RecordLink[]) : Set<string> {
+  const topicAxis = new Set<string>()
+  for (const frl of filteredRecordLinks) {
+    const topicId = frl.otherRecordId
+    addAncestors(topicAxis, topicTree, topicId)
+    addDescendants(topicAxis, topicTree, topicId, false)
+  }
+  return topicAxis
+}
 
 export default function StatusDialog({recordKind, record} : {recordKind?: LinkableEntityKind, record?: ILinkableEntity}) {
   const {hasAuthority} = useAuth()
@@ -161,19 +200,35 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
     return entityAudit.linkAudit ?? {links: [], groups: [], pass: true}
   }, [entityAudit])
 
-  const otherRecords = useMemo(() => {
+  const otherRecordsRaw = useMemo(() => {
     const data = (otherRecordsResult?.loading
       ? otherRecordsResult.previousData
       : otherRecordsResult.data) as QueryResult<IPage<ILinkableEntity>>
     let otherRecordsPage = data && otherRecordsFieldName
       ? data[otherRecordsFieldName]
       : undefined
-    return otherRecordsPage?.content.filter(
+    return otherRecordsPage?.content ?? []
+  }, [otherRecordsResult, otherRecordsFieldName])
+
+  const otherRecords = useMemo(() => {
+    // Filter out records which are already linked
+    const otherRecords = otherRecordKind === "Topic" ? flatten(undefined, otherRecordsRaw, []) : otherRecordsRaw
+    return otherRecords.filter(
       r => filteredRecordLinks.findIndex(
         l => l.otherRecordId == r.id) == -1) ?? []
-  }, [otherRecordsResult, otherRecordsFieldName, filteredRecordLinks])
+  }, [otherRecordsRaw, otherRecordKind, filteredRecordLinks])
+
   const otherRecord = useMemo(() => otherRecords.find(r => r.id === otherRecordId), [otherRecords, otherRecordId])
   const otherRecordLabel = useMemo(() => getRecordLabel(otherRecordKind, otherRecord) ?? '', [otherRecordKind, otherRecord])
+
+  // Must disable the 'Link' button if an ancestor or descendant topic is already linked.
+  // filteredRecordLinks contains all existing links for the selected otherRecordKind.
+  // otherRecords contains all as-yet unlinked records of the selected otherRecordKind.
+  // When otherRecordKind === "Topic", gather a set containing IDs of linked topics, their ancestors and descendants.
+  // If the set includes otherRecord.id, disable the 'Link' button.
+  const topicAxis = useMemo(() => {
+    return otherRecordKind === "Topic" ? getTopicAxis(otherRecordsRaw, filteredRecordLinks) : EMPTY_SET
+  }, [otherRecordKind, otherRecordsRaw, filteredRecordLinks])
 
   // Ghastly AI hack to prevent Carousel from scrolling when pressing LeftArrow or RightArrow inside a TextInput.
   useEffect(() => {
@@ -217,13 +272,14 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
     toast.info(`Use the search to find a link target ${otherRecordKind}`)
   }, [api])
 
-  const updateFilter = useCallback((status: string, text: string, advanced: boolean | "indeterminate", recordId: string) => {
+  const updateFilter = useCallback((otherRecordKind: LinkableEntityKind | undefined, status: string, text: string, advanced: boolean | "indeterminate", recordId: string) => {
     logger.trace("updateFilter: status='%s', text='%s', advanced=%s, recordId='%s'", status, text, advanced, recordId)
     const newFilter = {
       status: status ? [status] : undefined,
       text: text || undefined,
       advancedSearch: text && advanced || undefined,
       recordId: recordId || undefined,
+      parentId: otherRecordKind === "Topic" ? -1 : undefined,
     } as LinkableEntityQueryFilter
     if (!isEqual(newFilter as LinkableEntityQueryFilter, filter)) {
       logger.trace("updateFilter from %o to %o", filter, newFilter)
@@ -243,9 +299,8 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
   const isModified = useCallback(() => {
     // NOTE: when editing a new record, selectedLink is undefined.
     return thisRecordLocations != (selectedLink?.thisLocations ?? '') ||
-      otherRecordLocations != (selectedLink?.otherLocations ?? '')/* ||
-      selectedLink?.otherRecordKind == "Topic" && topicId != selectedLink?.otherRecordId*/
-  }, [thisRecordLocations, otherRecordLocations, /*topicId, */selectedLink])
+      otherRecordLocations != (selectedLink?.otherLocations ?? '')
+  }, [thisRecordLocations, otherRecordLocations, selectedLink])
 
   const createInput = useCallback((recordLink: Partial<RecordLink>) => {
     logger.trace("createInput: recordLink=%o", recordLink)
@@ -279,32 +334,33 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
     setOtherRecordKind(otherRecordKind)
     setOtherRecordId('')
     setSelectedLinkId('')
-  }, [])
+    updateFilter(otherRecordKind, filterStatus, filterText, filterAdvanced, otherRecordId)
+  }, [updateFilter, filterStatus, filterText, filterAdvanced, otherRecordId])
 
   const handleStatusChange = useCallback((status: string) => {
     logger.trace("handleStatusChange: status='%s'", status)
     status = status === "ALL" ? '' : status
     setFilterStatus(status)
-    updateFilter(status, filterText, filterAdvanced, otherRecordId)
-  }, [updateFilter, filterText, filterAdvanced, otherRecordId])
+    updateFilter(otherRecordKind, status, filterText, filterAdvanced, otherRecordId)
+  }, [updateFilter, otherRecordKind, filterText, filterAdvanced, otherRecordId])
 
   const handleTextChange = useCallback((text: string) => {
     logger.trace("handleTextChange: text='%s'", text)
     setFilterText(text)
-    updateFilter(filterStatus, text, filterAdvanced, otherRecordId)
-  }, [updateFilter, filterStatus, filterAdvanced, otherRecordId])
+    updateFilter(otherRecordKind, filterStatus, text, filterAdvanced, otherRecordId)
+  }, [updateFilter, otherRecordKind, filterStatus, filterAdvanced, otherRecordId])
 
   const handleAdvancedSearchChange = useCallback((advanced: boolean) => {
     logger.trace("handleAdvancedSearchChange: advanced=%s", advanced)
     setFilterAdvanced(advanced)
-    updateFilter(filterStatus, filterText, advanced, otherRecordId)
-  }, [updateFilter, filterStatus, filterText, otherRecordId])
+    updateFilter(otherRecordKind, filterStatus, filterText, advanced, otherRecordId)
+  }, [updateFilter, otherRecordKind, filterStatus, filterText, otherRecordId])
 
   const handleRecordIdChange = useCallback((recordId: string) => {
     logger.trace("handleRecordIdChange: recordId='%s'", recordId)
     setFilterRecordId(recordId)
-    updateFilter(filterStatus, filterText, filterAdvanced, recordId)
-  }, [updateFilter, filterStatus, filterText, filterAdvanced])
+    updateFilter(otherRecordKind, filterStatus, filterText, filterAdvanced, recordId)
+  }, [updateFilter, otherRecordKind, filterStatus, filterText, filterAdvanced])
 
   const handleReset = useCallback(() => {
     logger.trace("handleReset")
@@ -312,8 +368,8 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
     setFilterText('')
     setFilterAdvanced(false)
     setFilterRecordId('')
-    updateFilter('', '', false, '')
-  }, [updateFilter])
+    updateFilter(otherRecordKind, '', '', false, '')
+  }, [updateFilter, otherRecordKind])
 
   const handleLink = useCallback(() => {
     logger.trace("handleLink")
@@ -883,7 +939,7 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
                               ? otherRecords.length ?? 0 > 0
                               ? "-Select a record to link-"
                               : "-No matching records-"
-                              : "-Select a linked record kind-"}
+                              : "-Select a 'Link with' record kind-"}
                             />
                           </SelectTriggerEx>
                           <SelectContent>
@@ -905,7 +961,7 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
                           type="button"
                           variant="outline"
                           className="w-20"
-                          disabled={!allowLinking || !otherRecordId || mode !== "view"}
+                          disabled={!allowLinking || !otherRecordId || topicAxis.has(otherRecord?.id ?? '0') || mode !== "view"}
                           onClick={handleLink}
                           help={
                             otherRecordId
@@ -937,7 +993,7 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
                                 ? filteredRecordLinks.length ?? 0 > 0
                                 ? "-Select a record link-"
                                 : "-No record links-"
-                                : "-Select a linked record kind-"
+                                : "-Select a 'Link with' record kind-"
                               }
                           />
                         </SelectTriggerEx>

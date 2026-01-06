@@ -242,8 +242,12 @@ export function setTopicFields(path: string, parentId: string | undefined, inTop
   }
 }
 
-export function flatten(inTopics: Topic[], outTopics: Topic[]): Topic[] {
+export function flatten(selectedTopic: Topic | undefined, inTopics: Topic[], outTopics: Topic[]): Topic[] {
   for (const topic of inTopics) {
+    // Exclude the selected topic and, recursively, all of its descendants.
+    if (topic.id === selectedTopic?.id)
+      continue
+
     outTopics.push({
       id: topic.id,
       parentId: topic.parentId,
@@ -252,7 +256,7 @@ export function flatten(inTopics: Topic[], outTopics: Topic[]): Topic[] {
       path: topic.path,
     })
     if (topic.children)
-      flatten(topic.children, outTopics)
+      flatten(selectedTopic, topic.children, outTopics)
   }
   return outTopics
 }

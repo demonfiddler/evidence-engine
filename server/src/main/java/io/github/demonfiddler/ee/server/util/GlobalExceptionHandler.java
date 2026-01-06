@@ -34,10 +34,12 @@ import graphql.GraphqlErrorBuilder;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final ErrorClassification UNAUTHORIZED = ErrorClassification.errorClassification("UNAUTHORIZED");
-    private static final ErrorClassification NOT_FOUND = ErrorClassification.errorClassification("NOT_FOUND");
     private static final ErrorClassification CONSTRAINT_VIOLATION =
         ErrorClassification.errorClassification("CONSTRAINT_VIOLATION");
+    private static final ErrorClassification BAD_REQUEST =
+        ErrorClassification.errorClassification("BAD_REQUEST");
+    private static final ErrorClassification NOT_FOUND = ErrorClassification.errorClassification("NOT_FOUND");
+    private static final ErrorClassification UNAUTHORIZED = ErrorClassification.errorClassification("UNAUTHORIZED");
     private static final ErrorClassification DUPLICATE_KEY = ErrorClassification.errorClassification("DUPLICATE_KEY");
 
     private static Throwable getRootCause(Throwable t) {
@@ -58,21 +60,31 @@ public class GlobalExceptionHandler {
     }
 
     @GraphQlExceptionHandler
-    public GraphQLError handle(GraphqlErrorBuilder<?> builder, PermissionDeniedDataAccessException e) {
-        return builder //
-            .errorType(UNAUTHORIZED) //
-            .message(
-                "You are not authorised to perform the operation. Speak to the system administrator. Root cause: %s",
-                e.getRootCause().getMessage()) //
-            .build();
-    }
-
-    @GraphQlExceptionHandler
     public GraphQLError handle(GraphqlErrorBuilder<?> builder, DataIntegrityViolationException e) {
         return builder //
             .errorType(CONSTRAINT_VIOLATION) //
             .message(
                 "You tried to create or update a record in a way that violates a relational integrity constraint in the database. Root cause: %s",
+                e.getRootCause().getMessage()) //
+            .build();
+    }
+
+    @GraphQlExceptionHandler
+    public GraphQLError handle(GraphqlErrorBuilder<?> builder, IllegalArgumentException e) {
+        return builder //
+            .errorType(BAD_REQUEST) //
+            .message(
+                "Your request contained an illegal argument. Root cause: %s",
+                getRootCause(e).getMessage()) //
+            .build();
+    }
+
+    @GraphQlExceptionHandler
+    public GraphQLError handle(GraphqlErrorBuilder<?> builder, PermissionDeniedDataAccessException e) {
+        return builder //
+            .errorType(UNAUTHORIZED) //
+            .message(
+                "You are not authorised to perform the operation. Speak to the system administrator. Root cause: %s",
                 e.getRootCause().getMessage()) //
             .build();
     }

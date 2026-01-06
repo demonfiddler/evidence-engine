@@ -22,11 +22,15 @@ package io.github.demonfiddler.ee.server.datafetcher.impl;
 import static io.github.demonfiddler.ee.common.util.StringUtils.countLines;
 
 import java.time.OffsetDateTime;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
@@ -49,6 +53,7 @@ import io.github.demonfiddler.ee.server.model.Comment;
 import io.github.demonfiddler.ee.server.model.CommentInput;
 import io.github.demonfiddler.ee.server.model.Declaration;
 import io.github.demonfiddler.ee.server.model.DeclarationInput;
+import io.github.demonfiddler.ee.server.model.EntityKind;
 import io.github.demonfiddler.ee.server.model.EntityLink;
 import io.github.demonfiddler.ee.server.model.EntityLinkInput;
 import io.github.demonfiddler.ee.server.model.EntityLinkQueryFilter;
@@ -158,7 +163,9 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         log(txnKind, entity, null, timestamp);
     }
 
-    private void log(TransactionKind txnKind, ITrackedEntity entity, ILinkableEntity linkedEntity, OffsetDateTime timestamp) {
+    private void log(TransactionKind txnKind, ITrackedEntity entity, ILinkableEntity linkedEntity,
+        OffsetDateTime timestamp) {
+
         Log log = new Log();
         log.setTransactionKind(txnKind.name());
         log.setTimestamp(timestamp);
@@ -438,6 +445,13 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
             .orElseThrow(() -> createEntityNotFoundException("From ILinkableEntity", input.getFromEntityId()));
         AbstractLinkableEntity toEntity = linkableEntityRepository.findById(input.getToEntityId())
             .orElseThrow(() -> createEntityNotFoundException("To ILinkableEntity", input.getToEntityId()));
+
+        // Enforce rules about which ends a given pair of entity kinds are linked.
+        checkLinkageRules(fromEntity, toEntity);
+
+        // Prevent links to any Topic for which there is an existing link within its the ancestor-self-descendant axis.
+        checkForExistingTopicLink(null, input, fromEntity);
+
         EntityLink entityLink = EntityLink.builder() //
             .withRating(input.getRating()) //
             .withFromEntity(fromEntity) //
@@ -460,7 +474,6 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         AbstractLinkableEntity oldFromEntity = entityLink.getFromEntity();
         AbstractLinkableEntity oldToEntity = entityLink.getToEntity();
 
-        entityLink.setRating(input.getRating());
         boolean fromEntityChanged = !oldFromEntity.getId().equals(input.getFromEntityId());
         boolean toEntityChanged = !oldToEntity.getId().equals(input.getToEntityId());
         if (fromEntityChanged || toEntityChanged) {
@@ -470,13 +483,22 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
             AbstractLinkableEntity newToEntity = toEntityChanged //
                 ? linkableEntityRepository.getReferenceById(input.getToEntityId()) //
                 : oldToEntity;
-            if (fromEntityChanged)
+
+            // Enforce rules about which ends a given pair of entity kinds are linked.
+            checkLinkageRules(newFromEntity, newToEntity);
+
+            if (fromEntityChanged) {
+                // Prevent links to any Topic for which there is an existing link within its the ancestor-self-descendant axis.
+                checkForExistingTopicLink(entityLink, input, newFromEntity);
+
                 entityLink.setFromEntity(newFromEntity);
+            }
             if (toEntityChanged)
                 entityLink.setToEntity(newToEntity);
             logUnlinked(entityLink, oldFromEntity, oldToEntity);
             logLinked(entityLink, newFromEntity, newToEntity);
         }
+        entityLink.setRating(input.getRating());
         entityLink.setFromEntityLocations(input.getFromEntityLocations());
         entityLink.setToEntityLocations(input.getToEntityLocations());
 
@@ -485,6 +507,77 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
 
         return entityLinkRepository.save(entityLink);
     }
+
+	/**
+	 * Checks that two entities would be linked from/to the correct ends of an {@code EntityLink}.
+	 * @param fromEntity The entity to be linked by {@code EntityLink.fromEntityId}.
+	 * @param toEntity The entity to be linked by {@code EntityLink.toEntityId}.
+	 * @throws IllegalArgumentException if the entities are the wrong way round or cannot be linked.
+	 */
+	private void checkLinkageRules(ILinkableEntity fromEntity, ILinkableEntity toEntity) {
+		EntityKind fromEntityKind = entityUtils.getEntityKind(fromEntity);
+		EntityKind toEntityKind = entityUtils.getEntityKind(toEntity);
+
+        if (fromEntity.getId().equals(toEntity.getId())) {
+			throw new IllegalArgumentException(
+				"Cannot link an entity to itself: " + fromEntityKind.label() + '#' + fromEntity.getId());
+		}
+
+        if (fromEntityKind == toEntityKind)
+			throw new IllegalArgumentException("Cannot link two entities of the same kind: " + fromEntityKind.label());
+
+        Collection<EntityKind> toEntityKinds = entityUtils.getToEntityKinds(fromEntityKind);
+		if (!toEntityKinds.contains(toEntityKind)) {
+			throw new IllegalArgumentException(toEntityKind.label() + " must be the 'from' entity and "
+				+ fromEntityKind.label() + " must be the 'to' entity");
+		}
+	}
+
+	/**
+	 * Prevents links to any Topic for which there is an existing link within its the ancestor-self-descendant axis.
+	 * @param existingEntityLink The existing entity link in the {@code updateEntityLink} case.
+	 * @param input The input passed to {@code createEntityLink} or {@code updateEntityLink}.
+	 * @param fromEntity The 'from' entity per {@code input.getFromEntityId()}.
+	 * @throws IllegalArgumentException if there is an existing entity link to a Topic that is an ancestor or descendant
+	 * of {@code fromEntity}.
+	 */
+	private void checkForExistingTopicLink(EntityLink existingEntityLink, EntityLinkInput input, ILinkableEntity fromEntity) {
+		boolean fromEntityIsTopic = entityUtils.hasEntityKind(fromEntity, EntityKind.TOP);
+		if (fromEntityIsTopic) {
+			Topic topic = (Topic)Hibernate.unproxy(fromEntity);
+			EntityLinkQueryFilter filter = EntityLinkQueryFilter.builderForEntityLinkQueryFilter() //
+				.withFromEntityKind(EntityKind.TOP) //
+				.withToEntityId(input.getToEntityId()) //
+				.build();
+			List<EntityLink> entityLinks = entityLinkRepository.findByFilter(filter, Pageable.unpaged()).getContent();
+			if (!entityLinks.isEmpty()) {
+				Set<Long> topicAxis = new LinkedHashSet<>();
+				Topic parent = topic;
+				while (parent != null) {
+					topicAxis.add(parent.getId());
+					parent = parent.getParent();
+				}
+				addDescendantIds(topicAxis, topic.getChildren());
+
+				for (EntityLink entityLink : entityLinks) {
+					// Ignore any existing entity link that we are going to update.
+					if (existingEntityLink != null && entityLink.getId().equals(existingEntityLink.getId()))
+						continue;
+					if (topicAxis.contains(entityLink.getFromEntity().getId())) {
+						throw new IllegalArgumentException(
+							"Cannot link an ancestor or descendant of an existing linked Topic");
+					}
+				}
+			}
+		}
+	}
+
+	private void addDescendantIds(Set<Long> topicAxis, Collection<Topic> descendants) {
+		for (Topic descendant : descendants) {
+			topicAxis.add(descendant.getId());
+			addDescendantIds(topicAxis, descendant.getChildren());
+		}
+	}
 
     @Override
     @PreAuthorize("hasAuthority('LNK')")
@@ -844,17 +937,23 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     public Object updateTopic(DataFetchingEnvironment dataFetchingEnvironment, TopicInput input) {
         Topic topic = topicRepository.findById(input.getId())
             .orElseThrow(() -> createEntityNotFoundException("Topic", input.getId()));
-        topic.setRating(input.getRating());
-        topic.setLabel(input.getLabel());
-        topic.setDescription(input.getDescription());
+
         Long parentId = input.getParentId();
         if (parentId == null) {
             topic.setParent(null);
         } else {
+            // Prevent Topic cycles.
+            Set<Long> descendantIds = gatherDescendantIds(new LinkedHashSet<>(), topic.getChildren());
+            if (descendantIds.contains(parentId))
+                throw new IllegalArgumentException("A Topic cannot have one of its descendants as its parent");
+
             Topic parentTopic =
                 topicRepository.findById(parentId).orElseThrow(() -> createEntityNotFoundException("Topic", parentId));
             topic.setParent(parentTopic);
         }
+        topic.setRating(input.getRating());
+        topic.setLabel(input.getLabel());
+        topic.setDescription(input.getDescription());
         setUpdatedFields(topic);
 
         topic = topicRepository.save(topic);
@@ -864,9 +963,19 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         return topic;
     }
 
+    private Set<Long> gatherDescendantIds(Set<Long> descendantIds, Collection<Topic> descendants) {
+        for (Topic descendant : descendants) {
+            descendantIds.add(descendant.getId());
+            gatherDescendantIds(descendantIds, descendant.getChildren());
+        }
+        return descendantIds;
+    }
+
     @Override
     @PreAuthorize("hasAuthority('CHG')")
     public Object deleteTopic(DataFetchingEnvironment dataFetchingEnvironment, Long topicId) {
+        // TODO: consider the fate of the descendants of a deleted Topic.
+        // (They become unreachable to unauthenticated users.)
         return delete(topicId, topicRepository);
     }
 
