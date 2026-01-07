@@ -19,6 +19,7 @@
 
 'use client'
 
+import { useState } from "react"
 import useAuth from "@/hooks/use-auth"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -32,11 +33,10 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import SignInDialog from "./sign-in"
-import { useState } from "react"
-import ProfileDialog from "./profile"
-import PasswordDialog from "./password"
-import SettingsDialog from "./settings"
+import SignInDialog from "../dialog/sign-in-dialog"
+import ProfileDialog from "../dialog/profile-dialog"
+import PasswordDialog from "../dialog/password-dialog"
+import SettingsDialog from "../dialog/settings-dialog"
 import { dialog, LoggerEx } from "@/lib/logger"
 import { LogOutIcon, SettingsIcon, ShieldAlertIcon, UserIcon, UserPenIcon } from "lucide-react"
 
