@@ -91,6 +91,8 @@ function defaultAppState() {
     sidebarOpen: true,
     linkFilterOpen: false,
     trackingDetailsOpen: false,
+    commentsDialogOpen: false,
+    logDialogOpen: false,
     statusDialogOpen: false,
     statusDialogItem: 0,
     masterTopicRecursive: true,
@@ -212,6 +214,8 @@ function reducer(draft: AppState, action: ReducerArg) {
       draft.sidebarOpen = defaults.sidebarOpen
       draft.linkFilterOpen = defaults.linkFilterOpen
       draft.trackingDetailsOpen = defaults.trackingDetailsOpen
+      draft.commentsDialogOpen = defaults.commentsDialogOpen
+      draft.logDialogOpen = defaults.logDialogOpen
       draft.statusDialogOpen = defaults.statusDialogOpen
       draft.statusDialogItem = defaults.statusDialogItem
       draft.masterTopicId = defaults.masterTopicId
@@ -240,6 +244,14 @@ function reducer(draft: AppState, action: ReducerArg) {
     }
     case "setTrackingDetailsOpen": {
       draft.trackingDetailsOpen = action.value as boolean
+      break
+    }
+    case "setCommentsDialogOpen": {
+      draft.commentsDialogOpen = action.value as boolean
+      break
+    }
+    case "setLogDialogOpen": {
+      draft.logDialogOpen = action.value as boolean
       break
     }
     case "setStatusDialogOpen": {
@@ -406,6 +418,16 @@ export default function RootLayout({
     dispatch({command: "setTrackingDetailsOpen", value: trackingDetailsOpen})
   }, [dispatch])
 
+  const setCommentsDialogOpen = useCallback((commentsDialogOpen: boolean) => {
+    // if (commentsDialogOpen !== appState.commentsDialogOpen)
+    dispatch({command: "setCommentsDialogOpen", value: commentsDialogOpen})
+  }, [dispatch])
+
+  const setLogDialogOpen = useCallback((logDialogOpen: boolean) => {
+    // if (logDialogOpen !== appState.logDialogOpen)
+    dispatch({command: "setLogDialogOpen", value: logDialogOpen})
+  }, [dispatch])
+
   const setStatusDialogOpen = useCallback((statusDialogOpen: boolean) => {
     // if (statusDialogOpen !== appState.statusDialogOpen)
     dispatch({command: "setStatusDialogOpen", value: statusDialogOpen})
@@ -449,7 +471,7 @@ export default function RootLayout({
     dispatch({command: "setShowOnlyLinkedRecords", value: showOnlyLinkedRecords})
   }, [dispatch])
 
-  const setSelectedRecord = useCallback((recordKind: RecordKind, record?: ILinkableEntity) => {
+  const setSelectedRecord = useCallback((recordKind: RecordKind, record?: IBaseEntity) => {
     // if (record?.id !== appState.selectedRecords[recordKind]?.id)
     dispatch({command: "setSelectedRecord", value: {recordKind, value: record}})
   }, [dispatch])
@@ -516,6 +538,8 @@ export default function RootLayout({
       setSidebarOpen,
       setLinkFilterOpen,
       setTrackingDetailsOpen,
+      setCommentsDialogOpen,
+      setLogDialogOpen,
       setStatusDialogOpen,
       setStatusDialogItem,
       setMasterTopicId,
@@ -543,6 +567,8 @@ export default function RootLayout({
     setSidebarOpen,
     setLinkFilterOpen,
     setTrackingDetailsOpen,
+    setCommentsDialogOpen,
+    setLogDialogOpen,
     setStatusDialogOpen,
     setStatusDialogItem,
     setMasterTopicId,

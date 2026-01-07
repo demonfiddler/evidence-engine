@@ -18,7 +18,6 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 import { createContext } from 'react'
-
 import ILinkableEntity from "../app/model/ILinkableEntity"
 import { RecordKind } from "../app/model/RecordKinds"
 import User from '@/app/model/User'
@@ -29,8 +28,9 @@ import {
   SortingState,
   Updater,
   VisibilityState
-} from '@tanstack/react-table';
+} from '@tanstack/react-table'
 import { AuthorityKind, QueryFilter } from '@/app/model/schema'
+import IBaseEntity from '@/app/model/IBaseEntity'
 
 export type MasterLinkState = {
   masterTopicId?: string
@@ -64,7 +64,7 @@ export type SelectedRecordsState = {
 }
 
 export type SelectedRecordsStateSetters = {
-  setSelectedRecord: (recordKind: RecordKind, record?: ILinkableEntity) => void
+  setSelectedRecord: (recordKind: RecordKind, record?: IBaseEntity) => void
 }
 
 export type SecurityState = {
@@ -133,6 +133,8 @@ export type ToggleState = {
   sidebarOpen: boolean
   linkFilterOpen: boolean
   trackingDetailsOpen: boolean
+  commentsDialogOpen: boolean
+  logDialogOpen: boolean
   statusDialogOpen: boolean
   statusDialogItem: number
 }
@@ -141,6 +143,8 @@ export type ToggleStateSetters = {
   setSidebarOpen: (sidebarOpen: boolean) => void
   setLinkFilterOpen: (linkFilterOpen: boolean) => void
   setTrackingDetailsOpen: (trackingDetailsOpen: boolean) => void
+  setCommentsDialogOpen: (commentsDialogOpen: boolean) => void
+  setLogDialogOpen: (logDialogOpen: boolean) => void
   setStatusDialogOpen: (statusDialogOpen: boolean) => void
   setStatusDialogItem: (statusDialogItem: number) => void
 }
@@ -179,6 +183,7 @@ export type GlobalContextType = AppState & AppStateSetters
  * - sidebar state: open or closed;
  * - master entity link filter panel state: open or closed;
  * - tracking and linking details panel: open or closed;
+ * - comments, log and status dialogs: open or closed;
  * - master entity link filter settings;
  * - selected records context;
  * - data table column settings (displayed, order, widths) for each page;
@@ -192,6 +197,8 @@ export const GlobalContext = createContext<GlobalContextType>({
   linkFilterOpen: false,
   showOnlyLinkedRecords: false,
   trackingDetailsOpen: false,
+  commentsDialogOpen: false,
+  logDialogOpen: false,
   statusDialogOpen: false,
   statusDialogItem: 0,
   masterTopicRecursive: true,
@@ -204,6 +211,8 @@ export const GlobalContext = createContext<GlobalContextType>({
   setSidebarOpen: () => {throw new Error("setSidebarOpen() not supported in default GlobalContext")},
   setLinkFilterOpen: () => {throw new Error("setLinkFilterOpen() not supported in default GlobalContext")},
   setTrackingDetailsOpen: () => {throw new Error("setTrackingDetailsOpen() not supported in default GlobalContext")},
+  setCommentsDialogOpen: () => {throw new Error("setCommentsDialogOpen() not supported in default GlobalContext")},
+  setLogDialogOpen: () => {throw new Error("setLogDialogOpen() not supported in default GlobalContext")},
   setStatusDialogOpen: () => {throw new Error("setStatusDialogOpen() not supported in default GlobalContext")},
   setStatusDialogItem: () => {throw new Error("setStatusDialogItem() not supported in default GlobalContext")},
   setMasterTopicId: () => {throw new Error("setMasterTopicId() not supported in default GlobalContext")},

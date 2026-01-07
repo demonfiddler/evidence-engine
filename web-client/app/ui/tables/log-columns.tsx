@@ -22,22 +22,20 @@
 import { ColumnDef } from "@tanstack/react-table"
 import Log from "@/app/model/Log"
 import { columns as baseEntityColumns } from "./base-entity-columns"
-import { actionColumn as rawActionColumn, selectColumn as rawSelectColumn } from "./extra-columns"
+import { selectColumn as rawSelectColumn } from "./extra-columns"
 import { formatDateTime } from "@/lib/utils"
 import User from "@/app/model/User"
 
-const actionColumn = rawActionColumn as ColumnDef<Log>
 const selectColumn = rawSelectColumn as ColumnDef<Log>
 
 const ownColumns1: ColumnDef<Log>[] = [
-  selectColumn,
   ... baseEntityColumns as ColumnDef<Log>[],
   {
     id: "timestamp",
     accessorKey: "timestamp",
     enableHiding: true,
     enableSorting: true,
-    size: 220,
+    size: 200,
     // enableColumnFilter: false,
     header: "Timestamp",
     cell: ({ row, cell }) => (
@@ -71,7 +69,7 @@ const ownColumns2: ColumnDef<Log>[] = [
     accessorKey: "linkedEntityKind",
     enableHiding: true,
     enableSorting: true,
-    size: 200,
+    size: 210,
     header: "Linked Record Kind",
   },
   {
@@ -79,7 +77,7 @@ const ownColumns2: ColumnDef<Log>[] = [
     accessorKey: "linkedEntityId",
     enableHiding: true,
     enableSorting: true,
-    size: 170,
+    size: 180,
     header: "Linked Record ID",
     meta: {
       className: "text-right"
@@ -90,10 +88,10 @@ const ownColumns2: ColumnDef<Log>[] = [
 export const ownColumns: ColumnDef<Log>[] = [
   ...ownColumns1,
   ...ownColumns2,
-  actionColumn
 ]
 
 export const columns: ColumnDef<Log>[] = [
+  selectColumn,
   ...ownColumns1,
   {
     id: "entityKind",
@@ -124,6 +122,6 @@ export const columnVisibility = {
   transactionKind: true,
   entityKind: true,
   entityId: true,
-  linkedEntityKind: false,
-  linkedEntityId: false
+  linkedEntityKind: true,
+  linkedEntityId: true
 }

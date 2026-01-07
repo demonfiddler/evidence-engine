@@ -185,7 +185,7 @@ export default function TrackingDetails(
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem disabled={record?.status === "Draft" || !hasAuthority('UPD')} onClick={() => handleChangeStatus("draft")}>Draft</DropdownMenuItem>
-          <DropdownMenuItem disabled={record?.status === "Deleted" || !hasAuthority('DEL')} onClick={() => handleChangeStatus("delete")}>Delete</DropdownMenuItem>
+          <DropdownMenuItem disabled={record?.status === "Deleted" || !hasAuthority('CHG')} onClick={() => handleChangeStatus("delete")}>Delete</DropdownMenuItem>
           <DropdownMenuItem disabled={record?.status === "Suspended" || !hasAuthority('UPD')} onClick={() => handleChangeStatus("suspend")}>Suspend</DropdownMenuItem>
           <DropdownMenuItem disabled={record?.status === "Published" || !hasAuthority('UPD')} onClick={() => handleChangeStatus("publish")}>Publish...</DropdownMenuItem>
         </DropdownMenuContent>

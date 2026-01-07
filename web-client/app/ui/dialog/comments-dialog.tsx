@@ -109,7 +109,7 @@ export default function CommentsDialog({
   logger.debug("render: targetKind='%s', targetId='%s', targetLabel='%s'", targetKind, targetId, targetLabel)
 
   const { user, hasAuthority } = useAuth()
-  const [isOpen, setIsOpen] = useState(false)
+  const {commentsDialogOpen, setCommentsDialogOpen} = useContext(GlobalContext)
   const [commentFilterOpen, setCommentFilterOpen] = useState(false)
   const [comment, setComment] = useState<Comment>()
   const [parent, setParent] = useState<Comment>()
@@ -151,9 +151,9 @@ export default function CommentsDialog({
   }, [readResult, filter, pageSort])
   const prevTargetId = useRef<string>(undefined)
   useEffect(() => {
-    if (isOpen && targetKind === "Comment") {
+    if (commentsDialogOpen && targetKind === "Comment") {
       logger.debug("effect1: closing Comments dialog as Comments page is now displayed")
-      setIsOpen(false)
+      setCommentsDialogOpen(false)
     }
   }, [targetKind])
   useEffect(() => {
@@ -375,13 +375,13 @@ export default function CommentsDialog({
   }, [comments, renderComplete, scroll])
 
   return (
-    <Sheet modal={false} open={isOpen} onOpenChange={setIsOpen}>
+    <Sheet modal={false} open={commentsDialogOpen} onOpenChange={setCommentsDialogOpen}>
       <SheetTrigger asChild>
         <ButtonEx
           outerClassName={cn("place-self-center", className)}
           className="w-35 bg-blue-500 text-md"
           disabled={disabled}
-          onClick={() => setIsOpen(true)}
+          onClick={() => setCommentsDialogOpen(true)}
           help={
             targetId
               ? `Show comments for ${targetLabel}`

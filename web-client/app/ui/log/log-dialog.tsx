@@ -30,7 +30,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import { useContext, useState } from "react"
 import Log from "@/app/model/Log"
 import { ownColumns as columns } from "@/app/ui/tables/log-columns"
 import DataTable from "../data-table/data-table"
@@ -44,6 +44,7 @@ import ButtonEx from "../ext/button-ex"
 import { RecordKind } from "@/app/model/RecordKinds"
 import { dialog, LoggerEx } from "@/lib/logger"
 import { FileClockIcon } from "lucide-react"
+import { GlobalContext } from "@/lib/context"
 
 const logger = new LoggerEx(dialog, "[LogDialog] ")
 
@@ -76,7 +77,11 @@ export default function LogDialog({
 }) {
   logger.debug("render")
 
-  const [open, setOpen] = useState(false)
+  const [linkLogDialogOpen, setLinkLogDialogOpen] = useState(false)
+  const {logDialogOpen, setLogDialogOpen} = useContext(GlobalContext)
+  const isRecordLink = recordKind == "RecordLink"
+  const open = isRecordLink ? linkLogDialogOpen : logDialogOpen
+  const setOpen = isRecordLink ? setLinkLogDialogOpen : setLogDialogOpen
 
   const {
     loading,

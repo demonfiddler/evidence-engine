@@ -26,22 +26,47 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
+  // DropdownMenuPortal,
+  // DropdownMenuSub,
+  // DropdownMenuSubContent,
+  // DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import IBaseEntity from "@/app/model/IBaseEntity"
+import ITrackedEntity from "@/app/model/ITrackedEntity"
+import { useCallback, useContext } from "react"
+// import Publication from "@/app/model/Publication"
+import { GlobalContext } from "@/lib/context"
 
-export const actionColumn: ColumnDef<IBaseEntity> = {
+// type CitationKind = "MLA" | "APA" | "CHI" | "AMA" | "CSE"
+
+export const actionColumn: ColumnDef<ITrackedEntity> = {
   id: "action",
   enableSorting: false,
   enableHiding: false,
   enableResizing: false,
   size: 72,
   header: "Actions",
-  cell: ({ cell }) => {
+  cell: ({ cell, row }) => {
+    const {setCommentsDialogOpen, setLogDialogOpen} = useContext(GlobalContext)
+    const handleViewComments = useCallback(() => {
+      if (!row.getIsSelected())
+        row.toggleSelected()
+      setCommentsDialogOpen(true)
+    }, [row, setCommentsDialogOpen])
+    const handleViewLog = useCallback(() => {
+      if (!row.getIsSelected())
+        row.toggleSelected()
+      setLogDialogOpen(true)
+    }, [row, setLogDialogOpen])
+    // const handleCite = useCallback((publication: Publication, kind: CitationKind) => {
+    //   if (!row.getIsSelected())
+    //     row.toggleSelected()
+    //   toast.info(`Cite: ${kind}`)
+    // }, [row])
+
     return (
       <DropdownMenu key={cell.id}>
         <DropdownMenuTrigger asChild>
@@ -51,11 +76,24 @@ export const actionColumn: ColumnDef<IBaseEntity> = {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem>View Log</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>View xxx</DropdownMenuItem>
-          <DropdownMenuItem>View yyy</DropdownMenuItem>
+          <DropdownMenuItem onClick={handleViewComments}>Comments...</DropdownMenuItem>
+          <DropdownMenuItem onClick={handleViewLog}>Log...</DropdownMenuItem>
+          {/*
+            row.original.entityKind === "Publication"
+            ? <DropdownMenuSub>
+              <DropdownMenuSubTrigger>Cite</DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent>
+                <DropdownMenuItem onClick={() => handleCite(row.original as Publication, "MLA")}>MLA</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleCite(row.original as Publication, "APA")}>APA</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleCite(row.original as Publication, "CHI")}>Chicago</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleCite(row.original as Publication, "AMA")}>AMA</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleCite(row.original as Publication, "CSE")}>CSE</DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
+            : null
+          */}
         </DropdownMenuContent>
       </DropdownMenu>
     )
