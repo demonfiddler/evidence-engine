@@ -62,7 +62,16 @@ export default function Page() {
     <div className="flex flex-col">
       <header className="fixed top-0 left-0 right-0 z-10 grid grid-cols-3 items-center shrink-0 w-full h-16 text-white bg-blue-500">
         <div></div>
-        <p className="justify-self-center"><b>The Evidence Engine</b></p>
+        <div className="flex justify-center">
+          <Image
+            className="inline"
+            aria-hidden
+            src="/logo-horizontal.svg"
+            alt="Evidence Engine horizontal logo"
+            width={240}
+            height={50}
+          />
+        </div>
         <div className="justify-self-end flex items-center mr-2">
           <UserIcon className="justify-self-end mr-2 size-6" />
           <a href="https://github.com/demonfiddler/evidence-engine" target="_blank" title="Source code on GitHub"><GithubIcon className="justify-self-end inline size-6 text-white"/></a>
@@ -78,7 +87,8 @@ export default function Page() {
             <strong>Welcome to the</strong>
           </p>
           <Logo />
-          from&nbsp;<a href="https://campaign-resources.org" target="_blank">
+          from&nbsp;
+          <a href="https://campaign-resources.org" target="_blank">
             <Image src="/cr-logo.svg" width="132" height="132" alt="Campaign Resources logo" />
           </a>
           <Link
@@ -88,7 +98,7 @@ export default function Page() {
             <span>Explore</span>
           </Link>
         </div>
-        <div className="flex flex-col items-center h-full">
+        <div className="flex flex-col items-center h-full overflow-y-auto">
           <div className="flex items-center justify-center p-6 md:w-5/6 md:px-28 md:py-12">
             <Image
               src="/hero-desktop.png"
@@ -165,7 +175,7 @@ export default function Page() {
             <CarouselNext />
           </Carousel>
           <RadioGroup
-            className="flex mt-2"
+            className="flex mt-2 mb-4"
             value={item.toString()}
             onValueChange={(value) => setItem(Number.parseInt(value))}
           >

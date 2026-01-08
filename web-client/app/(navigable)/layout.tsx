@@ -28,6 +28,8 @@ import { layout, LoggerEx } from "@/lib/logger"
 import Sidebar from "../ui/navigator/sidebar"
 import { Button } from "@/components/ui/button"
 import { GithubIcon, PanelRightCloseIcon, PanelRightOpenIcon } from "lucide-react"
+import Image from 'next/image'
+import Link from "next/link"
 
 const logger = new LoggerEx(layout, "[NavigableLayout] ")
 
@@ -56,7 +58,16 @@ export default function NavigableLayout({
             : <PanelRightCloseIcon />
           }
         </Button>
-        <p className="justify-self-center"><b>The Evidence Engine</b></p>
+        <Link href="/" title="Evidence Engine Home">
+          <Image
+            className="justify-self-center"
+            aria-hidden
+            src="/logo-horizontal.svg"
+            alt="Evidence Engine horizontal logo"
+            width={240}
+            height={50}
+          />
+        </Link>
         <div className="justify-self-end flex items-center mr-2">
           <MyAccount className="justify-self-end" />
           <a href="https://github.com/demonfiddler/evidence-engine" target="_blank" title="Source code on GitHub"><GithubIcon className="justify-self-end inline text-white"/></a>
