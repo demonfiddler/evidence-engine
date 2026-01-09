@@ -20,6 +20,9 @@
 INSERT INTO "config" ("property", "subscript", "value") VALUES
 	("schema_version", 0, "1");
 
+-- To populate table "abbreviation", manually run /server/sql/populatedb-abbreviation-mariadb.sql.
+-- N.B. Requires ltwa_current.csv, latest downloadable from https://www.issn.org/services/online-services/access-to-the-ltwa/.
+
 INSERT INTO "country" ("alpha_2", "alpha_3", "numeric", "iso_name", "common_name", "year", "cc_tld", "notes") VALUES
 	('AD', 'AND', '020', 'Andorra', 'Andorra', '1974', '.ad', NULL),
 	('AE', 'ARE', '784', 'United Arab Emirates', 'United Arab Emirates', '1974', '.ae', 'Formerly Trucial States'),

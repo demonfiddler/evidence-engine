@@ -39,6 +39,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import graphql.schema.DataFetchingEnvironment;
@@ -105,6 +106,10 @@ import jakarta.persistence.EntityNotFoundException;
 @Component
 public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMutation {
 
+    /** Passwords can be passed from client as cleartext or a bcrypt hash. */
+    private static final Pattern PASSWORD_PATTERN = Pattern.compile(
+        "^(?:(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,})|(\\{bcrypt\\}\\$[a-zA-Z0-9/$.]{59})$");
+
     @Resource
     private ClaimRepository claimRepository;
     @Resource
@@ -143,6 +148,8 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     private JwtUtils jwtUtils;
     @Resource
     private AuthenticationManager authManager;
+    @Resource
+    PasswordEncoder passwordEncoder;
 
     private void setCreatedFields(ITrackedEntity entity) {
         entity.setStatus(StatusKind.DRA.name());
@@ -988,10 +995,11 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         user.setFirstName(input.getFirstName());
         user.setLastName(input.getLastName());
         user.setEmail(input.getEmail());
-        user.setPassword(input.getPassword());
         user.setCountry(input.getCountry());
         user.setNotes(input.getNotes());
         user.setAuthorities(input.getAuthorities());
+        setUserPasswordHash(user, input.getPassword());
+
         setCreatedFields(user);
 
         user = userRepository.save(user);
@@ -1011,10 +1019,11 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         user.setFirstName(input.getFirstName());
         user.setLastName(input.getLastName());
         user.setEmail(input.getEmail());
-        user.setPassword(input.getPassword());
         user.setCountry(input.getCountry());
         user.setNotes(input.getNotes());
         user.setAuthorities(input.getAuthorities());
+        setUserPasswordHash(user, input.getPassword());
+
         setUpdatedFields(user);
 
         user = userRepository.save(user);
@@ -1023,9 +1032,6 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
 
         return user;
     }
-
-    private static final Pattern BCRYPT_PATTERN = Pattern.compile(
-        "^\\{bcrypt\\}\\$2[ab]\\$10\\$[./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789]{53}$");
 
     @Override
     public Object updateUserPassword(DataFetchingEnvironment dataFetchingEnvironment, UserPasswordInput input) {
@@ -1037,10 +1043,9 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
 
         User user = userRepository.findById(input.getId())
             .orElseThrow(() -> createEntityNotFoundException("User", input.getId()));
-        if (!BCRYPT_PATTERN.matcher(input.getPassword()).matches())
-            throw new IllegalArgumentException("Invalid bcrypt password hash: " + input.getPassword());
 
-        user.setPassword(input.getPassword());
+        setUserPasswordHash(user, input.getPassword());
+
         setUpdatedFields(user);
 
         user = userRepository.save(user);
@@ -1048,6 +1053,17 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         logUpdated(user);
 
         return user;
+    }
+
+    private void setUserPasswordHash(User user, String password) {
+        if (!PASSWORD_PATTERN.matcher(password).matches())
+            throw new IllegalArgumentException("Invalid password");
+        String passwordHash;
+        if (password.startsWith("{bcrypt}"))
+            passwordHash = password;
+        else
+            passwordHash = passwordEncoder.encode(password);
+        user.setPassword(passwordHash);
     }
 
     @Override

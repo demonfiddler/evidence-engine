@@ -23,7 +23,10 @@ import { Rateable } from "./tracked-entity"
 
 export const UserSchema = Rateable.extend({
   username: z.string().regex(/^[a-z0-9]*$/).min(1).max(50),
-  password: z.string().regex(/^\{bcrypt\}\$[a-zA-Z0-9/$.]{59}$/).optional(),
+  password: z.string().regex(/^(?:(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}|\{bcrypt\}\$[a-zA-Z0-9/$.]{59})$/,
+    {
+      error: "Password must be at least 8 characters, and include an uppercase and a lowercase letter, a number and a special character, OR be a {bcrypt} password hash"
+    }),
   firstName: z.string().min(1).max(50),
   lastName: z.string().min(1).max(50),
   email: z.email().max(100),
