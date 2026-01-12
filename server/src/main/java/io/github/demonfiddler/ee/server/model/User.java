@@ -283,11 +283,11 @@ public class User extends AbstractTrackedEntity {
 			+ ", " //
 			+ "created: " + this.created //
 			+ ", " //
-			+ "createdByUserId: " + (this.createdByUser != null ? this.createdByUser.id : null) //
+			+ "createdByUserId: " + (this.getCreatedByUser() == null ? null : this.getCreatedByUser().getId()) //
 			+ ", " //
 			+ "updated: " + this.updated //
 			+ ", " //
-			+ "updatedByUserId: " + (this.updatedByUser != null ? this.updatedByUser.id : null) //
+			+ "updatedByUserId: " + (this.getUpdatedByUser() == null ? null : this.getUpdatedByUser().getId()) //
 			+ ", " //
 			+ "log: " + this.log //
 			+ ", " //
@@ -307,7 +307,7 @@ public class User extends AbstractTrackedEntity {
 			+ ", " //
 			+ "authorities: " + this.authorities //
 			+ ", " //
-			+ "groups: " + this.groups //
+			+ "groups: " + this.getGroups().stream().map(g -> g.getGroupname()).toList() //
 			+ "}"; //
 	}
 

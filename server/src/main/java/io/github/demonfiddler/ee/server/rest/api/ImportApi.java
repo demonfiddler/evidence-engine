@@ -25,10 +25,12 @@ import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,6 +46,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Generated;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen",
@@ -62,6 +65,10 @@ public interface ImportApi {
      * POST /import/{importRecordKind} : Imports records from a file Imports records from an uploaded file (e.g.
      * RIS-format citations).
      * @param importRecordKind The record type to import. (required)
+     * @param topicId The master topic identifier. Applicable to recordKind claims, declarations, persons, publications,
+     * quotations. (optional)
+     * @param recordId The identifier of the single record to return OR the master record to link on import. Applicable
+     * to all recordKind except logs. (optional)
      * @param file (optional)
      * @return File successfully uploaded. Body contains a summary of the record(s) imported or rejected. (status code
      * 200) or Bad request (e.g., invalid combination of query parameters) (status code 400) or Internal server error
@@ -82,19 +89,25 @@ public interface ImportApi {
     default ResponseEntity<List<ImportedRecord>> callImport(
         @NotNull @Parameter(name = "importRecordKind", description = "The record type to import.", required = true,
             in = ParameterIn.PATH) @PathVariable("importRecordKind") String importRecordKind,
+        @Parameter(name = "topicId",
+            description = "The master topic identifier. Applicable to recordKind claims, declarations, persons, publications, quotations.",
+            in = ParameterIn.QUERY) @Valid @RequestParam(value = "topicId", required = false) @Nullable Long topicId,
+        @Parameter(name = "recordId",
+            description = "The identifier of the single record to return OR the master record to link on import. Applicable to all recordKind except logs.",
+            in = ParameterIn.QUERY) @Valid @RequestParam(value = "recordId", required = false) @Nullable Long recordId,
         @Parameter(name = "file", description = "") @RequestPart(value = "file", required = false) MultipartFile file) {
-
         getRequest().ifPresent(request -> {
             for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
                     String exampleString =
-                        "[ { \"result\" : \"imported\", \"id\" : 0, \"label\" : \"label\", \"message\" : \"message\" }, { \"result\" : \"imported\", \"id\" : 0, \"label\" : \"label\", \"message\" : \"message\" } ]";
+                        "[ { \"result\" : \"imported\", \"messages\" : [ { \"severity\" : \"info\", \"lineNum\" : 6, \"text\" : \"text\" }, { \"severity\" : \"info\", \"lineNum\" : 6, \"text\" : \"text\" } ], \"id\" : 0, \"label\" : \"label\" }, { \"result\" : \"imported\", \"messages\" : [ { \"severity\" : \"info\", \"lineNum\" : 6, \"text\" : \"text\" }, { \"severity\" : \"info\", \"lineNum\" : 6, \"text\" : \"text\" } ], \"id\" : 0, \"label\" : \"label\" } ]";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
             }
         });
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
     }
 
 }

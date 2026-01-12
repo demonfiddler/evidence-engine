@@ -19,7 +19,13 @@
 
 package io.github.demonfiddler.ee.common.util;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.time.LocalDate;
 import java.util.StringTokenizer;
+
+import io.github.demonfiddler.ee.common.model.Country;
 
 /**
  * Various string manipulation utilities.
@@ -63,6 +69,83 @@ public final class StringUtils {
      */
     public static boolean isBlank(String s) {
         return s == null || s.isBlank();
+    }
+
+    /**
+     * Strips leading and trailing double quote characters from a string.
+     * @param s The string to strip.
+     * @return The input string with leading and trailing double quote characters stripped.
+     */
+    public static String unquote(String s) {
+        if (s == null || s.isEmpty())
+            return s;
+        int start = s.charAt(0) == '"' ? 1 : 0;
+        int end = s.charAt(s.length() - 1) == '"' ? s.length() - 1 : s.length();
+        return s.substring(start, end);
+    }
+
+    /**
+     * Parses a {@code Boolean} from a {@code String}.
+     * @param s The string to parse, or {@code null}.
+     * @return {@code null} if {@code s} is {@code null} or blank, otherwise the {@code Boolean} value of {@code s}, with {@code &quot;0&quot;} yielding {@code false} and all other values yielding {@code true}.
+     */
+    public static Boolean parseBoolean(String s) {
+        return isBlank(s) ? null : !s.equals("0");
+    }
+
+    /**
+     * Parses an ISO-3166-1 {@code alpha_2} country code from a {@code String}.
+     * @param s The string to parse, or {@code null}.
+     * @return {@code null} if {@code s} is {@code null} or blank, otherwise the {@code alpha_2} value of {@code s}.
+     */
+    public static String parseCountry(String s) {
+        Country country = Country.BY_COMMON_NAME.get(s);
+        return country != null ? country.alpha_2() : null;
+    }
+
+    /**
+     * Parses a {@code LocalDate} from a {@code String}.
+     * @param s The string to parse, or {@code null}.
+     * @return {@code null} if {@code s} is {@code null} or blank, otherwise the {@code LocalDate} value of {@code s}.
+     */
+    public static LocalDate parseLocalDate(String s) {
+        return isBlank(s) ? null : LocalDate.parse(s);
+    }
+
+    /**
+     * Parses a {@code Long} from a {@code String}.
+     * @param s The string to parse, or {@code null}.
+     * @return {@code null} if {@code s} is {@code null} or blank, otherwise the {@code Long} value of {@code s}.
+     */
+    public static Long parseLong(String s) {
+        return isBlank(s) ? null : Long.valueOf(s);
+    }
+
+    /**
+     * Parses a {@code Integer} from a {@code String}.
+     * @param s The string to parse, or {@code null}.
+     * @return {@code null} if {@code s} is {@code null} or blank, otherwise the {@code Integer} value of {@code s}.
+     */
+    public static Integer parseInteger(String s) {
+        return isBlank(s) ? null : Integer.valueOf(s);
+    }
+
+    /**
+     * Parses a {@code Short} from a {@code String}.
+     * @param s The string to parse, or {@code null}.
+     * @return {@code null} if {@code s} is {@code null} or blank, otherwise the {@code Short} value of {@code s}.
+     */
+    public static Short parseShort(String s) {
+        return isBlank(s) ? null : Short.valueOf(s);
+    }
+
+    /**
+     * Parses a {@code URL} from a {@code String}.
+     * @param s The string to parse, or {@code null}.
+     * @return {@code null} if {@code s} is {@code null} or blank, otherwise the {@code URL} value of {@code s}.
+     */
+    public static URL parseUrl(String s) throws MalformedURLException {
+        return isBlank(s) ? null : URI.create(s).toURL();
     }
 
     /** Private ctor prevents instantiation. */

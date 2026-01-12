@@ -37,6 +37,8 @@ dependencies {
 	implementation "com.graphql-java-generator:graphql-java-client-runtime:${graphQLPluginVersion}"
 	implementation 'com.graphql-java:graphql-java-extended-scalars:22.0'
 	implementation 'org.jsoup:jsoup:1.18.3'
+	implementation 'org.apache.commons:commons-csv:1.14.1'
+	implementation 'commons-cli:commons-cli:1.11.0'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-webtestclient'

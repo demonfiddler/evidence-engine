@@ -120,6 +120,8 @@ paths:
                   format: binary
       parameters:
         - $ref: '#/components/parameters/importRecordKind'
+        - $ref: '#/components/parameters/topicIdOpt'
+        - $ref: '#/components/parameters/recordIdOpt'
       security:
         - BearerAuth: ['CRE']
       responses:
@@ -215,7 +217,7 @@ components:
         default: application/pdf
     recordIdOpt:
       name: recordId
-      description: The identifier of the single record to return. Applicable to all recordKind except logs.
+      description: The identifier of the single record to return OR the master record to link on import. Applicable to all recordKind except logs.
       in: query
       schema:
         type: integer

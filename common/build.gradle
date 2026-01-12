@@ -26,6 +26,7 @@ dependencies {
 	implementation 'org.slf4j:slf4j-api:2.0.16'
 	implementation 'com.graphql-java:graphql-java:22.3'
 	implementation 'com.graphql-java:graphql-java-extended-scalars:22.0'
+	implementation 'org.apache.commons:commons-csv:1.14.1'
 }
 
 // dependencyManagement {

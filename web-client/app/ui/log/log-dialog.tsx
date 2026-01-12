@@ -93,6 +93,7 @@ export default function LogDialog({
     manualPagination: true,
     manualSorting: true,
     readQuery: READ_LOGS,
+    skipQuery: !logDialogOpen && !linkLogDialogOpen,
     createFieldValues,
   })
 

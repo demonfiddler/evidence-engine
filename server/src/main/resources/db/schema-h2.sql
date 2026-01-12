@@ -128,12 +128,12 @@ CALL FT_CREATE_INDEX('PUBLIC', 'entity_link', 'from_entity_locations,to_entity_l
 
 CREATE TABLE "journal" (
   "id" BIGINT PRIMARY KEY COMMENT 'The journal ID',
-  "title" VARCHAR(100) NOT NULL COMMENT 'The journal, etc. title',
-  "abbreviation" VARCHAR(50) DEFAULT NULL COMMENT 'The official ISO 4 title abbreviation, with periods',
+  "title" VARCHAR(200) NOT NULL COMMENT 'The journal, etc. title',
+  "abbreviation" VARCHAR(100) DEFAULT NULL COMMENT 'The official ISO 4 title abbreviation, with periods',
   "url" VARCHAR(200) DEFAULT NULL COMMENT 'Web link to the journal''s home page',
   "issn" CHAR(9) DEFAULT NULL UNIQUE CHECK ("issn" REGEXP '^\\d{4}-\\d{3}[\\dX]$') COMMENT 'The International Standard Serial Number',
   "publisher_id" BIGINT DEFAULT NULL COMMENT 'The ID of the publisher',
-  "notes" VARCHAR(200) DEFAULT NULL COMMENT 'A brief description of the journal',
+  "notes" VARCHAR(65535) DEFAULT NULL COMMENT 'A brief description of the journal',
   "peer_reviewed" BOOLEAN DEFAULT NULL COMMENT 'Whether the journal publishes peer-reviewed articles',
 );
 CREATE UNIQUE INDEX "journal_issn" ON "journal" ("issn");
@@ -189,7 +189,7 @@ CREATE TABLE "publication" (
   "id" BIGINT PRIMARY KEY COMMENT 'Unique publication ID',
   "title" VARCHAR(200) NOT NULL COMMENT 'Publication title',
   "authors" VARCHAR(2000) NOT NULL COMMENT 'List of author names',
-  "journal_id" BIGINT DEFAULT NULL COMMENT 'Journal title',
+  "journal_id" BIGINT DEFAULT NULL COMMENT 'The ID of the Journal',
   "kind" VARCHAR(6) NOT NULL COMMENT 'The kind of publication',
   "date" DATE DEFAULT NULL COMMENT 'Publication date',
   "year" SMALLINT DEFAULT NULL COMMENT 'Publication year',

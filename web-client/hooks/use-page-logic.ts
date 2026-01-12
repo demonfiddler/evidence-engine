@@ -52,6 +52,7 @@ type PageConfiguration<TData extends ITrackedEntity, TFilter, TFieldValues exten
   manualPagination: boolean
   manualSorting: boolean
   readQuery: DocumentNode
+  skipQuery?: boolean
   createMutation?: DocumentNode
   updateMutation?: DocumentNode
   deleteMutation?: DocumentNode
@@ -161,6 +162,7 @@ export default function usePageLogic<
     manualPagination,
     manualSorting,
     readQuery,
+    skipQuery,
     createMutation,
     updateMutation,
     deleteMutation,
@@ -290,6 +292,7 @@ export default function usePageLogic<
         filter: fixFilter(filter),
         pageSort
       },
+      skip: skipQuery
     }
   )
   const refetch = useCallback(() => {

@@ -131,6 +131,7 @@ export default function CommentsDialog({
         filter,
         pageSort,
       },
+      skip: !commentsDialogOpen
     }
   )
   const [createOp, createResult] = useMutation(CREATE_COMMENT, { refetchQueries: [READ_OWNED_COMMENTS] })

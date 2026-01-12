@@ -151,11 +151,11 @@ public class Group extends AbstractTrackedEntity {
 			+ ", " //
 			+ "created: " + this.created //
 			+ ", " //
-			+ "createdByUser: " + this.createdByUser //
+			+ "createdByUser: " + (this.getCreatedByUser() == null ? null : this.getCreatedByUser().getId()) //
 			+ ", " //
 			+ "updated: " + this.updated //
 			+ ", " //
-			+ "updatedByUser: " + this.updatedByUser //
+			+ "updatedByUser: " + (this.getUpdatedByUser() == null ? null : this.getUpdatedByUser().getId()) //
 			+ ", " //
 			+ "log: " + this.log //
 			+ ", " //
@@ -163,7 +163,7 @@ public class Group extends AbstractTrackedEntity {
 			+ ", " //
 			+ "authorities: " + this.authorities //
 			+ ", " //
-			+ "members: " + this.members //
+			+ "members: " + this.getMembers().stream().map(u -> u.getUsername()).toList() //
 			+ "}"; //
 	}
 

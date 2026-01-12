@@ -148,10 +148,10 @@ public class Iso4Utils {
             String word = tok.nextToken();
             if (isAbbreviation(word)) {
                 word = StringUtils.firstToUpper(word);
+                buf.append(word);
                 // KLUDGE: If there are more tokens, ensure trailing period.
                 if (!word.endsWith("."))
                     buf.append('.');
-                buf.append(word);
             } else {
                 buf.append(word);
             }

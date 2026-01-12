@@ -59,7 +59,7 @@ export default function StandardDetails(
         onOpenChange={setTrackingDetailsOpen}
         className="ml-2 mr-2 space-y-2"
       >
-        <span className="text-lg"><ClipboardClockIcon className="inline" />&nbsp;Tracking</span>
+        <span className="text-lg"><ClipboardClockIcon className="inline" />&nbsp;{trackingDetailsOpen ? "Tracking" : "Tracking & Linking"}</span>
         <CollapsibleTrigger asChild>
           <Button variant="ghost" size="sm">
             {

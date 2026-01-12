@@ -19,6 +19,8 @@
 
 package io.github.demonfiddler.ee.server.rest.util;
 
+import static io.github.demonfiddler.ee.common.util.StringUtils.unquote;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -157,12 +159,6 @@ public class BackupUtils {
         LOGGER.debug("readConfiguration: returning {}", config);
 
         return config;
-    }
-
-    private String unquote(String s) {
-        int start = s.charAt(0) == '"' ? 1 : 0;
-        int end = s.charAt(s.length() - 1) == '"' ? s.length() - 1 : s.length();
-        return s.substring(start, end);
     }
 
 }

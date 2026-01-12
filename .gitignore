@@ -40,13 +40,16 @@ out/
 ### Eclipse ###
 .metadata
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# Virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
-server/src/main/resources/graphql/relay.graphqlsxxx
+
+# Scratch files and custom configuration
 Evidence Engine Testing.xlsx
-server/database design.txt
 notes.md
 integration-testing.txt
-web-client/design.md
 react-dev-notes.txt
+client/src/main/resources/application.properties
+server/src/main/resources/graphql/relay.graphqlsxxx
+server/database design.txt
+web-client/design.md

@@ -59,6 +59,8 @@ import { toast } from "sonner";
 import { dialog, LoggerEx } from "@/lib/logger";
 import { CheckIcon, CircleAlertIcon, CircleXIcon, CopyMinusIcon, InfoIcon, UploadIcon, XIcon } from "lucide-react";
 import Spinner from "../misc/spinner";
+import CheckboxEx from "../ext/checkbox-ex";
+import { Label } from "@/components/ui/label";
 
 const logger = new LoggerEx(dialog, "[ImportDialog] ")
 
@@ -89,14 +91,23 @@ export default function ImportDialog({recordKind, accept} : ImportDialogProps) {
   const [files, setFiles] = useState<File[] | undefined>()
   const [importedRecords, setImportedRecords] = useState<ImportedRecord[]>([])
   const globalContext = useContext(GlobalContext)
-  const { queries, setFilter } = globalContext
+  const { masterTopicId, masterRecordId, masterRecordKind, queries, setFilter } = globalContext
+  const [linkMasterTopic, setLinkMasterTopic] = useState<boolean|"indeterminate">(!!masterTopicId)
+  const [linkMasterRecord, setLinkMasterRecord] = useState<boolean|"indeterminate">(!!masterRecordId)
   const [api, setApi] = useState<CarouselApi>()
 
   const getHref = useCallback(() => {
-    const href = `${process.env.NEXT_PUBLIC_SERVER_URL}/rest/import/${recordKind.toLowerCase()}s`
+    let href = `${process.env.NEXT_PUBLIC_SERVER_URL}/rest/import/${recordKind.toLowerCase()}s`
+    let sep = "?"
+    if (linkMasterTopic) {
+      href += `${sep}topicId=${masterTopicId}`
+      sep = "&"
+    }
+    if (linkMasterRecord)
+      href += `${sep}recordId=${masterRecordId}`
     console.log(`href='${href}'`)
     return href
-  }, [recordKind])
+  }, [recordKind, linkMasterTopic, linkMasterRecord, masterTopicId, masterRecordId])
 
   const handleDrop = useCallback((files: File[]) => {
     logger.trace("Files dropped: %o", files)
@@ -111,6 +122,8 @@ export default function ImportDialog({recordKind, accept} : ImportDialogProps) {
   }, [setError])
 
   const handleImport = useCallback(() => {
+    logger.trace("handleImport")
+
     if (!files || files.length == 0 || !jwtToken)
       return
 
@@ -150,16 +163,19 @@ export default function ImportDialog({recordKind, accept} : ImportDialogProps) {
   }, [files, jwtToken, getHref, api])
 
   const handleCopy = useCallback(() => {
+    logger.trace("handleCopy")
     navigator.clipboard.writeText(JSON.stringify(importedRecords, null, 2))
     toast.info("Messages copied to clipboard (JSON format)")
   }, [])
 
   const handleClose = useCallback(() => {
+    logger.trace("handleClose")
     setFiles([])
     setImportedRecords([])
   }, [])
 
   const handleNavigate = useCallback((id?: number) => {
+    logger.trace("handleNavigate")
     setIsOpen(false)
     setFilter(recordKind, {
       ...queries[recordKind]?.filter,
@@ -189,9 +205,10 @@ export default function ImportDialog({recordKind, accept} : ImportDialogProps) {
         <Spinner loading={isLoading} label="Importing..." />
         <Carousel setApi={setApi} className="flex flex-col w-7/8 h-full min-h-0 [&>div[data-slot=carousel-content]]:grow">
           <CarouselContent className="w-full h-full max-h-full">
-            <CarouselItem className="h-full max-h-full">
+            <CarouselItem className="flex flex-col h-full max-h-full">
               <Dropzone
-                className="h-full max-h-full"
+                // className="h-full max-h-full"
+                className="grow"
                 accept={accept}
                 maxFiles={1}
                 onDrop={handleDrop}
@@ -201,6 +218,17 @@ export default function ImportDialog({recordKind, accept} : ImportDialogProps) {
                 <DropzoneEmptyState />
                 <DropzoneContent />
               </Dropzone>
+              <fieldset className="flex flex-col border p-4 gap-2">
+                <legend>&nbsp;Link imported records to:&nbsp;</legend>
+                <div className="flex gap-2">
+                  <CheckboxEx id="linkMasterTopic" disabled={!masterTopicId} checked={linkMasterTopic} onCheckedChange={setLinkMasterTopic} />
+                  <Label htmlFor="linkMasterTopic">{masterTopicId ? `Master Topic#${masterTopicId}` : "Master Topic"}</Label>
+                </div>
+                <div className="flex gap-2">
+                  <CheckboxEx id="linkMasterRecord" disabled={!masterRecordId} checked={linkMasterRecord} onCheckedChange={setLinkMasterRecord} />
+                  <Label htmlFor="linkMasterRecord">{masterRecordId? `Master ${masterRecordKind}#${masterRecordId}` : "Master record"}</Label>
+                </div>
+              </fieldset>
             </CarouselItem>
             <CarouselItem className="w-full h-full max-h-full">
               <div className="w-full h-full min-h-0 max-h-full overflow-y-auto relative">
@@ -330,6 +358,24 @@ export default function ImportDialog({recordKind, accept} : ImportDialogProps) {
           <CarouselNext />
         </Carousel>
         <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            disabled={!files || files.length === 0}
+            title="Import from selected file"
+            onClick={handleImport}
+          >
+            Import
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            disabled={files?.length === 0 || importedRecords.length === 0}
+            title="Copy import messages to clipboard in JSON format"
+            onClick={handleCopy}
+          >
+            Copy
+          </Button>
           <DialogClose asChild>
             <Button
               type="button"
@@ -340,23 +386,6 @@ export default function ImportDialog({recordKind, accept} : ImportDialogProps) {
               Close
             </Button>
           </DialogClose>
-          <Button
-            type="button"
-            variant="outline"
-            disabled={files?.length === 0 || importedRecords.length === 0}
-            title="Copy import messages to clipboard in JSON format"
-            onClick={handleCopy}
-          >
-            Copy
-          </Button>
-          <Button
-            type="button"
-            disabled={!files || files.length === 0}
-            title="Import from selected file"
-            onClick={handleImport}
-          >
-            Import
-          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
