@@ -49,7 +49,8 @@ Evidence Engine Testing.xlsx
 notes.md
 integration-testing.txt
 react-dev-notes.txt
-client/src/main/resources/application.properties
+application.properties
+.env
 server/src/main/resources/graphql/relay.graphqlsxxx
 server/database design.txt
 web-client/design.md
