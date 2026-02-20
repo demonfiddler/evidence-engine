@@ -60,8 +60,10 @@ export type LinkableEntityQueryFilter = TrackedEntityQueryFilter & {
   recursive?: boolean
   fromEntityId?: string
   fromEntityKind?: EntityKind
+  fromEntityFuzzy?: boolean
   toEntityId?: string
   toEntityKind?: EntityKind
+  toEntityFuzzy?: boolean
 }
 
 export type TopicQueryFilter = TrackedEntityQueryFilter & {

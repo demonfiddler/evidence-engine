@@ -23,7 +23,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import Search from "./search"
 import DataTableViewOptions from "../data-table/data-table-view-options"
 import DataTableFilterProps from "../data-table/data-table-filter"
-import { LinkableEntityQueryFilterIdProperty, getEntityKind, getRecordLinkProperties, isEqual } from "@/lib/utils"
+import { getEntityKind, getRecordLinkProperties, isEqual } from "@/lib/utils"
 import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import { Select, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
 import { LinkableEntityQueryFilter } from "@/app/model/schema"
@@ -85,11 +85,11 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
           leFilter.recursive = masterTopicRecursive
         }
         if (masterRecordId) {
-          const [, otherRecordKindProperty,, otherRecordIdProperty] =
+          const props =
             getRecordLinkProperties(recordKind as LinkableEntityKind, masterRecordKind as LinkableEntityKind)
-          if (otherRecordIdProperty) {
-            leFilter[otherRecordKindProperty as LinkableEntityQueryFilterIdProperty] = getEntityKind(masterRecordKind)
-            leFilter[otherRecordIdProperty as LinkableEntityQueryFilterIdProperty] = masterRecordId
+          if (props) {
+            leFilter[props.otherRecordKindProperty] = getEntityKind(masterRecordKind)
+            leFilter[props.otherRecordIdProperty] = masterRecordId
           }
         }
       }

@@ -24,14 +24,6 @@ import { ForwardRefExoticComponent, RefAttributes, useCallback, useContext, useE
 import { Button } from "@/components/ui/button"
 import ButtonEx from "../ext/button-ex"
 import {
-  Carousel,
-  CarouselApi,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel"
-import {
   Dialog,
   DialogClose,
   DialogContent,
@@ -41,6 +33,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger
+} from "@/components/ui/tabs"
 import {
   Table,
   TableBody,
@@ -53,10 +51,33 @@ import {
 } from "@/components/ui/table"
 import { toast } from "sonner"
 import { dialog, LoggerEx } from "@/lib/logger"
-import { CheckIcon, CircleAlertIcon, CircleXIcon, InfoIcon, LinkIcon, LucideProps, RectangleEllipsisIcon, RotateCwIcon, SearchIcon, XIcon } from "lucide-react"
+import {
+  CheckIcon,
+  CircleAlertIcon,
+  CircleXIcon,
+  InfoIcon,
+  LinkIcon,
+  LucideProps,
+  RectangleEllipsisIcon,
+  RotateCwIcon,
+  SearchIcon,
+  XIcon
+} from "lucide-react"
 import Spinner from "../misc/spinner"
 import ILinkableEntity from "@/app/model/ILinkableEntity"
-import { cn, flatten, formatDateTime, getReadQuery, getRecordLabel, getRecordLinkProperties, getRecordLinks, isEqual, RecordLink, TO_ENTITY_ID } from "@/lib/utils"
+import {
+  cn,
+  flatten,
+  formatDateTime,
+  getEntityKind,
+  getReadQuery,
+  getRecordLabel,
+  getRecordLinkProperties,
+  getRecordLinks,
+  isEqual,
+  RecordLink,
+  TO_ENTITY_ID,
+} from "@/lib/utils"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import Search from "../filter/search"
@@ -84,8 +105,18 @@ import useAuth from "@/hooks/use-auth"
 import ITrackedEntity from "@/app/model/ITrackedEntity"
 import { GlobalContext } from "@/lib/context"
 import Topic from "@/app/model/Topic"
+import { Textarea } from "@/components/ui/textarea"
+import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 const logger = new LoggerEx(dialog, "[StatusDialog] ")
+
+const LINK_AUDIT = "link-audit"
+const FIELD_AUDIT = "field-audit"
+const LINK_MANAGER = "link-manager"
+const VIEW = "view"
+const EDIT = "edit"
+const CREATE = "create"
 
 const SeverityIcons: { [K in SeverityKind]: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> } = {
   ERROR: CircleXIcon, //
@@ -99,21 +130,52 @@ const SeverityColours: { [K in SeverityKind]: string } = {
   INFO: "text-blue-600", //
 }
 
-function isTextEditing(el: Element | null) {
-  const e = el as HTMLElement | null;
-  if (!e) return false;
-  return (
-    e.tagName === "INPUT" ||
-    e.tagName === "TEXTAREA" ||
-    e.isContentEditable ||
-    e.getAttribute("role") === "textbox"
-  )
+const FUZZY_SEARCH_SUPPORTED: { [K in LinkableEntityKind]?: LinkableEntityKind[] } = {
+  Declaration: ["Person"], //
+  Person: ["Declaration", "Publication", "Quotation"],
+  Publication: ["Person"], //
+  Quotation: ["Person", "Publication"], //
+}
+
+function isFuzzySearchSupported(contextualRecordKind?: LinkableEntityKind, otherRecordKind?: LinkableEntityKind) {
+  return (contextualRecordKind && otherRecordKind && FUZZY_SEARCH_SUPPORTED[contextualRecordKind]?.includes(otherRecordKind)) ?? false
+}
+
+const FUZZY_SEARCH_FIELDS: { [K in LinkableEntityKind]?: string } = {
+  Declaration: "signatories", //
+  Person: "lastName", //
+  Publication: "authors", //
+  Quotation: "quotee", //
+}
+
+function getFuzzySearchField(contextualRecordKind?: LinkableEntityKind) {
+  return contextualRecordKind ? FUZZY_SEARCH_FIELDS[contextualRecordKind] : undefined
+}
+
+function lineCount(s: string | undefined) {
+  if (!s)
+    return 0
+
+  let lineCount = 1;
+  let atLineEnd = false
+  for (let i = 0, n = s.length; i < n; i++) {
+    const c = s[i]
+    if (c === '\r' || c === '\n') {
+      if (!atLineEnd) {
+        atLineEnd = true
+        lineCount++
+      }
+    } else {
+      atLineEnd = false
+    }
+  }
+  return lineCount
 }
 
 const EMPTY_SET = new Set<string>()
 
 /** Adds all ancestors of topicId to topicAxis. */
-function addAncestors(topicAxis: Set<string>, topicTrees: Topic[], topicId: string) : boolean {
+function addAncestors(topicAxis: Set<string>, topicTrees: Topic[], topicId: string): boolean {
   for (const topic of topicTrees) {
     if (!topic.id)
       continue
@@ -141,7 +203,7 @@ function addDescendants(topicAxis: Set<string>, topicTrees: Topic[], topicId: st
 }
 
 /** Returns a list containing all the topics referenced from filteredRecordLinks, their ancestors and descendants. */
-function getTopicAxis(topicTree: Topic[], filteredRecordLinks: RecordLink[]) : Set<string> {
+function getTopicAxis(topicTree: Topic[], filteredRecordLinks: RecordLink[]): Set<string> {
   const topicAxis = new Set<string>()
   for (const frl of filteredRecordLinks) {
     const topicId = frl.otherRecordId
@@ -151,13 +213,13 @@ function getTopicAxis(topicTree: Topic[], filteredRecordLinks: RecordLink[]) : S
   return topicAxis
 }
 
-export default function StatusDialog({recordKind, record} : {recordKind?: LinkableEntityKind, record?: ILinkableEntity}) {
-  const {hasAuthority} = useAuth()
-  const {statusDialogOpen, setStatusDialogOpen, statusDialogItem, setStatusDialogItem} = useContext(GlobalContext)
+export default function StatusDialog({ recordKind, record }: { recordKind?: LinkableEntityKind, record?: ILinkableEntity }) {
+  const { hasAuthority } = useAuth()
+  const { statusDialogOpen, setStatusDialogOpen, /*statusDialogItem, setStatusDialogItem*/ } = useContext(GlobalContext)
+  const [ statusDialogItem, setStatusDialogItem ] = useState(FIELD_AUDIT)
   const [error, setError] = useState("")
-  const [api, setApi] = useState<CarouselApi>()
   const [otherRecordKind, setOtherRecordKind] = useState<LinkableEntityKind>()
-  const [otherRecordId, setOtherRecordId] = useState('')
+  const [otherRecord, setOtherRecord] = useState<ILinkableEntity | null>(null)
   const recordLabel = useMemo(() => getRecordLabel(recordKind, record), [recordKind, record])
   const recordLinks = useMemo(() => getRecordLinks(record), [record])
   const filteredRecordLinks = useMemo(() => {
@@ -167,20 +229,21 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
   const [filterStatus, setFilterStatus] = useState(filter.status?.[0] ?? '')
   const [filterText, setFilterText] = useState('')
   const [filterAdvanced, setFilterAdvanced] = useState<boolean | "indeterminate">(false)
+  const [filterFuzzy, setFilterFuzzy] = useState<boolean | "indeterminate">(false)
   const [filterRecordId, setFilterRecordId] = useState('')
   const [selectedLinkId, setSelectedLinkId] = useState('')
-  const [mode, setMode] = useState("view")
+  const [mode, setMode] = useState(VIEW)
   const [thisRecordLocations, setThisRecordLocations] = useState<string>('')
   const [otherRecordLocations, setOtherRecordLocations] = useState<string>('')
   const [topicId, setTopicId] = useState<string>('')
-  const auditResult = useQuery(READ_ENTITY_AUDIT, {variables: {id: record?.id ?? "0"}})
+  const auditResult = useQuery(READ_ENTITY_AUDIT, { variables: { id: record?.id ?? "0" } })
   const otherRecordsQuery = (otherRecordKind && getReadQuery(otherRecordKind)) ?? READ_ENTITY_LINKS // A dummy query.
-  const otherRecordsResult = useQuery(otherRecordsQuery, {variables: {filter}, skip: !otherRecordKind})
+  const otherRecordsResult = useQuery(otherRecordsQuery, { variables: { filter }, skip: !otherRecordKind })
   const [otherRecordsFieldName] = useMemo(() => otherRecordsQuery ? introspect(otherRecordsQuery, OperationTypeNode.QUERY) : '', [otherRecordsQuery])
-  const [createLinkOp, createLinkResult] = useMutation(CREATE_ENTITY_LINK, {refetchQueries: [READ_ENTITY_AUDIT/*otherRecordsQuery*/]})
-  const [updateLinkOp, updateLinkResult] = useMutation(UPDATE_ENTITY_LINK, {refetchQueries: [/*otherRecordsQuery*/]})
-  const [deleteLinkOp, deleteLinkResult] = useMutation(DELETE_ENTITY_LINK, {refetchQueries: [/*otherRecordsQuery*/]})
-  const [updateStatusOp, updateStatusResult] = useMutation(UPDATE_ENTITY_STATUS, {refetchQueries: [/*otherRecordsQuery*/]})
+  const [createLinkOp, createLinkResult] = useMutation(CREATE_ENTITY_LINK, { refetchQueries: [READ_ENTITY_AUDIT/*otherRecordsQuery*/] })
+  const [updateLinkOp, updateLinkResult] = useMutation(UPDATE_ENTITY_LINK, { refetchQueries: [/*otherRecordsQuery*/] })
+  const [deleteLinkOp, deleteLinkResult] = useMutation(DELETE_ENTITY_LINK, { refetchQueries: [/*otherRecordsQuery*/] })
+  const [updateStatusOp, updateStatusResult] = useMutation(UPDATE_ENTITY_STATUS, { refetchQueries: [/*otherRecordsQuery*/] })
   const allowLinking = !!record && hasAuthority("LNK")
   const thisLocationsRef = useRef<HTMLInputElement>(null)
 
@@ -191,14 +254,27 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
     const data = (auditResult.loading
       ? auditResult.previousData
       : auditResult.data) as QueryResult<EntityAudit>
-    return data?.audit ?? {pass:true}
+    return data?.audit ?? { pass: true }
   }, [auditResult])
   const fieldAudit = useMemo(() => {
-    return entityAudit.fieldAudit ?? {fields: [], groups: [], pass: true}
+    return entityAudit.fieldAudit ?? { fields: [], groups: [], pass: true }
   }, [entityAudit])
   const linkAudit = useMemo(() => {
-    return entityAudit.linkAudit ?? {links: [], groups: [], pass: true}
+    return entityAudit.linkAudit ?? { links: [], groups: [], pass: true }
   }, [entityAudit])
+
+  const fuzzySearchSupported = useMemo(() => {
+    return isFuzzySearchSupported(recordKind, otherRecordKind)
+  }, [recordKind, otherRecordKind])
+
+  const fuzzySearchField = useMemo(() => {
+    return getFuzzySearchField(recordKind)
+  }, [recordKind])
+
+  const fuzzyItemCount = useMemo(() => {
+    let fuzzySearchValue = (fuzzySearchField ? record?.[fuzzySearchField as keyof ILinkableEntity] : '') as string
+    return lineCount(fuzzySearchValue)
+  }, [record, fuzzySearchField])
 
   const otherRecordsRaw = useMemo(() => {
     const data = (otherRecordsResult?.loading
@@ -218,7 +294,7 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
         l => l.otherRecordId == r.id) == -1) ?? []
   }, [otherRecordsRaw, otherRecordKind, filteredRecordLinks])
 
-  const otherRecord = useMemo(() => otherRecords.find(r => r.id === otherRecordId), [otherRecords, otherRecordId])
+  const otherRecordId = otherRecord?.id
   const otherRecordLabel = useMemo(() => getRecordLabel(otherRecordKind, otherRecord) ?? '', [otherRecordKind, otherRecord])
 
   // Must disable the 'Link' button if an ancestor or descendant topic is already linked.
@@ -230,50 +306,41 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
     return otherRecordKind === "Topic" ? getTopicAxis(otherRecordsRaw, filteredRecordLinks) : EMPTY_SET
   }, [otherRecordKind, otherRecordsRaw, filteredRecordLinks])
 
-  // Ghastly AI hack to prevent Carousel from scrolling when pressing LeftArrow or RightArrow inside a TextInput.
-  useEffect(() => {
-    const handler = (ev: KeyboardEvent) => {
-      if (ev.key !== "ArrowLeft" && ev.key !== "ArrowRight")
-        return
-
-      const active = document.activeElement
-      if (isTextEditing(active)) {
-        // Let caret move, but stop carousel
-        ev.stopPropagation()
-        ev.stopImmediatePropagation?.()
-      }
-      // Otherwise, let carousel handle left/right
+  const handlePrevious = useCallback(() => {
+    switch (statusDialogItem) {
+      case LINK_AUDIT:
+        setStatusDialogItem(FIELD_AUDIT)
+        break
+      case LINK_MANAGER:
+        setStatusDialogItem(LINK_AUDIT)
+        break
     }
+  }, [statusDialogItem])
 
-    document.addEventListener("keydown", handler, { capture: true })
-    return () => document.removeEventListener("keydown", handler, { capture: true })
-  }, [])
-
-  // Bidirectionally sync carousel scroll state with item state
-  useEffect(() => {
-    if (!api)
-      return
-    const onSelect = () => setStatusDialogItem(api.selectedScrollSnap())
-    api.on("select", onSelect)
-    return () => {
-      api.off("select", onSelect)
+  const handleNext = useCallback(() => {
+    switch (statusDialogItem) {
+      case FIELD_AUDIT:
+        setStatusDialogItem(LINK_AUDIT)
+        break
+      case LINK_AUDIT:
+        setStatusDialogItem(LINK_MANAGER)
+        break
     }
-  }, [api])
-  useEffect(() => {
-    api?.scrollTo(statusDialogItem)
-  }, [api, statusDialogItem])
+  }, [statusDialogItem])
 
   const handleNew = useCallback((otherRecordKind: LinkableEntityKind): void => {
     logger.trace("handleNew: otherRecordKind='%s'", otherRecordKind)
     setOtherRecordKind(otherRecordKind)
-    setOtherRecordId('')
+    setOtherRecord(null)
     setSelectedLinkId('')
-    api?.scrollTo(2)
+    setStatusDialogItem(LINK_MANAGER)
     toast.info(`Use the search to find a link target ${otherRecordKind}`)
-  }, [api])
+  }, [])
 
-  const updateFilter = useCallback((otherRecordKind: LinkableEntityKind | undefined, status: string, text: string, advanced: boolean | "indeterminate", recordId: string) => {
-    logger.trace("updateFilter: status='%s', text='%s', advanced=%s, recordId='%s'", status, text, advanced, recordId)
+  const updateFilter = useCallback((otherRecordKind: LinkableEntityKind | undefined, status: string, text: string,
+    advanced: boolean | "indeterminate", fuzzy: boolean | "indeterminate", recordId: string) => {
+
+    logger.trace("updateFilter: status='%s', text='%s', advanced=%s, fuzzy=%s, recordId='%s'", status, text, advanced, fuzzy, recordId)
     const newFilter = {
       status: status ? [status] : undefined,
       text: text || undefined,
@@ -281,18 +348,26 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
       recordId: recordId || undefined,
       parentId: otherRecordKind === "Topic" ? -1 : undefined,
     } as LinkableEntityQueryFilter
+    if (fuzzy && fuzzySearchSupported && record && recordKind && otherRecordKind) {
+      const props = getRecordLinkProperties(recordKind, otherRecordKind)
+      if (props) {
+        newFilter[props.otherRecordFuzzyProperty] = true
+        newFilter[props.thisRecordKindProperty] = getEntityKind(recordKind)
+        newFilter[props.thisRecordIdProperty] = record.id
+      }
+    }
     if (!isEqual(newFilter as LinkableEntityQueryFilter, filter)) {
       logger.trace("updateFilter from %o to %o", filter, newFilter)
       setFilter(newFilter)
     }
-  }, [filter, setFilter])
+  }, [fuzzySearchSupported, record, recordKind, filter, setFilter])
 
-  const getSelectedLink = useCallback((linkId?: string) : RecordLink | undefined => {
+  const getSelectedLink = useCallback((linkId?: string): RecordLink | null => {
     linkId ??= selectedLinkId
     if (!linkId)
-      return undefined;
+      return null;
 
-    return filteredRecordLinks.find(link => link.id == linkId)
+    return filteredRecordLinks.find(link => link.id == linkId) ?? null
   }, [selectedLinkId, filteredRecordLinks])
   const selectedLink = getSelectedLink(selectedLinkId)
 
@@ -305,23 +380,23 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
   const createInput = useCallback((recordLink: Partial<RecordLink>) => {
     logger.trace("createInput: recordLink=%o", recordLink)
     return recordLink.thisRecordIsToEntity
-    ? {
-      id: recordLink.id,
-      fromEntityId: topicId || recordLink.otherRecordId,
-      fromEntityLocations: otherRecordLocations,
-      toEntityId: recordLink.thisRecordId,
-      toEntityLocations: thisRecordLocations,
-    }
-    : {
-      id: recordLink.id,
-      fromEntityId: recordLink.thisRecordId,
-      fromEntityLocations: thisRecordLocations,
-      toEntityId: recordLink.otherRecordId,
-      toEntityLocations: otherRecordLocations,
-    }
+      ? {
+        id: recordLink.id,
+        fromEntityId: topicId || recordLink.otherRecordId,
+        fromEntityLocations: otherRecordLocations || null,
+        toEntityId: recordLink.thisRecordId,
+        toEntityLocations: thisRecordLocations || null,
+      }
+      : {
+        id: recordLink.id,
+        fromEntityId: recordLink.thisRecordId,
+        fromEntityLocations: thisRecordLocations || null,
+        toEntityId: recordLink.otherRecordId,
+        toEntityLocations: otherRecordLocations || null,
+      }
   }, [topicId, thisRecordLocations, otherRecordLocations])
 
-  const refreshEditableFields = useCallback((linkId : string) => {
+  const refreshEditableFields = useCallback((linkId: string) => {
     logger.trace("refreshEditableFields: linkId='%s'", linkId)
     const selectedLink = getSelectedLink(linkId)
     setThisRecordLocations(selectedLink?.thisLocations ?? '')
@@ -332,73 +407,85 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
   const handleOtherRecordKindChange = useCallback((otherRecordKind: LinkableEntityKind) => {
     logger.trace("handleOtherRecordKindChange: otherRecordKind='%s'", otherRecordKind)
     setOtherRecordKind(otherRecordKind)
-    setOtherRecordId('')
+    setOtherRecord(null)
     setSelectedLinkId('')
-    updateFilter(otherRecordKind, filterStatus, filterText, filterAdvanced, otherRecordId)
-  }, [updateFilter, filterStatus, filterText, filterAdvanced, otherRecordId])
+    updateFilter(otherRecordKind, filterStatus, filterText, filterAdvanced, filterFuzzy, filterRecordId)
+  }, [updateFilter, filterStatus, filterText, filterAdvanced, filterFuzzy, filterRecordId])
 
   const handleStatusChange = useCallback((status: string) => {
     logger.trace("handleStatusChange: status='%s'", status)
     status = status === "ALL" ? '' : status
     setFilterStatus(status)
-    updateFilter(otherRecordKind, status, filterText, filterAdvanced, otherRecordId)
-  }, [updateFilter, otherRecordKind, filterText, filterAdvanced, otherRecordId])
+    updateFilter(otherRecordKind, status, filterText, filterAdvanced, filterFuzzy, filterRecordId)
+  }, [updateFilter, otherRecordKind, filterText, filterAdvanced, filterFuzzy, filterRecordId])
 
   const handleTextChange = useCallback((text: string) => {
     logger.trace("handleTextChange: text='%s'", text)
     setFilterText(text)
-    updateFilter(otherRecordKind, filterStatus, text, filterAdvanced, otherRecordId)
-  }, [updateFilter, otherRecordKind, filterStatus, filterAdvanced, otherRecordId])
+    updateFilter(otherRecordKind, filterStatus, text, filterAdvanced, filterFuzzy, filterRecordId)
+  }, [updateFilter, otherRecordKind, filterStatus, filterAdvanced, filterFuzzy, filterRecordId])
 
   const handleAdvancedSearchChange = useCallback((advanced: boolean) => {
     logger.trace("handleAdvancedSearchChange: advanced=%s", advanced)
     setFilterAdvanced(advanced)
-    updateFilter(otherRecordKind, filterStatus, filterText, advanced, otherRecordId)
-  }, [updateFilter, otherRecordKind, filterStatus, filterText, otherRecordId])
+    updateFilter(otherRecordKind, filterStatus, filterText, advanced, filterFuzzy, filterRecordId)
+  }, [updateFilter, otherRecordKind, filterStatus, filterText, filterFuzzy, filterRecordId])
+
+  const handleFuzzySearchChange = useCallback((fuzzy: boolean) => {
+    logger.trace("handleFuzzySearchChange: fuzzy=%s", fuzzy)
+    setFilterFuzzy(fuzzy)
+    updateFilter(otherRecordKind, filterStatus, filterText, filterAdvanced, fuzzy, filterRecordId)
+  }, [updateFilter, otherRecordKind, filterStatus, filterText, filterAdvanced, filterRecordId])
 
   const handleRecordIdChange = useCallback((recordId: string) => {
     logger.trace("handleRecordIdChange: recordId='%s'", recordId)
     setFilterRecordId(recordId)
-    updateFilter(otherRecordKind, filterStatus, filterText, filterAdvanced, recordId)
-  }, [updateFilter, otherRecordKind, filterStatus, filterText, filterAdvanced])
+    updateFilter(otherRecordKind, filterStatus, filterText, filterAdvanced, filterFuzzy, recordId)
+  }, [updateFilter, otherRecordKind, filterStatus, filterText, filterAdvanced, filterFuzzy])
+
+  useEffect(() => {
+    updateFilter(otherRecordKind, filterStatus, filterText, filterAdvanced, filterFuzzy, filterRecordId)
+  }, [recordKind, record])
 
   const handleReset = useCallback(() => {
     logger.trace("handleReset")
     setFilterStatus('')
     setFilterText('')
     setFilterAdvanced(false)
+    setFilterFuzzy(false)
     setFilterRecordId('')
-    updateFilter(otherRecordKind, '', '', false, '')
+    updateFilter(otherRecordKind, '', '', false, false, '')
   }, [updateFilter, otherRecordKind])
 
   const handleLink = useCallback(() => {
     logger.trace("handleLink")
-    if (mode === "view") {
+    if (mode === VIEW) {
       toast.info(`Linking '${otherRecordLabel}'. Enter link locations then Save.`)
       setSelectedLinkId('')
+      // setSelectedLink(null)
       setThisRecordLocations('')
       setOtherRecordLocations('')
-      setMode("create")
+      setMode(CREATE)
       requestAnimationFrame(() => requestAnimationFrame(() => thisLocationsRef.current?.focus()))
     }
   }, [mode, otherRecordLabel])
 
   const handleEdit = useCallback(() => {
     logger.trace("handleEdit")
-    if (mode === "view") {
+    if (mode === VIEW) {
       toast.info("Edit link locations then Save.")
-      setMode("edit")
+      setMode(EDIT)
       requestAnimationFrame(() => requestAnimationFrame(() => thisLocationsRef.current?.focus()))
     }
   }, [])
 
   const handleSave = useCallback(() => {
-    if (mode === "create") {
+    if (mode === CREATE) {
       const thisRecordId = record?.id
       if (recordKind && otherRecordKind && thisRecordId && otherRecordId) {
-        const [,, thisRecordIdProperty] = getRecordLinkProperties(recordKind, otherRecordKind)
-        if (thisRecordIdProperty) {
-          const thisRecordIsToEntity = thisRecordIdProperty === TO_ENTITY_ID
+        const props = getRecordLinkProperties(recordKind, otherRecordKind)
+        if (props) {
+          const thisRecordIsToEntity = props.thisRecordIdProperty === TO_ENTITY_ID
           createLinkOp({
             variables: {
               input: createInput({
@@ -410,13 +497,14 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
                 otherLocations: otherRecordLocations,
                 otherRecordLabel,
                 thisRecordIsToEntity,
-              }
-            )},
+              })
+            },
             onCompleted: (data) => {
               const entityLink = (data as QueryResult<EntityLink>).createEntityLink
               logger.trace("handleSave(create).completed: new EntityLink: %o", entityLink)
-              setMode("view")
-              setOtherRecordId('')
+              toast.info(`New link with '${otherRecordLabel}' created.`)
+              setMode(VIEW)
+              setOtherRecord(null)
               setSelectedLinkId(entityLink.id ?? '')
             },
             onError: (error) => {
@@ -425,7 +513,7 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
           })
         }
       }
-    } else if (mode === "edit") {
+    } else if (mode === EDIT) {
       toast.info("Saving link locations...")
       if (selectedLink)
         updateLinkOp({
@@ -434,7 +522,8 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
           },
           onCompleted: (/*data, clientOptions*/) => {
             logger.trace("handleSave(edit).completed")
-            setMode("view")
+            toast.info(`Link to '${otherRecordLabel}' updated.`)
+            setMode(VIEW)
           },
           onError: (error/*, clientOptions*/) => {
             toast.error(error.message)
@@ -457,21 +546,21 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
   ])
 
   const handleCancel = useCallback(() => {
-    if (mode === "create" || mode === "edit") {
+    if (mode === CREATE || mode === EDIT) {
       if (isModified()) {
-        const target = mode === "edit"
+        const target = mode === EDIT
           ? `link with record '${selectedLink?.otherRecordLabel}'`
           : "new record link"
         if (confirm(`Confirm discard changes to ${target}?`)) {
           toast.info(`Cancelling ${mode} ...`)
           refreshEditableFields(selectedLinkId)
-          setMode("view")
+          setMode(VIEW)
         }
       } else {
-        setMode("view")
+        setMode(VIEW)
       }
     }
-  }, [mode, selectedLinkId, selectedLink, isModified, refreshEditableFields])
+  }, [mode, selectedLinkId, isModified, refreshEditableFields])
 
   const handleRelink = useCallback(() => {
     if (confirm(`Change target of link from ${selectedLink?.otherRecordLabel} to ${otherRecordLabel}?${otherRecordLocations ? "\n\nN.B. The 'Location(s) in other record' value will be retained but may not be appropriate to the new target record. Change it if necessary." : ""}`)) {
@@ -481,7 +570,6 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
         variables: {
           input: {
             id: selectedLink?.id,
-            // rating: selectedLink?.rating,
             fromEntityId: selectedLink?.thisRecordIsToEntity ? otherRecordId : record?.id,
             fromEntityLocations: selectedLink?.thisRecordIsToEntity ? thisRecordLocations : otherRecordLocations,
             toEntityId: selectedLink?.thisRecordIsToEntity ? record?.id : otherRecordId,
@@ -489,7 +577,7 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
           }
         },
         onCompleted: (data) => {
-          setOtherRecordId('')
+          setOtherRecord(null)
           toast.info(`Changed link target to ${newTargetLabel}`)
         },
         onError: (error) => {
@@ -503,7 +591,7 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
     if (confirm(`Confirm delete link with record '${selectedLink?.otherRecordLabel}'?`)) {
       toast.info(`Unlinking '${selectedLink?.otherRecordLabel}'...`)
       deleteLinkOp({
-        variables: {entityLinkId: selectedLinkId},
+        variables: { entityLinkId: selectedLinkId },
         onError: (error/*, clientOptions*/) => {
           toast.error(error.message)
         },
@@ -513,9 +601,7 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
     }
   }, [selectedLinkId, selectedLink, deleteLinkOp])
 
-  const handleSelectedLinkChange = useCallback((linkId : string) => {
-    if (linkId === "CLEAR")
-      linkId = ''
+  const handleSelectedLinkChange = useCallback((linkId: string) => {
     setSelectedLinkId(linkId)
     refreshEditableFields(linkId)
   }, [refreshEditableFields])
@@ -543,9 +629,6 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
       onCompleted: (data) => {
         const entity = (data as QueryResult<ITrackedEntity>).setEntityStatus
         logger.trace("handlePublish().completed: ITrackedEntity: %o", entity)
-        // setMode("view")
-        // setOtherRecordId('')
-        // setSelectedLinkId(entity.id ?? '')
         toast.info(`Published ${recordLabel}`)
       },
       onError: (error) => {
@@ -554,7 +637,7 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
     })
   }, [recordLabel])
 
-  logger.debug(`item: ${statusDialogItem}, canScrollPrev: ${api?.canScrollPrev()}, canScrollNext: ${api?.canScrollNext()} `)
+  logger.debug(`item: ${statusDialogItem}`)
 
   return (
     <Dialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
@@ -565,48 +648,50 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
           type="button"
           variant="default"
           disabled={!record}
-          onClick={() => setStatusDialogItem(2)}
+          onClick={() => setStatusDialogItem(LINK_MANAGER)}
           help={`Manage links for ${recordLabel}`}>
           Manage...
         </ButtonEx>
       </DialogTrigger>
-      <DialogContent className="flex flex-col items-center w-5/6 min-w-0 max-w-none! h-5/6 min-h-0 max-h-none! overflow-hidden">
+      <DialogContent
+        className="flex flex-col items-center w-5/6 min-w-0 max-w-none! h-5/6 min-h-0 max-h-none! overflow-hidden"
+        onPointerDownOutside={e => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle className="text-center">{
             recordKind
-            ? (() => {
-              const Icon = RecordIcons[recordKind]
-              return <Icon className="inline" />
-            })()
-            : null
+              ? (() => {
+                const Icon = RecordIcons[recordKind]
+                return <Icon className="inline" />
+              })()
+              : null
           }&nbsp;{recordKind} Status</DialogTitle>
           <DialogDescription>
             Manage status for {recordLabel}
           </DialogDescription>
-          <fieldset className="grow-0 w-90 self-center p-2 border rounded-md">
-            <legend>&nbsp;Page&nbsp;</legend>
-            <RadioGroup
-              className="flex justify-center"
-              value={statusDialogItem.toString()}
-              onValueChange={(value) => setStatusDialogItem(Number.parseInt(value))}>
-              <RadioGroupItem id="field-audit" value="0" />
-              <Label htmlFor="field-audit">Field Audit</Label>
-              <RadioGroupItem id="link-audit" value="1" />
-              <Label htmlFor="link-audit">Link Audit</Label>
-              <RadioGroupItem id="link-manager" value="2" />
-              <Label htmlFor="link-manager">Link Manager</Label>
-            </RadioGroup>
-          </fieldset>
           <p className="text-red-600">{error}</p>
         </DialogHeader>
         <Spinner className="absolute inset-0 bg-black/20 z-50" loading={loading} />
-        <Carousel
-          setApi={setApi} 
-          className="flex flex-col w-7/8 h-full min-h-0 [&>div[data-slot=carousel-content]]:grow"
+        <Tabs
+          className="flex flex-col w-7/8 h-full min-h-0"
+          value={statusDialogItem}
+          onValueChange={setStatusDialogItem}
         >
-          <CarouselContent className="w-full h-full max-h-full">
-            <CarouselItem id="field-audit" className="w-full h-full max-h-full overflow-auto">
-                <h2><RectangleEllipsisIcon className="inline"/><SearchIcon className="inline"/>&nbsp;Field Audit</h2>
+          <TabsList>
+            <TabsTrigger value={FIELD_AUDIT}>Field Audit</TabsTrigger>
+            <TabsTrigger value={LINK_AUDIT}>Link Audit</TabsTrigger>
+            <TabsTrigger value={LINK_MANAGER}>Link Manager</TabsTrigger>
+          </TabsList>
+          <TabsContent value="field-audit">
+            <Card>
+              <CardHeader>
+                <CardTitle><RectangleEllipsisIcon className="inline" /><SearchIcon className="inline" />&nbsp;Field Audit</CardTitle>
+                <CardDescription>
+                  Checks the selected {recordKind ?? "record"} field values against minimum publication criteria.
+                  Error-level failures must be corrected before publication is permitted but please also correct any warning-level failures, if possible.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="w-full h-full max-h-full overflow-auto">
                 <Table className="table-fixed w-full max-h-full border caption-top">
                   <colgroup>
                     <col className="w-[15%]" />
@@ -643,8 +728,8 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
                             <TableCell className="text-center border">
                               {
                                 fieldAuditEntry.pass
-                                ? <><CheckIcon className="inline text-green-600" />&nbsp;Pass</>
-                                : <><XIcon className="inline text-red-600" />&nbsp;Fail</>
+                                  ? <><CheckIcon className="inline text-green-600" />&nbsp;Pass</>
+                                  : <><XIcon className="inline text-red-600" />&nbsp;Fail</>
                               }
                             </TableCell>
                           </TableRow>
@@ -659,8 +744,8 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
                               <TableCell className="border">{fieldAuditEntry.fieldName}</TableCell>
                               {
                                 idx2 == 0
-                                ? <TableCell rowSpan={fieldGroupAuditEntry.fields.length}>any of</TableCell>
-                                : null
+                                  ? <TableCell rowSpan={fieldGroupAuditEntry.fields.length}>any of</TableCell>
+                                  : null
                               }
                               <TableCell className="border">
                                 {(() => {
@@ -673,8 +758,8 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
                               <TableCell className="text-center border">
                                 {
                                   fieldAuditEntry.pass
-                                  ? <><CheckIcon className="inline text-green-600" />&nbsp;Pass</>
-                                  : <><XIcon className="inline text-red-600" />&nbsp;Fail</>
+                                    ? <><CheckIcon className="inline text-green-600" />&nbsp;Pass</>
+                                    : <><XIcon className="inline text-red-600" />&nbsp;Fail</>
                                 }
                               </TableCell>
                             </TableRow>
@@ -690,8 +775,8 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
                         <span className={cn(fieldAudit.pass ? "text-black" : "text-red-600")}>
                           {
                             fieldAudit.pass
-                            ? <><CheckIcon className="inline text-green-600" />&nbsp;Pass</>
-                            : <><XIcon className="inline text-red-600" />&nbsp;Fail</>
+                              ? <><CheckIcon className="inline text-green-600" />&nbsp;Pass</>
+                              : <><XIcon className="inline text-red-600" />&nbsp;Fail</>
                           }
                         </span>
                       </TableCell>
@@ -699,90 +784,60 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
                     </TableRow>
                   </TableFooter>
                 </Table>
-            </CarouselItem>
-            <CarouselItem id="link-audit" className="h-full max-h-full overflow-auto">
-              <form>
-                <h2><LinkIcon className="inline"/><SearchIcon className="inline"/>&nbsp;Link Audit</h2>
-                <Table className="table-fixed w-2/3 max-h-full border caption-top">
-                  <colgroup>
-                    <col className="w-[20%]" />
-                    <col className="w-[15%]" />
-                    <col className="w-[10%]" />
-                    <col className="w-[10%]" />
-                    <col className="w-[10%]" />
-                    <col className="w-[10%]" />
-                  </colgroup>
-                  <TableCaption>Links by linked record kind</TableCaption>
-                  <TableHeader className="sticky top-0 z-10 bg-gray-50 border">
-                    <TableRow className="border">
-                      <TableHead className="border">Linked Record Kind</TableHead>
-                      <TableHead className="border">Rule</TableHead>
-                      <TableHead className="text-right border">Minimum</TableHead>
-                      <TableHead className="text-right border">Actual</TableHead>
-                      <TableHead className="text-center border">Result</TableHead>
-                      <TableHead className="text-center border">Action</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody className="max-h-full border">
-                    {
-                      linkAudit.links.map((linkAuditEntry, idx) => {
-                        return (
-                          <TableRow key={`link-audit-${idx}`}>
-                            <TableCell className="border">
-                              {(() => {
-                                const Icon = RecordIcons[linkAuditEntry.linkedEntityKind]
-                                return <Icon className="inline" />
-                              })()}
-                              &nbsp;{linkAuditEntry.linkedEntityKind}
-                            </TableCell>
-                            <TableCell className="border">required</TableCell>
-                            <TableCell className="text-right border">{linkAuditEntry.min}</TableCell>
-                            <TableCell className="text-right border">{linkAuditEntry.actual ?? 0}</TableCell>
-                            <TableCell className="text-center border">
-                              {
-                                linkAuditEntry.pass
-                                ? <><CheckIcon className="inline text-green-600" />&nbsp;Pass</>
-                                : <><XIcon className="inline text-red-600" />&nbsp;Fail</>
-                              }
-                            </TableCell>
-                            <TableCell className="text-center border">
-                              <Button
-                                className="cursor-pointer"
-                                type="button"
-                                variant="outline"
-                                onClick={() => handleNew(linkAuditEntry.linkedEntityKind)}
-                              >
-                                New...
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        )
-                      })
-                    }
-                    {
-                      linkAudit.groups.map((linkGroupAuditEntry, idx1) => {
-                        return linkGroupAuditEntry.links.map((linkAuditEntry, idx2) => {
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value={LINK_AUDIT}>
+            <Card>
+              <CardHeader>
+                <CardTitle><LinkIcon className="inline" /><SearchIcon className="inline" />&nbsp;Link Audit</CardTitle>
+                <CardDescription>
+                  Checks the selected {recordKind ?? "record"} links against minimum publication criteria.
+                  Error-level failures must be corrected before publication is permitted but please also correct any warning-level failures, if possible.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="h-full max-h-full overflow-auto">
+                <form>
+                  <Table className="table-fixed w-2/3 max-h-full border caption-top">
+                    <colgroup>
+                      <col className="w-[20%]" />
+                      <col className="w-[15%]" />
+                      <col className="w-[10%]" />
+                      <col className="w-[10%]" />
+                      <col className="w-[10%]" />
+                      <col className="w-[10%]" />
+                    </colgroup>
+                    <TableCaption>Links by linked record kind</TableCaption>
+                    <TableHeader className="sticky top-0 z-10 bg-gray-50 border">
+                      <TableRow className="border">
+                        <TableHead className="border">Linked Record Kind</TableHead>
+                        <TableHead className="border">Rule</TableHead>
+                        <TableHead className="text-right border">Minimum</TableHead>
+                        <TableHead className="text-right border">Actual</TableHead>
+                        <TableHead className="text-center border">Result</TableHead>
+                        <TableHead className="text-center border">Action</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody className="max-h-full border">
+                      {
+                        linkAudit.links.map((linkAuditEntry, idx) => {
                           return (
-                            <TableRow key={`link-group-audit-${idx1}-${idx2}`}>
+                            <TableRow key={`link-audit-${idx}`}>
                               <TableCell className="border">
                                 {(() => {
-                                  const Icon = RecordIcons[linkAuditEntry.linkedEntityKind];
-                                  return <Icon className="inline" />;
+                                  const Icon = RecordIcons[linkAuditEntry.linkedEntityKind]
+                                  return <Icon className="inline" />
                                 })()}
                                 &nbsp;{linkAuditEntry.linkedEntityKind}
                               </TableCell>
-                              {
-                                idx2 == 0
-                                ? <TableCell rowSpan={linkGroupAuditEntry.links.length} className="border">any of</TableCell>
-                                : null
-                              }
+                              <TableCell className="border">required</TableCell>
                               <TableCell className="text-right border">{linkAuditEntry.min}</TableCell>
                               <TableCell className="text-right border">{linkAuditEntry.actual ?? 0}</TableCell>
                               <TableCell className="text-center border">
                                 {
                                   linkAuditEntry.pass
-                                  ? <><CheckIcon className="inline text-green-600" />&nbsp;Pass</>
-                                  : <><XIcon className="inline text-red-600" />&nbsp;Fail</>
+                                    ? <><CheckIcon className="inline text-green-600" />&nbsp;Pass</>
+                                    : <><XIcon className="inline text-red-600" />&nbsp;Fail</>
                                 }
                               </TableCell>
                               <TableCell className="text-center border">
@@ -798,411 +853,494 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
                             </TableRow>
                           )
                         })
-                      })
-                    }
-                  </TableBody>
-                  <TableFooter className="sticky bottom-0 z-10">
-                    <TableRow>
-                      <TableCell colSpan={4} className="text-right border">Overall:</TableCell>
-                      <TableCell className="text-center border">
-                        <span className={cn(linkAudit.pass ? "text-black" : "text-red-600")}>
-                          {
-                            linkAudit.pass
-                            ? <><CheckIcon className="inline text-green-600" />&nbsp;Pass</>
-                            : <><XIcon className="inline text-red-600" />&nbsp;Fail</>
-                          }
-                        </span>
-                      </TableCell>
-                      <TableCell></TableCell>
-                    </TableRow>
-                  </TableFooter>
-                </Table>
-                <br />
-              </form>
-            </CarouselItem>
-            <CarouselItem id="record-links" className="w-full h-full max-h-full overflow-auto">
-              <h2><LinkIcon className="inline"/>&nbsp;Link Manager</h2><br/>
-              <form>
-                <div className="flex">
-                  <fieldset className="border rounded-md ml-1 p-2 gap-2">
-                    <legend>&nbsp;Link with:&nbsp;</legend>
-                    <RadioGroup
-                      value={otherRecordKind}
-                      onValueChange={value => handleOtherRecordKindChange(value as LinkableEntityKind)}
-                    >
-                      {
-                        LinkableEntityKindKeys.map(key => (
-                          <div id={key} key={key} className="flex items-center gap-3">
-                            <RadioGroupItem
-                              value={key}
-                              disabled={key === recordKind}
-                            />
-                            {
-                              (() => {
-                                const Icon = RecordIcons[key]
-                                return <Icon className="size-4 inline" />
-                              })()
-                            }
-                            <Label
-                              className={cn(key === recordKind ? "text-gray-400" : "text-black")}
-                              htmlFor={key}
-                            >
-                              {key}
-                            </Label>
-                          </div>
-                        ), [recordKind, otherRecordKind])
                       }
-                    </RadioGroup>
-                  </fieldset>
-                  <div className="flex flex-col">
-                    <fieldset className="grow border rounded-md ml-1 p-2 gap-2">
-                      <legend>&nbsp;{`Search for ${otherRecordKind ?? "record"}s to link`}&nbsp;</legend>
-                      <div className="flex items-center gap-2 mb-2">
-                        <Select
-                          value={filterStatus ?? ''}
-                          onValueChange={handleStatusChange}
-                        >
-                          <SelectTriggerEx
-                            id="status"
-                            help="Filter the list to show only records with this status"
-                            title="Filter the list to show only records with this status"
-                          >
-                            <SelectValue placeholder="Status" />
-                          </SelectTriggerEx>
-                          <SelectContent>
+                      {
+                        linkAudit.groups.map((linkGroupAuditEntry, idx1) => {
+                          return linkGroupAuditEntry.links.map((linkAuditEntry, idx2) => {
+                            return (
+                              <TableRow key={`link-group-audit-${idx1}-${idx2}`}>
+                                <TableCell className="border">
+                                  {(() => {
+                                    const Icon = RecordIcons[linkAuditEntry.linkedEntityKind];
+                                    return <Icon className="inline" />;
+                                  })()}
+                                  &nbsp;{linkAuditEntry.linkedEntityKind}
+                                </TableCell>
+                                {
+                                  idx2 == 0
+                                    ? <TableCell rowSpan={linkGroupAuditEntry.links.length} className="border">any of</TableCell>
+                                    : null
+                                }
+                                <TableCell className="text-right border">{linkAuditEntry.min}</TableCell>
+                                <TableCell className="text-right border">{linkAuditEntry.actual ?? 0}</TableCell>
+                                <TableCell className="text-center border">
+                                  {
+                                    linkAuditEntry.pass
+                                      ? <><CheckIcon className="inline text-green-600" />&nbsp;Pass</>
+                                      : <><XIcon className="inline text-red-600" />&nbsp;Fail</>
+                                  }
+                                </TableCell>
+                                <TableCell className="text-center border">
+                                  <Button
+                                    className="cursor-pointer"
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => handleNew(linkAuditEntry.linkedEntityKind)}
+                                  >
+                                    New...
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            )
+                          })
+                        })
+                      }
+                    </TableBody>
+                    <TableFooter className="sticky bottom-0 z-10">
+                      <TableRow>
+                        <TableCell colSpan={4} className="text-right border">Overall:</TableCell>
+                        <TableCell className="text-center border">
+                          <span className={cn(linkAudit.pass ? "text-black" : "text-red-600")}>
                             {
-                              filterStatus
-                              ? <SelectItem value="ALL">-Clear-</SelectItem>
-                              : null
+                              linkAudit.pass
+                                ? <><CheckIcon className="inline text-green-600" />&nbsp;Pass</>
+                                : <><XIcon className="inline text-red-600" />&nbsp;Fail</>
                             }
-                            <SelectItem value="DEL">Deleted</SelectItem>
-                            <SelectItem value="DRA">Draft</SelectItem>
-                            <SelectItem value="PUB">Published</SelectItem>
-                            <SelectItem value="SUS">Suspended</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <Search id="searchText" value={filterText} onChangeValue={handleTextChange} />
-                        <Checkbox
-                          id="advanced"
-                          checked={filterAdvanced}
-                          onCheckedChange={handleAdvancedSearchChange}
-                          title="Use advanced text search syntax. See info hover tip to the right."
-                        />
-                        <LabelEx
-                          htmlFor="advanced"
-                          help="Use advanced text search syntax. See MariaDB documentation at https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode">Advanced</LabelEx>
-                        <InputEx
-                          id="recordId"
-                          outerClassName="w-30"
-                          className="text-right"
-                          placeholder="Record ID"
-                          value={filterRecordId}
-                          onChange={e => handleRecordIdChange(e.target.value)}
-                          delay={500}
-                          clearOnEscape={true}
-                          help="Filter the list to show only the record with the specified ID. Other filters are retained but ignored."
-                        />
-                        <ButtonEx
-                          id="refresh"
-                          variant="outline"
-                          help="Refresh the list using the same filter and pagination settings."
-                          onClick={() => otherRecordsResult.refetch()}
-                        >
-                          <RotateCwIcon />
-                        </ButtonEx>
-                        <ButtonEx
-                          id="reset"
-                          type="button"
-                          variant="outline"
-                          disabled={!filterStatus && !filterText && !filterAdvanced && !filterRecordId}
-                          className="w-20"
-                          onClick={handleReset}
-                          help="Clear all filters"
-                        >
-                          Reset
-                        </ButtonEx>
-                      </div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <Select
-                          disabled={!record || mode !== "view"}
-                          value={otherRecordId ?? ''}
-                          onValueChange={recordId => setOtherRecordId(recordId === "CLEAR" ? '' : recordId)}
-                        >
-                          <SelectTriggerEx
-                            id="other-record"
-                            outerClassName="grow"
-                            className="w-full"
-                            help="A list of matching records"
-                          >
-                            <SelectValue placeholder={
-                              otherRecordKind
-                              ? otherRecords.length ?? 0 > 0
-                              ? "-Select a record to link-"
-                              : "-No matching records-"
-                              : "-Select a 'Link with' record kind-"}
-                            />
-                          </SelectTriggerEx>
-                          <SelectContent>
-                            {
-                              otherRecordId
-                              ? <SelectItem key="0" value="CLEAR">-Clear-</SelectItem>
-                              : null
-                            }
-                            {
-                              otherRecords.map(otherRecord => {
-                                return otherRecord
-                                  ? <SelectItem key={otherRecord.id} value={otherRecord.id ?? "0"}>{getRecordLabel(otherRecordKind, otherRecord)}</SelectItem>
-                                  : null
-                              })
-                            }
-                          </SelectContent>
-                        </Select>
-                        <ButtonEx
-                          type="button"
-                          variant="outline"
-                          className="w-20"
-                          disabled={!allowLinking || !otherRecordId || topicAxis.has(otherRecord?.id ?? '0') || mode !== "view"}
-                          onClick={handleLink}
-                          help={
-                            otherRecordId
-                            ? `Create a new link between ${recordLabel} and ${otherRecordLabel}`
-                            : "No record selected"
-                          }
-                        >
-                          Link
-                        </ButtonEx>
-                      </div>
-                    </fieldset>
-                    <fieldset className="flex border rounded-md ml-1 p-2 gap-2">
-                      <legend>&nbsp;{`Existing ${otherRecordKind ?? "record"} links`}&nbsp;</legend>
-                      <Select
-                        disabled={!record || mode !== "view"}
-                        value={selectedLinkId ?? ''}
-                        onValueChange={handleSelectedLinkChange}
+                          </span>
+                        </TableCell>
+                        <TableCell></TableCell>
+                      </TableRow>
+                    </TableFooter>
+                  </Table>
+                  <br />
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value={LINK_MANAGER}>
+            <Card>
+              <CardHeader>
+                <CardTitle><LinkIcon className="inline" />&nbsp;Link Manager</CardTitle>
+                <CardDescription>
+                  Manage links between the selected {recordKind ?? "record"} and {otherRecordKind ?? "other"} records.
+                  Please ensure that the {recordKind ?? "record"} is linked to all relevant records of other types.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="w-full h-full max-h-full overflow-auto">
+                <form>
+                  <div className="flex">
+                    <fieldset className="border rounded-md ml-1 p-2 gap-2">
+                      <legend>&nbsp;Links with:&nbsp;</legend>
+                      <RadioGroup
+                        value={otherRecordKind}
+                        onValueChange={value => handleOtherRecordKindChange(value as LinkableEntityKind)}
                       >
-                        <SelectTriggerEx
-                          id="links"
-                          outerClassName="grow"
-                          className="w-full"
-                          help="A list of all the records which are linked with the selected record. Select one to see/edit its settings."
-                        >
-                          <SelectValue
-                            placeholder=
+                        {
+                          LinkableEntityKindKeys.map(key => (
+                            <div id={key} key={key} className="flex items-center gap-3">
+                              <RadioGroupItem
+                                value={key}
+                                disabled={key === recordKind}
+                              />
+                              {
+                                (() => {
+                                  const Icon = RecordIcons[key]
+                                  return <Icon className="size-4 inline" />
+                                })()
+                              }
+                              <Label
+                                className={cn(key === recordKind ? "text-gray-400" : "text-black")}
+                                htmlFor={key}
+                              >
+                                {key}
+                              </Label>
+                            </div>
+                          ), [recordKind, otherRecordKind])
+                        }
+                      </RadioGroup>
+                    </fieldset>
+                    <div className="flex flex-col">
+                      <fieldset className="grow border rounded-md ml-1 p-2 gap-2">
+                        <legend>&nbsp;{`Search for ${otherRecordKind ?? "record"}s to link (${(otherRecords?.length ?? 0).toLocaleString()})`}&nbsp;</legend>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Select
+                            value={filterStatus ?? ''}
+                            onValueChange={handleStatusChange}
+                          >
+                            <SelectTriggerEx
+                              id="status"
+                              disabled={!otherRecordKind}
+                              help="Filter the list to show only records with this status"
+                              title="Filter the list to show only records with this status"
+                            >
+                              <SelectValue placeholder="Status" />
+                            </SelectTriggerEx>
+                            <SelectContent>
+                              {
+                                filterStatus
+                                  ? <SelectItem value="ALL">-Clear-</SelectItem>
+                                  : null
+                              }
+                              <SelectItem value="DEL">Deleted</SelectItem>
+                              <SelectItem value="DRA">Draft</SelectItem>
+                              <SelectItem value="PUB">Published</SelectItem>
+                              <SelectItem value="SUS">Suspended</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <Search id="searchText" value={filterText} onChangeValue={handleTextChange} />
+                          <Checkbox
+                            id="advanced"
+                            disabled={!otherRecordKind}
+                            checked={filterAdvanced}
+                            onCheckedChange={handleAdvancedSearchChange}
+                            title="Use advanced text search syntax. See info hover tip to the right."
+                          />
+                          <LabelEx
+                            htmlFor="advanced"
+                            help="Use advanced text search syntax. See MariaDB documentation at https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode">Advanced</LabelEx>
+                          <Checkbox
+                            id="fuzzy"
+                            disabled={!fuzzySearchSupported}
+                            checked={fuzzySearchSupported && filterFuzzy}
+                            onCheckedChange={handleFuzzySearchChange}
+                            title="Perform a fuzzy search. See info hover tip to the right."
+                          />
+                          <LabelEx
+                            htmlFor="fuzzy"
+                            help={`Perform a fuzzy search. Guesses which ${otherRecordKind} records might need linking to the contextual ${recordKind ?? "record"} based on its ${fuzzySearchField} field, displayed in 'Fuzzy match on' to the right.`}>Fuzzy</LabelEx>
+                          <InputEx
+                            id="recordId"
+                            disabled={!otherRecordKind}
+                            outerClassName="w-30"
+                            className="text-right"
+                            placeholder="Record ID"
+                            value={filterRecordId}
+                            onChange={e => handleRecordIdChange(e.target.value)}
+                            delay={500}
+                            clearOnEscape={true}
+                            help="Filter the list to show only the record with the specified ID. Other filters are retained but ignored."
+                          />
+                          <ButtonEx
+                            id="refresh"
+                            type="button"
+                            variant="outline"
+                            disabled={!otherRecordKind}
+                            help="Refresh the list using the same filter and pagination settings."
+                            onClick={() => otherRecordsResult.refetch()}
+                          >
+                            <RotateCwIcon />
+                          </ButtonEx>
+                          <ButtonEx
+                            id="reset"
+                            type="button"
+                            variant="outline"
+                            disabled={!otherRecordKind || !filterStatus && !filterText && !filterAdvanced && !filterFuzzy && !filterRecordId}
+                            className="w-20"
+                            onClick={handleReset}
+                            help="Clear all filters"
+                          >
+                            Reset
+                          </ButtonEx>
+                        </div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Combobox
+                            items={otherRecords}
+                            itemToStringValue={otherRecord => getRecordLabel(otherRecordKind, otherRecord as ITrackedEntity) ?? ''}
+                            itemToStringLabel={otherRecord => getRecordLabel(otherRecordKind, otherRecord as ITrackedEntity) ?? ''}
+                            value={otherRecord}
+                            onValueChange={value => setOtherRecord(value)}
+                          >
+                            <ComboboxInput
+                              className="truncate w-full max-w-213"
+                              disabled={!otherRecordKind || mode !== VIEW}
+                              value={otherRecordLabel}
+                              placeholder=
                               {
                                 otherRecordKind
-                                ? filteredRecordLinks.length ?? 0 > 0
-                                ? "-Select a record link-"
-                                : "-No record links-"
-                                : "-Select a 'Link with' record kind-"
+                                  ? otherRecords.length ?? 0 > 0
+                                    ? "-Select a record to link-"
+                                    : "-No matching records-"
+                                  : "-Select a 'Link with' record kind-"
                               }
+                              showClear
+                            />
+                            <ComboboxContent className="z-50 pointer-events-auto">
+                              <ComboboxEmpty>(No item matches)</ComboboxEmpty>
+                              <ComboboxList>
+                                {otherRecord => (
+                                  <ComboboxItem key={otherRecord.id} value={otherRecord}>
+                                    {getRecordLabel(otherRecordKind, otherRecord as ITrackedEntity)}
+                                  </ComboboxItem>
+                                )}
+                              </ComboboxList>
+                            </ComboboxContent>
+                          </Combobox>
+                          <ButtonEx
+                            type="button"
+                            variant="outline"
+                            className="w-20"
+                            disabled={!allowLinking || !otherRecordId || topicAxis.has(otherRecord?.id ?? '0') || mode !== VIEW}
+                            onClick={handleLink}
+                            help={
+                              otherRecordId
+                                ? `Create a new link between ${recordLabel} and ${otherRecordLabel}`
+                                : "No record selected"
+                            }
+                          >
+                            Link
+                          </ButtonEx>
+                        </div>
+                      </fieldset>
+                      <fieldset className="flex border rounded-md ml-1 p-2 gap-2">
+                        <legend>&nbsp;{`Existing ${otherRecordKind ?? "record"} links (${(filteredRecordLinks?.length ?? 0).toLocaleString()})`}&nbsp;</legend>
+                        <Combobox
+                          items={filteredRecordLinks}
+                          itemToStringValue={link => link.otherRecordLabel}
+                          itemToStringLabel={link => link.otherRecordLabel}
+                          value={selectedLink}
+                          onValueChange={link => handleSelectedLinkChange(link?.id ?? '')}
+                        >
+                          <ComboboxInput
+                            className="truncate w-full max-w-213"
+                            disabled={!record || !otherRecordKind || mode !== VIEW}
+                            value={selectedLink?.otherRecordLabel}
+                            placeholder=
+                            {
+                              otherRecordKind
+                                ? filteredRecordLinks.length ?? 0 > 0
+                                  ? "-Select a record link-"
+                                  : "-No record links-"
+                                : "-Select a 'Link with' record kind-"
+                            }
+                            showClear
                           />
-                        </SelectTriggerEx>
-                        <SelectContent>
-                          {
-                            selectedLinkId
-                            ? <SelectItem key="0" value="CLEAR">-Clear-</SelectItem>
-                            : null
+                          <ComboboxContent className="z-50 pointer-events-auto">
+                            <ComboboxEmpty>(No item matches)</ComboboxEmpty>
+                            <ComboboxList>
+                              {link => (
+                                <ComboboxItem key={link.id} value={link}>
+                                  {link.otherRecordLabel}
+                                </ComboboxItem>
+                              )}
+                            </ComboboxList>
+                          </ComboboxContent>
+                        </Combobox>
+                        <ButtonEx
+                          type="button"
+                          variant="outline"
+                          outerClassName="justify-center"
+                          className="w-20"
+                          disabled={!allowLinking || mode == VIEW && !selectedLink || mode == EDIT || mode == CREATE}
+                          onClick={handleEdit}
+                          help={
+                            selectedLink
+                              ? "Edit the selected link"
+                              : "No record link selected"
                           }
-                          {
-                            filteredRecordLinks.map(link => {
-                              return link
-                                ? <SelectItem key={link.id} value={link.id ?? "0"}>{link.otherRecordLabel}</SelectItem>
-                                : null
-                            })
-                          }
-                        </SelectContent>
-                      </Select>
-                      <ButtonEx
-                        type="button"
-                        variant="outline"
-                        outerClassName="justify-center"
-                        className="w-20"
-                        disabled={!allowLinking || (mode == "view" && !selectedLinkId) || (mode == "edit" && !isModified())}
-                        onClick={handleEdit}
-                        help={
-                          selectedLinkId
-                          ? "Edit the selected link"
-                          : "No record link selected"
-                        }
-                      >
-                        Edit
-                      </ButtonEx>
-                    </fieldset>
+                        >
+                          Edit
+                        </ButtonEx>
+                      </fieldset>
+                    </div>
+                    {
+                      fuzzySearchField
+                        ? <div className="flex grow">
+                          <fieldset className="flex h-full border rounded-md ml-1 p-2 gap-2">
+                            <legend>&nbsp;{`${recordKind} ${fuzzySearchField} (${fuzzyItemCount.toLocaleString()})`}&nbsp;</legend>
+                            <Textarea
+                              className="h-42 overflow-auto"
+                              readOnly
+                              value={record && fuzzySearchField ? record[fuzzySearchField as keyof ILinkableEntity] as string : ''}
+                              title={`The ${recordKind} ${fuzzySearchField}`}
+                            />
+                          </fieldset>
+                        </div>
+                        : null
+                    }
                   </div>
-                </div>
-                <fieldset className="grid grid-cols-5 border rounded-md ml-1 p-2 gap-2">
-                  <legend>&nbsp;Link Details&nbsp;</legend>
-                  <Label className="col-start-1" htmlFor="link-id">Link ID:</Label>
-                  <InputEx
-                    id="link-id"
-                    type="text"
-                    readOnly={true}
-                    disabled={!record}
-                    value={selectedLinkId}
-                    help="The database identifier of the selected record link"
-                  />
-                  <Label htmlFor="link-status">Status:</Label>
-                  <InputEx
-                    id="link-status"
-                    type="text"
-                    readOnly={true}
-                    disabled={!record}
-                    value={selectedLink?.status ?? ''}
-                    help="The status of the selected record link"
-                  />
-                  <ButtonEx
-                    type="button"
-                    variant="outline"
-                    outerClassName="w-full justify-end"
-                    className="w-20 place-self-center"
-                    disabled={!allowLinking || mode == "view" || (mode == "edit" && !isModified())}
-                    onClick={handleSave}
-                    help={
-                      selectedLink
-                        ? mode === "create"
-                        ? "Save changes to new record link"
-                        : `Save changes to link with record '${selectedLink?.otherRecordLabel}'`
-                        : "No record link selected"
-                    }
-                  >
-                    Save
-                  </ButtonEx>
-                  <Label htmlFor="link-created-by" className="col-start-1">Created by:</Label>
-                  <InputEx
-                    id="link-created-by"
-                    type="text"
-                    readOnly={true}
-                    disabled={!selectedLink}
-                    value={selectedLink?.createdByUser ?? ''}
-                    help="The username of the user who created the record link"
-                  />
-                  <Label htmlFor="link-created">Created on:</Label>
-                  <InputEx
-                    id="link-created"
-                    type="text"
-                    readOnly={true}
-                    disabled={!record}
-                    value={formatDateTime(selectedLink?.created)}
-                    help="The date and time at which the record link was created"
-                  />
-                  <ButtonEx
-                    type="button"
-                    variant="outline"
-                    outerClassName="w-full justify-end"
-                    className="w-20 place-self-center"
-                    disabled={!allowLinking || mode === "view"}
-                    onClick={handleCancel}
-                    help={
-                      selectedLink
-                      ? mode === "create"
-                      ? "Discard changes to new record link"
-                      : `Discard changes to link with record '${selectedLink?.otherRecordLabel}'`
-                      : "No record link selected"
-                    }
-                  >
-                    Cancel
-                  </ButtonEx>
-                  <Label htmlFor="link-updated-by" className="col-start-1">Updated by:</Label>
-                  <InputEx
-                    id="link-updated-by"
-                    type="text"
-                    readOnly={true}
-                    disabled={!record}
-                    value={selectedLink?.updatedByUser ?? ''}
-                    help="The username of the user who last updated the record link"
-                  />
-                  <Label htmlFor="link-updated">Updated on:</Label>
-                  <InputEx
-                    id="link-updated"
-                    type="text"
-                    readOnly={true}
-                    disabled={!record}
-                    value={formatDateTime(selectedLink?.updated)}
-                    help="The date and time at which the record link was last updated"
-                  />
-                  <ButtonEx
-                    type="button"
-                    variant="outline"
-                    outerClassName="justify-end w-full"
-                    className="w-20 place-self-center"
-                    disabled={!allowLinking || !selectedLinkId || !otherRecordId || mode !== "view"}
-                    onClick={handleRelink}
-                    help={
-                      otherRecord
-                        ? `Change link target to '${otherRecordLabel}'.`
-                        : "No target record selected"
-                    }
-                  >
-                    Relink
-                  </ButtonEx>
-                  <Label htmlFor="link-this-locations" className="col-start-1">Location(s) in this record:</Label>
-                  <InputEx
-                    id="link-this-locations"
-                    ref={thisLocationsRef}
-                    type="text"
-                    outerClassName="col-span-3"
-                    readOnly={!allowLinking || mode === "view"}
-                    disabled={!record}
-                    value={thisRecordLocations}
-                    onChange={e => setThisRecordLocations(e.target.value)}
-                    help="Location(s) within this record that pertain to the record link"
-                  />
-                  <ButtonEx
-                    type="button"
-                    variant="outline"
-                    outerClassName="justify-end w-full"
-                    className="w-20 place-self-center"
-                    disabled={!allowLinking || !selectedLinkId || selectedLink?.status === "Deleted" || mode !== "view"}
-                    onClick={handleUnlink}
-                    help={
-                      selectedLink
-                        ? `Delete link with record '${selectedLink?.otherRecordLabel}'.`
-                        : "No record link selected"
-                    }
-                  >
-                    Unlink
-                  </ButtonEx>
-                  <Label htmlFor="link-other-locations" className="col-start-1">Location(s) in other record:</Label>
-                  <InputEx
-                    id="link-other-locations"
-                    type="text"
-                    outerClassName="col-span-3"
-                    readOnly={!allowLinking || mode === "view"}
-                    disabled={!record || selectedLink?.otherRecordKind == "Topic"}
-                    value={otherRecordLocations}
-                    onChange={e => setOtherRecordLocations(e.target.value)}
-                    help="Location(s) within the other record that pertain to the record link"
-                  />
-                </fieldset>
-              </form>
-            </CarouselItem>
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
+                  <fieldset className="grid grid-cols-5 border rounded-md ml-1 p-2 gap-2">
+                    <legend>&nbsp;Link Details&nbsp;</legend>
+                    <Label className="col-start-1" htmlFor="link-id">Link ID:</Label>
+                    <InputEx
+                      id="link-id"
+                      type="text"
+                      readOnly={true}
+                      disabled={!selectedLink && mode !== CREATE}
+                      value={selectedLinkId}
+                      help="The database identifier of the selected record link"
+                    />
+                    <Label htmlFor="link-status">Status:</Label>
+                    <InputEx
+                      id="link-status"
+                      type="text"
+                      readOnly={true}
+                      disabled={!selectedLink && mode !== CREATE}
+                      value={selectedLink?.status ?? ''}
+                      help="The status of the selected record link"
+                    />
+                    <ButtonEx
+                      type="button"
+                      variant="outline"
+                      outerClassName="w-full justify-end"
+                      className="w-20 place-self-center"
+                      disabled={!allowLinking || mode == VIEW || (mode == EDIT && !isModified())}
+                      onClick={handleSave}
+                      help={
+                        selectedLink
+                          ? mode === CREATE
+                            ? "Save changes to new record link"
+                            : `Save changes to link with record '${selectedLink?.otherRecordLabel}'`
+                          : "No record link selected"
+                      }
+                    >
+                      Save
+                    </ButtonEx>
+                    <Label htmlFor="link-created-by" className="col-start-1">Created by:</Label>
+                    <InputEx
+                      id="link-created-by"
+                      type="text"
+                      readOnly={true}
+                      disabled={!selectedLink}
+                      value={selectedLink?.createdByUser ?? ''}
+                      help="The username of the user who created the record link"
+                    />
+                    <Label htmlFor="link-created">Created on:</Label>
+                    <InputEx
+                      id="link-created"
+                      type="text"
+                      readOnly={true}
+                      disabled={!selectedLink}
+                      value={formatDateTime(selectedLink?.created)}
+                      help="The date and time at which the record link was created"
+                    />
+                    <ButtonEx
+                      type="button"
+                      variant="outline"
+                      outerClassName="w-full justify-end"
+                      className="w-20 place-self-center"
+                      disabled={!allowLinking || mode === VIEW}
+                      onClick={handleCancel}
+                      help={
+                        selectedLink
+                          ? mode === CREATE
+                            ? "Discard changes to new record link"
+                            : `Discard changes to link with record '${selectedLink?.otherRecordLabel}'`
+                          : "No record link selected"
+                      }
+                    >
+                      Cancel
+                    </ButtonEx>
+                    <Label htmlFor="link-updated-by" className="col-start-1">Updated by:</Label>
+                    <InputEx
+                      id="link-updated-by"
+                      type="text"
+                      readOnly={true}
+                      disabled={!selectedLink}
+                      value={selectedLink?.updatedByUser ?? ''}
+                      help="The username of the user who last updated the record link"
+                    />
+                    <Label htmlFor="link-updated">Updated on:</Label>
+                    <InputEx
+                      id="link-updated"
+                      type="text"
+                      readOnly={true}
+                      disabled={!selectedLink}
+                      value={formatDateTime(selectedLink?.updated)}
+                      help="The date and time at which the record link was last updated"
+                    />
+                    <ButtonEx
+                      type="button"
+                      variant="outline"
+                      outerClassName="justify-end w-full"
+                      className="w-20 place-self-center"
+                      disabled={!allowLinking || !selectedLink || !otherRecordId || mode !== VIEW}
+                      onClick={handleRelink}
+                      help={
+                        otherRecord
+                          ? `Change link target to '${otherRecordLabel}'.`
+                          : "No target record selected"
+                      }
+                    >
+                      Relink
+                    </ButtonEx>
+                    <Label htmlFor="link-this-locations" className="col-start-1">Location(s) in this record:</Label>
+                    <InputEx
+                      id="link-this-locations"
+                      ref={thisLocationsRef}
+                      type="text"
+                      outerClassName="col-span-3"
+                      readOnly={!allowLinking || mode === VIEW}
+                      disabled={!selectedLink && mode !== CREATE}
+                      value={thisRecordLocations}
+                      onChange={e => setThisRecordLocations(e.target.value)}
+                      help="Location(s) within this record that pertain to the record link"
+                    />
+                    <ButtonEx
+                      type="button"
+                      variant="outline"
+                      outerClassName="justify-end w-full"
+                      className="w-20 place-self-center"
+                      disabled={!allowLinking || !selectedLink || selectedLink?.status === "Deleted" || mode !== VIEW}
+                      onClick={handleUnlink}
+                      help={
+                        selectedLink
+                          ? `Delete link with record '${selectedLink?.otherRecordLabel}'.`
+                          : "No record link selected"
+                      }
+                    >
+                      Unlink
+                    </ButtonEx>
+                    <Label htmlFor="link-other-locations" className="col-start-1">Location(s) in other record:</Label>
+                    <InputEx
+                      id="link-other-locations"
+                      type="text"
+                      outerClassName="col-span-3"
+                      readOnly={!allowLinking || mode === VIEW}
+                      // disabled={!record || selectedLink?.otherRecordKind == "Topic"}
+                      disabled={!selectedLink && mode !== CREATE}
+                      value={otherRecordLocations}
+                      onChange={e => setOtherRecordLocations(e.target.value)}
+                      help="Location(s) within the other record that pertain to the record link"
+                    />
+                  </fieldset>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
         <DialogFooter>
           <div className="flex flex-col gap-2">
             {
               record
-              ? <p className="text-center">
-                {
-                  entityAudit.pass
-                  ? <><CheckIcon className="inline text-green-600" />&nbsp;</>
-                  : <><XIcon className="inline text-red-600" />&nbsp;</>
-                }
-                {
-                record.status === "Published"
-                ? entityAudit.pass
-                  ? `${recordKind} #${record.id} is already published and still meets the minumum criteria for publication.`
-                  : <>{`${recordKind} #${record.id} is already published but no longer meets the minumum criteria for publication.`}<br/>Please review the field/link audit pages and correct any failures.</>
-                : entityAudit.pass
-                  ? <>{`${recordKind} #${record.id} meets the minumum criteria for publication.`}<br/>You may publish it at will; any unpublished outbound links will also be published.</>
-                  : <>{`${recordKind} #${record.id} does not yet meet the minumum criteria for publication.`}<br/>Please review the field/link audit pages and correct any failures.</>
-                }
-              </p>
-              : null
+                ? <p className="text-center">
+                  {
+                    entityAudit.pass
+                      ? <><CheckIcon className="inline text-green-600" />&nbsp;</>
+                      : <><XIcon className="inline text-red-600" />&nbsp;</>
+                  }
+                  {
+                    record.status === "Published"
+                      ? entityAudit.pass
+                        ? `${recordKind} #${record.id} is already published and still meets the minumum criteria for publication.`
+                        : <>{`${recordKind} #${record.id} is already published but no longer meets the minumum criteria for publication.`}<br />Please review the Field Audit and Link Audit pages and correct any failures.</>
+                      : entityAudit.pass
+                        ? <>{`${recordKind} #${record.id} meets the minumum criteria for publication.`}<br />You may publish it at will; any unpublished outbound links will also be published.</>
+                        : <>{`${recordKind} #${record.id} does not yet meet the minumum criteria for publication.`}<br />Please review the Field Audit and Link Audit pages and correct any failures.</>
+                  }
+                </p>
+                : null
             }
             <div className="flex justify-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-20"
+                disabled={statusDialogItem === FIELD_AUDIT}
+                title="Show previous tab"
+                onClick={handlePrevious}
+              >
+                Previous
+              </Button>
               <DialogClose asChild>
                 <Button
                   type="button"
@@ -1214,15 +1352,25 @@ export default function StatusDialog({recordKind, record} : {recordKind?: Linkab
                   Close
                 </Button>
               </DialogClose>
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled={!hasAuthority("UPD") || record?.status === "Published" || !entityAudit.pass}
-                  title="Publish the selected record"
-                  onClick={handlePublish}
-                >
-                  Publish
-                </Button>
+              <Button
+                type="button"
+                variant="outline"
+                disabled={!hasAuthority("UPD") || record?.status === "Published" || !entityAudit.pass}
+                title="Publish the selected record"
+                onClick={handlePublish}
+              >
+                Publish
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-20"
+                disabled={statusDialogItem === LINK_MANAGER}
+                title="Show next tab"
+                onClick={handleNext}
+              >
+                Next
+              </Button>
             </div>
           </div>
         </DialogFooter>

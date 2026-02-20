@@ -29,6 +29,7 @@ import io.github.demonfiddler.ee.server.util.ProfileUtils;
 import io.github.demonfiddler.ee.server.util.SecurityUtils;
 import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 
@@ -87,6 +88,10 @@ abstract class AbstractCustomRepositoryImpl {
             getLogger().debug("Defined query '{}'", queryName);
 
         return query;
+    }
+
+    EntityNotFoundException createEntityNotFoundException(String type, Long id) {
+        return new EntityNotFoundException(type + " not found with id: " + id);
     }
 
 }

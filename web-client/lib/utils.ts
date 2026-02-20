@@ -162,7 +162,7 @@ export function getEntityKind(recordKind: RecordKind): EntityKind | undefined {
   return ENTITY_KIND_BY_RECORD_KIND[recordKind] as EntityKind | undefined
 }
 
-export function getRecordLabel(recordKind: RecordKind | undefined, record?: ITrackedEntity): string | undefined {
+export function getRecordLabel(recordKind: RecordKind | undefined | null, record?: ITrackedEntity | null): string | undefined {
   if (!recordKind || !record)
     return undefined
 
@@ -197,7 +197,28 @@ export function getRecordLabel(recordKind: RecordKind | undefined, record?: ITra
     }
     case "Person": {
       const person = record as Person
-      return `${recordKind} #${record?.id}: '${person?.firstName} ${person?.lastName}'`
+      let label = `${recordKind} #${record?.id}:`
+      // if (person.title)
+      //   label += " " + person.title
+      // if (person.firstName)
+      //   label += " " + person.firstName
+      // if (person.prefix)
+      //   label += " " + person.prefix
+      // if (person.lastName)
+      //   label += " " + person.lastName
+      // if (person.suffix)
+      //   label += " " + person.suffix
+      if (person.prefix)
+        label += " " + person.prefix
+      if (person.lastName)
+        label += " " + person.lastName + ", "
+      if (person.suffix)
+        label += " " + person.suffix
+      if (person.title)
+        label += " " + person.title
+      if (person.firstName)
+        label += " " + person.firstName
+      return label
     }
     case "Publication": {
       const publication = record as Publication
@@ -267,35 +288,52 @@ export const FROM_ENTITY_ID = "fromEntityId"
 export const TO_ENTITY_ID = "toEntityId"
 export const FROM_ENTITY_LOCATIONS = "fromEntityLocations"
 export const TO_ENTITY_LOCATIONS = "toEntityLocations"
-export type LinkableEntityQueryFilterKindProperty = "fromEntityKind" | "toEntityKind"
+export const FROM_ENTITY_FUZZY = "fromEntityFuzzy"
+export const TO_ENTITY_FUZZY = "toEntityFuzzy"
 export type LinkableEntityQueryFilterIdProperty = "fromEntityId" | "toEntityId"
+export type LinkableEntityQueryFilterKindProperty = "fromEntityKind" | "toEntityKind"
+export type LinkableEntityQueryFilterFuzzyProperty = "fromEntityFuzzy" | "toEntityFuzzy"
 export type LinkableEntityQueryFilterLocationProperty = "fromEntityLocations" | "toEntityLocations"
 export type LinkableEntityQueryFilterProperty =
-  LinkableEntityQueryFilterKindProperty |
   LinkableEntityQueryFilterIdProperty |
+  LinkableEntityQueryFilterKindProperty |
+  LinkableEntityQueryFilterFuzzyProperty |
   LinkableEntityQueryFilterLocationProperty
-const NONE = [] as unknown as LinkableEntityQueryFilterProperty[]
-const FROM_TO = [
-  FROM_ENTITY_KIND,
-  TO_ENTITY_KIND,
-  FROM_ENTITY_ID,
-  TO_ENTITY_ID,
-  FROM_ENTITY_LOCATIONS,
-  TO_ENTITY_LOCATIONS
-] as LinkableEntityQueryFilterProperty[]
-const TO_FROM = [
-  TO_ENTITY_KIND,
-  FROM_ENTITY_KIND,
-  TO_ENTITY_ID,
-  FROM_ENTITY_ID,
-  TO_ENTITY_LOCATIONS,
-  FROM_ENTITY_LOCATIONS
-] as LinkableEntityQueryFilterProperty[]
-type MasterRecordLink = { [key in RecordKind]?: LinkableEntityQueryFilterProperty[] }
+export type LinkableEntityQueryFilterProperties = {
+  thisRecordKindProperty: LinkableEntityQueryFilterKindProperty
+  otherRecordKindProperty: LinkableEntityQueryFilterKindProperty
+  thisRecordIdProperty: LinkableEntityQueryFilterIdProperty
+  otherRecordIdProperty: LinkableEntityQueryFilterIdProperty
+  thisRecordFuzzyProperty: LinkableEntityQueryFilterFuzzyProperty
+  otherRecordFuzzyProperty: LinkableEntityQueryFilterFuzzyProperty
+  thisLocationsProperty: LinkableEntityQueryFilterLocationProperty
+  otherLocationsProperty: LinkableEntityQueryFilterLocationProperty
+}
+const FROM_TO = {
+  thisRecordKindProperty: FROM_ENTITY_KIND,
+  otherRecordKindProperty: TO_ENTITY_KIND,
+  thisRecordIdProperty: FROM_ENTITY_ID,
+  otherRecordIdProperty: TO_ENTITY_ID,
+  thisRecordFuzzyProperty: FROM_ENTITY_FUZZY,
+  otherRecordFuzzyProperty: TO_ENTITY_FUZZY,
+  thisLocationsProperty: FROM_ENTITY_LOCATIONS,
+  otherLocationsProperty: TO_ENTITY_LOCATIONS,
+} as LinkableEntityQueryFilterProperties
+const TO_FROM = {
+  thisRecordKindProperty: TO_ENTITY_KIND,
+  otherRecordKindProperty: FROM_ENTITY_KIND,
+  thisRecordIdProperty: TO_ENTITY_ID,
+  otherRecordIdProperty: FROM_ENTITY_ID,
+  thisRecordFuzzyProperty: TO_ENTITY_FUZZY,
+  otherRecordFuzzyProperty: FROM_ENTITY_FUZZY,
+  thisLocationsProperty: TO_ENTITY_LOCATIONS,
+  otherLocationsProperty: FROM_ENTITY_LOCATIONS,
+} as LinkableEntityQueryFilterProperties
+type MasterRecordLink = { [key in RecordKind]?: LinkableEntityQueryFilterProperties | null }
 type RecordLinks = { [key in RecordKind]?: MasterRecordLink }
 const recordLinkProperties: RecordLinks = {
   Claim: {
-    Claim: NONE,
+    Claim: null,
     Declaration: FROM_TO,
     Person: FROM_TO,
     Publication: FROM_TO,
@@ -304,25 +342,25 @@ const recordLinkProperties: RecordLinks = {
   },
   Declaration: {
     Claim: TO_FROM,
-    Declaration: NONE,
+    Declaration: null,
     Person: FROM_TO,
-    Publication: NONE,
+    Publication: null,
     Quotation: FROM_TO,
     Topic: TO_FROM
   },
   Person: {
     Claim: TO_FROM,
     Declaration: TO_FROM,
-    Person: NONE,
+    Person: null,
     Publication: TO_FROM,
     Quotation: TO_FROM,
     Topic: TO_FROM
   },
   Publication: {
     Claim: TO_FROM,
-    Declaration: NONE,
+    Declaration: null,
     Person: FROM_TO,
-    Publication: NONE,
+    Publication: null,
     Quotation: TO_FROM,
     Topic: TO_FROM
   },
@@ -331,7 +369,7 @@ const recordLinkProperties: RecordLinks = {
     Declaration: TO_FROM,
     Person: FROM_TO,
     Publication: FROM_TO,
-    Quotation: NONE,
+    Quotation: null,
     Topic: TO_FROM
   },
   Topic: {
@@ -340,20 +378,20 @@ const recordLinkProperties: RecordLinks = {
     Person: FROM_TO,
     Publication: FROM_TO,
     Quotation: FROM_TO,
-    Topic: NONE
+    Topic: null,
   },
 }
 
 /**
- * Returns the to/from entity link properties.
- * @param thisRecordKind The record kind of 'this record'.
+ * Returns the from/to entity link properties.
+ * @param thisRecordKind The record kind of the contextual 'this record'.
  * @param otherRecordKind The record kind of the 'other record'.
- * @returns A four-element array containing the actual property names for
- * `[thisRecordKindProperty, otherRecordKindProperty, thisRecordIdProperty, otherRecordIdProperty, thisLocationsProperty, otherLocationsProperty]`,
- * or an empty array if no such link is supported.
+ * @returns The names of the from/to entity link properties.
  */
-export function getRecordLinkProperties(thisRecordKind: LinkableEntityKind, otherRecordKind: LinkableEntityKind): LinkableEntityQueryFilterProperty[] {
-  return recordLinkProperties?.[thisRecordKind]?.[otherRecordKind] ?? NONE
+export function getRecordLinkProperties(thisRecordKind: LinkableEntityKind, otherRecordKind: LinkableEntityKind)
+  : LinkableEntityQueryFilterProperties | null {
+
+  return recordLinkProperties?.[thisRecordKind]?.[otherRecordKind] ?? null
 }
 
 export type RecordLink = {

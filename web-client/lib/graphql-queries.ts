@@ -114,6 +114,7 @@ fragment linkedEntityFields on ILinkableEntity {
     title
   }
   ...on Person {
+    title
     firstName
     prefix
     lastName

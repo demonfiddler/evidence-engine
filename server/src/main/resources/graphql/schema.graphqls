@@ -897,7 +897,7 @@ type JournalPage implements IPage {
     content: [Journal!]!
 }
 
-"Parameters to filter an linkable entity query."
+"Parameters to filter a linkable entity query."
 input LinkableEntityQueryFilter {
     "The topic identifier, mandatory when querying the master list or when master = NONE."
     topicId: ID
@@ -908,11 +908,15 @@ input LinkableEntityQueryFilter {
     # Do we actually need this field? Certainly not if fromEntityId is specified but what if it isn't? Would that mean select target records if they are linked from by any entity of this kind? Is that even a useful/meaningful query? NO!
     "The kind of the 'linked-from' entity."
     fromEntityKind: EntityKind
+    "Perform a fuzzy match based on the 'from' entity."
+    fromEntityFuzzy: Boolean
     "The ID of the 'linked-to' entity."
     toEntityId: ID
     # Do we actually need this field? Certainly not if toEntityId is specified but what if it isn't? Would that mean select target records of the specified type if they are linked from by fromEntityid? That is a useful/meaningful query.
     "The kind of the 'linked-to' entity."
     toEntityKind: EntityKind
+    "Perform a fuzzy match based on the 'to' entity."
+    toEntityFuzzy: Boolean
     "Return only records with these status codes (default: ALL)."
     status: [StatusKind!]
     "Free text search string (applied to the 'linked-to' entity)."

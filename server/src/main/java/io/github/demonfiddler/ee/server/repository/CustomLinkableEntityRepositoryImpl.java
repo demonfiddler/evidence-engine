@@ -19,9 +19,19 @@
 
 package io.github.demonfiddler.ee.server.repository;
 
+import static io.github.demonfiddler.ee.server.model.EntityKind.DEC;
+import static io.github.demonfiddler.ee.server.model.EntityKind.PER;
+import static io.github.demonfiddler.ee.server.model.EntityKind.PUB;
+import static io.github.demonfiddler.ee.server.model.EntityKind.QUO;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +43,17 @@ import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+import io.github.demonfiddler.ee.server.model.Declaration;
+import io.github.demonfiddler.ee.server.model.EntityKind;
 import io.github.demonfiddler.ee.server.model.ILinkableEntity;
 import io.github.demonfiddler.ee.server.model.LinkableEntityQueryFilter;
+import io.github.demonfiddler.ee.server.model.Name;
+import io.github.demonfiddler.ee.server.model.Person;
+import io.github.demonfiddler.ee.server.model.Publication;
+import io.github.demonfiddler.ee.server.model.Quotation;
 import io.github.demonfiddler.ee.server.model.StatusKind;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import jakarta.annotation.Resource;
 import jakarta.persistence.Query;
 
 /**
@@ -48,13 +66,65 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
     /** Describes the elements of a query. */
     private static record QueryMetaData(LinkableEntityQueryFilter filter, Pageable pageable, String entityName,
         String countQueryName, String selectQueryName, boolean hasRecordId, boolean hasTopic, boolean isRecursive,
-        boolean hasFromEntityKind, boolean hasFromEntityId, String fromEntityName, boolean hasToEntityKind,
-        boolean hasToEntityId, String toEntityName, boolean hasStatus, boolean hasText, boolean hasTextH2,
-        boolean hasTextMariaDB, boolean isAdvanced, boolean isPaged, boolean isSorted,
-        boolean isSortedOnCreatedByUsername, boolean isSortedOnUpdatedByUsername) {
+        boolean hasFromEntityId, boolean hasFromEntityKind, boolean hasFromEntityFuzzy, String fromEntityName,
+        boolean hasToEntityId, boolean hasToEntityKind, boolean hasToEntityFuzzy, String toEntityName,
+        boolean hasStatus, boolean hasText, boolean hasTextH2, boolean hasTextMariaDB, boolean isAdvanced,
+        boolean isPaged, boolean isSorted, boolean isSortedOnCreatedByUsername, boolean isSortedOnUpdatedByUsername) {
+    }
+
+    private static record FuzzySearch(Supplier<String> predicate, Function<ILinkableEntity, Object> param) {
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomLinkableEntityRepositoryImpl.class);
+
+    private static final FuzzySearch DEFAULT_FUZZY_SEARCH = new FuzzySearch(() -> "", rec -> "");
+
+    /** Maps contextual entity kind to other entity kind to a predicate/param factory. */
+    private static final Map<EntityKind, Map<EntityKind, FuzzySearch>> FUZZY_SEARCHES = Map.of( //
+        DEC, Map.of( //
+            PER, new FuzzySearch(() -> "last_name IN :fuzzyParam", //
+                rec -> lastNames(((Declaration)rec).getSignatories())) //
+        ), //
+        PER, Map.of( //
+            DEC, new FuzzySearch(() -> "signatories LIKE :fuzzyParam", //
+                rec -> "%" + ((Person)rec).getLastName() + '%'), //
+            PUB, new FuzzySearch(() -> "authors LIKE :fuzzyParam", //
+                rec -> "%" + ((Person)rec).getLastName() + '%'), //
+            QUO, new FuzzySearch(() -> "quotee LIKE :fuzzyParam", //
+                rec -> "%" + ((Person)rec).getLastName() + '%') //
+        ), //
+        PUB, Map.of( //
+            PER, new FuzzySearch(() -> "last_name IN :fuzzyParam", //
+                rec -> lastNames(((Publication)rec).getAuthors())) //
+        ), //
+        QUO, Map.of( //
+            PER, new FuzzySearch(() -> "last_name = :fuzzyParam", //
+                rec -> lastName(((Quotation)rec).getQuotee())), //
+            PUB, new FuzzySearch(() -> "authors LIKE :fuzzyParam", //
+                rec -> "%" + lastName(((Quotation)rec).getQuotee()) + '%') //
+        ) //
+    );
+
+    private static final List<String> lastNames(String names) {
+        StringTokenizer tok = new StringTokenizer(names, "\r\n");
+        List<String> lastNames = new ArrayList<>(tok.countTokens());
+        while (tok.hasMoreTokens()) {
+            String lastName = lastName(tok.nextToken());
+            if (lastName != null)
+                lastNames.add(lastName);
+        }
+        return lastNames;
+    }
+
+    private static final String lastName(String namestr) {
+        Name name = Name.parse(namestr);
+        return name != null ? name.getLastName() : null;
+    }
+
+    @Resource
+    LinkableEntityRepository linkableEntityRepository;
+    @Resource
+    EntityUtils entityUtils;
 
     @Override
     Logger getLogger() {
@@ -66,6 +136,10 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
      * @return The runtime entity class.
      */
     protected abstract Class<T> getEntityClass();
+
+    protected final EntityKind getEntityKind() {
+        return entityUtils.getEntityKind(getEntityClass());
+    }
 
     /**
      * Returns the database columns for which there exists a full text index.
@@ -79,16 +153,18 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
      * @param pageable Specifies sorting and pagination, must not be {@code null}.
      * @return Query metadata.
      */
-    @SuppressWarnings("null")
+    @SuppressWarnings({ "null", "unused" })
     private QueryMetaData getQueryMetaData(@Nullable LinkableEntityQueryFilter filter, @NonNull Pageable pageable) {
         boolean hasFilter = filter != null;
         boolean hasRecordId = hasFilter && filter.getRecordId() != null;
         boolean hasTopic = hasFilter && !hasRecordId && filter.getTopicId() != null;
         boolean isRecursive = hasTopic && filter.getRecursive() != null && filter.getRecursive();
-        boolean hasFromEntityKind = hasFilter && !hasRecordId && filter.getFromEntityKind() != null;
         boolean hasFromEntityId = hasFilter && !hasRecordId && filter.getFromEntityId() != null;
-        boolean hasToEntityKind = hasFilter && !hasRecordId && filter.getToEntityKind() != null;
+        boolean hasFromEntityKind = hasFilter && !hasRecordId && filter.getFromEntityKind() != null;
+        boolean hasFromEntityFuzzy = hasFilter && !hasRecordId && Boolean.TRUE.equals(filter.getFromEntityFuzzy());
         boolean hasToEntityId = hasFilter && !hasRecordId && filter.getToEntityId() != null;
+        boolean hasToEntityKind = hasFilter && !hasRecordId && filter.getToEntityKind() != null;
+        boolean hasToEntityFuzzy = hasFilter && !hasRecordId && Boolean.TRUE.equals(filter.getToEntityFuzzy());
         boolean hasStatus = hasFilter && !hasRecordId && filter.getStatus() != null && !filter.getStatus().isEmpty();
         boolean hasText = hasFilter && !hasRecordId && filter.getText() != null && !filter.getText().isBlank();
         boolean hasTextH2 = hasText && profileUtils.isIntegrationTesting();
@@ -102,6 +178,18 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
         String fromEntityName = hasFromEntityKind ? entityUtils.getEntityName(filter.getFromEntityKind()) : "";
         String toEntityName = hasToEntityKind ? entityUtils.getEntityName(filter.getToEntityKind()) : "";
 
+        if (hasFromEntityFuzzy && hasToEntityFuzzy) {
+            throw new IllegalArgumentException("fromEntityFuzzy and toEntityFuzzy cannot both be set");
+        }
+
+        if (hasFromEntityFuzzy && (!hasToEntityId || !hasToEntityKind) //
+            || hasToEntityFuzzy && (!hasFromEntityId || !hasFromEntityKind)) {
+
+            throw new IllegalArgumentException(
+                "A fuzzy search requires all three of (fromEntityFuzzy, toEntityId and toEntityKind) "
+                    + "or (toEntityFuzzy, fromEntityId and fromEntityKind) to be set");
+        }
+
         // Unauthenticated queries should only return published results.
         if (securityUtils.getCurrentUsername().equals("anonymousUser")) {
             if (filter == null)
@@ -110,10 +198,8 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
             hasFilter = hasStatus = true;
         }
 
-        // For paged queries, we need to ensure that the sort order includes "id"
-        // because otherwise the join with H2's
-        // FT_SEARCH_DATA can result in records duplicated across successive pages, OR
-        // result sets involving JOINs can
+        // For paged queries, we need to ensure that the sort order includes "id" because otherwise the join with H2's
+        // FT_SEARCH_DATA can result in records duplicated across successive pages, OR result sets involving JOINs can
         // be returned in a nondeterministic order.
         if (isPaged && pageable.getSort().filter(o -> o.getProperty().equals("id")).isEmpty()) {
             Sort sort = pageable.getSort().and(Sort.by("id"));
@@ -131,8 +217,13 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
         StringBuilder selectQueryName = new StringBuilder();
         StringBuilder[] queryNames = { countQueryName, selectQueryName };
         append(entityName, queryNames);
-        countQueryName.append(".countBy");
-        selectQueryName.append(".findBy");
+        countQueryName.append(".count");
+        selectQueryName.append(".find");
+        if (hasRecordId || hasTopic || hasFromEntityId || hasFromEntityKind || hasFromEntityFuzzy || hasToEntityId
+            || hasToEntityKind || hasToEntityFuzzy || hasStatus || hasText) {
+
+            append("By", queryNames);
+        }
         if (hasRecordId) {
             append("Id", queryNames);
         }
@@ -141,22 +232,31 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
                 append("Recursive", queryNames);
             append("Topic", queryNames);
         }
-        if (hasFromEntityKind || hasFromEntityId) {
-            append("FromEntity", queryNames);
-            if (hasFromEntityKind)
-                append("Kind", queryNames);
-            if (hasFromEntityId)
-                append("Id", queryNames);
+        if (hasFromEntityId || hasFromEntityKind || hasFromEntityFuzzy) {
+            if (!hasToEntityFuzzy)
+                append("FromEntity", queryNames);
+            if (hasFromEntityFuzzy) {
+                append(filter.getToEntityKind().label(), queryNames);
+                append("Fuzzy", queryNames);
+            } else if (!hasToEntityFuzzy) {
+                if (hasFromEntityId)
+                    append("Id", queryNames);
+                if (hasFromEntityKind)
+                    append("Kind", queryNames);
+            }
         }
-        if (hasToEntityKind || hasToEntityId) {
-            append("ToEntity", queryNames);
-            // Unnecessary, since the query name starts with toEntityName?
-            // Actually, it depends on whether the query's entity kind is linked as the
-            // fromEntity or the toEntity!
-            if (hasToEntityKind)
-                append("Kind", queryNames);
-            if (hasToEntityId)
-                append("Id", queryNames);
+        if (hasToEntityId || hasToEntityKind || hasToEntityFuzzy) {
+            if (!hasFromEntityFuzzy)
+                append("ToEntity", queryNames);
+            if (hasToEntityFuzzy) {
+                append(filter.getFromEntityKind().label(), queryNames);
+                append("Fuzzy", queryNames);
+            } else if (!hasFromEntityFuzzy) {
+                if (hasToEntityId)
+                    append("Id", queryNames);
+                if (hasToEntityKind)
+                    append("Kind", queryNames);
+            }
         }
         if (hasStatus)
             append("Status", queryNames);
@@ -170,9 +270,9 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
         }
 
         return new QueryMetaData(filter, pageable, entityName, countQueryName.toString(), selectQueryName.toString(),
-            hasRecordId, hasTopic, isRecursive, hasFromEntityKind, hasFromEntityId, fromEntityName, hasToEntityKind,
-            hasToEntityId, toEntityName, hasStatus, hasText, hasTextH2, hasTextMariaDB, isAdvanced, isPaged, isSorted,
-            isSortedOnCreatedByUsername, isSortedOnUpdatedByUsername);
+            hasRecordId, hasTopic, isRecursive, hasFromEntityId, hasFromEntityKind, hasFromEntityFuzzy, fromEntityName,
+            hasToEntityId, hasToEntityKind, hasToEntityFuzzy, toEntityName, hasStatus, hasText, hasTextH2,
+            hasTextMariaDB, isAdvanced, isPaged, isSorted, isSortedOnCreatedByUsername, isSortedOnUpdatedByUsername);
     }
 
     /**
@@ -181,47 +281,32 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
      * @return An executable query pair.
      */
     private QueryPair defineNamedQueries(QueryMetaData m) {
-        // Question: do we need the recursive topic filter if a master entity is
-        // provided?
-        // One might be tempted to think that we would only need to apply a topic filter
-        // when retrieving the master
-        // entity list, and that retrieval of associated entities could be done simply
-        // via the entity_link
-        // association table.
+        // Question: do we need the recursive topic filter if a master entity is provided?
+        // One might be tempted to think that we would only need to apply a topic filter when retrieving the master
+        // entity list, and that retrieval of associated entities could be done simply via the entity_link association
+        // table.
         //
-        // However, a master entity person might be associated with multiple topics and
-        // multiple publications or
-        // declarations, each of which may or may not pertain to the specified topic,
-        // so if a topic filter is specified, we would not want to include publications
-        // or declarations that do not
-        // pertain to that topic.
+        // However, a master entity person might be associated with multiple topics and multiple publications or
+        // declarations, each of which may or may not pertain to the specified topic, so if a topic filter is specified,
+        // we would not want to include publications or declarations that do not pertain to that topic.
         //
-        // Additionally, if NO topic was selected, we would expect to see ALL associated
-        // publications and declarations,
-        // whereas when a topic IS selected, we would expect to see ONLY those
-        // publications and declarations associated
+        // Additionally, if NO topic was selected, we would expect to see ALL associated publications and declarations,
+        // whereas when a topic IS selected, we would expect to see ONLY those publications and declarations associated
         // with that topic.
         //
-        // In other words, if a topicId is supplied, it must be used in the query
-        // regardless of whether a master entity
+        // In other words, if a topicId is supplied, it must be used in the query regardless of whether a master entity
         // is supplied.
+
         /*
-         * The primary use for this query is to fetch all records of a particular entity
-         * kind, which match a set of
-         * criteria including topic and master entity links, status and text matches.
-         * This is used by the filtered
-         * claims, declarations, persons, publications and quotations top-level query
-         * fields.
-         * A possible future use of this query might be to fetch all records of any
-         * entity kind, which match the same set
-         * of criteria, with a view to implementing queries such as
-         * ILinkableEntity.fromEntities: [ILinkableEntity] and
-         * ILinkableEntity.toEntities: [ILinkableEntity]. Such potentially heterogeneous
-         * results would require a native
-         * query that joins the base "entity" table with all other tables "claim",
-         * "declaration", "person", "publication",
-         * "quotation" and "topic". In this case we would have to deal the possibility
-         * of column name/type clashes.
+         * The primary use for this query is to fetch all records of a particular entity kind, which match a set of
+         * criteria including topic and master entity links, status and text matches. This is used by the filtered
+         * claims, declarations, persons, publications and quotations top-level query fields. A possible future use of
+         * this query might be to fetch all records of any entity kind, which match the same set of criteria, with a
+         * view to implementing queries such as ILinkableEntity.fromEntities: [ILinkableEntity] and
+         * ILinkableEntity.toEntities: [ILinkableEntity]. Such potentially heterogeneous results would require a native
+         * query that joins the base "entity" table with all other tables "claim", "declaration", "person",
+         * "publication", "quotation" and "topic". In this case we would have to deal the possibility of column
+         * name/type clashes.
          * 
          * -- This is what the query template looks like conceptually when ALL filter
          * fields are provided.
@@ -279,7 +364,7 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
          * -- }
          * -- }
          * 
-         * -- if (m.hasFromEntityKind || m.hasFromEntityId) { meJoinClause =
+         * -- if ((m.hasFromEntityId || m.hasFromEntityKind) && !m.hasToEntityFuzzy) { meJoinClause =
          * JOIN "entity_link" master_el
          * ON
          * -- if (m.hasFromEntityId) {
@@ -294,7 +379,7 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
          * -- }
          * -- }
          * 
-         * -- if (m.hasToEntityKind || m.hasToEntityId) { meJoinClause =
+         * -- if ((m.hasToEntityId || m.hasToEntityKind) && !m.hasFromEntityFuzzy) { meJoinClause =
          * JOIN "entity_link" master_el
          * ON
          * -- if (m.hasToEntityId) {
@@ -329,12 +414,20 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
          * ON ubu."id" = e."updated_by_user_id"
          * --}
          *
-         * -- if (m.hasRecordId || m.hasStatus || m.hasTextMariaDB) {
+         * -- if (m.hasRecordId || m.hasFromEntityFuzzy || m.hasToEntityFuzzy || m.hasStatus || m.hasTextMariaDB) {
          * WHERE
          * -- if (m.hasRecordId) {
          *   e."id" = :recordId
          * -- }
          *
+         * -- if (m.hasFromEntityFuzzy) {
+         *   AND ${fuzzyPredicate}
+         * -- }
+         * 
+         * -- if (m.hasToEntityFuzzy) {
+         *   AND ${fuzzyPredicate}
+         * -- }
+         * 
          * -- if (m.hasStatus) {
          *   AND e."status" IN (:status)
          * -- }
@@ -419,9 +512,10 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
             }
         }
 
-        // N.B. This code assumes that fromEntityKind/fromEntityId and toEntityKind/toEntityId are mutually exclusive.
+        // N.B. This code assumes that fromEntityId/fromEntityKind/toEntityFuzzy and
+        // toEntityId/toEntityKind/fromEntityFuzzy are mutually exclusive.
         StringBuilder meJoinClause = new StringBuilder();
-        if (m.hasFromEntityKind || m.hasFromEntityId) {
+        if ((m.hasFromEntityId || m.hasFromEntityKind) && !m.hasToEntityFuzzy) {
             meJoinClause.append(NL) //
                 .append("JOIN \"entity_link\" master_el").append(NL) //
                 .append("ON");
@@ -443,7 +537,7 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
                     .append("    master_e.\"id\" = master_el.\"from_entity_id\"").append(NL) //
                     .append("    AND master_e.\"dtype\" = :fromEntityKind");
             }
-        } else if (m.hasToEntityKind || m.hasToEntityId) {
+        } else if ((m.hasToEntityId || m.hasToEntityKind) && !m.hasFromEntityFuzzy) {
             meJoinClause.append(NL) //
                 .append("JOIN \"entity_link\" master_el").append(NL) //
                 .append("ON");
@@ -494,7 +588,7 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
         }
 
         StringBuilder whereClause = new StringBuilder();
-        if (m.hasRecordId || m.hasStatus || m.hasTextMariaDB) {
+        if (m.hasRecordId || m.hasFromEntityFuzzy || m.hasToEntityFuzzy || m.hasStatus || m.hasTextMariaDB) {
             whereClause.append(NL) //
                 .append("WHERE");
             needsAnd = false;
@@ -504,6 +598,22 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
                 if (needsAnd)
                     whereClause.append("AND ");
                 whereClause.append("e.\"id\" = :recordId");
+                needsAnd = true;
+            }
+            if (m.hasFromEntityFuzzy) {
+                whereClause.append(NL) //
+                    .append("    ");
+                if (needsAnd)
+                    whereClause.append("AND ");
+                whereClause.append("ee.").append(getFuzzyPredicate(m.filter.getToEntityKind(), getEntityKind()));
+                needsAnd = true;
+            }
+            if (m.hasToEntityFuzzy) {
+                whereClause.append(NL) //
+                    .append("    ");
+                if (needsAnd)
+                    whereClause.append("AND ");
+                whereClause.append("ee.").append(getFuzzyPredicate(m.filter.getFromEntityKind(), getEntityKind()));
                 needsAnd = true;
             }
             if (m.hasStatus) {
@@ -552,6 +662,27 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
         return new QueryPair(countQuery, selectQuery);
     }
 
+    private String getFuzzyPredicate(EntityKind contextualEntityKind, EntityKind otherEntityKind) {
+        String predicate = FUZZY_SEARCHES.getOrDefault(contextualEntityKind, Collections.emptyMap())
+            .getOrDefault(otherEntityKind, DEFAULT_FUZZY_SEARCH).predicate.get();
+
+        LOGGER.trace("getFuzzyPredicate({}, {}) returned \"{}\"", contextualEntityKind, otherEntityKind, predicate);
+
+        return predicate;
+    }
+
+    private Object getFuzzyParam(Long contextualEntityId, EntityKind contextualEntityKind, EntityKind otherEntityKind) {
+        ILinkableEntity contextualEntity = linkableEntityRepository.findById(contextualEntityId)
+            .orElseThrow(() -> createEntityNotFoundException(contextualEntityKind.label(), contextualEntityId));
+        Object param = FUZZY_SEARCHES.getOrDefault(contextualEntityKind, Collections.emptyMap())
+            .getOrDefault(otherEntityKind, DEFAULT_FUZZY_SEARCH).param.apply(contextualEntity);
+
+        LOGGER.trace("getFuzzyParam({}, {}, {}) returned \"{}\"", contextualEntityId, contextualEntityKind,
+            otherEntityKind, param);
+
+        return param;
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public Page<T> findByFilter(@Nullable LinkableEntityQueryFilter filter, @NonNull Pageable pageable) {
@@ -573,14 +704,24 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
             params.put("recordId", m.filter.getRecordId());
         if (m.hasTopic)
             params.put("topicId", m.filter.getTopicId());
-        if (m.hasFromEntityKind)
-            params.put("fromEntityKind", m.filter.getFromEntityKind().name());
-        if (m.hasFromEntityId)
-            params.put("fromEntityId", m.filter.getFromEntityId());
-        if (m.hasToEntityKind)
-            params.put("toEntityKind", m.filter.getToEntityKind().name());
-        if (m.hasToEntityId)
-            params.put("toEntityId", m.filter.getToEntityId());
+        if (m.hasFromEntityFuzzy) {
+            params.put("fuzzyParam",
+                getFuzzyParam(m.filter.getToEntityId(), m.filter.getToEntityKind(), getEntityKind()));
+        } else {
+            if (m.hasToEntityId)
+                params.put("toEntityId", m.filter.getToEntityId());
+            if (m.hasToEntityKind)
+                params.put("toEntityKind", m.filter.getToEntityKind().name());
+        }
+        if (m.hasToEntityFuzzy) {
+            params.put("fuzzyParam",
+                getFuzzyParam(m.filter.getFromEntityId(), m.filter.getFromEntityKind(), getEntityKind()));
+        } else {
+            if (m.hasFromEntityId)
+                params.put("fromEntityId", m.filter.getFromEntityId());
+            if (m.hasFromEntityKind)
+                params.put("fromEntityKind", m.filter.getFromEntityKind().name());
+        }
         if (m.hasStatus)
             params.put("status", m.filter.getStatus().stream().map(e -> e.name()).toList());
         if (m.hasText)
@@ -589,8 +730,18 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
         if (m.isPaged)
             entityUtils.setQueryPagination(queries.selectQuery(), m.pageable);
 
+        if (LOGGER.isTraceEnabled())
+            LOGGER.debug("Executing query '{}' with parameters {}", m.countQueryName, params);
+        else
+            LOGGER.debug("Executing query '{}'", m.countQueryName);
         long total = (Long)queries.countQuery().getSingleResult();
+
+        if (LOGGER.isTraceEnabled())
+            LOGGER.debug("Executing query '{}' with parameters {}", m.selectQueryName, params);
+        else
+            LOGGER.debug("Executing query '{}'", m.selectQueryName);
         List<T> content = queries.selectQuery().getResultList();
+
         return new PageImpl<>(content, m.pageable, total);
     }
 

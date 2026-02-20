@@ -90,6 +90,14 @@ public class LinkableEntityQueryFilter extends /*EntityLinkQueryFilter*/Abstract
 		listDepth = 0)
 	EntityKind fromEntityKind;
 
+	/**
+	 * Perform a fuzzy match based on the 'from' entity.
+	 */
+	@JsonProperty("fromEntityFuzzy")
+	@GraphQLScalar(fieldName = "fromEntityFuzzy", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class,
+		listDepth = 0)
+	Boolean fromEntityFuzzy;
+
 	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
 	 * The ID of the 'linked-to' entity.
@@ -106,6 +114,14 @@ public class LinkableEntityQueryFilter extends /*EntityLinkQueryFilter*/Abstract
 	@GraphQLScalar(fieldName = "toEntityKind", graphQLTypeSimpleName = "EntityKind", javaClass = EntityKind.class,
 		listDepth = 0)
 	EntityKind toEntityKind;
+
+	/**
+	 * Perform a fuzzy match based on the 'to' entity.
+	 */
+	@JsonProperty("toEntityFuzzy")
+	@GraphQLScalar(fieldName = "toEntityFuzzy", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class,
+		listDepth = 0)
+	Boolean toEntityFuzzy;
 
 	// Uncommented, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	/**
@@ -199,6 +215,22 @@ public class LinkableEntityQueryFilter extends /*EntityLinkQueryFilter*/Abstract
 	}
 
 	/**
+	 * Perform a fuzzy match based on the 'from' entity.
+	 */
+	@JsonProperty("fromEntityFuzzy")
+	public void setFromEntityFuzzy(Boolean fromEntityFuzzy) {
+		this.fromEntityFuzzy = fromEntityFuzzy;
+	}
+
+	/**
+	 * Perform a fuzzy match based on the 'from' entity.
+	 */
+	@JsonProperty("fromEntityFuzzy")
+	public Boolean getFromEntityFuzzy() {
+		return this.fromEntityFuzzy;
+	}
+
+	/**
 	 * The ID of the 'linked-to' entity.
 	 */
 	@JsonProperty("toEntityId")
@@ -228,6 +260,22 @@ public class LinkableEntityQueryFilter extends /*EntityLinkQueryFilter*/Abstract
 	@JsonProperty("toEntityKind")
 	public EntityKind getToEntityKind() {
 		return this.toEntityKind;
+	}
+
+	/**
+	 * Perform a fuzzy match based on the 'to' entity.
+	 */
+	@JsonProperty("toEntityFuzzy")
+	public void setToEntityFuzzy(Boolean toEntityFuzzy) {
+		this.toEntityFuzzy = toEntityFuzzy;
+	}
+
+	/**
+	 * Perform a fuzzy match based on the 'to' entity.
+	 */
+	@JsonProperty("toEntityFuzzy")
+	public Boolean getToEntityFuzzy() {
+		return this.toEntityFuzzy;
 	}
 
 	/**
@@ -288,9 +336,13 @@ public class LinkableEntityQueryFilter extends /*EntityLinkQueryFilter*/Abstract
 			+ ", " //
 			+ "fromEntityKind: " + this.fromEntityKind //
 			+ ", " //
+			+ "fromEntityFuzzy: " + this.fromEntityFuzzy //
+			+ ", " //
 			+ "toEntityId: " + this.toEntityId //
 			+ ", " //
 			+ "toEntityKind: " + this.toEntityKind //
+			+ ", " //
+			+ "toEntityFuzzy: " + this.toEntityFuzzy //
 			+ ", " //
 			+ "status: " + this.status //
 			+ ", " //
@@ -315,8 +367,10 @@ public class LinkableEntityQueryFilter extends /*EntityLinkQueryFilter*/Abstract
 		private Boolean recursive;
 		private Long fromEntityId;
 		private EntityKind fromEntityKind;
+		private Boolean fromEntityFuzzy;
 		private Long toEntityId;
 		private EntityKind toEntityKind;
+		private Boolean toEntityFuzzy;
 		private List<StatusKind> status;
 		private String text;
 		private Boolean advancedSearch;
@@ -354,6 +408,14 @@ public class LinkableEntityQueryFilter extends /*EntityLinkQueryFilter*/Abstract
 		}
 
 		/**
+		 * Perform a fuzzy match based on the 'from' entity.
+		 */
+		public Builder withFromEntityFuzzy(Boolean fromEntityFuzzyParam) {
+			this.fromEntityFuzzy = fromEntityFuzzyParam;
+			return this;
+		}
+
+		/**
 		 * The ID of the 'linked-to' entity.
 		 */
 		public Builder withToEntityId(Long toEntityIdParam) {
@@ -366,6 +428,14 @@ public class LinkableEntityQueryFilter extends /*EntityLinkQueryFilter*/Abstract
 		 */
 		public Builder withToEntityKind(EntityKind toEntityKindParam) {
 			this.toEntityKind = toEntityKindParam;
+			return this;
+		}
+
+		/**
+		 * Perform a fuzzy match based on the 'to' entity.
+		 */
+		public Builder withToEntityFuzzy(Boolean toEntityFuzzyParam) {
+			this.toEntityFuzzy = toEntityFuzzyParam;
 			return this;
 		}
 
@@ -399,8 +469,10 @@ public class LinkableEntityQueryFilter extends /*EntityLinkQueryFilter*/Abstract
 			_object.setRecursive(this.recursive);
 			_object.setFromEntityId(this.fromEntityId);
 			_object.setFromEntityKind(this.fromEntityKind);
+			_object.setFromEntityFuzzy(this.fromEntityFuzzy);
 			_object.setToEntityId(this.toEntityId);
 			_object.setToEntityKind(this.toEntityKind);
+			_object.setToEntityFuzzy(this.toEntityFuzzy);
 			_object.setStatus(this.status);
 			_object.setText(this.text);
 			_object.setAdvancedSearch(this.advancedSearch);
@@ -412,46 +484,46 @@ public class LinkableEntityQueryFilter extends /*EntityLinkQueryFilter*/Abstract
 	// Commented out, as InputParameter.getStringContentForAnInputTypeValue() doesn't check superclass fields.
 	// @SuppressWarnings("unchecked")
 	// abstract static class AbstractBuilder<B extends AbstractBuilder<B, T>, T extends LinkableEntityQueryFilter>
-	// 	extends EntityLinkQueryFilter.AbstractBuilder<B, T> {
+	// extends EntityLinkQueryFilter.AbstractBuilder<B, T> {
 
-	// 	private Long topicId;
-	// 	private Boolean recursive;
+	// private Long topicId;
+	// private Boolean recursive;
 
-	// 	/**
-	// 	 * The topic identifier, mandatory when querying the master list or when master = NONE.
-	// 	 */
-	// 	public B withTopicId(Long topicIdParam) {
-	// 		this.topicId = topicIdParam;
-	// 		return (B)this;
-	// 	}
+	// /**
+	// * The topic identifier, mandatory when querying the master list or when master = NONE.
+	// */
+	// public B withTopicId(Long topicIdParam) {
+	// this.topicId = topicIdParam;
+	// return (B)this;
+	// }
 
-	// 	/**
-	// 	 * Whether queries including a topicId should be executed recursively.
-	// 	 */
-	// 	public B withRecursive(Boolean recursiveParam) {
-	// 		this.recursive = recursiveParam;
-	// 		return (B)this;
-	// 	}
+	// /**
+	// * Whether queries including a topicId should be executed recursively.
+	// */
+	// public B withRecursive(Boolean recursiveParam) {
+	// this.recursive = recursiveParam;
+	// return (B)this;
+	// }
 
-	// 	T build(T _object) {
-	// 		super.build(_object);
-	// 		_object.setTopicId(this.topicId);
-	// 		_object.setRecursive(this.recursive);
-	// 		return _object;
-	// 	}
+	// T build(T _object) {
+	// super.build(_object);
+	// _object.setTopicId(this.topicId);
+	// _object.setRecursive(this.recursive);
+	// return _object;
+	// }
 
 	// }
 
 	// /**
-	//  * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
-	//  * {@link #builderForLinkableEntityQueryFilter()}
-	//  */
+	// * The Builder that helps building instance of this POJO. You can get an instance of this class, by calling the
+	// * {@link #builderForLinkableEntityQueryFilter()}
+	// */
 	// public static class Builder extends AbstractBuilder<Builder, LinkableEntityQueryFilter> {
 
-	// 	@Override
-	// 	public LinkableEntityQueryFilter build() {
-	// 		return build(new LinkableEntityQueryFilter());
-	// 	}
+	// @Override
+	// public LinkableEntityQueryFilter build() {
+	// return build(new LinkableEntityQueryFilter());
+	// }
 
 	// }
 

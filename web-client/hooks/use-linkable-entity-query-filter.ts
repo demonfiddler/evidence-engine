@@ -36,6 +36,8 @@ function convertQueryValue(queryKey: string, value: string): FilterValue {
       return value ? [value] : undefined
     case "advancedSearch":
     case "recursive":
+    case "fromEntityFuzzy":
+    case "toEntityFuzzy":
       return value === "true" || undefined
     default:
       return value || undefined
@@ -49,7 +51,9 @@ function convertFilterValue(filterKey: string, value: FilterValue) : string | un
       return array && array.length != 0 ? array[0] : undefined
     }
     case "advancedSearch":
-    case "recursive": {
+    case "recursive":
+    case "fromEntityFuzzy":
+    case "toEntityFuzzy": {
       const b = value as boolean
       return b ? "true" : undefined
     }

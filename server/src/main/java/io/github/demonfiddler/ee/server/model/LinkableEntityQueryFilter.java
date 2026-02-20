@@ -24,6 +24,20 @@ import com.graphql_java_generator.annotation.GraphQLScalar;
 public class LinkableEntityQueryFilter extends EntityLinkQueryFilter {
 
 	/**
+	 * Perform a fuzzy match based on the 'from' entity.
+	 */
+	@GraphQLScalar(fieldName = "fromEntityFuzzy", graphQLTypeSimpleName = "Boolean",
+		javaClass = Boolean.class, listDepth = 0)
+	Boolean fromEntityFuzzy;
+
+	/**
+	 * Perform a fuzzy match based on the 'to' entity.
+	 */
+	@GraphQLScalar(fieldName = "toEntityFuzzy", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class,
+		listDepth = 0)
+	Boolean toEntityFuzzy;
+
+	/**
 	 * The topic identifier, mandatory when querying the master list or when master = NONE.
 	 */
 	@GraphQLScalar(fieldName = "topicId", graphQLTypeSimpleName = "ID", javaClass = Long.class, listDepth = 0)
@@ -34,6 +48,34 @@ public class LinkableEntityQueryFilter extends EntityLinkQueryFilter {
 	 */
 	@GraphQLScalar(fieldName = "recursive", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class, listDepth = 0)
 	Boolean recursive;
+
+	/**
+	 * Perform a fuzzy match based on the 'from' entity.
+	 */
+	public void setFromEntityFuzzy(Boolean fromEntityFuzzy) {
+		this.fromEntityFuzzy = fromEntityFuzzy;
+	}
+
+	/**
+	 * Perform a fuzzy match based on the 'from' entity.
+	 */
+	public Boolean getFromEntityFuzzy() {
+		return this.fromEntityFuzzy;
+	}
+
+	/**
+	 * Perform a fuzzy match based on the 'to' entity.
+	 */
+	public void setToEntityFuzzy(Boolean toEntityFuzzy) {
+		this.toEntityFuzzy = toEntityFuzzy;
+	}
+
+	/**
+	 * Perform a fuzzy match based on the 'to' entity.
+	 */
+	public Boolean getToEntityFuzzy() {
+		return this.toEntityFuzzy;
+	}
 
 	/**
 	 * The topic identifier, mandatory when querying the master list or when master = NONE.
@@ -69,13 +111,17 @@ public class LinkableEntityQueryFilter extends EntityLinkQueryFilter {
 			+ ", " //
 			+ "recursive: " + this.recursive //
 			+ ", " //
+			+ "fromEntityId: " + this.fromEntityId //
+			+ ", " //
 			+ "fromEntityKind: " + this.fromEntityKind //
 			+ ", " //
-			+ "fromEntityId: " + this.fromEntityId //
+			+ "fromEntityFuzzy: " + this.fromEntityFuzzy //
+			+ ", " //
+			+ "toEntityId: " + this.toEntityId //
 			+ ", " //
 			+ "toEntityKind: " + this.toEntityKind //
 			+ ", " //
-			+ "toEntityId: " + this.toEntityId //
+			+ "toEntityFuzzy: " + this.toEntityFuzzy //
 			+ ", " //
 			+ "status: " + this.status //
 			+ ", " //
@@ -93,8 +139,26 @@ public class LinkableEntityQueryFilter extends EntityLinkQueryFilter {
 	abstract static class AbstractBuilder<B extends AbstractBuilder<B, T>, T extends LinkableEntityQueryFilter>
 		extends EntityLinkQueryFilter.AbstractBuilder<B, T> {
 
+		private Boolean fromEntityFuzzy;
+		private Boolean toEntityFuzzy;
 		private Long topicId;
 		private Boolean recursive;
+
+		/**
+		 * Perform a fuzzy match based on the 'from' entity.
+		 */
+		public B withFromEntityFuzzy(Boolean fromEntityFuzzyParam) {
+			this.fromEntityFuzzy = fromEntityFuzzyParam;
+			return (B)this;
+		}
+
+		/**
+		 * Perform a fuzzy match based on the 'to' entity.
+		 */
+		public B withToEntityFuzzy(Boolean toEntityFuzzyParam) {
+			this.toEntityFuzzy = toEntityFuzzyParam;
+			return (B)this;
+		}
 
 		/**
 		 * The topic identifier, mandatory when querying the master list or when master = NONE.
@@ -114,6 +178,8 @@ public class LinkableEntityQueryFilter extends EntityLinkQueryFilter {
 
 		T build(T _object) {
 			super.build(_object);
+			_object.setFromEntityFuzzy(this.fromEntityFuzzy);
+			_object.setToEntityFuzzy(this.toEntityFuzzy);
 			_object.setTopicId(this.topicId);
 			_object.setRecursive(this.recursive);
 			return _object;
