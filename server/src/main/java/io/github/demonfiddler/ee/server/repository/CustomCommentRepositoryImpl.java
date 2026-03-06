@@ -370,8 +370,18 @@ public class CustomCommentRepositoryImpl extends AbstractCustomRepositoryImpl im
         if (m.isPaged)
             entityUtils.setQueryPagination(queries.selectQuery(), m.pageable);
 
+        if (LOGGER.isTraceEnabled())
+            LOGGER.trace("Executing query '{}' with parameters {}", m.countQueryName, params);
+        else
+            LOGGER.debug("Executing query '{}'", m.countQueryName);
         long total = (Long)queries.countQuery().getSingleResult();
+
+        if (LOGGER.isTraceEnabled())
+            LOGGER.trace("Executing query '{}' with parameters {}", m.selectQueryName, params);
+        else
+            LOGGER.debug("Executing query '{}'", m.selectQueryName);
         List<Comment> content = queries.selectQuery().getResultList();
+
         return new PageImpl<>(content, m.pageable, total);
     }
 

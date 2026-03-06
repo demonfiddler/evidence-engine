@@ -731,13 +731,13 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
             entityUtils.setQueryPagination(queries.selectQuery(), m.pageable);
 
         if (LOGGER.isTraceEnabled())
-            LOGGER.debug("Executing query '{}' with parameters {}", m.countQueryName, params);
+            LOGGER.trace("Executing query '{}' with parameters {}", m.countQueryName, params);
         else
             LOGGER.debug("Executing query '{}'", m.countQueryName);
         long total = (Long)queries.countQuery().getSingleResult();
 
         if (LOGGER.isTraceEnabled())
-            LOGGER.debug("Executing query '{}' with parameters {}", m.selectQueryName, params);
+            LOGGER.trace("Executing query '{}' with parameters {}", m.selectQueryName, params);
         else
             LOGGER.debug("Executing query '{}'", m.selectQueryName);
         List<T> content = queries.selectQuery().getResultList();

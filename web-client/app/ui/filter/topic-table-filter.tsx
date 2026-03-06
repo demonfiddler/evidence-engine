@@ -20,7 +20,6 @@
 import Topic from "@/app/model/Topic"
 import { TopicQueryFilter } from "@/app/model/schema"
 import { Checkbox } from "@/components/ui/checkbox"
-import Search from "./search"
 import DataTableFilterProps from "../data-table/data-table-filter"
 import DataTableViewOptions from "../data-table/data-table-view-options"
 import { useCallback, useContext, useEffect, useRef, useState } from "react"
@@ -34,6 +33,7 @@ import { RotateCwIcon } from "lucide-react"
 import { isEqual } from "@/lib/utils"
 import { filter, LoggerEx } from "@/lib/logger"
 import ExportDialog from "../dialog/export-dialog"
+import Link from "next/link"
 
 const logger = new LoggerEx(filter, "[TopicTableFilter] ")
 
@@ -152,14 +152,31 @@ export default function TopicTableFilter({
           </Select>
           : null
         }
-        <Search id="search" value={text} onChangeValue={handleTextChange} />
-        {/* See https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode */}
+        <InputEx
+          id="search"
+          outerClassName="w-56"
+          clear
+          delay={500}
+          search
+          help="Filter the list to show only topics containing the specified text. This performs a case-insensitive match against all text fields, matching whole words unless 'Advanced' is checked."
+          title="Filter the list to show only topics containing the specified text. This performs a case-insensitive match against all text fields, matching whole words unless 'Advanced' is checked."
+          placeholder="Search..."
+          value={text}
+          onChange={e => handleTextChange(e.target.value)}
+        />
         <Checkbox
           id="advanced"
           checked={advanced}
           onCheckedChange={handleAdvancedSearchChange}
+          title="Use advanced ('Boolean mode') text search syntax. See info hover tip to the right."
         />
-        <LabelEx htmlFor="advanced" help="Use advanced text search syntax">Advanced</LabelEx>
+        <Link
+          className="text-black"
+          href="https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode"
+          target="_blank"
+        >
+          <LabelEx htmlFor="advanced" help="Use advanced ('Boolean mode') text search syntax. Click the ? icon for details.">Advanced</LabelEx>
+        </Link>
         <Checkbox
           id="recursive"
           checked={treeView}
@@ -168,13 +185,13 @@ export default function TopicTableFilter({
         <LabelEx htmlFor="recursive" help="Show topics as an expandable tree">Tree view</LabelEx>
         <InputEx
           id="recordId"
-          outerClassName="w-28"
+          outerClassName="w-38"
           className="text-right"
           placeholder="Record ID"
           value={recordId}
           onChange={(e) => handleRecordIdChange(e.target.value)}
+          clear
           delay={500}
-          clearOnEscape={true}
           help="Filter the table to show only the record with the specified ID. Other filters are retained but ignored."
         />
         <ButtonEx

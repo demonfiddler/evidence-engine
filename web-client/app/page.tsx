@@ -31,9 +31,10 @@ import {
 } from "@/components/ui/card"
 import Autoplay from "embla-carousel-autoplay"
 import { Carousel, CarouselApi, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
-import { GithubIcon, UserIcon, } from 'lucide-react'
+import { CirclePauseIcon, CirclePlayIcon, GithubIcon, UserIcon, } from 'lucide-react'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { Toggle } from '@/components/ui/toggle'
 
 // export const metadata: Metadata = {
 //   title: 'Dashboard',
@@ -42,6 +43,8 @@ import { useEffect, useState } from 'react'
 export default function Page() {
   const [api, setApi] = useState<CarouselApi>()
   const [item, setItem] = useState(0)
+  const [play, setPlay] = useState(true)
+  const autoplay = useRef(Autoplay({ delay: 8000, stopOnInteraction: false }))
 
   // Bidirectionally sync carousel scroll state with item state
   useEffect(() => {
@@ -57,6 +60,16 @@ export default function Page() {
   useEffect(() => {
     api?.scrollTo(item)
   }, [api, item])
+
+  useEffect(() => {
+    if (!api)
+      return
+
+    if (play)
+      autoplay.current.play()
+    else
+      autoplay.current.stop()
+  }, [api, play])
 
   return (
     <div className="flex flex-col">
@@ -117,11 +130,7 @@ export default function Page() {
           </div>
           <Carousel
             className="w-2/3"
-            plugins={[
-              Autoplay({
-                delay: 8000,
-              }),
-            ]}
+            plugins={[autoplay.current]}
             opts={{
               loop: true
             }}
@@ -174,15 +183,24 @@ export default function Page() {
             <CarouselPrevious />
             <CarouselNext />
           </Carousel>
-          <RadioGroup
-            className="flex mt-2 mb-4"
-            value={item.toString()}
-            onValueChange={(value) => setItem(Number.parseInt(value))}
-          >
-            <RadioGroupItem value="0" title="Challenge"></RadioGroupItem>
-            <RadioGroupItem value="1" title="Mission"></RadioGroupItem>
-            <RadioGroupItem value="2" title="Description"></RadioGroupItem>
-          </RadioGroup>
+          <div className="flex items-center">
+            <RadioGroup
+              className="flex mt-4 mb-4"
+              value={item.toString()}
+              onValueChange={(value) => setItem(Number.parseInt(value))}
+            >
+              <RadioGroupItem value="0" title="Challenge"></RadioGroupItem>
+              <RadioGroupItem value="1" title="Mission"></RadioGroupItem>
+              <RadioGroupItem value="2" title="Description"></RadioGroupItem>
+            </RadioGroup>
+            <Toggle pressed={play} onPressedChange={setPlay}>
+              {
+                play
+                ? <CirclePauseIcon />
+                : <CirclePlayIcon />
+              }
+            </Toggle>
+          </div>
         </div>
       </div>
     </div>

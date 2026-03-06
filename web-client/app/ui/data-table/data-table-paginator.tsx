@@ -96,8 +96,8 @@ export function DataTablePaginator<TData>({
           <Label htmlFor="page-number">Page&nbsp;</Label>
           <InputEx
             id="page-number"
-            outerClassName="inline"
-            className="w-14 inline text-right"
+            outerClassName="w-14 inline"
+            className="inline text-right"
             type="number"
             min={1}
             max={table.getPageCount()}

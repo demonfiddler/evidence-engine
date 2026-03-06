@@ -204,6 +204,7 @@ public class CustomStatisticsRepositoryImpl extends AbstractCustomRepositoryImpl
         if (m.hasStatus)
             query.setParameter("status", m.filter.getStatus().stream().map(s -> s.name()).toList());
 
+        LOGGER.debug("Executing query '{}'", m.queryName);
         return (List<EntityStatistics>)query.getResultList();
     }
 
@@ -222,6 +223,7 @@ public class CustomStatisticsRepositoryImpl extends AbstractCustomRepositoryImpl
         if (m.hasStatus)
             query.setParameter("status", m.filter.getStatus().stream().map(s -> s.name()).toList());
 
+        LOGGER.debug("Executing query '{}'", m.queryName);
         return (List<TopicStatisticsDto>)query.getResultList();
     }
 

@@ -19,27 +19,51 @@
 
 'use client'
 
-import { Input } from "@/components/ui/input"
 import { ChangeEvent, ComponentProps, KeyboardEvent, useCallback, useEffect, useRef, useState } from "react"
 import { useDebounceValue } from "usehooks-ts"
 import Help, { HelpProps } from "../misc/help"
-import { cn } from "@/lib/utils"
 import { component, LoggerEx } from "@/lib/logger"
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group"
+import { SearchIcon, XIcon } from "lucide-react"
 
 const logger = new LoggerEx(component, "[InputEx] ")
 
 type InputExProps = ComponentProps<"input"> & HelpProps & {
-    delay?: number
-    clearOnEscape?: boolean
-  }
+  clear?: boolean
+  delay?: number
+  search?: boolean
+}
+
+function createChangeEvent(
+  input: HTMLInputElement
+): React.ChangeEvent<HTMLInputElement> {
+  return {
+    target: input,
+    currentTarget: input,
+    bubbles: true,
+    cancelable: false,
+    defaultPrevented: false,
+    eventPhase: 3,
+    isTrusted: false,
+    preventDefault() {},
+    isDefaultPrevented() { return false; },
+    stopPropagation() {},
+    isPropagationStopped() { return false; },
+    persist() {},
+    timeStamp: Date.now(),
+    type: "change",
+    nativeEvent: new Event("change", { bubbles: true })
+  } as React.ChangeEvent<HTMLInputElement>;
+}
 
 export default function InputEx(
-  {help, outerClassName, value, onChange, delay, clearOnEscape, ...props} : InputExProps
+  {help, outerClassName, value, onChange, clear, delay, search, disabled, ...props} : InputExProps
 ) {
   logger.debug("render")
 
   const [text, setText] = useState(value)
   const [event, setEvent] = useDebounceValue<ChangeEvent<HTMLInputElement>|undefined>(undefined, delay || 0)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   // If the supplied value changes externally, update text to match.
   const prevValue = useRef<string | number | readonly string[] | undefined>('')
@@ -56,7 +80,7 @@ export default function InputEx(
         }
       }
     }
-  }, [value, text, event, onChange]) // previously [value]
+  }, [value, text, event, onChange])
 
   // When the debounced event changes, invoke the supplied listener function.
   const prevEvent = useRef(event)
@@ -67,14 +91,14 @@ export default function InputEx(
       logger.trace("effect2 (2)")
       onChange?.(event)
     }
-  }, [event, onChange]) // previously [event]
+  }, [event, onChange])
 
   // To clear, empty text value and invoke supplied change handler immediately.
-  const clear = useCallback(() => {
+  const handleClear = useCallback(() => {
     setText('')
-    if (event && onChange) {
-      event.target.value = ''
-      onChange(event)
+    if (onChange && inputRef.current) {
+      inputRef.current.value = ''
+      onChange(createChangeEvent(inputRef.current))
     }
   }, [event, onChange])
 
@@ -87,20 +111,49 @@ export default function InputEx(
 
   const handleKeyDown = useCallback((e: KeyboardEvent<HTMLInputElement>) => {
     if (e.code == "Escape") {
+      // TODO: prevent dialog closure by setting onEscapeKeyDown={(e) => e.preventDefault()} on Dialog or DialogContent
       e.preventDefault()
-      clear()
+      e.stopPropagation()
+      handleClear()
     }
-  }, [clear])
+  }, [handleClear])
 
   return (
-    <div className={cn("flex flex-row items-center gap-1", outerClassName)}>
-      <Input
+    <InputGroup className={outerClassName}>
+      <InputGroupInput
         value={text}
-        onKeyDown={(e) => clearOnEscape && handleKeyDown(e)}
+        disabled={disabled}
+        onKeyDown={(e) => clear && handleKeyDown(e)}
         onChange={(e) => handleChangeText(e)}
+        ref={inputRef}
         {...props}
       />
-      <Help text={help} />
-    </div>
+      {
+        search
+        ? <InputGroupAddon>
+          <SearchIcon />
+        </InputGroupAddon>
+        : null
+      }
+      {
+        clear
+        ? <InputGroupAddon align="inline-end">
+          <InputGroupButton
+            disabled={disabled}
+            onClick={handleClear}
+          >
+            <XIcon />
+          </InputGroupButton>
+        </InputGroupAddon>
+        : null
+      }
+      {
+        help
+        ? <InputGroupAddon align="inline-end">
+            <Help text={help} />
+          </InputGroupAddon>
+        : null
+      }
+    </InputGroup>
   )
 }

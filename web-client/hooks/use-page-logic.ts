@@ -428,18 +428,14 @@ export default function usePageLogic<
                   : undefined
                 let masterRecordLinkInput
                 if (linkMasterRecord && masterRecordId) {
-                  const [
-                    ,,
-                    thisRecordIdProperty,
-                    otherRecordIdProperty,
-                    thisLocationsProperty,
-                    otherLocationsProperty,
-                  ] = getRecordLinkProperties(recordKind as LinkableEntityKind, masterRecordKind as LinkableEntityKind)
-                  masterRecordLinkInput = {
-                    [thisRecordIdProperty]: newRecord.id,
-                    [otherRecordIdProperty]: masterRecordId,
-                    [thisLocationsProperty]: thisRecordLocationsForMaster || null,
-                    [otherLocationsProperty]: otherRecordLocationsForMaster || null,
+                  const props = getRecordLinkProperties(recordKind as LinkableEntityKind, masterRecordKind as LinkableEntityKind)
+                  if (props) {
+                    masterRecordLinkInput = {
+                      [props.thisRecordIdProperty]: newRecord.id,
+                      [props.otherRecordIdProperty]: masterRecordId,
+                      [props.thisLocationsProperty]: thisRecordLocationsForMaster || null,
+                      [props.otherLocationsProperty]: otherRecordLocationsForMaster || null,
+                    }
                   }
                 } else {
                   masterRecordLinkInput = undefined
@@ -455,6 +451,11 @@ export default function usePageLogic<
                   linkOp({variables: {input: masterRecordLinkInput}})
                 }
               }
+              const newFilter = {
+                ...filter,
+                recordId: newRecord.id
+              } as TrackedEntityQueryFilter
+              setFilter(recordKind, newFilter)
               // FIXME: this doesn't set the selection in the data table.
               setSelectedRecord(newRecord)
               setMode("view")
@@ -491,7 +492,7 @@ export default function usePageLogic<
     }
     // Dependencies assume (reasonably) that createOp, updateOp, deleteOp, createVarName, updateVarName, deleteVarName
     // will never change during the page lifetime.
-  }, [selectedRecordId, form, origFieldValues, masterTopicId, masterRecordKind, masterRecordId, createInput])
+  }, [selectedRecordId, form, origFieldValues, masterTopicId, masterRecordKind, masterRecordId, createInput, filter, setFilter])
 
   const handleRowSelectionChange = useCallback((recordId?: string) => {
     if (mode !== "view") {

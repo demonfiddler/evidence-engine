@@ -77,7 +77,7 @@ CREATE TABLE "country" (
   "iso_name" VARCHAR(100) NOT NULL UNIQUE COMMENT 'Official/ISO country name',
   "common_name" VARCHAR(50) NOT NULL UNIQUE COMMENT 'Common or short name',
   "year" SMALLINT NOT NULL COMMENT 'Year alpha-2 code was first assigned',
-  "cc_tld" CHAR(3) NOT NULL COMMENT 'Country code top level domain',
+  "cc_tld" VARCHAR(6) NOT NULL COMMENT 'Country code top level domain',
   "notes" VARCHAR(65535) DEFAULT NULL COMMENT 'Remarks as per Wikipedia ISO-3166-1 entry'
 );
 CREATE UNIQUE INDEX "country_alpha_3" ON "country" ("alpha_3");
@@ -122,6 +122,7 @@ CREATE TABLE "entity_link" (
   "to_entity_locations" VARCHAR(500) DEFAULT NULL COMMENT 'Location(s) within the linked-to entity (where applicable), one per line'
 );
 
+CREATE UNIQUE INDEX "FK_entity_link_unique" ON "entity_link" ("from_entity_id", "to_entity_id");
 CREATE INDEX "FK_entity_link_from" ON "entity_link" ("from_entity_id");
 CREATE INDEX "FK_entity_link_to" ON "entity_link" ("to_entity_id");
 CALL FT_CREATE_INDEX('PUBLIC', 'entity_link', 'from_entity_locations,to_entity_locations');

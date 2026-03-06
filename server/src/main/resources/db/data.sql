@@ -18,7 +18,7 @@
 -- ----------------------------------------------------------------------------------------------------------------------
 
 INSERT INTO "config" ("property", "subscript", "value") VALUES
-	("schema_version", 0, "1");
+	('schema_version', 0, '1');
 
 -- To populate table "abbreviation", manually run /server/sql/populatedb-abbreviation-mariadb.sql.
 -- N.B. Requires ltwa_current.csv, latest downloadable from https://www.issn.org/services/online-services/access-to-the-ltwa/.
@@ -267,6 +267,7 @@ INSERT INTO "country" ("alpha_2", "alpha_3", "numeric", "iso_name", "common_name
 	('VI', 'VIR', '850', 'Virgin Islands (U.S.)', 'Virgin Islands (U.S.)', '1974', '.vi', NULL),
 	('VN', 'VNM', '704', 'Viet Nam', 'Vietnam', '1974', '.vn', 'ISO country name follows UN designation (common name: Vietnam). Code used for Republic of Viet Nam (common name: South Vietnam) before 1977. Official name Socialist Republic of Viet Nam.'),
 	('VU', 'VUT', '548', 'Vanuatu', 'Vanuatu', '1980', '.vu', 'Name changed from New Hebrides (NH)'),
+	('WD', 'WLD', '999', 'World', 'World', '1970', '.world', 'Not an ISO country'),
 	('WF', 'WLF', '876', 'Wallis and Futuna', 'Wallis and Futuna', '1974', '.wf', 'Previous ISO country name: Wallis and Futuna Islands'),
 	('WS', 'WSM', '882', 'Samoa', 'Samoa', '1974', '.ws', 'Code taken from former name: Western Samoa'),
 	('YE', 'YEM', '887', 'Yemen', 'Yemen', '1974', '.ye', 'Previous ISO country name: Yemen, Republic of (for three years after the unification). Code used for North Yemen before unification in 1990.'),

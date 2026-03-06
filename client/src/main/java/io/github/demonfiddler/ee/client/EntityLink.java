@@ -154,11 +154,15 @@ public class EntityLink extends AbstractTrackedEntity {
 			+ ", " //
 			+ "comments: " + this.comments //
 			+ ", " //
-			+ "fromEntity.id: " + (this.fromEntity == null ? null : this.fromEntity.getId()) //
+			+ "fromEntity: " + fromEntity == null //
+				? null //
+				: (EntityKind.valueOf(this.fromEntity.getEntityKind()).label() + " #" + this.fromEntity.getId()) //
 			+ ", " //
 			+ "fromEntityLocations: " + this.fromEntityLocations //
 			+ ", " //
-			+ "toEntity.id: " + (this.toEntity == null ? null : this.toEntity.getId()) //
+			+ "toEntity: " + toEntity == null //
+				? null //
+				: EntityKind.valueOf(this.toEntity.getEntityKind()).label() + " #" + this.toEntity.getId() //
 			+ ", " //
 			+ "toEntityLocations: " + this.toEntityLocations //
 			+ ", " //

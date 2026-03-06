@@ -39,11 +39,11 @@ import { filter, LoggerEx } from "@/lib/logger"
 import SelectTriggerEx from "../ext/select-ex"
 import { Checkbox } from "@/components/ui/checkbox"
 import LabelEx from "../ext/label-ex"
-import Search from "./search"
 import useAuth from "@/hooks/use-auth"
 import { QueryResult } from "@/lib/graphql-utils"
 import ExportDialog from "../dialog/export-dialog"
 import { CalendarIcon, ChevronDownIcon, RotateCwIcon } from "lucide-react"
+import Link from "next/link"
 
 const logger = new LoggerEx(filter, "[CommentTableFilter] ")
 
@@ -258,22 +258,40 @@ export default function CommentTableFilter(
             </Select>
             : null
           }
-          <Search id="searchComments" value={text} onChangeValue={handleTextChange} />
+          <InputEx
+            id="searchComments"
+            outerClassName="w-56"
+            clear
+            delay={500}
+            search
+            help="Filter the list to show only comments containing the specified text. This performs a case-insensitive match against all text fields, matching whole words unless 'Advanced' is checked."
+            title="Filter the list to show only comments containing the specified text. This performs a case-insensitive match against all text fields, matching whole words unless 'Advanced' is checked."
+            placeholder="Search..."
+            value={text}
+            onChange={e => handleTextChange(e.target.value)}
+          />
           <Checkbox
             id="advancedComments"
             checked={advanced}
             onCheckedChange={handleAdvancedSearchChange}
+            title="Use advanced ('Boolean mode') text search syntax. See info hover tip to the right."
           />
-          <LabelEx htmlFor="advancedComments" help="Use advanced text search syntax. See MariaDB documentation at https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode">Advanced</LabelEx>
+          <Link
+            className="text-black"
+            href="https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode"
+            target="_blank"
+          >
+            <LabelEx htmlFor="advancedComments" help="Use advanced ('Boolean mode') text search syntax. Click the ? icon for details.">Advanced</LabelEx>
+          </Link>
           <InputEx
             id="recordIdComments"
-            outerClassName="w-40"
+            outerClassName="w-38"
             className="text-right"
             placeholder="Record ID"
             value={recordId}
             onChange={(e) => handleRecordIdChange(e.target.value)}
+            clear
             delay={500}
-            clearOnEscape={true}
             help="Filter the table to show only the record with the specified ID. Other filters are retained but ignored."
           />
           <Select
@@ -304,24 +322,24 @@ export default function CommentTableFilter(
           </Select>
           <InputEx
             id="targetIdComments"
-            outerClassName="w-40"
+            outerClassName="w-38"
             className="text-right"
             placeholder="Target ID"
             value={recordId}
             onChange={(e) => handleTargetIdChange(e.target.value)}
+            clear
             delay={500}
-            clearOnEscape={true}
             help="Filter the table to show only comments on the record with the specified ID."
           />
           <InputEx
             id="parentIdComments"
-            outerClassName="w-40"
+            outerClassName="w-38"
             className="text-right"
             placeholder="Parent ID"
             value={recordId}
             onChange={(e) => handleParentIdChange(e.target.value)}
+            clear
             delay={500}
-            clearOnEscape={true}
             help="Filter the table to show only replies to the comment with the specified ID."
           />
           <Select

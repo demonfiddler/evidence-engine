@@ -231,6 +231,11 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
       onRowSelectionChange(selectedRecord?.id)
   }, [findItem, page, setSelectedRecord, recordKind, onRowSelectionChange])
 
+  useEffect(() => {
+    // If the selected record is changed programmatically, update the table selection to match it.
+    setRowSelection(selectedRecord ? {[selectedRecord.id]: true} : {})
+  }, [selectedRecord])
+
   const table = useReactTable({
     // aggregationFns: ,
     // autoResetAll: boolean,

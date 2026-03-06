@@ -22,6 +22,8 @@ package io.github.demonfiddler.ee.server.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 
 import io.github.demonfiddler.ee.server.model.AuthorityKind;
@@ -30,6 +32,7 @@ import jakarta.persistence.Query;
 
 public class CustomUserRepositoryImpl extends CustomTrackedEntityRepositoryImpl<User> implements CustomUserRepository {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CustomUserRepositoryImpl.class);
     private static final String QUERY_SELECT_ALL_AUTHORITIES = "user.selectAllAuthorities";
     private static final String SQL_SELECT_ALL_AUTHORITIES = """
         SELECT "authority"
@@ -71,6 +74,8 @@ public class CustomUserRepositoryImpl extends CustomTrackedEntityRepositoryImpl<
         if (query == null)
             query = em.createNamedQuery(QUERY_SELECT_ALL_AUTHORITIES, AuthorityKind.class);
         query.setParameter("userId", userId);
+        LOGGER.debug("Executing query '{}'", QUERY_SELECT_ALL_AUTHORITIES);
+
         return (List<AuthorityKind>)query.getResultList();
     }
 

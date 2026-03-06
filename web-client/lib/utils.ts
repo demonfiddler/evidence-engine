@@ -211,13 +211,17 @@ export function getRecordLabel(recordKind: RecordKind | undefined | null, record
       if (person.prefix)
         label += " " + person.prefix
       if (person.lastName)
-        label += " " + person.lastName + ", "
+        label += " " + person.lastName
       if (person.suffix)
         label += " " + person.suffix
+      if (person.lastName)
+        label += ","
       if (person.title)
         label += " " + person.title
       if (person.firstName)
         label += " " + person.firstName
+      if (person.nickname)
+        label += " '" + person.nickname + "'"
       return label
     }
     case "Publication": {
@@ -610,4 +614,8 @@ export function createSearchParamsImpl<TFilter, TFilterValue>(filter: TFilter,
       searchParams.set(key, queryValue)
   }
   return searchParams
+}
+
+export function firstToUpper(s: string) {
+  return s && (s[0].toUpperCase() + s.substring(1))
 }

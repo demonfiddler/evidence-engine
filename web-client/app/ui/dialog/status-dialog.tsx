@@ -67,6 +67,7 @@ import Spinner from "../misc/spinner"
 import ILinkableEntity from "@/app/model/ILinkableEntity"
 import {
   cn,
+  firstToUpper,
   flatten,
   formatDateTime,
   getEntityKind,
@@ -80,7 +81,6 @@ import {
 } from "@/lib/utils"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
-import Search from "../filter/search"
 import InputEx from "../ext/input-ex"
 import { Select, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
 import SelectTriggerEx from "../ext/select-ex"
@@ -108,6 +108,7 @@ import Topic from "@/app/model/Topic"
 import { Textarea } from "@/components/ui/textarea"
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import Link from "next/link"
 
 const logger = new LoggerEx(dialog, "[StatusDialog] ")
 
@@ -382,7 +383,7 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
     return recordLink.thisRecordIsToEntity
       ? {
         id: recordLink.id,
-        fromEntityId: topicId || recordLink.otherRecordId,
+        fromEntityId: recordLink.otherRecordId,
         fromEntityLocations: otherRecordLocations || null,
         toEntityId: recordLink.thisRecordId,
         toEntityLocations: thisRecordLocations || null,
@@ -394,7 +395,7 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
         toEntityId: recordLink.otherRecordId,
         toEntityLocations: otherRecordLocations || null,
       }
-  }, [topicId, thisRecordLocations, otherRecordLocations])
+  }, [thisRecordLocations, otherRecordLocations])
 
   const refreshEditableFields = useCallback((linkId: string) => {
     logger.trace("refreshEditableFields: linkId='%s'", linkId)
@@ -682,8 +683,8 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
             <TabsTrigger value={LINK_AUDIT}>Link Audit</TabsTrigger>
             <TabsTrigger value={LINK_MANAGER}>Link Manager</TabsTrigger>
           </TabsList>
-          <TabsContent value="field-audit">
-            <Card>
+          <TabsContent className="h-15/16" value="field-audit">
+            <Card className="h-15/16">
               <CardHeader>
                 <CardTitle><RectangleEllipsisIcon className="inline" /><SearchIcon className="inline" />&nbsp;Field Audit</CardTitle>
                 <CardDescription>
@@ -787,8 +788,8 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
               </CardContent>
             </Card>
           </TabsContent>
-          <TabsContent value={LINK_AUDIT}>
-            <Card>
+          <TabsContent className="h-15/16" value={LINK_AUDIT}>
+            <Card className="h-15/16">
               <CardHeader>
                 <CardTitle><LinkIcon className="inline" /><SearchIcon className="inline" />&nbsp;Link Audit</CardTitle>
                 <CardDescription>
@@ -940,7 +941,7 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
                             <div id={key} key={key} className="flex items-center gap-3">
                               <RadioGroupItem
                                 value={key}
-                                disabled={key === recordKind}
+                                disabled={mode != VIEW || key === recordKind}
                               />
                               {
                                 (() => {
@@ -969,7 +970,7 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
                           >
                             <SelectTriggerEx
                               id="status"
-                              disabled={!otherRecordKind}
+                              disabled={mode != VIEW || !otherRecordKind}
                               help="Filter the list to show only records with this status"
                               title="Filter the list to show only records with this status"
                             >
@@ -987,20 +988,36 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
                               <SelectItem value="SUS">Suspended</SelectItem>
                             </SelectContent>
                           </Select>
-                          <Search id="searchText" value={filterText} onChangeValue={handleTextChange} />
+                          <InputEx
+                            id="searchText"
+                            disabled={mode != VIEW || !otherRecordKind}
+                            outerClassName="w-56"
+                            clear
+                            delay={500}
+                            search
+                            help="Filter the list to show only records containing the specified text. This performs a case-insensitive match against all text fields, matching whole words unless 'Advanced' is checked."
+                            title="Filter the list to show only records containing the specified text. This performs a case-insensitive match against all text fields, matching whole words unless 'Advanced' is checked."
+                            placeholder="Search..."
+                            value={filterText}
+                            onChange={e => handleTextChange(e.target.value)}
+                          />
                           <Checkbox
                             id="advanced"
-                            disabled={!otherRecordKind}
+                            disabled={mode != VIEW || !otherRecordKind}
                             checked={filterAdvanced}
                             onCheckedChange={handleAdvancedSearchChange}
-                            title="Use advanced text search syntax. See info hover tip to the right."
+                            title="Use advanced ('Boolean mode') text search syntax. See info hover tip to the right."
                           />
-                          <LabelEx
-                            htmlFor="advanced"
-                            help="Use advanced text search syntax. See MariaDB documentation at https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode">Advanced</LabelEx>
+                          <Link
+                            className="text-black"
+                            href="https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode"
+                            target="_blank"
+                          >
+                            <LabelEx htmlFor="advanced" help="Use advanced ('Boolean mode') text search syntax. Click the ? icon for details.">Advanced</LabelEx>
+                          </Link>
                           <Checkbox
                             id="fuzzy"
-                            disabled={!fuzzySearchSupported}
+                            disabled={mode != VIEW || !otherRecordKind || !fuzzySearchSupported}
                             checked={fuzzySearchSupported && filterFuzzy}
                             onCheckedChange={handleFuzzySearchChange}
                             title="Perform a fuzzy search. See info hover tip to the right."
@@ -1010,21 +1027,21 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
                             help={`Perform a fuzzy search. Guesses which ${otherRecordKind} records might need linking to the contextual ${recordKind ?? "record"} based on its ${fuzzySearchField} field, displayed in 'Fuzzy match on' to the right.`}>Fuzzy</LabelEx>
                           <InputEx
                             id="recordId"
-                            disabled={!otherRecordKind}
-                            outerClassName="w-30"
+                            disabled={mode != VIEW || !otherRecordKind}
+                            outerClassName="w-38"
                             className="text-right"
+                            clear
                             placeholder="Record ID"
                             value={filterRecordId}
                             onChange={e => handleRecordIdChange(e.target.value)}
                             delay={500}
-                            clearOnEscape={true}
                             help="Filter the list to show only the record with the specified ID. Other filters are retained but ignored."
                           />
                           <ButtonEx
                             id="refresh"
                             type="button"
                             variant="outline"
-                            disabled={!otherRecordKind}
+                            disabled={mode != VIEW || !otherRecordKind}
                             help="Refresh the list using the same filter and pagination settings."
                             onClick={() => otherRecordsResult.refetch()}
                           >
@@ -1034,7 +1051,7 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
                             id="reset"
                             type="button"
                             variant="outline"
-                            disabled={!otherRecordKind || !filterStatus && !filterText && !filterAdvanced && !filterFuzzy && !filterRecordId}
+                            disabled={mode != VIEW || !otherRecordKind || !filterStatus && !filterText && !filterAdvanced && !filterFuzzy && !filterRecordId}
                             className="w-20"
                             onClick={handleReset}
                             help="Clear all filters"
@@ -1145,10 +1162,10 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
                     {
                       fuzzySearchField
                         ? <div className="flex grow">
-                          <fieldset className="flex h-full border rounded-md ml-1 p-2 gap-2">
-                            <legend>&nbsp;{`${recordKind} ${fuzzySearchField} (${fuzzyItemCount.toLocaleString()})`}&nbsp;</legend>
+                          <fieldset className="flex w-full h-full border rounded-md ml-1 p-2 gap-2">
+                            <legend>&nbsp;{`${firstToUpper(fuzzySearchField)} (${fuzzyItemCount.toLocaleString()})`}&nbsp;</legend>
                             <Textarea
-                              className="h-42 overflow-auto"
+                              className="w-full h-42 overflow-auto"
                               readOnly
                               value={record && fuzzySearchField ? record[fuzzySearchField as keyof ILinkableEntity] as string : ''}
                               title={`The ${recordKind} ${fuzzySearchField}`}

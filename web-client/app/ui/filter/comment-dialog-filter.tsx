@@ -35,10 +35,11 @@ import { filter, LoggerEx } from "@/lib/logger"
 import SelectTriggerEx from "../ext/select-ex"
 import { Checkbox } from "@/components/ui/checkbox"
 import LabelEx from "../ext/label-ex"
-import Search from "./search"
 import useAuth from "@/hooks/use-auth"
 import { QueryResult } from "@/lib/graphql-utils"
 import { CalendarIcon, ChevronDownIcon, RotateCwIcon } from "lucide-react"
+import InputEx from "../ext/input-ex"
+import Link from "next/link"
 
 const logger = new LoggerEx(filter, "[CommentDialogFilter] ")
 
@@ -160,13 +161,31 @@ export default function CommentDialogFilter(
   return (
     <div className="flex flex-row flex-wrap items-center max-w-full gap-2">
       <Spinner loading={result.loading} className="absolute inset-0 bg-black/20 z-50" />
-      <Search id="searchCommentsDlg" className="w-5/8" value={text} onChangeValue={handleTextChange} />
+      <InputEx
+        id="searchCommentsDlg"
+        outerClassName="w-5/8"
+        clear
+        delay={500}
+        search
+        help="Filter the list to show only comments containing the specified text. This performs a case-insensitive match against all text fields, matching whole words unless 'Advanced' is checked."
+        title="Filter the list to show only comments containing the specified text. This performs a case-insensitive match against all text fields, matching whole words unless 'Advanced' is checked."
+        placeholder="Search..."
+        value={text}
+        onChange={e => handleTextChange(e.target.value)}
+      />
       <Checkbox
         id="cf-advanced"
         checked={advanced}
         onCheckedChange={handleAdvancedSearchChange}
+        title="Use advanced ('Boolean mode') text search syntax. See info hover tip to the right."
       />
-      <LabelEx htmlFor="cf-advanced" help="Use advanced text search syntax. See MariaDB documentation at https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode">Advanced</LabelEx>
+      <Link
+        className="text-black"
+        href="https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode"
+        target="_blank"
+      >
+        <LabelEx htmlFor="cf-advanced" help="Use advanced ('Boolean mode') text search syntax. Click the ? icon for details.">Advanced</LabelEx>
+      </Link>
       {
         user
           ? <Select

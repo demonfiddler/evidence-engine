@@ -20,7 +20,6 @@
 'use client'
 
 import { Checkbox } from "@/components/ui/checkbox"
-import Search from "./search"
 import DataTableViewOptions from "../data-table/data-table-view-options"
 import DataTableFilterProps from "../data-table/data-table-filter"
 import { getEntityKind, getRecordLinkProperties, isEqual } from "@/lib/utils"
@@ -39,6 +38,7 @@ import { filter, LoggerEx } from "@/lib/logger"
 import { anything } from "@/types/types"
 import ExportDialog from "../dialog/export-dialog"
 import ImportDialog from "../dialog/import-dialog"
+import Link from "next/link"
 
 const logger = new LoggerEx(filter, "[LinkableEntityTableFilter] ")
 
@@ -208,25 +208,42 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
           </Select>
           : null
         }
-        <Search id="searchText" value={text} onChangeValue={handleTextChange} />
-        {/* See https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode */}
+        <InputEx
+          id="searchText"
+          outerClassName="w-56"
+          clear
+          delay={500}
+          search
+          help="Filter the list to show only records containing the specified text. This performs a case-insensitive match against all text fields, matching whole words unless 'Advanced' is checked."
+          title="Filter the list to show only records containing the specified text. This performs a case-insensitive match against all text fields, matching whole words unless 'Advanced' is checked."
+          placeholder="Search..."
+          value={text}
+          onChange={e => handleTextChange(e.target.value)}
+        />
         <Checkbox
           id="advanced"
           checked={advanced}
           onCheckedChange={handleAdvancedSearchChange}
-          title="Use advanced text search syntax. See info hover tip to the right."
+          title="Use advanced ('Boolean mode') text search syntax. See info hover tip to the right."
         />
-        <LabelEx htmlFor="advanced" help="Use advanced text search syntax. See MariaDB documentation at https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode">Advanced</LabelEx>
+        <Link
+          className="text-black"
+          href="https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode"
+          target="_blank"
+        >
+          <LabelEx htmlFor="advanced" help="Use advanced ('Boolean mode') text search syntax. Click the ? icon for details.">Advanced</LabelEx>
+        </Link>
         <InputEx
           id="recordId"
-          outerClassName="w-28"
-          className="text-right"
+          outerClassName="w-38"
+          className="w-10 text-right"
           placeholder="Record ID"
+          clear
           value={recordId}
           onChange={(e) => handleRecordIdChange(e.target.value)}
           delay={500}
-          clearOnEscape={true}
           help="Filter the table to show only the record with the specified ID. Other filters are retained but ignored."
+          title="Filter the table to show only the record with the specified ID. Other filters are retained but ignored."
         />
         <ButtonEx
           id="refresh"

@@ -20,6 +20,7 @@
 package io.github.demonfiddler.ee.server.model;
 
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -28,11 +29,13 @@ import java.util.regex.Pattern;
 public class Name {
 
     private static final Pattern TITLE = Pattern.compile(
-        "^Ambassador|Baroness|Baronet|Captain|Capt\\.?|Cllr\\.?|Col\\.?|Dame|Dr\\.?|Fr\\.?|Gen\\.?|King|Lady|Lord|Lt\\.?|Lt\\.?|Maj\\.?|Miss|Mr\\.?|Mrs\\.?|Ms\\.?|nat\\.?|Prince|Princess|Prof\\.?|Queen|Rabbi|rer\\.?|\\(?[Rr]et\\.?\\)?|Rev\\.?|Sen\\.?|Sir$");
+        "^Ambassador|Baroness|Baronet|Captain|Capt\\.?|Cllr\\.?|Col\\.?|Dame|Dr\\.?|Fr\\.?|Gen\\.?|King|Lady|Lord|Lt\\.?|Lt\\.?|Major|Maj\\.?|Miss|Mr\\.?|Mrs\\.?|Ms\\.?|nat\\.?|Prince|Princess|Prof\\.?|Queen|Rabbi|rer\\.?|\\(?[Rr]et\\.?\\)?|Rev\\.?|Sen\\.?|Sargeant|Sgt\\?|Sir$");
     private static final Pattern FIRST_NAME = Pattern.compile("^[\\p{IsAlphabetic}()'.-]+$");
-    private static final Pattern PREFIX = Pattern.compile("^[dD]e[nlr]?|[dD]u|[lL][ae]|[vV][ao]n|[zZ]u|St\\.?$");
+    private static final Pattern NICKNAME = Pattern.compile("^[(\"']([\\p{IsAlphabetic}]+)[)\"']$");
+    private static final Pattern PREFIX = Pattern.compile("^[dD]e[nlr]?|[dD]u|[lL][ae]|[vV][ao]n|[zZ]u|St\\.?|[tT]e$");
     private static final Pattern LAST_NAME = Pattern.compile("^[\\p{IsAlphabetic}'’.-]+$");
     private static final Pattern SUFFIX = Pattern.compile("^I{1,3}|IV|VI{0,3}|I?X|Jn?r\\.?|Sn?r\\.?$");
+    private static final Pattern POST_NOMINAL = Pattern.compile("^[A-Z]{2,}|[B|M]\\.?A\\.?|[B|M|D]\\.?Sc\\.?|Ph\\.?D\\.?|D\\.?Phil\\.?$");
 
     /**
      * Parses a string into a {@code Name} object.
@@ -47,18 +50,21 @@ public class Name {
         // TODO: handle the LASTNAME INITIALS case if there is no comma
         // TODO: handle the LASTNAME INITIALS case if initials are not space- or period-delimited
         // TODO: handle nicknames: 'Nickname' or (Nickname)
+        // TODO: handle post-nominal letters (all uppercase or degree abbreviation)
         boolean lastNameFirst = commapos != -1;
 
         StringBuilder title = new StringBuilder();
         StringBuilder firstNames = new StringBuilder();
+        StringBuilder nickname = new StringBuilder();
         StringBuilder prefix = new StringBuilder();
         StringBuilder lastName = new StringBuilder();
         StringBuilder suffix = new StringBuilder();
+        StringBuilder postNominals = new StringBuilder();
 
         if (lastNameFirst) {
             // Possible name formats:
-            // - prefix? lastName, title? firstName+ suffix?
-            // - prefix? lastName suffix?, title? firstName+
+            // - prefix? lastName, title? firstName+ nickname? suffix? postNominals?
+            // - prefix? lastName suffix?, title? firstName+ nickname? postNominals?
 
             // chunk1: prefix? lastName suffix?
             String chunk1 = namestr.substring(0, commapos);
@@ -80,12 +86,18 @@ public class Name {
                     break;
             }
 
-            // chunk2: title? firstName+ suffix?
+            // chunk2: title? firstName+ nickname? suffix? postNominals?
             String chunk2 = commapos < namestr.length() - 2 ? namestr.substring(commapos + 1).trim() : "";
             tokens = chunk2.split(" +");
 
             i = tokens.length - 1;
+            while (i > 0 && parse(tokens[i], POST_NOMINAL, postNominals, true))
+                i--;
+
             while (i > 0 && parse(tokens[i], SUFFIX, suffix, true))
+                i--;
+
+            while (i > 0 && parse(tokens[i], NICKNAME, nickname, true))
                 i--;
 
             max = i;
@@ -96,11 +108,14 @@ public class Name {
             while (i <= max && parse(tokens[i], FIRST_NAME, firstNames, false))
                 i++;
         } else {
-            // - title? firstName+ prefix? lastName suffix?
+            // - title? firstName+ nickname? prefix? lastName suffix? postNominals?
             String[] tokens = namestr.split(" +");
 
             // Parse any suffixes first, so that they don't get consumed by lastName.
             int i = tokens.length - 1;
+            while (i > 0 && parse(tokens[i], POST_NOMINAL, postNominals, true))
+                i--;
+
             while (i > 0 && parse(tokens[i], SUFFIX, suffix, true))
                 i--;
 
@@ -111,6 +126,8 @@ public class Name {
 
             while (i < max) {
                 if (parse(tokens[i], PREFIX, prefix, false))
+                    i++;
+                else if (parse(tokens[i], NICKNAME, nickname, false))
                     i++;
                 else if (parse(tokens[i], FIRST_NAME, firstNames, false))
                     i++;
@@ -125,9 +142,11 @@ public class Name {
         Name name = new Name();
         name.title = toString(title);
         name.firstNames = toString(firstNames);
+        name.nickname = toString(nickname);
         name.prefix = toString(prefix);
         name.lastName = toString(lastName);
         name.suffix = toString(suffix);
+        name.postNominals = toString(postNominals);
 
         return name;
     }
@@ -142,15 +161,17 @@ public class Name {
      * @return {@code true} if {@code token} matched {@code pattern}, otherwise {@code false}.
      */
     private static boolean parse(String token, Pattern pattern, StringBuilder result, boolean prepend) {
-        if (pattern.matcher(token).matches()) {
+        Matcher matcher = pattern.matcher(token);
+        if (matcher.matches()) {
+            String match = matcher.group(matcher.groupCount() == 1 ? 1 : 0);
             if (prepend) {
                 if (!result.isEmpty() && result.charAt(0) != ' ')
                     result.insert(0, ' ');
-                result.insert(0, token);
+                result.insert(0, match);
             } else {
                 if (!result.isEmpty() && result.charAt(result.length() - 1) != ' ')
                     result.append(' ');
-                result.append(token);
+                result.append(match);
             }
             return true;
         }
@@ -163,10 +184,23 @@ public class Name {
      * @param s The string to append.
      */
     private static void append(StringBuilder sb, String s) {
+        append(sb, s, null, null);
+    }
+
+    /**
+     * Appends a string to a buffer, prepending a space if the buffer is not empty.
+     * @param sb The buffer.
+     * @param s The string to append.
+     */
+    private static void append(StringBuilder sb, String s, Character openDelim, Character closeDelim) {
         if (s != null) {
             if (!sb.isEmpty() && sb.charAt(sb.length() - 1) != ' ')
                 sb.append(' ');
+            if (openDelim != null)
+                sb.append(openDelim);
             sb.append(s);
+            if (closeDelim != null)
+                sb.append(closeDelim);
         }
     }
 
@@ -181,9 +215,11 @@ public class Name {
 
     private String title;
     private String firstNames;
+    private String nickname;
     private String prefix;
     private String lastName;
     private String suffix;
+    private String postNominals;
 
     public Name() {
     }
@@ -193,12 +229,14 @@ public class Name {
         this.lastName = lastName;
     }
 
-    public Name(String title, String firstNames, String prefix, String lastName, String suffix) {
+    public Name(String title, String firstNames, String nickname, String prefix, String lastName, String suffix, String postNominals) {
         this.title = title;
         this.firstNames = firstNames;
+        this.nickname = nickname;
         this.prefix = prefix;
         this.lastName = lastName;
         this.suffix = suffix;
+        this.postNominals = postNominals;
     }
 
     public String getTitle() {
@@ -215,6 +253,14 @@ public class Name {
 
     public void setFirstNames(String firstName) {
         this.firstNames = firstName;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public String getPrefix() {
@@ -239,6 +285,14 @@ public class Name {
 
     public void setSuffix(String suffix) {
         this.suffix = suffix;
+    }
+
+    public String getPostNominals() {
+        return postNominals;
+    }
+
+    public void setPostNominals(String postNominals) {
+        this.postNominals = postNominals;
     }
 
     public String getInitials() {
@@ -268,9 +322,11 @@ public class Name {
         int result = 1;
         result = prime * result + ((title == null) ? 0 : title.hashCode());
         result = prime * result + ((firstNames == null) ? 0 : firstNames.hashCode());
+        result = prime * result + ((nickname == null) ? 0 : nickname.hashCode());
         result = prime * result + ((prefix == null) ? 0 : prefix.hashCode());
         result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
         result = prime * result + ((suffix == null) ? 0 : suffix.hashCode());
+        result = prime * result + ((postNominals == null) ? 0 : postNominals.hashCode());
         return result;
     }
 
@@ -293,6 +349,11 @@ public class Name {
                 return false;
         } else if (!firstNames.equals(other.firstNames))
             return false;
+        if (nickname == null) {
+            if (other.nickname != null)
+                return false;
+        } else if (!nickname.equals(other.nickname))
+            return false;
         if (prefix == null) {
             if (other.prefix != null)
                 return false;
@@ -308,11 +369,16 @@ public class Name {
                 return false;
         } else if (!suffix.equals(other.suffix))
             return false;
+        if (postNominals == null) {
+            if (other.postNominals != null)
+                return false;
+        } else if (!postNominals.equals(other.postNominals))
+            return false;
         return true;
     }
 
     /**
-     * Returns a string representation of the object. The result is equivalent to calling {@code format("%t%f%p%l%s")}.
+     * Returns a string representation of the object. The result is equivalent to calling {@code format("%t%f%n%p%l%s%z")}.
      * @return The string representation.
      */
     @Override
@@ -320,9 +386,11 @@ public class Name {
         StringBuilder result = new StringBuilder();
         append(result, title);
         append(result, firstNames);
+        append(result, nickname, '\'', '\'');
         append(result, prefix);
         append(result, lastName);
         append(result, suffix);
+        append(result, postNominals);
         return result.toString();
     }
 
@@ -332,9 +400,11 @@ public class Name {
      * field types are as follows:<br>
      * <b>{@code t}</b>: The {@code title} field<br>
      * <b>{@code f}</b>: The {@code firstNames} field<br>
+     * <b>{@code n}</b>: The {@code nickame} field<br>
      * <b>{@code p}</b>: The {@code prefix} field<br>
      * <b>{@code l}</b>: The {@code lastName} field<br>
      * <b>{@code s}</b>: The {@code suffix} field<br>
+     * <b>{@code z}</b>: The {@code postNominals} field<br>
      * <b>{@code i}</b>: The {@code firstNames} field represented as initials, each with a trailing period and space<br>
      * <b>{@code I}</b>: The {@code firstNames} field represented as initials, each with neither trailing period nor
      * space<br>
@@ -363,6 +433,9 @@ public class Name {
                     case 'f':
                         append(result, firstNames);
                         break;
+                    case 'n':
+                        append(result, nickname, '\'', '\'');
+                        break;
                     case 'p':
                         append(result, prefix);
                         break;
@@ -371,6 +444,9 @@ public class Name {
                         break;
                     case 's':
                         append(result, suffix);
+                        break;
+                    case 'z':
+                        append(result, postNominals);
                         break;
                     case 'i':
                         append(result, getInitials());
