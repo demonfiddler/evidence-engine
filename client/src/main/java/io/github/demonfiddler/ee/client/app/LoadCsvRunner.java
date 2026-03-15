@@ -30,19 +30,12 @@ import java.io.FileReader;
 import java.io.Reader;
 import java.util.Map;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Options;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.csv.QuoteMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 
 import com.graphql_java_generator.exception.GraphQLRequestExecutionException;
@@ -63,17 +56,20 @@ import io.github.demonfiddler.ee.client.Quotation;
 import io.github.demonfiddler.ee.client.QuotationInput;
 import io.github.demonfiddler.ee.client.util.Authenticator;
 import io.github.demonfiddler.ee.client.util.MutationExecutor;
+import io.github.demonfiddler.ee.client.util.QueryExecutor;
 
+/**
+ * Loads Declarations, Persons, Publications or Quotations from a CSV file. The file must have the structure defined by
+ * the <a href="https://campaign-resources.org/climate-scence-client/" target="_blank">climate-scence-client</a> application.
+ */
 @Component
-public class EvidenceEngineClientRunner implements CommandLineRunner {
+public class LoadCsvRunner extends AbstractClientRunner {
 
     static enum RecordKind {
         Declaration, Person, Publication, Quotation
     }
 
-    private static final String OPT_TOPIC_ID = "topic_id";
-    private static final String OPT_LOAD = "load";
-    private static final Logger LOGGER = LoggerFactory.getLogger(EvidenceEngineClientRunner.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoadCsvRunner.class);
     private static final Map<String, DeclarationKind> DECLARATION_KINDS = Map.of(//
         "Declaration", DeclarationKind.DECL, //
         "Open Letter", DeclarationKind.OPLE, //
@@ -83,7 +79,7 @@ public class EvidenceEngineClientRunner implements CommandLineRunner {
 
     class HandlerFactory {
 
-        /*<T extends ILinkableEntity>*/ CsvHandler<? extends ILinkableEntity> create(RecordKind recordKind) {
+        CsvHandler<? extends ILinkableEntity> create(RecordKind recordKind) {
             return switch (recordKind) {
                 case Declaration -> new DeclarationHandler();
                 case Person -> new PersonHandler();
@@ -202,32 +198,19 @@ public class EvidenceEngineClientRunner implements CommandLineRunner {
 
     }
 
-    private final ConfigurableApplicationContext context;
-    private final Authenticator authenticator;
-    // private final QueryExecutor queryExecutor;
-    private final MutationExecutor mutationExecutor;
+    public LoadCsvRunner(ConfigurableApplicationContext context, Authenticator authenticator,
+        QueryExecutor queryExecutor, MutationExecutor mutationExecutor) {
 
-    public EvidenceEngineClientRunner(ConfigurableApplicationContext context, Authenticator authenticator,
-        /*QueryExecutor queryExecutor, */MutationExecutor mutationExecutor) {
-        this.context = context;
-        this.authenticator = authenticator;
-        // this.queryExecutor = queryExecutor;
-        this.mutationExecutor = mutationExecutor;
+        super(context, authenticator, queryExecutor, mutationExecutor);
+    }
+
+    Logger getLogger() {
+        return LOGGER;
     }
 
     @Override
-    public void run(String... args) throws Exception {
-        if (!authenticator.login())
-            throw new BadCredentialsException("Authentication failed");
-
-        // Need to be able to load the EE database from files:
-        // declarations.csv, persons.csv, publications.csv, quotations.csv
-        Options options = new Options() //
-            .addOption("l", OPT_LOAD, true, "Load data from CSV file") //
-            .addOption("t", OPT_TOPIC_ID, true, "Link imported records to specified topic");
-        CommandLineParser parser = new DefaultParser();
-        CommandLine cmdline = parser.parse(options, args);
-        if (cmdline.hasOption("load")) {
+    void doRun() throws Exception {
+        if (cmdline.hasOption(OPT_LOAD)) {
             String recordKindStr = cmdline.getOptionValue(OPT_LOAD);
             RecordKind recordKind = RecordKind.valueOf(recordKindStr);
             String topicIdStr = cmdline.getOptionValue(OPT_TOPIC_ID);
@@ -278,8 +261,6 @@ public class EvidenceEngineClientRunner implements CommandLineRunner {
                 });
             }
         }
-        SpringApplication.exit(context);
-        context.close();
     }
 
 }

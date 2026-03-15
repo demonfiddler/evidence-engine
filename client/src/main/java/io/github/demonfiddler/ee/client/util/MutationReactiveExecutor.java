@@ -3925,10 +3925,15 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	}
 
 	/**
-	 * Deletes an entity link. This method executes a partial query against the GraphQL server. That is, the query that
-	 * is one of the queries defined in the GraphQL query object. The queryResponseDef contains the part of the query
-	 * that <B><U>is after</U></B> the query name.<BR/>
-	 * For instance, if the query hero has one parameter (as defined in the GraphQL schema):
+	 * Deletes an entity link.
+	 *
+	 * This method executes a partial query against the GraphQL server. That is, the
+	 * query that is one of the queries
+	 * defined in the GraphQL query object. The queryResponseDef contains the part
+	 * of the query that <B><U>is
+	 * after</U></B> the query name.<BR/>
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL
+	 * schema):
 	 * 
 	 * <PRE>
 	 * &#64;Component // This class must be a spring component
@@ -3943,50 +3948,79 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * 		params.put("skip", Boolean.FALSE); // skip is mandatory, as it is marked by a "&" in the request
 	 * 
 	 * 		Mono<EntityLink> mono = executor.deleteEntityLinkWithBindValues(
-	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
-	 * 			entityLinkId, // A value for deleteEntityLink's entityLinkId input parameter
-	 * 			params);
+	 * 				"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 				entityLinkId, // A value for deleteEntityLink's entityLinkId input parameter
+	 * 				hard, // A value for deleteEntityLink's hard input parameter
+	 * 				params);
 	 * 		EntityLink field = mono.block();
 	 * 	}
-	 * 
 	 * }
 	 * </PRE>
 	 * 
-	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
-	 * This method takes care of writing the query/mutation name, and the parameter(s) for the query/mutation. The given
-	 * queryResponseDef describes the format of the response of the server response, that is the expected fields of the
-	 * {@link Character} GraphQL type. It can be something like "{ id name }", if you want these fields of this type.
-	 * Please take a look at the StarWars, Forum and other samples for more complex queries.<BR/>
-	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * It offers a logging of the call (if in debug mode), or of the call and its
+	 * parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the
+	 * parameter(s) for the query/mutation. The given queryResponseDef
+	 * describes the format of the response of the server response, that is the
+	 * expected fields of the {@link Character}
+	 * GraphQL type. It can be something like "{ id name }", if you want these
+	 * fields of this type. Please take a look
+	 * at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
 	 * <I>parameters</I> argument to pass the list of values.<BR/>
-	 * @param queryResponseDef The response definition of the query, in the native GraphQL format (see here above)
-	 * @param entityLinkId Parameter for the deleteEntityLink field of Mutation, as defined in the GraphQL schema
-	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
-	 * variable in the defined query/mutation, this argument may be null or an empty {@link Map}
-	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
-	 * building the {@link ObjectResponse}
-	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
-	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 * 
+	 * @param queryResponseDef
+	 *                         The response definition of the query, in the native
+	 *                         GraphQL format (see here above)
+	 * @param entityLinkId     Parameter for the deleteEntityLink field of Mutation,
+	 *                         as defined in the GraphQL schema
+	 * @param hard             Parameter for the deleteEntityLink field of Mutation,
+	 *                         as defined in the GraphQL schema
+	 * @param parameters
+	 *                         The list of values, for the bind variables defined in
+	 *                         the query/mutation. If there is no bind variable in
+	 *                         the
+	 *                         defined query/mutation, this argument may be null or
+	 *                         an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException
+	 *                                            When an error occurs during the
+	 *                                            request preparation, typically
+	 *                                            when building the
+	 *                                            {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException
+	 *                                            When an error occurs during the
+	 *                                            request execution, typically a
+	 *                                            network error, an error from the
+	 *                                            GraphQL server or if the server
+	 *                                            response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "deleteEntityLink", graphQLTypeSimpleName = "EntityLink",
-		javaClass = EntityLink.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[LNK]" })
-	public Mono<Optional<EntityLink>> deleteEntityLinkWithBindValues(String queryResponseDef, Long entityLinkId,
-		Map<String, Object> parameters) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "deleteEntityLink", graphQLTypeSimpleName = "EntityLink", javaClass = EntityLink.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[LNK]" })
+	public Mono<Optional<EntityLink>> deleteEntityLinkWithBindValues(
+			String queryResponseDef,
+			Long entityLinkId,
+			Boolean hard,
+			Map<String, Object> parameters)
+			throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 
 		LOGGER.debug("Executing mutation 'deleteEntityLink': {} ", queryResponseDef);
-		ObjectResponse objectResponse =
-			getDeleteEntityLinkResponseBuilder().withQueryResponseDef(queryResponseDef).build();
-		return deleteEntityLinkWithBindValues(objectResponse, entityLinkId, parameters);
+		ObjectResponse objectResponse = getDeleteEntityLinkResponseBuilder().withQueryResponseDef(queryResponseDef)
+				.build();
+		return deleteEntityLinkWithBindValues(objectResponse, entityLinkId, hard, parameters);
 	}
 
 	/**
 	 * Deletes an entity link.<br/>
-	 * This method executes a partial query against the GraphQL server. That is, the query that is one of the queries
-	 * defined in the GraphQL query object. The queryResponseDef contains the part of the query that <B><U>is
+	 *
+	 * This method executes a partial query against the GraphQL server. That is, the
+	 * query that is one of the queries
+	 * defined in the GraphQL query object. The queryResponseDef contains the part
+	 * of the query that <B><U>is
 	 * after</U></B> the query name.<BR/>
-	 * For instance, if the query hero has one parameter (as defined in the GraphQL schema):
+	 * For instance, if the query hero has one parameter (as defined in the GraphQL
+	 * schema):
 	 * 
 	 * <PRE>
 	 * &#64;Component // This class must be a spring component
@@ -3997,53 +4031,81 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * 
 	 * 	void myMethod() {
 	 * 		Mono<EntityLink> mono = executor.deleteEntityLink(
-	 * 			"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
-	 * 			entityLinkId, // A value for deleteEntityLink's entityLinkId input parameter
-	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
-	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 				"{subfield1 @aDirectiveToDemonstrateBindVariables(if: &skip, param: ?param) subfield2 {id name}}",
+	 * 				entityLinkId, // A value for deleteEntityLink's entityLinkId input parameter
+	 * 				hard, // A value for deleteEntityLink's hard input parameter
+	 * 				"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 				"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 		EntityLink field = mono.block();
 	 * 	}
-	 * 
 	 * }
 	 * </PRE>
 	 * 
-	 * It offers a logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
-	 * This method takes care of writing the query/mutation name, and the parameter(s) for the query/mutation . The
-	 * given queryResponseDef describes the format of the response of the server response, that is the expected fields
-	 * of the {@link Character} GraphQL type. It can be something like "{ id name }", if you want these fields of this
-	 * type. Please take a look at the StarWars, Forum and other samples for more complex queries.<BR/>
-	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 * It offers a logging of the call (if in debug mode), or of the call and its
+	 * parameters (if in trace mode).<BR/>
+	 * This method takes care of writing the query/mutation name, and the
+	 * parameter(s) for the query/mutation . The given queryResponseDef
+	 * describes the format of the response of the server response, that is the
+	 * expected fields of the {@link Character}
+	 * GraphQL type. It can be something like "{ id name }", if you want these
+	 * fields of this type. Please take a look
+	 * at the StarWars, Forum and other samples for more complex queries.<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
 	 * <I>parameters</I> argument to pass the list of values.<BR/>
-	 * @param queryResponseDef The response definition of the query/mutation, in the native GraphQL format (see here
-	 * above)
-	 * @param entityLinkId Parameter for the deleteEntityLink field of Mutation, as defined in the GraphQL schema
-	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
-	 * variable in the defined query/mutation, this argument may be null or an empty {@link Map}
-	 * @throws GraphQLRequestPreparationException When an error occurs during the request preparation, typically when
-	 * building the {@link ObjectResponse}
-	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
-	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 * 
+	 * @param queryResponseDef
+	 *                         The response definition of the query/mutation, in the
+	 *                         native GraphQL format (see here above)
+	 * @param entityLinkId     Parameter for the deleteEntityLink field of Mutation,
+	 *                         as defined in the GraphQL schema
+	 * @param hard             Parameter for the deleteEntityLink field of Mutation,
+	 *                         as defined in the GraphQL schema
+	 * @param parameters
+	 *                         The list of values, for the bind variables defined in
+	 *                         the query/mutation. If there is no bind variable in
+	 *                         the
+	 *                         defined query/mutation, this argument may be null or
+	 *                         an empty {@link Map}
+	 * @throws GraphQLRequestPreparationException
+	 *                                            When an error occurs during the
+	 *                                            request preparation, typically
+	 *                                            when building the
+	 *                                            {@link ObjectResponse}
+	 * @throws GraphQLRequestExecutionException
+	 *                                            When an error occurs during the
+	 *                                            request execution, typically a
+	 *                                            network error, an error from the
+	 *                                            GraphQL server or if the server
+	 *                                            response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "deleteEntityLink", graphQLTypeSimpleName = "EntityLink",
-		javaClass = EntityLink.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[LNK]" })
-	public Mono<Optional<EntityLink>> deleteEntityLink(String queryResponseDef, Long entityLinkId,
-		Object... paramsAndValues) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "deleteEntityLink", graphQLTypeSimpleName = "EntityLink", javaClass = EntityLink.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[LNK]" })
+	public Mono<Optional<EntityLink>> deleteEntityLink(
+			String queryResponseDef,
+			Long entityLinkId,
+			Boolean hard,
+			Object... paramsAndValues)
+			throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 
 		LOGGER.debug("Executing mutation 'deleteEntityLink': {} ", queryResponseDef);
-		ObjectResponse objectResponse =
-			getDeleteEntityLinkResponseBuilder().withQueryResponseDef(queryResponseDef).build();
-		return deleteEntityLinkWithBindValues(objectResponse, entityLinkId,
-			this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues));
+		ObjectResponse objectResponse = getDeleteEntityLinkResponseBuilder().withQueryResponseDef(queryResponseDef)
+				.build();
+		return deleteEntityLinkWithBindValues(objectResponse, entityLinkId, hard,
+				this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues));
 	}
 
 	/**
 	 * Deletes an entity link.<br/>
-	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
-	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
-	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 *
+	 * This method is expected by the graphql-java framework. It will be called when
+	 * this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if
+	 * in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
 	 * <I>parameters</I> argument to pass the list of values.<BR/>
 	 * Here is a sample:
 	 * 
@@ -4058,45 +4120,61 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * 
 	 * 	@PostConstruct
 	 * 	public void setup() {
-	 * 		// Preparation of the query, so that it is prepared once then executed several times
+	 * 		// Preparation of the query, so that it is prepared once then executed
+	 * 		// several times
 	 * 		preparedRequest = executor.getDeleteEntityLinkGraphQLRequest(
-	 * 			"mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 				"mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
 	 * 	}
 	 * 
 	 * 	void myMethod() {
-	 * 		Mono<EntityLink> mono = executor.deleteEntityLinkWithBindValues(preparedRequest, entityLinkId, // A value
-	 * 																										// for
-	 * 																										// deleteEntityLink's
-	 * 																										// entityLinkId
-	 * 																										// input
-	 * 																										// parameter
-	 * 			params);
+	 * 		Mono<EntityLink> mono = executor.deleteEntityLinkWithBindValues(
+	 * 				preparedRequest,
+	 * 				entityLinkId, // A value for deleteEntityLink's entityLinkId input parameter
+	 * 				hard, // A value for deleteEntityLink's hard input parameter
+	 * 				params);
 	 * 		EntityLink field = mono.block();
 	 * 	}
-	 * 
 	 * }
 	 * </PRE>
 	 * 
-	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
-	 * to return<br/>
-	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
-	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
-	 * {@link getDeleteEntityLinkGraphQLRequest(String)} method.
-	 * @param entityLinkId Parameter for the deleteEntityLink field of Mutation, as defined in the GraphQL schema
-	 * @param parameters The list of values, for the bind variables defined in the query/mutation. If there is no bind
-	 * variable in the defined query/mutation, this argument may be null or an empty {@link Map}
-	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
-	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 * @param objectResponse
+	 *                       The definition of the response format, that describes
+	 *                       what the GraphQL server is expected to return<br/>
+	 *                       Note: the <code>ObjectResponse</code> type of this
+	 *                       parameter is defined for backward compatibility. In new
+	 *                       implementations,
+	 *                       the expected type is the generated GraphQLRequest POJO,
+	 *                       as returned by the
+	 *                       {@link getDeleteEntityLinkGraphQLRequest(String)}
+	 *                       method.
+	 * @param entityLinkId   Parameter for the deleteEntityLink field of Mutation,
+	 *                       as defined in the GraphQL schema
+	 * @param hard           Parameter for the deleteEntityLink field of Mutation,
+	 *                       as defined in the GraphQL schema
+	 * @param parameters
+	 *                       The list of values, for the bind variables defined in
+	 *                       the query/mutation. If there is no bind variable in the
+	 *                       defined query/mutation, this argument may be null or an
+	 *                       empty {@link Map}
+	 * @throws GraphQLRequestExecutionException
+	 *                                          When an error occurs during the
+	 *                                          request execution, typically a
+	 *                                          network error, an error from the
+	 *                                          GraphQL server or if the server
+	 *                                          response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "deleteEntityLink", graphQLTypeSimpleName = "EntityLink",
-		javaClass = EntityLink.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[LNK]" })
-	public Mono<Optional<EntityLink>> deleteEntityLinkWithBindValues(ObjectResponse objectResponse, Long entityLinkId,
-		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "deleteEntityLink", graphQLTypeSimpleName = "EntityLink", javaClass = EntityLink.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[LNK]" })
+	public Mono<Optional<EntityLink>> deleteEntityLinkWithBindValues(
+			ObjectResponse objectResponse,
+			Long entityLinkId,
+			Boolean hard,
+			Map<String, Object> parameters)
+			throws GraphQLRequestExecutionException {
 
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("Executing mutation 'deleteEntityLink' with parameters: {} ", entityLinkId);
+			LOGGER.trace("Executing mutation 'deleteEntityLink' with parameters: {}, {} ", entityLinkId, hard);
 		} else if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Executing mutation 'deleteEntityLink'");
 		}
@@ -4104,16 +4182,22 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 		// Given values for the BindVariables
 		Map<String, Object> parametersLocal = (parameters != null) ? parameters : new HashMap<>();
 		parametersLocal.put("mutationDeleteEntityLinkEntityLinkId", entityLinkId);
+		parametersLocal.put("mutationDeleteEntityLinkHard", hard);
 
-		return objectResponse.execReactive(Mutation.class, parametersLocal)
-			.map(t -> (t.getDeleteEntityLink() == null) ? Optional.empty() : Optional.of(t.getDeleteEntityLink()));
+		return objectResponse //
+				.execReactive(io.github.demonfiddler.ee.client.Mutation.class, parametersLocal) //
+				.map(t -> (t.getDeleteEntityLink() == null) ? Optional.empty() : Optional.of(t.getDeleteEntityLink()));
 	}
 
 	/**
 	 * Deletes an entity link.<br/>
-	 * This method is expected by the graphql-java framework. It will be called when this query is called. It offers a
-	 * logging of the call (if in debug mode), or of the call and its parameters (if in trace mode).<BR/>
-	 * This method is valid for queries/mutations/subscriptions which don't have bind variables, as there is no
+	 *
+	 * This method is expected by the graphql-java framework. It will be called when
+	 * this query is called. It offers a
+	 * logging of the call (if in debug mode), or of the call and its parameters (if
+	 * in trace mode).<BR/>
+	 * This method is valid for queries/mutations/subscriptions which don't have
+	 * bind variables, as there is no
 	 * <I>parameters</I> argument to pass the list of values.<BR/>
 	 * Here is a sample:
 	 * 
@@ -4128,43 +4212,65 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 	 * 
 	 * 	@PostConstruct
 	 * 	public void setup() {
-	 * 		// Preparation of the query, so that it is prepared once then executed several times
+	 * 		// Preparation of the query, so that it is prepared once then executed
+	 * 		// several times
 	 * 		preparedRequest = executor.getDeleteEntityLinkGraphQLRequest(
-	 * 			"mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
+	 * 				"mutation { sampleQueryOrMutationField(param: ?param)  {subfield1 @skip(if: &skip) subfield2 {id name}}}");
 	 * 	}
 	 * 
 	 * 	void myMethod() {
-	 * 		Mono<EntityLink> mono = executor.deleteEntityLink(preparedRequest, entityLinkId, // A value for
-	 * 			// deleteEntityLink's entityLinkId input parameter
-	 * 			"param", paramValue, // param is optional, as it is marked by a "?" in the request
-	 * 			"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
+	 * 		Mono<EntityLink> mono = executor.deleteEntityLink(
+	 * 				preparedRequest,
+	 * 				entityLinkId, // A value for deleteEntityLink's entityLinkId input parameter
+	 * 				hard, // A value for deleteEntityLink's hard input parameter
+	 * 				"param", paramValue, // param is optional, as it is marked by a "?" in the request
+	 * 				"skip", Boolean.FALSE // skip is mandatory, as it is marked by a "&" in the request
 	 * 		);
 	 * 		EntityLink field = mono.block();
 	 * 	}
-	 * 
 	 * }
 	 * </PRE>
 	 * 
-	 * @param objectResponse The definition of the response format, that describes what the GraphQL server is expected
-	 * to return<br/>
-	 * Note: the <code>ObjectResponse</code> type of this parameter is defined for backward compatibility. In new
-	 * implementations, the expected type is the generated GraphQLRequest POJO, as returned by the
-	 * {@link getDeleteEntityLinkGraphQLRequest(String)} method.
-	 * @param entityLinkId Parameter for the deleteEntityLink field of Mutation, as defined in the GraphQL schema
-	 * @param paramsAndValues This parameter contains all the name and values for the Bind Variables defined in the
-	 * objectResponse parameter, that must be sent to the server. Optional parameter may not have a value. They will be
-	 * ignored and not sent to the server. Mandatory parameter must be provided in this argument.<BR/>
-	 * This parameter contains an even number of parameters: it must be a series of name and values : (paramName1,
-	 * paramValue1, paramName2, paramValue2...)
-	 * @throws GraphQLRequestExecutionException When an error occurs during the request execution, typically a network
-	 * error, an error from the GraphQL server or if the server response can't be parsed
+	 * @param objectResponse
+	 *                        The definition of the response format, that describes
+	 *                        what the GraphQL server is expected to return<br/>
+	 *                        Note: the <code>ObjectResponse</code> type of this
+	 *                        parameter is defined for backward compatibility. In
+	 *                        new implementations,
+	 *                        the expected type is the generated GraphQLRequest
+	 *                        POJO, as returned by the
+	 *                        {@link getDeleteEntityLinkGraphQLRequest(String)}
+	 *                        method.
+	 * @param entityLinkId    Parameter for the deleteEntityLink field of Mutation,
+	 *                        as defined in the GraphQL schema
+	 * @param hard            Parameter for the deleteEntityLink field of Mutation,
+	 *                        as defined in the GraphQL schema
+	 * @param paramsAndValues
+	 *                        This parameter contains all the name and values for
+	 *                        the Bind Variables defined in the objectResponse
+	 *                        parameter, that must be sent to the server. Optional
+	 *                        parameter may not have a value. They will be
+	 *                        ignored and not sent to the server. Mandatory
+	 *                        parameter must be provided in this argument.<BR/>
+	 *                        This parameter contains an even number of parameters:
+	 *                        it must be a series of name and values :
+	 *                        (paramName1, paramValue1, paramName2, paramValue2...)
+	 * @throws GraphQLRequestExecutionException
+	 *                                          When an error occurs during the
+	 *                                          request execution, typically a
+	 *                                          network error, an error from the
+	 *                                          GraphQL server or if the server
+	 *                                          response can't be parsed
 	 */
-	@GraphQLNonScalar(fieldName = "deleteEntityLink", graphQLTypeSimpleName = "EntityLink",
-		javaClass = EntityLink.class)
-	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
-		parameterValues = { "[LNK]" })
-	public Mono<Optional<EntityLink>> deleteEntityLink(ObjectResponse objectResponse, Long entityLinkId,
-		Object... paramsAndValues) throws GraphQLRequestExecutionException {
+	@GraphQLNonScalar(fieldName = "deleteEntityLink", graphQLTypeSimpleName = "EntityLink", javaClass = EntityLink.class)
+	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = {
+			"[AuthorityKind!]" }, parameterValues = { "[LNK]" })
+	public Mono<Optional<EntityLink>> deleteEntityLink(
+			ObjectResponse objectResponse,
+			Long entityLinkId,
+			Boolean hard,
+			Object... paramsAndValues)
+			throws GraphQLRequestExecutionException {
 
 		if (LOGGER.isTraceEnabled()) {
 			StringBuilder sb = new StringBuilder();
@@ -4185,30 +4291,41 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 
 		Map<String, Object> parameters = this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues);
 		parameters.put("mutationDeleteEntityLinkEntityLinkId", entityLinkId);
+		parameters.put("mutationDeleteEntityLinkHard", hard);
 
-		return objectResponse.execReactive(Mutation.class, parameters)
-			.map(t -> (t.getDeleteEntityLink() == null) ? Optional.empty() : Optional.of(t.getDeleteEntityLink()));
+		return objectResponse
+				.execReactive(io.github.demonfiddler.ee.client.Mutation.class, parameters)
+				.map(t -> (t.getDeleteEntityLink() == null) ? Optional.empty() : Optional.of(t.getDeleteEntityLink()));
 	}
 
 	/**
 	 * Deletes an entity link.<br/>
-	 * Get the {@link Builder} for the EntityLink, as expected by the deleteEntityLink query/mutation.
+	 *
+	 * Get the {@link com.graphql_java_generator.client.request.Builder} for the
+	 * EntityLink, as expected by the deleteEntityLink query/mutation.
+	 * 
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
 	public Builder getDeleteEntityLinkResponseBuilder() throws GraphQLRequestPreparationException {
-		return new Builder(this.graphQlClient, GraphQLReactiveRequest.class, "deleteEntityLink", RequestType.mutation,
-			InputParameter.newBindParameter("", "entityLinkId", "mutationDeleteEntityLinkEntityLinkId", MANDATORY,
-				"Long", true, 0, false));
+		return new Builder(this.graphQlClient, GraphQLReactiveRequest.class,
+			"deleteEntityLink", RequestType.mutation,
+			InputParameter.newBindParameter("", "entityLinkId", "mutationDeleteEntityLinkEntityLinkId",
+					InputParameterType.MANDATORY, "ID", true, 0, false),
+			InputParameter.newBindParameter("", "hard", "mutationDeleteEntityLinkHard",
+					InputParameterType.OPTIONAL, "Boolean", false, 0, false));
 	}
 
 	/**
 	 * Deletes an entity link.<br/>
-	 * Get the {@link GraphQLReactiveRequest} for the deleteEntityLink REACTIVE_EXECUTOR, created with the given Partial
-	 * request.
-	 * @param partialRequest The Partial GraphQL request, as explained in the
-	 * <A HREF="https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin client
-	 * documentation</A>
+	 * Get the {@link GraphQLReactiveRequest} for the deleteEntityLink
+	 * REACTIVE_EXECUTOR, created with the given Partial request.
+	 * 
+	 * @param partialRequest
+	 *                       The Partial GraphQL request, as explained in the
+	 *                       <A HREF=
+	 *                       "https://graphql-maven-plugin-project.graphql-java-generator.com/client.html">plugin
+	 *                       client documentation</A>
 	 * @return
 	 * @throws GraphQLRequestPreparationException
 	 */
@@ -4216,8 +4333,10 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 		throws GraphQLRequestPreparationException {
 
 		return new GraphQLReactiveRequest(this.graphQlClient, partialRequest, RequestType.mutation, "deleteEntityLink",
-			InputParameter.newBindParameter("", "entityLinkId", "mutationDeleteEntityLinkEntityLinkId", MANDATORY,
-				"Long", true, 0, false));
+				InputParameter.newBindParameter("", "entityLinkId", "mutationDeleteEntityLinkEntityLinkId",
+						InputParameterType.MANDATORY, "ID", true, 0, false),
+				InputParameter.newBindParameter("", "hard", "mutationDeleteEntityLinkHard", InputParameterType.OPTIONAL,
+						"Boolean", false, 0, false));
 	}
 
 	/**
@@ -9645,7 +9764,6 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 		javaClass = ITrackedEntity.class)
 	@GraphQLDirective(name = "@auth", parameterNames = { "authority" }, parameterTypes = { "[AuthorityKind!]" },
 		parameterValues = { "[UPD]" })
-	@SuppressWarnings("static-method")
 	public Mono<Optional<ITrackedEntity>> setEntityStatusWithBindValues(ObjectResponse objectResponse, Long entityId,
 		StatusKind status, Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 

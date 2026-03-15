@@ -457,7 +457,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         checkLinkageRules(fromEntity, toEntity);
 
         // Prevent links to any Topic for which there is an existing link within its the ancestor-self-descendant axis.
-        checkForExistingTopicLink(null, input, fromEntity);
+        checkForExistingTopicLink(null, input, fromEntity, toEntity);
 
         EntityLink entityLink = EntityLink.builder() //
             .withRating(input.getRating()) //
@@ -496,7 +496,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
 
             if (fromEntityChanged) {
                 // Prevent links to any Topic for which there is an existing link within its the ancestor-self-descendant axis.
-                checkForExistingTopicLink(entityLink, input, newFromEntity);
+                checkForExistingTopicLink(entityLink, input, newFromEntity, newToEntity);
 
                 entityLink.setFromEntity(newFromEntity);
             }
@@ -545,39 +545,46 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
 	 * @param existingEntityLink The existing entity link in the {@code updateEntityLink} case.
 	 * @param input The input passed to {@code createEntityLink} or {@code updateEntityLink}.
 	 * @param fromEntity The 'from' entity per {@code input.getFromEntityId()}.
+	 * @param toEntity TODO
 	 * @throws IllegalArgumentException if there is an existing entity link to a Topic that is an ancestor or descendant
 	 * of {@code fromEntity}.
 	 */
-	private void checkForExistingTopicLink(EntityLink existingEntityLink, EntityLinkInput input, ILinkableEntity fromEntity) {
-		boolean fromEntityIsTopic = entityUtils.hasEntityKind(fromEntity, EntityKind.TOP);
-		if (fromEntityIsTopic) {
-			Topic topic = (Topic)Hibernate.unproxy(fromEntity);
-			EntityLinkQueryFilter filter = EntityLinkQueryFilter.builderForEntityLinkQueryFilter() //
-				.withFromEntityKind(EntityKind.TOP) //
-				.withToEntityId(input.getToEntityId()) //
-				.build();
-			List<EntityLink> entityLinks = entityLinkRepository.findByFilter(filter, Pageable.unpaged()).getContent();
-			if (!entityLinks.isEmpty()) {
-				Set<Long> topicAxis = new LinkedHashSet<>();
-				Topic parent = topic;
-				while (parent != null) {
-					topicAxis.add(parent.getId());
-					parent = parent.getParent();
-				}
-				addDescendantIds(topicAxis, topic.getChildren());
+    private void checkForExistingTopicLink(EntityLink existingEntityLink, EntityLinkInput input,
+            ILinkableEntity fromEntity, ILinkableEntity toEntity) {
 
-				for (EntityLink entityLink : entityLinks) {
-					// Ignore any existing entity link that we are going to update.
-					if (existingEntityLink != null && entityLink.getId().equals(existingEntityLink.getId()))
-						continue;
-					if (topicAxis.contains(entityLink.getFromEntity().getId())) {
-						throw new IllegalArgumentException(
-							"Cannot link an ancestor or descendant of an existing linked Topic");
-					}
-				}
-			}
-		}
-	}
+        boolean fromEntityIsTopic = entityUtils.hasEntityKind(fromEntity, EntityKind.TOP);
+        if (fromEntityIsTopic) {
+            Topic topic = (Topic) Hibernate.unproxy(fromEntity);
+            EntityLinkQueryFilter filter = EntityLinkQueryFilter.builderForEntityLinkQueryFilter() //
+                    .withFromEntityKind(EntityKind.TOP) //
+                    .withToEntityId(input.getToEntityId()) //
+                    .build();
+            List<EntityLink> entityLinks = entityLinkRepository.findByFilter(filter, Pageable.unpaged()).getContent();
+            if (!entityLinks.isEmpty()) {
+                Set<Long> topicAxis = new LinkedHashSet<>();
+                Topic parent = topic;
+                while (parent != null) {
+                    topicAxis.add(parent.getId());
+                    parent = parent.getParent();
+                }
+                addDescendantIds(topicAxis, topic.getChildren());
+
+                for (EntityLink entityLink : entityLinks) {
+                    // Ignore any existing entity link that we are going to update.
+                    if (existingEntityLink != null && entityLink.getId().equals(existingEntityLink.getId()))
+                        continue;
+                    if (topicAxis.contains(entityLink.getFromEntity().getId())) {
+                        throw new IllegalArgumentException(
+                                "Cannot link " + EntityKind.valueOf(fromEntity.getEntityKind()).label() + " #"
+                                        + fromEntity.getId() + " to "
+                                        + EntityKind.valueOf(toEntity.getEntityKind()).label() + " #" + toEntity.getId()
+                                        + ", because it is an ancestor or descendant of an existing linked Topic: "
+                                        + topicAxis);
+                    }
+                }
+            }
+        }
+    }
 
 	private void addDescendantIds(Set<Long> topicAxis, Collection<Topic> descendants) {
 		for (Topic descendant : descendants) {
@@ -588,7 +595,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
 
     @Override
     @PreAuthorize("hasAuthority('LNK')")
-    public Object deleteEntityLink(DataFetchingEnvironment dataFetchingEnvironment, Long entityLinkId) {
+    public Object deleteEntityLink(DataFetchingEnvironment dataFetchingEnvironment, Long entityLinkId, Boolean hard) {
         EntityLink entityLink = entityLinkRepository.getReferenceById(entityLinkId);
         entityLink.setStatus(StatusKind.DEL.name());
         setUpdatedFields(entityLink);
@@ -599,6 +606,10 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
         ILinkableEntity toEntity = entityLink.getToEntity();
         logUnlinked(entityLink, fromEntity, toEntity);
 
+        if (Boolean.TRUE.equals(hard)) {
+            entityLinkRepository.delete(entityLink);
+            return null;
+        }
         return entityLinkRepository.save(entityLink);
     }
 

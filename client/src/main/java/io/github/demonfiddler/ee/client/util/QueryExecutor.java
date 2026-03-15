@@ -7846,7 +7846,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "audit", graphQLTypeSimpleName = "EntityAudit", javaClass = EntityAudit.class)
-	public EntityAudit auditWithBindValues(String queryResponseDef, String id, Map<String, Object> parameters)
+	public EntityAudit auditWithBindValues(String queryResponseDef, Long id, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 
 		return getValueFromMonoOptional(
@@ -7894,7 +7894,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "audit", graphQLTypeSimpleName = "EntityAudit", javaClass = EntityAudit.class)
-	public EntityAudit audit(String queryResponseDef, String id, Object... paramsAndValues)
+	public EntityAudit audit(String queryResponseDef, Long id, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 
 		return getValueFromMonoOptional(this.queryReactiveExecutor.audit(queryResponseDef, id, paramsAndValues));
@@ -7945,7 +7945,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "audit", graphQLTypeSimpleName = "EntityAudit", javaClass = EntityAudit.class)
-	public EntityAudit auditWithBindValues(ObjectResponse objectResponse, String id, Map<String, Object> parameters)
+	public EntityAudit auditWithBindValues(ObjectResponse objectResponse, Long id, Map<String, Object> parameters)
 		throws GraphQLRequestExecutionException {
 
 		return getValueFromMonoOptional(this.queryReactiveExecutor.auditWithBindValues(objectResponse, id, parameters));
@@ -8000,7 +8000,7 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "audit", graphQLTypeSimpleName = "EntityAudit", javaClass = EntityAudit.class)
-	public EntityAudit audit(ObjectResponse objectResponse, String id, Object... paramsAndValues)
+	public EntityAudit audit(ObjectResponse objectResponse, Long id, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
 
 		return getValueFromMonoOptional(this.queryReactiveExecutor.audit(objectResponse, id, paramsAndValues));

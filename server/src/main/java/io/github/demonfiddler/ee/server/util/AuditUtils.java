@@ -345,6 +345,7 @@ public class AuditUtils {
             null)); // Publisher
         rules.put("QUO", new Rule( //
             Map.of( //
+                "CLA", 1, //
                 "PER", 1, //
                 "TOP", 1 //
             ), //

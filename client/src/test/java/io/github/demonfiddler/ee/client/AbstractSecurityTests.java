@@ -300,7 +300,7 @@ abstract class AbstractSecurityTests extends AbstractTrackedEntityTests<ITracked
                 input.setId(0L);
                 mutationExecutor.updateEntityLink(RESPONSE_SPEC, input);
             case DELETE:
-                mutationExecutor.deleteEntityLink("", 0L);
+                mutationExecutor.deleteEntityLink("", 0L, Boolean.FALSE);
                 break;
         }
     }

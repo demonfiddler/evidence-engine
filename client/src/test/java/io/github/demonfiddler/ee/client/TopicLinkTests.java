@@ -493,15 +493,15 @@ class TopicLinkTests extends AbstractGraphQLTests {
         TopicLinkTests.quotationTopicLink = null;
 
         String deletedStatus = StatusKind.DEL.label();
-        claimTopicLink = mutationExecutor.deleteEntityLink(RESPONSE_SPEC, claimTopicLink.getId());
+        claimTopicLink = mutationExecutor.deleteEntityLink(RESPONSE_SPEC, claimTopicLink.getId(), Boolean.FALSE);
         assertThat(claimTopicLink).hasStatus(deletedStatus);
-        declarationTopicLink = mutationExecutor.deleteEntityLink(RESPONSE_SPEC, declarationTopicLink.getId());
+        declarationTopicLink = mutationExecutor.deleteEntityLink(RESPONSE_SPEC, declarationTopicLink.getId(), Boolean.FALSE);
         assertThat(declarationTopicLink).hasStatus(deletedStatus);
-        personTopicLink = mutationExecutor.deleteEntityLink(RESPONSE_SPEC, personTopicLink.getId());
+        personTopicLink = mutationExecutor.deleteEntityLink(RESPONSE_SPEC, personTopicLink.getId(), Boolean.FALSE);
         assertThat(personTopicLink).hasStatus(deletedStatus);
-        publicationTopicLink = mutationExecutor.deleteEntityLink(RESPONSE_SPEC, publicationTopicLink.getId());
+        publicationTopicLink = mutationExecutor.deleteEntityLink(RESPONSE_SPEC, publicationTopicLink.getId(), Boolean.FALSE);
         assertThat(publicationTopicLink).hasStatus(deletedStatus);
-        quotationTopicLink = mutationExecutor.deleteEntityLink(RESPONSE_SPEC, quotationTopicLink.getId());
+        quotationTopicLink = mutationExecutor.deleteEntityLink(RESPONSE_SPEC, quotationTopicLink.getId(), Boolean.FALSE);
         assertThat(quotationTopicLink).hasStatus(deletedStatus);
 
         EntityLinkQueryFilter filter = EntityLinkQueryFilter.builder() //

@@ -454,6 +454,7 @@ export function getRecordLinks(record?: ILinkableEntity, toLinks?: boolean, enti
     if (record?.toEntityLinks?.content)
       getRecordLinks(record, true, record.toEntityLinks.content, results)
   }
+  results.sort((a, b) => a.otherRecordKind.localeCompare(b.otherRecordKind))
   return results
 }
 

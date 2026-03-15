@@ -9433,7 +9433,7 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "audit", graphQLTypeSimpleName = "EntityAudit", javaClass = EntityAudit.class)
-	public Mono<Optional<EntityAudit>> auditWithBindValues(String queryResponseDef, String id,
+	public Mono<Optional<EntityAudit>> auditWithBindValues(String queryResponseDef, Long id,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 
 		LOGGER.debug("Executing query 'audit': {} ", queryResponseDef);
@@ -9486,7 +9486,7 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "audit", graphQLTypeSimpleName = "EntityAudit", javaClass = EntityAudit.class)
-	public Mono<Optional<EntityAudit>> audit(String queryResponseDef, String id, Object... paramsAndValues)
+	public Mono<Optional<EntityAudit>> audit(String queryResponseDef, Long id, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException, GraphQLRequestPreparationException {
 
 		LOGGER.debug("Executing query 'audit': {} ", queryResponseDef);
@@ -9541,7 +9541,7 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "audit", graphQLTypeSimpleName = "EntityAudit", javaClass = EntityAudit.class)
-	public Mono<Optional<EntityAudit>> auditWithBindValues(ObjectResponse objectResponse, String id,
+	public Mono<Optional<EntityAudit>> auditWithBindValues(ObjectResponse objectResponse, Long id,
 		Map<String, Object> parameters) throws GraphQLRequestExecutionException {
 
 		if (LOGGER.isTraceEnabled()) {
@@ -9608,7 +9608,7 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	 * error, an error from the GraphQL server or if the server response can't be parsed
 	 */
 	@GraphQLNonScalar(fieldName = "audit", graphQLTypeSimpleName = "EntityAudit", javaClass = EntityAudit.class)
-	public Mono<Optional<EntityAudit>> audit(ObjectResponse objectResponse, String id, Object... paramsAndValues)
+	public Mono<Optional<EntityAudit>> audit(ObjectResponse objectResponse, Long id, Object... paramsAndValues)
 		throws GraphQLRequestExecutionException {
 
 		if (LOGGER.isTraceEnabled()) {

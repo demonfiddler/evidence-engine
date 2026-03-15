@@ -2465,7 +2465,7 @@ type Mutation {
     "Updates an existing entity link."
     updateEntityLink(entityLink: EntityLinkInput!): EntityLink @auth(authority: [LNK])
     "Deletes an entity link."
-    deleteEntityLink(entityLinkId: ID!) : EntityLink @auth(authority: [LNK])
+    deleteEntityLink(entityLinkId: ID!, hard: Boolean) : EntityLink @auth(authority: [LNK])
 
     "Create a new journal."
     createJournal(journal: JournalInput!): Journal @auth(authority: [CRE])

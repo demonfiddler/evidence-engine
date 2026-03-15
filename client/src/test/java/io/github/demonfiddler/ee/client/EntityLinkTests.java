@@ -213,7 +213,7 @@ class EntityLinkTests extends AbstractLinkTests {
 
                 try {
                     EntityLink entityLink = entityLinks.get(j - 1);
-                    EntityLink result = mutationExecutor.deleteEntityLink(MINIMAL_RESPONSE, entityLink.getId());
+                    EntityLink result = mutationExecutor.deleteEntityLink(MINIMAL_RESPONSE, entityLink.getId(), Boolean.FALSE);
                     assertThat(result).hasStatus(StatusKind.DEL.name());
                     assertThat(result).fromEntity().hasId(fromEntityId);
                     assertThat(result).hasFromEntityLocations(entityLink.getFromEntityLocations());
