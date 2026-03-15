@@ -19,8 +19,12 @@
 
 package io.github.demonfiddler.ee.server.rest.api;
 
-import static io.github.demonfiddler.ee.server.rest.util.BackupUtils.*;
 import static io.github.demonfiddler.ee.common.util.StringUtils.NL;
+import static io.github.demonfiddler.ee.server.rest.util.BackupUtils.APPDATA_TABLES_BACKUP;
+import static io.github.demonfiddler.ee.server.rest.util.BackupUtils.APPDATA_TABLES_RESTORE;
+import static io.github.demonfiddler.ee.server.rest.util.BackupUtils.ENTITY_TABLES_RESTORE;
+import static io.github.demonfiddler.ee.server.rest.util.BackupUtils.SELECT_TABLE_COLUMNS;
+import static io.github.demonfiddler.ee.server.rest.util.BackupUtils.STATIC_TABLES;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -36,7 +40,6 @@ import java.util.zip.ZipInputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -78,7 +81,6 @@ public class RestoreApiController implements RestoreApi {
     @Value("${data.server.tmpdir}")
     private String tmpDir;
 
-    @Autowired
     public RestoreApiController(NativeWebRequest request, PlatformTransactionManager txManager,
         JdbcTemplate jdbcTemplate, BackupUtils backupUtils, DatabaseUtils databaseUtils) {
         this.request = request;

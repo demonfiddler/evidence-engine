@@ -47,5 +47,6 @@ Runtime
 - GraphQL annotations on inherited members are not detected, so it's impossible to optimise similar generated classes by extending an abstract base class supplying the common functionality. To fix this I had to extend GraphQLClientUtils.getDeclaredField() to check superclasses where necessary, further modify the generated sources and programmatically update the static GraphqlClientUtils.graphqlClientUtils and InputParameter.graphqlClientUtils fields.
 - Spelling errors in log and message strings. (e.g. "Could not find fied '...' in ...")
 - com.graphql_java_generator.client.request.InputParameter.getStringContentForAnInputTypeValue() line 1113 only checks the declared fields on the input's class, not any of its superclasses, thus ignoring any inherited fields.
+- com.graphql_java_generator.client.request.InputParameter.parseInputParameterValue() line 588 fails to handle the case where owningClass is an interface, erroring out because graphqlClientUtils.getDeclaredField() stupidly tries to find a field on an interface.
 - In a response specification, inline fragments on interface types do not work, as GraphqlClientUtils.checkFieldOfGraphQLType() attempts to find the field in the Java interface!
 - Error messages lack line/column numbers, making it hard to identify the source of an error in a response specification.

@@ -168,7 +168,7 @@ export default function PublicationDetails(
               )}
             />
             <DetailActions
-              className="col-start-4 row-span-14"
+              className="col-start-4 row-span-15"
               recordKind="Publication"
               record={record}
               form={form}

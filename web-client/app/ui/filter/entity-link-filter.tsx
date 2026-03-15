@@ -299,6 +299,7 @@ export default function EntityLinkFilter() {
                     <ButtonEx
                       id="gotoMasterRecord"
                       className="bg-blue-500"
+                      type="button"
                       disabled={masterRecordKind == "None"}
                       help={
                         masterRecordKind != "None"

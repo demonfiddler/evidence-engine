@@ -22,7 +22,7 @@
 import ILinkableEntity from "@/app/model/ILinkableEntity"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { formatDateTime, getRecordLinks, RecordLink, getLinkLabel } from "@/lib/utils"
 import { LinkableEntityKind, RecordKind } from "@/app/model/RecordKinds"
 import { DetailState } from "./detail-actions"
@@ -33,6 +33,11 @@ import InputEx from "../ext/input-ex"
 import { detail, LoggerEx } from "@/lib/logger"
 import StatusDialog from "../dialog/status-dialog"
 import { LinkIcon } from "lucide-react"
+import ButtonEx from "../ext/button-ex"
+import useLinkableEntityQueryFilter from "@/hooks/use-linkable-entity-query-filter"
+import { LinkableEntityQueryFilter } from "@/app/model/schema"
+import { GlobalContext } from "@/lib/context"
+import Link from "next/link"
 
 const logger = new LoggerEx(detail, "[LinkingDetails] ")
 
@@ -50,6 +55,8 @@ export default function LinkingDetails(
   }) {
   logger.debug("render")
 
+  const {createSearchParams} = useLinkableEntityQueryFilter()
+  const {queries} = useContext(GlobalContext)
   const [ selectedLinkId, setSelectedLinkId ] = useState('')
   const [ thisRecordLocations, setThisRecordLocations ] = useState<string>('')
   const [ otherRecordLocations, setOtherRecordLocations ] = useState<string>('')
@@ -85,6 +92,18 @@ export default function LinkingDetails(
     }
   }, [handleSelectedLinkChange, record])
 
+  const getOtherRecordUrl = useCallback(() => {
+    let uri = ""
+    if (selectedLink?.otherRecordKind && selectedLink?.otherRecordId) {
+      uri = `/${selectedLink.otherRecordKind?.toLowerCase()}s`
+      const newFilter = {...queries[selectedLink.otherRecordKind]?.filter} as LinkableEntityQueryFilter
+      newFilter.recordId = selectedLink?.otherRecordId
+      const searchParams = createSearchParams(newFilter)
+      uri += `?${searchParams.toString()}`
+    }
+    return uri
+  }, [selectedLink, queries, createSearchParams])
+
   return (
     <div className="w-full grid grid-cols-5 gap-2">
       <span className="text-lg"><LinkIcon className="inline" />&nbsp;Linking</span>
@@ -117,14 +136,21 @@ export default function LinkingDetails(
           }
         </SelectContent>
       </Select>
-      <LogDialog
-        recordKind="RecordLink"
-        recordId={selectedLinkId ?? ''}
-        recordLabel={getLinkLabel(recordKind as LinkableEntityKind, selectedLink)}
-        className="col-start-5 place-items-center"
-        disabled={!selectedLink || !state.allowRead}
-        state={state}
-      />
+      <Link href={getOtherRecordUrl()}>
+        <ButtonEx
+          outerClassName="col-start-5 justify-center w-full"
+          className="w-35 bg-blue-500 text-md"
+          type="button"
+          disabled={!selectedLink}
+          help={
+            selectedLink?.otherRecordKind
+            ? `Navigate to the ${selectedLink?.otherRecordKind}s page`
+            : "No record link selected"
+          }
+        >
+          Go to
+        </ButtonEx>
+      </Link>
       <Label className="col-start-1" htmlFor="link-id">Link ID:</Label>
       <InputEx
         id="link-id"
@@ -143,7 +169,10 @@ export default function LinkingDetails(
         value={selectedLink?.status ?? ''}
         help="The status of the selected record link"
       />
-      <StatusDialog recordKind={recordKind as LinkableEntityKind} record={record} />
+      <StatusDialog
+        recordKind={recordKind as LinkableEntityKind}
+        record={record}
+      />
       <Label htmlFor="link-created-by" className="col-start-1">Created by:</Label>
       <InputEx
         id="link-created-by"
@@ -161,6 +190,14 @@ export default function LinkingDetails(
         disabled={!record}
         value={formatDateTime(selectedLink?.created)}
         help="The date and time at which the record link was created"
+      />
+      <LogDialog
+        className="col-start-5 place-items-center"
+        recordKind="RecordLink"
+        recordId={selectedLinkId ?? ''}
+        recordLabel={getLinkLabel(recordKind as LinkableEntityKind, selectedLink)}
+        disabled={!selectedLink || !state.allowRead}
+        state={state}
       />
       <Label htmlFor="link-updated-by" className="col-start-1">Updated by:</Label>
       <InputEx

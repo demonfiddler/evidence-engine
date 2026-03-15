@@ -103,7 +103,7 @@ import EntityLink from "@/app/model/EntityLink"
 import EntityAudit from "@/app/model/EntityAudit"
 import useAuth from "@/hooks/use-auth"
 import ITrackedEntity from "@/app/model/ITrackedEntity"
-import { GlobalContext } from "@/lib/context"
+import { FIELD_AUDIT, GlobalContext, LINK_AUDIT, LINK_MANAGER, StatusDialogItemType } from "@/lib/context"
 import Topic from "@/app/model/Topic"
 import { Textarea } from "@/components/ui/textarea"
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
@@ -112,9 +112,6 @@ import Link from "next/link"
 
 const logger = new LoggerEx(dialog, "[StatusDialog] ")
 
-const LINK_AUDIT = "link-audit"
-const FIELD_AUDIT = "field-audit"
-const LINK_MANAGER = "link-manager"
 const VIEW = "view"
 const EDIT = "edit"
 const CREATE = "create"
@@ -216,8 +213,7 @@ function getTopicAxis(topicTree: Topic[], filteredRecordLinks: RecordLink[]): Se
 
 export default function StatusDialog({ recordKind, record }: { recordKind?: LinkableEntityKind, record?: ILinkableEntity }) {
   const { hasAuthority } = useAuth()
-  const { statusDialogOpen, setStatusDialogOpen, /*statusDialogItem, setStatusDialogItem*/ } = useContext(GlobalContext)
-  const [ statusDialogItem, setStatusDialogItem ] = useState(FIELD_AUDIT)
+  const { statusDialogOpen, setStatusDialogOpen, statusDialogItem, setStatusDialogItem } = useContext(GlobalContext)
   const [error, setError] = useState("")
   const [otherRecordKind, setOtherRecordKind] = useState<LinkableEntityKind>()
   const [otherRecord, setOtherRecord] = useState<ILinkableEntity | null>(null)
@@ -676,14 +672,14 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
         <Tabs
           className="flex flex-col w-7/8 h-full min-h-0"
           value={statusDialogItem}
-          onValueChange={setStatusDialogItem}
+          onValueChange={value => setStatusDialogItem(value as StatusDialogItemType)}
         >
           <TabsList>
             <TabsTrigger value={FIELD_AUDIT}>Field Audit</TabsTrigger>
             <TabsTrigger value={LINK_AUDIT}>Link Audit</TabsTrigger>
             <TabsTrigger value={LINK_MANAGER}>Link Manager</TabsTrigger>
           </TabsList>
-          <TabsContent className="h-15/16" value="field-audit">
+          <TabsContent className="h-15/16" value={FIELD_AUDIT}>
             <Card className="h-15/16">
               <CardHeader>
                 <CardTitle><RectangleEllipsisIcon className="inline" /><SearchIcon className="inline" />&nbsp;Field Audit</CardTitle>

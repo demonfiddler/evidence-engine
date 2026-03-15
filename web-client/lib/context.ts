@@ -136,7 +136,7 @@ export type ToggleState = {
   commentsDialogOpen: boolean
   logDialogOpen: boolean
   statusDialogOpen: boolean
-  statusDialogItem: number
+  statusDialogItem: StatusDialogItemType
 }
 
 export type ToggleStateSetters = {
@@ -146,7 +146,7 @@ export type ToggleStateSetters = {
   setCommentsDialogOpen: (commentsDialogOpen: boolean) => void
   setLogDialogOpen: (logDialogOpen: boolean) => void
   setStatusDialogOpen: (statusDialogOpen: boolean) => void
-  setStatusDialogItem: (statusDialogItem: number) => void
+  setStatusDialogItem: (statusDialogItem: StatusDialogItemType) => void
 }
 
 export type StorageState = {
@@ -178,6 +178,11 @@ export type AppStateSetters =
   
 export type GlobalContextType = AppState & AppStateSetters
 
+export const LINK_AUDIT = "link-audit"
+export const FIELD_AUDIT = "field-audit"
+export const LINK_MANAGER = "link-manager"
+export type StatusDialogItemType = typeof LINK_AUDIT | typeof FIELD_AUDIT | typeof LINK_MANAGER
+
 /**
  * Global context is stored in the browser's session or local storage. It includes the following settings:
  * - sidebar state: open or closed;
@@ -200,7 +205,7 @@ export const GlobalContext = createContext<GlobalContextType>({
   commentsDialogOpen: false,
   logDialogOpen: false,
   statusDialogOpen: false,
-  statusDialogItem: 0,
+  statusDialogItem: FIELD_AUDIT,
   masterTopicRecursive: true,
   masterRecordKind: "None",
   selectedRecords: {},

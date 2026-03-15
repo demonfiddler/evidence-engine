@@ -31,7 +31,9 @@ import {
   SelectedRecord,
   UsersPageRadioState,
   QueryState,
-  SecurityPageTabState
+  SecurityPageTabState,
+  FIELD_AUDIT,
+  StatusDialogItemType
 } from "@/lib/context"
 import { RecordKind } from "./model/RecordKinds"
 import ILinkableEntity from "./model/ILinkableEntity"
@@ -94,7 +96,7 @@ function defaultAppState() {
     commentsDialogOpen: false,
     logDialogOpen: false,
     statusDialogOpen: false,
-    statusDialogItem: 0,
+    statusDialogItem: FIELD_AUDIT,
     masterTopicRecursive: true,
     masterRecordKind: "None",
     showOnlyLinkedRecords: false,
@@ -259,7 +261,7 @@ function reducer(draft: AppState, action: ReducerArg) {
       break
     }
     case "setStatusDialogItem": {
-      draft.statusDialogItem = action.value as number
+      draft.statusDialogItem = action.value as StatusDialogItemType
       break
     }
     case "setMasterTopicId": {
@@ -433,7 +435,7 @@ export default function RootLayout({
     dispatch({command: "setStatusDialogOpen", value: statusDialogOpen})
   }, [dispatch])
 
-  const setStatusDialogItem = useCallback((statusDialogItem: number) => {
+  const setStatusDialogItem = useCallback((statusDialogItem: StatusDialogItemType) => {
     // if (setStatusDialogItem !== appState.setStatusDialogItem)
     dispatch({command: "setStatusDialogItem", value: statusDialogItem})
   }, [dispatch])

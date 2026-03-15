@@ -38,7 +38,7 @@ import {
 import ButtonEx from "../ext/button-ex"
 import { useCallback, useContext, useMemo } from "react"
 import { toast } from "sonner"
-import { GlobalContext } from "@/lib/context"
+import { FIELD_AUDIT, GlobalContext } from "@/lib/context"
 import useAuth from "@/hooks/use-auth"
 import { ChevronDownIcon } from "lucide-react"
 import { useMutation } from "@apollo/client/react"
@@ -97,10 +97,10 @@ export default function TrackingDetails(
         break
       case "publish":
         setStatusDialogOpen(true)
-        setStatusDialogItem(0)
+        setStatusDialogItem(FIELD_AUDIT)
         break
     }
-  }, [])
+  }, [record, recordLabel, setStatusDialogOpen, setStatusDialogItem, updateStatusOp])
 
   return (
     <div className="w-full grid grid-cols-5 mb-2 gap-2">
@@ -113,13 +113,12 @@ export default function TrackingDetails(
         value={String(record?.id ?? '')}
         help="The database identifier for the selected record"
       />
-      <LogDialog
+      <CommentsDialog
         className="col-start-5 place-items-center"
-        disabled={!record || !state.allowRead || state.mode == "create"}
-        recordKind={recordKind}
-        recordId={record?.id ?? ''}
-        recordLabel={getRecordLabel(recordKind, record) ?? ''}
-        state={state}
+        disabled={!record || !state.allowRead || state.mode == "create" || recordKind === "Comment"}
+        targetKind={recordKind}
+        targetId={record?.id ?? ''}
+        targetLabel={getRecordLabel(recordKind, record) ?? ''}
       />
       <Label htmlFor="status" className="col-start-1">Status:</Label>
       <InputEx
@@ -140,31 +139,6 @@ export default function TrackingDetails(
         iconSize={18}
         className="ml-2 w-full"
         help="A five-star rating for the entity, interpretation depends on entity kind."
-      />
-      <CommentsDialog
-        className="col-start-5 place-items-center"
-        disabled={!record || !state.allowRead || state.mode == "create" || recordKind === "Comment"}
-        targetKind={recordKind}
-        targetId={record?.id ?? ''}
-        targetLabel={getRecordLabel(recordKind, record) ?? ''}
-      />
-      <Label htmlFor="created-by" className="col-start-1">Created by:</Label>
-      <InputEx
-        id="created-by"
-        type="text"
-        readOnly={true}
-        disabled={!record}
-        value={record?.createdByUser?.username ?? ''}
-        help="The username of the user who created the record"
-      />
-      <Label htmlFor="created">Created on:</Label>
-      <InputEx
-        id="created"
-        type="text"
-        readOnly={true}
-        disabled={!record}
-        value={formatDateTime(record?.created)}
-        help="The date and time at which the record was created"
       />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -190,6 +164,32 @@ export default function TrackingDetails(
           <DropdownMenuItem disabled={record?.status === "Published" || !hasAuthority('UPD')} onClick={() => handleChangeStatus("publish")}>Publish...</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      <Label htmlFor="created-by" className="col-start-1">Created by:</Label>
+      <InputEx
+        id="created-by"
+        type="text"
+        readOnly={true}
+        disabled={!record}
+        value={record?.createdByUser?.username ?? ''}
+        help="The username of the user who created the record"
+      />
+      <Label htmlFor="created">Created on:</Label>
+      <InputEx
+        id="created"
+        type="text"
+        readOnly={true}
+        disabled={!record}
+        value={formatDateTime(record?.created)}
+        help="The date and time at which the record was created"
+      />
+      <LogDialog
+        className="col-start-5 place-items-center"
+        disabled={!record || !state.allowRead || state.mode == "create"}
+        recordKind={recordKind}
+        recordId={record?.id ?? ''}
+        recordLabel={getRecordLabel(recordKind, record) ?? ''}
+        state={state}
+      />
       <Label htmlFor="updated-by" className="col-start-1">Updated by:</Label>
       <InputEx
         id="updated-by"

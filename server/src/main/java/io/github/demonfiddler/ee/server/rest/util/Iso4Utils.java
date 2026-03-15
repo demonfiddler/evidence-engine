@@ -31,7 +31,6 @@ import java.util.StringTokenizer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import io.github.demonfiddler.ee.common.util.StringUtils;
@@ -62,7 +61,6 @@ public class Iso4Utils {
 
     private final AbbreviationRepository abbreviationRepository;
 
-    @Autowired
     public Iso4Utils(AbbreviationRepository abbreviationRepository) {
         this.abbreviationRepository = abbreviationRepository;
     }

@@ -376,7 +376,7 @@ INSERT INTO "transaction_kind" ("code", "label", "description") VALUES
 	('CRE', 'Created', 'A new record was created'),
 	('DEL', 'Deleted', 'A record was marked as deleted'),
 	('DRA', 'Drafted', 'A record was marked as a draft'),
-	('LNK', 'Linked', 'Two record were linked'),
+	('LNK', 'Linked', 'Two records were linked'),
 	('PUB', 'Published', 'A record was published'),
 	('SUS', 'Suspended', 'A record was marked as suspended'),
 	('UNL', 'Unlinked', 'Two linked records were unlinked'),

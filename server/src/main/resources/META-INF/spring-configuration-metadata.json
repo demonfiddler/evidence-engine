@@ -1,0 +1,49 @@
+{
+  "properties": [
+    {
+      "name": "web.server.url",
+      "type": "java.lang.String",
+      "description": "The URL of the web server."
+    },
+    {
+      "name": "data.server.url",
+      "type": "java.lang.String",
+      "description": "The URL of the GraphQL data server."
+    },
+    {
+      "name": "data.server.tmpdir",
+      "type": "java.lang.String",
+      "description": "The temporary directory for backup/restore operations."
+    },
+    {
+      "name": "jwt.server-url",
+      "type": "java.lang.String",
+      "description": "The URL of the JWT authentication server."
+    },
+    {
+      "name": "jwt.header",
+      "type": "java.lang.String",
+      "description": "The header name for the JWT token (e.g., Authorization)."
+    },
+    {
+      "name": "jwt.prefix",
+      "type": "java.lang.String",
+      "description": "The prefix for the JWT token (e.g., Bearer)."
+    },
+    {
+      "name": "jwt.secret",
+      "type": "java.lang.String",
+      "description": "The key with which the JWT token is signed."
+    },
+    {
+      "name": "jwt.duration-ms",
+      "type": "java.lang.String",
+      "description": "The time-to-live of the JWT token in milliseconds."
+    },
+    {
+      "name": "jwt.authority-claim",
+      "type": "java.lang.String",
+      "description": "The claim name for the JWT authorities (e.g., entitlements)."
+    }
+  ]
+}

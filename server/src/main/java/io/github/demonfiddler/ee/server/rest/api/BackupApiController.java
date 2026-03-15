@@ -19,8 +19,10 @@
 
 package io.github.demonfiddler.ee.server.rest.api;
 
-import static io.github.demonfiddler.ee.server.rest.util.BackupUtils.*;
 import static io.github.demonfiddler.ee.common.util.StringUtils.NL;
+import static io.github.demonfiddler.ee.server.rest.util.BackupUtils.APPDATA_TABLES_BACKUP;
+import static io.github.demonfiddler.ee.server.rest.util.BackupUtils.SELECT_TABLE_COLUMNS;
+import static io.github.demonfiddler.ee.server.rest.util.BackupUtils.STATIC_TABLES;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.File;
@@ -40,7 +42,6 @@ import java.util.zip.ZipOutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -79,7 +80,6 @@ public class BackupApiController implements BackupApi {
     @Value("${data.server.tmpdir}")
     private String tmpDir;
 
-    @Autowired
     public BackupApiController(NativeWebRequest request, JdbcTemplate jdbcTemplate, BackupUtils backupUtils) {
         this.request = request;
         this.jdbcTemplate = jdbcTemplate;
