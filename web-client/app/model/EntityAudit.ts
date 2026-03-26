@@ -17,6 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import FieldAudit from "./FieldAudit";
 import ITrackedEntity from "./ITrackedEntity";
 import LinkAudit from "./LinkAudit";

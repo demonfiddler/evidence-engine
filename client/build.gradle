@@ -18,28 +18,33 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 plugins {
-	id 'java'
 	id 'org.springframework.boot' version "${springBootVersion}"
 	id 'io.spring.dependency-management' version "${dependencyManagementPluginVersion}"
+	id 'java'
 }
 
 group = 'io.github.demonfiddler.evidence-engine'
-version = '0.0.1-SNAPSHOT'
+version = '1.0.0-SNAPSHOT'
 
 dependencies {
 	implementation project(':common')
+
+	// GraphQL client support
 	implementation 'org.springframework.boot:spring-boot-starter-graphql'
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-	implementation "org.springframework.boot:spring-boot-starter-websocket"  // used for subscriptions
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-jersey'
-	implementation 'org.springframework.session:spring-session-core'
 	implementation "com.graphql-java-generator:graphql-java-client-runtime:${graphQLPluginVersion}"
 	implementation 'com.graphql-java:graphql-java-extended-scalars:22.0'
+
+	// Utilities
 	implementation 'org.jsoup:jsoup:1.18.3'
 	implementation 'org.apache.commons:commons-csv:1.14.1'
 	implementation 'commons-cli:commons-cli:1.11.0'
+	// Optional (harmless without a web server)
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	// Dev tools
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	// Testing
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-webtestclient'
 	testImplementation 'org.springframework.security:spring-security-test'
@@ -53,6 +58,13 @@ dependencies {
 dependencyManagement {
 }
 
+bootJar {
+    enabled = true   // produce an executable Spring Boot JAR.
+	archiveBaseName = "ee-client"
+    archiveVersion = "" // removes version from filename
+	archiveClassifier = ""// removes classifier from filename
+}
+
 repositories {
 	mavenLocal()
 	mavenCentral()
@@ -60,9 +72,9 @@ repositories {
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(23)
+		languageVersion = JavaLanguageVersion.of(25)
 	}
-	sourceCompatibility = JavaVersion.VERSION_23
+	sourceCompatibility = JavaVersion.VERSION_25
 }
 
 compileJava {

@@ -17,6 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import IBaseEntity from "./IBaseEntity"
 import User from "./User"
 

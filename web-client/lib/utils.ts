@@ -17,6 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import Claim from "@/app/model/Claim"
 import Comment from "@/app/model/Comment"
 import Declaration from "@/app/model/Declaration"

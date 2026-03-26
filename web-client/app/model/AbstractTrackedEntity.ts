@@ -17,6 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import AbstractBaseEntity from "./AbstractBaseEntity"
 import Comment from "./Comment"
 import IPage from "./IPage"

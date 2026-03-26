@@ -17,8 +17,9 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import { BookOpenCheckIcon, Building2Icon, CircleSlash2Icon, FileClockIcon, FolderTreeIcon, LibraryIcon, LinkIcon, LucideProps, MessageSquareQuoteIcon, MessagesSquareIcon, NewspaperIcon, ScrollIcon, UserIcon, UsersIcon } from "lucide-react";
-// import { MessageSquareQuoteIconEx } from "../ui/icons";
 import { ForwardRefExoticComponent, JSX, RefAttributes } from "react";
 
 // Utility type: ensures A is assignable to B

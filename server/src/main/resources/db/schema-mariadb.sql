@@ -35,16 +35,16 @@
 SET SQL_MODE = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION,ANSI,NO_AUTO_VALUE_ON_ZERO';
 
 CREATE TABLE IF NOT EXISTS "abbreviation" (
-	"word" VARCHAR(50) NOT NULL COMMENT 'The title word, prefix or suffix',
-	"is_prefix" BIT(1) NOT NULL DEFAULT b'0' COMMENT 'Whether "word" is a prefix',
-	"is_suffix" BIT(1) NOT NULL DEFAULT b'0' COMMENT 'Whether "word" is a suffix',
-	"abbreviation" VARCHAR(30) DEFAULT NULL COMMENT 'The abbreviation, if any, for "word"',
-	"languages" VARCHAR(50) NOT NULL COMMENT 'The applicable languages',
+  "word" VARCHAR(50) NOT NULL COMMENT 'The title word, prefix or suffix',
+  "is_prefix" BIT(1) NOT NULL DEFAULT b'0' COMMENT 'Whether "word" is a prefix',
+  "is_suffix" BIT(1) NOT NULL DEFAULT b'0' COMMENT 'Whether "word" is a suffix',
+  "abbreviation" VARCHAR(30) DEFAULT NULL COMMENT 'The abbreviation, if any, for "word"',
+  "languages" VARCHAR(50) NOT NULL COMMENT 'The applicable languages',
   PRIMARY KEY ("word"),
-	INDEX "abbreviation_abbreviation" ("abbreviation") USING BTREE
+  INDEX "abbreviation_abbreviation" ("abbreviation") USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='The ISSN Network''s ''List of Title Word Abbreviations'' (LTWA), as used by ISO 4.';
 
-CREATE TABLE "config" (
+CREATE TABLE IF NOT EXISTS "config" (
     "property" VARCHAR(20) NOT NULL COMMENT 'The property name',
     "subscript" TINYINT(4) NOT NULL DEFAULT '0' COMMENT 'For a multi-valued property, the unique item index',
     "value" VARCHAR(255) NULL DEFAULT NULL COMMENT 'The property value as a string',
@@ -66,11 +66,11 @@ CREATE TABLE IF NOT EXISTS "entity" (
   KEY "FK_entity_status" ("status"),
   KEY "FK_entity_created_by_user" ("created_by_user_id"),
   KEY "FK_entity_updated_by_user" ("updated_by_user_id"),
-  CONSTRAINT "FK_entity_dtype" FOREIGN KEY ("dtype") REFERENCES "entity_kind" ("code") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT "FK_entity_status" FOREIGN KEY ("status") REFERENCES "status_kind" ("code") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT "FK_entity_created_by_user" FOREIGN KEY ("created_by_user_id") REFERENCES "user" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT "FK_entity_updated_by_user" FOREIGN KEY ("updated_by_user_id") REFERENCES "user" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT "CC_rating" CHECK ("rating" BETWEEN 1 AND 5)
+  CONSTRAINT "FK_entity_dtype" FOREIGN KEY ("dtype") REFERENCES "entity_kind" ("code") ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT "FK_entity_status" FOREIGN KEY ("status") REFERENCES "status_kind" ("code") ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT "FK_entity_created_by_user" FOREIGN KEY ("created_by_user_id") REFERENCES "user" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT "FK_entity_updated_by_user" FOREIGN KEY ("updated_by_user_id") REFERENCES "user" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT "CC_rating" CHECK ("rating" BETWEEN 1 AND 5)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Base table for all tracked and linkable entities';
 
 -- Dumping structure for table evidence_engine.claim
@@ -163,10 +163,20 @@ CREATE TABLE IF NOT EXISTS "entity_link" (
   PRIMARY KEY ("id"),
   UNIQUE INDEX `entity_link_unique` (`from_entity_id`, `to_entity_id`),
   FULLTEXT KEY "entity_fulltext" ("from_entity_locations","to_entity_locations"),
-  CONSTRAINT "FK_entity_link_entity" FOREIGN KEY ("id") REFERENCES "entity" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT "FK_entity_link_from_entity" FOREIGN KEY ("from_entity_id") REFERENCES "entity" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT "FK_entity_link_to_entity" FOREIGN KEY ("to_entity_id") REFERENCES "entity" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT "FK_entity_link_entity" FOREIGN KEY ("id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT "FK_entity_link_from_entity" FOREIGN KEY ("from_entity_id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT "FK_entity_link_to_entity" FOREIGN KEY ("to_entity_id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Self-association table to hold links between linkable entities';
+
+CREATE VIEW IF NOT EXISTS "entity_link_entity_vw" AS
+SELECT el.*, ele."status", fe."dtype" AS "from_entity_kind", te."dtype" AS "to_entity_kind"
+FROM "entity_link" el
+JOIN "entity" ele
+ON ele."id" = el."id"
+JOIN "entity" fe
+ON fe.id = el."from_entity_id"
+JOIN "entity" te
+ON te.id = el."to_entity_id";
 
 -- Dumping structure for table evidence_engine.journal
 CREATE TABLE IF NOT EXISTS "journal" (
@@ -185,7 +195,7 @@ CREATE TABLE IF NOT EXISTS "journal" (
   KEY "journal_abbreviation" ("abbreviation") USING BTREE,
   FULLTEXT KEY "journal_fulltext" ("title","abbreviation","url","issn","notes"),
   CONSTRAINT "FK_journal_entity" FOREIGN KEY ("id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT "FK_journal_publisher" FOREIGN KEY ("publisher_id") REFERENCES "publisher" ("id") ON UPDATE CASCADE,
+  CONSTRAINT "FK_journal_publisher" FOREIGN KEY ("publisher_id") REFERENCES "publisher" ("id") ON UPDATE CASCADE ON DELETE SET NULL,
   CONSTRAINT "CC_journal_issn" CHECK ("issn" regexp '^(\\d{4}-\\d{3}[\\dX])?$')
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Definitive list of journal titles, abbreviations, etc.';
 
@@ -253,33 +263,33 @@ CREATE TABLE IF NOT EXISTS "publication" (
   "kind" varchar(6) NOT NULL COMMENT 'The kind of publication',
   "date" date DEFAULT NULL COMMENT 'Publication date',
   "year" year(4) DEFAULT NULL COMMENT 'Publication year',
-	"keywords" VARCHAR(255) DEFAULT NULL COMMENT 'Keywords per publication metadata',
-	"location" VARCHAR(50) DEFAULT NULL COMMENT 'The location of the relevant section within the publication',
+  "keywords" VARCHAR(255) DEFAULT NULL COMMENT 'Keywords per publication metadata',
+  "location" VARCHAR(50) DEFAULT NULL COMMENT 'The location of the relevant section within the publication',
   "abstract" text DEFAULT NULL COMMENT 'Abstract from the article',
   "notes" text DEFAULT NULL COMMENT 'Added notes about the publication',
   "peer_reviewed" bit(1) DEFAULT NULL COMMENT 'Whether the article was peer-reviewed',
   "doi" varchar(100) DEFAULT NULL COMMENT 'Digital Object Identifier',
   "isbn" varchar(20) DEFAULT NULL COMMENT 'International Standard Book Number (printed publications only)',
-	"pmcid" VARCHAR(10) DEFAULT NULL COMMENT 'The U.S. National Library of Medicine''s PubMed Central ID',
-	"pmid" varchar(10) DEFAULT NULL COMMENT 'The U.S. National Library of Medicine''s PubMed ID',
-	"hsid" varchar(12) DEFAULT NULL COMMENT 'The Corporation for National Research Initiatives''s Handle System ID',
-	"arxivid" varchar(15) DEFAULT NULL COMMENT 'Cornell University Library''s arXiv.org ID',
-	"biorxivid" varchar(20) DEFAULT NULL COMMENT 'Cold Spring Harbor Laboratory''s bioRxiv.org ID',
-	"medrxivid" varchar(20) DEFAULT NULL COMMENT 'Cold Spring Harbor Laboratory''s medRxiv.org ID',
-	"ericid" varchar(8) DEFAULT NULL COMMENT 'U.S. Department of Education''s ERIC database ID (niche)',
-	"ihepid" varchar(10) DEFAULT NULL COMMENT 'CERN''s INSPIRE-HEP ID',
-	"oaipmhid" varchar(50) DEFAULT NULL COMMENT 'Open Archives Initiative''s OAI-PMH ID',
-	"halid" varchar(20) DEFAULT NULL COMMENT 'CNRS (France)''s HAL ID',
-	"zenodoid" varchar(10) DEFAULT NULL COMMENT 'CERN''s Zenodo Record ID',
-	"scopuseid" varchar(16) DEFAULT NULL COMMENT 'Elsevier''s SCOPUS database EID (proprietary)',
-	"wsan" varchar(25) DEFAULT NULL COMMENT 'Clarivate''s Web of Science Accession Number (UT) (proprietary)',
-	"pinfoan" varchar(30) DEFAULT NULL COMMENT 'American Psychological Association''s PsycINFO Accession Number (proprietary/niche)',
+  "pmcid" VARCHAR(10) DEFAULT NULL COMMENT 'The U.S. National Library of Medicine''s PubMed Central ID',
+  "pmid" varchar(10) DEFAULT NULL COMMENT 'The U.S. National Library of Medicine''s PubMed ID',
+  "hsid" varchar(12) DEFAULT NULL COMMENT 'The Corporation for National Research Initiatives''s Handle System ID',
+  "arxivid" varchar(15) DEFAULT NULL COMMENT 'Cornell University Library''s arXiv.org ID',
+  "biorxivid" varchar(20) DEFAULT NULL COMMENT 'Cold Spring Harbor Laboratory''s bioRxiv.org ID',
+  "medrxivid" varchar(20) DEFAULT NULL COMMENT 'Cold Spring Harbor Laboratory''s medRxiv.org ID',
+  "ericid" varchar(8) DEFAULT NULL COMMENT 'U.S. Department of Education''s ERIC database ID (niche)',
+  "ihepid" varchar(10) DEFAULT NULL COMMENT 'CERN''s INSPIRE-HEP ID',
+  "oaipmhid" varchar(50) DEFAULT NULL COMMENT 'Open Archives Initiative''s OAI-PMH ID',
+  "halid" varchar(20) DEFAULT NULL COMMENT 'CNRS (France)''s HAL ID',
+  "zenodoid" varchar(10) DEFAULT NULL COMMENT 'CERN''s Zenodo Record ID',
+  "scopuseid" varchar(16) DEFAULT NULL COMMENT 'Elsevier''s SCOPUS database EID (proprietary)',
+  "wsan" varchar(25) DEFAULT NULL COMMENT 'Clarivate''s Web of Science Accession Number (UT) (proprietary)',
+  "pinfoan" varchar(30) DEFAULT NULL COMMENT 'American Psychological Association''s PsycINFO Accession Number (proprietary/niche)',
   "url" varchar(200) DEFAULT NULL COMMENT 'URL of the publication',
   "cached" bit(1) NOT NULL DEFAULT b'0' COMMENT 'Flag to indicate that url content is cached on this application server',
   "accessed" date DEFAULT NULL COMMENT 'Date a web page was accessed',
   PRIMARY KEY ("id") USING BTREE,
   UNIQUE KEY "publication_doi" ("doi") USING BTREE,
-	UNIQUE KEY "publication_isbn" ("isbn") USING BTREE,
+  UNIQUE KEY "publication_isbn" ("isbn") USING BTREE,
   UNIQUE KEY "publication_pmcid" ("pmcid") USING BTREE,
   UNIQUE KEY "publication_pmid" ("pmid") USING BTREE,
   UNIQUE KEY "publication_hsid" ("hsid") USING BTREE,
@@ -300,21 +310,21 @@ CREATE TABLE IF NOT EXISTS "publication" (
   CONSTRAINT "FK_publication_entity" FOREIGN KEY ("id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT "FK_publication_journal" FOREIGN KEY ("journal_id") REFERENCES "journal" ("id") ON UPDATE CASCADE ON DELETE SET NULL,
   CONSTRAINT "FK_publication_publication_kind" FOREIGN KEY ("kind") REFERENCES "publication_kind" ("kind") ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT "CC_publication_doi" CHECK("doi" regexp '^10\\.\\d{4,9}\/(?i)[-._;()/:A-Z0-9]+$'),
-	CONSTRAINT "CC_publication_pmcid" CHECK("pmcid" regexp '^PMC\\d{7}$'),
-	CONSTRAINT "CC_publication_pmid" CHECK("pmid" regexp '^\\d{1,10}$'),
-	CONSTRAINT "CC_publication_hsid" CHECK("hsid" regexp '^[^/]+/.+$'),
-	CONSTRAINT "CC_publication_arxivid" CHECK("arxivid" regexp '^\\d{4}\\.\\d{4,5}(v\\d+)?$'),
-	CONSTRAINT "CC_publication_biorxivid" CHECK("biorxivid" regexp '^10\\.1101\\/\\d+$'),
-	CONSTRAINT "CC_publication_medrxivid" CHECK("medrxivid" regexp '^10\\.1101\\/\\d+$'),
-	CONSTRAINT "CC_publication_ericid" CHECK("ericid" regexp '^(?i)ED\\d{6}$'),
-	CONSTRAINT "CC_publication_ihepid" CHECK("ihepid" regexp '^\\d{6,10}$'),
-	CONSTRAINT "CC_publication_oaipmhid" CHECK("oaipmhid" regexp '^oai:[^:]+:[^:]+$'),
-	CONSTRAINT "CC_publication_halid" CHECK("halid" regexp '^hal-\\d{6,10}$'),
-	CONSTRAINT "CC_publication_zenodoid" CHECK("zenodoid" regexp '^\\d{6,10}$'),
-	CONSTRAINT "CC_publication_scopuseid" CHECK("scopuseid" regexp '^\\d{8,16}$'),
-	CONSTRAINT "CC_publication_wsan" CHECK("wsan" regexp '^[A-Z0-9]{15,25}$'),
-	CONSTRAINT "CC_publication_pinfoan" CHECK("pinfoan" regexp '^[A-Z0-9\\-]{10,30}$')
+  CONSTRAINT "CC_publication_doi" CHECK("doi" regexp '^10\\.\\d{4,9}/[A-Z0-9-._:;()<>/]+$'),
+  CONSTRAINT "CC_publication_pmcid" CHECK("pmcid" regexp '^PMC\\d{7}$'),
+  CONSTRAINT "CC_publication_pmid" CHECK("pmid" regexp '^\\d{1,10}$'),
+  CONSTRAINT "CC_publication_hsid" CHECK("hsid" regexp '^[^/]+/.+$'),
+  CONSTRAINT "CC_publication_arxivid" CHECK("arxivid" regexp '^\\d{4}\\.\\d{4,5}(v\\d+)?$'),
+  CONSTRAINT "CC_publication_biorxivid" CHECK("biorxivid" regexp '^10\\.1101\\/\\d+$'),
+  CONSTRAINT "CC_publication_medrxivid" CHECK("medrxivid" regexp '^10\\.1101\\/\\d+$'),
+  CONSTRAINT "CC_publication_ericid" CHECK("ericid" regexp '^(?i)ED\\d{6}$'),
+  CONSTRAINT "CC_publication_ihepid" CHECK("ihepid" regexp '^\\d{6,10}$'),
+  CONSTRAINT "CC_publication_oaipmhid" CHECK("oaipmhid" regexp '^oai:[^:]+:[^:]+$'),
+  CONSTRAINT "CC_publication_halid" CHECK("halid" regexp '^hal-\\d{6,10}$'),
+  CONSTRAINT "CC_publication_zenodoid" CHECK("zenodoid" regexp '^\\d{6,10}$'),
+  CONSTRAINT "CC_publication_scopuseid" CHECK("scopuseid" regexp '^\\d{8,16}$'),
+  CONSTRAINT "CC_publication_wsan" CHECK("wsan" regexp '^[A-Z0-9]{15,25}$'),
+  CONSTRAINT "CC_publication_pinfoan" CHECK("pinfoan" regexp '^[A-Z0-9\\-]{10,30}$')
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='References to published articles, peer-reviewed or otherwise.';
 
 -- Dumping structure for table evidence_engine.publication_kind
@@ -332,7 +342,7 @@ CREATE TABLE IF NOT EXISTS "publisher" (
   "country" char(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for the publisher''s country',
   "url" varchar(200) DEFAULT NULL COMMENT 'URL of publisher''s home page',
   "journal_count" smallint(6) unsigned DEFAULT NULL COMMENT 'The number of journals published',
-	"notes" TEXT DEFAULT NULL COMMENT 'Notes on the publisher',
+  "notes" TEXT DEFAULT NULL COMMENT 'Notes on the publisher',
   PRIMARY KEY ("id"),
   KEY "FK_publisher_country" ("country") USING BTREE,
   KEY "publisher_name" ("name"),
@@ -392,7 +402,7 @@ CREATE TABLE IF NOT EXISTS "user" (
   "id"  bigint(20) unsigned NOT NULL COMMENT 'The unique system-assigned user identifier',
   "username" varchar(50) NOT NULL COMMENT 'The unique user-assigned user name',
   "password" varchar(68) NOT NULL COMMENT 'Bcrypt hash of the user''s password',
-	"enabled" bit(1) NOT NULL DEFAULT b'1' COMMENT 'Whether the user account is enabled',
+  "enabled" bit(1) NOT NULL DEFAULT b'1' COMMENT 'Whether the user account is enabled',
   "first_name" varchar(50) NULL COMMENT 'The user''s first name',
   "last_name" varchar(50) NULL COMMENT 'The user''s last name',
   "email" varchar(100) DEFAULT NULL COMMENT 'The user''s email address, used for sign-in',
@@ -408,53 +418,54 @@ CREATE TABLE IF NOT EXISTS "user" (
 
 -- Additional tables required by Spring Security
 CREATE TABLE IF NOT EXISTS "user_authority" (
-	"user_id" BIGINT(20) UNSIGNED NULL DEFAULT NULL COMMENT 'The user ID',
-	"username" VARCHAR(50) NOT NULL COMMENT 'The login user name',
-	"authority" CHAR(3) NOT NULL COMMENT 'The granted authority code',
-	UNIQUE KEY "user_authority" ("user_id", "username", "authority"),
-	CONSTRAINT "FK_user_authority_user_id" FOREIGN KEY ("user_id") REFERENCES "user" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT "FK_user_authority_username" FOREIGN KEY ("username") REFERENCES "user" ("username") ON UPDATE CASCADE ON DELETE CASCADE,
+  "user_id" BIGINT(20) UNSIGNED NULL DEFAULT NULL COMMENT 'The user ID',
+  "username" VARCHAR(50) NOT NULL COMMENT 'The login user name',
+  "authority" CHAR(3) NOT NULL COMMENT 'The granted authority code',
+  UNIQUE KEY "user_authority" ("user_id", "username", "authority"),
+  CONSTRAINT "FK_user_authority_user_id" FOREIGN KEY ("user_id") REFERENCES "user" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT "FK_user_authority_username" FOREIGN KEY ("username") REFERENCES "user" ("username") ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT "FK_user_authority_authority" FOREIGN KEY ("authority") REFERENCES "authority_kind" ("code") ON UPDATE CASCADE ON DELETE CASCADE
-) COMMENT='Holds authorities granted to users';
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Holds authorities granted to users';
 
 CREATE TABLE IF NOT EXISTS "group" (
-	"id"  bigint(20) unsigned AUTO_INCREMENT NOT NULL COMMENT 'The unique system-assigned group identifier',
-	"groupname" VARCHAR(50) NOT NULL COMMENT 'The group name',
-	PRIMARY KEY ("id"),
+  "id"  bigint(20) unsigned AUTO_INCREMENT NOT NULL COMMENT 'The unique system-assigned group identifier',
+  "groupname" VARCHAR(50) NOT NULL COMMENT 'The group name',
+  PRIMARY KEY ("id"),
   UNIQUE KEY "group_groupname" ("groupname"),
   FULLTEXT KEY "group_fulltext" ("groupname"),
- 	CONSTRAINT "FK_group_entity" FOREIGN KEY ("id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE
-) COMMENT='Holds groups to which users can belong';
+  CONSTRAINT "FK_group_entity" FOREIGN KEY ("id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Holds groups to which users can belong';
 
 CREATE TABLE IF NOT EXISTS "group_authority" (
-	"group_id"  bigint(20) unsigned NOT NULL COMMENT 'ID of a group',
-	"authority" CHAR(3) NOT NULL COMMENT 'The granted authority code',
-	UNIQUE KEY "group_authority" ("group_id", "authority"),
-	CONSTRAINT "FK_group_authority_group" FOREIGN KEY ("group_id") REFERENCES "group" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
+  "group_id"  bigint(20) unsigned NOT NULL COMMENT 'ID of a group',
+  "authority" CHAR(3) NOT NULL COMMENT 'The granted authority code',
+  UNIQUE KEY "group_authority" ("group_id", "authority"),
+  CONSTRAINT "FK_group_authority_group" FOREIGN KEY ("group_id") REFERENCES "group" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT "FK_group_authority_authority" FOREIGN KEY ("authority") REFERENCES "authority_kind" ("code") ON UPDATE CASCADE ON DELETE CASCADE
-) COMMENT='Holds authorities granted to groups';
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Holds authorities granted to groups';
 
 CREATE TABLE IF NOT EXISTS "group_user" (
-	"id"  bigint(20) unsigned AUTO_INCREMENT NOT NULL COMMENT 'The unique system-assigned identifier',
-	"group_id"  bigint(20) unsigned NOT NULL COMMENT 'ID of the group to which user belongs',
-	"username" VARCHAR(50) NOT NULL COMMENT 'The login user name',
-	PRIMARY KEY ("id"),
+  "id"  bigint(20) unsigned AUTO_INCREMENT NOT NULL COMMENT 'The unique system-assigned identifier',
+  "group_id"  bigint(20) unsigned NOT NULL COMMENT 'ID of the group to which user belongs',
+  "username" VARCHAR(50) NOT NULL COMMENT 'The login user name',
+  PRIMARY KEY ("id"),
   UNIQUE KEY "group_user" ("username", "group_id"),
-	CONSTRAINT "FK_group_user_group" FOREIGN KEY ("group_id") REFERENCES "group" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT "FK_group_user_group" FOREIGN KEY ("group_id") REFERENCES "group" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT "FK_group_user_user" FOREIGN KEY ("username") REFERENCES "user" ("username") ON UPDATE CASCADE ON DELETE CASCADE
-) COMMENT='Defines group membership';
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Defines group membership';
 
 CREATE TABLE IF NOT EXISTS "persistent_login" (
-    "series" VARCHAR(64) COMMENT 'Encoded random number used to detect cookie stealing',
-    "username" VARCHAR(64) NOT NULL COMMENT 'The authenticated username',
-    "token" VARCHAR(64) NOT NULL COMMENT 'The authentication token returned as a cookie',
-    "last_used" TIMESTAMP NOT NULL COMMENT 'The date/time at which the token was last used',
-    PRIMARY KEY ("series")
-) COMMENT='Holds login tokens that persist across HTTP sessions';
+  "series" VARCHAR(64) COMMENT 'Encoded random number used to detect cookie stealing',
+  "username" VARCHAR(64) NOT NULL COMMENT 'The authenticated username',
+  "token" VARCHAR(64) NOT NULL COMMENT 'The authentication token returned as a cookie',
+  "last_used" TIMESTAMP NOT NULL COMMENT 'The date/time at which the token was last used',
+  PRIMARY KEY ("series")
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Holds login tokens that persist across HTTP sessions';
 
+/*
 DELIMITER //
 
-CREATE PROCEDURE export_table_to_csv(
+CREATE PROCEDURE IF NOT EXISTS export_table_to_csv(
     IN p_table_name VARCHAR(255),
     IN p_output_path VARCHAR(1024)
 )
@@ -530,7 +541,7 @@ DELIMITER ;
 
 DELIMITER //
 
-CREATE PROCEDURE import_table_from_csv(
+CREATE PROCEDURE IF NOT EXISTS import_table_from_csv(
     IN p_table_name VARCHAR(255),
     IN p_input_path VARCHAR(1024)
 )
@@ -601,7 +612,7 @@ BEGIN
 END//
 
 DELIMITER ;
-
+*/
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

@@ -17,6 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import { Inter, Lusitana } from 'next/font/google'
  
 export const inter = Inter({ subsets: ['latin'] });

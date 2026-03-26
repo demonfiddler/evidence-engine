@@ -17,6 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import { expandRows, getMemoOptions, memo, RowData, RowModel, Table } from "@tanstack/react-table"
 
 /**

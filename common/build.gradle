@@ -3,13 +3,13 @@ plugins {
 }
 
 group = 'io.github.demonfiddler.evidence-engine'
-version = '0.0.1-SNAPSHOT'
+version = '1.0.0-SNAPSHOT'
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(23)
+		languageVersion = JavaLanguageVersion.of(25)
 	}
-	sourceCompatibility = JavaVersion.VERSION_23
+	sourceCompatibility = JavaVersion.VERSION_25
 }
 
 compileJava {
@@ -28,9 +28,6 @@ dependencies {
 	implementation 'com.graphql-java:graphql-java-extended-scalars:22.0'
 	implementation 'org.apache.commons:commons-csv:1.14.1'
 }
-
-// dependencyManagement {
-// }
 
 tasks.named('test') {
 	useJUnitPlatform()

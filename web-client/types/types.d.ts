@@ -17,4 +17,6 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 export type anything = boolean | number | string | object | null | undefined

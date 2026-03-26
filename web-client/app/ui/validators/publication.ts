@@ -17,6 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import { z } from "zod/v4"
 import { Rateable } from "./tracked-entity"
 
@@ -92,7 +94,7 @@ export const PublicationSchema = Rateable.extend({
   abstract: z.string(),
   notes: z.string(),
   peerReviewed: z.boolean().or(z.literal("indeterminate")),
-  doi: z.string().length(0).or(z.string().min(8).max(100).regex(/^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i)),
+  doi: z.string().length(0).or(z.string().min(8).max(100).regex(/^10\.\d{4,9}\/[A-Z0-9-._:;()<>/]+$/i)),
   isbn: z.string().length(0).or(z.string().min(10).max(17)/*.regex(/^(?:\d{9}X$|^\d{10})$/|/^(?:97[89])\d{10}$/)*/),
   pmcid: z.string().length(0).or(z.string().length(10).regex(/^PMC\d{7}$/)),
   pmid: z.string().length(0).or(z.string().min(1).max(10).regex(/^\d{1,10}$/)),

@@ -17,6 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import AbstractTrackedEntity from "./AbstractTrackedEntity"
 import EntityLink from "./EntityLink"
 import ILinkableEntity from "./ILinkableEntity"

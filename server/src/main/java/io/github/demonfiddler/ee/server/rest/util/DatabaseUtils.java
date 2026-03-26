@@ -152,4 +152,16 @@ public class DatabaseUtils {
         return schemaVersion == CURRENT_SCHEMA_VERSION;
     }
 
+    /**
+     * Indicates whether a database column type is a text type.
+     * @param colType The database column type.
+     * @return {@code true} if {@code colType} is textual, otherwise {@code false}.
+     */
+    public boolean isTextType(String colType) {
+        return switch (colType) {
+            case "char", "varchar", "tinytext", "text", "mediumtext", "longtext", "json" -> true;
+            default -> false;
+        };
+    }
+
 }

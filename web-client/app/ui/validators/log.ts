@@ -17,6 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import { z } from "zod/v4"
 import { EntityKind, TransactionKind } from "./enums"
 import { ID } from "./id"

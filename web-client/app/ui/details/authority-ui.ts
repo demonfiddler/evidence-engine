@@ -17,6 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 export type AuthorityUI = {
   key: "adm" | "chg" | "com" | "cre" | "lnk" | "rea" | "upd" | "upl"
   label: string

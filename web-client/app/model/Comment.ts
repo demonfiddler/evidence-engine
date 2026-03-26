@@ -17,6 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import ITrackedEntity from "./ITrackedEntity"
 
 export default interface Comment extends ITrackedEntity {

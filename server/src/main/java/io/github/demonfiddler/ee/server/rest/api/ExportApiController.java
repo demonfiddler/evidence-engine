@@ -298,7 +298,10 @@ public class ExportApiController implements ExportApi {
         // Reconstruct the data URL.
         StringBuilder dataUrl = new StringBuilder();
         char sep = '?';
-        dataUrl.append(dataServerUrl).append("rest/export/").append(recordKind);
+        dataUrl.append(dataServerUrl);
+        if (dataUrl.charAt(dataUrl.length() - 1) != '/')
+            dataUrl.append('/');
+        dataUrl.append("rest/export/").append(recordKind);
         sep = appendQueryParam(dataUrl, sep, "contentType", contentType);
         if (recordId != null) {
             sep = appendQueryParam(dataUrl, sep, "recordId", recordId);
@@ -342,6 +345,8 @@ public class ExportApiController implements ExportApi {
         StringBuilder webUrl = new StringBuilder();
         sep = '?';
         webUrl.append(webServerUrl);
+        if (webUrl.charAt(webUrl.length() - 1) != '/')
+            webUrl.append('/');
         switch (recordKind) {
             case "journals":
             case "publishers":

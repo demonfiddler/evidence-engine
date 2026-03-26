@@ -17,16 +17,16 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-'use client';
+'use client'
 
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
-import { categories } from "./sidebar-items";
-import useAuth from "@/hooks/use-auth";
+import { categories } from "./sidebar-items"
+import useAuth from "@/hooks/use-auth"
 
-type SidebarProps ={
+type SidebarProps = {
   open: boolean
 }
 

@@ -17,6 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import Topic from "@/app/model/Topic"
 import { TopicQueryFilter } from "@/app/model/schema"
 import { Checkbox } from "@/components/ui/checkbox"

@@ -29,7 +29,7 @@ import { useMutation, useQuery } from "@apollo/client/react"
 import { OperationTypeNode } from "graphql/language"
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema"
 import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { FieldValues, useForm, UseFormReturn } from "react-hook-form"
 import { toast } from "sonner"
 import z from "zod/v4"

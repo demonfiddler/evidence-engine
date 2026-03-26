@@ -36,7 +36,6 @@ import {
   StatusDialogItemType
 } from "@/lib/context"
 import { RecordKind } from "./model/RecordKinds"
-import ILinkableEntity from "./model/ILinkableEntity"
 import { getRecordLabel } from "@/lib/utils"
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useSessionStorage } from "usehooks-ts"
@@ -62,11 +61,11 @@ import { columns as quotationColumns, columnVisibility as quotationColumnVisibil
 import { columns as topicColumns, columnVisibility as topicColumnVisibility } from "@/app/ui/tables/topic-columns"
 import { columns as userColumns, columnVisibility as userColumnVisibility } from "@/app/ui/tables/user-columns"
 import { layout, LoggerEx } from "@/lib/logger"
-import LoggingLevelDrawer from "./ui/misc/logging-level-drawer"
+import LoggingLevelDialog from "@/app/ui/dialog/logging-level-dialog"
 
 const logger = new LoggerEx(layout, "[RootLayout] ")
 
-if (process.env.NODE_ENV === "development") {
+if (/*process.env.NODE_ENV === "development"*/false) {
   // require("../wdyr");
 }
 
@@ -634,7 +633,7 @@ export default function RootLayout({
             </GlobalContext>
           </AuthProvider>
         </ApolloProvider>
-        <LoggingLevelDrawer open={logLevelsDrawerOpen} onOpenChange={setLogLevelsDrawerOpen} />
+        <LoggingLevelDialog open={logLevelsDrawerOpen} onOpenChange={setLogLevelsDrawerOpen} />
       </body>
     </html>
   )

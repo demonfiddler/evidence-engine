@@ -17,6 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import ILinkableEntity from "./ILinkableEntity"
 
 export default interface Topic extends ILinkableEntity {

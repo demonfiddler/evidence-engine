@@ -108,22 +108,29 @@ public class RestoreApiController implements RestoreApi {
             default:
                 return ResponseEntity.badRequest().build();
         }
+        LOGGER.debug("Restoring backup, mode='{}'", kind);
 
         // N.B. The remaining code only works if the application and database servers are colocated,
         // because unzipping writes to and the LOAD DATA LOCAL INFILE statement reads from local files.
 
-        // MariaDB doesn't have permission to access ${java.io.tmpdir}, so we'll have to specify a different location.
-        String outputPath = tmpDir + "ee-backup" + File.separatorChar;
+        // MariaDB may not have permission to access ${java.io.tmpdir}, so we'll have to use a different location.
+        String outputPath = tmpDir + File.separatorChar + "ee-backup" + File.separatorChar;
         File outputDir = new File(outputPath);
         if (!outputDir.mkdirs()) {
             // The directory already existed, so make sure it's empty.
             backupUtils.deleteFile(outputDir, true);
+
+            LOGGER.trace("Work directory '{}' already existed, cleaned", outputPath);
+        } else {
+            LOGGER.trace("Work directory '{}' created", outputPath);
         }
 
         // Unzip the backup set by copying each entry to disk.
         List<String> csvFilenames = new ArrayList<>();
         byte[] buf = new byte[65536];
         try (ZipInputStream zipIn = new ZipInputStream(file.getInputStream())) {
+            LOGGER.trace("Opened backup set in '{}'", file.getOriginalFilename());
+
             ZipEntry csvEntry;
             while ((csvEntry = zipIn.getNextEntry()) != null) {
                 String csvFilename = csvEntry.getName();
@@ -136,6 +143,7 @@ public class RestoreApiController implements RestoreApi {
                     zipIn.closeEntry();
                     csvFilenames.add(csvFilename);
                 }
+                LOGGER.trace("Read ZipEntry '{}'", csvFilename);
             }
         } catch (IOException e) {
             LOGGER.error("Error unzipping backup set", e);
@@ -188,7 +196,7 @@ public class RestoreApiController implements RestoreApi {
                     } catch (DataAccessException e) {
                         txManager.rollback(status);
 
-                        String errmsg = "Error deleting from table: " + table;
+                        String errmsg = "Error deleting lookup data from table: " + table;
                         LOGGER.error(errmsg, e);
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
                             .body("500 Internal Server Error: " + errmsg);
@@ -203,16 +211,21 @@ public class RestoreApiController implements RestoreApi {
             } catch (DataAccessException e) {
                 txManager.rollback(status);
 
-                String errmsg = "Error deleting existing data from table: entity";
+                String errmsg = "Error deleting existing data from table: \"entity\"";
                 LOGGER.error(errmsg, e);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
                     .body("500 Internal Server Error: " + errmsg);
             }
 
-            // Restore entity + user tables together (with RI constraints temporarily disabled).
             try {
+                // Temporarily disable RI constraints while we restore table data.
                 jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS=0;");
+
+                // Restore entity + user tables together.
                 restoreTables(ENTITY_TABLES_RESTORE, outputPath);
+
+                // Restore remaining application data tables.
+                restoreTables(APPDATA_TABLES_RESTORE, outputPath);
             } catch (DataAccessException e) {
                 txManager.rollback(status);
 
@@ -233,18 +246,10 @@ public class RestoreApiController implements RestoreApi {
                 }
             }
 
-            // Restore remaining application data tables and commit the transaction.
-            try {
-                restoreTables(APPDATA_TABLES_RESTORE, outputPath);
-            } catch (DataAccessException e) {
-                txManager.rollback(status);
-
-                String errmsg = "Error restoring application data tables";
-                LOGGER.error(errmsg, e);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
-                    .body("500 Internal Server Error: " + errmsg);
-            }
+            // Finally, commit the transaction.
             txManager.commit(status);
+
+            LOGGER.debug("Restore complete");
         } catch (Throwable t) {
             txManager.rollback(status);
             throw t;
@@ -268,6 +273,8 @@ public class RestoreApiController implements RestoreApi {
         for (String table : tables) {
             String sql = getImportStatement(table, inputPath);
             jdbcTemplate.execute(sql);
+
+            LOGGER.debug("Restored table \"{}\"", table);
         }
     }
 
@@ -284,10 +291,10 @@ public class RestoreApiController implements RestoreApi {
                 if (!colList.isEmpty())
                     colList.append(',');
                 if (colType.equals("bit")) {
-                    colList.append("@v_").append(colName);
+                    colList.append('@').append(colName);
                     if (!setList.isEmpty())
                         setList.append(',');
-                    setList.append('"').append(colName).append("\" = CAST(@v_").append(colName).append(" AS UNSIGNED)");
+                    setList.append('"').append(colName).append("\" = CAST(@").append(colName).append(" AS UNSIGNED)");
                 } else {
                     colList.append('"').append(colName).append('"');
                 }
@@ -310,6 +317,8 @@ public class RestoreApiController implements RestoreApi {
             sqlbuf.append(';');
             sql = sqlbuf.toString();
             IMPORT_STATEMENTS.put(table, sql);
+
+            LOGGER.trace("Restoring table \"{}\" with SQL statement:\n{}", table, sql);
         }
         return sql;
     }

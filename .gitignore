@@ -49,7 +49,7 @@ Evidence Engine Testing.xlsx
 notes.md
 integration-testing.txt
 react-dev-notes.txt
-application.properties
+**/application*.properties
 .env
 server/src/main/resources/graphql/relay.graphqlsxxx
 server/database design.txt

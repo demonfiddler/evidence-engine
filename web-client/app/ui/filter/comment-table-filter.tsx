@@ -17,6 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import Comment from "@/app/model/Comment"
 import DataTableFilterProps from "../data-table/data-table-filter"
 import DataTableViewOptions from "../data-table/data-table-view-options"

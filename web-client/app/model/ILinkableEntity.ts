@@ -17,6 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import EntityLink from "./EntityLink"
 import IPage from "./IPage"
 import ITrackedEntity from "./ITrackedEntity"

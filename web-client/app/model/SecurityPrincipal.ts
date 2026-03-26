@@ -17,6 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import ITrackedEntity from "./ITrackedEntity"
 import { AuthorityKind } from "./schema"
 

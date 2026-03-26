@@ -89,11 +89,11 @@ public class BackupUtils {
         "group", //
         "group_authority", //
         "group_user", //
+        "publisher", //
         "journal", //
         "log", //
         "person", //
         "publication", //
-        "publisher", //
         "quotation", //
         "topic", //
         "user_authority", //

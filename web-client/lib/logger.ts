@@ -17,96 +17,78 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import { anything } from '@/types/types'
-import type { Logger, LoggerOptions, WriteFn } from 'pino'
+import log, { LogLevel, LogLevelNumbers } from 'loglevel'
 
-let pino: typeof import('pino')
-let options: LoggerOptions
-type Message = {msgPrefix: string, msg: string}
-type WriteFns = {
-  fatal?: WriteFn;
-  error?: WriteFn;
-  warn?: WriteFn;
-  info?: WriteFn;
-  debug?: WriteFn;
-  trace?: WriteFn
-}
-
-if (typeof window === 'undefined') {
-  // Server-side
-  pino = require('pino') as typeof import('pino')
-  options = { level: "trace" }
-} else {
-  // Client-side (we declared this in types/pino-browser.d.ts)
-  // NOTE: in MS Edge, only console.debug/info() calls result in console output. trace/warn/error() do not, but
-  // error() gets picked up by the Next.js dev runtime and flagged as a full-screen-displayable error.
-  pino = require('pino/browser') as typeof import('pino')
-  const writers = {
-    silent: (o: Message) => {},
-    trace: (o: Message) => console.debug((o.msgPrefix ?? '') + "[TRACE] " + o.msg),
-    debug: (o: Message) => console.debug((o.msgPrefix ?? '') + "[DEBUG] " + o.msg),
-    info: (o: Message) => console.info((o.msgPrefix ?? '') + "[INFO] " + o.msg),
-    // TODO: finalise warn(), error() and fatal() handling
-    // warn: (o: Message) => console.warn((o.msgPrefix ?? '') + "[WARN] " + o.msg),
-    // error: (o: Message) => console.error((o.msgPrefix ?? '') + "[ERROR] " + o.msg),
-    // fatal: (o: Message) => console.error((o.msgPrefix ?? '') + "[FATAL] " + o.msg),
-    warn: (o: Message) => console.info((o.msgPrefix ?? '') + "[WARN] " + o.msg),
-    error: (o: Message) => console.info((o.msgPrefix ?? '') + "[ERROR] " + o.msg),
-    fatal: (o: Message) => console.info((o.msgPrefix ?? '') + "[FATAL] " + o.msg),
-  }
-  // Browser option asObjectBindingsOnly = true logs a single object, which (for now) is not what we want.
-  options = { level: "info", browser: { asObject/*BindingsOnly*/: true, write: writers as WriteFns } }
-}
-
-// NOTE: pino/browser ignores the msgPrefix option, hence the need to implement it via bindings.
-// ALSO: in pino/browser, child loggers ignore the asObjectBindingsOnly browser option and default to asObject,
-// which leads to an inconsistent logging format between top-level and child loggers. For this reason, we don't
-// use child loggers.
 /** A logger for use by layouts. */
-export const layout = pino({...options, name: "Layout", msgPrefix: "[Layout] "})
+export const layout = log.getLogger("Layout")
 /** A logger for use by pages. */
-export const page = pino({...options, name: "Page", msgPrefix: "[Page] "})
+export const page = log.getLogger("Page")
 /** A logger for use by detail sections. */
-export const detail = pino({...options, name: "Detail", msgPrefix: "[Detail] "})
+export const detail = log.getLogger("Detail")
 /** A logger for use by dialogs/drawers/sheets. */
-export const dialog = pino({...options, name: "Dialog", msgPrefix: "[Dialog] "})
+export const dialog = log.getLogger("Dialog")
 /** A logger for use by filter components. */
-export const filter = pino({...options, name: "Filter", msgPrefix: "[Filter] "})
+export const filter = log.getLogger("Filter")
 /** A logger for use by other components. */
-export const component = pino({...options, name: "Component", msgPrefix: "[Component] "})
+export const component = log.getLogger("Component")
 /** A logger for use by tables. */
-export const table = pino({...options, name: "Table", msgPrefix: "[Table] "})
+export const table = log.getLogger("Table")
 /** A logger for use by hooks. */
-export const hook = pino({...options, name: "Hook", msgPrefix: "[Hook] "})
+export const hook = log.getLogger("Hook")
 /** A logger for use by utility functions. */
-export const utility = pino({...options, name: "Utility", msgPrefix: "[Utility] "})
+export const utility = log.getLogger("Utility")
 
 /**
- * Wraps an existing logger to give all messages a msgPrefix binding.
+ * Wraps an existing logger to give all messages a message prefix.
  */
 export class LoggerEx {
-  private logger: Logger
-  private bindings: { msgPrefix: string }
+
+  private log: log.Logger
+  private prefix: string
 
   /**
    * Constructs a new ```LoggerEx```.
    * @param logger The logger to wrap.
-   * @param msgPrefix The prefix to prepend to all messages.
+   * @param prefix The prefix to prepend to all messages.
    */
-  constructor(logger: Logger, msgPrefix: string) {
-    this.logger = logger
-    this.bindings = { msgPrefix }
+  constructor(logger: log.Logger, prefix: string) {
+    this.log = logger
+    this.prefix = prefix
   }
 
-  get level() { return this.logger.level}
-  // set level(level: LevelWithSilentOrString) { this.logger.level = level}
-  get msgPrefix() { return this.bindings.msgPrefix }
+  get level() : LogLevel { return this.log.levels}
+  set level(level: LogLevelNumbers) { this.log.setLevel(level) }
 
-  silent(msg: string, ...args: anything[]) { /* no-op */ }
-  trace(msg: string, ...args: anything[]) { this.logger.trace(this.bindings, msg, ...args) }
-  debug(msg: string, ...args: anything[]) { this.logger.debug(this.bindings, msg, ...args) }
-  info(msg: string, ...args: anything[]) { this.logger.info(this.bindings, msg, ...args) }
-  warn(msg: string, ...args: anything[]) { this.logger.warn(this.bindings, msg, ...args) }
-  error(msg: string, ...args: anything[]) { this.logger.error(this.bindings, msg, ...args) }
-  fatal(msg: string, ...args: anything[]) { this.logger.fatal(this.bindings, msg, ...args) }
+  trace(msg: string, ...args: anything[]) {
+    if (this.log.getLevel() <= log.levels.TRACE)
+      this.log.trace("%s" + msg, this.prefix, ...args)
+  }
+
+  debug(msg: string, ...args: anything[]) {
+    if (this.log.getLevel() <= log.levels.DEBUG)
+      this.log.debug("%s" + msg, this.prefix, ...args)
+  }
+
+  info(msg: string, ...args: anything[]) {
+    if (this.log.getLevel() <= log.levels.INFO)
+      this.log.info("%s" + msg, this.prefix, ...args)
+  }
+
+  warn(msg: string, ...args: anything[]) {
+    if (this.log.getLevel() <= log.levels.WARN)
+      this.log.warn("%s" + msg, this.prefix, ...args)
+  }
+
+  error(msg: string, ...args: anything[]) {
+    if (this.log.getLevel() <= log.levels.ERROR)
+      this.log.error("%s" + msg, this.prefix, ...args)
+  }
+
+  silent(msg: string, ...args: anything[]) {
+    // All logging disabled, so this is a no-op.
+  }
+
 }

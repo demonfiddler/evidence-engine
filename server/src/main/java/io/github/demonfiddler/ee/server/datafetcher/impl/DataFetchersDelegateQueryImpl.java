@@ -299,7 +299,7 @@ public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery 
     }
 
     private boolean matchesFilter(Topic topic, StatisticsQueryFilter filter) {
-        return filter.getStatus() == null
+        return filter == null || filter.getStatus() == null
             || filter.getStatus().contains(StatusKind.fromGraphQlValue(topic.getStatus()));
     }
 

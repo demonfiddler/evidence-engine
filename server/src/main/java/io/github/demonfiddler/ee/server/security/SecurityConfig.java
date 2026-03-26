@@ -179,10 +179,11 @@ public class SecurityConfig {
             .addFilterBefore(jwtAuthenticationFilter, RememberMeAuthenticationFilter.class) //
             .authorizeHttpRequests(customizer -> {
                 customizer //
-                    .requestMatchers("/graphiql").authenticated() //
-                    .requestMatchers("/rest/**").permitAll() //.authenticated() //
+                    .requestMatchers("/graphiql", "/*/graphiql").authenticated() //
+                    .requestMatchers("/rest/**", "/*/rest/**").permitAll() // server code performs programmatic authorization
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // allow preflight
-                    .requestMatchers(HttpMethod.POST, "/graphql").permitAll().anyRequest().authenticated();
+                    .requestMatchers(HttpMethod.POST, "/graphql", "/*/graphql").permitAll() //
+                    .anyRequest().authenticated();
             }) //
             .rememberMe(customizer -> {
                 customizer.rememberMeServices(rememberMeServices);

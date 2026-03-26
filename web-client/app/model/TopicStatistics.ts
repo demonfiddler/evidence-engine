@@ -17,6 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import EntityStatistics from "./EntityStatistics"
 import Topic from "./Topic"
 

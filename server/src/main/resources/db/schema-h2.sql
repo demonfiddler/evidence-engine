@@ -199,7 +199,7 @@ CREATE TABLE "publication" (
   "abstract" VARCHAR(65535) DEFAULT NULL COMMENT 'Abstract from the article',
   "notes" VARCHAR(65535) DEFAULT NULL COMMENT 'Added notes about the publication',
   "peer_reviewed" BOOLEAN DEFAULT NULL COMMENT 'Whether the article was peer-reviewed',
-  "doi" VARCHAR(100) DEFAULT NULL UNIQUE CHECK("doi" REGEXP '^(10\\.\\d{4,9}/(?i)[-._;()/:A-Z0-9]+)$') COMMENT 'Digital Object Identifier',
+  "doi" VARCHAR(100) DEFAULT NULL UNIQUE CHECK("doi" REGEXP '^10\\.\\d{4,9}/[A-Z0-9-._:;()<>/]+$') COMMENT 'Digital Object Identifier',
   "isbn" VARCHAR(20) DEFAULT NULL UNIQUE CHECK("isbn" REGEXP '^(?=(?:\d[- ]?){13}$|(?:\\d[- ]?){9}[\dXx]$)\\d{1,5}[- ]?\\d{1,7}[- ]?\\d{1,7}[- ]?[\\dXx]$') COMMENT 'International Standard Book Number (printed publications only)',
 	"pmcid" VARCHAR(10) DEFAULT NULL UNIQUE CHECK("pmid" REGEXP '^PMC\\d{7}$') COMMENT 'The U.S. National Library of Medicine''s PubMed Central ID',
 	"pmid" VARCHAR(10) DEFAULT NULL UNIQUE CHECK("pmid" REGEXP '^\\d{1,10}$') COMMENT 'The U.S. National Library of Medicine''s PubMed ID',

@@ -17,6 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import { CommentQueryFilter } from "@/app/model/schema"
 import { Select, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
 import { useCallback, useContext, useState } from "react"

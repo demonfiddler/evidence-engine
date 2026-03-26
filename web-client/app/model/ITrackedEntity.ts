@@ -17,6 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import Comment from "./Comment"
 import IBaseEntity from "./IBaseEntity"
 import IPage from "./IPage"

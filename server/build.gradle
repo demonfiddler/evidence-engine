@@ -18,18 +18,19 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 plugins {
-	id 'java'
-	id 'war'
 	id 'org.springframework.boot' version "${springBootVersion}"
 	id 'io.spring.dependency-management' version "${dependencyManagementPluginVersion}"
-	id 'org.asciidoctor.jvm.convert' version "${asciidoctorJvmConvertVersion}"
+//	id 'org.asciidoctor.jvm.convert' version "${asciidoctorJvmConvertVersion}"
+	id 'java'
+	id 'war'
 }
 
 group = 'io.github.demonfiddler.evidence-engine'
-version = '0.0.1-SNAPSHOT'
+version = '1.0.0-SNAPSHOT'
 
 dependencies {
 	implementation project(':common')
+	implementation 'org.springframework.boot:spring-boot-starter-logging'
 	implementation 'org.springframework.boot:spring-boot-starter-graphql'
 //	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
@@ -60,7 +61,10 @@ dependencies {
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 	// H2 is only required for running in integration test target server mode
 	runtimeOnly 'com.h2database:h2:2.3.232'
-	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+    // Embedded Tomcat for the JAR
+    implementation 'org.springframework.boot:spring-boot-starter-tomcat'
+    // Provided Tomcat for the WAR
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-webtestclient'
 	testImplementation 'org.springframework.security:spring-security-test'
@@ -68,11 +72,80 @@ dependencies {
 	testImplementation 'org.springframework.graphql:spring-graphql-test'
 }
 
+bootJar {
+    enabled = true   // produce an executable JAR that relies on Spring Boot's embedded Tomcat.
+	archiveBaseName = "ee-server"
+    archiveVersion = "" // removes version from filename
+	archiveClassifier = ""// removes classifier from filename
+}
+
+bootWar {
+	enabled = true   // produce a Spring Boot WAR for deployment on external Tomcat.
+	archiveBaseName = "ee-server"
+    archiveVersion = "" // removes version from filename
+	archiveClassifier = ""// removes classifier from filename
+}
+
+jar {
+    enabled = false	// We don't need a thin, unbootable JAR
+}
+
+war {
+    enabled = false  // Spring Boot won't work in an ordinary WAR
+}
+
+def metaInfSource = "src/main/resources/META-INF"
+
+tasks.named("bootJar", org.springframework.boot.gradle.tasks.bundling.BootJar) { jarTask ->
+    // Add META-INF to the JAR root
+    jarTask.from(metaInfSource) {
+        into "META-INF"
+    }
+}
+
+tasks.named("bootWar", org.springframework.boot.gradle.tasks.bundling.BootWar) { warTask ->
+    // Add META-INF to the WAR root
+    warTask.from(metaInfSource) {
+        into "META-INF"
+    }
+}
+
+def profile = project.findProperty("profile") ?: "dev"
+def selectedConfig = "application-${profile}.properties"
+tasks.named("processResources") { processResources ->
+    // Make profile affect up-to-date checks
+    inputs.property("profile", profile)
+
+    doFirst {
+        def f = file("src/main/resources/config/${selectedConfig}")
+        if (!f.exists()) {
+            throw new GradleException("Missing config file: src/main/resources/config/${selectedConfig}")
+        }
+    }
+
+    // 1. Exclude all application*.properties from the normal resource set
+    exclude("config/application*.properties")
+	exclude("graphql/relay.graphqls*")
+	exclude("META-INF/**")
+
+    // 2. Add only the selected profile file, renamed to application.properties
+    from("src/main/resources/config") {
+        include(selectedConfig)
+        rename(selectedConfig, "application.properties")
+        into("config")
+    }
+}
+
+tasks.assemble {
+    dependsOn bootJar
+    dependsOn bootWar
+}
+
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(23)
+		languageVersion = JavaLanguageVersion.of(25)
 	}
-	sourceCompatibility = JavaVersion.VERSION_23
+	sourceCompatibility = JavaVersion.VERSION_25
 }
 
 compileJava {
@@ -85,10 +158,10 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-tasks.named('asciidoctor') {
-	inputs.dir snippetsDir
-	dependsOn test
-}
+// tasks.named('asciidoctor') {
+// 	inputs.dir snippetsDir
+// 	dependsOn test
+// }
 
 repositories {
 	mavenLocal()

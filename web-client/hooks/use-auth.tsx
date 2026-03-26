@@ -17,6 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import AuthPayload from '@/app/model/AuthPayload'
 import User from '@/app/model/User'
 import { CURRENT_USER, LOGIN } from '@/lib/graphql-queries'

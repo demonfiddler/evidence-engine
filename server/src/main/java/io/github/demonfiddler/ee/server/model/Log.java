@@ -223,7 +223,7 @@ public class Log implements IBaseEntity {
 			+ ", " //
 			+ "timestamp: " + this.timestamp //
 			+ ", " //
-			+ "user: " + this.user //
+			+ "userId: " + (this.user == null ? null : this.user.getId()) //
 			+ ", " //
 			+ "transactionKind: " + this.transactionKind //
 			+ ", " //

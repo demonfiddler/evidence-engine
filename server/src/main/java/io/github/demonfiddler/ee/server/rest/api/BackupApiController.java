@@ -60,6 +60,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 import io.github.demonfiddler.ee.server.rest.model.BackupKind;
 import io.github.demonfiddler.ee.server.rest.util.BackupUtils;
+import io.github.demonfiddler.ee.server.rest.util.DatabaseUtils;
 import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -77,13 +78,15 @@ public class BackupApiController implements BackupApi {
     private final NativeWebRequest request;
     private final JdbcTemplate jdbcTemplate;
     private final BackupUtils backupUtils;
+    private final DatabaseUtils databaseUtils;
     @Value("${data.server.tmpdir}")
     private String tmpDir;
 
-    public BackupApiController(NativeWebRequest request, JdbcTemplate jdbcTemplate, BackupUtils backupUtils) {
+    public BackupApiController(NativeWebRequest request, JdbcTemplate jdbcTemplate, BackupUtils backupUtils, DatabaseUtils databaseUtils) {
         this.request = request;
         this.jdbcTemplate = jdbcTemplate;
         this.backupUtils = backupUtils;
+        this.databaseUtils = databaseUtils;
     }
 
     @Override
@@ -109,8 +112,8 @@ public class BackupApiController implements BackupApi {
         // N.B. The remaining code only works if the application and database servers are colocated,
         // because the SELECT ... INTO OUTFILE SQL statement writes to a local file.
 
-        // MariaDB doesn't have permission to access ${java.io.tmpdir}, so we'll have to specify a different location.
-        String outputPath = tmpDir + "ee-backup" + File.separatorChar;
+        // MariaDB may not have permission to access ${java.io.tmpdir}, so we'll have to use a different location.
+        String outputPath = tmpDir + File.separatorChar + "ee-backup" + File.separatorChar;
         File outputDir = new File(outputPath);
         if (!outputDir.mkdirs()) {
             // The directory already existed, so make sure it's empty.
@@ -189,7 +192,11 @@ public class BackupApiController implements BackupApi {
 
                 if (!selectList.isEmpty())
                     selectList.append(',');
-                selectList.append('"').append(colName).append(colType.equals("bit") ? "\" + 0" : '"');
+                if (databaseUtils.isTextType(colType))
+                    // To emit valid CSV per RFC-4180, embedded double quote characters must be doubled.
+                    selectList.append("REPLACE(\"").append(colName).append("\", '\"', '\"\"')");
+                else
+                    selectList.append('"').append(colName).append('"');
             };
             jdbcTemplate.query(SELECT_TABLE_COLUMNS, pss, rch);
 
@@ -203,7 +210,7 @@ public class BackupApiController implements BackupApi {
                 .append("FIELDS TERMINATED BY ','").append(NL) //
                 .append("OPTIONALLY ENCLOSED BY '\"'").append(NL) //
                 .append("ESCAPED BY ''").append(NL) //
-                .append("LINES TERMINATED BY '\\n'");
+                .append("LINES TERMINATED BY '\\n';");
             sql = sqlbuf.toString();
             EXPORT_STATEMENTS.put(table, sql);
         }

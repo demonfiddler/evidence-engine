@@ -17,6 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import { DeclarationKind } from "../ui/validators/declaration"
 import { PublicationKind } from "../ui/validators/publication"
 

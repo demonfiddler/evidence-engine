@@ -17,6 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import Log from "@/app/model/Log"
 import DataTableViewOptions from "../data-table/data-table-view-options"
 import DataTableFilterProps from "../data-table/data-table-filter"

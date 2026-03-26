@@ -1,0 +1,11 @@
+-- N.B. Textual COLUMNS must handle replacement of embedded " characters to "".
+
+SELECT <HEADER_LIST>
+UNION ALL
+SELECT <COLUMNS>
+FROM "<TABLE>"
+INTO OUTFILE '<PATH_TO_TABLE>.csv'
+FIELDS TERMINATED BY ','
+OPTIONALLY ENCLOSED BY '"'
+ESCAPED BY ''
+LINES TERMINATED BY '\n';

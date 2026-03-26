@@ -26,28 +26,26 @@ import { Slider } from "@/components/ui/slider"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { layout, page, detail, dialog, filter, component, table, hook, utility, LoggerEx } from "@/lib/logger"
 import { MoveLeftIcon, MoveRightIcon, SlidersHorizontalIcon } from "lucide-react"
-import { Logger } from "pino"
 import { useCallback, useReducer, useState } from "react"
+import log, { LogLevelNames, LogLevelNumbers } from 'loglevel'
 
 const logger = new LoggerEx(dialog, "[LoggingLevelDrawer] ")
 
-const labelToLevel : {[k: string]: number} = {
-  silent: 0,
-  fatal: 1,
-  error: 2,
+const labelToLevel : {[k: string]: LogLevelNumbers} = {
+  trace: 0,
+  debug: 1,
+  info: 2,
   warn: 3,
-  info: 4,
-  debug: 5,
-  trace: 6,
+  error: 4,
+  silent: 5,
 }
-const levelToLabel = [
-  "silent",
-  "fatal",
-  "error",
-  "warn",
-  "info",
-  "debug",
+const levelToLabel : (LogLevelNames | "silent")[] = [
   "trace",
+  "debug",
+  "info",
+  "warn",
+  "error",
+  "silent",
 ]
 const loggers = [
   {label: "Components", logger: component},
@@ -61,31 +59,32 @@ const loggers = [
   {label: "Utilities", logger: utility},
 ]
 
-export default function LoggingLevelDrawer(
+export default function LoggingLevelDialog(
   {open, onOpenChange} : {open: boolean, onOpenChange: (open: boolean) => void}
 ) {
   logger.debug("render")
 
-  const [allLevel, setAllLevel] = useState("silent")
+  const [allLevel, setAllLevel] = useState(levelToLabel[labelToLevel.silent])
   // The logger states are non-reactive, so we use this dummy state to force a re-render when logging level changes.
   const [, forceUpdate] = useReducer(x => x + 1, 0)
 
-  const handleValueChange = useCallback((label: string, _logger: Logger, value: number[]): void => {
+  const handleValueChange = useCallback((label: string, _logger: log.Logger, value: LogLevelNumbers[]): void => {
     if (value.length == 1) {
-      const level = levelToLabel[value[0]]
-      if (_logger.level !== level) {
-        _logger.level = level
+      const newLevel = value[0]
+      if (_logger.getLevel() !== newLevel) {
+        _logger.setLevel(newLevel)
         forceUpdate()
-        logger.info("'%s' logging level set to '%s'", label, level)
+        logger.info("'%s' logging level set to '%s'", label, levelToLabel[newLevel])
       }
     }
   }, [])
 
   const handleSetAll = useCallback(() => {
     let modified = false
+    const newLevel = labelToLevel[allLevel]
     for (let desc of loggers) {
-      if (desc.logger.level !== allLevel) {
-        desc.logger.level = allLevel
+      if (desc.logger.getLevel() !== newLevel) {
+        desc.logger.setLevel(newLevel)
         logger.info("'%s' logging level set to '%s'", desc.label, allLevel)
         modified = true
       }
@@ -109,9 +108,9 @@ export default function LoggingLevelDrawer(
                   <TableHead className="text-lg">Logger</TableHead>
                   <TableHead className="relative">
                     <div className="grid grid-cols-3 absolute w-6/7 left-1/14 top-0">
-                      <span className="justify-self-start self-end text-xs text-gray-400"><MoveLeftIcon className="inline size-6"/>increasing severity</span>
+                      <span className="justify-self-start self-end text-xs text-gray-400"><MoveLeftIcon className="inline size-6"/>increasing verbosity</span>
                       <span className="justify-self-center text-lg">Level</span>
-                      <span className="justify-self-end self-end text-xs text-gray-400">increasing verbosity<MoveRightIcon className="inline size-6"/></span>
+                      <span className="justify-self-end self-end text-xs text-gray-400">increasing severity<MoveRightIcon className="inline size-6"/></span>
                     </div>
                   </TableHead>
                 </TableRow>
@@ -120,14 +119,10 @@ export default function LoggingLevelDrawer(
                 <TableRow>
                   <TableCell></TableCell>
                   <TableCell>
-                    <div className="grid grid-cols-7 items-center justify-items-center w-full">
-                      <span>silent</span>
-                      <span>fatal</span>
-                      <span>error</span>
-                      <span>warn</span>
-                      <span>info</span>
-                      <span>debug</span>
-                      <span>trace</span>
+                    <div className="grid grid-cols-6 items-center justify-items-center w-full">
+                      {
+                        levelToLabel.map(label => <span key={label}>{label}</span>)
+                      }
                     </div>
                   </TableCell>
                 </TableRow>
@@ -139,10 +134,10 @@ export default function LoggingLevelDrawer(
                         <Slider
                           className="w-6/7 left-1/14"
                           min={0}
-                          max={6}
+                          max={5}
                           step={1}
-                          value={[labelToLevel[row.logger.level]]}
-                          onValueChange={value => handleValueChange(row.label, row.logger, value)}
+                          value={[row.logger.getLevel()]}
+                          onValueChange={value => handleValueChange(row.label, row.logger, value as LogLevelNumbers[])}
                         />
                       </TableCell>
                     </TableRow>
@@ -155,19 +150,15 @@ export default function LoggingLevelDrawer(
             <Button className="w-20 self-center" variant="outline" onClick={handleSetAll}>Set all to:</Button>
             <Select
               value={allLevel}
-              onValueChange={setAllLevel}
+              onValueChange={value => setAllLevel(value as LogLevelNames)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Level" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="silent">silent</SelectItem>
-                <SelectItem value="fatal">fatal</SelectItem>
-                <SelectItem value="error">error</SelectItem>
-                <SelectItem value="warn">warn</SelectItem>
-                <SelectItem value="info">info</SelectItem>
-                <SelectItem value="debug">debug</SelectItem>
-                <SelectItem value="trace">trace</SelectItem>
+                {
+                  levelToLabel.map(label => <SelectItem key={label} value={label}>{label}</SelectItem>)
+                }
               </SelectContent>
             </Select>
             <DrawerClose asChild>

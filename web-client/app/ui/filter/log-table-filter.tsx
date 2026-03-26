@@ -17,6 +17,8 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
+'use client'
+
 import Log from "@/app/model/Log"
 import DataTableFilterProps from "../data-table/data-table-filter"
 import DataTableViewOptions from "../data-table/data-table-view-options"
@@ -303,7 +305,7 @@ export default function LogTableFilter(
           value={entityId}
           onChange={handleEntityIdChange}
           delay={500}
-          clearOnEscape={true}
+          clear
           help="Filter the table to show only the record with the specified ID. Other filters are retained but ignored."
         />
         <ButtonEx
