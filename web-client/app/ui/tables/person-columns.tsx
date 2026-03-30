@@ -107,7 +107,7 @@ export const columns: ColumnDef<Person>[] = [
   },
   {
     id: "country",
-    accessorKey: "country",
+    accessorKey: "countryLabel",
     enableHiding: true,
     enableSorting: true,
     size: 142,

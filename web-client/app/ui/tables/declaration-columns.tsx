@@ -34,7 +34,7 @@ export const columns: ColumnDef<Declaration>[] = [
   ... trackedEntityColumns as ColumnDef<Declaration>[],
   {
     id: "kind",
-    accessorKey: "kind",
+    accessorKey: "kindLabel",
     enableHiding: true,
     enableSorting: true,
     size: 112,
@@ -62,7 +62,7 @@ export const columns: ColumnDef<Declaration>[] = [
   },
   {
     id: "country",
-    accessorKey: "country",
+    accessorKey: "countryLabel",
     enableHiding: true,
     enableSorting: true,
     size: 142,

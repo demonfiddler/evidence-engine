@@ -44,7 +44,7 @@ export const columns: ColumnDef<Publication>[] = [
   },
   {
     id: "kind",
-    accessorKey: "kind",
+    accessorKey: "kindLabel",
     enableHiding: true,
     enableSorting: true,
     size: 150,

@@ -337,9 +337,11 @@ fragment ownedCommentFields on Comment {
 const FRAGMENT_DECLARATION_FIELDS = gql`
 fragment declarationFields on Declaration {
   kind(format: SHORT)
+  kindLabel : kind(format: LONG)
   title
   date
   country(format: ALPHA_2)
+  countryLabel: country(format: COMMON_NAME)
   url
   cached
   signatories
@@ -391,6 +393,7 @@ fragment personFields on Person {
   qualifications
   notes
   country(format: ALPHA_2)
+  countryLabel: country(format: COMMON_NAME)
   checked
   published
 }
@@ -401,6 +404,7 @@ fragment publisherFields on Publisher {
   name
   location
   country(format: ALPHA_2)
+  countryLabel: country(format: COMMON_NAME)
   url
   journalCount
   notes
@@ -431,6 +435,7 @@ fragment publicationFields on Publication {
     ...journalFields
   }
   kind(format: SHORT)
+  kindLabel : kind(format: LONG)
   date
   year
   keywords
@@ -550,6 +555,7 @@ fragment userFields on User {
   email
   password
   country(format: ALPHA_2)
+  countryLabel: country(format: COMMON_NAME)
   notes
   authorities(aggregation:OWN, format:SHORT)
   # groups {
