@@ -56,8 +56,8 @@ export default function CommentDialogFilter(
   logger.debug("render")
 
   const {user} = useAuth()
-  const {queries, setFilter} = useContext(GlobalContext)
-  const {filter} = queries.Comment as QueryState<CommentQueryFilter>
+  const {queries, setFilter, setPagination} = useContext(GlobalContext)
+  const {filter, pagination} = queries.Comment as QueryState<CommentQueryFilter>
   const [status, setStatus] = useState(filter.status?.[0] ?? '')
   const [text, setText] = useState(filter.text ?? '')
   const [advanced, setAdvanced] = useState(filter.advancedSearch ?? false)
@@ -89,8 +89,12 @@ export default function CommentDialogFilter(
     if (!isEqual(newFilter as CommentQueryFilter, filter)) {
       logger.trace("updateFilter from %o to %o", filter, newFilter)
       setFilter("Comment", newFilter)
+        if (pagination.pageIndex != 0) {
+          logger.trace("updateFilter: reset pageIndex to 0")
+          setPagination("Comment", {pageIndex: 0, pageSize: pagination.pageSize});
+        }
     }
-  }, [targetId, filter, setFilter])
+  }, [targetId, filter, setFilter, pagination, setPagination])
 
   const handleStatusChange = useCallback((status: string) => {
     logger.trace("handleStatusChange: status='%s'", status)
@@ -129,7 +133,7 @@ export default function CommentDialogFilter(
     updateFilter(status, text, advanced, userId, from, to)
   }, [updateFilter, status, text, advanced, userId, from])
 
-  const handleReset = useCallback(() => {
+  const handleClear = useCallback(() => {
     setStatus('')
     setText('')
     setAdvanced(false)
@@ -297,10 +301,10 @@ export default function CommentDialogFilter(
       <ButtonEx
         outerClassName="flex-grow"
         variant="outline"
-        onClick={handleReset}
+        onClick={handleClear}
         help="Clear all filters."
       >
-        Reset
+        Clear
       </ButtonEx>
     </div>
   )

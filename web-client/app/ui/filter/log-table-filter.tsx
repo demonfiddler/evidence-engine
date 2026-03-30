@@ -53,8 +53,8 @@ export default function LogTableFilter(
   } : DataTableFilterProps<Log>) {
   logger.debug("render")
 
-  const {queries, setFilter} = useContext(GlobalContext)
-  const {filter} = queries["Log"] as QueryState<LogQueryFilter>
+  const {queries, setFilter, setPagination} = useContext(GlobalContext)
+  const {filter, pagination} = queries["Log"] as QueryState<LogQueryFilter>
   const [from, setFrom] = useState<Date|undefined>(filter.from)
   const [fromOpen, setFromOpen] = useState(false)
   const [to, setTo] = useState<Date|undefined>(filter.to)
@@ -84,9 +84,13 @@ export default function LogTableFilter(
         if (!isEqual(newFilter as LogQueryFilter, filter)) {
           logger.trace("updateFilter from %o to %o", filter, newFilter)
           setFilter("Log", newFilter)
+          if (pagination.pageIndex != 0) {
+            logger.trace("updateFilter: reset pageIndex to 0")
+            setPagination("Log", {pageIndex: 0, pageSize: pagination.pageSize});
+          }
         }
       }
-    }, [loadingPathWithSearchParams, filter, setFilter])
+    }, [loadingPathWithSearchParams, filter, setFilter, pagination, setPagination])
 
   // If the filter changes, refresh the UI to match.
   const prevFilter = useRef<LogQueryFilter>({})
@@ -147,7 +151,7 @@ export default function LogTableFilter(
     updateFilter(entityKind, entityId, userId, transactionKind, from, to)
   }, [entityKind, userId, transactionKind, from, to, updateFilter])
 
-  const handleReset = useCallback(() => {
+  const handleClear = useCallback(() => {
     setFrom(undefined)
     setTo(undefined)
     setUserId('')
@@ -320,9 +324,9 @@ export default function LogTableFilter(
           id="reset"
           variant="outline"
           title="Clear all filters"
-          onClick={handleReset}
+          onClick={handleClear}
         >
-          Reset
+          Clear
         </Button>
         <ExportDialog recordKind="Log" />
         <DataTableViewOptions table={table} />

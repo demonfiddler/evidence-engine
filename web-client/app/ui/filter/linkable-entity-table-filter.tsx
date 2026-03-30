@@ -60,10 +60,11 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
     showOnlyLinkedRecords,
     queries,
     setFilter,
+    setPagination,
   } = useContext(GlobalContext)
   const {user} = useAuth()
   const queryState = queries[recordKind] as QueryState<LinkableEntityQueryFilter>
-  const {filter} = queryState
+  const {filter, pagination} = queryState
   const [status, setStatus] = useState(filter.status?.[0] ?? '')
   const [text, setText] = useState(filter.text ?? '')
   const [advanced, setAdvanced] = useState(filter.advancedSearch ?? false)
@@ -96,9 +97,26 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
       if (!isEqual(newFilter as LinkableEntityQueryFilter, filter)) {
         logger.trace("updateFilter from %o to %o", filter, newFilter as anything)
         setFilter(recordKind, newFilter)
+        if (pagination.pageIndex != 0) {
+          logger.trace("updateFilter: reset pageIndex to 0")
+          setPagination(recordKind, {pageIndex: 0, pageSize: pagination.pageSize});
+        }
       }
     }
-  }, [loadingPathWithSearchParams, isLinkableEntity, recordKind, filter, masterTopicId, masterTopicRecursive, masterRecordKind, masterRecordId, showOnlyLinkedRecords, setFilter])
+  }, [
+    loadingPathWithSearchParams,
+    isLinkableEntity,
+    recordKind,
+    filter,
+    masterTopicId,
+    masterTopicRecursive,
+    masterRecordKind,
+    masterRecordId,
+    showOnlyLinkedRecords,
+    setFilter,
+    pagination,
+    setPagination
+  ])
 
   // If the filter changes, refresh the UI to match.
   const prevFilter = useRef<LinkableEntityQueryFilter>({})
@@ -169,8 +187,8 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
     updateFilter(status, text, advanced, recordId)
   }, [updateFilter])
 
-  const handleReset = useCallback(() => {
-    logger.trace("handleReset")
+  const handleClear = useCallback(() => {
+    logger.trace("handleClear")
     setStatus('')
     setText('')
     setAdvanced(false)
@@ -258,10 +276,10 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
           id="reset"
           outerClassName="flex-grow"
           variant="outline"
-          onClick={handleReset}
+          onClick={handleClear}
           help="Clear all filters"
         >
-          Reset
+          Clear
         </ButtonEx>
         <ImportDialog
           recordKind={recordKind}

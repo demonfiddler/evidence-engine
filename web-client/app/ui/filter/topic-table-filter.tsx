@@ -47,8 +47,8 @@ export default function TopicTableFilter({
   logger.debug("render")
 
   const {user} = useAuth()
-  const {queries, setFilter} = useContext(GlobalContext)
-  const {filter} = queries["Topic"] as QueryState<TopicQueryFilter>
+  const {queries, setFilter, setPagination} = useContext(GlobalContext)
+  const {filter, pagination} = queries["Topic"] as QueryState<TopicQueryFilter>
   const [status, setStatus] = useState(filter.status?.[0] ?? '')
   const [text, setText] = useState(filter.text ?? '')
   const [advanced, setAdvanced] = useState(filter.advancedSearch ?? false)
@@ -68,9 +68,13 @@ export default function TopicTableFilter({
       if (!isEqual(newFilter, filter)) {
         logger.trace("updateFilter from %o to %o", filter, newFilter)
         setFilter("Topic", newFilter)
+        if (pagination.pageIndex != 0) {
+          logger.trace("updateFilter: reset pageIndex to 0")
+          setPagination("Topic", {pageIndex: 0, pageSize: pagination.pageSize});
+        }
       }
     }
-  }, [loadingPathWithSearchParams, filter, setFilter])
+  }, [loadingPathWithSearchParams, filter, setFilter, pagination, setPagination])
 
   // If the filter changes, refresh the UI to match.
   const prevFilter = useRef<TopicQueryFilter>({})
@@ -119,7 +123,7 @@ export default function TopicTableFilter({
     updateFilter(status, text, advanced, treeView, recordId)
   }, [updateFilter])
 
-  const handleReset = useCallback(() => {
+  const handleClear = useCallback(() => {
     setStatus('')
     setText('')
     setAdvanced(false)
@@ -208,10 +212,10 @@ export default function TopicTableFilter({
           id="reset"
           outerClassName="flex-grow"
           variant="outline"
-          onClick={handleReset}
+          onClick={handleClear}
           help="Clear all filters"
         >
-          Reset
+          Clear
         </ButtonEx>
         <ExportDialog recordKind="Topic" />
         <DataTableViewOptions table={table} />

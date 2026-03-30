@@ -58,8 +58,8 @@ export default function CommentTableFilter(
   logger.debug("render")
 
   const {user} = useAuth()
-  const {queries, setFilter} = useContext(GlobalContext)
-  const {filter} = queries["Comment"] as QueryState<CommentQueryFilter>
+  const {queries, setFilter, setPagination} = useContext(GlobalContext)
+  const {filter, pagination} = queries["Comment"] as QueryState<CommentQueryFilter>
   const [status, setStatus] = useState(filter.status?.[0] ?? '')
   const [text, setText] = useState(filter.text ?? '')
   const [advanced, setAdvanced] = useState(filter.advancedSearch ?? false)
@@ -103,9 +103,13 @@ export default function CommentTableFilter(
       if (!isEqual(newFilter as CommentQueryFilter, filter)) {
         logger.trace("updateFilter from %o to %o", filter, newFilter)
         setFilter("Comment", newFilter)
+        if (pagination.pageIndex != 0) {
+          logger.trace("updateFilter: reset pageIndex to 0")
+          setPagination("Comment", {pageIndex: 0, pageSize: pagination.pageSize});
+        }
       }
     }
-  }, [loadingPathWithSearchParams, filter, setFilter])
+  }, [loadingPathWithSearchParams, filter, setFilter, pagination, setPagination])
 
   // If the filter changes, refresh the UI to match.
   const prevFilter = useRef<CommentQueryFilter>({})
@@ -197,7 +201,7 @@ export default function CommentTableFilter(
     updateFilter(status, text, advanced, recordId, targetKind, targetId, parentId, userId, from, to)
   }, [updateFilter, status, text, advanced, recordId, targetKind, targetId, parentId, userId, from])
 
-  const handleReset = useCallback(() => {
+  const handleClear = useCallback(() => {
     setStatus('')
     setText('')
     setAdvanced(false)
@@ -327,7 +331,7 @@ export default function CommentTableFilter(
             outerClassName="w-38"
             className="text-right"
             placeholder="Target ID"
-            value={recordId}
+            value={targetId}
             onChange={(e) => handleTargetIdChange(e.target.value)}
             clear
             delay={500}
@@ -338,7 +342,7 @@ export default function CommentTableFilter(
             outerClassName="w-38"
             className="text-right"
             placeholder="Parent ID"
-            value={recordId}
+            value={parentId}
             onChange={(e) => handleParentIdChange(e.target.value)}
             clear
             delay={500}
@@ -428,10 +432,10 @@ export default function CommentTableFilter(
             id="resetComments"
             outerClassName="flex-grow"
             variant="outline"
-            onClick={handleReset}
+            onClick={handleClear}
             help="Clear all filters."
           >
-            Reset
+            Clear
           </ButtonEx>
           <ExportDialog recordKind="Comment" />
           <DataTableViewOptions table={table} />

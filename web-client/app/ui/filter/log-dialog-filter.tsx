@@ -51,8 +51,8 @@ export default function LogDialogFilter(
   } : DataTableFilterProps<Log>) {
   logger.debug("render")
 
-  const {queries, setFilter} = useContext(GlobalContext)
-  const {filter} = queries["Log"] as QueryState<LogQueryFilter>
+  const {queries, setFilter, setPagination} = useContext(GlobalContext)
+  const {filter, pagination} = queries["Log"] as QueryState<LogQueryFilter>
   const [from, setFrom] = useState<Date|undefined>(filter.from)
   const [fromOpen, setFromOpen] = useState(false)
   const [to, setTo] = useState<Date|undefined>( filter.to)
@@ -76,8 +76,12 @@ export default function LogDialogFilter(
       if (!isEqual(newFilter, filter)) {
         logger.trace("updateFilter from %o to %o", filter, newFilter)
         setFilter("Log", newFilter)
+        if (pagination.pageIndex != 0) {
+          logger.trace("updateFilter: reset pageIndex to 0")
+          setPagination("Log", {pageIndex: 0, pageSize: pagination.pageSize});
+        }
       }
-  }, [auxRecordId, filter, setFilter])
+  }, [auxRecordId, filter, setFilter, pagination, setPagination])
 
   const prevAuxRecordId = useRef<string>(undefined)
   useEffect(() => {
@@ -111,7 +115,7 @@ export default function LogDialogFilter(
     updateFilter(userId, transactionKind, from, to)
   }, [userId, from, to, updateFilter])
 
-  const handleReset = useCallback(() => {
+  const handleClear = useCallback(() => {
     setFrom(undefined)
     setTo(undefined)
     setUserId('')
@@ -243,10 +247,10 @@ export default function LogDialogFilter(
         <ButtonEx
           outerClassName="flex-grow"
           variant="outline"
-          onClick={handleReset}
+          onClick={handleClear}
           help="Clear all filters"
         >
-          Reset
+          Clear
         </ButtonEx>
         <DataTableViewOptions table={table} />
       </div>
