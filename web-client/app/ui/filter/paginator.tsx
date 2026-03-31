@@ -19,7 +19,6 @@
 
 'use client'
 
-import { Table } from "@tanstack/react-table"
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -34,59 +33,80 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { ChangeEvent, useCallback, useEffect, useState } from "react"
+import { ChangeEvent, useCallback } from "react"
 import InputEx from "../ext/input-ex"
 import { Label } from "@/components/ui/label"
+import IPage from "@/app/model/IPage"
+import { Updater } from "@tanstack/react-table"
+import { component, LoggerEx } from "@/lib/logger"
+import { PageableInput } from "@/app/model/schema"
 
-interface DataTablePaginationProps<TData> {
-  table: Table<TData>
+const logger = new LoggerEx(component, "[Paginator] ")
+
+interface PaginatorProps<TData> {
+  page?: IPage<TData>
+  pageSort: PageableInput
+  setPageSort: (pagination: Updater<PageableInput>) => void
 }
 
-export function DataTablePaginator<TData>({
-  table,
-}: DataTablePaginationProps<TData>) {
-  const pn = (table.getState().pagination?.pageIndex ?? 0) + 1
-  const [pageNumber, setPageNumber] = useState(pn)
-  useEffect(() => {
-    setPageNumber(pn)
-  }, [pn])
+export function Paginator<TData>({
+  page,
+  pageSort,
+  setPageSort
+}: PaginatorProps<TData>) {
+  logger.trace("render, pageSort: %o", pageSort)
+
+  const handleChangePageSize = useCallback((value: string) => {
+    if (value)
+      setPageSort({pageNumber: 0, pageSize: Number.parseInt(value)})
+  }, [setPageSort])
+
+  const handleGotoPage = useCallback((pageNumber: number) => {
+    if (page && pageNumber != page.number && pageNumber >= 0 && pageNumber < page.totalPages)
+      setPageSort({pageNumber, pageSize: pageSort.pageSize})
+  }, [page, pageSort, setPageSort])
+
   const handlePageNumberChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
-    const newpn = typeof value ==="number" ? value : Number.parseInt(value?.toString() ?? "0")
-    if (newpn !== pageNumber && newpn > 0 && newpn <= table.getPageCount()) {
-      const pageIndex = newpn - 1
-      setPageNumber(newpn)
-      table.setPageIndex(pageIndex)
-    }
-  }, [pageNumber, table, setPageNumber])
+    const newPageNumber = Number.parseInt(value) ?? 1
+    handleGotoPage(newPageNumber - 1)
+  }, [handleGotoPage])
+
+  const handleGotoFirstPage = useCallback(() => {
+    handleGotoPage(0)
+  }, [handleGotoPage])
+
+  const handleGotoPreviousPage = useCallback(() => {
+    if (page)
+      handleGotoPage(page.number - 1)
+  }, [page, handleGotoPage])
+
+  const handleGotoNextPage = useCallback(() => {
+    if (page)
+      handleGotoPage(page.number + 1)
+  }, [page, handleGotoPage])
+
+  const handleGotoLastPage = useCallback(() => {
+    if (page)
+      handleGotoPage(page.totalPages - 1)
+  }, [page, handleGotoPage])
 
   return (
-    <div className="flex items-center justify-between">
-      {
-        // FIXME: there doesn't seem to be a Table API to tell whether row selection is enabled.
-        table.getSelectedRowModel()
-        ? <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected
-        </div>
-        : <div></div>
-      }
+    <div className="flex items-center justify-end">
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
-          <p className="text-sm font-medium">Rows per page</p>
+          <p className="text-sm font-medium">Records per page</p>
           <Select
-            value={`${table.getState().pagination?.pageSize}`}
-            onValueChange={(value) => {
-              table.setPageSize(Number.parseInt(value))
-            }}
+            value={`${pageSort.pageSize}`}
+            onValueChange={handleChangePageSize}
           >
             <SelectTrigger className="h-8 w-fit" title="Click to change page size">
-              <SelectValue placeholder={table.getState().pagination?.pageSize} />
+              <SelectValue placeholder={page?.size ?? 0}/>
             </SelectTrigger>
             <SelectContent side="top">
-              {[5, 10, 20, 50, 100].map((pageSize) => (
+              {[5, 10, 20, 50, 100, 0].map((pageSize) => (
                 <SelectItem key={pageSize} value={`${pageSize}`}>
-                  {pageSize}
+                  {pageSize || '(all)'}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -100,16 +120,16 @@ export function DataTablePaginator<TData>({
             className="inline text-right"
             type="number"
             min={1}
-            max={table.getPageCount()}
-            value={pageNumber}
+            max={page ? page.totalPages : 0}
+            value={page ? page.number + 1 : 0}
             onChange={handlePageNumberChange}
             delay={500}
             title="Page number"
           />
-          &nbsp;of&nbsp;{table.getPageCount()}
+          &nbsp;of&nbsp;{page ? page.totalPages : 0}
           <span>
-            &nbsp;(showing {table.getRowModel().rows.length.toLocaleString()}
-            &nbsp;of&nbsp;{table.getRowCount().toLocaleString()} items)
+            &nbsp;(showing {page ? page.numberOfElements.toLocaleString() : 0}
+            &nbsp;of&nbsp;{page ? page.totalElements.toLocaleString() : 0} items)
           </span>
         </div>
         <div className="flex items-center space-x-2">
@@ -118,8 +138,8 @@ export function DataTablePaginator<TData>({
             variant="outline"
             className="hidden h-8 w-8 p-0 lg:flex"
             title="Go to first page"
-            onClick={() => table.firstPage()}
-            disabled={!table.getCanPreviousPage()}
+            onClick={() => handleGotoFirstPage()}
+            disabled={!page?.hasPrevious}
           >
             <span className="sr-only">Go to first page</span>
             <ChevronsLeftIcon />
@@ -129,8 +149,8 @@ export function DataTablePaginator<TData>({
             variant="outline"
             className="h-8 w-8 p-0"
             title="Go to previous page"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            onClick={() => handleGotoPreviousPage()}
+            disabled={!page?.hasPrevious}
           >
             <span className="sr-only">Go to previous page</span>
             <ChevronLeftIcon />
@@ -140,8 +160,8 @@ export function DataTablePaginator<TData>({
             variant="outline"
             className="h-8 w-8 p-0"
             title="Go to next page"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            onClick={() => handleGotoNextPage()}
+            disabled={!page?.hasNext}
           >
             <span className="sr-only">Go to next page</span>
             <ChevronRightIcon />
@@ -151,8 +171,8 @@ export function DataTablePaginator<TData>({
             variant="outline"
             className="hidden h-8 w-8 p-0 lg:flex"
             title="Go to last page"
-            onClick={() => table.lastPage()}
-            disabled={!table.getCanNextPage()}
+            onClick={() => handleGotoLastPage()}
+            disabled={!page?.hasNext}
           >
             <span className="sr-only">Go to last page</span>
             <ChevronsRightIcon />
@@ -163,4 +183,4 @@ export function DataTablePaginator<TData>({
   )
 }
 
-DataTablePaginator.whyDidYouRender = true
+Paginator.whyDidYouRender = true

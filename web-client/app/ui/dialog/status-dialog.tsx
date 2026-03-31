@@ -84,7 +84,7 @@ import { Label } from "@/components/ui/label"
 import InputEx from "../ext/input-ex"
 import { Select, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
 import SelectTriggerEx from "../ext/select-ex"
-import { LinkableEntityQueryFilter, SeverityKind } from "@/app/model/schema"
+import { LinkableEntityQueryFilter, PageableInput, SeverityKind } from "@/app/model/schema"
 import { Checkbox } from "@/components/ui/checkbox"
 import LabelEx from "../ext/label-ex"
 import {
@@ -109,6 +109,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
+import { Paginator } from "../filter/paginator"
 
 const logger = new LoggerEx(dialog, "[StatusDialog] ")
 
@@ -223,6 +224,7 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
     return recordLinks.filter(link => link.otherRecordKind === otherRecordKind)
   }, [recordLinks, otherRecordKind])
   const [filter, setFilter] = useState<LinkableEntityQueryFilter>({})
+  const [pageSort, setPageSort] = useState<PageableInput>({pageNumber: 0, pageSize: 5})
   const [filterStatus, setFilterStatus] = useState(filter.status?.[0] ?? '')
   const [filterText, setFilterText] = useState('')
   const [filterAdvanced, setFilterAdvanced] = useState<boolean | "indeterminate">(false)
@@ -235,7 +237,7 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
   const [topicId, setTopicId] = useState<string>('')
   const auditResult = useQuery(READ_ENTITY_AUDIT, { variables: { id: record?.id ?? "0" } })
   const otherRecordsQuery = (otherRecordKind && getReadQuery(otherRecordKind)) ?? READ_ENTITY_LINKS // A dummy query.
-  const otherRecordsResult = useQuery(otherRecordsQuery, { variables: { filter }, skip: !otherRecordKind })
+  const otherRecordsResult = useQuery(otherRecordsQuery, { variables: { filter, pageSort }, skip: !otherRecordKind })
   const [otherRecordsFieldName] = useMemo(() => otherRecordsQuery ? introspect(otherRecordsQuery, OperationTypeNode.QUERY) : '', [otherRecordsQuery])
   const [createLinkOp, createLinkResult] = useMutation(CREATE_ENTITY_LINK, { refetchQueries: [READ_ENTITY_AUDIT/*otherRecordsQuery*/] })
   const [updateLinkOp, updateLinkResult] = useMutation(UPDATE_ENTITY_LINK, { refetchQueries: [/*otherRecordsQuery*/] })
@@ -273,23 +275,25 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
     return lineCount(fuzzySearchValue)
   }, [record, fuzzySearchField])
 
-  const otherRecordsRaw = useMemo(() => {
+  const otherRecordsPage = useMemo(() => {
     const data = (otherRecordsResult?.loading
       ? otherRecordsResult.previousData
       : otherRecordsResult.data) as QueryResult<IPage<ILinkableEntity>>
     let otherRecordsPage = data && otherRecordsFieldName
       ? data[otherRecordsFieldName]
       : undefined
-    return otherRecordsPage?.content ?? []
+    return otherRecordsPage
   }, [otherRecordsResult, otherRecordsFieldName])
 
-  const otherRecords = useMemo(() => {
-    // Filter out records which are already linked
-    const otherRecords = otherRecordKind === "Topic" ? flatten(undefined, otherRecordsRaw, []) : otherRecordsRaw
-    return otherRecords.filter(
-      r => filteredRecordLinks.findIndex(
-        l => l.otherRecordId == r.id) == -1) ?? []
-  }, [otherRecordsRaw, otherRecordKind, filteredRecordLinks])
+  const otherRecords = useMemo(() => otherRecordsPage?.content ?? [], [otherRecordsPage])
+  const otherRecordsUnlinkedCount = useMemo(() => {
+    let counter = 0
+    otherRecords.map(otherRecord => {
+      if (filteredRecordLinks.findIndex(l => l.otherRecordId == otherRecord.id) == -1)
+        counter++
+    })
+    return counter
+  }, [otherRecords, filteredRecordLinks])
 
   const otherRecordId = otherRecord?.id
   const otherRecordLabel = useMemo(() => getRecordLabel(otherRecordKind, otherRecord) ?? '', [otherRecordKind, otherRecord])
@@ -300,8 +304,8 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
   // When otherRecordKind === "Topic", gather a set containing IDs of linked topics, their ancestors and descendants.
   // If the set includes otherRecord.id, disable the 'Link' button.
   const topicAxis = useMemo(() => {
-    return otherRecordKind === "Topic" ? getTopicAxis(otherRecordsRaw, filteredRecordLinks) : EMPTY_SET
-  }, [otherRecordKind, otherRecordsRaw, filteredRecordLinks])
+    return otherRecordKind === "Topic" ? getTopicAxis(otherRecords, filteredRecordLinks) : EMPTY_SET
+  }, [otherRecordKind, otherRecords, filteredRecordLinks])
 
   const handlePrevious = useCallback(() => {
     switch (statusDialogItem) {
@@ -357,7 +361,9 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
       logger.trace("updateFilter from %o to %o", filter, newFilter)
       setFilter(newFilter)
     }
-  }, [fuzzySearchSupported, record, recordKind, filter, setFilter])
+    if (pageSort.pageNumber != 0)
+      setPageSort({pageNumber: 0, pageSize: pageSort.pageSize})
+  }, [fuzzySearchSupported, record, recordKind, filter, setFilter, pageSort, setPageSort])
 
   const getSelectedLink = useCallback((linkId?: string): RecordLink | null => {
     linkId ??= selectedLinkId
@@ -644,7 +650,7 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
           className="w-35 bg-blue-500 text-md"
           type="button"
           variant="default"
-          disabled={!record}
+          disabled={!hasAuthority("UPD") || !record}
           onClick={() => setStatusDialogItem(LINK_MANAGER)}
           help={`Manage links for ${recordLabel}`}>
           Manage...
@@ -958,7 +964,7 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
                     </fieldset>
                     <div className="flex flex-col">
                       <fieldset className="grow border rounded-md ml-1 p-2 gap-2">
-                        <legend>&nbsp;{`Search for ${otherRecordKind ?? "record"}s to link (${(otherRecords?.length ?? 0).toLocaleString()})`}&nbsp;</legend>
+                        <legend>&nbsp;{`Search for ${otherRecordKind ?? "record"}s to link (${otherRecordsUnlinkedCount.toLocaleString()} of ${(otherRecords?.length ?? 0).toLocaleString()} on this page)`}&nbsp;</legend>
                         <div className="flex items-center gap-2 mb-2">
                           <Select
                             value={filterStatus ?? ''}
@@ -1081,7 +1087,7 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
                               <ComboboxEmpty>(No item matches)</ComboboxEmpty>
                               <ComboboxList>
                                 {otherRecord => (
-                                  <ComboboxItem key={otherRecord.id} value={otherRecord}>
+                                  <ComboboxItem key={otherRecord.id} value={otherRecord} disabled={filteredRecordLinks.findIndex(l => l.otherRecordId == otherRecord.id) != -1}>
                                     {getRecordLabel(otherRecordKind, otherRecord as ITrackedEntity)}
                                   </ComboboxItem>
                                 )}
@@ -1102,6 +1108,10 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
                           >
                             Link
                           </ButtonEx>
+                        </div>
+                        <div className="flex justify-end">
+                          <Paginator page={otherRecordsPage} pageSort={pageSort} setPageSort={setPageSort} />
+                          <div className="w-29" />
                         </div>
                       </fieldset>
                       <fieldset className="flex border rounded-md ml-1 p-2 gap-2">
