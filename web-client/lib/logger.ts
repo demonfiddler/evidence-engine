@@ -20,7 +20,16 @@
 'use client'
 
 import { anything } from '@/types/types'
-import log, { LogLevel, LogLevelNumbers } from 'loglevel'
+import log, { Logger, LogLevelNumbers } from 'loglevel'
+
+const LogLevel = {
+    TRACE: 0,
+    DEBUG: 1,
+    INFO: 2,
+    WARN: 3,
+    ERROR: 4,
+    SILENT: 5,
+}
 
 /** A logger for use by layouts. */
 export const layout = log.getLogger("Layout")
@@ -46,7 +55,7 @@ export const utility = log.getLogger("Utility")
  */
 export class LoggerEx {
 
-  private log: log.Logger
+  private logger: Logger
   private prefix: string
 
   /**
@@ -54,37 +63,40 @@ export class LoggerEx {
    * @param logger The logger to wrap.
    * @param prefix The prefix to prepend to all messages.
    */
-  constructor(logger: log.Logger, prefix: string) {
-    this.log = logger
+  constructor(logger: Logger, prefix: string) {
+    this.logger = logger
     this.prefix = prefix
   }
 
-  get level() : LogLevel { return this.log.levels}
-  set level(level: LogLevelNumbers) { this.log.setLevel(level) }
+  get level() : LogLevelNumbers { return this.logger.getLevel()}
+  set level(level: LogLevelNumbers) { this.logger.setLevel(level) }
 
   trace(msg: string, ...args: anything[]) {
-    if (this.log.getLevel() <= log.levels.TRACE)
-      this.log.trace("%s" + msg, this.prefix, ...args)
+    // NOTE: logger.trace(...) produces no console output.
+    if (this.level <= LogLevel.TRACE)
+      this.logger.debug("%s" + msg, this.prefix, ...args)
   }
 
   debug(msg: string, ...args: anything[]) {
-    if (this.log.getLevel() <= log.levels.DEBUG)
-      this.log.debug("%s" + msg, this.prefix, ...args)
+    if (this.level <= LogLevel.DEBUG)
+      this.logger.debug("%s" + msg, this.prefix, ...args)
   }
 
   info(msg: string, ...args: anything[]) {
-    if (this.log.getLevel() <= log.levels.INFO)
-      this.log.info("%s" + msg, this.prefix, ...args)
+    if (this.level <= LogLevel.INFO)
+      this.logger.info("%s" + msg, this.prefix, ...args)
   }
 
   warn(msg: string, ...args: anything[]) {
-    if (this.log.getLevel() <= log.levels.WARN)
-      this.log.warn("%s" + msg, this.prefix, ...args)
+    // NOTE: logger.warn(...) produces no console output.
+    if (this.level <= LogLevel.WARN)
+      this.logger.warn("%s" + msg, this.prefix, ...args)
   }
 
   error(msg: string, ...args: anything[]) {
-    if (this.log.getLevel() <= log.levels.ERROR)
-      this.log.error("%s" + msg, this.prefix, ...args)
+    // NOTE: logger.error(...) produces no console output.
+    if (this.level <= LogLevel.ERROR)
+      this.logger.error("%s" + msg, this.prefix, ...args)
   }
 
   silent(msg: string, ...args: anything[]) {
