@@ -109,7 +109,7 @@ export default function CommentsDialog({
   logger.debug("render: targetKind='%s', targetId='%s', targetLabel='%s'", targetKind, targetId, targetLabel)
 
   const { user, hasAuthority } = useAuth()
-  const {commentsDialogOpen, setCommentsDialogOpen} = useContext(GlobalContext)
+  const {commentsDialogOpen, setCommentsDialogOpen, trackingDetailsOpen} = useContext(GlobalContext)
   const [commentFilterOpen, setCommentFilterOpen] = useState(false)
   const [comment, setComment] = useState<Comment>()
   const [parent, setParent] = useState<Comment>()
@@ -131,7 +131,8 @@ export default function CommentsDialog({
         filter,
         pageSort,
       },
-      skip: !commentsDialogOpen
+      // This doesn't seem to work - Apollo bug?
+      skip: !trackingDetailsOpen || !commentsDialogOpen
     }
   )
   const [createOp, createResult] = useMutation(CREATE_COMMENT, { refetchQueries: [READ_OWNED_COMMENTS] })
@@ -156,7 +157,7 @@ export default function CommentsDialog({
       logger.debug("effect1: closing Comments dialog as Comments page is now displayed")
       setCommentsDialogOpen(false)
     }
-  }, [targetKind])
+  }, [commentsDialogOpen, targetKind])
   useEffect(() => {
     if (targetId !== prevTargetId.current) {
       logger.trace("effect2: targetId has changed from '%s' to '%s'", prevTargetId.current, targetId)

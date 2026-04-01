@@ -235,9 +235,9 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
   const [thisRecordLocations, setThisRecordLocations] = useState<string>('')
   const [otherRecordLocations, setOtherRecordLocations] = useState<string>('')
   const [topicId, setTopicId] = useState<string>('')
-  const auditResult = useQuery(READ_ENTITY_AUDIT, { variables: { id: record?.id ?? "0" } })
+  const auditResult = useQuery(READ_ENTITY_AUDIT, { variables: { id: record?.id }, skip: !statusDialogOpen || !record })
   const otherRecordsQuery = (otherRecordKind && getReadQuery(otherRecordKind)) ?? READ_ENTITY_LINKS // A dummy query.
-  const otherRecordsResult = useQuery(otherRecordsQuery, { variables: { filter, pageSort }, skip: !otherRecordKind })
+  const otherRecordsResult = useQuery(otherRecordsQuery, { variables: { filter, pageSort }, skip: !statusDialogOpen || !otherRecordKind })
   const [otherRecordsFieldName] = useMemo(() => otherRecordsQuery ? introspect(otherRecordsQuery, OperationTypeNode.QUERY) : '', [otherRecordsQuery])
   const [createLinkOp, createLinkResult] = useMutation(CREATE_ENTITY_LINK, { refetchQueries: [READ_ENTITY_AUDIT/*otherRecordsQuery*/] })
   const [updateLinkOp, updateLinkResult] = useMutation(UPDATE_ENTITY_LINK, { refetchQueries: [/*otherRecordsQuery*/] })
