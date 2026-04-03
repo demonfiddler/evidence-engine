@@ -29,12 +29,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/components/ui/select"
 import StandardDetails from "./standard-details"
 import DetailActions, { DetailMode, DetailState } from "./detail-actions"
 import { Dispatch, SetStateAction, useMemo } from "react"
@@ -43,10 +37,12 @@ import { TopicFieldValues } from "../validators/topic"
 import { FormActionHandler } from "@/hooks/use-page-logic"
 import { flatten } from "@/lib/utils"
 import InputEx from "../ext/input-ex"
-import SelectTriggerEx from "../ext/select-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
 import { detail, LoggerEx } from "@/lib/logger"
-import { NotebookTabsIcon } from "lucide-react"
+import { NotebookTabsIcon, RotateCwIcon } from "lucide-react"
+import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
+import { InputGroupAddon } from "@/components/ui/input-group"
+import Help from "../misc/help"
 
 const logger = new LoggerEx(detail, "[TopicDetails] ")
 
@@ -85,6 +81,16 @@ export default function TopicDetails(
     // A topic can't be its own ancestor, so exclude this record and all of its descendants.
     return flatten(record, topics, [])
   }, [topics, record])
+
+  const topicsById = useMemo(() => {
+    return Object.fromEntries(
+      flatTopics.map(t => [t.id, t])
+    )
+  }, [flatTopics])
+  const parentId = form.getValues().parentId
+  const selectedParentTopic = parentId
+  ? topicsById[parentId] ?? null
+  : null
 
   return (
     <fieldset className="border shadow-lg rounded-md">
@@ -154,46 +160,44 @@ export default function TopicDetails(
               render={({ field }) => (
                 <FormItem className="col-span-2">
                   <FormLabel htmlFor="parentId">Parent</FormLabel>
-                  <Select
+                  <Combobox
                     disabled={!updating}
-                    value={field.value}
-                    onValueChange={field.onChange}
+                    items={flatTopics}
+                    itemToStringValue={t => t.id}
+                    itemToStringLabel={t => t.path}
+                    value={selectedParentTopic}
+                    onValueChange={t => field.onChange(t?.id ?? null)}
                   >
-                    <FormControl>
-                      <SelectTriggerEx
-                        id="parentId"
-                        outerClassName="col-span-4"
-                        className="grow"
-                        help="The parent topic, if any"
-                      >
-                        <SelectValue className="col-span-4 w-full" placeholder="Specify parent" />
-                      </SelectTriggerEx>
-                    </FormControl>
-                    <SelectContent>
-                      {
-                        record?.parentId
-                        ? (
-                          <SelectItem
-                            key="0"
-                            value="0"
-                          >
-                            <span>-Clear Selection-</span>
-                          </SelectItem>
-                        )
-                        : null
-                      }
-                      {
-                        flatTopics.map(topic => (
-                          <SelectItem
-                            key={topic.id ?? ''}
-                            value={topic.id ?? ''}
-                          >
-                            {`Topic #${topic.id}: ${topic.path}`}
-                          </SelectItem>
-                        ))
-                      }
-                    </SelectContent>
-                  </Select>
+                    <ComboboxInput
+                      id="parentId"
+                      placeholder="Select a parent topic"
+                      readOnly={!updating}
+                      showClear
+                    >
+                      <InputGroupAddon align="inline-end">
+                        {/* <Button
+                          className="w-6 h-6"
+                          type="button"
+                          variant="ghost"
+                          onClick={() => topicsResult.refetch()}
+                          title="Refresh the list of topics"
+                        >
+                          <RotateCwIcon className="w-6 h-6" />
+                        </Button> */}
+                        <Help text="The parent topic, of which this is a direct sub-topic" />
+                      </InputGroupAddon>
+                    </ComboboxInput>
+                    <ComboboxContent>
+                      <ComboboxEmpty>-No topics found-</ComboboxEmpty>
+                      <ComboboxList>
+                        {t => (
+                          <ComboboxItem key={t.id} value={t}>
+                            {t.path}
+                          </ComboboxItem>
+                        )}
+                      </ComboboxList>
+                    </ComboboxContent>
+                  </Combobox>
                   <FormMessage />
                 </FormItem>
               )}

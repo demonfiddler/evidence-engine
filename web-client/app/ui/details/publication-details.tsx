@@ -32,22 +32,14 @@ import {
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn, formatDate } from "@/lib/utils"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/components/ui/select"
-import rawPublicationKinds from "@/data/publication-kinds.json" assert {type: 'json'}
 import Journal from "@/app/model/Journal"
 import StandardDetails from "./standard-details"
 import DetailActions, { DetailMode, DetailState } from "./detail-actions"
-import { Dispatch, SetStateAction, useState } from "react"
+import { Dispatch, SetStateAction, useMemo, useState } from "react"
 import { useFormContext } from "react-hook-form"
 import { PublicationFieldValues } from "../validators/publication"
 import { FormActionHandler } from "@/hooks/use-page-logic"
 import InputEx from "../ext/input-ex"
-import SelectTriggerEx from "../ext/select-ex"
 import TextareaEx from "../ext/textarea-ex"
 import ButtonEx from "../ext/button-ex"
 import LinkEx from "../ext/link-ex"
@@ -58,15 +50,16 @@ import { useQuery } from "@apollo/client/react"
 import { READ_JOURNALS } from "@/lib/graphql-queries"
 import IPage from "@/app/model/IPage"
 import { QueryResult } from "@/lib/graphql-utils"
-import { CalendarIcon, NotebookTabsIcon } from "lucide-react"
+import { CalendarIcon, NotebookTabsIcon, RotateCwIcon } from "lucide-react"
+import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
+import { publicationKinds, publicationKindsByKind } from "@/data/publication-kinds"
+import { InputGroupAddon } from "@/components/ui/input-group"
+import Help from "../misc/help"
+import { Button } from "@/components/ui/button"
 
 const logger = new LoggerEx(detail, "[PublicationDetails] ")
-
-type PublicationKind = {
-  kind: string
-  label: string
-}
-const publicationKinds = rawPublicationKinds as unknown as PublicationKind[]
+const EMPTY_JOURNALS = [] as Journal[]
+const JOURNAL_OPTIONS = {variables: {pageSort: {sort: {orders: [{property: "title"}]}}}}
 
 export default function PublicationDetails(
   {
@@ -86,15 +79,22 @@ export default function PublicationDetails(
   const [dateOpen, setDateOpen] = useState(false)
   const [accessedOpen, setAccessedOpen] = useState(false)
   const { updating } = state
-  const journalsResult = useQuery(READ_JOURNALS)
+  const journalsResult = useQuery(READ_JOURNALS, JOURNAL_OPTIONS)
   const journalsData = (journalsResult.loading
     ? journalsResult.previousData
     : journalsResult.data) as QueryResult<IPage<Journal>>
-  const rawJournals = journalsData
-    ? journalsData.journals
-    : undefined
-  const journals = rawJournals?.content ?? []
+  const journals = journalsData?.journals?.content ?? EMPTY_JOURNALS
+  const journalsById = useMemo(() => {
+    return Object.fromEntries(
+      journals.map(p => [p.id, p])
+    )
+  }, [journals])
+  const journalId = form.getValues().journalId
+  const selectedJournal = journalId ? journalsById[journalId] ?? null : null
 
+  const kind = form.getValues().kind
+  const selectedPublicationKind = kind ? publicationKindsByKind[kind] ?? null : null
+  
   return (
     <fieldset className="border shadow-lg rounded-md">
       <legend className="text-lg">&nbsp;Publication Details&nbsp;</legend>
@@ -201,31 +201,35 @@ export default function PublicationDetails(
               render={({ field }) => (
                 <FormItem className="col-start-1">
                   <FormLabel htmlFor="kind">Kind</FormLabel>
-                  <Select
+                  <Combobox
                     disabled={!updating}
-                    value={field.value}
-                    onValueChange={field.onChange}
+                    items={publicationKinds}
+                    itemToStringValue={k => k.kind}
+                    itemToStringLabel={k => k.label}
+                    value={selectedPublicationKind}
+                    onValueChange={k => field.onChange(k?.kind ?? null)}
                   >
-                    <FormControl>
-                      <SelectTriggerEx
-                        id="kind"
-                        className="w-full"
-                        help="The kind of publication (corresponds to the RIS 'TY' field)"
-                      >
-                        <SelectValue placeholder="Specify kind" />
-                      </SelectTriggerEx>
-                    </FormControl>
-                    <SelectContent>
-                      {
-                        publicationKinds.map(kind =>
-                          <SelectItem
-                            key={kind.kind?.toString() ?? ''}
-                            value={kind.kind?.toString() ?? ''}>
-                            {kind.label}
-                          </SelectItem>)
-                      }
-                    </SelectContent>
-                  </Select>
+                    <ComboboxInput
+                      id="kind"
+                      placeholder="Select a publication kind"
+                      readOnly={!updating}
+                      showClear
+                    >
+                      <InputGroupAddon align="inline-end">
+                        <Help text="The kind of publication (corresponds to the RIS 'TY' field)" />
+                      </InputGroupAddon>
+                    </ComboboxInput>
+                    <ComboboxContent>
+                      <ComboboxEmpty>-No publication kinds found-</ComboboxEmpty>
+                      <ComboboxList>
+                        {k => (
+                          <ComboboxItem key={k.kind} value={k}>
+                            {k.label}
+                          </ComboboxItem>
+                        )}
+                      </ComboboxList>
+                    </ComboboxContent>
+                  </Combobox>
                   <FormMessage />
                 </FormItem>
               )}
@@ -236,31 +240,44 @@ export default function PublicationDetails(
               render={({ field }) => (
                 <FormItem className="col-span-2">
                   <FormLabel htmlFor="journal">Journal</FormLabel>
-                  <Select
+                  <Combobox
                     disabled={!updating}
-                    value={field.value}
-                    onValueChange={field.onChange}
+                    items={journals}
+                    itemToStringValue={j => j.id}
+                    itemToStringLabel={j => j.title}
+                    value={selectedJournal}
+                    onValueChange={p => field.onChange(p?.id ?? null)}
                   >
-                    <FormControl>
-                      <SelectTriggerEx
-                        id="journal"
-                        className="w-full"
-                        help="The journal or series containing the publication">
-                        <SelectValue className="w-full" placeholder="Specify journal" />
-                      </SelectTriggerEx>
-                    </FormControl>
-                    <SelectContent>
-                      {
-                        journals.map(journal => (
-                          <SelectItem
-                            key={journal.id?.toString() ?? ''}
-                            value={journal.id?.toString() ?? ''}>
-                            {journal.title}
-                          </SelectItem>
-                        ))
-                      }
-                    </SelectContent>
-                  </Select>
+                    <ComboboxInput
+                      id="journalId"
+                      placeholder="Select a journal"
+                      readOnly={!updating}
+                      showClear
+                    >
+                      <InputGroupAddon align="inline-end">
+                        <Button
+                          className="w-6 h-6"
+                          type="button"
+                          variant="ghost"
+                          onClick={() => journalsResult.refetch()}
+                          title="Refresh the list of journals"
+                        >
+                          <RotateCwIcon className="w-6 h-6" />
+                        </Button>
+                        <Help text="The journal or series containing the publication" />
+                      </InputGroupAddon>
+                    </ComboboxInput>
+                    <ComboboxContent>
+                      <ComboboxEmpty>-No journals found-</ComboboxEmpty>
+                      <ComboboxList>
+                        {j => (
+                          <ComboboxItem key={j.id} value={j}>
+                            {j.title}
+                          </ComboboxItem>
+                        )}
+                      </ComboboxList>
+                    </ComboboxContent>
+                  </Combobox>
                   <FormMessage />
                 </FormItem>
               )}
@@ -295,6 +312,7 @@ export default function PublicationDetails(
                     <PopoverTrigger id="date" asChild>
                       <FormControl>
                         <ButtonEx
+                          type="button"
                           variant={"outline"}
                           disabled={!updating}
                           className={cn("grow justify-start text-left font-normal",
@@ -451,6 +469,7 @@ export default function PublicationDetails(
                         <ButtonEx
                           className={cn("grow justify-start text-left font-normal",
                             (!record || !record.date) && "text-muted-foreground")}
+                          type="button"
                           variant={"outline"}
                           disabled={!updating}
                           help="The date the publication was last accessed by contributor"

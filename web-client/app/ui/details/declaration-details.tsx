@@ -38,29 +38,22 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select"
-import Country from "@/app/model/Country"
-import rawCountries from "@/data/countries.json" assert {type: 'json'}
-import StandardDetails from "./standard-details"
+import { detail, LoggerEx } from "@/lib/logger"
+import ButtonEx from "../ext/button-ex"
+import CheckboxEx from "../ext/checkbox-ex"
+import CountryCombobox from "../ext/country-combobox"
 import DetailActions, { DetailMode, DetailState } from "./detail-actions"
+import InputEx from "../ext/input-ex"
+import LinkEx from "../ext/link-ex"
+import SelectTriggerEx from "../ext/select-ex"
+import StandardDetails from "./standard-details"
+import StarRatingBasicEx from "../ext/star-rating-ex"
+import TextareaEx from "../ext/textarea-ex"
 import { Dispatch, SetStateAction, useState } from "react"
 import { useFormContext } from "react-hook-form"
 import { DeclarationFieldValues } from "../validators/declaration"
 import { FormActionHandler } from "@/hooks/use-page-logic"
-import InputEx from "../ext/input-ex"
-import ButtonEx from "../ext/button-ex"
-import SelectTriggerEx from "../ext/select-ex"
-import LinkEx from "../ext/link-ex"
-import CheckboxEx from "../ext/checkbox-ex"
-import TextareaEx from "../ext/textarea-ex"
-import StarRatingBasicEx from "../ext/star-rating-ex"
-import { detail, LoggerEx } from "@/lib/logger"
 import { CalendarIcon, NotebookTabsIcon } from "lucide-react"
-
-const countries = rawCountries as unknown as Country[]
-// import { useQuery } from "@apollo/client/react"
-// import { READ_COUNTRIES } from "@/lib/graphql-queries"
-// import IPage from "@/app/model/IPage"
-// import { QueryResult } from "@/lib/graphql-utils"
 
 const logger = new LoggerEx(detail, "[DeclarationDetails] ")
 
@@ -143,6 +136,7 @@ export default function DeclarationDetails(
                     <PopoverTrigger id="date" asChild>
                       <FormControl>
                         <ButtonEx
+                          type="button"
                           variant={"outline"}
                           disabled={!updating}
                           className={cn("grow justify-start text-left font-normal",
@@ -280,28 +274,11 @@ export default function DeclarationDetails(
               render={({ field }) => (
                 <FormItem>
                   <FormLabel htmlFor="country">Country</FormLabel>
-                  <Select
+                  <CountryCombobox
+                    field={field}
                     disabled={!updating}
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <FormControl>
-                      <SelectTriggerEx
-                        id="country"
-                        className="w-full"
-                        disabled={!updating}
-                        help="The country in which the declaration was issued"
-                      >
-                        <SelectValue placeholder="Specify country" />
-                      </SelectTriggerEx>
-                    </FormControl>
-                    <SelectContent>
-                      {
-                        countries.map(country =>
-                          <SelectItem key={country.alpha_2} value={country.alpha_2}>{country.common_name}</SelectItem>)
-                      }
-                    </SelectContent>
-                  </Select>
+                    help="The country of origin or with which the declaration is primarily associated"
+                  />
                   <FormMessage />
                 </FormItem>
               )}

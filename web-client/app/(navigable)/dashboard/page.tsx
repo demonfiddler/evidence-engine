@@ -238,6 +238,7 @@ export default function Dashboard() {
                 </div>
               </RadioGroup>
               <ButtonEx
+                type="button"
                 variant="ghost"
                 help="Refresh the table using the same filter settings."
                 onClick={() => refetch()}

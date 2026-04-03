@@ -75,6 +75,7 @@ export default function MyAccount({className} : {className: string}) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
+            type="button"
             variant="ghost"
             className="w-8 h-8 flex items-center justify-center"
             disabled={!user}

@@ -29,9 +29,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Select, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
-import rawCountries from "@/data/countries.json" assert {type: 'json'}
-import Country from "@/app/model/Country"
+import CountryCombobox from "../ext/country-combobox"
 import StandardDetails from "./standard-details"
 import DetailActions, { DetailMode, DetailState } from "./detail-actions"
 import { Dispatch, SetStateAction } from "react"
@@ -40,15 +38,12 @@ import { PersonFieldValues } from "../validators/person"
 import { FormActionHandler } from "@/hooks/use-page-logic"
 import InputEx from "../ext/input-ex"
 import TextareaEx from "../ext/textarea-ex"
-import SelectTriggerEx from "../ext/select-ex"
 import CheckboxEx from "../ext/checkbox-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
 import { detail, LoggerEx } from "@/lib/logger"
 import { NotebookTabsIcon } from "lucide-react"
 
 const logger = new LoggerEx(detail, "[PersonDetails] ")
-
-const countries = rawCountries as unknown as Country[]
 
 export default function PersonDetails(
   {
@@ -291,27 +286,11 @@ export default function PersonDetails(
               render={({ field }) => (
                 <FormItem className="col-start-1">
                   <FormLabel htmlFor="country">Country</FormLabel>
-                  <Select
+                  <CountryCombobox
+                    field={field}
                     disabled={!updating}
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <FormControl>
-                      <SelectTriggerEx
-                        id="country"
-                        className="w-full"
-                        help="The country with which the person is primarily associated"
-                      >
-                        <SelectValue placeholder="Specify country" />
-                      </SelectTriggerEx>
-                    </FormControl>
-                    <SelectContent>
-                      {
-                        countries.map(country =>
-                          <SelectItem key={country.alpha_2} value={country.alpha_2}>{country.common_name}</SelectItem>)
-                      }
-                    </SelectContent>
-                  </Select>
+                    help="The country with which the person is primarily associated"
+                  />
                   <FormMessage />
                 </FormItem>
               )}

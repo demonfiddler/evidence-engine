@@ -145,6 +145,7 @@ export default function TrackingDetails(
           <ButtonEx 
             outerClassName="place-self-center"
             className="w-35 bg-blue-500 text-white text-md"
+            type="button"
             variant="outline"
             disabled={!hasAuthority("UPD") || !record}
             help={

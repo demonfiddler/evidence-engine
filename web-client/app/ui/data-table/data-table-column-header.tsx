@@ -71,6 +71,7 @@ export default function DataTableColumnHeader<TData, TValue>({
             {
               !column.getIsPinned()
               ? <Button
+                type="button"
                 variant="ghost"
                 className={`w-2 h-full relative ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
                 title="Drag to reorder columns"
@@ -83,6 +84,7 @@ export default function DataTableColumnHeader<TData, TValue>({
             {
               column.getCanSort()
               ? <Button
+                type="button"
                 variant="ghost"
                 size="sm"
                 className="-ml-3 h-8"

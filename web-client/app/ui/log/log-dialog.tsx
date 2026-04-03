@@ -101,6 +101,7 @@ export default function LogDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <ButtonEx
+          type="button"
           outerClassName={cn("place-self-center", className)}
           className="w-35 bg-blue-500 text-md"
           disabled={disabled}
@@ -132,7 +133,12 @@ export default function LogDialog({
           loadingPathWithSearchParams={loadingPathWithSearchParams}
         />
         <DialogFooter>
-          <Button onClick={() => setOpen(false)}>Close</Button>
+          <Button
+            type="button"
+            onClick={() => setOpen(false)}
+          >
+            Close
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

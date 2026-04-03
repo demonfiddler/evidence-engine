@@ -380,6 +380,7 @@ export default function CommentsDialog({
     <Sheet modal={false} open={commentsDialogOpen} onOpenChange={setCommentsDialogOpen}>
       <SheetTrigger asChild>
         <ButtonEx
+          type="button"
           outerClassName={cn("place-self-center", className)}
           className="w-35 bg-blue-500 text-md"
           disabled={disabled}
@@ -568,7 +569,12 @@ export default function CommentsDialog({
                             <span className="font-bold text-blue-400">Edit comment</span>
                             <span>{comment.text}</span>
                           </div>
-                          <Button className="" variant="ghost" title="Cancel" onClick={handleCancel}>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            title="Cancel"
+                            onClick={handleCancel}
+                          >
                             <XIcon className="size-6" />
                           </Button>
                         </div>
@@ -582,7 +588,12 @@ export default function CommentsDialog({
                             <span className="font-bold text-blue-400">Reply to {formatName(parent.createdByUser, false)}</span>
                             <span className="text-nowrap overflow-hidden">{parent.text}</span>
                           </div>
-                          <Button className="" variant="ghost" title="Cancel" onClick={handleCancel}>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            title="Cancel"
+                            onClick={handleCancel}
+                          >
                             <XIcon className="size-6" />
                           </Button>
                         </div>
@@ -598,6 +609,7 @@ export default function CommentsDialog({
                       />
                       <Button
                         className="w-14 h-14"
+                        type="button"
                         variant="ghost"
                         title="Send (Ctrl+Enter)"
                         disabled={!canSave()}

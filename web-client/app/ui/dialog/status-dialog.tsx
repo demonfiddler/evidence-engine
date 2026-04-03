@@ -172,6 +172,7 @@ function lineCount(s: string | undefined) {
 }
 
 const EMPTY_SET = new Set<string>()
+const DEFAULT_PAGESORT = {pageNumber: 0, pageSize: 5};
 
 /** Adds all ancestors of topicId to topicAxis. */
 function addAncestors(topicAxis: Set<string>, topicTrees: Topic[], topicId: string): boolean {
@@ -224,13 +225,13 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
     return recordLinks.filter(link => link.otherRecordKind === otherRecordKind)
   }, [recordLinks, otherRecordKind])
   const [filter, setFilter] = useState<LinkableEntityQueryFilter>({})
-  const [pageSort, setPageSort] = useState<PageableInput>({pageNumber: 0, pageSize: 5})
+  const [pageSort, setPageSort] = useState<PageableInput>(DEFAULT_PAGESORT)
   const [filterStatus, setFilterStatus] = useState(filter.status?.[0] ?? '')
   const [filterText, setFilterText] = useState('')
   const [filterAdvanced, setFilterAdvanced] = useState<boolean | "indeterminate">(false)
   const [filterFuzzy, setFilterFuzzy] = useState<boolean | "indeterminate">(false)
   const [filterRecordId, setFilterRecordId] = useState('')
-  const [selectedLinkId, setSelectedLinkId] = useState('')
+  const [selectedLink, setSelectedLink] = useState<RecordLink | null>(null)
   const [mode, setMode] = useState(VIEW)
   const [thisRecordLocations, setThisRecordLocations] = useState<string>('')
   const [otherRecordLocations, setOtherRecordLocations] = useState<string>('')
@@ -289,7 +290,7 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
   const otherRecordsUnlinkedCount = useMemo(() => {
     let counter = 0
     otherRecords.map(otherRecord => {
-      if (filteredRecordLinks.findIndex(l => l.otherRecordId == otherRecord.id) == -1)
+      if (filteredRecordLinks.findIndex(link => link.otherRecordId == otherRecord.id) == -1)
         counter++
     })
     return counter
@@ -329,28 +330,35 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
     }
   }, [statusDialogItem, setStatusDialogItem])
 
+  const refreshEditableFields = useCallback((selectedLink: RecordLink | null) => {
+    logger.trace("refreshEditableFields: selectedLink.id = '%s'", selectedLink?.id ?? '')
+    setThisRecordLocations(selectedLink?.thisLocations ?? '')
+    setOtherRecordLocations(selectedLink?.otherLocations ?? '')
+    setTopicId(selectedLink?.otherRecordKind == "Topic" ? selectedLink?.otherRecordId : '')
+  }, [setThisRecordLocations, setOtherRecordLocations, setTopicId])
+
   const handleNew = useCallback((otherRecordKind: LinkableEntityKind): void => {
     logger.trace("handleNew: otherRecordKind='%s'", otherRecordKind)
     setOtherRecordKind(otherRecordKind)
     setOtherRecord(null)
-    setSelectedLinkId('')
+    setSelectedLink(null)
     setStatusDialogItem(LINK_MANAGER)
     toast.info(`Use the search to find a link target ${otherRecordKind}`)
-  }, [setOtherRecordKind, setOtherRecord, setSelectedLinkId, setStatusDialogItem])
+  }, [setOtherRecordKind, setOtherRecord, setSelectedLink, setStatusDialogItem])
 
-  const updateFilter = useCallback((otherRecordKind: LinkableEntityKind | undefined, status: string, text: string,
-    advanced: boolean | "indeterminate", fuzzy: boolean | "indeterminate", recordId: string) => {
+  const updateFilter = useCallback((newOtherRecordKind: LinkableEntityKind | undefined, newStatus: string, newText: string,
+    newAdvanced: boolean | "indeterminate", newFuzzy: boolean | "indeterminate", newRecordId: string) => {
 
-    logger.trace("updateFilter: status='%s', text='%s', advanced=%s, fuzzy=%s, recordId='%s'", status, text, advanced, fuzzy, recordId)
+    logger.trace("updateFilter: status='%s', text='%s', advanced=%s, fuzzy=%s, recordId='%s'", newStatus, newText, newAdvanced, newFuzzy, newRecordId)
     const newFilter = {
-      status: status ? [status] : undefined,
-      text: text || undefined,
-      advancedSearch: text && advanced || undefined,
-      recordId: recordId || undefined,
-      parentId: otherRecordKind === "Topic" ? -1 : undefined,
+      status: newStatus ? [newStatus] : undefined,
+      text: newText || undefined,
+      advancedSearch: newText && newAdvanced || undefined,
+      recordId: newRecordId || undefined,
+      parentId: newOtherRecordKind === "Topic" ? -1 : undefined,
     } as LinkableEntityQueryFilter
-    if (fuzzy && fuzzySearchSupported && record && recordKind && otherRecordKind) {
-      const props = getRecordLinkProperties(recordKind, otherRecordKind)
+    if (newFuzzy && fuzzySearchSupported && record && recordKind && newOtherRecordKind) {
+      const props = getRecordLinkProperties(recordKind, newOtherRecordKind)
       if (props) {
         newFilter[props.otherRecordFuzzyProperty] = true
         newFilter[props.thisRecordKindProperty] = getEntityKind(recordKind)
@@ -360,20 +368,13 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
     if (!isEqual(newFilter as LinkableEntityQueryFilter, filter)) {
       logger.trace("updateFilter from %o to %o", filter, newFilter)
       setFilter(newFilter)
+
     }
-    if (pageSort.pageNumber != 0)
+    if (newOtherRecordKind !== otherRecordKind && pageSort.pageNumber != 0)
       setPageSort({pageNumber: 0, pageSize: pageSort.pageSize})
-  }, [fuzzySearchSupported, record, recordKind, filter, setFilter, pageSort, setPageSort])
+  }, [fuzzySearchSupported, record, recordKind, filter, setFilter, otherRecordKind, pageSort, setPageSort])
 
-  const getSelectedLink = useCallback((linkId?: string): RecordLink | null => {
-    linkId ??= selectedLinkId
-    if (!linkId)
-      return null;
-
-    return filteredRecordLinks.find(link => link.id == linkId) ?? null
-  }, [selectedLinkId, filteredRecordLinks])
-  const selectedLink = getSelectedLink(selectedLinkId)
-  logger.trace("selectedLinkId = '%s', selectedLink = %o", selectedLinkId, selectedLink)
+  logger.trace("selectedLink = %o", selectedLink)
 
   const isModified = useCallback(() => {
     // NOTE: when editing a new record, selectedLink is undefined.
@@ -400,21 +401,13 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
       }
   }, [thisRecordLocations, otherRecordLocations])
 
-  const refreshEditableFields = useCallback((linkId: string) => {
-    logger.trace("refreshEditableFields: linkId='%s'", linkId)
-    const selectedLink = getSelectedLink(linkId)
-    setThisRecordLocations(selectedLink?.thisLocations ?? '')
-    setOtherRecordLocations(selectedLink?.otherLocations ?? '')
-    setTopicId(selectedLink?.otherRecordKind == "Topic" ? selectedLink?.otherRecordId : '')
-  }, [getSelectedLink, setThisRecordLocations, setOtherRecordLocations, setTopicId])
-
   const handleOtherRecordKindChange = useCallback((otherRecordKind: LinkableEntityKind) => {
     logger.trace("handleOtherRecordKindChange: otherRecordKind='%s'", otherRecordKind)
     setOtherRecordKind(otherRecordKind)
     setOtherRecord(null)
-    setSelectedLinkId('')
+    setSelectedLink(null)
     updateFilter(otherRecordKind, filterStatus, filterText, filterAdvanced, filterFuzzy, filterRecordId)
-  }, [setOtherRecordKind, setOtherRecord, setSelectedLinkId, updateFilter, filterStatus, filterText, filterAdvanced, filterFuzzy, filterRecordId])
+  }, [setOtherRecordKind, setOtherRecord, setSelectedLink, updateFilter, filterStatus, filterText, filterAdvanced, filterFuzzy, filterRecordId])
 
   const handleStatusChange = useCallback((status: string) => {
     logger.trace("handleStatusChange: status='%s'", status)
@@ -465,14 +458,13 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
     logger.trace("handleLink")
     if (mode === VIEW) {
       toast.info(`Linking '${otherRecordLabel}'. Enter link locations then Save.`)
-      setSelectedLinkId('')
-      // setSelectedLink(null)
+      setSelectedLink(null)
       setThisRecordLocations('')
       setOtherRecordLocations('')
       setMode(CREATE)
       requestAnimationFrame(() => requestAnimationFrame(() => thisLocationsRef.current?.focus()))
     }
-  }, [setSelectedLinkId, setThisRecordLocations, setOtherRecordLocations, setMode, mode, otherRecordLabel])
+  }, [mode, otherRecordLabel, setSelectedLink, setThisRecordLocations, setOtherRecordLocations, setMode])
 
   const handleEdit = useCallback(() => {
     logger.trace("handleEdit")
@@ -504,12 +496,12 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
               })
             },
             onCompleted: (data) => {
-              const entityLink = (data as QueryResult<EntityLink>).createEntityLink
-              logger.trace("handleSave(create).completed: new EntityLink: %o", entityLink)
+              const newLink = (data as QueryResult<EntityLink>).createEntityLink
+              logger.trace("handleSave(create).completed: new EntityLink: %o", newLink)
               toast.info(`New link with '${otherRecordLabel}' created.`)
               setMode(VIEW)
               setOtherRecord(null)
-              setSelectedLinkId(entityLink.id ?? '')
+              setSelectedLink(recordLinks.find(link => link.id === newLink.id) ?? null)
             },
             onError: (error) => {
               toast.error(error.message)
@@ -548,6 +540,8 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
     createLinkOp,
     createInput,
     updateLinkOp,
+    setOtherRecord,
+    setSelectedLink,
   ])
 
   const handleCancel = useCallback(() => {
@@ -557,15 +551,15 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
           ? `link with record '${selectedLink?.otherRecordLabel}'`
           : "new record link"
         if (confirm(`Confirm discard changes to ${target}?`)) {
-          toast.info(`Cancelling ${mode} ...`)
-          refreshEditableFields(selectedLinkId)
+          refreshEditableFields(selectedLink)
           setMode(VIEW)
+          toast.info(`Cancelled ${mode} ...`)
         }
       } else {
         setMode(VIEW)
       }
     }
-  }, [mode, setMode, selectedLinkId, isModified, refreshEditableFields])
+  }, [mode, setMode, selectedLink, isModified, refreshEditableFields])
 
   const handleRelink = useCallback(() => {
     if (confirm(`Change target of link from ${selectedLink?.otherRecordLabel} to ${otherRecordLabel}?${otherRecordLocations ? "\n\nN.B. The 'Location(s) in other record' value will be retained but may not be appropriate to the new target record. Change it if necessary." : ""}`)) {
@@ -593,33 +587,29 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
   }, [selectedLink, record, otherRecordId, otherRecordLabel, thisRecordLocations, otherRecordLocations, updateLinkOp])
 
   const handleUnlink = useCallback(() => {
-    if (confirm(`Confirm delete link with record '${selectedLink?.otherRecordLabel}'?`)) {
-      toast.info(`Unlinking '${selectedLink?.otherRecordLabel}'...`)
-      deleteLinkOp({
-        variables: { entityLinkId: selectedLinkId },
-        onError: (error/*, clientOptions*/) => {
-          toast.error(error.message)
-        },
-      })
-    } else {
-      toast.info(`Cancelling unlink '${selectedLink?.otherRecordLabel}'...`)
+    if (selectedLink) {
+      if (confirm(`Confirm delete link with record '${selectedLink.otherRecordLabel}'?`)) {
+        toast.info(`Unlinking '${selectedLink.otherRecordLabel}'...`)
+        deleteLinkOp({
+          variables: { entityLinkId: selectedLink.id },
+          onError: (error/*, clientOptions*/) => {
+            toast.error(error.message)
+          },
+        })
+      } else {
+        toast.info(`Cancelling unlink '${selectedLink?.otherRecordLabel}'...`)
+      }
     }
-  }, [selectedLinkId, selectedLink, deleteLinkOp])
-
-  const handleSelectedLinkChange = useCallback((linkId: string) => {
-    setSelectedLinkId(linkId)
-    refreshEditableFields(linkId)
-    logger.trace("handleSelectedLinkChange('%s')", linkId)
-  }, [setSelectedLinkId, refreshEditableFields])
+  }, [selectedLink, deleteLinkOp])
 
   const prevRecord = useRef<ILinkableEntity>(undefined)
   useEffect(() => {
     if (record !== prevRecord.current) {
       if (record?.id !== prevRecord.current?.id)
-        handleSelectedLinkChange('')
+        setSelectedLink(null)
       prevRecord.current = record
     }
-  }, [record, handleSelectedLinkChange])
+  }, [record, setSelectedLink])
 
   const handleClose = useCallback(() => {
     setStatusDialogOpen(false)
@@ -643,16 +633,14 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
     })
   }, [updateStatusOp, record, recordLabel])
 
-  // logger.debug(`item: ${statusDialogItem}`)
-
   return (
     <Dialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
       <DialogTrigger asChild>
         <ButtonEx
-          outerClassName={cn("place-self-center", "")}
-          className="w-35 bg-blue-500 text-md"
           type="button"
           variant="default"
+          outerClassName={cn("place-self-center", "")}
+          className="w-35 bg-blue-500 text-md"
           disabled={!hasAuthority("UPD") || !record}
           onClick={() => setStatusDialogItem(LINK_MANAGER)}
           help={`Manage links for ${recordLabel}`}>
@@ -848,9 +836,9 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
                               </TableCell>
                               <TableCell className="text-center border">
                                 <Button
-                                  className="cursor-pointer"
                                   type="button"
                                   variant="outline"
+                                  className="cursor-pointer"
                                   onClick={() => handleNew(linkAuditEntry.linkedEntityKind)}
                                 >
                                   New...
@@ -888,9 +876,9 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
                                 </TableCell>
                                 <TableCell className="text-center border">
                                   <Button
-                                    className="cursor-pointer"
                                     type="button"
                                     variant="outline"
+                                    className="cursor-pointer"
                                     onClick={() => handleNew(linkAuditEntry.linkedEntityKind)}
                                   >
                                     New...
@@ -1070,12 +1058,11 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
                             itemToStringValue={otherRecord => getRecordLabel(otherRecordKind, otherRecord as ITrackedEntity) ?? ''}
                             itemToStringLabel={otherRecord => getRecordLabel(otherRecordKind, otherRecord as ITrackedEntity) ?? ''}
                             value={otherRecord}
-                            onValueChange={value => setOtherRecord(value)}
+                            onValueChange={setOtherRecord}
                           >
                             <ComboboxInput
                               className="truncate w-full max-w-213"
                               disabled={!otherRecordKind || mode !== VIEW}
-                              value={otherRecordLabel}
                               placeholder=
                               {
                                 otherRecordKind
@@ -1087,7 +1074,7 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
                               showClear
                             />
                             <ComboboxContent className="z-50 pointer-events-auto">
-                              <ComboboxEmpty>(No item matches)</ComboboxEmpty>
+                              <ComboboxEmpty>-No records found-</ComboboxEmpty>
                               <ComboboxList>
                                 {otherRecord => (
                                   <ComboboxItem key={otherRecord.id} value={otherRecord} disabled={filteredRecordLinks.findIndex(l => l.otherRecordId == otherRecord.id) != -1}>
@@ -1124,12 +1111,11 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
                           itemToStringValue={link => link.otherRecordLabel}
                           itemToStringLabel={link => link.otherRecordLabel}
                           value={selectedLink}
-                          onValueChange={link => handleSelectedLinkChange(link?.id ?? '')}
+                          onValueChange={setSelectedLink}
                         >
                           <ComboboxInput
                             className="truncate w-full max-w-213"
                             disabled={!record || !otherRecordKind || mode !== VIEW}
-                            value={selectedLink?.otherRecordLabel ?? ''}
                             placeholder=
                             {
                               otherRecordKind
@@ -1141,7 +1127,7 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
                             showClear
                           />
                           <ComboboxContent className="z-50 pointer-events-auto">
-                            <ComboboxEmpty>(No item matches)</ComboboxEmpty>
+                            <ComboboxEmpty>-No record links found-</ComboboxEmpty>
                             <ComboboxList>
                               {link => (
                                 <ComboboxItem key={link.id} value={link}>
@@ -1192,7 +1178,7 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
                       type="text"
                       readOnly={true}
                       disabled={!selectedLink && mode !== CREATE}
-                      value={selectedLinkId}
+                      value={selectedLink?.id ?? ''}
                       help="The database identifier of the selected record link"
                     />
                     <Label htmlFor="link-status">Status:</Label>
@@ -1322,7 +1308,6 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
                       type="text"
                       outerClassName="col-span-3"
                       readOnly={!allowLinking || mode === VIEW}
-                      // disabled={!record || selectedLink?.otherRecordKind == "Topic"}
                       disabled={!selectedLink && mode !== CREATE}
                       value={otherRecordLocations}
                       onChange={e => setOtherRecordLocations(e.target.value)}

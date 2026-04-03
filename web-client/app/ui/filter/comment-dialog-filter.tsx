@@ -42,6 +42,7 @@ import { QueryResult } from "@/lib/graphql-utils"
 import { CalendarIcon, ChevronDownIcon, RotateCwIcon } from "lucide-react"
 import InputEx from "../ext/input-ex"
 import Link from "next/link"
+import UserCombobox from "../ext/user-combobox"
 
 const logger = new LoggerEx(filter, "[CommentDialogFilter] ")
 
@@ -68,23 +69,23 @@ export default function CommentDialogFilter(
   const [toOpen, setToOpen] = useState(false)
 
   const updateFilter = useCallback((
-    status: string,
-    text: string,
-    advanced: boolean,
-    userId: string,
-    from: Date | undefined,
-    to: Date | undefined) => {
+    newStatus: string,
+    newText: string,
+    newAdvanced: boolean,
+    newUserId: string,
+    newFrom: Date | undefined,
+    newTo: Date | undefined) => {
 
-    logger.trace("updateFilter: targetId=%s, status=%s, text=%s, advanced=%s, userId=%s, from=%s, to=%s",
-      targetId, status, text, advanced, userId, from, to)
+    logger.trace("updateFilter: newTargetId=%s, newStatus=%s, newText=%s, newAdvanced=%s, newUserId=%s, newFrom=%s, newTo=%s",
+      targetId, newStatus, newText, newAdvanced, newUserId, newFrom, newTo)
     const newFilter = {
-      status: status ? [status] : undefined,
-      text: text || undefined,
-      advancedSearch: advanced || undefined,
+      status: newStatus ? [newStatus] : undefined,
+      text: newText || undefined,
+      advancedSearch: newAdvanced || undefined,
       targetId,
-      userId: userId || undefined,
-      from,
-      to,
+      userId: newUserId || undefined,
+      from: newFrom,
+      to: newTo,
     } as CommentQueryFilter
     if (!isEqual(newFilter as CommentQueryFilter, filter)) {
       logger.trace("updateFilter from %o to %o", filter, newFilter)
@@ -218,30 +219,17 @@ export default function CommentDialogFilter(
           </Select>
           : null
       }
-      <Select
+      <UserCombobox
+        id="cf-userId"
+        className="w-45"
         value={userId ?? ''}
         onValueChange={handleUserIdChange}
-      >
-        <SelectTriggerEx
-          id="cf-userId"
-          help="Filter the list to show only comments made by the selected user."
-        >
-          <SelectValue placeholder="User" />
-        </SelectTriggerEx>
-        <SelectContent>
-          {
-            userId
-              ? <SelectItem value="ALL">-Clear-</SelectItem>
-              : null
-          }
-          {
-            users?.map(user => <SelectItem key={user.id} value={user.id ?? ''}>{user.username}</SelectItem>)
-          }
-        </SelectContent>
-      </Select>
+        help="Filter the table to show only comments made by the selected user."
+      />
       <Popover open={fromOpen} onOpenChange={setFromOpen}>
         <PopoverTrigger id="cf-from" asChild>
           <ButtonEx
+            type="button"
             variant={"outline"}
             className="justify-start text-left font-normal"
             help="Filter the list to show only comments created or updated on or after the specified date."
@@ -268,6 +256,7 @@ export default function CommentDialogFilter(
       <Popover open={toOpen} onOpenChange={setToOpen}>
         <PopoverTrigger id="cf-to" asChild>
           <ButtonEx
+            type="button"
             variant={"outline"}
             className="justify-start text-left font-normal"
             help="Filter the list to show only comments created or updated on or before the specified date."
@@ -292,6 +281,7 @@ export default function CommentDialogFilter(
         </PopoverContent>
       </Popover>
       <ButtonEx
+        type="button"
         variant="outline"
         help="Refresh the table using the same filter and pagination settings."
         onClick={() => refetch()}
@@ -299,8 +289,9 @@ export default function CommentDialogFilter(
         <RotateCwIcon />
       </ButtonEx>
       <ButtonEx
-        outerClassName="flex-grow"
+        type="button"
         variant="outline"
+        outerClassName="flex-grow"
         onClick={handleClear}
         help="Clear all filters."
       >

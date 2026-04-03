@@ -124,7 +124,7 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
         const itemLabel = state.mode == "create" ? `new ${recordKind}` : recordLabel
         if (!confirm(`Confirm discard changes to ${itemLabel}?`))
           return
-        toast.info(`Cancelling ${state.mode}...`)
+        toast.info(`Cancelled ${state.mode}`)
       }
       onFormAction("reset")
       setMode("view")

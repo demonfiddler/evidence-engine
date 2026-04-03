@@ -198,13 +198,14 @@ export default function ExportDialog<T>({ recordKind }: { recordKind: RecordKind
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <ButtonEx
+          type="button"
           variant="ghost"
           help="Export (download) the table"
           title="Export (download) the table">
           <DownloadIcon />
         </ButtonEx>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-105">
         <DialogHeader>
           <DialogTitle><DownloadIcon className="inline" />&nbsp;Export {recordKind}s</DialogTitle>
           <DialogDescription>

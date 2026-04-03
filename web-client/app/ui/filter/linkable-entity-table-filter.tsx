@@ -265,6 +265,7 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
         />
         <ButtonEx
           id="refresh"
+          type="button"
           variant="outline"
           help="Refresh the table using the same filter and pagination settings."
           title="Refresh the table using the same filter and pagination settings."
@@ -274,8 +275,9 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
         </ButtonEx>
         <ButtonEx
           id="reset"
-          outerClassName="flex-grow"
+          type="button"
           variant="outline"
+          outerClassName="flex-grow"
           onClick={handleClear}
           help="Clear all filters"
         >

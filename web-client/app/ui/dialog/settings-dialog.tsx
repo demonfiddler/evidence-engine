@@ -56,7 +56,7 @@ export default function SettingsDialog(
 
   return open ? (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-105">
         <DialogHeader>
           <DialogTitle>
             <SettingsIcon className="inline" />&nbsp;Settings
@@ -66,7 +66,13 @@ export default function SettingsDialog(
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button type="button" className="w-20 justify-self-center" onClick={clearSettings}>Clear</Button>
+          <Button
+            type="button"
+            className="w-20 justify-self-center"
+            onClick={clearSettings}
+          >
+            Clear
+          </Button>
           <DialogClose asChild>
             <Button
               type="button"

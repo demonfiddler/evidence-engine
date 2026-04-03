@@ -21,14 +21,11 @@
 
 import ILinkableEntity from "@/app/model/ILinkableEntity"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { formatDateTime, getRecordLinks, RecordLink, getLinkLabel } from "@/lib/utils"
 import { LinkableEntityKind, RecordKind } from "@/app/model/RecordKinds"
 import { DetailState } from "./detail-actions"
-import Topic from "@/app/model/Topic"
 import LogDialog from "../log/log-dialog"
-import SelectTriggerEx from "../ext/select-ex"
 import InputEx from "../ext/input-ex"
 import { detail, LoggerEx } from "@/lib/logger"
 import StatusDialog from "../dialog/status-dialog"
@@ -38,10 +35,11 @@ import useLinkableEntityQueryFilter from "@/hooks/use-linkable-entity-query-filt
 import { LinkableEntityQueryFilter } from "@/app/model/schema"
 import { GlobalContext } from "@/lib/context"
 import Link from "next/link"
+import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
+import { InputGroupAddon } from "@/components/ui/input-group"
+import Help from "../misc/help"
 
 const logger = new LoggerEx(detail, "[LinkingDetails] ")
-
-const EMPTY = [] as Topic[]
 
 export default function LinkingDetails(
   {
@@ -62,12 +60,14 @@ export default function LinkingDetails(
   const [ otherRecordLocations, setOtherRecordLocations ] = useState<string>('')
   const recordLinks = useMemo(() => getRecordLinks(record), [record])
 
-  const getSelectedLink = useCallback((linkId?: string) : RecordLink | undefined => {
+  const recordLinksById = useMemo(() => {
+    return Object.fromEntries(
+      recordLinks.map(l => [l.id, l])
+    )
+  }, [recordLinks])
+  const getSelectedLink = useCallback((linkId?: string) : RecordLink | null => {
     linkId ??= selectedLinkId
-    if (!linkId)
-      return undefined;
-
-    return recordLinks.find(rl => rl.id == linkId)
+    return linkId ? recordLinksById[linkId] ?? null : null
   }, [selectedLinkId, recordLinks])
   const selectedLink = getSelectedLink(selectedLinkId)
 
@@ -95,7 +95,7 @@ export default function LinkingDetails(
   const getOtherRecordUrl = useCallback(() => {
     let uri = ""
     if (selectedLink?.otherRecordKind && selectedLink?.otherRecordId) {
-      uri = `/${selectedLink.otherRecordKind?.toLowerCase()}s`
+      uri = `/${selectedLink.otherRecordKind?.toLowerCase()}s/`
       const newFilter = {...queries[selectedLink.otherRecordKind]?.filter} as LinkableEntityQueryFilter
       newFilter.recordId = selectedLink?.otherRecordId
       const searchParams = createSearchParams(newFilter)
@@ -108,35 +108,41 @@ export default function LinkingDetails(
     <div className="w-full grid grid-cols-5 gap-2">
       <span className="text-lg"><LinkIcon className="inline" />&nbsp;Linking</span>
       <Label className="col-start-1" htmlFor="links">{`Record links (${recordLinks.length}):`}</Label>
-      <Select disabled={!record} value={selectedLinkId ?? ''} onValueChange={handleSelectedLinkChange}>
-        <SelectTriggerEx
+      <Combobox
+        disabled={!record}
+        items={recordLinks}
+        itemToStringValue={p => p.id}
+        itemToStringLabel={p => p.otherRecordLabel}
+        value={selectedLink}
+        onValueChange={l => handleSelectedLinkChange(l?.id ?? '')}
+      >
+        <ComboboxInput
           id="links"
-          outerClassName="col-span-3"
-          className="w-full"
-          help="A list of all the records which are linked with the selected record. Select one to see its settings."
-        >
-          <SelectValue placeholder={
+          className="col-span-3"
+          placeholder={
             recordLinks.length ?? 0 > 0
             ? "-Select a record link-"
-            : "-No record links-"}
-          />
-        </SelectTriggerEx>
-        <SelectContent>
-          {
-            selectedLinkId
-            ? <SelectItem key="0" value="CLEAR">-Clear-</SelectItem>
-            : null
+            : "-No record links-"
           }
-          {
-            recordLinks.map(link => {
-              return link
-                ? <SelectItem key={link.id} value={link.id ?? "0"}>{link.otherRecordLabel}</SelectItem>
-                : null
-            })
-          }
-        </SelectContent>
-      </Select>
-      <Link href={getOtherRecordUrl()}>
+          readOnly={!record}
+          showClear
+        >
+          <InputGroupAddon align="inline-end">
+            <Help text="A list of all the records which are linked with the selected record. Select one to see its settings." />
+          </InputGroupAddon>
+        </ComboboxInput>
+        <ComboboxContent>
+          <ComboboxEmpty>-No record links found-</ComboboxEmpty>
+          <ComboboxList>
+            {l => (
+              <ComboboxItem key={l.id} value={l}>
+                {l.otherRecordLabel}
+              </ComboboxItem>
+            )}
+          </ComboboxList>
+        </ComboboxContent>
+      </Combobox>
+      <Link className="justify-self-center w-42" href={getOtherRecordUrl()}>
         <ButtonEx
           outerClassName="col-start-5 justify-center w-full"
           className="w-35 bg-blue-500 text-md"

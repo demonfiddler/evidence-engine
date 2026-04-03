@@ -70,7 +70,11 @@ export const actionColumn: ColumnDef<ITrackedEntity> = {
     return (
       <DropdownMenu key={cell.id}>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="justify-self-center h-8 w-8 p-0">
+          <Button
+            type="button"
+            variant="ghost"
+            className="justify-self-center h-8 w-8 p-0"
+          >
             <span className="sr-only">Open menu</span>
             <MoreHorizontalIcon className="h-4 w-4" />
           </Button>
@@ -110,16 +114,27 @@ export const expandColumn: ColumnDef<IBaseEntity> = {
   enableResizing: false,
   size: 50,
   header: ({ table }) => (
-      table.getCanSomeRowsExpand()
-        ? <Button variant="ghost" className="w-8 h-8" onClick={table.getToggleAllRowsExpandedHandler()}>
-          {table.getIsAllRowsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
-        </Button>
-        : null
+    table.getCanSomeRowsExpand()
+      ? <Button
+        type="button"
+        variant="ghost"
+        className="w-8 h-8"
+        onClick={table.getToggleAllRowsExpandedHandler()}
+      >
+        {table.getIsAllRowsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
+      </Button>
+      : null
   ),
   cell: ({ row, cell }) =>
-    row.getCanExpand() ?
-      <Button key={cell.id} variant="ghost" className="w-8 h-8" onClick={row.getToggleExpandedHandler()}>
-          {row.getIsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
+    row.getCanExpand()
+      ? <Button
+        key={cell.id}
+        type="button"
+        variant="ghost"
+        className="w-8 h-8"
+        onClick={row.getToggleExpandedHandler()}
+      >
+        {row.getIsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
       </Button>
       : null,
   meta: {

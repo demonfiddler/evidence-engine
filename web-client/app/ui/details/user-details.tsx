@@ -29,15 +29,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/components/ui/select"
 import StandardDetails from "./standard-details"
-import Country from "@/app/model/Country"
-import rawCountries from "@/data/countries.json" assert {type: 'json'}
 import Group from "@/app/model/Group"
 import { getRecordLabel } from "@/lib/utils"
 import DetailActions, { DetailMode, DetailState } from "./detail-actions"
@@ -48,17 +40,15 @@ import { useFormContext } from "react-hook-form"
 import { UserFieldValues } from "../validators/user"
 import { FormActionHandler } from "@/hooks/use-page-logic"
 import InputEx from "../ext/input-ex"
-import SelectTriggerEx from "../ext/select-ex"
 import TextareaEx from "../ext/textarea-ex"
 import CheckboxEx from "../ext/checkbox-ex"
 import ButtonEx from "../ext/button-ex"
 import FieldsetEx from "../ext/fieldset-ex"
 import { detail, LoggerEx } from "@/lib/logger"
 import { NotebookTabsIcon } from "lucide-react"
+import CountryCombobox from "../ext/country-combobox"
 
 const logger = new LoggerEx(detail, "[UserDetails] ")
-
-const countries = rawCountries as unknown as Country[]
 
 export default function UserDetails(
   {
@@ -152,7 +142,7 @@ export default function UserDetails(
             <ButtonEx
               type="button"
               outerClassName="col-start-3 place-self-center"
-              className="w-20 bg-blue-500"
+              className="w-35 bg-blue-500"
               disabled={!user || !group || updating}
               onClick={handleAddOrRemove}
               help={
@@ -247,33 +237,11 @@ export default function UserDetails(
               render={({ field }) => (
                 <FormItem className="col-start-1">
                   <FormLabel htmlFor="country">Country</FormLabel>
-                  <Select
-                    disabled={!user && !updating}
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <FormControl>
-                      <SelectTriggerEx
-                        id="country"
-                        className="w-full"
-                        disabled={!user && !updating}
-                        help="The user's country of residence"
-                      >
-                        <SelectValue placeholder="Specify country" />
-                      </SelectTriggerEx>
-                    </FormControl>
-                    <SelectContent>
-                      {
-                        countries.map(country => (
-                          <SelectItem
-                            key={country.alpha_2}
-                            value={country.alpha_2}>
-                            {country.common_name}
-                          </SelectItem>
-                        ))
-                      }
-                    </SelectContent>
-                  </Select>
+                  <CountryCombobox
+                    field={field}
+                    disabled={!updating}
+                    help="The user's country of residence"
+                  />
                   <FormMessage />
                 </FormItem>
               )}

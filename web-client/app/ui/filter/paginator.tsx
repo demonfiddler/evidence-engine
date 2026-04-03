@@ -138,7 +138,7 @@ export function Paginator<TData>({
             variant="outline"
             className="hidden h-8 w-8 p-0 lg:flex"
             title="Go to first page"
-            onClick={() => handleGotoFirstPage()}
+            onClick={handleGotoFirstPage}
             disabled={!page?.hasPrevious}
           >
             <span className="sr-only">Go to first page</span>
@@ -149,7 +149,7 @@ export function Paginator<TData>({
             variant="outline"
             className="h-8 w-8 p-0"
             title="Go to previous page"
-            onClick={() => handleGotoPreviousPage()}
+            onClick={handleGotoPreviousPage}
             disabled={!page?.hasPrevious}
           >
             <span className="sr-only">Go to previous page</span>
@@ -160,7 +160,7 @@ export function Paginator<TData>({
             variant="outline"
             className="h-8 w-8 p-0"
             title="Go to next page"
-            onClick={() => handleGotoNextPage()}
+            onClick={handleGotoNextPage}
             disabled={!page?.hasNext}
           >
             <span className="sr-only">Go to next page</span>
@@ -171,7 +171,7 @@ export function Paginator<TData>({
             variant="outline"
             className="hidden h-8 w-8 p-0 lg:flex"
             title="Go to last page"
-            onClick={() => handleGotoLastPage()}
+            onClick={handleGotoLastPage}
             disabled={!page?.hasNext}
           >
             <span className="sr-only">Go to last page</span>

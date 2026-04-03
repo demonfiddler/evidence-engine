@@ -203,8 +203,8 @@ export default function Security() {
   })
 
   const {queries, setActiveSecurityPageTab, setShowUsersOrMembers} = useContext(GlobalContext)
-  const groupQueryState = queries["Group"]
-  const userQueryState = queries["User"]
+  const groupQueryState = queries.Group
+  const userQueryState = queries.User
   const activeTab = groupQueryState?.activeTab ?? "groups"
   const showUsersOrMembers = userQueryState?.showUsersOrMembers ?? "users"
 
@@ -273,7 +273,7 @@ export default function Security() {
             <h2>Groups</h2>
           </div>
           <DataTable<Group, unknown>
-            className="size-fit min-w-[700px]"
+            className="size-fit min-w-175"
             recordKind="Group"
             defaultColumns={groupColumns}
             page={groupPage}

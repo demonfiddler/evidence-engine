@@ -147,7 +147,14 @@ export default function LoggingLevelDialog(
             </Table>
           </div>
           <DrawerFooter className="flex-row justify-center">
-            <Button className="w-20 self-center" variant="outline" onClick={handleSetAll}>Set all to:</Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-20 self-center"
+              onClick={handleSetAll}
+            >
+              Set all to:
+            </Button>
             <Select
               value={allLevel}
               onValueChange={value => setAllLevel(value as LogLevelNames)}
@@ -162,7 +169,13 @@ export default function LoggingLevelDialog(
               </SelectContent>
             </Select>
             <DrawerClose asChild>
-              <Button className="w-20 self-center" variant="outline">Close</Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-20 self-center"
+              >
+                Close
+              </Button>
             </DrawerClose>
           </DrawerFooter>
         </div>

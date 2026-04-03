@@ -20,8 +20,6 @@
 'use client'
 
 import { Button } from "@/components/ui/button"
-import Country from "@/app/model/Country"
-import rawCountries from "@/data/countries.json" assert {type: 'json'}
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import Spinner from "../misc/spinner"
 import { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react"
@@ -31,17 +29,14 @@ import z from "zod/v4"
 import { useMutation } from "@apollo/client/react"
 import { UPDATE_USER_PROFILE } from "@/lib/graphql-queries"
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Select, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
 import TextareaEx from "../ext/textarea-ex"
-import SelectTriggerEx from "../ext/select-ex"
 import InputEx from "../ext/input-ex"
 import useAuth from "@/hooks/use-auth"
 import { dialog, LoggerEx } from "@/lib/logger"
 import { UserPenIcon } from "lucide-react"
+import CountryCombobox from "../ext/country-combobox"
 
 const logger = new LoggerEx(dialog, "[ProfileDialog] ")
-
-const countries = rawCountries as unknown as Country[]
 
 const NAME = /[A-Z].*/
 const NAME_ERROR = {error: "Name must start with a capital letter"}
@@ -116,7 +111,7 @@ export default function ProfileDialog(
 
   return open ? (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent>
         <Spinner loading={loading} label="Saving..." className="absolute inset-0 bg-black/20 z-50" />
         <FormProvider {...form}>
           <form>
@@ -177,27 +172,12 @@ export default function ProfileDialog(
                 control={form.control}
                 name="country"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="col-start-1 col-span-2">
                     <FormLabel htmlFor="country">Country</FormLabel>
-                    <Select
-                      value={field.value}
-                      onValueChange={field.onChange}
-                    >
-                      <FormControl>
-                        <SelectTriggerEx
-                          id="country"
-                          help="Your country of primary residence. This is a required field."
-                        >
-                          <SelectValue placeholder="Specify country" />
-                        </SelectTriggerEx>
-                      </FormControl>
-                      <SelectContent>
-                        {
-                          countries.map(country =>
-                            <SelectItem key={country.alpha_2} value={country.alpha_2}>{country.common_name}</SelectItem>)
-                        }
-                      </SelectContent>
-                    </Select>
+                    <CountryCombobox
+                      field={field}
+                      help="Your country of primary residence. This is a required field."
+                    />
                     <FormMessage />
                   </FormItem>
                 )}

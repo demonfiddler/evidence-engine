@@ -68,11 +68,16 @@ export default function SignInDialog() {
   return (
     <Dialog open={signInOpen} onOpenChange={setSignInOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" className="text-md" disabled={!!user}>
+        <Button
+          type="button"
+          variant="ghost"
+          className="text-md"
+          disabled={!!user}
+        >
           { user?.username ?? <span><LogInIcon className="inline" />&nbsp;Sign in</span> }
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-105">
         <Spinner loading={loading} label="Signing in..." className="absolute inset-0 bg-black/20 z-50" />
         <FormProvider {...form}>
           <form>

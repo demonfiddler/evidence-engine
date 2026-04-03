@@ -162,7 +162,7 @@ export default function EntityLinkFilter() {
   const getMasterRecordUri = useCallback(() => {
     let uri = ""
     if (masterRecordKind != "None")
-      uri = `/${masterRecordKind?.toLowerCase()}s`
+      uri = `/${masterRecordKind?.toLowerCase()}s/`
     const newFilter = {...queries[masterRecordKind]?.filter} as LinkableEntityQueryFilter
     if (masterRecordId)
       newFilter.recordId = masterRecordId
@@ -207,7 +207,11 @@ export default function EntityLinkFilter() {
             }
           </span>
           <CollapsibleTrigger className="justify-self-end" asChild>
-            <Button variant="ghost" size="default">
+            <Button
+              type="button"
+              variant="ghost"
+              size="default"
+            >
               {
                 linkFilterOpen
                 ? <ChevronUpIcon className="h-4 w-4" />
@@ -298,8 +302,8 @@ export default function EntityLinkFilter() {
                   <Link href={getMasterRecordUri()}>
                     <ButtonEx
                       id="gotoMasterRecord"
-                      className="bg-blue-500"
                       type="button"
+                      className="bg-blue-500"
                       disabled={masterRecordKind == "None"}
                       help={
                         masterRecordKind != "None"

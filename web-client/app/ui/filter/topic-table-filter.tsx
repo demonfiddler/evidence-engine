@@ -48,7 +48,7 @@ export default function TopicTableFilter({
 
   const {user} = useAuth()
   const {queries, setFilter, setPagination} = useContext(GlobalContext)
-  const {filter, pagination} = queries["Topic"] as QueryState<TopicQueryFilter>
+  const {filter, pagination} = queries.Topic as QueryState<TopicQueryFilter>
   const [status, setStatus] = useState(filter.status?.[0] ?? '')
   const [text, setText] = useState(filter.text ?? '')
   const [advanced, setAdvanced] = useState(filter.advancedSearch ?? false)
@@ -141,7 +141,7 @@ export default function TopicTableFilter({
             value={status ?? ''}
             onValueChange={handleStatusChange}
           >
-            <SelectTrigger id="kind">
+            <SelectTrigger id="status">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -202,6 +202,7 @@ export default function TopicTableFilter({
         />
         <ButtonEx
           id="refresh"
+          type="button"
           variant="outline"
           help="Refresh the table using the same filter and pagination settings."
           onClick={() => refetch()}
@@ -210,8 +211,9 @@ export default function TopicTableFilter({
         </ButtonEx>
         <ButtonEx
           id="reset"
-          outerClassName="flex-grow"
+          type="button"
           variant="outline"
+          outerClassName="flex-grow"
           onClick={handleClear}
           help="Clear all filters"
         >

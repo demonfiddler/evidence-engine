@@ -187,6 +187,7 @@ export default function ImportDialog({recordKind, accept} : ImportDialogProps) {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <ButtonEx
+          type="button"
           variant="ghost"
           disabled={!accept || !jwtToken || !hasAuthority("CRE")}
           help="Import (upload) a file"

@@ -138,6 +138,7 @@ export default function QuotationDetails(
                     <PopoverTrigger id="date" asChild>
                       <FormControl>
                         <ButtonEx
+                          type="button"
                           variant={"outline"}
                           disabled={!updating}
                           className={cn("grow justify-start text-left font-normal",

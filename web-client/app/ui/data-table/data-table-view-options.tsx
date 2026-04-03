@@ -38,6 +38,7 @@ export default function DataTableViewOptions<T>(
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <ButtonEx
+          type="button"
           variant="ghost"
           size="sm"
           outerClassName="justify-self-end" 
@@ -48,7 +49,7 @@ export default function DataTableViewOptions<T>(
           <Columns3Icon />
         </ButtonEx>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[150px]">
+      <DropdownMenuContent align="end" className="w-40">
         <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {table

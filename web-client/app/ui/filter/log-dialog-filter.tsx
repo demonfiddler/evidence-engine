@@ -26,20 +26,14 @@ import { LogQueryFilter } from "@/app/model/schema"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import { formatDate, isEqual } from "@/lib/utils"
-import { READ_USERS } from "@/lib/graphql-queries"
-import { useQuery } from "@apollo/client/react"
-import { toast } from "sonner"
-import IPage from "@/app/model/IPage"
-import User from "@/app/model/User"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
 import { Button } from "@/components/ui/button"
-import Spinner from "../misc/spinner"
 import { GlobalContext, QueryState } from "@/lib/context"
 import ButtonEx from "../ext/button-ex"
 import { filter, LoggerEx } from "@/lib/logger"
-import { QueryResult } from "@/lib/graphql-utils"
 import { CalendarIcon, ChevronDownIcon, RotateCwIcon } from "lucide-react"
+import UserCombobox from "../ext/user-combobox"
 
 const logger = new LoggerEx(filter, "[LogDialogFilter] ")
 
@@ -52,7 +46,7 @@ export default function LogDialogFilter(
   logger.debug("render")
 
   const {queries, setFilter, setPagination} = useContext(GlobalContext)
-  const {filter, pagination} = queries["Log"] as QueryState<LogQueryFilter>
+  const {filter, pagination} = queries.Log as QueryState<LogQueryFilter>
   const [from, setFrom] = useState<Date|undefined>(filter.from)
   const [fromOpen, setFromOpen] = useState(false)
   const [to, setTo] = useState<Date|undefined>( filter.to)
@@ -61,17 +55,17 @@ export default function LogDialogFilter(
   const [transactionKind, setTransactionKind] = useState(filter.transactionKinds?.[0] ?? '')
 
   const updateFilter = useCallback((
-    userId: string,
-    transactionKind: string,
-    from: Date|undefined,
-    to: Date|undefined) => {
-      logger.trace("updateFilter: userId=%s, transactionKind=%s, from=%s, to=%s", userId, transactionKind, from, to)
+    newUserId: string,
+    newTransactionKind: string,
+    newFrom: Date|undefined,
+    newTo: Date|undefined) => {
+      logger.trace("updateFilter: newUserId=%s, newTransactionKind=%s, newFrom=%s, newTo=%s", newUserId, newTransactionKind, newFrom, newTo)
       const newFilter = {
         entityId: auxRecordId,
-        userId: userId || undefined,
-        transactionKinds: transactionKind ? [transactionKind] : undefined,
-        from: from || undefined,
-        to: to || undefined
+        userId: newUserId || undefined,
+        transactionKinds: newTransactionKind ? [newTransactionKind] : undefined,
+        from: newFrom || undefined,
+        to: newTo || undefined
       } as LogQueryFilter
       if (!isEqual(newFilter, filter)) {
         logger.trace("updateFilter from %o to %o", filter, newFilter)
@@ -123,34 +117,13 @@ export default function LogDialogFilter(
     updateFilter('', '', undefined, undefined)
   }, [updateFilter])
 
-  const result = useQuery(
-    READ_USERS,
-    {
-      variables: {
-        pageSort: {
-          sort: {
-            orders: [
-              {property: "username"}
-            ]
-          }
-        }
-      },
-    }
-  )
-  if (result.error) {
-    // TODO: display user-friendly error notification
-    toast.error(`Operation failed:\n\n${result.error.message}`)
-    logger.error("Operation failed: %o", result.error)
-  }
-  const users = (result.data as QueryResult<IPage<User>>)?.users?.content
-
   return (
     <div className="flex flex-col gap-2">
-      <Spinner loading={result.loading} className="absolute inset-0 bg-black/20 z-50" />
       <div className="flex items-center gap-2">
         <Popover open={fromOpen} onOpenChange={setFromOpen}>
           <PopoverTrigger id="filter-from" asChild>
             <Button
+              type="button"
               variant={"outline"}
               className="justify-start text-left font-normal">
               <CalendarIcon />
@@ -175,6 +148,7 @@ export default function LogDialogFilter(
         <Popover open={toOpen} onOpenChange={setToOpen}>
           <PopoverTrigger id="filter-to" asChild>
             <Button
+              type="button"
               variant={"outline"}
               className="justify-start text-left font-normal">
               <CalendarIcon />
@@ -196,24 +170,13 @@ export default function LogDialogFilter(
             />
           </PopoverContent>
         </Popover>
-        <Select
+        <UserCombobox
+          id="filter-userId"
+          className="w-45"
           value={userId ?? ''}
           onValueChange={handleUserIdChange}
-        >
-          <SelectTrigger id="filter-userId">
-            <SelectValue placeholder="User" />
-          </SelectTrigger>
-          <SelectContent>
-            {
-              userId
-              ? <SelectItem value="ALL">-Clear-</SelectItem>
-              : null
-            }
-            {
-              users?.map(user => <SelectItem key={user.id} value={user.id ?? ''}>{user.username}</SelectItem>)
-            }
-          </SelectContent>
-        </Select>
+          // help="Filter the table to show only relating to the selected user."
+        />
         <Select
           value={transactionKind ?? ''}
           onValueChange={handleTransactionKindChange}
@@ -238,6 +201,7 @@ export default function LogDialogFilter(
           </SelectContent>
         </Select>
         <ButtonEx
+          type="button"
           variant="outline"
           help="Refresh the table using the same filter and pagination settings."
           onClick={() => refetch()}
@@ -245,8 +209,9 @@ export default function LogDialogFilter(
           <RotateCwIcon />
         </ButtonEx>
         <ButtonEx
-          outerClassName="flex-grow"
+          type="button"
           variant="outline"
+          outerClassName="flex-grow"
           onClick={handleClear}
           help="Clear all filters"
         >

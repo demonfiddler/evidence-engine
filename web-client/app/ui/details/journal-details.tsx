@@ -20,12 +20,6 @@
 'use client'
 
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/components/ui/select"
-import {
   Form,
   FormControl,
   FormDescription,
@@ -38,12 +32,11 @@ import Journal from "@/app/model/Journal"
 import Publisher from "@/app/model/Publisher"
 import StandardDetails from "./standard-details"
 import DetailActions, { DetailMode, DetailState } from "./detail-actions"
-import { Dispatch, SetStateAction } from "react"
+import { Dispatch, SetStateAction, useMemo } from "react"
 import { useFormContext } from "react-hook-form"
 import { JournalFieldValues } from "../validators/journal"
 import { FormActionHandler } from "@/hooks/use-page-logic"
 import InputEx from "../ext/input-ex"
-import SelectTriggerEx from "../ext/select-ex"
 import TextareaEx from "../ext/textarea-ex"
 import LinkEx from "../ext/link-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
@@ -53,9 +46,15 @@ import IPage from "@/app/model/IPage"
 import { QueryResult } from "@/lib/graphql-utils"
 import { useQuery } from "@apollo/client/react"
 import CheckboxEx from "../ext/checkbox-ex"
-import { NotebookTabsIcon } from "lucide-react"
+import { NotebookTabsIcon, RotateCwIcon } from "lucide-react"
+import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
+import { InputGroupAddon } from "@/components/ui/input-group"
+import { Button } from "@/components/ui/button"
+import Help from "../misc/help"
 
 const logger = new LoggerEx(detail, "[JournalDetails] ")
+const EMPTY_PUBLISHERS = [] as Publisher[]
+const PUBLISHER_OPTIONS = {variables: {pageSort: {sort: {orders: [{property: "name"}]}}}}
 
 export default function JournalDetails(
   {
@@ -73,14 +72,18 @@ export default function JournalDetails(
 
   const form = useFormContext<JournalFieldValues>()
   const { updating } = state
-  const publishersResult = useQuery(READ_PUBLISHERS)
+  const publishersResult = useQuery(READ_PUBLISHERS, PUBLISHER_OPTIONS)
   const publishersData = (publishersResult.loading
     ? publishersResult.previousData
     : publishersResult.data) as QueryResult<IPage<Publisher>>
-  const rawPublishers = publishersData
-    ? publishersData.publishers
-    : undefined
-  const publishers = rawPublishers?.content ?? []
+  const publishers = publishersData?.publishers?.content ?? EMPTY_PUBLISHERS
+  const publishersById = useMemo(() => {
+    return Object.fromEntries(
+      publishers.map(p => [p.id, p])
+    )
+  }, [publishers])
+  const publisherId = form.getValues().publisherId
+  const selectedPublisher = publisherId ? publishersById[publisherId] ?? null : null
 
   return (
     <fieldset className="border shadow-lg rounded-md">
@@ -218,33 +221,44 @@ export default function JournalDetails(
               render={({ field }) => (
                 <FormItem className="col-span-2">
                   <FormLabel htmlFor="publisherId">Publisher</FormLabel>
-                  <Select
+                  <Combobox
                     disabled={!updating}
-                    value={field.value}
-                    onValueChange={field.onChange}
+                    items={publishers}
+                    itemToStringValue={p => p.id}
+                    itemToStringLabel={p => p.name}
+                    value={selectedPublisher}
+                    onValueChange={p => field.onChange(p?.id ?? null)}
                   >
-                    <FormControl>
-                      <SelectTriggerEx
-                        id="publisherId"
-                        className="w-full"
-                        disabled={!updating}
-                        help="The journal publisher"
+                    <ComboboxInput
+                      id="publisherId"
+                      placeholder="Select a publisher"
+                      readOnly={!updating}
+                      showClear
+                    >
+                    <InputGroupAddon align="inline-end">
+                      <Button
+                        className="w-6 h-6"
+                        type="button"
+                        variant="ghost"
+                        onClick={() => publishersResult.refetch()}
+                        title="Refresh the list of publishers"
                       >
-                        <SelectValue className="w-full" placeholder="Specify publisher" />
-                      </SelectTriggerEx>
-                    </FormControl>
-                    <SelectContent>
-                      {
-                        publishers.map(publisher => (
-                          <SelectItem
-                            key={publisher.id?.toString() ?? ''}
-                            value={publisher.id?.toString() ?? ''}>
-                            {publisher.name}
-                          </SelectItem>
-                        ))
-                      }
-                    </SelectContent>
-                  </Select>
+                        <RotateCwIcon className="w-6 h-6" />
+                      </Button>
+                      <Help text="The publisher of the journal" />
+                    </InputGroupAddon>
+                  </ComboboxInput>
+                    <ComboboxContent>
+                      <ComboboxEmpty>-No publishers found-</ComboboxEmpty>
+                      <ComboboxList>
+                        {p => (
+                          <ComboboxItem key={p.id} value={p}>
+                            {p.name}
+                          </ComboboxItem>
+                        )}
+                      </ComboboxList>
+                    </ComboboxContent>
+                  </Combobox>
                   <FormMessage />
                 </FormItem>
               )}

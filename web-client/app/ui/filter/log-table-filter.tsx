@@ -26,22 +26,16 @@ import { LogQueryFilter } from "@/app/model/schema"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ChangeEvent, useCallback, useContext, useEffect, useRef, useState } from "react"
 import { formatDate, isEqual } from "@/lib/utils"
-import { READ_USERS } from "@/lib/graphql-queries"
-import { useQuery } from "@apollo/client/react"
-import { toast } from "sonner"
-import IPage from "@/app/model/IPage"
-import User from "@/app/model/User"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
 import { Button } from "@/components/ui/button"
-import Spinner from "../misc/spinner"
 import InputEx from "../ext/input-ex"
 import { GlobalContext, QueryState } from "@/lib/context"
 import ButtonEx from "../ext/button-ex"
 import { filter, LoggerEx } from "@/lib/logger"
-import { QueryResult } from "@/lib/graphql-utils"
 import ExportDialog from "../dialog/export-dialog"
 import { CalendarIcon, ChevronDownIcon, RotateCwIcon } from "lucide-react"
+import UserCombobox from "../ext/user-combobox"
 
 const logger = new LoggerEx(filter, "[LogTableFilter] ")
 
@@ -54,7 +48,7 @@ export default function LogTableFilter(
   logger.debug("render")
 
   const {queries, setFilter, setPagination} = useContext(GlobalContext)
-  const {filter, pagination} = queries["Log"] as QueryState<LogQueryFilter>
+  const {filter, pagination} = queries.Log as QueryState<LogQueryFilter>
   const [from, setFrom] = useState<Date|undefined>(filter.from)
   const [fromOpen, setFromOpen] = useState(false)
   const [to, setTo] = useState<Date|undefined>(filter.to)
@@ -65,21 +59,22 @@ export default function LogTableFilter(
   const [entityId, setEntityId] = useState(filter.entityId ?? '')
 
   const updateFilter = useCallback((
-    entityKind: string,
-    entityId: string,
-    userId: string,
-    transactionKind: string,
-    from: Date | undefined,
-    to: Date | undefined) => {
-      logger.trace("updateFilter: entityKind=%s, entityId=%s, userId=%s, transactionKind=%s, from=%s, to=%s", entityKind, entityId, userId, transactionKind, from, to)
+    newEntityKind: string,
+    newEntityId: string,
+    newUserId: string,
+    newTransactionKind: string,
+    newFrom: Date | undefined,
+    newTo: Date | undefined) => {
+      logger.trace("updateFilter: newEntityKind=%s, newEntityId=%s, newUserId=%s, newTransactionKind=%s, newFrom=%s, newTo=%s",
+        newEntityKind, newEntityId, newUserId, newTransactionKind, newFrom, newTo)
       if (!loadingPathWithSearchParams) {
         const newFilter = {
-          entityKind: entityKind || undefined,
-          entityId: entityId || undefined,
-          userId: userId || undefined,
-          transactionKinds: transactionKind ? [transactionKind] : undefined,
-          from,
-          to,
+          entityKind: newEntityKind || undefined,
+          entityId: newEntityId || undefined,
+          userId: newUserId || undefined,
+          transactionKinds: newTransactionKind ? [newTransactionKind] : undefined,
+          from: newFrom,
+          to: newTo,
         } as LogQueryFilter
         if (!isEqual(newFilter as LogQueryFilter, filter)) {
           logger.trace("updateFilter from %o to %o", filter, newFilter)
@@ -161,34 +156,13 @@ export default function LogTableFilter(
     updateFilter('', '', '', '', undefined, undefined)
   }, [setFrom, setTo, setUserId, setTransactionKind, updateFilter])
 
-  const result = useQuery(
-    READ_USERS,
-    {
-      variables: {
-        pageSort: {
-          sort: {
-            orders: [
-              {property: "username"}
-            ]
-          }
-        }
-      },
-    }
-  )
-  if (result.error) {
-    // TODO: display user-friendly error notification
-    toast.error(`Operation failed:\n\n${result.error.message}`)
-    logger.error("Operation failed: %o", result.error)
-  }
-  const users = (result.data as QueryResult<IPage<User>>)?.users?.content
-
   return (
     <div className="flex flex-col gap-2">
-      <Spinner loading={result.loading} className="absolute inset-0 bg-black/20 z-50" />
       <div className="flex items-center gap-2">
         <Popover open={fromOpen} onOpenChange={setFromOpen}>
           <PopoverTrigger id="from" asChild>
             <Button
+              type="button"
               variant={"outline"}
               className="justify-start text-left font-normal">
               <CalendarIcon />
@@ -213,6 +187,7 @@ export default function LogTableFilter(
         <Popover open={toOpen} onOpenChange={setToOpen}>
           <PopoverTrigger id="to" asChild>
             <Button
+              type="button"
               variant={"outline"}
               className="justify-start text-left font-normal">
               <CalendarIcon />
@@ -234,24 +209,13 @@ export default function LogTableFilter(
             />
           </PopoverContent>
         </Popover>
-        <Select
+        <UserCombobox
+          id="userId"
+          className="w-45"
           value={userId ?? ''}
           onValueChange={handleUserIdChange}
-        >
-          <SelectTrigger id="userId">
-            <SelectValue placeholder="User" />
-          </SelectTrigger>
-          <SelectContent>
-            {
-              userId
-              ? <SelectItem value="ALL">-Clear-</SelectItem>
-              : null
-            }
-            {
-              users?.map(user => <SelectItem key={user.id} value={user.id ?? ''}>{user.username}</SelectItem>)
-            }
-          </SelectContent>
-        </Select>
+          // help="Filter the table to show only relating to the selected user."
+        />
         <Select
           value={transactionKind ?? ''}
           onValueChange={handleTransactionKindChange}
@@ -304,7 +268,8 @@ export default function LogTableFilter(
         </Select>
         <InputEx
           id="recordId"
-          className="w-30 text-right"
+          outerClassName="w-40"
+          className="text-right"
           placeholder="Record ID"
           value={entityId}
           onChange={handleEntityIdChange}
@@ -314,6 +279,7 @@ export default function LogTableFilter(
         />
         <ButtonEx
           id="refresh"
+          type="button"
           variant="outline"
           help="Refresh the table using the same filter and pagination settings."
           onClick={() => refetch()}
@@ -322,6 +288,7 @@ export default function LogTableFilter(
         </ButtonEx>
         <Button
           id="reset"
+          type="button"
           variant="outline"
           title="Clear all filters"
           onClick={handleClear}

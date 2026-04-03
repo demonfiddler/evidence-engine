@@ -416,7 +416,7 @@ export type RecordLink = {
   otherRecordLabel: string
 }
 
-export function getLinkLabel(recordKind: LinkableEntityKind, link?: RecordLink) {
+export function getLinkLabel(recordKind: LinkableEntityKind, link?: RecordLink | null) {
   return link
     ? `RecordLink #${link?.id} (${recordKind} #${link?.thisRecordId} <—> ${link?.otherRecordKind} #${link?.otherRecordId})`
     : "-Select Record Link-"

@@ -61,7 +61,11 @@ export default function StandardDetails(
       >
         <span className="text-lg"><ClipboardClockIcon className="inline" />&nbsp;{trackingDetailsOpen ? "Tracking" : "Tracking & Linking"}</span>
         <CollapsibleTrigger asChild>
-          <Button variant="ghost" size="sm">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+          >
             {
               trackingDetailsOpen
               ? <ChevronUpIcon className="h-4 w-4" />

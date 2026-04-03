@@ -29,31 +29,21 @@ import {
   FormLabel,
   FormMessage
 } from "@/components/ui/form"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/components/ui/select"
 import StandardDetails from "./standard-details"
-import rawCountries from "@/data/countries.json" assert {type: 'json'}
-import Country from "@/app/model/Country"
 import DetailActions, { DetailMode, DetailState } from "./detail-actions"
 import { Dispatch, SetStateAction } from "react"
 import { useFormContext } from "react-hook-form"
 import { PublisherFieldValues } from "../validators/publisher"
 import { FormActionHandler } from "@/hooks/use-page-logic"
 import InputEx from "../ext/input-ex"
-import SelectTriggerEx from "../ext/select-ex"
 import LinkEx from "../ext/link-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
 import { detail, LoggerEx } from "@/lib/logger"
 import TextareaEx from "../ext/textarea-ex"
 import { NotebookTabsIcon } from "lucide-react"
+import CountryCombobox from "../ext/country-combobox"
 
 const logger = new LoggerEx(detail, "[PublisherDetails] ")
-
-const countries = rawCountries as unknown as Country[]
 
 export default function PublisherDetails(
   {
@@ -180,32 +170,11 @@ export default function PublisherDetails(
               render={({ field }) => (
                 <FormItem>
                   <FormLabel htmlFor="country">Country</FormLabel>
-                  <Select
+                  <CountryCombobox
+                    field={field}
                     disabled={!updating}
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <FormControl>
-                      <SelectTriggerEx
-                        id="country"
-                        className="w-full"
-                        help="The publisher's country, if known and singular"
-                      >
-                        <SelectValue placeholder="Specify country" />
-                      </SelectTriggerEx>
-                    </FormControl>
-                    <SelectContent>
-                      {
-                        countries.map(country => (
-                          <SelectItem
-                            key={country.alpha_2}
-                            value={country.alpha_2}>
-                            {country.common_name}
-                          </SelectItem>
-                        ))
-                      }
-                    </SelectContent>
-                  </Select>
+                    help="The publisher's country, if known and singular"
+                  />
                   <FormMessage />
                 </FormItem>
               )}

@@ -46,6 +46,7 @@ import { QueryResult } from "@/lib/graphql-utils"
 import ExportDialog from "../dialog/export-dialog"
 import { CalendarIcon, ChevronDownIcon, RotateCwIcon } from "lucide-react"
 import Link from "next/link"
+import UserCombobox from "../ext/user-combobox"
 
 const logger = new LoggerEx(filter, "[CommentTableFilter] ")
 
@@ -59,7 +60,7 @@ export default function CommentTableFilter(
 
   const {user} = useAuth()
   const {queries, setFilter, setPagination} = useContext(GlobalContext)
-  const {filter, pagination} = queries["Comment"] as QueryState<CommentQueryFilter>
+  const {filter, pagination} = queries.Comment as QueryState<CommentQueryFilter>
   const [status, setStatus] = useState(filter.status?.[0] ?? '')
   const [text, setText] = useState(filter.text ?? '')
   const [advanced, setAdvanced] = useState(filter.advancedSearch ?? false)
@@ -348,29 +349,19 @@ export default function CommentTableFilter(
             delay={500}
             help="Filter the table to show only replies to the comment with the specified ID."
           />
-          <Select
+          <UserCombobox
+            id="userIdComments"
+            className="w-45"
             value={userId ?? ''}
             onValueChange={handleUserIdChange}
-          >
-            <SelectTriggerEx id="userIdComments" help="Filter the table to show only comments made by the selected user.">
-              <SelectValue placeholder="User" />
-            </SelectTriggerEx>
-            <SelectContent>
-              {
-                userId
-                  ? <SelectItem value="ALL">-Clear-</SelectItem>
-                  : null
-              }
-              {
-                users?.map(user => <SelectItem key={user.id} value={user.id ?? ''}>{user.username}</SelectItem>)
-              }
-            </SelectContent>
-          </Select>
+            help="Filter the table to show only comments made by the selected user."
+          />
         </div>
         <div className="flex gap-2">
           <Popover open={fromOpen} onOpenChange={setFromOpen}>
             <PopoverTrigger id="fromComments" asChild>
               <ButtonEx
+                type="button"
                 variant={"outline"}
                 className="justify-start text-left font-normal"
                 help="Filter the table to show only comments created or updated on or after the specified date."
@@ -397,6 +388,7 @@ export default function CommentTableFilter(
           <Popover open={toOpen} onOpenChange={setToOpen}>
             <PopoverTrigger id="toComments" asChild>
               <ButtonEx
+                type="button"
                 variant={"outline"}
                 className="justify-start text-left font-normal"
                 help="Filter the table to show only comments created or updated on or before the specified date."
@@ -422,6 +414,7 @@ export default function CommentTableFilter(
           </Popover>
           <ButtonEx
             id="refreshComments"
+            type="button"
             variant="outline"
             help="Refresh the table using the same filter and pagination settings."
             onClick={() => refetch()}
@@ -430,8 +423,9 @@ export default function CommentTableFilter(
           </ButtonEx>
           <ButtonEx
             id="resetComments"
-            outerClassName="flex-grow"
+            type="button"
             variant="outline"
+            outerClassName="flex-grow"
             onClick={handleClear}
             help="Clear all filters."
           >

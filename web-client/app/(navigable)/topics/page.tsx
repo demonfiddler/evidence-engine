@@ -78,7 +78,7 @@ export default function Topics() {
   logger.debug("render")
 
   const { queries } = useContext(GlobalContext)
-  const filter = queries["Topic"]?.filter as TopicQueryFilter
+  const filter = queries.Topic?.filter as TopicQueryFilter
   const filterLogic = useTopicQueryFilter()
   const {
     loading,
