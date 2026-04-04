@@ -53,6 +53,9 @@ import org.springframework.stereotype.Component;
 
 import io.github.demonfiddler.ee.common.util.StringUtils;
 import io.github.demonfiddler.ee.server.model.Claim;
+import io.github.demonfiddler.ee.server.model.CountPageImpl;
+import io.github.demonfiddler.ee.server.model.CountRequest;
+import io.github.demonfiddler.ee.server.model.Countable;
 import io.github.demonfiddler.ee.server.model.Country;
 import io.github.demonfiddler.ee.server.model.Declaration;
 import io.github.demonfiddler.ee.server.model.EntityKind;
@@ -261,6 +264,8 @@ public class EntityUtils {
 		P findByFilter(F filter, PageableInput pageSort, R repository, Supplier<P> ctor) {
 
 		Pageable pageable = toPageable(pageSort);
+		boolean isCountRequest = pageable instanceof Countable;
+
 		Page<T> page;
 		// Unauthenticated users can only access published entities, so allow the repository to apply that filter.
 		if (securityUtils.getCurrentUsername().equals("anonymousUser")) {
@@ -277,12 +282,19 @@ public class EntityUtils {
 				else
 					page = new PageImpl<>(repository.findAll(pageable.getSort()));
 			} else {
-				page = new PageImpl<>(repository.findAll());
+				page = isCountRequest
+					? CountPageImpl.of(repository.count())
+					: new PageImpl<>(repository.findAll());
 			}
 		} else if (filter instanceof TrackedEntityQueryFilter teqf && teqf.getRecordId() != null) {
 			// If a recordId is specified, ignore all other filter fields.
-			Optional<T> record = repository.findById(((TrackedEntityQueryFilter)filter).getRecordId());
-			page = new PageImpl<T>(record.isPresent() ? List.of(record.get()) : Collections.emptyList());
+			Long recordId = teqf.getRecordId();
+			if (isCountRequest) {
+				page = CountPageImpl.of(repository.existsById(recordId) ? 1 : 0);
+			} else {
+				Optional<T> record = repository.findById(recordId);
+				page = new PageImpl<T>(record.isPresent() ? List.of(record.get()) : Collections.emptyList());
+			}
 		} else {
 			page = repository.findByFilter(filter, pageable);
 		}
@@ -307,62 +319,66 @@ public class EntityUtils {
 	public Pageable toPageable(PageableInput pageableInput) {
 		Pageable pageable;
 		if (pageableInput != null) {
-			SortInput sortInput = pageableInput.getSort();
-			boolean isSorted = sortInput != null;
-			Sort sort;
-			if (isSorted) {
-				List<Order> orders = new ArrayList<>(sortInput.getOrders().size());
-				for (OrderInput oi : sortInput.getOrders()) {
-					Order order;
-					if (oi.getDirection() != null) {
-						switch (oi.getDirection()) {
-							case ASC:
-								order = Order.asc(oi.getProperty());
-								break;
-							case DESC:
-								order = Order.desc(oi.getProperty());
-								break;
-							default:
-								throw new IllegalArgumentException("Unsupported direction: " + oi.getDirection());
-						}
-					} else {
-						order = Order.asc(oi.getProperty());
-					}
-					if (oi.getNullHandling() != null) {
-						switch (oi.getNullHandling()) {
-							case NATIVE:
-								break;
-							case NULLS_FIRST:
-								order = order.nullsFirst();
-								break;
-							case NULLS_LAST:
-								order = order.nullsLast();
-								break;
-							default:
-								throw new IllegalArgumentException("Unsupported NullHandling: " + oi.getNullHandling());
-						}
-					}
-					if (Boolean.TRUE.equals(oi.getIgnoreCase()))
-						order = order.ignoreCase();
-					orders.add(order);
-				}
-				sort = Sort.by(orders);
+			if (Boolean.TRUE.equals(pageableInput.getRequestCount())) {
+				pageable = CountRequest.INSTANCE;
 			} else {
-				sort = Sort.unsorted();
-			}
-			Integer pageSize = pageableInput.getPageSize();
-			if (pageSize != null && pageSize > 0) {
-				Integer pageNumberObj = pageableInput.getPageNumber();
-				int pageNumber = pageNumberObj == null ? 0 : pageNumberObj;
+				SortInput sortInput = pageableInput.getSort();
+				boolean isSorted = sortInput != null;
+				Sort sort;
 				if (isSorted) {
-					pageable = PageRequest.of(pageNumber, pageSize, sort);
+					List<Order> orders = new ArrayList<>(sortInput.getOrders().size());
+					for (OrderInput oi : sortInput.getOrders()) {
+						Order order;
+						if (oi.getDirection() != null) {
+							switch (oi.getDirection()) {
+								case ASC:
+									order = Order.asc(oi.getProperty());
+									break;
+								case DESC:
+									order = Order.desc(oi.getProperty());
+									break;
+								default:
+									throw new IllegalArgumentException("Unsupported direction: " + oi.getDirection());
+							}
+						} else {
+							order = Order.asc(oi.getProperty());
+						}
+						if (oi.getNullHandling() != null) {
+							switch (oi.getNullHandling()) {
+								case NATIVE:
+									break;
+								case NULLS_FIRST:
+									order = order.nullsFirst();
+									break;
+								case NULLS_LAST:
+									order = order.nullsLast();
+									break;
+								default:
+									throw new IllegalArgumentException("Unsupported NullHandling: " + oi.getNullHandling());
+							}
+						}
+						if (Boolean.TRUE.equals(oi.getIgnoreCase()))
+							order = order.ignoreCase();
+						orders.add(order);
+					}
+					sort = Sort.by(orders);
 				} else {
-					pageable = PageRequest.of(pageNumber, pageSize);
+					sort = Sort.unsorted();
 				}
-			} else if (isSorted) {
-				pageable = Pageable.unpaged(sort);
-			} else {
-				pageable = Pageable.unpaged();
+				Integer pageSize = pageableInput.getPageSize();
+				if (pageSize != null && pageSize > 0) {
+					Integer pageNumberObj = pageableInput.getPageNumber();
+					int pageNumber = pageNumberObj == null ? 0 : pageNumberObj;
+					if (isSorted) {
+						pageable = PageRequest.of(pageNumber, pageSize, sort);
+					} else {
+						pageable = PageRequest.of(pageNumber, pageSize);
+					}
+				} else if (isSorted) {
+					pageable = Pageable.unpaged(sort);
+				} else {
+					pageable = Pageable.unpaged();
+				}
 			}
 		} else {
 			pageable = Pageable.unpaged();

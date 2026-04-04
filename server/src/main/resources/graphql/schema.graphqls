@@ -53,6 +53,8 @@ input PageableInput {
     pageSize: Int
     "How to sort the results. Default is to use native database order."
     sort: SortInput
+    "Requests the total number of records matching the query criteria, without returning the records themselves."
+    requestCount: Boolean = false
 }
 
 "An input to specify output sort order."

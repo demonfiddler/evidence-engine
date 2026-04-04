@@ -36,6 +36,8 @@ import org.springframework.lang.Nullable;
 import io.github.demonfiddler.ee.server.model.Comment;
 import io.github.demonfiddler.ee.server.model.StatusKind;
 import io.github.demonfiddler.ee.server.model.CommentQueryFilter;
+import io.github.demonfiddler.ee.server.model.CountPageImpl;
+import io.github.demonfiddler.ee.server.model.Countable;
 import jakarta.persistence.Query;
 
 /**
@@ -375,6 +377,9 @@ public class CustomCommentRepositoryImpl extends AbstractCustomRepositoryImpl im
         else
             LOGGER.debug("Executing query '{}'", m.countQueryName);
         long total = (Long)queries.countQuery().getSingleResult();
+
+        if (pageable instanceof Countable)
+            return CountPageImpl.of(total);
 
         if (LOGGER.isTraceEnabled())
             LOGGER.trace("Executing query '{}' with parameters {}", m.selectQueryName, params);

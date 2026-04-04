@@ -103,7 +103,7 @@ export default function LogDialog({
         <ButtonEx
           type="button"
           outerClassName={cn("place-self-center", className)}
-          className="w-35 bg-blue-500 text-md"
+          className="w-40 bg-blue-500 text-md"
           disabled={disabled}
           help={
             recordId

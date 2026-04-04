@@ -32,6 +32,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.github.demonfiddler.ee.server.model.CountPageImpl;
+import io.github.demonfiddler.ee.server.model.Countable;
 import io.github.demonfiddler.ee.server.model.Log;
 import io.github.demonfiddler.ee.server.model.LogQueryFilter;
 import jakarta.persistence.Query;
@@ -223,6 +225,9 @@ public class CustomLogRepositoryImpl extends AbstractCustomRepositoryImpl implem
         else
             LOGGER.debug("Executing query '{}'", m.countQueryName);
         long total = (Long)queries.countQuery().getSingleResult();
+
+        if (pageable instanceof Countable)
+            return CountPageImpl.of(total);
 
         if (LOGGER.isTraceEnabled())
             LOGGER.trace("Executing query '{}' with parameters {}", m.selectQueryName, params);

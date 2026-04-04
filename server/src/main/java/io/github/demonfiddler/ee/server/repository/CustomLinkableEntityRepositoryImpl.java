@@ -43,6 +43,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+import io.github.demonfiddler.ee.server.model.CountPageImpl;
+import io.github.demonfiddler.ee.server.model.Countable;
 import io.github.demonfiddler.ee.server.model.Declaration;
 import io.github.demonfiddler.ee.server.model.EntityKind;
 import io.github.demonfiddler.ee.server.model.ILinkableEntity;
@@ -735,6 +737,9 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
         else
             LOGGER.debug("Executing query '{}'", m.countQueryName);
         long total = (Long)queries.countQuery().getSingleResult();
+
+        if (pageable instanceof Countable)
+            return CountPageImpl.of(total);
 
         if (LOGGER.isTraceEnabled())
             LOGGER.trace("Executing query '{}' with parameters {}", m.selectQueryName, params);

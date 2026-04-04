@@ -117,8 +117,7 @@ export default function TrackingDetails(
         className="col-start-5 place-items-center"
         disabled={!record || !state.allowRead || state.mode == "create" || recordKind === "Comment"}
         targetKind={recordKind}
-        targetId={record?.id ?? ''}
-        targetLabel={getRecordLabel(recordKind, record) ?? ''}
+        target={record}
       />
       <Label htmlFor="status" className="col-start-1">Status:</Label>
       <InputEx
@@ -144,7 +143,7 @@ export default function TrackingDetails(
         <DropdownMenuTrigger asChild>
           <ButtonEx 
             outerClassName="place-self-center"
-            className="w-35 bg-blue-500 text-white text-md"
+            className="w-40 bg-blue-500 text-white text-md"
             type="button"
             variant="outline"
             disabled={!hasAuthority("UPD") || !record}

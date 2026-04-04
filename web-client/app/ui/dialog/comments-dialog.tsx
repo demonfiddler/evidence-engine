@@ -31,7 +31,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import ButtonEx from "../ext/button-ex"
-import { cn, formatDate, toDate } from "@/lib/utils"
+import { cn, formatDate, getRecordLabel, toDate } from "@/lib/utils"
 import { dialog, LoggerEx } from "@/lib/logger"
 import { CREATE_COMMENT, DELETE_COMMENT, READ_OWNED_COMMENTS, UPDATE_COMMENT } from "@/lib/graphql-queries"
 import { useMutation, useQuery } from "@apollo/client/react"
@@ -60,6 +60,7 @@ import CommentDialogFilter from "../filter/comment-dialog-filter"
 import { GlobalContext, QueryState } from "@/lib/context"
 import { Toggle } from "@/components/ui/toggle"
 import { QueryResult } from "@/lib/graphql-utils"
+import ITrackedEntity from "@/app/model/ITrackedEntity"
 
 const logger = new LoggerEx(dialog, "[CommentsDialog] ")
 
@@ -97,15 +98,16 @@ export default function CommentsDialog({
   className,
   disabled,
   targetKind,
-  targetId,
-  targetLabel,
+  target
 }: {
   className?: string
   disabled: boolean
   targetKind: RecordKind
-  targetId: string
-  targetLabel: string
+  target: ITrackedEntity | undefined
 }) {
+  const targetId= target?.id ?? ''
+  const targetLabel = getRecordLabel(targetKind, target) ?? ''
+
   logger.debug("render: targetKind='%s', targetId='%s', targetLabel='%s'", targetKind, targetId, targetLabel)
 
   const { user, hasAuthority } = useAuth()
@@ -382,7 +384,7 @@ export default function CommentsDialog({
         <ButtonEx
           type="button"
           outerClassName={cn("place-self-center", className)}
-          className="w-35 bg-blue-500 text-md"
+          className="w-40 bg-blue-500 text-md"
           disabled={disabled}
           onClick={() => setCommentsDialogOpen(true)}
           help={
@@ -391,7 +393,7 @@ export default function CommentsDialog({
               : `No ${targetKind} selected`
           }
         >
-          Comments...
+          Comments...({target ? target.comments?.totalElements.toLocaleString() : 0})
         </ButtonEx>
       </SheetTrigger>
       <SheetContent className="w-100" onInteractOutside={(e) => e.preventDefault()}>

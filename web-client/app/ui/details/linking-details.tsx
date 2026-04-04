@@ -142,10 +142,10 @@ export default function LinkingDetails(
           </ComboboxList>
         </ComboboxContent>
       </Combobox>
-      <Link className="justify-self-center w-42" href={getOtherRecordUrl()}>
+      <Link className="justify-self-center w-47" href={getOtherRecordUrl()}>
         <ButtonEx
           outerClassName="col-start-5 justify-center w-full"
-          className="w-35 bg-blue-500 text-md"
+          className="w-40 bg-blue-500 text-md"
           type="button"
           disabled={!selectedLink}
           help={

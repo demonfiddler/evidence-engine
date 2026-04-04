@@ -62,6 +62,13 @@ public class PageableInput extends AbstractGraphQLObject {
 	SortInput sort;
 
 	/**
+	 * Requests the total number of records matching the query criteria, without returning the records themselves.
+	 */
+	@JsonProperty("requestCount")
+	@GraphQLScalar( fieldName = "requestCount", graphQLTypeSimpleName = "Boolean", javaClass = Boolean.class, listDepth = 0)
+	Boolean requestCount;
+
+	/**
 	 * 0-based page number, must be >= 0. Omit or set to 0 for first page.
 	 */
 	@JsonProperty("pageNumber")
@@ -109,6 +116,22 @@ public class PageableInput extends AbstractGraphQLObject {
 		return this.sort;
 	}
 
+	/**
+	 * Requests the total number of records matching the query criteria, without returning the records themselves.
+ 	 */
+	@JsonProperty("requestCount")
+	public void setRequestCount(Boolean requestCount) {
+		this.requestCount = requestCount;
+	}
+
+	/**
+	 * Requests the total number of records matching the query criteria, without returning the records themselves.
+	 */
+	@JsonProperty("requestCount")
+	public Boolean getRequestCount() {
+		return this.requestCount;
+	}
+
 	public String toString() {
 		return "PageableInput {" //
 			+ "pageNumber: " + this.pageNumber //
@@ -116,6 +139,8 @@ public class PageableInput extends AbstractGraphQLObject {
 			+ "pageSize: " + this.pageSize //
 			+ ", " //
 			+ "sort: " + this.sort //
+			+ ", " //
+			+ "requestCount: " + this.requestCount //
 			+ "}";
 	}
 
@@ -132,6 +157,7 @@ public class PageableInput extends AbstractGraphQLObject {
 		private Integer pageNumber;
 		private Integer pageSize;
 		private SortInput sort;
+		private Boolean requestCount;
 
 		/**
 		 * 0-based page number, must be >= 0. Omit or set to 0 for first page.
@@ -157,11 +183,20 @@ public class PageableInput extends AbstractGraphQLObject {
 			return this;
 		}
 
+	    /**
+	     * Requests the total number of records matching the query criteria, without returning the records themselves.
+	     */
+		public Builder withRequestCount(Boolean requestCountParam) {
+			this.requestCount = requestCountParam;
+			return this;
+		}
+
 		public PageableInput build() {
 			PageableInput _object = new PageableInput();
 			_object.setPageNumber(this.pageNumber);
 			_object.setPageSize(this.pageSize);
 			_object.setSort(this.sort);
+			_object.setRequestCount(this.requestCount);
 			return _object;
 		}
 

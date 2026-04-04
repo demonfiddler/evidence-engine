@@ -640,7 +640,7 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
           type="button"
           variant="default"
           outerClassName={cn("place-self-center", "")}
-          className="w-35 bg-blue-500 text-md"
+          className="w-40 bg-blue-500 text-md"
           disabled={!hasAuthority("UPD") || !record}
           onClick={() => setStatusDialogItem(LINK_MANAGER)}
           help={`Manage links for ${recordLabel}`}>

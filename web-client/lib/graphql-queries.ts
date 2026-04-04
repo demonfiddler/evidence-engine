@@ -57,6 +57,9 @@ fragment trackedEntityFields on ITrackedEntity {
     lastName
     username
   }
+  comments(pageSort: {requestCount: true}) {
+    totalElements
+  }
   # log {
   #   ...pageFields
   #   content {
@@ -79,26 +82,6 @@ fragment trackedEntityFields on ITrackedEntity {
   # }
 }
 `
-
-/*
-const FRAGMENT_TRACKED_ENTITY_FIELDS_POLYMORPHIC = gql`
-fragment trackedEntityFieldsPolymorphic on ITrackedEntity {
-  ...trackedEntityFields
-  ...on EntityLink {
-    ...entityLinkFields
-  }
-  ...on Journal {
-    ...journalFields
-  }
-  ...on Publisher {
-    ...publisherFields
-  }
-  ...on User {
-    ...userFields
-  }
-}
-`
-*/
 
 const FRAGMENT_LINKED_ENTITY_FIELDS = gql`
 fragment linkedEntityFields on ILinkableEntity {

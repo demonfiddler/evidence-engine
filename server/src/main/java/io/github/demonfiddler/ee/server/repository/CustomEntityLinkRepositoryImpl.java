@@ -35,6 +35,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.github.demonfiddler.ee.server.model.CountPageImpl;
+import io.github.demonfiddler.ee.server.model.Countable;
 import io.github.demonfiddler.ee.server.model.EntityLink;
 import io.github.demonfiddler.ee.server.model.EntityLinkQueryFilter;
 import jakarta.persistence.NoResultException;
@@ -337,6 +339,9 @@ public class CustomEntityLinkRepositoryImpl extends AbstractCustomRepositoryImpl
         else
             LOGGER.debug("Executing query '{}'", m.countQueryName);
         long total = (Long)queries.countQuery().getSingleResult();
+
+        if (pageable instanceof Countable)
+            return CountPageImpl.of(total);
 
         if (LOGGER.isTraceEnabled())
             LOGGER.trace("Executing query '{}' with parameters {}", m.selectQueryName, params);
