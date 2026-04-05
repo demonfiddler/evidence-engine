@@ -32,7 +32,7 @@ import Journal from "@/app/model/Journal"
 import Publisher from "@/app/model/Publisher"
 import StandardDetails from "./standard-details"
 import DetailActions, { DetailMode, DetailState } from "./detail-actions"
-import { Dispatch, SetStateAction, useMemo } from "react"
+import { Dispatch, SetStateAction, useCallback, useMemo } from "react"
 import { useFormContext } from "react-hook-form"
 import { JournalFieldValues } from "../validators/journal"
 import { FormActionHandler } from "@/hooks/use-page-logic"
@@ -46,11 +46,13 @@ import IPage from "@/app/model/IPage"
 import { QueryResult } from "@/lib/graphql-utils"
 import { useQuery } from "@apollo/client/react"
 import CheckboxEx from "../ext/checkbox-ex"
-import { NotebookTabsIcon, RotateCwIcon } from "lucide-react"
+import { ArrowRight, NotebookTabsIcon, RotateCwIcon } from "lucide-react"
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
 import { InputGroupAddon } from "@/components/ui/input-group"
 import { Button } from "@/components/ui/button"
 import Help from "../misc/help"
+import { Badge } from "@/components/ui/badge"
+import { AddOnLink } from "../ext/addon-link"
 
 const logger = new LoggerEx(detail, "[JournalDetails] ")
 const EMPTY_PUBLISHERS = [] as Publisher[]
@@ -84,6 +86,7 @@ export default function JournalDetails(
   }, [publishers])
   const publisherId = form.getValues().publisherId
   const selectedPublisher = publisherId ? publishersById[publisherId] ?? null : null
+  const getPublisherUri = useCallback(() => `/publishers/?recordId=${publisherId ?? ''}`, [publisherId])
 
   return (
     <fieldset className="border shadow-lg rounded-md">
@@ -235,7 +238,15 @@ export default function JournalDetails(
                       readOnly={!updating}
                       showClear
                     >
-                    <InputGroupAddon align="inline-end">
+                    <InputGroupAddon className="gap-1" align="inline-end">
+                      <AddOnLink
+                        href={getPublisherUri()}
+                        disabled={!publisherId}
+                        title="Go to the selected publisher"
+                      >
+                        <ArrowRight className="w-6 h-6 text-gray-400" />
+                      </AddOnLink>
+                      <Badge variant="outline" title="The number of publishers">{publishers.length}</Badge>
                       <Button
                         className="w-6 h-6"
                         type="button"

@@ -29,7 +29,7 @@ import LogDialog from "../log/log-dialog"
 import InputEx from "../ext/input-ex"
 import { detail, LoggerEx } from "@/lib/logger"
 import StatusDialog from "../dialog/status-dialog"
-import { LinkIcon } from "lucide-react"
+import { ArrowRight, LinkIcon } from "lucide-react"
 import ButtonEx from "../ext/button-ex"
 import useLinkableEntityQueryFilter from "@/hooks/use-linkable-entity-query-filter"
 import { LinkableEntityQueryFilter } from "@/app/model/schema"
@@ -38,6 +38,8 @@ import Link from "next/link"
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
 import { InputGroupAddon } from "@/components/ui/input-group"
 import Help from "../misc/help"
+import { AddOnLink } from "../ext/addon-link"
+import { Badge } from "@/components/ui/badge"
 
 const logger = new LoggerEx(detail, "[LinkingDetails] ")
 
@@ -92,7 +94,7 @@ export default function LinkingDetails(
     }
   }, [handleSelectedLinkChange, record])
 
-  const getOtherRecordUrl = useCallback(() => {
+  const getOtherRecordUri = useCallback(() => {
     let uri = ""
     if (selectedLink?.otherRecordKind && selectedLink?.otherRecordId) {
       uri = `/${selectedLink.otherRecordKind?.toLowerCase()}s/`
@@ -107,7 +109,7 @@ export default function LinkingDetails(
   return (
     <div className="w-full grid grid-cols-5 gap-2">
       <span className="text-lg"><LinkIcon className="inline" />&nbsp;Linking</span>
-      <Label className="col-start-1" htmlFor="links">{`Record links (${recordLinks.length}):`}</Label>
+      <Label className="col-start-1" htmlFor="links">Record links</Label>
       <Combobox
         disabled={!record}
         items={recordLinks}
@@ -127,7 +129,15 @@ export default function LinkingDetails(
           readOnly={!record}
           showClear
         >
-          <InputGroupAddon align="inline-end">
+          <InputGroupAddon className="gap-1" align="inline-end">
+            <AddOnLink
+              href={getOtherRecordUri()}
+              disabled={!selectedLinkId}
+              title={`Go to the linked ${selectedLink?.otherRecordKind ?? "record"}`}
+            >
+              <ArrowRight className="w-6 h-6 text-gray-400" />
+            </AddOnLink>
+            <Badge variant="outline" title="The number of record links">{recordLinks.length}</Badge>
             <Help text="A list of all the records which are linked with the selected record. Select one to see its settings." />
           </InputGroupAddon>
         </ComboboxInput>
@@ -142,21 +152,10 @@ export default function LinkingDetails(
           </ComboboxList>
         </ComboboxContent>
       </Combobox>
-      <Link className="justify-self-center w-47" href={getOtherRecordUrl()}>
-        <ButtonEx
-          outerClassName="col-start-5 justify-center w-full"
-          className="w-40 bg-blue-500 text-md"
-          type="button"
-          disabled={!selectedLink}
-          help={
-            selectedLink?.otherRecordKind
-            ? `Navigate to the ${selectedLink?.otherRecordKind}s page`
-            : "No record link selected"
-          }
-        >
-          Go to
-        </ButtonEx>
-      </Link>
+      <StatusDialog
+        recordKind={recordKind as LinkableEntityKind}
+        record={record}
+      />
       <Label className="col-start-1" htmlFor="link-id">Link ID:</Label>
       <InputEx
         id="link-id"
@@ -175,9 +174,13 @@ export default function LinkingDetails(
         value={selectedLink?.status ?? ''}
         help="The status of the selected record link"
       />
-      <StatusDialog
-        recordKind={recordKind as LinkableEntityKind}
-        record={record}
+      <LogDialog
+        className="col-start-5 place-items-center"
+        recordKind="RecordLink"
+        recordId={selectedLinkId ?? ''}
+        recordLabel={getLinkLabel(recordKind as LinkableEntityKind, selectedLink)}
+        disabled={!selectedLink || !state.allowRead}
+        state={state}
       />
       <Label htmlFor="link-created-by" className="col-start-1">Created by:</Label>
       <InputEx
@@ -196,14 +199,6 @@ export default function LinkingDetails(
         disabled={!record}
         value={formatDateTime(selectedLink?.created)}
         help="The date and time at which the record link was created"
-      />
-      <LogDialog
-        className="col-start-5 place-items-center"
-        recordKind="RecordLink"
-        recordId={selectedLinkId ?? ''}
-        recordLabel={getLinkLabel(recordKind as LinkableEntityKind, selectedLink)}
-        disabled={!selectedLink || !state.allowRead}
-        state={state}
       />
       <Label htmlFor="link-updated-by" className="col-start-1">Updated by:</Label>
       <InputEx

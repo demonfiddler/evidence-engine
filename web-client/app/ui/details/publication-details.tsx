@@ -35,7 +35,7 @@ import { cn, formatDate } from "@/lib/utils"
 import Journal from "@/app/model/Journal"
 import StandardDetails from "./standard-details"
 import DetailActions, { DetailMode, DetailState } from "./detail-actions"
-import { Dispatch, SetStateAction, useMemo, useState } from "react"
+import { Dispatch, SetStateAction, useCallback, useMemo, useState } from "react"
 import { useFormContext } from "react-hook-form"
 import { PublicationFieldValues } from "../validators/publication"
 import { FormActionHandler } from "@/hooks/use-page-logic"
@@ -50,12 +50,15 @@ import { useQuery } from "@apollo/client/react"
 import { READ_JOURNALS } from "@/lib/graphql-queries"
 import IPage from "@/app/model/IPage"
 import { QueryResult } from "@/lib/graphql-utils"
-import { CalendarIcon, NotebookTabsIcon, RotateCwIcon } from "lucide-react"
+import { ArrowRight, CalendarIcon, NotebookTabsIcon, RotateCwIcon } from "lucide-react"
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
 import { publicationKinds, publicationKindsByKind } from "@/data/publication-kinds"
 import { InputGroupAddon } from "@/components/ui/input-group"
 import Help from "../misc/help"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import Link from "next/link"
+import { AddOnLink } from "../ext/addon-link"
 
 const logger = new LoggerEx(detail, "[PublicationDetails] ")
 const EMPTY_JOURNALS = [] as Journal[]
@@ -91,6 +94,7 @@ export default function PublicationDetails(
   }, [journals])
   const journalId = form.getValues().journalId
   const selectedJournal = journalId ? journalsById[journalId] ?? null : null
+  const getJournalUri = useCallback(() => `/journals/?recordId=${journalId ?? ''}`, [journalId])
 
   const kind = form.getValues().kind
   const selectedPublicationKind = kind ? publicationKindsByKind[kind] ?? null : null
@@ -254,7 +258,15 @@ export default function PublicationDetails(
                       readOnly={!updating}
                       showClear
                     >
-                      <InputGroupAddon align="inline-end">
+                      <InputGroupAddon className="gap-1" align="inline-end">
+                        <AddOnLink
+                          href={getJournalUri()}
+                          disabled={!journalId}
+                          title="Go to the selected journal"
+                        >
+                          <ArrowRight className="w-6 h-6 text-gray-400" />
+                        </AddOnLink>
+                        <Badge variant="outline" title="The number of publishers">{journals.length}</Badge>
                         <Button
                           className="w-6 h-6"
                           type="button"

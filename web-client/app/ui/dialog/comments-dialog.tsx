@@ -61,6 +61,7 @@ import { GlobalContext, QueryState } from "@/lib/context"
 import { Toggle } from "@/components/ui/toggle"
 import { QueryResult } from "@/lib/graphql-utils"
 import ITrackedEntity from "@/app/model/ITrackedEntity"
+import { Badge } from "@/components/ui/badge"
 
 const logger = new LoggerEx(dialog, "[CommentsDialog] ")
 
@@ -393,7 +394,7 @@ export default function CommentsDialog({
               : `No ${targetKind} selected`
           }
         >
-          Comments...({target ? target.comments?.totalElements.toLocaleString() : 0})
+          Comments...<Badge variant="secondary">{target ? target.comments?.totalElements.toLocaleString() : 0}</Badge>
         </ButtonEx>
       </SheetTrigger>
       <SheetContent className="w-100" onInteractOutside={(e) => e.preventDefault()}>

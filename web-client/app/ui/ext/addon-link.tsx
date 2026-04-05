@@ -19,14 +19,31 @@
 
 'use client'
 
-import { z } from "zod/v4"
-import { Rateable } from "./tracked-entity"
+import Link from "next/link";
+import { ReactNode } from "react";
 
-export const TopicSchema = Rateable.extend({
-  path: z.string(),
-  label: z.string().min(2).max(50),
-  description: z.string().max(500),
-  parentId: z.string().regex(/^\d*$/).nullable(),
-})
+/**
+ * A Link that can be disabled.
+ */
+export function AddOnLink(
+  { href, disabled = false, title = '', children } :
+  { href: string; disabled?: boolean; title?: string, children: ReactNode }) {
 
-export type TopicFieldValues = z.infer<typeof TopicSchema>
+  if (disabled) {
+    return (
+      <span className="flex items-center text-muted-foreground opacity-50 cursor-not-allowed">
+        {children}
+      </span>
+    )
+  }
+
+  return (
+    <Link
+      href={href}
+      className="flex items-center text-muted-foreground hover:text-foreground"
+      title={title}
+    >
+      {children}
+    </Link>
+  )
+}
