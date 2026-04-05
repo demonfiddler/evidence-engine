@@ -266,7 +266,7 @@ export default function PublicationDetails(
                         >
                           <ArrowRight className="w-6 h-6 text-gray-400" />
                         </AddOnLink>
-                        <Badge variant="outline" title="The number of publishers">{journals.length}</Badge>
+                        <Badge variant="outline" title="The number of publishers">{journals.length.toLocaleString()}</Badge>
                         <Button
                           className="w-6 h-6"
                           type="button"

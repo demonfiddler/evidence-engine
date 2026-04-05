@@ -137,7 +137,7 @@ export default function LinkingDetails(
             >
               <ArrowRight className="w-6 h-6 text-gray-400" />
             </AddOnLink>
-            <Badge variant="outline" title="The number of record links">{recordLinks.length}</Badge>
+            <Badge variant="outline" title="The number of record links">{recordLinks.length.toLocaleString()}</Badge>
             <Help text="A list of all the records which are linked with the selected record. Select one to see its settings." />
           </InputGroupAddon>
         </ComboboxInput>
