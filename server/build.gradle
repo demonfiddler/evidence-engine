@@ -110,7 +110,7 @@ tasks.named("bootWar", org.springframework.boot.gradle.tasks.bundling.BootWar) {
     }
 }
 
-def profile = project.findProperty("profile") ?: "dev"
+def profile = project.findProperty("profile") ?: "development"
 def selectedConfig = "application-${profile}.properties"
 tasks.named("processResources") { processResources ->
     // Make profile affect up-to-date checks
