@@ -108,7 +108,12 @@ public class User extends AbstractTrackedEntity {
     @ElementCollection//(targetClass = AuthorityKind.class)
     @CollectionTable(name = "user_authority", joinColumns = {
 		@JoinColumn(name = "user_id", referencedColumnName = "id"),
-		@JoinColumn(name = "username", referencedColumnName = "username")
+		// The username key is used by Spring Security's JdbcUserDetailsManager but
+		// the following @JoinColumn causes weird ClassCastExceptions because this forces Hibernate to use a composite
+		// key, and when it attempts to compute a hash code from (id, username), it tries to call j.l.r.Field.get() on a
+		// AbstractTrackedEntity$HibernateProxy rather than a User$HibernateProxy. No idea why this happens.
+		// So instead, we just key on user_id and rely on an INSERT trigger to set username from the referenced user.
+		// @JoinColumn(name = "username", referencedColumnName = "username")
 	})
     @Column(name = "authority")
     @Enumerated(EnumType.STRING)

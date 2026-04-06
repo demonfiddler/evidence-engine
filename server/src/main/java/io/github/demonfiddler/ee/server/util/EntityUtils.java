@@ -134,24 +134,16 @@ public class EntityUtils {
 	@Resource
 	private SecurityUtils securityUtils;
 
-	/**
-	 * Converts an {@link Iterable} of a given source class into a list of a given target class.
-	 * @param <T> The target class
-	 * @param sources The {@link Iterable} of source instances.
-	 * @param sourceClass The source class
-	 * @param targetClass The target class
-	 * @return The list of target classes, where each instance is mapped from the source class found in <I>sources</I>.
-	 * It returns null if <I>sources</I> is null.
-	 */
-	public <T> List<T> toList(Iterable<T> sources, Class<T> targetClass) {
-		if (sources == null)
-			return null;
-
-		List<T> ret = new ArrayList<>();
-		for (T t : sources)
-			ret.add(t);
-
-		return ret;
+	@SuppressWarnings("unchecked")
+	public <T> List<T> unproxy(List<T> list) {
+		List<T> unproxied = new ArrayList<>(list.size());
+		for (int i = 0; i < list.size(); i++) {
+			T value = list.get(i);
+			if (value instanceof HibernateProxy)
+				value = (T)Hibernate.unproxy(value);
+			unproxied.add(value);
+		}
+		return unproxied;
 	}
 
 	/**
@@ -187,9 +179,11 @@ public class EntityUtils {
 	public <K, V> Map<K, List<V>> getListValuesMap(List<K> keys, Function<K, List<V>> accessor) {
 		Map<K, List<V>> values = new HashMap<>(keys.size());
 		for (K key : keys) {
-			List<V> value = accessor.apply(key);
-			if (value != null)
-				values.put(key, value);
+			List<V> list = accessor.apply(key);
+			if (list != null) {
+				list = unproxy(list);
+				values.put(key, list);
+			}
 		}
 		return values;
 	}
@@ -396,7 +390,7 @@ public class EntityUtils {
 	 */
 	public <P extends IBaseEntityPage<T>, T extends IBaseEntity> P toEntityPage(Page<T> jpaPage, Supplier<P> ctor) {
 		P entityPage = ctor.get();
-		entityPage.setContent(jpaPage.getContent());
+		entityPage.setContent(unproxy(unproxy(jpaPage.getContent())));
 		entityPage.setHasContent(jpaPage.hasContent());
 		entityPage.setIsEmpty(jpaPage.isEmpty());
 		entityPage.setHasNext(jpaPage.hasNext());

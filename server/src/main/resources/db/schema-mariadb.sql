@@ -218,6 +218,12 @@ CREATE TABLE IF NOT EXISTS "log" (
   CONSTRAINT "FK_log_linked_entity_id" FOREIGN KEY ("linked_entity_id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='A log of all transactions';
 
+CREATE VIEW IF NOT EXISTS `log_vw` AS
+SELECT l."id", l."timestamp", l."user_id", l."transaction_kind", e."dtype" "entity_kind", l."entity_id", le."dtype" "linked_entity_kind", l."linked_entity_id" FROM "log" l
+JOIN "entity" e ON l."entity_id" = e."id"
+LEFT JOIN "entity" le ON l."linked_entity_id" = le."id"
+ORDER BY l."id";
+
 -- Dumping structure for table evidence_engine.authority_kind
 CREATE TABLE IF NOT EXISTS "authority_kind" (
   "code" char(3) NOT NULL COMMENT 'Unique authority code',
@@ -426,6 +432,27 @@ CREATE TABLE IF NOT EXISTS "user_authority" (
   CONSTRAINT "FK_user_authority_username" FOREIGN KEY ("username") REFERENCES "user" ("username") ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT "FK_user_authority_authority" FOREIGN KEY ("authority") REFERENCES "authority_kind" ("code") ON UPDATE CASCADE ON DELETE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Holds authorities granted to users';
+
+-- This Trigger is required in order to populate user_authority.username on INSERT,
+-- because the application level JPA code uses user_id as the key,
+-- whereas Spring Security uses username as the key.
+DELIMITER //
+
+CREATE TRIGGER IF NOT EXISTS "TR_user_authority_username"
+BEFORE INSERT ON "user_authority"
+FOR EACH ROW
+BEGIN
+  DECLARE v_username VARCHAR(50);
+
+  SELECT "username" INTO v_username
+  FROM "user" u
+  WHERE u."id" = NEW."user_id";
+
+  SET NEW."username" = v_username;
+END//
+
+DELIMITER ;
+;
 
 CREATE TABLE IF NOT EXISTS "group" (
   "id"  bigint(20) unsigned AUTO_INCREMENT NOT NULL COMMENT 'The unique system-assigned group identifier',

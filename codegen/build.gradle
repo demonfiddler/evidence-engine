@@ -1,7 +1,7 @@
 plugins {
 	id 'java'
 	// Uncomment the following line to enable GraphQL code generation
-	// id "com.graphql-java-generator.graphql-gradle-plugin3" version "${graphQLPluginVersion}"
+	id "com.graphql-java-generator.graphql-gradle-plugin3" version "${graphQLPluginVersion}"
 	// id "com.netflix.dgs.codegen" version "${netflixDgsCodegenVersion}"
 	id "org.openapi.generator" version "${openapiGeneratorVersion}"
 }
@@ -82,4 +82,4 @@ openApiValidate {
 }
 
 // Uncomment the following line to enable GraphQL code generation (NOTE: the generated code has been heavily modified).
-// apply from: 'graphql-codegen.gradle'
+apply from: 'graphql-codegen.gradle'

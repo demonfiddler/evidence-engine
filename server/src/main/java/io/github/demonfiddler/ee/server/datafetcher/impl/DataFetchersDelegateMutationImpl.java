@@ -545,7 +545,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
 	 * @param existingEntityLink The existing entity link in the {@code updateEntityLink} case.
 	 * @param input The input passed to {@code createEntityLink} or {@code updateEntityLink}.
 	 * @param fromEntity The 'from' entity per {@code input.getFromEntityId()}.
-	 * @param toEntity TODO
+	 * @param toEntity The 'to' entity per {@code input.getToEntityId()}.
 	 * @throws IllegalArgumentException if there is an existing entity link to a Topic that is an ancestor or descendant
 	 * of {@code fromEntity}.
 	 */

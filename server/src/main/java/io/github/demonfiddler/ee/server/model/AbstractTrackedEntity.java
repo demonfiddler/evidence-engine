@@ -89,7 +89,7 @@ public abstract class AbstractTrackedEntity implements ITrackedEntity {
 	@GraphQLNonScalar(fieldName = "createdByUser", graphQLTypeSimpleName = "User", javaClass = User.class,
 		listDepth = 0)
 	@GraphQLDirective(name = "@auth", parameterNames = {}, parameterTypes = {}, parameterValues = {})
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = User.class)
 	@JoinColumn(name = "created_by_user_id", nullable = false)
 	User createdByUser;
 
@@ -106,7 +106,7 @@ public abstract class AbstractTrackedEntity implements ITrackedEntity {
 	@GraphQLNonScalar(fieldName = "updatedByUser", graphQLTypeSimpleName = "User", javaClass = User.class,
 		listDepth = 0)
 	@GraphQLDirective(name = "@auth", parameterNames = {}, parameterTypes = {}, parameterValues = {})
-	@ManyToOne(fetch = FetchType.LAZY, optional = true)
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = User.class)
 	@JoinColumn(name = "updated_by_user_id", nullable = true)
 	User updatedByUser;
 

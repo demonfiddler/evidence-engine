@@ -26,8 +26,10 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.dataloader.BatchLoaderEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.graphql.execution.BatchLoaderRegistry;
 import org.springframework.stereotype.Controller;
@@ -35,10 +37,12 @@ import org.springframework.stereotype.Controller;
 import com.graphql_java_generator.server.util.GraphqlServerUtils;
 import com.graphql_java_generator.util.GraphqlUtils;
 
+import graphql.GraphQLContext;
 import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateLog;
 import io.github.demonfiddler.ee.server.model.FormatKind;
 import io.github.demonfiddler.ee.server.model.Log;
+import io.github.demonfiddler.ee.server.model.User;
 import reactor.core.publisher.Mono;
 
 /**
@@ -72,6 +76,24 @@ public class LogController {
 				return map;
 			});
 		});
+	}
+
+	/**
+	 * This methods loads the data for Log.user. It is generated as the <code>generateBatchMappingDataFetchers</code>
+	 * plugin parameter is true. <br/>
+	 * @param batchLoaderEnvironment The environment for this batch loader. You can extract the GraphQLContext from this
+	 * parameter.
+	 * @param graphQLContext
+	 * @param keys The objects for which the value for the user field must be retrieved.
+	 * @return This method returns <code>${dataFetcher.batchMappingReturnType.value}</code>, as defined by the
+	 * <code>batchMappingDataFetcherReturnType</code> plugin parameter. <br/>
+	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
+	 */
+	@BatchMapping(field = "user")
+	public Map<Log, User> user(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
+		List<Log> keys) {
+
+		return this.dataFetchersDelegateLog.user(batchLoaderEnvironment, graphQLContext, keys);
 	}
 
 	/**

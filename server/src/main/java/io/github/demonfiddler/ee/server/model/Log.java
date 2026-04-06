@@ -64,7 +64,7 @@ public class Log implements IBaseEntity {
 	/**
 	 * The user who made the change.
 	 */
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = User.class)
 	@JoinColumn(name = "user_id", nullable = false)
 	@GraphQLNonScalar(fieldName = "user", graphQLTypeSimpleName = "User", javaClass = User.class, listDepth = 0)
 	@GraphQLDirective(name = "@auth", parameterNames = {}, parameterTypes = {}, parameterValues = {})
