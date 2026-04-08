@@ -21,6 +21,7 @@
 
 import ILinkableEntity from "./ILinkableEntity"
 import Journal from "./Journal"
+import Publisher from "./Publisher"
 
 export default interface Publication extends ILinkableEntity {
   /** The publication title. */
@@ -29,6 +30,8 @@ export default interface Publication extends ILinkableEntity {
   authors?: string
   /** The journal in which the publication appeared. */
   journal?: Journal | null
+  /** The publisher of the publication. */
+  publisher?: Publisher | null
   /** The publication kind. */
   kind?: string
   /** The publication date. */

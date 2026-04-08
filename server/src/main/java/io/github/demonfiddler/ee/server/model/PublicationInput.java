@@ -54,10 +54,16 @@ public class PublicationInput extends AbstractTrackedEntityInput {
 	String title;
 
 	/**
-	 * The name of the journal in which the publication appeared.
+	 * The ID of the journal in which the publication appeared.
 	 */
 	@GraphQLScalar(fieldName = "journalId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
 	Long journalId;
+
+	/**
+	 * The ID of the publisher of the publication.
+	 */
+	@GraphQLScalar( fieldName = "publisherId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
+	Long publisherId;
 
 	/**
 	 * The publication type.
@@ -271,6 +277,20 @@ public class PublicationInput extends AbstractTrackedEntityInput {
 	 */
 	public Long getJournalId() {
 		return this.journalId;
+	}
+
+	/**
+	 * The ID of the publisher of the publication.
+	 */
+	public void setPublisherId(Long publisherId) {
+		this.publisherId = publisherId;
+	}
+
+	/**
+	 * The ID of the publisher of the publication.
+	 */
+	public Long getPublisherId() {
+		return this.publisherId;
 	}
 
 	/**
@@ -651,6 +671,8 @@ public class PublicationInput extends AbstractTrackedEntityInput {
 			+ ", " //
 			+ "journalId: " + this.journalId //
 			+ ", " //
+			+ "publisherId: " + this.publisherId //
+			+ ", " //
 			+ "kind: " + this.kind //
 			+ ", " //
 			+ "date: " + this.date //
@@ -719,6 +741,7 @@ public class PublicationInput extends AbstractTrackedEntityInput {
 		private List<Long> authorIds;
 		private String title;
 		private Long journalId;
+		private Long publisherId;
 		private PublicationKind kind;
 		private LocalDate date;
 		private Integer year;
@@ -775,6 +798,14 @@ public class PublicationInput extends AbstractTrackedEntityInput {
 		 */
 		public Builder withJournalId(Long journalIdParam) {
 			this.journalId = journalIdParam;
+			return this;
+		}
+
+		/**
+		 * The ID of the publisher of the publication.
+		 */
+		public Builder withPublisherId(Long publisherIdParam) {
+			this.publisherId = publisherIdParam;
 			return this;
 		}
 
@@ -993,6 +1024,7 @@ public class PublicationInput extends AbstractTrackedEntityInput {
 			_object.setAuthorIds(this.authorIds);
 			_object.setTitle(this.title);
 			_object.setJournalId(this.journalId);
+			_object.setPublisherId(this.publisherId);
 			_object.setKind(this.kind);
 			_object.setDate(this.date);
 			_object.setYear(this.year);

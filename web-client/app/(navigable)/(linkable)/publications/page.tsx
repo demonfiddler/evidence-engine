@@ -41,7 +41,8 @@ function createFieldValues(publication?: Publication) : PublicationFieldValues {
     rating: publication?.rating ?? 0,
     title: publication?.title ?? '',
     authors: publication?.authors ?? '',
-    journalId: publication?.journal?.id ?? '',
+    journalId: publication?.journal?.id ?? null,
+    publisherId: publication?.publisher?.id ?? null,
     kind: publication?.kind as unknown as PublicationKind ?? '',
     // HACK ALERT for #36: pretend that date is always set, but it'll actually be undefined for a new Publication.
     date: toDate(publication?.date) as Date,
@@ -79,6 +80,7 @@ function createInput(fieldValues: PublicationFieldValues, id?: string) : Publica
     title: fieldValues.title,
     authorNames: fieldValues.authors,
     journalId: fieldValues.journalId || null,
+    publisherId: fieldValues.publisherId || null,
     kind: fieldValues.kind,
     date: toIsoDateString(fieldValues.date),
     year: toInteger(fieldValues.year),

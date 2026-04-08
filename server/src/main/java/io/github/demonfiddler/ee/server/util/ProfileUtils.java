@@ -19,7 +19,9 @@
 
 package io.github.demonfiddler.ee.server.util;
 
+import static io.github.demonfiddler.ee.server.util.Constants.PROFILE_DEVELOPMENT;
 import static io.github.demonfiddler.ee.server.util.Constants.PROFILE_INTEGRATION_TEST;
+import static io.github.demonfiddler.ee.server.util.Constants.PROFILE_PRODUCTION;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,11 +47,27 @@ public class ProfileUtils {
     }
 
     /**
+     * Indicates whether the server is running in development mode.
+     * @return {@code true} if the {@code development} profile is active.
+     */
+    public boolean isDevelopment() {
+        return isProfileActive(PROFILE_DEVELOPMENT);
+    }
+
+    /**
      * Indicates whether the server is running in integration test mode.
      * @return {@code true} if the {@code integration-test} profile is active.
      */
     public boolean isIntegrationTesting() {
         return isProfileActive(PROFILE_INTEGRATION_TEST);
+    }
+
+    /**
+     * Indicates whether the server is running in production mode.
+     * @return {@code true} if the {@code production} profile is active.
+     */
+    public boolean isProduction() {
+        return isProfileActive(PROFILE_PRODUCTION);
     }
 
 }

@@ -51,6 +51,7 @@ import io.github.demonfiddler.ee.server.model.LogPage;
 import io.github.demonfiddler.ee.server.model.LogQueryFilter;
 import io.github.demonfiddler.ee.server.model.PageableInput;
 import io.github.demonfiddler.ee.server.model.Publication;
+import io.github.demonfiddler.ee.server.model.Publisher;
 import io.github.demonfiddler.ee.server.model.User;
 import reactor.core.publisher.Mono;
 
@@ -318,7 +319,7 @@ public class PublicationController {
 	 * this parameter.
 	 * @param graphQLContext
 	 * @param keys The objects for which the value for the journal field must be retrieved.
-	 * @return This method returns <code>${dataFetcher.batchMappingReturnType.value}</code>, as defined by the
+	 * @return This method returns <code>Map&lt;Publication, Journal&gt;</code>, as defined by the
 	 * <code>batchMappingDataFetcherReturnType</code> plugin parameter. <br/>
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
@@ -327,6 +328,24 @@ public class PublicationController {
 		GraphQLContext graphQLContext, List<Publication> keys) {
 
 		return this.dataFetchersDelegatePublication.journal(batchLoaderEnvironment, graphQLContext, keys);
+	}
+
+	/**
+	 * Loads the data for Publication.publisher. It is generated as the <code>generateBatchMappingDataFetchers</code>
+	 * plugin parameter is true. <br/>
+	 * @param batchLoaderEnvironment The environment for this batch loader. You can extract the GraphQLContext from this
+	 * parameter.
+	 * @param graphQLContext
+	 * @param keys The objects for which the value for the publisher field must be retrieved.
+	 * @return This method returns <code>Map&lt;Publication, Publisher&gt;</code>, as defined by the
+	 * <code>batchMappingDataFetcherReturnType</code> plugin parameter. <br/>
+	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
+	 */
+	@BatchMapping(field = "publisher")
+	public Map<Publication, Publisher> publisher(BatchLoaderEnvironment batchLoaderEnvironment,
+		GraphQLContext graphQLContext, List<Publication> keys) {
+
+		return this.dataFetchersDelegatePublication.publisher(batchLoaderEnvironment, graphQLContext, keys);
 	}
 
 	/**

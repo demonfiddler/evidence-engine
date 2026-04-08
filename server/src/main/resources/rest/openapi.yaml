@@ -16,9 +16,9 @@ externalDocs:
   description: Find out more about Evidence Engine
   url: https://campaign-resources.org/files/Evidence%20Engine/Evidence%20Engine.pdf
 servers:
-  - url: http://localhost:8080/rest
+  - url: http://localhost:8080/api/rest
     description: Local development server
-  - url: https://ee.campaign-resources.org/rest
+  - url: https://ee.campaign-resources.org/api/rest
     description: Production server
 security: []
 tags:

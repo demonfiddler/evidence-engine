@@ -41,10 +41,14 @@ public class PublicationColumns {
     private static final Column<Publication> JOURNAL = new Column<>("journal", "Journal", ColumnType.STRING, SINGLE,
         (rec, raw) -> rec.getJournal() != null ? rec.getJournal().getAbbreviation() != null
             ? rec.getJournal().getAbbreviation() : rec.getJournal().getTitle() : "");
+    private static final Column<Publication> PUBLISHER = new Column<>("publisher", "Publisher", ColumnType.STRING,
+        SINGLE, (rec, raw) -> rec.getPublisher() != null && rec.getPublisher().getName() != null
+            ? rec.getPublisher().getName() : "");
     private static final Column<Publication> DATE = new Column<>("date", "Date", ColumnType.DATE, SINGLE, null);
     private static final Column<Publication> YEAR = new Column<>("year", "Year", ColumnType.NUMBER, SINGLE,
         (rec, raw) -> rec.getYear() != null ? rec.getYear().toString() : "");
-    private static final Column<Publication> KEYWORDS = new Column<>("keywords", "Keywords", ColumnType.STRING, FULL, null);
+    private static final Column<Publication> KEYWORDS =
+        new Column<>("keywords", "Keywords", ColumnType.STRING, FULL, null);
     private static final Column<Publication> ABSTRACT =
         new Column<>("abstract", "Abstract", ColumnType.STRING, FULL, null);
     private static final Column<Publication> DOI = new Column<>("doi", "DOI", ColumnType.STRING, SINGLE, (rec, raw) -> {
@@ -147,9 +151,9 @@ public class PublicationColumns {
     private static final Column<Publication> PEER_REVIEWED =
         new Column<>("peerReviewed", "Peer Reviewed", ColumnType.BOOLEAN, SINGLE, null);
 
-    public static final List<Column<Publication>> OWN_COLUMNS = List.of(TITLE, KIND, AUTHORS, JOURNAL, DATE, YEAR, KEYWORDS,
-        ABSTRACT, DOI, ISBN, PMCID, PMID, HSID, ARXIVID, BIORXIVXID, MEDRXIVID, ERICID, IHEPID, OAIPMHID, HALID, ZENODOID,
-        SCOPUSEID, WSAN, PINFOAN, URL, ACCESSED, NOTES, CACHED, PEER_REVIEWED);
+    public static final List<Column<Publication>> OWN_COLUMNS = List.of(TITLE, KIND, AUTHORS, JOURNAL, PUBLISHER, DATE,
+        YEAR, KEYWORDS, ABSTRACT, DOI, ISBN, PMCID, PMID, HSID, ARXIVID, BIORXIVXID, MEDRXIVID, ERICID, IHEPID,
+        OAIPMHID, HALID, ZENODOID, SCOPUSEID, WSAN, PINFOAN, URL, ACCESSED, NOTES, CACHED, PEER_REVIEWED);
     public static final List<Column<Publication>> OWN_DEFAULT_COLUMNS = List.of(TITLE, KIND, YEAR);
     public static final List<Column<? extends IBaseEntity>> ALL_COLUMNS =
         new CompositeList<>(List.of(TrackedEntityColumns.ALL_COLUMNS, OWN_COLUMNS));

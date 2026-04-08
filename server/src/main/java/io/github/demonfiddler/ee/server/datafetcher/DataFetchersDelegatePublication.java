@@ -31,6 +31,7 @@ import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.model.FormatKind;
 import io.github.demonfiddler.ee.server.model.Journal;
 import io.github.demonfiddler.ee.server.model.Publication;
+import io.github.demonfiddler.ee.server.model.Publisher;
 
 /**
  * Contains the data fetchers that are delegated in the bean that the implementation has to provide, when fetching
@@ -44,18 +45,32 @@ import io.github.demonfiddler.ee.server.model.Publication;
 public interface DataFetchersDelegatePublication extends DataFetchersDelegateILinkableEntity<Publication> {
 
 	/**
-	 * Loads the data for Publication.journal. It is generated as the
-	 * <code>generateBatchMappingDataFetchers</code> plugin parameter is true. <br/>
-	 * @param batchLoaderEnvironment The environment for this batch loader. You can extract the GraphQLContext from
-	 * this parameter.
+	 * Loads the data for Publication.journal. It is generated as the <code>generateBatchMappingDataFetchers</code>
+	 * plugin parameter is true. <br/>
+	 * @param batchLoaderEnvironment The environment for this batch loader. You can extract the GraphQLContext from this
+	 * parameter.
 	 * @param graphQLContext
 	 * @param keys The objects for which the value for the journal field must be retrieved.
-	 * @return This method returns <code>${dataFetcher.batchMappingReturnType.value}</code>, as defined by the
+	 * @return This method returns <code>Map&lt;Publication, Journal&gt;</code>, as defined by the
 	 * <code>batchMappingDataFetcherReturnType</code> plugin parameter. <br/>
 	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
 	 */
 	Map<Publication, Journal> journal(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
 		List<Publication> keys);
+
+	/**
+	 * Loads the data for Publication.publisher. It is generated as the <code>generateBatchMappingDataFetchers</code>
+	 * plugin parameter is true. <br/>
+	 * @param batchLoaderEnvironment The environment for this batch loader. You can extract the GraphQLContext from this
+	 * parameter.
+	 * @param graphQLContext
+	 * @param keys The objects for which the value for the publisher field must be retrieved.
+	 * @return This method returns <code>Map&lt;Publication, Publisher&gt;</code>, as defined by the
+	 * <code>batchMappingDataFetcherReturnType</code> plugin parameter. <br/>
+	 * Please look at the spring-graphql annotation for a documentation on how to return the proper values
+	 */
+	public Map<Publication, Publisher> publisher(BatchLoaderEnvironment batchLoaderEnvironment,
+		GraphQLContext graphQLContext, List<Publication> keys);
 
 	/**
 	 * Description for the kind field: <br/>

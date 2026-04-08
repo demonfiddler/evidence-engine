@@ -69,6 +69,13 @@ public class Publication extends AbstractLinkableEntity {
 	Journal journal;
 
 	/**
+	 * The publisher of the publication.
+	 */
+	@JsonProperty("publisher")
+	@GraphQLNonScalar( fieldName = "publisher", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class, listDepth = 0)
+	Publisher publisher;
+
+	/**
 	 * The publication kind.
 	 */
 	@JsonProperty("kind")
@@ -302,6 +309,22 @@ public class Publication extends AbstractLinkableEntity {
 	@JsonProperty("journal")
 	public Journal getJournal() {
 		return this.journal;
+	}
+
+	/**
+	 * The publisher of the publication.
+ 	 */
+	@JsonProperty("publisher")
+	public void setPublisher(Publisher publisher) {
+		this.publisher = publisher;
+	}
+
+	/**
+	 * The publisher of the publication.
+	 */
+	@JsonProperty("publisher")
+	public Publisher getPublisher() {
+		return this.publisher;
 	}
 
 	/**
@@ -752,6 +775,8 @@ public class Publication extends AbstractLinkableEntity {
 			+ ", " //
 			+ "journal: " + this.journal //
 			+ ", " //
+			+ "publisher: " + this.publisher //
+			+ ", " //
 			+ "kind: " + this.kind //
 			+ ", " //
 			+ "date: " + this.date //
@@ -815,6 +840,7 @@ public class Publication extends AbstractLinkableEntity {
 		result = prime * result + ((title == null) ? 0 : title.hashCode());
 		result = prime * result + ((authors == null) ? 0 : authors.hashCode());
 		result = prime * result + ((journal == null) ? 0 : journal.hashCode());
+		result = prime * result + ((publisher == null) ? 0 : publisher.hashCode());
 		result = prime * result + ((kind == null) ? 0 : kind.hashCode());
 		result = prime * result + ((date == null) ? 0 : date.hashCode());
 		result = prime * result + ((year == null) ? 0 : year.hashCode());
@@ -863,6 +889,11 @@ public class Publication extends AbstractLinkableEntity {
 			if (other.journal != null)
 				return false;
 		} else if (!journal.equals(other.journal))
+			return false;
+		if (publisher == null) {
+			if (other.publisher != null)
+				return false;
+		} else if (!publisher.equals(other.publisher))
 			return false;
 		if (kind == null) {
 			if (other.kind != null)
@@ -1010,6 +1041,7 @@ public class Publication extends AbstractLinkableEntity {
 		private String title;
 		private String authors;
 		private Journal journal;
+		private Publisher publisher;
 		private String kind;
 		private LocalDate date;
 		private Integer year;
@@ -1058,6 +1090,14 @@ public class Publication extends AbstractLinkableEntity {
 		 */
 		public Builder withJournal(Journal journalParam) {
 			this.journal = journalParam;
+			return this;
+		}
+
+		/**
+		 * The publisher of the publication.
+		 */
+		public Builder withPublisher(Publisher publisherParam) {
+			this.publisher = publisherParam;
 			return this;
 		}
 
@@ -1275,6 +1315,7 @@ public class Publication extends AbstractLinkableEntity {
 			_object.setTitle(this.title);
 			_object.setAuthors(this.authors);
 			_object.setJournal(this.journal);
+			_object.setPublisher(this.publisher);
 			_object.setKind(this.kind);
 			_object.setDate(this.date);
 			_object.setYear(this.year);

@@ -18,7 +18,7 @@
 -- ----------------------------------------------------------------------------------------------------------------------
 
 INSERT INTO "config" ("property", "subscript", "value") VALUES
-	('schema_version', 0, '1');
+	('schema_version', 0, '2');
 
 -- To populate table "abbreviation", manually run /server/sql/populatedb-abbreviation-mariadb.sql.
 -- N.B. Requires ltwa_current.csv, latest downloadable from https://www.issn.org/services/online-services/access-to-the-ltwa/.

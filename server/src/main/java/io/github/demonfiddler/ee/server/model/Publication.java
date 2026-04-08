@@ -68,6 +68,14 @@ public class Publication extends AbstractLinkableEntity {
 	Journal journal;
 
 	/**
+	 * The publisher of the publication.
+	 */
+	@GraphQLNonScalar( fieldName = "publisher", graphQLTypeSimpleName = "Publisher", javaClass = Publisher.class, listDepth = 0)
+	@ManyToOne(fetch = FetchType.LAZY, optional = true)
+	@JoinColumn(name = "publisher_id", nullable = true)
+	Publisher publisher;
+
+	/**
 	 * The publication kind.
 	 */
 	@GraphQLScalar(fieldName = "kind", graphQLTypeSimpleName = "String", javaClass = String.class, listDepth = 0)
@@ -270,6 +278,20 @@ public class Publication extends AbstractLinkableEntity {
 	 */
 	public Journal getJournal() {
 		return this.journal;
+	}
+
+	/**
+	  * The publisher of the publication.
+ 	 */
+	public void setPublisher(Publisher publisher) {
+		this.publisher = publisher;
+	}
+
+	/**
+	 * The publisher of the publication.
+	 */
+	public Publisher getPublisher() {
+		return this.publisher;
 	}
 
 	/**
@@ -666,6 +688,8 @@ public class Publication extends AbstractLinkableEntity {
 			+ ", " //
 			+ "journal: " + this.journal //
 			+ ", " //
+			+ "publisher: " + this.publisher //
+			+ ", " //
 			+ "kind: " + this.kind //
 			+ ", " //
 			+ "date: " + this.date //
@@ -733,6 +757,7 @@ public class Publication extends AbstractLinkableEntity {
 		private String title;
 		private String authors;
 		private Journal journal;
+		private Publisher publisher;
 		private String kind;
 		private LocalDate date;
 		private Integer year;
@@ -781,6 +806,14 @@ public class Publication extends AbstractLinkableEntity {
 		 */
 		public Builder withJournal(Journal journalParam) {
 			this.journal = journalParam;
+			return this;
+		}
+
+		/**
+		 * The publisher of the publication.
+		 */
+		public Builder withPublisher(Publisher publisherParam) {
+			this.publisher = publisherParam;
 			return this;
 		}
 
@@ -998,6 +1031,7 @@ public class Publication extends AbstractLinkableEntity {
 			_object.setTitle(this.title);
 			_object.setAuthors(this.authors);
 			_object.setJournal(this.journal);
+			_object.setPublisher(this.publisher);
 			_object.setKind(this.kind);
 			_object.setDate(this.date);
 			_object.setYear(this.year);

@@ -117,7 +117,8 @@ export default function ExportDialog<T>({ recordKind }: { recordKind: RecordKind
         path = "/groups"
         break
       default:
-        path = pathname.substring(pathname.lastIndexOf('/'));
+        let tmp = pathname.replace(/\/*$/, '')
+        path = tmp.substring(tmp.lastIndexOf('/'));
     }
 
     return `${process.env.NEXT_PUBLIC_SERVER_URL}/rest/export${path}?${newSearchParams.toString()}`

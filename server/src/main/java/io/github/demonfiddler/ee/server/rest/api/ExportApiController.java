@@ -348,15 +348,12 @@ public class ExportApiController implements ExportApi {
         if (webUrl.charAt(webUrl.length() - 1) != '/')
             webUrl.append('/');
         switch (recordKind) {
-            case "journals":
-            case "publishers":
-            case "topics":
             case "groups":
             case "users":
                 webUrl.append("admin/");
         }
         String lastSeg = recordKind.equals("groups") || recordKind.equals("users") ? "security" : recordKind;
-        webUrl.append(lastSeg);
+        webUrl.append(lastSeg).append('/');
         if (recordId != null) {
             sep = appendQueryParam(webUrl, sep, "recordId", recordId);
         } else {

@@ -417,6 +417,10 @@ fragment publicationFields on Publication {
     id
     ...journalFields
   }
+  publisher {
+    id
+    ...publisherFields
+  }
   kind(format: SHORT)
   kindLabel : kind(format: LONG)
   date

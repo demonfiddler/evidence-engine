@@ -154,17 +154,40 @@ public class SecurityConfig {
         return source;
     }
 
+/*
+    @Bean
+    public FilterRegistrationBean<Filter> debugFilter() {
+        FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>();
+        bean.setFilter(new Filter() {
+            @Override
+            public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+                    throws IOException, ServletException {
+
+                HttpServletRequest req = (HttpServletRequest) request;
+
+                System.out.println(">>> ContextPath = " + req.getContextPath());
+                System.out.println(">>> ServletPath = " + req.getServletPath());
+                System.out.println(">>> PathInfo    = " + req.getPathInfo());
+                System.out.println(">>> RequestURI  = " + req.getRequestURI());
+
+                chain.doFilter(request, response);
+            }
+        });
+        bean.addUrlPatterns("/*");
+        return bean;
+    }
+*/
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         init();
 
-        // For now, only expose the actuator endpoints during integration testing.
-        if (profileUtils.isIntegrationTesting()) {
+        // For now, only expose the actuator endpoints during development and integration testing.
+        if (profileUtils.isDevelopment() || profileUtils.isIntegrationTesting()) {
             http.csrf(customizer -> customizer //
-                .ignoringRequestMatchers("/actuator/**")) //
+                .ignoringRequestMatchers("/actuator/**", "/*/actuator/**")) //
                 .authorizeHttpRequests(customizer -> customizer //
-                    .requestMatchers(GET, "/actuator/**").permitAll() //
-                    .requestMatchers(POST, "/actuator/**").permitAll() //
+                    .requestMatchers(GET, "/actuator/**", "/*/actuator/**").permitAll() //
+                    .requestMatchers(POST, "/actuator/**", "/*/actuator/**").permitAll() //
                 );
         }
 
@@ -183,6 +206,7 @@ public class SecurityConfig {
                     .requestMatchers("/rest/**", "/*/rest/**").permitAll() // server code performs programmatic authorization
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // allow preflight
                     .requestMatchers(HttpMethod.POST, "/graphql", "/*/graphql").permitAll() //
+                    .requestMatchers("/error", "/error/**").permitAll() //
                     .anyRequest().authenticated();
             }) //
             .rememberMe(customizer -> {

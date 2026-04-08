@@ -1,9 +1,11 @@
 <configuration>
+    <!-- CoPilot suggests this as a fallback default. -->
+    <!-- include resource="org/springframework/boot/logging/logback/defaults.xml" /-->
 
-    <!-- ========================= -->
-    <!-- DEV MODE (console output) -->
-    <!-- ========================= -->
-    <springProfile name="dev">
+    <!-- ================================= -->
+    <!-- DEVELOPMENT MODE (console output) -->
+    <!-- ================================= -->
+    <springProfile name="development">
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
                 <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>

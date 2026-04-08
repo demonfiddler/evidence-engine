@@ -84,8 +84,9 @@ export const PublicationKindSchema = z.enum([
 
 export const PublicationSchema = Rateable.extend({
   title: z.string().min(10).max(200),
-  authors: z.string().min(10).max(2000),
-  journalId: z.string().length(0).or(z.string().regex(/^\d*$/)),
+  authors: z.string().min(3).max(2000),
+  journalId: z.string().length(0).or(z.string().regex(/^\d*$/)).nullable(),
+  publisherId: z.string().length(0).or(z.string().regex(/^\d*$/)).nullable(),
   kind: PublicationKindSchema,
   date: z.date({message: "Publication date is required"})
     .max(Date.now(), { message: "Publication date cannot be in the future" }),

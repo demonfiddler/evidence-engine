@@ -1,4 +1,6 @@
 plugins {
+	id 'org.springframework.boot' version "${springBootVersion}"
+	id 'io.spring.dependency-management' version "${dependencyManagementPluginVersion}"
 	id 'java'
 	// Uncomment the following line to enable GraphQL code generation
 	id "com.graphql-java-generator.graphql-gradle-plugin3" version "${graphQLPluginVersion}"
@@ -10,6 +12,13 @@ group = 'io.github.demonfiddler.evidence-engine'
 version = '0.0.1-SNAPSHOT'
 
 dependencies {
+	implementation project(':common')
+	implementation 'org.springframework.boot:spring-boot-starter-logging'
+	implementation 'org.springframework.boot:spring-boot-starter-graphql'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation "com.graphql-java-generator:graphql-java-client-runtime:${graphQLPluginVersion}" // only if copyRuntimeSources = false
+	implementation "com.graphql-java-generator:graphql-java-server-runtime:${graphQLPluginVersion}" // only if copyRuntimeSources = false
+	implementation 'com.graphql-java:graphql-java-extended-scalars:22.0'
 	implementation('org.openapitools:openapi-generator') {
 		version {
 			prefer "${openapiGeneratorVersion}"
@@ -29,9 +38,9 @@ repositories {
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(23)
+		languageVersion = JavaLanguageVersion.of(25)
 	}
-	sourceCompatibility = JavaVersion.VERSION_23
+	sourceCompatibility = JavaVersion.VERSION_25
 }
 
 tasks.named('test') {

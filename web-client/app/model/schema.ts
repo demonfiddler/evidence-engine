@@ -164,6 +164,7 @@ export interface PublicationInput extends TrackedEntityInput {
   // authorIds: string[] | null // TODO: remove from schema.graphqls
   title: string
   journalId: string | null
+  publisherId: string | null
   kind: PublicationKind
   date: Date | string | null
   year: number | null

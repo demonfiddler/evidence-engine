@@ -1320,6 +1320,8 @@ type Publication implements IBaseEntity & ITrackedEntity & ILinkableEntity {
     authors: String
     "The journal in which the publication appeared."
     journal: Journal
+    "The publisher of the publication."
+    publisher: Publisher
     "The publication kind."
     kind(
         "How to format the result. SHORT format is per ```PublicationKind``` enum."
@@ -1391,8 +1393,10 @@ input PublicationInput {
     authorIds: [ID!]
     "The publication title."
     title: String!
-    "The journal in which the publication appeared."
+    "The ID of the journal in which the publication appeared."
     journalId: Long
+    "The ID of the publisher of the publication."
+    publisherId: Long
     "The publication type."
     kind: PublicationKind!
     "The publication date."

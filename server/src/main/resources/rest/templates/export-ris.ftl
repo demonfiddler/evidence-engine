@@ -14,7 +14,14 @@ AU  - ${author}
 <#if record.journal??><#t>
   <#if record.journal.title??>JF  - ${record.journal.title}</#if><#lt>
   <#if record.journal.abbreviation??>JA  - ${record.journal.abbreviation}</#if><#lt>
-  <#if record.journal.publisher?? && record.journal.publisher.location??>PP  - ${record.journal.publisher.location}</#if><#lt>
+  <#if record.journal.publisher?? && !record.publisher??><#t>
+    <#if record.journal.publisher.name??>PB  - ${record.journal.publisher.name}</#if><#lt>
+    <#if record.journal.publisher.location??>PP  - ${record.journal.publisher.location}</#if><#lt>
+  </#if>
+</#if><#t>
+<#if record.publisher??><#t>
+  <#if record.publisher.name??>PB  - ${record.publisher.name}</#if><#lt>
+  <#if record.publisher?? && record.publisher.location??>PP  - ${record.publisher.location}</#if><#lt>
 </#if><#t>
 <#if record.kind == "BOOK"><#t>
   <#if record.isbn??>SN  - ${record.isbn}</#if><#lt>

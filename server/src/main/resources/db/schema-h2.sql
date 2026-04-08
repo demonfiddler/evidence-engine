@@ -191,6 +191,7 @@ CREATE TABLE "publication" (
   "title" VARCHAR(200) NOT NULL COMMENT 'Publication title',
   "authors" VARCHAR(2000) NOT NULL COMMENT 'List of author names',
   "journal_id" BIGINT DEFAULT NULL COMMENT 'The ID of the Journal',
+  "publisher_id" BIGINT DEFAULT NULL COMMENT 'The ID of the Publisher',
   "kind" VARCHAR(6) NOT NULL COMMENT 'The kind of publication',
   "date" DATE DEFAULT NULL COMMENT 'Publication date',
   "year" SMALLINT DEFAULT NULL COMMENT 'Publication year',
@@ -221,6 +222,7 @@ CREATE TABLE "publication" (
 );
 CREATE UNIQUE INDEX "publication_doi" ON "publication" ("doi");
 CREATE INDEX "FK_publication_journal" ON "publication" ("journal_id");
+CREATE INDEX "FK_publication_publisher" ON "publication" ("publisher_id");
 CREATE INDEX "FK_publication_publication_kind" ON "publication" ("kind");
 CALL FT_CREATE_INDEX('PUBLIC', 'publication', 'title,authors,abstract,notes,keywords,doi,isbn,pmid,hsid,arxivid,biorxivid,medrxivid,ericid,ihepid,oaipmhid,halid,zenodoid,scopuseid,wsan,pinfoan,url');
 
@@ -518,6 +520,12 @@ ALTER TABLE "publication"
 ALTER TABLE "publication"
   ADD FOREIGN KEY ("journal_id") 
   REFERENCES "journal" ("id")
+  ON UPDATE CASCADE
+  ON DELETE SET NULL;
+
+ALTER TABLE "publication"
+  ADD FOREIGN KEY ("publisher_id") 
+  REFERENCES "publisher" ("id")
   ON UPDATE CASCADE
   ON DELETE SET NULL;
 

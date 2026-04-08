@@ -739,10 +739,16 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
             journal = journalRepository.findById(input.getJournalId())
                 .orElseThrow(() -> createEntityNotFoundException("Journal", input.getJournalId()));
         }
+        Publisher publisher = null;
+        if (input.getPublisherId() != null) {
+            publisher = publisherRepository.findById(input.getPublisherId())
+                .orElseThrow(() -> createEntityNotFoundException("Publisher", input.getPublisherId()));
+        }
         Publication publication = new Publication();
         publication.setRating(input.getRating());
         publication.setTitle(input.getTitle());
         publication.setJournal(journal);
+        publication.setPublisher(publisher);
         publication.setAuthors(input.getAuthorNames());
         publication.setAbstract(input.getAbstract());
         publication.setDate(input.getDate());
@@ -782,16 +788,22 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     @Override
     @PreAuthorize("hasAuthority('UPD')")
     public Object updatePublication(DataFetchingEnvironment dataFetchingEnvironment, PublicationInput input) {
+        Publication publication = publicationRepository.findById(input.getId())
+            .orElseThrow(() -> createEntityNotFoundException("Publication", input.getId()));
         Journal journal = null;
         if (input.getJournalId() != null) {
             journal = journalRepository.findById(input.getJournalId())
                 .orElseThrow(() -> createEntityNotFoundException("Journal", input.getJournalId()));
         }
-        Publication publication = publicationRepository.findById(input.getId())
-            .orElseThrow(() -> createEntityNotFoundException("Publication", input.getId()));
+        Publisher publisher = null;
+        if (input.getPublisherId() != null) {
+            publisher = publisherRepository.findById(input.getPublisherId())
+                .orElseThrow(() -> createEntityNotFoundException("Publisher", input.getPublisherId()));
+        }
         publication.setRating(input.getRating());
         publication.setTitle(input.getTitle());
         publication.setJournal(journal);
+        publication.setPublisher(publisher);
         publication.setAuthors(input.getAuthorNames());
         publication.setAbstract(input.getAbstract());
         publication.setDate(input.getDate());

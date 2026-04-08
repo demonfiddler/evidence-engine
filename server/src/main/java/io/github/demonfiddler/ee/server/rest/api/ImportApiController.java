@@ -659,7 +659,11 @@ public class ImportApiController implements ImportApi {
                                         addMessage(importedRecord, lineNum, WARNING,
                                             "No Publisher associated with existing Journal# " + journal.getId());
                                     }
+                                    if (publisher == null)
+                                        publisher = journal.getPublisher();
                                 }
+                                if (publisher != null)
+                                    builder.withPublisherId(publisher.getId());
 
                                 PublicationInput input = builder.build();
                                 try {

@@ -53,14 +53,14 @@ CREATE TABLE IF NOT EXISTS "config" (
 
 -- Dumping structure for table evidence_engine.entity
 CREATE TABLE IF NOT EXISTS "entity" (
-  "id" bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'The unique entity record identifier',
-  "dtype" char(3) NOT NULL COMMENT 'The entity type discriminator',
-  "status" char(3) NOT NULL DEFAULT 'DRA' COMMENT 'The record status',
-  "rating" tinyint(3) unsigned DEFAULT NULL COMMENT 'Quality/significance/eminence star rating, 1..5',
-  "created" timestamp NOT NULL DEFAULT current_timestamp() COMMENT 'When the record was created',
-  "created_by_user_id"  bigint(20) unsigned COMMENT 'The ID of the user who created the record',
-  "updated" timestamp NULL DEFAULT NULL COMMENT 'When the record was last updated',
-  "updated_by_user_id"  bigint(20) unsigned DEFAULT NULL COMMENT 'The ID of the user who last updated the record',
+  "id" BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The unique entity record identifier',
+  "dtype" CHAR(3) NOT NULL COMMENT 'The entity type discriminator',
+  "status" CHAR(3) NOT NULL DEFAULT 'DRA' COMMENT 'The record status',
+  "rating" TINYINT(3) UNSIGNED DEFAULT NULL COMMENT 'Quality/significance/eminence star rating, 1..5',
+  "created" TIMESTAMP NOT NULL DEFAULT current_timestamp() COMMENT 'When the record was created',
+  "created_by_user_id" BIGINT(20) UNSIGNED COMMENT 'The ID of the user who created the record',
+  "updated" TIMESTAMP NULL DEFAULT NULL COMMENT 'When the record was last updated',
+  "updated_by_user_id" BIGINT(20) UNSIGNED DEFAULT NULL COMMENT 'The ID of the user who last updated the record',
   PRIMARY KEY ("id"),
   KEY "FK_entity_dtype" ("dtype"),
   KEY "FK_entity_status" ("status"),
@@ -75,10 +75,10 @@ CREATE TABLE IF NOT EXISTS "entity" (
 
 -- Dumping structure for table evidence_engine.claim
 CREATE TABLE IF NOT EXISTS "claim" (
-  "id" bigint(20) unsigned NOT NULL COMMENT 'The unique claim identifier',
-  "date" date DEFAULT NULL COMMENT 'The date on which the claim was first made',
-  "text" varchar(500) NOT NULL COMMENT 'The claim text',
-  "notes" text DEFAULT NULL COMMENT 'Added notes about the claim',
+  "id" BIGINT(20) UNSIGNED NOT NULL COMMENT 'The unique claim identifier',
+  "date" DATE DEFAULT NULL COMMENT 'The date on which the claim was first made',
+  "text" VARCHAR(500) NOT NULL COMMENT 'The claim text',
+  "notes" TEXT DEFAULT NULL COMMENT 'Added notes about the claim',
   PRIMARY KEY ("id"),
   FULLTEXT KEY "claim_fulltext" ("text","notes"),
   CONSTRAINT "FK_claim_entity" FOREIGN KEY ("id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE
@@ -86,10 +86,10 @@ CREATE TABLE IF NOT EXISTS "claim" (
 
 -- Dumping structure for table evidence_engine.comment
 CREATE TABLE IF NOT EXISTS "comment" (
-  "id" bigint(20) unsigned NOT NULL COMMENT 'The unique comment identifier',
-  "target_id" bigint(20) unsigned NOT NULL COMMENT 'The ID of the target entity with which the comment is associated',
-  "parent_id" bigint(20) unsigned DEFAULT NULL COMMENT 'The ID of the parent comment to which this comment is a reply.',
-  "text" varchar(500) NOT NULL COMMENT 'The text of the comment',
+  "id" BIGINT(20) UNSIGNED NOT NULL COMMENT 'The unique comment identifier',
+  "target_id" BIGINT(20) UNSIGNED NOT NULL COMMENT 'The ID of the target entity with which the comment is associated',
+  "parent_id" BIGINT(20) UNSIGNED DEFAULT NULL COMMENT 'The ID of the parent comment to which this comment is a reply.',
+  "text" VARCHAR(500) NOT NULL COMMENT 'The text of the comment',
   PRIMARY KEY ("id"),
   FULLTEXT KEY "comment_fulltext" ("text"),
   CONSTRAINT "FK_comment_entity" FOREIGN KEY ("id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
@@ -99,14 +99,14 @@ CREATE TABLE IF NOT EXISTS "comment" (
 
 -- Dumping structure for table evidence_engine.country
 CREATE TABLE IF NOT EXISTS "country" (
-  "alpha_2" char(2) NOT NULL COMMENT 'ISO-3166-1 alpha-2 code',
-  "alpha_3" char(3) NOT NULL COMMENT 'ISO-3166-1 alpha-3 code',
-  "numeric" char(3) NOT NULL COMMENT 'ISO-3166-1 numeric code',
-  "iso_name" varchar(100) NOT NULL COMMENT 'Official/ISO country name',
-  "common_name" varchar(50) NOT NULL COMMENT 'Common or short name',
+  "alpha_2" CHAR(2) NOT NULL COMMENT 'ISO-3166-1 alpha-2 code',
+  "alpha_3" CHAR(3) NOT NULL COMMENT 'ISO-3166-1 alpha-3 code',
+  "numeric" CHAR(3) NOT NULL COMMENT 'ISO-3166-1 numeric code',
+  "iso_name" VARCHAR(100) NOT NULL COMMENT 'Official/ISO country name',
+  "common_name" VARCHAR(50) NOT NULL COMMENT 'Common or short name',
   "year" year(4) NOT NULL COMMENT 'Year alpha-2 code was first assigned',
-  "cc_tld" varchar(6) NOT NULL COMMENT 'Country code top level domain',
-  "notes" text DEFAULT NULL COMMENT 'Remarks as per Wikipedia ISO-3166-1 entry',
+  "cc_tld" VARCHAR(6) NOT NULL COMMENT 'Country code top level domain',
+  "notes" TEXT DEFAULT NULL COMMENT 'Remarks as per Wikipedia ISO-3166-1 entry',
   PRIMARY KEY ("alpha_2"),
   UNIQUE KEY "country_alpha_3" ("alpha_3") USING BTREE,
   UNIQUE KEY "country_numeric" ("numeric") USING BTREE,
@@ -115,18 +115,31 @@ CREATE TABLE IF NOT EXISTS "country" (
   CONSTRAINT "CC_country_numeric" CHECK ("numeric" regexp '^\\d{3}$')
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Lookup table for converting ISO-3166-1 country codes to country name';
 
+CREATE VIEW IF NOT EXISTS "comment_entity_vw" AS
+SELECT 
+  c."id",
+  ce."status",
+  te."dtype" AS "target_entity_kind",
+  c."target_id" AS "target_entity_id",
+  c."text"
+FROM "comment" c
+JOIN "entity" ce
+ON ce."id" = c."id"
+JOIN "entity" te
+ON te."id" = c."target_id";
+
 -- Dumping structure for table evidence_engine.declaration
 CREATE TABLE IF NOT EXISTS "declaration" (
-  "id"  bigint(20) unsigned NOT NULL COMMENT 'The unique declaration identifier',
-  "kind" varchar(4) NOT NULL COMMENT 'The kind of declaration',
-  "date" date NOT NULL COMMENT 'The date the declaration was first published',
-  "title" varchar(100) NOT NULL COMMENT 'The declaration name or title',
-  "country" char(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for the country to which the declaration pertains',
-  "url" varchar(200) DEFAULT NULL COMMENT 'Web URL of the original declaration',
-  "cached" bit(1) NOT NULL DEFAULT b'0' COMMENT 'Flag to indicate that url content is cached on this application server',
-  "signatories" text DEFAULT NULL COMMENT 'The list of signatories, one per line',
-  "signatory_count" smallint(6) DEFAULT NULL COMMENT 'The number of signatories',
-  "notes" text DEFAULT NULL COMMENT 'Added notes about the declaration',
+  "id"  BIGINT(20) UNSIGNED NOT NULL COMMENT 'The unique declaration identifier',
+  "kind" VARCHAR(4) NOT NULL COMMENT 'The kind of declaration',
+  "date" DATE NOT NULL COMMENT 'The date the declaration was first published',
+  "title" VARCHAR(100) NOT NULL COMMENT 'The declaration name or title',
+  "country" CHAR(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for the country to which the declaration pertains',
+  "url" VARCHAR(200) DEFAULT NULL COMMENT 'Web URL of the original declaration',
+  "cached" BIT(1) NOT NULL DEFAULT b'0' COMMENT 'Flag to indicate that url content is cached on this application server',
+  "signatories" TEXT DEFAULT NULL COMMENT 'The list of signatories, one per line',
+  "signatory_count" SMALLINT(6) DEFAULT NULL COMMENT 'The number of signatories',
+  "notes" TEXT DEFAULT NULL COMMENT 'Added notes about the declaration',
   PRIMARY KEY ("id"),
   KEY "FK_declaration_declaration_kind" ("kind"),
   KEY "FK_declaration_country" ("country"),
@@ -138,28 +151,28 @@ CREATE TABLE IF NOT EXISTS "declaration" (
 
 -- Dumping structure for table evidence_engine.declaration_kind
 CREATE TABLE IF NOT EXISTS "declaration_kind" (
-  "kind" varchar(4) NOT NULL COMMENT 'The declaration kind code',
-  "label" varchar(20) NOT NULL COMMENT 'Label for the declaration kind',
-  "description" varchar(50) NOT NULL COMMENT 'Description of the declaration kind',
+  "kind" VARCHAR(4) NOT NULL COMMENT 'The declaration kind code',
+  "label" VARCHAR(20) NOT NULL COMMENT 'Label for the declaration kind',
+  "description" VARCHAR(50) NOT NULL COMMENT 'Description of the declaration kind',
   PRIMARY KEY ("kind"),
   UNIQUE KEY "declaration_kind_label" ("label") USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='A lookup table for validating declaration records';
 
 -- Dumping structure for table evidence_engine.entity_kind
 CREATE TABLE IF NOT EXISTS "entity_kind" (
-  "code" char(3) NOT NULL COMMENT 'Unique code for the entity kind',
-  "label" varchar(20) NOT NULL COMMENT 'Label for the entity kind',
+  "code" CHAR(3) NOT NULL COMMENT 'Unique code for the entity kind',
+  "label" VARCHAR(20) NOT NULL COMMENT 'Label for the entity kind',
   PRIMARY KEY ("code"),
   UNIQUE KEY "entity_kind_label" ("label")
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Lookup table enumerating supported entity types';
 
 -- Dumping structure for table evidence_engine.entity_link
 CREATE TABLE IF NOT EXISTS "entity_link" (
-  "id" bigint(20) unsigned NOT NULL COMMENT 'The unique entity link identifier',
-  "from_entity_id" bigint(20) unsigned NOT NULL COMMENT 'The linked-from entity ID',
-  "to_entity_id" bigint(20) unsigned NOT NULL COMMENT 'The linked-to entity ID',
-  "from_entity_locations" varchar(500) NULL DEFAULT NULL COMMENT 'Location(s) within the linked-from entity (where applicable), one per line',
-  "to_entity_locations" varchar(500) NULL DEFAULT NULL COMMENT 'Location(s) within the linked-to entity (where applicable), one per line',
+  "id" BIGINT(20) UNSIGNED NOT NULL COMMENT 'The unique entity link identifier',
+  "from_entity_id" BIGINT(20) UNSIGNED NOT NULL COMMENT 'The linked-from entity ID',
+  "to_entity_id" BIGINT(20) UNSIGNED NOT NULL COMMENT 'The linked-to entity ID',
+  "from_entity_locations" VARCHAR(500) NULL DEFAULT NULL COMMENT 'Location(s) within the linked-from entity (where applicable), one per line',
+  "to_entity_locations" VARCHAR(500) NULL DEFAULT NULL COMMENT 'Location(s) within the linked-to entity (where applicable), one per line',
   PRIMARY KEY ("id"),
   UNIQUE INDEX `entity_link_unique` (`from_entity_id`, `to_entity_id`),
   FULLTEXT KEY "entity_fulltext" ("from_entity_locations","to_entity_locations"),
@@ -169,7 +182,15 @@ CREATE TABLE IF NOT EXISTS "entity_link" (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Self-association table to hold links between linkable entities';
 
 CREATE VIEW IF NOT EXISTS "entity_link_entity_vw" AS
-SELECT el.*, ele."status", fe."dtype" AS "from_entity_kind", te."dtype" AS "to_entity_kind"
+SELECT 
+  el."id",
+  ele."status",
+  fe."dtype" AS "from_entity_kind",
+  el."from_entity_id",
+  el."from_entity_locations",
+  te."dtype" AS "to_entity_kind",
+  el."to_entity_id",
+  el."to_entity_locations"
 FROM "entity_link" el
 JOIN "entity" ele
 ON ele."id" = el."id"
@@ -180,13 +201,13 @@ ON te.id = el."to_entity_id";
 
 -- Dumping structure for table evidence_engine.journal
 CREATE TABLE IF NOT EXISTS "journal" (
-  "id"  bigint(20) unsigned NOT NULL COMMENT 'The journal ID',
-  "title" varchar(200) NOT NULL COMMENT 'The journal, etc. title',
-  "abbreviation" varchar(100) DEFAULT NULL COMMENT 'The official ISO 4 title abbreviation, with periods',
-  "url" varchar(200) DEFAULT NULL COMMENT 'Web link to the journal''s home page',
-  "issn" char(9) DEFAULT NULL COMMENT 'The International Standard Serial Number',
-  "publisher_id"  bigint(20) unsigned DEFAULT NULL COMMENT 'The ID of the publisher',
-  "notes" text DEFAULT NULL COMMENT 'A brief description of the journal',
+  "id"  BIGINT(20) UNSIGNED NOT NULL COMMENT 'The journal ID',
+  "title" VARCHAR(200) NOT NULL COMMENT 'The journal, etc. title',
+  "abbreviation" VARCHAR(100) DEFAULT NULL COMMENT 'The official ISO 4 title abbreviation, with periods',
+  "url" VARCHAR(200) DEFAULT NULL COMMENT 'Web link to the journal''s home page',
+  "issn" CHAR(9) DEFAULT NULL COMMENT 'The International Standard Serial Number',
+  "publisher_id"  BIGINT(20) UNSIGNED DEFAULT NULL COMMENT 'The ID of the publisher',
+  "notes" TEXT DEFAULT NULL COMMENT 'A brief description of the journal',
   "peer_reviewed" BIT(1) DEFAULT NULL COMMENT 'Whether the journal publishes peer-reviewed articles',
   PRIMARY KEY ("id") USING BTREE,
   UNIQUE KEY "journal_issn" ("issn") USING BTREE,
@@ -201,12 +222,12 @@ CREATE TABLE IF NOT EXISTS "journal" (
 
 -- Dumping structure for table evidence_engine.log
 CREATE TABLE IF NOT EXISTS "log" (
-  "id"  bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'The log entry ID',
-  "timestamp" datetime NOT NULL DEFAULT current_timestamp() COMMENT 'The date and time at which the log entry was made',
-  "user_id"  bigint(20) unsigned NOT NULL DEFAULT 0 COMMENT 'The ID of the user who made the change',
-  "transaction_kind" char(3) NOT NULL COMMENT 'The kind of change that was made',
-  "entity_id" bigint(20) unsigned NOT NULL COMMENT 'The ID of the affected entity',
-  "linked_entity_id" bigint(20) unsigned DEFAULT NULL COMMENT 'The ID of the entity that was linked/unlinked',
+  "id"  BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'The log entry ID',
+  "timestamp" DATETIME NOT NULL DEFAULT current_timestamp() COMMENT 'The date and time at which the log entry was made',
+  "user_id"  BIGINT(20) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'The ID of the user who made the change',
+  "transaction_kind" CHAR(3) NOT NULL COMMENT 'The kind of change that was made',
+  "entity_id" BIGINT(20) UNSIGNED NOT NULL COMMENT 'The ID of the affected entity',
+  "linked_entity_id" BIGINT(20) UNSIGNED DEFAULT NULL COMMENT 'The ID of the entity that was linked/unlinked',
   PRIMARY KEY ("id"),
   KEY "log_entity" ("entity_id"),
   KEY "log_linked_entity" ("linked_entity_id"),
@@ -226,28 +247,28 @@ ORDER BY l."id";
 
 -- Dumping structure for table evidence_engine.authority_kind
 CREATE TABLE IF NOT EXISTS "authority_kind" (
-  "code" char(3) NOT NULL COMMENT 'Unique authority code',
-  "label" varchar(10) NOT NULL COMMENT 'Unique authority label',
-  "description" varchar(50) NOT NULL COMMENT 'Description of the authority',
+  "code" CHAR(3) NOT NULL COMMENT 'Unique authority code',
+  "label" VARCHAR(10) NOT NULL COMMENT 'Unique authority label',
+  "description" VARCHAR(50) NOT NULL COMMENT 'Description of the authority',
   PRIMARY KEY ("code"),
   UNIQUE KEY "authority_kind_label" ("label") USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Access authorities that can be granted to users';
 
 -- Dumping structure for table evidence_engine.person
 CREATE TABLE IF NOT EXISTS "person" (
-  "id"  bigint(20) unsigned NOT NULL COMMENT 'Unique person identifier',
-  "title" varchar(10) DEFAULT NULL COMMENT 'Person''s title, e.g., Prof., Dr.',
-  "first_name" varchar(80) NOT NULL COMMENT 'Person''s first names and/or initials',
-  "nickname" varchar(40) DEFAULT NULL COMMENT 'Nickname by which commonly known',
-  "prefix" varchar(20) DEFAULT NULL COMMENT 'Prefix to last name, e.g., van, de',
-  "last_name" varchar(40) NOT NULL COMMENT 'Person''s last name,  without prefix or suffix',
-  "suffix" varchar(16) DEFAULT NULL COMMENT 'Suffix to last name, e.g. Jr., Sr.',
-  "alias" varchar(40) DEFAULT NULL COMMENT 'Alternative last name',
-  "notes" text DEFAULT NULL COMMENT 'Brief biography, notes, etc.',
-  "qualifications" text DEFAULT NULL COMMENT 'Academic qualifications',
-  "country" char(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for country of primary professional association',
-  "checked" bit(1) NOT NULL DEFAULT b'0' COMMENT 'Set when the person''s credentials have been checked',
-  "published" bit(1) DEFAULT NULL COMMENT 'Set if person has published peer-reviewed papers on climate change',
+  "id"  BIGINT(20) UNSIGNED NOT NULL COMMENT 'Unique person identifier',
+  "title" VARCHAR(10) DEFAULT NULL COMMENT 'Person''s title, e.g., Prof., Dr.',
+  "first_name" VARCHAR(80) NOT NULL COMMENT 'Person''s first names and/or initials',
+  "nickname" VARCHAR(40) DEFAULT NULL COMMENT 'Nickname by which commonly known',
+  "prefix" VARCHAR(20) DEFAULT NULL COMMENT 'Prefix to last name, e.g., van, de',
+  "last_name" VARCHAR(40) NOT NULL COMMENT 'Person''s last name,  without prefix or suffix',
+  "suffix" VARCHAR(16) DEFAULT NULL COMMENT 'Suffix to last name, e.g. Jr., Sr.',
+  "alias" VARCHAR(40) DEFAULT NULL COMMENT 'Alternative last name',
+  "notes" TEXT DEFAULT NULL COMMENT 'Brief biography, notes, etc.',
+  "qualifications" TEXT DEFAULT NULL COMMENT 'Academic qualifications',
+  "country" CHAR(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for country of primary professional association',
+  "checked" BIT(1) NOT NULL DEFAULT b'0' COMMENT 'Set when the person''s credentials have been checked',
+  "published" BIT(1) DEFAULT NULL COMMENT 'Set if person has published peer-reviewed papers on climate change',
   PRIMARY KEY ("id"),
   KEY "person_title" ("title") USING BTREE,
   KEY "person_first_name" ("first_name") USING BTREE,
@@ -262,37 +283,38 @@ CREATE TABLE IF NOT EXISTS "person" (
 
 -- Dumping structure for table evidence_engine.publication
 CREATE TABLE IF NOT EXISTS "publication" (
-  "id"  bigint(20) unsigned NOT NULL COMMENT 'Unique publication ID',
-  "title" varchar(200) NOT NULL COMMENT 'Publication title',
-  "authors" varchar(2000) NOT NULL COMMENT 'List of author names',
-  "journal_id"  bigint(20) unsigned DEFAULT NULL COMMENT 'The ID of the Journal',
-  "kind" varchar(6) NOT NULL COMMENT 'The kind of publication',
-  "date" date DEFAULT NULL COMMENT 'Publication date',
+  "id"  BIGINT(20) UNSIGNED NOT NULL COMMENT 'Unique publication ID',
+  "title" VARCHAR(200) NOT NULL COMMENT 'Publication title',
+  "authors" VARCHAR(2000) NOT NULL COMMENT 'List of author names',
+  "journal_id"  BIGINT(20) UNSIGNED DEFAULT NULL COMMENT 'The ID of the Journal',
+  "publisher_id" BIGINT(20) UNSIGNED NULL DEFAULT NULL COMMENT 'The ID of the Publisher',
+  "kind" VARCHAR(6) NOT NULL COMMENT 'The kind of publication',
+  "date" DATE DEFAULT NULL COMMENT 'Publication date',
   "year" year(4) DEFAULT NULL COMMENT 'Publication year',
   "keywords" VARCHAR(255) DEFAULT NULL COMMENT 'Keywords per publication metadata',
   "location" VARCHAR(50) DEFAULT NULL COMMENT 'The location of the relevant section within the publication',
-  "abstract" text DEFAULT NULL COMMENT 'Abstract from the article',
-  "notes" text DEFAULT NULL COMMENT 'Added notes about the publication',
-  "peer_reviewed" bit(1) DEFAULT NULL COMMENT 'Whether the article was peer-reviewed',
-  "doi" varchar(100) DEFAULT NULL COMMENT 'Digital Object Identifier',
-  "isbn" varchar(20) DEFAULT NULL COMMENT 'International Standard Book Number (printed publications only)',
+  "abstract" TEXT DEFAULT NULL COMMENT 'Abstract from the article',
+  "notes" TEXT DEFAULT NULL COMMENT 'Added notes about the publication',
+  "peer_reviewed" BIT(1) DEFAULT NULL COMMENT 'Whether the article was peer-reviewed',
+  "doi" VARCHAR(100) DEFAULT NULL COMMENT 'Digital Object Identifier',
+  "isbn" VARCHAR(20) DEFAULT NULL COMMENT 'International Standard Book Number (printed publications only)',
   "pmcid" VARCHAR(10) DEFAULT NULL COMMENT 'The U.S. National Library of Medicine''s PubMed Central ID',
-  "pmid" varchar(10) DEFAULT NULL COMMENT 'The U.S. National Library of Medicine''s PubMed ID',
-  "hsid" varchar(12) DEFAULT NULL COMMENT 'The Corporation for National Research Initiatives''s Handle System ID',
-  "arxivid" varchar(15) DEFAULT NULL COMMENT 'Cornell University Library''s arXiv.org ID',
-  "biorxivid" varchar(20) DEFAULT NULL COMMENT 'Cold Spring Harbor Laboratory''s bioRxiv.org ID',
-  "medrxivid" varchar(20) DEFAULT NULL COMMENT 'Cold Spring Harbor Laboratory''s medRxiv.org ID',
-  "ericid" varchar(8) DEFAULT NULL COMMENT 'U.S. Department of Education''s ERIC database ID (niche)',
-  "ihepid" varchar(10) DEFAULT NULL COMMENT 'CERN''s INSPIRE-HEP ID',
-  "oaipmhid" varchar(50) DEFAULT NULL COMMENT 'Open Archives Initiative''s OAI-PMH ID',
-  "halid" varchar(20) DEFAULT NULL COMMENT 'CNRS (France)''s HAL ID',
-  "zenodoid" varchar(10) DEFAULT NULL COMMENT 'CERN''s Zenodo Record ID',
-  "scopuseid" varchar(16) DEFAULT NULL COMMENT 'Elsevier''s SCOPUS database EID (proprietary)',
-  "wsan" varchar(25) DEFAULT NULL COMMENT 'Clarivate''s Web of Science Accession Number (UT) (proprietary)',
-  "pinfoan" varchar(30) DEFAULT NULL COMMENT 'American Psychological Association''s PsycINFO Accession Number (proprietary/niche)',
-  "url" varchar(200) DEFAULT NULL COMMENT 'URL of the publication',
-  "cached" bit(1) NOT NULL DEFAULT b'0' COMMENT 'Flag to indicate that url content is cached on this application server',
-  "accessed" date DEFAULT NULL COMMENT 'Date a web page was accessed',
+  "pmid" VARCHAR(10) DEFAULT NULL COMMENT 'The U.S. National Library of Medicine''s PubMed ID',
+  "hsid" VARCHAR(12) DEFAULT NULL COMMENT 'The Corporation for National Research Initiatives''s Handle System ID',
+  "arxivid" VARCHAR(15) DEFAULT NULL COMMENT 'Cornell University Library''s arXiv.org ID',
+  "biorxivid" VARCHAR(20) DEFAULT NULL COMMENT 'Cold Spring Harbor Laboratory''s bioRxiv.org ID',
+  "medrxivid" VARCHAR(20) DEFAULT NULL COMMENT 'Cold Spring Harbor Laboratory''s medRxiv.org ID',
+  "ericid" VARCHAR(8) DEFAULT NULL COMMENT 'U.S. Department of Education''s ERIC database ID (niche)',
+  "ihepid" VARCHAR(10) DEFAULT NULL COMMENT 'CERN''s INSPIRE-HEP ID',
+  "oaipmhid" VARCHAR(50) DEFAULT NULL COMMENT 'Open Archives Initiative''s OAI-PMH ID',
+  "halid" VARCHAR(20) DEFAULT NULL COMMENT 'CNRS (France)''s HAL ID',
+  "zenodoid" VARCHAR(10) DEFAULT NULL COMMENT 'CERN''s Zenodo Record ID',
+  "scopuseid" VARCHAR(16) DEFAULT NULL COMMENT 'Elsevier''s SCOPUS database EID (proprietary)',
+  "wsan" VARCHAR(25) DEFAULT NULL COMMENT 'Clarivate''s Web of Science Accession Number (UT) (proprietary)',
+  "pinfoan" VARCHAR(30) DEFAULT NULL COMMENT 'American Psychological Association''s PsycINFO Accession Number (proprietary/niche)',
+  "url" VARCHAR(200) DEFAULT NULL COMMENT 'URL of the publication',
+  "cached" BIT(1) NOT NULL DEFAULT b'0' COMMENT 'Flag to indicate that url content is cached on this application server',
+  "accessed" DATE DEFAULT NULL COMMENT 'Date a web page was accessed',
   PRIMARY KEY ("id") USING BTREE,
   UNIQUE KEY "publication_doi" ("doi") USING BTREE,
   UNIQUE KEY "publication_isbn" ("isbn") USING BTREE,
@@ -311,10 +333,12 @@ CREATE TABLE IF NOT EXISTS "publication" (
   UNIQUE KEY "publication_wsan" ("wsan") USING BTREE,
   UNIQUE KEY "publication_pinfoan" ("pinfoan") USING BTREE,
   KEY "FK_publication_journal" ("journal_id"),
+  KEY "FK_publication_publisher" ("publisher_id"),
   KEY "FK_publication_publication_kind" ("kind"),
   FULLTEXT KEY "publication_fulltext" ("title","authors","abstract","keywords","notes","doi","isbn","pmcid","pmid","hsid","arxivid","biorxivid","medrxivid","ericid","ihepid","oaipmhid","halid","zenodoid","scopuseid","wsan","pinfoan","url"),
   CONSTRAINT "FK_publication_entity" FOREIGN KEY ("id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT "FK_publication_journal" FOREIGN KEY ("journal_id") REFERENCES "journal" ("id") ON UPDATE CASCADE ON DELETE SET NULL,
+  CONSTRAINT "FK_publication_publisher" FOREIGN KEY ("publisher_id") REFERENCES "publisher" ("id") ON UPDATE CASCADE ON DELETE SET NULL,
   CONSTRAINT "FK_publication_publication_kind" FOREIGN KEY ("kind") REFERENCES "publication_kind" ("kind") ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT "CC_publication_doi" CHECK("doi" regexp '^10\\.\\d{4,9}/[A-Z0-9-._:;()<>/]+$'),
   CONSTRAINT "CC_publication_pmcid" CHECK("pmcid" regexp '^PMC\\d{7}$'),
@@ -335,19 +359,19 @@ CREATE TABLE IF NOT EXISTS "publication" (
 
 -- Dumping structure for table evidence_engine.publication_kind
 CREATE TABLE IF NOT EXISTS "publication_kind" (
-  "kind" varchar(10) NOT NULL COMMENT 'The publication type per TY field in RIS specification',
-  "label" varchar(25) NOT NULL COMMENT 'Label for the publication kind',
+  "kind" VARCHAR(10) NOT NULL COMMENT 'The publication type per TY field in RIS specification',
+  "label" VARCHAR(25) NOT NULL COMMENT 'Label for the publication kind',
   PRIMARY KEY ("kind") USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Publication kind per TY field in RIS specification';
 
 -- Dumping structure for table evidence_engine.publisher
 CREATE TABLE IF NOT EXISTS "publisher" (
-  "id"  bigint(20) unsigned NOT NULL COMMENT 'The unique publisher identifier',
-  "name" varchar(200) NOT NULL COMMENT 'The publisher name',
-  "location" varchar(50) DEFAULT NULL COMMENT 'The publisher location',
-  "country" char(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for the publisher''s country',
-  "url" varchar(200) DEFAULT NULL COMMENT 'URL of publisher''s home page',
-  "journal_count" smallint(6) unsigned DEFAULT NULL COMMENT 'The number of journals published',
+  "id"  BIGINT(20) UNSIGNED NOT NULL COMMENT 'The unique publisher identifier',
+  "name" VARCHAR(200) NOT NULL COMMENT 'The publisher name',
+  "location" VARCHAR(50) DEFAULT NULL COMMENT 'The publisher location',
+  "country" CHAR(2) DEFAULT NULL COMMENT 'The ISO-3166-1 alpha-2 code for the publisher''s country',
+  "url" VARCHAR(200) DEFAULT NULL COMMENT 'URL of publisher''s home page',
+  "journal_count" SMALLINT(6) UNSIGNED DEFAULT NULL COMMENT 'The number of journals published',
   "notes" TEXT DEFAULT NULL COMMENT 'Notes on the publisher',
   PRIMARY KEY ("id"),
   KEY "FK_publisher_country" ("country") USING BTREE,
@@ -359,13 +383,13 @@ CREATE TABLE IF NOT EXISTS "publisher" (
 
 -- Dumping structure for table evidence_engine.quotation
 CREATE TABLE IF NOT EXISTS "quotation" (
-  "id"  bigint(20) unsigned NOT NULL COMMENT 'Unique quotation identifier',
-  "quotee" varchar(50) NOT NULL COMMENT 'The person(s) who made the quotation',
-  "text" varchar(1000) NOT NULL COMMENT 'The quotation text',
-  "date" date DEFAULT NULL COMMENT 'The quotation date',
-  "source" varchar(200) DEFAULT NULL COMMENT 'The source of the quotation',
-  "url" varchar(200) DEFAULT NULL COMMENT 'Web url to the quotation',
-  "notes" text DEFAULT NULL COMMENT 'Added notes about the quotation',
+  "id"  BIGINT(20) UNSIGNED NOT NULL COMMENT 'Unique quotation identifier',
+  "quotee" VARCHAR(50) NOT NULL COMMENT 'The person(s) who made the quotation',
+  "text" VARCHAR(1000) NOT NULL COMMENT 'The quotation text',
+  "date" DATE DEFAULT NULL COMMENT 'The quotation date',
+  "source" VARCHAR(200) DEFAULT NULL COMMENT 'The source of the quotation',
+  "url" VARCHAR(200) DEFAULT NULL COMMENT 'Web url to the quotation',
+  "notes" TEXT DEFAULT NULL COMMENT 'Added notes about the quotation',
   PRIMARY KEY ("id"),
   KEY "quotation_quotee" ("quotee") USING BTREE,
   FULLTEXT KEY "quotation_fulltext" ("quotee","text","source","url","notes"),
@@ -374,19 +398,19 @@ CREATE TABLE IF NOT EXISTS "quotation" (
 
 -- Dumping structure for table evidence_engine.status_kind
 CREATE TABLE IF NOT EXISTS "status_kind" (
-  "code" char(3) NOT NULL COMMENT 'The status code',
-  "label" varchar(20) NOT NULL COMMENT 'The status label',
-  "description" varchar(100) NOT NULL COMMENT 'Defines the meaning of the status code',
+  "code" CHAR(3) NOT NULL COMMENT 'The status code',
+  "label" VARCHAR(20) NOT NULL COMMENT 'The status label',
+  "description" VARCHAR(100) NOT NULL COMMENT 'Defines the meaning of the status code',
   PRIMARY KEY ("code"),
   UNIQUE KEY "status_kind_label" ("label")
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='The set of status values defining an entity''s lifecycle.';
 
 -- Dumping structure for table evidence_engine.topic
 CREATE TABLE IF NOT EXISTS "topic" (
-  "id"  bigint(20) unsigned NOT NULL COMMENT 'The unique topic identifier',
-  "label" varchar(50) NOT NULL COMMENT 'The topic name/label',
-  "description" varchar(500) DEFAULT NULL COMMENT 'Notes on when to use the topic',
-  "parent_id"  bigint(20) unsigned DEFAULT NULL COMMENT 'The parent topic ID',
+  "id"  BIGINT(20) UNSIGNED NOT NULL COMMENT 'The unique topic identifier',
+  "label" VARCHAR(50) NOT NULL COMMENT 'The topic name/label',
+  "description" VARCHAR(500) DEFAULT NULL COMMENT 'Notes on when to use the topic',
+  "parent_id"  BIGINT(20) UNSIGNED DEFAULT NULL COMMENT 'The parent topic ID',
   PRIMARY KEY ("id"),
   KEY "FK_topic_topic" ("parent_id"),
   FULLTEXT KEY "topic_fulltext" ("label","description"),
@@ -396,24 +420,24 @@ CREATE TABLE IF NOT EXISTS "topic" (
 
 -- Dumping structure for table evidence_engine.transaction_kind
 CREATE TABLE IF NOT EXISTS "transaction_kind" (
-  "code" char(3) NOT NULL COMMENT 'The transaction code',
-  "label" varchar(20) NOT NULL COMMENT 'A UI label for the transaction kind',
-  "description" varchar(50) NOT NULL COMMENT 'Description of the transaction kind',
+  "code" CHAR(3) NOT NULL COMMENT 'The transaction code',
+  "label" VARCHAR(20) NOT NULL COMMENT 'A UI label for the transaction kind',
+  "description" VARCHAR(50) NOT NULL COMMENT 'Description of the transaction kind',
   PRIMARY KEY ("code"),
   UNIQUE KEY "transaction_kind_label" ("label")
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Enumerates the possible transaction kinds';
 
 -- Dumping structure for table evidence_engine.user
 CREATE TABLE IF NOT EXISTS "user" (
-  "id"  bigint(20) unsigned NOT NULL COMMENT 'The unique system-assigned user identifier',
-  "username" varchar(50) NOT NULL COMMENT 'The unique user-assigned user name',
-  "password" varchar(68) NOT NULL COMMENT 'Bcrypt hash of the user''s password',
-  "enabled" bit(1) NOT NULL DEFAULT b'1' COMMENT 'Whether the user account is enabled',
-  "first_name" varchar(50) NULL COMMENT 'The user''s first name',
-  "last_name" varchar(50) NULL COMMENT 'The user''s last name',
-  "email" varchar(100) DEFAULT NULL COMMENT 'The user''s email address, used for sign-in',
-  "country" char(2) DEFAULT NULL COMMENT 'ISO-3166-1 alpha-2 code for user''s country of residence',
-  "notes" text DEFAULT NULL COMMENT 'Added notes about the user',
+  "id"  BIGINT(20) UNSIGNED NOT NULL COMMENT 'The unique system-assigned user identifier',
+  "username" VARCHAR(50) NOT NULL COMMENT 'The unique user-assigned user name',
+  "password" VARCHAR(68) NOT NULL COMMENT 'Bcrypt hash of the user''s password',
+  "enabled" BIT(1) NOT NULL DEFAULT b'1' COMMENT 'Whether the user account is enabled',
+  "first_name" VARCHAR(50) NULL COMMENT 'The user''s first name',
+  "last_name" VARCHAR(50) NULL COMMENT 'The user''s last name',
+  "email" VARCHAR(100) DEFAULT NULL COMMENT 'The user''s email address, used for sign-in',
+  "country" CHAR(2) DEFAULT NULL COMMENT 'ISO-3166-1 alpha-2 code for user''s country of residence',
+  "notes" TEXT DEFAULT NULL COMMENT 'Added notes about the user',
   PRIMARY KEY ("id"),
   UNIQUE KEY ("username"),
   KEY "FK_user_country" ("country"),
@@ -452,10 +476,9 @@ BEGIN
 END//
 
 DELIMITER ;
-;
 
 CREATE TABLE IF NOT EXISTS "group" (
-  "id"  bigint(20) unsigned AUTO_INCREMENT NOT NULL COMMENT 'The unique system-assigned group identifier',
+  "id"  BIGINT(20) UNSIGNED AUTO_INCREMENT NOT NULL COMMENT 'The unique system-assigned group identifier',
   "groupname" VARCHAR(50) NOT NULL COMMENT 'The group name',
   PRIMARY KEY ("id"),
   UNIQUE KEY "group_groupname" ("groupname"),
@@ -464,7 +487,7 @@ CREATE TABLE IF NOT EXISTS "group" (
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Holds groups to which users can belong';
 
 CREATE TABLE IF NOT EXISTS "group_authority" (
-  "group_id"  bigint(20) unsigned NOT NULL COMMENT 'ID of a group',
+  "group_id"  BIGINT(20) UNSIGNED NOT NULL COMMENT 'ID of a group',
   "authority" CHAR(3) NOT NULL COMMENT 'The granted authority code',
   UNIQUE KEY "group_authority" ("group_id", "authority"),
   CONSTRAINT "FK_group_authority_group" FOREIGN KEY ("group_id") REFERENCES "group" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
@@ -472,8 +495,8 @@ CREATE TABLE IF NOT EXISTS "group_authority" (
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Holds authorities granted to groups';
 
 CREATE TABLE IF NOT EXISTS "group_user" (
-  "id"  bigint(20) unsigned AUTO_INCREMENT NOT NULL COMMENT 'The unique system-assigned identifier',
-  "group_id"  bigint(20) unsigned NOT NULL COMMENT 'ID of the group to which user belongs',
+  "id"  BIGINT(20) UNSIGNED AUTO_INCREMENT NOT NULL COMMENT 'The unique system-assigned identifier',
+  "group_id"  BIGINT(20) UNSIGNED NOT NULL COMMENT 'ID of the group to which user belongs',
   "username" VARCHAR(50) NOT NULL COMMENT 'The login user name',
   PRIMARY KEY ("id"),
   UNIQUE KEY "group_user" ("username", "group_id"),

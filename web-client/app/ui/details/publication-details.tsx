@@ -36,7 +36,7 @@ import Journal from "@/app/model/Journal"
 import StandardDetails from "./standard-details"
 import DetailActions, { DetailMode, DetailState } from "./detail-actions"
 import { Dispatch, SetStateAction, useCallback, useMemo, useState } from "react"
-import { useFormContext } from "react-hook-form"
+import { useFormContext, useWatch } from "react-hook-form"
 import { PublicationFieldValues } from "../validators/publication"
 import { FormActionHandler } from "@/hooks/use-page-logic"
 import InputEx from "../ext/input-ex"
@@ -47,7 +47,7 @@ import CheckboxEx from "../ext/checkbox-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
 import { detail, LoggerEx } from "@/lib/logger"
 import { useQuery } from "@apollo/client/react"
-import { READ_JOURNALS } from "@/lib/graphql-queries"
+import { READ_JOURNALS, READ_PUBLISHERS } from "@/lib/graphql-queries"
 import IPage from "@/app/model/IPage"
 import { QueryResult } from "@/lib/graphql-utils"
 import { ArrowRight, CalendarIcon, NotebookTabsIcon, RotateCwIcon } from "lucide-react"
@@ -57,12 +57,14 @@ import { InputGroupAddon } from "@/components/ui/input-group"
 import Help from "../misc/help"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import Link from "next/link"
 import { AddOnLink } from "../ext/addon-link"
+import Publisher from "@/app/model/Publisher"
 
 const logger = new LoggerEx(detail, "[PublicationDetails] ")
 const EMPTY_JOURNALS = [] as Journal[]
+const EMPTY_PUBLISHERS = [] as Publisher[]
 const JOURNAL_OPTIONS = {variables: {pageSort: {sort: {orders: [{property: "title"}]}}}}
+const PUBLISHER_OPTIONS = {variables: {pageSort: {sort: {orders: [{property: "name"}]}}}}
 
 export default function PublicationDetails(
   {
@@ -76,12 +78,12 @@ export default function PublicationDetails(
     setMode: Dispatch<SetStateAction<DetailMode>>
     onFormAction: FormActionHandler<PublicationFieldValues>
   }) {
-  logger.debug("render")
 
   const form = useFormContext<PublicationFieldValues>()
   const [dateOpen, setDateOpen] = useState(false)
   const [accessedOpen, setAccessedOpen] = useState(false)
   const { updating } = state
+
   const journalsResult = useQuery(READ_JOURNALS, JOURNAL_OPTIONS)
   const journalsData = (journalsResult.loading
     ? journalsResult.previousData
@@ -89,12 +91,40 @@ export default function PublicationDetails(
   const journals = journalsData?.journals?.content ?? EMPTY_JOURNALS
   const journalsById = useMemo(() => {
     return Object.fromEntries(
-      journals.map(p => [p.id, p])
-    )
+      journals.map(j => [j.id, j])
+    ) as {[id: string]: Journal}
   }, [journals])
-  const journalId = form.getValues().journalId
+  const journalId = useWatch({name: "journalId"})
   const selectedJournal = journalId ? journalsById[journalId] ?? null : null
   const getJournalUri = useCallback(() => `/journals/?recordId=${journalId ?? ''}`, [journalId])
+  logger.trace("render: journalId: %s", journalId)
+
+  const publishersResult = useQuery(READ_PUBLISHERS, PUBLISHER_OPTIONS)
+  const publishersData = (publishersResult.loading
+    ? publishersResult.previousData
+    : publishersResult.data) as QueryResult<IPage<Publisher>>
+  const publishers = publishersData?.publishers?.content ?? EMPTY_PUBLISHERS
+  const publishersById = useMemo(() => {
+    return Object.fromEntries(
+      publishers.map(p => [p.id, p])
+    ) as {[id: string]: Publisher}
+  }, [publishers])
+  const publisherId = useWatch({name: "publisherId"})
+  const selectedPublisher = publisherId ? publishersById[publisherId] ?? null : null
+  const getPublisherUri = useCallback(() => `/publishers/?recordId=${publisherId ?? ''}`, [publisherId])
+  logger.trace("render: publisherId: %s", publisherId)
+
+  const handleJournalChange = useCallback((journal: Journal | null) => {
+    logger.trace("handleJournalChange(%s)", journal?.id ?? null)
+
+    // If there is no publisher currently set, or if the current publisher matches that of the current journal,
+    // update the publication's publisher to match that of the newly selected journal.
+    if (journal?.publisher && !selectedPublisher || selectedJournal?.publisher?.id === selectedPublisher?.id) {
+      logger.trace("handleJournalChange: setting publisherId = %s", journal?.publisher?.id ?? '')
+
+      form.setValue("publisherId", journal?.publisher?.id ?? null)
+    }
+  }, [form, selectedJournal, selectedPublisher])
 
   const kind = form.getValues().kind
   const selectedPublicationKind = kind ? publicationKindsByKind[kind] ?? null : null
@@ -240,82 +270,6 @@ export default function PublicationDetails(
             />
             <FormField
               control={form.control}
-              name="journalId"
-              render={({ field }) => (
-                <FormItem className="col-span-2">
-                  <FormLabel htmlFor="journal">Journal</FormLabel>
-                  <Combobox
-                    disabled={!updating}
-                    items={journals}
-                    itemToStringValue={j => j.id}
-                    itemToStringLabel={j => j.title}
-                    value={selectedJournal}
-                    onValueChange={p => field.onChange(p?.id ?? null)}
-                  >
-                    <ComboboxInput
-                      id="journalId"
-                      placeholder="Select a journal"
-                      readOnly={!updating}
-                      showClear
-                    >
-                      <InputGroupAddon className="gap-1" align="inline-end">
-                        <AddOnLink
-                          href={getJournalUri()}
-                          disabled={!journalId}
-                          title="Go to the selected journal"
-                        >
-                          <ArrowRight className="w-6 h-6 text-gray-400" />
-                        </AddOnLink>
-                        <Badge variant="outline" title="The number of publishers">{journals.length.toLocaleString()}</Badge>
-                        <Button
-                          className="w-6 h-6"
-                          type="button"
-                          variant="ghost"
-                          onClick={() => journalsResult.refetch()}
-                          title="Refresh the list of journals"
-                        >
-                          <RotateCwIcon className="w-6 h-6" />
-                        </Button>
-                        <Help text="The journal or series containing the publication" />
-                      </InputGroupAddon>
-                    </ComboboxInput>
-                    <ComboboxContent>
-                      <ComboboxEmpty>-No journals found-</ComboboxEmpty>
-                      <ComboboxList>
-                        {j => (
-                          <ComboboxItem key={j.id} value={j}>
-                            {j.title}
-                          </ComboboxItem>
-                        )}
-                      </ComboboxList>
-                    </ComboboxContent>
-                  </Combobox>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="authors"
-              render={({field}) => (
-                <FormItem>
-                  <FormLabel htmlFor="authors">Authors</FormLabel>
-                  <FormControl>
-                    <TextareaEx
-                      id="authors"
-                      className=" h-40 overflow-y-auto"
-                      disabled={!record && !updating}
-                      readOnly={!updating}
-                      {...field}
-                      help="The author(s) of the publication, one per line"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name="date"
               render={({field}) => (
                 <FormItem>
@@ -371,6 +325,138 @@ export default function PublicationDetails(
                       readOnly={!updating}
                       {...field}
                       help="The year in which the publication was first published"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="journalId"
+              render={({ field }) => (
+                <FormItem className="col-span-3">
+                  <FormLabel htmlFor="journal">Journal</FormLabel>
+                  <Combobox
+                    disabled={!updating}
+                    items={journals}
+                    itemToStringValue={j => j?.id ?? ''}
+                    itemToStringLabel={j => j?.title ?? ''}
+                    value={selectedJournal}
+                    onValueChange={j => {field.onChange(j?.id ?? null); handleJournalChange(j)}}
+                  >
+                    <ComboboxInput
+                      id="journalId"
+                      placeholder="-Select a journal-"
+                      readOnly={!updating}
+                      showClear
+                    >
+                      <InputGroupAddon className="gap-1" align="inline-end">
+                        <AddOnLink
+                          href={getJournalUri()}
+                          disabled={!journalId}
+                          title="Go to the selected journal"
+                        >
+                          <ArrowRight className="w-6 h-6 text-gray-400" />
+                        </AddOnLink>
+                        <Badge variant="outline" title="The number of journals">{journals.length.toLocaleString()}</Badge>
+                        <Button
+                          className="w-6 h-6"
+                          type="button"
+                          variant="ghost"
+                          onClick={() => journalsResult.refetch()}
+                          title="Refresh the list of journals"
+                        >
+                          <RotateCwIcon className="w-6 h-6" />
+                        </Button>
+                        <Help text="The journal or series containing the publication" />
+                      </InputGroupAddon>
+                    </ComboboxInput>
+                    <ComboboxContent>
+                      <ComboboxEmpty>-No journals found-</ComboboxEmpty>
+                      <ComboboxList>
+                        {j => (
+                          <ComboboxItem key={j.id} value={j}>
+                            {j.title}
+                          </ComboboxItem>
+                        )}
+                      </ComboboxList>
+                    </ComboboxContent>
+                  </Combobox>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="publisherId"
+              render={({ field }) => (
+                <FormItem className="col-span-3">
+                  <FormLabel htmlFor="publisher">Publisher</FormLabel>
+                  <Combobox
+                    disabled={!updating}
+                    items={publishers}
+                    itemToStringValue={p => p?.id ?? ''}
+                    itemToStringLabel={p => p?.name ?? ''}
+                    value={selectedPublisher}
+                    onValueChange={p => field.onChange(p?.id ?? null)}
+                  >
+                    <ComboboxInput
+                      id="publisherId"
+                      placeholder="-Select a publisher-"
+                      readOnly={!updating}
+                      showClear
+                    >
+                      <InputGroupAddon className="gap-1" align="inline-end">
+                        <AddOnLink
+                          href={getPublisherUri()}
+                          disabled={!publisherId}
+                          title="Go to the selected publisher"
+                        >
+                          <ArrowRight className="w-6 h-6 text-gray-400" />
+                        </AddOnLink>
+                        <Badge variant="outline" title="The number of publishers">{publishers.length.toLocaleString()}</Badge>
+                        <Button
+                          className="w-6 h-6"
+                          type="button"
+                          variant="ghost"
+                          onClick={() => publishersResult.refetch()}
+                          title="Refresh the list of publishers"
+                        >
+                          <RotateCwIcon className="w-6 h-6" />
+                        </Button>
+                        <Help text="The publisher of the publication" />
+                      </InputGroupAddon>
+                    </ComboboxInput>
+                    <ComboboxContent>
+                      <ComboboxEmpty>-No publishers found-</ComboboxEmpty>
+                      <ComboboxList>
+                        {p => (
+                          <ComboboxItem key={p.id} value={p}>
+                            {p.name}
+                          </ComboboxItem>
+                        )}
+                      </ComboboxList>
+                    </ComboboxContent>
+                  </Combobox>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="authors"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel htmlFor="authors">Authors</FormLabel>
+                  <FormControl>
+                    <TextareaEx
+                      id="authors"
+                      className=" h-40 overflow-y-auto"
+                      disabled={!record && !updating}
+                      readOnly={!updating}
+                      {...field}
+                      help="The author(s) of the publication, one per line"
                     />
                   </FormControl>
                   <FormMessage />

@@ -67,6 +67,10 @@ public class PublicationSubject extends TrackedEntitySubject<Publication> {
         return check("journal()").about(JournalSubject.journals()).that(actual.getJournal());
     }
 
+    public PublisherSubject publisher() {
+        return check("publisher()").about(PublisherSubject.publishers()).that(actual.getPublisher());
+    }
+
     public void hasKind(String kind) {
         kind().isEqualTo(kind);
     }

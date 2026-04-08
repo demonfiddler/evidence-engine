@@ -32,6 +32,7 @@ import io.github.demonfiddler.ee.server.model.FormatKind;
 import io.github.demonfiddler.ee.server.model.Journal;
 import io.github.demonfiddler.ee.server.model.Publication;
 import io.github.demonfiddler.ee.server.model.PublicationKind;
+import io.github.demonfiddler.ee.server.model.Publisher;
 import io.github.demonfiddler.ee.server.repository.PublicationRepository;
 import jakarta.annotation.Resource;
 
@@ -52,6 +53,13 @@ public class DataFetchersDelegatePublicationImpl extends DataFetchersDelegateILi
         GraphQLContext graphQLContext, List<Publication> keys) {
 
         return entityUtils.getValuesMap(keys, Publication::getJournal);
+    }
+
+    @Override
+    public Map<Publication, Publisher> publisher(BatchLoaderEnvironment batchLoaderEnvironment,
+        GraphQLContext graphQLContext, List<Publication> keys) {
+
+        return entityUtils.getValuesMap(keys, Publication::getPublisher);
     }
 
     @Override
