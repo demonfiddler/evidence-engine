@@ -2,9 +2,8 @@
 DELETE FROM "entity" WHERE "dtype" <> 'USR';
 
 -- Reset the AUTO-GENERATED id field sequence number for the "entity" & "log" tables.
-SET @max_id = (SELECT MAX("id") FROM "entity");
-ALTER TABLE "entity" ALTER COLUMN "id" RESTART WITH @max_id + 1;
-ALTER TABLE "log" ALTER COLUMN "id" RESTART WITH 1;
+-- ALTER TABLE "entity" AUTO_INCREMENT = <max_entity_id>;
+-- ALTER TABLE "log" AUTO_INCREMENT = <max_log_id>;
 
 -- Clear all persistent login records.
 DELETE FROM "persistent_login" WHERE "username" IS NOT NULL;

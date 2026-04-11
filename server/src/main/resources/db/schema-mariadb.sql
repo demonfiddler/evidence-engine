@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS "abbreviation" (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='The ISSN Network''s ''List of Title Word Abbreviations'' (LTWA), as used by ISO 4.';
 
 CREATE TABLE IF NOT EXISTS "config" (
-    "property" VARCHAR(20) NOT NULL COMMENT 'The property name',
+    "property" VARCHAR(50) NOT NULL COMMENT 'The property name',
     "subscript" TINYINT(4) NOT NULL DEFAULT '0' COMMENT 'For a multi-valued property, the unique item index',
     "value" VARCHAR(255) NULL DEFAULT NULL COMMENT 'The property value as a string',
     PRIMARY KEY ("property", "subscript")

@@ -19,6 +19,12 @@
 
 package io.github.demonfiddler.ee.server.rest.model;
 
+/** The kind of backup/restore operation. */
 public enum BackupKind {
-    APPDATA, ALL
+    /** Application data + static lookup tables. */
+    ALL,
+    /** Application data only. */
+    FULL,
+    /** Added/changed application data only. */
+    INCREMENTAL
 }

@@ -20,6 +20,7 @@
 'use client'
 
 import ButtonEx from "@/app/ui/ext/button-ex"
+import LabelEx from "@/app/ui/ext/label-ex"
 import Spinner from "@/app/ui/misc/spinner"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -32,9 +33,25 @@ import { toast } from "sonner"
 
 const logger = new LoggerEx(page, "[BackupRestore] ")
 
+function formatTimestamp(d: Date): string {
+  const pad = (n: number) => String(n).padStart(2, "0")
+
+  return [
+    d.getFullYear(),
+    pad(d.getMonth() + 1),
+    pad(d.getDate())
+  ].join("-")
+  + "T" +
+  [
+    pad(d.getHours()),
+    pad(d.getMinutes()),
+    pad(d.getSeconds())
+  ].join("_")
+}
+
 export default function BackupRestore() {
   const { jwtToken, hasAuthority } = useAuth()
-  const [kind, setKind] = useState<string>("appdata")
+  const [kind, setKind] = useState<string>("full")
   const [error, setError] = useState("")
   const [files, setFiles] = useState<File[] | undefined>()
   const [isLoading, setIsLoading] = useState(false)
@@ -52,7 +69,7 @@ export default function BackupRestore() {
 
   const getHref = useCallback((action: string) => {
     const href = `${process.env.NEXT_PUBLIC_SERVER_URL}/rest/${action}?kind=${kind}`
-    console.log(`href='${href}'`)
+    logger.trace(`href='${href}'`)
     return href
   }, [kind])
 
@@ -63,21 +80,26 @@ export default function BackupRestore() {
     setError("")
     setIsLoading(true)
     const headers : HeadersInit = {
-      "Accept": "application/zip"
+      "Accept": "application/zip",
+      "Authorization": `Bearer ${jwtToken}`
     }
-    if (jwtToken)
-      headers["Authorization"] = `Bearer ${jwtToken}`
     fetch(getHref("backup"), {
       method: "GET",
       headers
     })
-    .then(res => {
-      if (!res.ok)
-        setError(`${res.status} (${res.statusText}): backup failed`)
+    .then(async resp => {
+      if (!resp.ok)
+        setError(`${resp.status}${resp.statusText ? ` (${resp.statusText}) ` : ''}: Backup failed: ${await resp.text()}`)
 
-      return res.blob()
+      const cd = resp.headers.get("Content-Disposition")
+      const filename = cd?.startsWith("attachment; filename=") ? cd.substring(21) : null
+
+      return {blob: resp.ok ? await resp.blob() : null, filename}
     })
-    .then(blob => {
+    .then(({blob, filename}) => {
+      if (!blob?.size)
+        return
+
       console.log(`blob.type = ${blob.type}`)
       const url = URL.createObjectURL(blob)
 
@@ -87,14 +109,20 @@ export default function BackupRestore() {
       // location.assign(url)
       // setTimeout(() => URL.revokeObjectURL(url), 10000);
 
-      // TODO: handle HTTP codes other than 200 (e.g., 302 Found -> "Please Login")
-
-      // This approach works better as it gives us full control over filename, etc.
-      let timestamp = new Date().toISOString()
-      timestamp = timestamp.substring(0, timestamp.lastIndexOf('.')).replace("T", "_").replaceAll(":", "")
+      // The filename from the server has a UTC timestamp, so to be user-friendly, replace this with a local timestamp.
+      const timestamp = formatTimestamp(new Date())
+      if (filename) {
+        const prefix = filename.substring(0, filename.indexOf('@') + 1)
+        filename = `${prefix}${timestamp}.zip`
+      } else {
+        // This code is just a fall-back and shouldn't actually be executed.
+        filename = `ee-backup-${kind}@${timestamp}.zip`
+      }
+      
+      // This approach, although klunky, works better as it gives us full control over filename, etc.
       const a = document.createElement("a")
       a.href = url
-      a.download = `ee-backup-${timestamp}.zip`
+      a.download = filename
       a.click()
       URL.revokeObjectURL(url)
 
@@ -107,7 +135,7 @@ export default function BackupRestore() {
 
   const handleRestore = useCallback(() => {
     if (!files || files.length == 0 || !jwtToken ||
-      !confirm(`Confirm restore database from ${files[0].name}, replacing all existing data?`)) {
+      !confirm(`Confirm restore database from ${files[0].name}, ${kind === "incremental" ? "updating/adding changed/new" : "replacing all existing"} data?`)) {
 
       return
     }
@@ -154,17 +182,17 @@ export default function BackupRestore() {
       </div>
       <p className="w-1/2">
         <InfoIcon className="inline text-blue-600" />
-        The Evidence Engine database can be backed up to a downloadable backup set file or restored from such a backup set, previously downloaded.
-        Backups are <b>full</b>; that is, there is currently no support for incremental backup/restore of just the records changed since the last backup.
-        There is a 'Scope' option to backup/restore just the application data, or to backup/restore the entire database including static lookup tables.
+        The Evidence Engine database can be backed up to a downloadable backup set file or restored from such a file, previously downloaded.
+        Backup scope can be <b>All</b>&nbsp;(entire database including static lookup tables), <b>Full</b>&nbsp;(application data only) or&nbsp;
+        <b>Incremental</b> (just the records added or changed since the last backup).
       </p>
       <p className="w-1/2">
         <AlertTriangleIcon className="inline text-red-600" />
-        Be aware that a backup set includes <b>all application data</b>, including <b>security principals</b> (user, groups and their granted authorities)
-        and that the restore operation <b>completely replaces</b> all existing application records. There is currently no support for merging
-        existing records with those from a different database.
+        Be aware that an All or Full backup set includes <b>all application data</b>, including <b>security principals</b> (user, groups and their granted authorities)
+        and that the corresponding restore operation <b>completely replaces</b> all existing data. Incremental backups form a numbered series and can only be restored
+        in order, starting with the original full backup set, without skipping any incremental backups.
       </p>
-      <fieldset className="grid grid-cols-3 justify-items-center p-2 gap-2 border rounded-md">
+      <fieldset className="w-1/2 grid grid-cols-3 justify-items-center p-2 gap-2 border rounded-md">
         <legend>&nbsp;Operations&nbsp;</legend>
         <Spinner loading={isLoading} label="busy" className="absolute inset-0 bg-black/20 z-50" />
         <p className="col-span-3 text-red-600">{error}</p>
@@ -172,12 +200,16 @@ export default function BackupRestore() {
           <Label>Scope:</Label>
           <RadioGroup className="flex p-2 gap-2" value={kind} onValueChange={setKind}>
             <div className="flex items-center space-x-2">
-              <RadioGroupItem id="backup-appdata" value="appdata" />
-              <Label htmlFor="backup-appdata">Application data only</Label>
+              <RadioGroupItem id="backup-all" value="all" />
+              <LabelEx htmlFor="backup-all" help="Application data + static lookup tables">All</LabelEx>
             </div>
             <div className="flex items-center space-x-2">
-              <RadioGroupItem id="backup-all" value="all" />
-              <Label htmlFor="backup-all">All (application data + lookup tables)</Label>
+              <RadioGroupItem id="backup-full" value="full" />
+              <LabelEx htmlFor="backup-full" help="Application data only">Full</LabelEx>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem id="backup-incremental" value="incremental" />
+              <LabelEx htmlFor="backup-incremental" help="Added/changed application data only">Incremental</LabelEx>
             </div>
           </RadioGroup>
         </div>

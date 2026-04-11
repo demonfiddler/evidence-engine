@@ -20,20 +20,21 @@
 package io.github.demonfiddler.ee.server.rest.api;
 
 import static io.github.demonfiddler.ee.common.util.StringUtils.NL;
-import static io.github.demonfiddler.ee.server.rest.util.BackupUtils.APPDATA_TABLES_BACKUP;
-import static io.github.demonfiddler.ee.server.rest.util.BackupUtils.APPDATA_TABLES_RESTORE;
-import static io.github.demonfiddler.ee.server.rest.util.BackupUtils.ENTITY_TABLES_RESTORE;
+import static io.github.demonfiddler.ee.server.rest.util.BackupUtils.APPDATA_TABLES;
 import static io.github.demonfiddler.ee.server.rest.util.BackupUtils.SELECT_TABLE_COLUMNS;
 import static io.github.demonfiddler.ee.server.rest.util.BackupUtils.STATIC_TABLES;
+import static io.github.demonfiddler.ee.server.rest.util.DatabaseUtils.PROP_SCHEMA_VERSION;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -60,6 +61,7 @@ import org.springframework.web.multipart.MultipartFile;
 import io.github.demonfiddler.ee.server.rest.model.BackupKind;
 import io.github.demonfiddler.ee.server.rest.util.BackupUtils;
 import io.github.demonfiddler.ee.server.rest.util.DatabaseUtils;
+import io.github.demonfiddler.ee.server.rest.util.BackupUtils.TableDescriptor;
 import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -99,22 +101,25 @@ public class RestoreApiController implements RestoreApi {
     public ResponseEntity<String> restore(@NotNull @Valid String kind, MultipartFile file) {
         BackupKind backupKind;
         switch (kind) {
-            case "appdata":
-                backupKind = BackupKind.APPDATA;
-                break;
             case "all":
                 backupKind = BackupKind.ALL;
+                break;
+            case "full":
+                backupKind = BackupKind.FULL;
+                break;
+            case "incremental":
+                backupKind = BackupKind.INCREMENTAL;
                 break;
             default:
                 return ResponseEntity.badRequest().build();
         }
-        LOGGER.debug("Restoring backup, mode='{}'", kind);
+        LOGGER.debug("Restoring backup, backupKind='{}'", backupKind);
 
         // N.B. The remaining code only works if the application and database servers are colocated,
-        // because unzipping writes to and the LOAD DATA LOCAL INFILE statement reads from local files.
+        // because unzipping writes to, and the LOAD DATA LOCAL INFILE statement reads from, local files.
 
         // MariaDB may not have permission to access ${java.io.tmpdir}, so we'll have to use a different location.
-        String outputPath = tmpDir + File.separatorChar + "ee-backup" + File.separatorChar;
+        String outputPath = tmpDir + (tmpDir.endsWith(File.separator) ? "" : File.separatorChar) + "ee-backup" + File.separatorChar;
         File outputDir = new File(outputPath);
         if (!outputDir.mkdirs()) {
             // The directory already existed, so make sure it's empty.
@@ -155,7 +160,7 @@ public class RestoreApiController implements RestoreApi {
         List<String> missingFilenames = new ArrayList<>();
         if (backupKind == BackupKind.ALL)
             checkForMissingFiles(STATIC_TABLES, csvFilenames, missingFilenames);
-        checkForMissingFiles(APPDATA_TABLES_BACKUP, csvFilenames, missingFilenames);
+        checkForMissingFiles(APPDATA_TABLES, csvFilenames, missingFilenames);
         if (!missingFilenames.isEmpty()) {
             String errmsg = "Files missing from backup set: " + missingFilenames;
             LOGGER.error(errmsg);
@@ -163,22 +168,103 @@ public class RestoreApiController implements RestoreApi {
                 .body("400 Bad Request: " + errmsg);
         }
 
-        // Check that the backup set's database schema version matches that of this server.
-        File configFile = new File(outputDir, "config.csv");
+        // Read the backup set config file.
+        Map<String, String> config;
         try {
-            Map<String, String> config = backupUtils.readConfiguration(configFile);
-            int schemaVersion = Integer.parseInt(config.getOrDefault("schema_version", "0"));
-            if (!databaseUtils.checkDatabaseSchemaVersion(schemaVersion)) {
-                String errmsg = "Backup set has an incompatible schema version; expected: "
-                    + DatabaseUtils.CURRENT_SCHEMA_VERSION + ", actual: " + schemaVersion;
-                LOGGER.error(errmsg);
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body("400 Bad Request: " + errmsg);
-            }
+            File configFile = new File(outputDir, "config.csv");
+            config = backupUtils.readConfiguration(configFile);
         } catch (IOException | NumberFormatException e) {
             LOGGER.error("Error reading backup set configuration", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
                 .body("400 Bad Request: Unable to read configuration from backup set");
+        }
+
+        // Check that the backup set's database schema version matches that of this server.
+        int schemaVersion = Integer.parseInt(config.getOrDefault(PROP_SCHEMA_VERSION, "0"));
+        if (!databaseUtils.checkDatabaseSchemaVersion(schemaVersion)) {
+            String errmsg = "Backup set has an incompatible schema version; expected: "
+                + DatabaseUtils.CURRENT_SCHEMA_VERSION + ", found: " + schemaVersion;
+            LOGGER.error(errmsg);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
+                .body("400 Bad Request: " + errmsg);
+        }
+
+        // Read and validate incoming configuration.
+        String newBackupId = config.get(DatabaseUtils.PROP_BACKUP_ID);
+        Integer newBackupNumber = databaseUtils.parseInteger(config.get(DatabaseUtils.PROP_BACKUP_NUMBER));
+        Timestamp newBackupTimestamp = databaseUtils.parseTimestamp(config.get(DatabaseUtils.PROP_BACKUP_TIMESTAMP));
+        if (newBackupId == null || newBackupNumber == null || newBackupTimestamp == null) {
+            String errmsg = "Backup set configuration invalid; backup_id = " + newBackupId + ", backup_number = "
+                + newBackupNumber + ", backup_timestamp = " + newBackupTimestamp;
+            LOGGER.error(errmsg);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
+                .body("400 Bad Request: " + errmsg);
+        }
+
+        // If restoring an incremental backup, make sure that we have already restored the full backup and all previous
+        // backups in this series.
+        if (backupKind == BackupKind.INCREMENTAL) {
+            // Read previous configuration.
+            String previousBackupId = databaseUtils.getConfigString(DatabaseUtils.PROP_BACKUP_ID);
+            Integer previousBackupNumber = databaseUtils.getConfigInteger(DatabaseUtils.PROP_BACKUP_NUMBER);
+            Timestamp previousBackupTimestamp = databaseUtils.getConfigTimestamp(DatabaseUtils.PROP_BACKUP_TIMESTAMP);
+
+            if (previousBackupId == null || previousBackupNumber == null || previousBackupTimestamp == null) {
+                String errmsg = "Database configuration invalid; backup_id = " + previousBackupId + ", backup_number = "
+                    + previousBackupNumber + ", last_backup_timestamp = " + previousBackupTimestamp;
+                LOGGER.error(errmsg);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
+                    .body("400 Bad Request: " + errmsg);
+            }
+
+            if (!Objects.equals(newBackupId, previousBackupId)) {
+                String errmsg =
+                    "Cannot restore incremental backup set because it is from a different series; expected: "
+                        + previousBackupId + ", found: " + newBackupId;
+                LOGGER.error(errmsg);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
+                    .body("400 Bad Request: " + errmsg);
+            }
+
+            if (newBackupNumber == 0) {
+                String errmsg = "Cannot restore a full backup set incrementally";
+                LOGGER.error(errmsg);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
+                    .body("400 Bad Request: " + errmsg);
+            }
+
+            int expectedBackupNumber = previousBackupNumber + 1;
+            if (newBackupNumber != expectedBackupNumber) {
+                String errmsg =
+                    "Cannot restore incremental backup set out of sequence; expected backup number: "
+                        + expectedBackupNumber + ", found: " + newBackupNumber;
+                LOGGER.error(errmsg);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
+                    .body("400 Bad Request: " + errmsg);
+            }
+
+            // Check whether any records have been added or updated since the incoming backup timestamp.
+            Timestamp[] timestamps = { null, null };
+            jdbcTemplate.query("SELECT MAX(\"created\"), MAX(\"updated\") FROM \"entity\";",
+                (PreparedStatementSetter)null, (RowCallbackHandler)rs -> {
+                    timestamps[0] = rs.getTimestamp(1);
+                    timestamps[1] = rs.getTimestamp(2);
+                });
+            if (timestamps[0] != null && timestamps[0].after(previousBackupTimestamp)
+                || timestamps[1] != null && timestamps[1].after(previousBackupTimestamp)) {
+
+                String errmsg =
+                    "Cannot restore incremental backup set as target database has been modified since the backup date of: "
+                        + previousBackupTimestamp;
+                LOGGER.error(errmsg);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
+                    .body("400 Bad Request: " + errmsg);
+            }
+        } else if (newBackupNumber != 0) {
+            String errmsg = "Cannot perform a full restore: supplied backup set is incremental";
+            LOGGER.error(errmsg);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
+                .body("400 Bad Request: " + errmsg);
         }
 
         // The entire restore operation must be performed transactionally.
@@ -189,43 +275,43 @@ public class RestoreApiController implements RestoreApi {
         try {
             // If required, restore lookup tables.
             if (backupKind == BackupKind.ALL) {
-                for (String table : STATIC_TABLES) {
+                for (TableDescriptor table : STATIC_TABLES) {
                     // Delete existing lookup table entries.
                     try {
-                        jdbcTemplate.update("DELETE FROM \"" + table + "\";");
+                        jdbcTemplate.update("DELETE FROM \"" + table.name() + "\";");
                     } catch (DataAccessException e) {
                         txManager.rollback(status);
 
-                        String errmsg = "Error deleting lookup data from table: " + table;
+                        String errmsg = "Error deleting lookup data from table: " + table.name();
                         LOGGER.error(errmsg, e);
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
                             .body("500 Internal Server Error: " + errmsg);
                     }
                 }
-                restoreTables(STATIC_TABLES, outputPath);
+                restoreTables(STATIC_TABLES, outputPath, backupKind);
             }
 
-            // Delete existing tracked entities (cascades to all joined tables).
-            try {
-                jdbcTemplate.update("DELETE FROM \"entity\";");
-            } catch (DataAccessException e) {
-                txManager.rollback(status);
-
-                String errmsg = "Error deleting existing data from table: \"entity\"";
-                LOGGER.error(errmsg, e);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
-                    .body("500 Internal Server Error: " + errmsg);
+            // For all/full restore, delete existing tracked entities (cascades to all joined tables).
+            if (backupKind != BackupKind.INCREMENTAL) {
+                try {
+                    jdbcTemplate.update("DELETE FROM \"config\";");
+                    jdbcTemplate.update("DELETE FROM \"entity\";");
+                } catch (DataAccessException e) {
+                    txManager.rollback(status);
+    
+                    String errmsg = "Error deleting existing config/application data";
+                    LOGGER.error(errmsg, e);
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
+                        .body("500 Internal Server Error: " + errmsg);
+                }
             }
 
             try {
-                // Temporarily disable RI constraints while we restore table data.
+                // Temporarily disable RI constraints while we restore application data.
                 jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS=0;");
 
-                // Restore entity + user tables together.
-                restoreTables(ENTITY_TABLES_RESTORE, outputPath);
-
-                // Restore remaining application data tables.
-                restoreTables(APPDATA_TABLES_RESTORE, outputPath);
+                // Restore application data tables.
+                restoreTables(APPDATA_TABLES, outputPath, backupKind);
             } catch (DataAccessException e) {
                 txManager.rollback(status);
 
@@ -244,46 +330,62 @@ public class RestoreApiController implements RestoreApi {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
                         .body("500 Internal Server Error: " + errmsg);
                 }
+                // This 'nice-to-have' code requires the database user (typically 'ee') to have ALTER permission.
+                try {
+                    resetAutoIncrement("entity");
+                    resetAutoIncrement("log");
+                } catch (DataAccessException e) {
+                    txManager.rollback(status);
+
+                    String errmsg = "Error resetting AUTO_INCREMENT";
+                    LOGGER.error(errmsg, e);
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
+                        .body("500 Internal Server Error: " + errmsg);
+                }
             }
 
             // Finally, commit the transaction.
             txManager.commit(status);
 
             LOGGER.debug("Restore complete");
+
+            return ResponseEntity.ok().contentType(MediaType.parseMediaType("text/html")) //
+                .body("<html><body>Backup set restored successfully</body></html>");
         } catch (Throwable t) {
             txManager.rollback(status);
-            throw t;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
+                .body("500 Internal Server Error: " + t.getMessage());
         } finally {
             backupUtils.deleteFile(outputDir, false);
         }
-
-        return ResponseEntity.ok().contentType(MediaType.parseMediaType("text/html")) //
-            .body("<html><body>Backup set restored successfully</body></html>");
     }
 
-    private void checkForMissingFiles(String[] tables, List<String> csvFilenames, List<String> missingFilenames) {
-        for (String table : tables) {
-            String csvFilename = table + ".csv";
+    private void checkForMissingFiles(TableDescriptor[] tables, List<String> csvFilenames, List<String> missingFilenames) {
+        for (TableDescriptor table : tables) {
+            String csvFilename = table.name() + ".csv";
             if (!csvFilenames.contains(csvFilename))
                 missingFilenames.add(csvFilename);
         }
     }
 
-    private void restoreTables(String[] tables, String inputPath) {
-        for (String table : tables) {
-            String sql = getImportStatement(table, inputPath);
+    private void restoreTables(TableDescriptor[] tables, String inputPath, BackupKind backupKind) {
+        for (TableDescriptor table : tables) {
+            String sql = getImportStatement(table, inputPath, backupKind);
             jdbcTemplate.execute(sql);
 
-            LOGGER.debug("Restored table \"{}\"", table);
+            LOGGER.debug("Restored table \"{}\"", table.name());
         }
     }
 
-    private String getImportStatement(String table, String inputPath) {
-        String sql = IMPORT_STATEMENTS.get(table);
+    private String getImportStatement(TableDescriptor table, String inputPath, BackupKind backupKind) {
+        boolean isIncremental = backupKind == BackupKind.INCREMENTAL;
+        boolean isIncrementalTable = isIncremental && table.supportsIncrementalBackup();
+        String key = table.name() + (isIncrementalTable ? "_incremental" : "_full");
+        String sql = IMPORT_STATEMENTS.get(key);
         if (sql == null) {
             StringBuilder colList = new StringBuilder();
             StringBuilder setList = new StringBuilder();
-            PreparedStatementSetter pss = ps -> ps.setString(1, table);
+            PreparedStatementSetter pss = ps -> ps.setString(1, table.name());
             RowCallbackHandler rch = rs -> {
                 String colName = rs.getString(1);
                 String colType = rs.getString(2);
@@ -302,9 +404,11 @@ public class RestoreApiController implements RestoreApi {
             jdbcTemplate.query(SELECT_TABLE_COLUMNS, pss, rch);
 
             StringBuilder sqlbuf = new StringBuilder();
-            sqlbuf.append("LOAD DATA LOCAL INFILE '").append(inputPath.replace("\\", "\\\\")).append(table)
-                .append(".csv").append('\'').append(NL) //
-                .append("INTO TABLE \"").append(table).append('"').append(NL) //
+            sqlbuf.append("LOAD DATA LOCAL INFILE '").append(inputPath.replace("\\", "\\\\")).append(table.name())
+                .append(".csv").append('\'').append(NL); //
+            if (isIncremental)
+                sqlbuf.append("REPLACE ");
+            sqlbuf.append("INTO TABLE \"").append(table.name()).append('"').append(NL) //
                 .append("CHARACTER SET utf8mb4").append(NL) //
                 .append("FIELDS TERMINATED BY ','").append(NL) //
                 .append("OPTIONALLY ENCLOSED BY '\"'").append(NL) //
@@ -316,11 +420,20 @@ public class RestoreApiController implements RestoreApi {
                 sqlbuf.append(NL).append("SET ").append(setList);
             sqlbuf.append(';');
             sql = sqlbuf.toString();
-            IMPORT_STATEMENTS.put(table, sql);
+            IMPORT_STATEMENTS.put(key, sql);
 
-            LOGGER.trace("Restoring table \"{}\" with SQL statement:\n{}", table, sql);
+            LOGGER.trace("Restoring table \"{}\" with SQL statement:\n{}", table.name(), sql);
         }
         return sql;
     }
 
+    private void resetAutoIncrement(String table) {
+        Long[] max = {0L};
+        jdbcTemplate.query("SELECT COALESCE(MAX(\"id\"), 0) FROM \"" + table + "\";", rs -> {
+            max[0] = rs.getLong(1);
+        });
+        jdbcTemplate.execute("ALTER TABLE \"" + table + "\" AUTO_INCREMENT = " + ++max[0] + ';');
+        LOGGER.trace("Reset table \"{}\" AUTO_INCREMENT = {}", table, max[0]);
+    }
+    
 }
