@@ -54,6 +54,7 @@ import LinkableEntityTableFilter from "@/app/ui/filter/linkable-entity-table-fil
 import { GlobalContext, SecurityPageTabState } from "@/lib/context"
 import { LoggerEx, page } from "@/lib/logger"
 import { ShieldCheckIcon, UserIcon, UsersIcon } from "lucide-react"
+import ContextHelp from "@/app/ui/misc/context-help"
 
 const logger = new LoggerEx(page, "[Security] ")
 
@@ -260,6 +261,7 @@ export default function Security() {
         <ShieldCheckIcon className="w-8 h-8" />
         &nbsp;
         <h1>Security</h1>
+        <ContextHelp href="/doc/security/" />
       </div>
       <Tabs defaultValue="groups" value={activeTab} onValueChange={onActiveTabChange}>
         <TabsList>

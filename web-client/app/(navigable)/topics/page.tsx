@@ -38,6 +38,7 @@ import { useQuery } from '@apollo/client/react'
 import { LoggerEx, page } from '@/lib/logger'
 import { QueryResult } from '@/lib/graphql-utils'
 import { FolderTreeIcon } from 'lucide-react'
+import ContextHelp from "@/app/ui/misc/context-help"
 
 const logger = new LoggerEx(page, "[Topics] ")
 
@@ -119,6 +120,7 @@ export default function Topics() {
         <FolderTreeIcon className="w-8 h-8"/>
         &nbsp;
         <h1>Topics</h1>
+        <ContextHelp href="/doc/topics/" />
       </div>
       <DataTable<Topic, unknown>
         recordKind="Topic"

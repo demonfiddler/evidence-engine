@@ -24,7 +24,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
-import { CircleQuestionMarkIcon } from "lucide-react"
+import { InfoIcon } from "lucide-react"
 
 export type HelpProps = {
   outerClassName?: string
@@ -38,7 +38,7 @@ export default function Help({text} : {text?: string}) {
   return (
     <HoverCard>
       <HoverCardTrigger asChild>
-        <CircleQuestionMarkIcon className="w-6 h-6 text-sky-200"/>
+        <InfoIcon className="w-6 h-6 text-sky-200"/>
       </HoverCardTrigger>
       <HoverCardContent className="w-80 bg-sky-50" side="left">
         <p className="text-sm">

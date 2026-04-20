@@ -21,11 +21,13 @@
 
 import "@/app/globals.css"
 import '@/app/ui/global.css'
+import { VERSION } from "@/lib/generated/build-info"
 import MyAccount from "../ui/security/my-account"
 import { GlobalContext } from "@/lib/context"
 import { useContext } from "react"
 import { layout, LoggerEx } from "@/lib/logger"
 import Sidebar from "../ui/navigator/sidebar"
+import { categories } from "../ui/navigator/sidebar-items"
 import { Button } from "@/components/ui/button"
 import { GithubIcon, PanelRightCloseIcon, PanelRightOpenIcon } from "lucide-react"
 import Image from 'next/image'
@@ -76,10 +78,26 @@ export default function NavigableLayout({
       <footer className="fixed bottom-0 left-0 right-0 z-10 grid grid-cols-3 items-center w-full h-12 text-xs text-white bg-blue-500">
         <p>&nbsp;Copyright &copy; 2024-26 Adrian Price. All rights reserved.</p>
         <p className="justify-self-center">A <a href="https://campaign-resources.org" target="_blank" className="text-white"><i>Campaign Resources</i></a> application</p>
+        <p className="justify-self-end">Version {VERSION}&nbsp;</p>
       </footer>
       <div className="fixed top-16 bottom-12 flex flex-row w-screen">
-        <Sidebar open={sidebarOpen} />
-        <div className="flex flex-col w-full overflow-y-auto">
+        <div
+          className={sidebarOpen ? "flex flex-col w-50 border-r bg-gray-50" : "w-0 none overflow-clip"}
+          data-slot="sidebar-container"
+        >
+          <div className="flex place-content-center border-b h-24" data-slot="sidebar-header">
+            <Link href="/" title="Navigate to the Evidence Engine home page">
+              <Image src="/logo.svg" alt="The Evidence Engine logo" width={120} height={120} className="" />
+            </Link>
+          </div>
+          <Sidebar categories={categories} categoryClassName="justify-center mt-3" />
+          <div className="flex place-content-center items-center border-t h-24" data-slot="sidebar-footer">
+            <Link href="https://campaign-resources.org" target="_blank" title="Navigate to the Campaign Resources home page">
+              <Image src="/cr-logo.svg" alt="The Campaign Resources logo" width={100} height={100} className="" />
+            </Link>
+          </div>
+        </div>
+        <div className="flex flex-col w-full overflow-auto">
           {children}
         </div>
       </div>

@@ -21,7 +21,7 @@
 
 import ITrackedEntity from "@/app/model/ITrackedEntity"
 import { Label } from "@/components/ui/label"
-import LogDialog from "../log/log-dialog"
+import LogDialog from "../dialog/log-dialog"
 import { RecordKind } from "@/app/model/RecordKinds"
 import { DetailState } from "./detail-actions"
 import { formatDateTime, getRecordLabel } from "@/lib/utils"

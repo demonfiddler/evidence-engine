@@ -33,6 +33,7 @@ import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-fil
 import useLinkableEntityQueryFilter from '@/hooks/use-linkable-entity-query-filter'
 import { LoggerEx, page } from '@/lib/logger'
 import { MessageSquareQuoteIconEx } from "@/app/ui/icons"
+import ContextHelp from "@/app/ui/misc/context-help"
 
 const logger = new LoggerEx(page, "[Quotations] ")
 
@@ -99,6 +100,7 @@ export default function Quotations() {
         <MessageSquareQuoteIconEx className="w-8 h-8"/>
         &nbsp;
         <h1>Quotations</h1>
+        <ContextHelp href="/doc/quotations/" />
       </div>
       <DataTable<Quotation, unknown>
         recordKind="Quotation"

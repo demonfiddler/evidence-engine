@@ -33,6 +33,7 @@ import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-fil
 import useLinkableEntityQueryFilter from '@/hooks/use-linkable-entity-query-filter'
 import { LoggerEx, page } from '@/lib/logger'
 import { ScrollTextIcon } from 'lucide-react'
+import ContextHelp from "@/app/ui/misc/context-help"
 
 const logger = new LoggerEx(page, "[Declarations] ")
 
@@ -106,6 +107,7 @@ export default function Declarations() {
         <ScrollTextIcon className="w-8 h-8"/>
         &nbsp;
         <h1>Declarations</h1>
+        <ContextHelp href="/doc/declarations/" />
       </div>
       <DataTable<Declaration, unknown>
         recordKind="Declaration"

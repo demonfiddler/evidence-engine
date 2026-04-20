@@ -31,6 +31,7 @@ import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import useAuth from "@/hooks/use-auth";
 import { dialog, LoggerEx } from "@/lib/logger"
 import { LogInIcon, ShieldAlertIcon } from "lucide-react";
+import ContextHelp from "../misc/context-help";
 
 const logger = new LoggerEx(dialog, "[SignInDialog] ")
 
@@ -82,7 +83,10 @@ export default function SignInDialog() {
         <FormProvider {...form}>
           <form>
             <DialogHeader>
-              <DialogTitle><LogInIcon className="inline" />&nbsp;Sign in</DialogTitle>
+              <DialogTitle>
+                <LogInIcon className="inline" />&nbsp;Sign in
+                <ContextHelp href="/doc/sign-in/" />
+              </DialogTitle>
               <DialogDescription>
                 Provide your credentials then click &apos;Sign in&apos;.
               </DialogDescription>

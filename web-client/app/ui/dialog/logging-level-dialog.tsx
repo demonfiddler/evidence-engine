@@ -28,6 +28,7 @@ import { layout, page, detail, dialog, filter, component, table, hook, utility, 
 import { MoveLeftIcon, MoveRightIcon, SlidersHorizontalIcon } from "lucide-react"
 import { useCallback, useReducer, useState } from "react"
 import log, { LogLevelNames, LogLevelNumbers } from 'loglevel'
+import ContextHelp from "../misc/context-help"
 
 const logger = new LoggerEx(dialog, "[LoggingLevelDrawer] ")
 
@@ -98,7 +99,10 @@ export default function LoggingLevelDialog(
       <DrawerContent className="w-1/2 bottom-0 translate-x-1/2 transform">
         <div className="mx-auto w-full">
           <DrawerHeader>
-            <DrawerTitle><SlidersHorizontalIcon className="inline" />&nbsp;Logging Levels</DrawerTitle>
+            <DrawerTitle>
+              <SlidersHorizontalIcon className="inline" />&nbsp;Logging Levels
+              <ContextHelp href="/doc/logging-levels/" />
+            </DrawerTitle>
             <DrawerDescription>Set client-side logging levels. Open the browser console or developer tools to see logger output.</DrawerDescription>
           </DrawerHeader>
           <div>

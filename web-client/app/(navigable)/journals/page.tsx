@@ -32,6 +32,7 @@ import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-fil
 import useTrackedEntityQueryFilter from '@/hooks/use-tracked-entity-query-filter'
 import { LoggerEx, page } from '@/lib/logger'
 import { NewspaperIcon } from 'lucide-react'
+import ContextHelp from "@/app/ui/misc/context-help"
 
 const logger = new LoggerEx(page, "[Journals] ")
 
@@ -100,6 +101,7 @@ export default function Journals() {
         <NewspaperIcon className="w-8 h-8"/>
         &nbsp;
         <h1>Journals</h1>
+        <ContextHelp href="/doc/journals/" />
       </div>
       <DataTable<Journal, unknown>
         recordKind="Journal"

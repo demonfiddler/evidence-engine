@@ -4,9 +4,9 @@
 //sourceSets.main.java.srcDirs += '/build/generated/sources/graphqlServer'
 //sourceSets.main.resources.srcDirs += '/build/generated/resources/graphqlServer'
 generateServerCodeConf {
-//	addRelayConnections = false
+	// addRelayConnections = false
 	batchMappingDataFetcherReturnType = 'MAP' // 'FLUX'
-	copyRuntimeSources = false // will go away in 2.0
+	// copyRuntimeSources = false // will go away in 2.0
 	customScalars = [
 		[
 			graphQLTypeName: 'Country',

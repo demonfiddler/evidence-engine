@@ -19,21 +19,36 @@
 
 'use client'
 
-import { LoggerEx, page } from "@/lib/logger";
-import { CircleQuestionMarkIcon } from "lucide-react";
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+import { CircleQuestionMarkIcon } from "lucide-react"
+import { useCallback } from "react"
 
-const logger = new LoggerEx(page, "[Help] ")
+let helpWindow : Window | null = null
 
-export default function Help() {
-  logger.debug("render")
+export default function ContextHelp({className, href} : {className?: string, href: string}) {
+  const handleClick = useCallback(() => {
+    // Try to reuse the existing tab if still open
+    if (helpWindow && !helpWindow.closed) {
+      helpWindow.location.href = href
+      helpWindow.focus()
+      return
+    }
+
+    // Otherwise open a new one
+    helpWindow = window.open(href, 'ee-context-help');
+  }, [href])
 
   return (
-    <main className="flex flex-col m-8 gap-8 w-1/2 self-center">
-      <div className="flex flex-row items-center">
-        <CircleQuestionMarkIcon className="w-8 h-8"/>
-        &nbsp;
-        <h1>Help</h1>
-      </div>
-    </main>
-  );
+    <Button
+      type="button"
+      variant="ghost"
+      className={cn("p-0", className)}
+      size="icon"
+      onClick={handleClick}
+      title="Display context-sensitive help in another browser tab"
+    >
+      <CircleQuestionMarkIcon className="w-6 h-6 text-green-600" />
+    </Button>
+  )
 }

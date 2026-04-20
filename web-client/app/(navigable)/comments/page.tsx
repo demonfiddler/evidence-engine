@@ -31,6 +31,7 @@ import { CommentFieldValues } from '@/app/ui/validators/comment'
 import useCommentQueryFilter from '@/hooks/use-comment-query-filter'
 import { LoggerEx, page } from '@/lib/logger'
 import { MessagesSquareIcon } from 'lucide-react'
+import ContextHelp from "@/app/ui/misc/context-help"
 
 const logger = new LoggerEx(page, "[Comments] ")
 
@@ -53,9 +54,6 @@ export default function Comments() {
     selectedRecord,
     handleRowSelectionChange,
     state,
-    // setMode,
-    // form,
-    // handleFormAction,
     refetch,
     loadingPathWithSearchParams,
   } = usePageLogic<Comment, CommentFieldValues, BaseEntityInput, CommentQueryFilter>({
@@ -73,6 +71,7 @@ export default function Comments() {
         <MessagesSquareIcon className="w-8 h-8"/>
         &nbsp;
         <h1>Comments</h1>
+        <ContextHelp href="/doc/comments/" />
       </div>
       <DataTable<Comment, unknown>
         recordKind="Comment"

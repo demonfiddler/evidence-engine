@@ -54,3 +54,4 @@ react-dev-notes.txt
 server/src/main/resources/graphql/relay.graphqlsxxx
 server/database design.txt
 web-client/design.md
+web-client/lib/generated/build-info.ts

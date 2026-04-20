@@ -53,6 +53,7 @@ import ButtonEx from "../ext/button-ex"
 import useAuth from "@/hooks/use-auth"
 import { DownloadIcon } from "lucide-react"
 import Spinner from "../misc/spinner"
+import ContextHelp from "../misc/context-help"
 
 const ctFileExt = {
   "text/csv": "csv",
@@ -208,7 +209,10 @@ export default function ExportDialog<T>({ recordKind }: { recordKind: RecordKind
       </DialogTrigger>
       <DialogContent className="sm:max-w-105">
         <DialogHeader>
-          <DialogTitle><DownloadIcon className="inline" />&nbsp;Export {recordKind}s</DialogTitle>
+          <DialogTitle>
+            <DownloadIcon className="inline" />&nbsp;Export {recordKind}s
+            <ContextHelp href="/doc/export/" />
+          </DialogTitle>
           <DialogDescription>
             Specify how to export the table.
           </DialogDescription>

@@ -33,8 +33,30 @@ war {
     }
 }
 
+jar {
+    enabled = false
+}
+
 tasks.assemble {
     dependsOn war
+}
+
+def generated = "$projectDir/lib/generated"
+
+tasks.register("generateTsBuildInfo") {
+    outputs.dir generated
+    doLast {
+        def file = file("$generated/build-info.ts")
+        file.parentFile.mkdirs()
+        file.text = """
+            export const VERSION = "${project.version}";
+            export const GROUP = "${project.group}";
+        """.stripIndent()
+    }
+}
+
+tasks.named("build").configure {
+    dependsOn tasks.generateTsBuildInfo
 }
 
 // See https://github.com/node-gradle/gradle-node-plugin/blob/main/docs/usage.md

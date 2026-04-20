@@ -34,6 +34,7 @@ import z from "zod/v4"
 import { genSaltSync, hashSync } from "bcrypt-ts"
 import { dialog, LoggerEx } from "@/lib/logger"
 import { ShieldAlertIcon } from "lucide-react"
+import ContextHelp from "../misc/context-help"
 
 const logger = new LoggerEx(dialog, "[PasswordDialog] ")
 
@@ -109,7 +110,7 @@ export default function PasswordDialog(
 
   return open ? (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-106.25">
         <Spinner loading={loading} label="Saving..." className="absolute inset-0 bg-black/20 z-50" />
         <FormProvider {...form}>
           <form>
@@ -117,6 +118,7 @@ export default function PasswordDialog(
               <DialogTitle>
                 <ShieldAlertIcon className="inline" />
                 &nbsp;Change Password
+                <ContextHelp href="/doc/password/" />
               </DialogTitle>
               <DialogDescription className="py-4">
                 &nbsp;Enter your new password twice then click &apos;Save&apos;.

@@ -1,9 +1,52 @@
+/*----------------------------------------------------------------------------------------------------------------------
+ * Evidence Engine: A system for managing evidence on arbitrary scientific topics.
+ * Comprises an SQL database, GraphQL public API, Java app server, Java and web clients.
+ * Copyright © 2024-26 Adrian Price. All rights reserved.
+ *
+ * This file is part of Evidence Engine.
+ *
+ * Evidence Engine is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * Evidence Engine is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
+ * If not, see <https://www.gnu.org/licenses/>. 
+ *--------------------------------------------------------------------------------------------------------------------*/
+
 plugins {
 	id 'java'
 }
 
-group = 'io.github.demonfiddler.evidence-engine'
-version = '1.0.0-SNAPSHOT'
+def generated = "$buildDir/generated/sources/buildConfig/java"
+
+sourceSets.main.java.srcDir generated
+
+tasks.register("generateBuildConfig") {
+    outputs.dir generated
+    doLast {
+        def file = file("$generated/io/github/demonfiddler/ee/common/util/BuildConfig.java")
+        file.parentFile.mkdirs()
+        file.text = """
+            package io.github.demonfiddler.ee.common.util;
+
+            public final class BuildConfig {
+                public static final String VERSION = "${project.version}";
+                public static final String GROUP = "${project.group}";
+            }
+        """.stripIndent()
+    }
+}
+
+jar {
+    enabled = true
+    archiveBaseName = "ee-common"
+    archiveVersion = "" // removes version from filename
+    archiveClassifier = ""// removes classifier from filename
+}
 
 java {
 	toolchain {
@@ -15,6 +58,8 @@ java {
 compileJava {
     options.compilerArgs.add("-g")
     options.compilerArgs.add("-parameters")
+
+    dependsOn tasks.generateBuildConfig
 }
 
 repositories {
@@ -27,6 +72,12 @@ dependencies {
 	implementation 'com.graphql-java:graphql-java:22.3'
 	implementation 'com.graphql-java:graphql-java-extended-scalars:22.0'
 	implementation 'org.apache.commons:commons-csv:1.14.1'
+//  implementation platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
+//  implementation 'org.springframework:spring-context'
+}
+
+tasks.assemble {
+    dependsOn jar
 }
 
 tasks.named('test') {

@@ -32,6 +32,7 @@ import { LogFieldValues } from '@/app/ui/validators/log'
 import useLogQueryFilter from '@/hooks/use-log-query-filter'
 import { LoggerEx, page } from '@/lib/logger'
 import { FileClockIcon } from 'lucide-react'
+import ContextHelp from "@/app/ui/misc/context-help"
 
 const logger = new LoggerEx(page, "[Log] ")
 
@@ -73,6 +74,7 @@ export default function Logs() {
         <FileClockIcon className="w-8 h-8"/>
         &nbsp;
         <h1>Logs</h1>
+        <ContextHelp href="/doc/log/" />
       </div>
       <DataTable<Log, unknown>
         recordKind="Log"

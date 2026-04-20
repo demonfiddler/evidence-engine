@@ -60,6 +60,7 @@ import LabelEx from "@/app/ui/ext/label-ex"
 import { LoggerEx, page } from "@/lib/logger"
 import { QueryResult } from "@/lib/graphql-utils"
 import { MessageSquareQuoteIconEx } from "@/app/ui/icons"
+import ContextHelp from "@/app/ui/misc/context-help"
 
 const logger = new LoggerEx(page, "[Dashboard] ")
 
@@ -192,6 +193,7 @@ export default function Dashboard() {
         <ChartColumnIcon className="w-8 h-8" />
         &nbsp;
         <h1>Dashboard</h1>
+        <ContextHelp href="/doc/dashboard/" />
       </div>
       <h2>Topics & Record Links</h2>
       <div className="shrink flex-auto shadow-lg">

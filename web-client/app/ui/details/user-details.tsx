@@ -142,7 +142,7 @@ export default function UserDetails(
             <ButtonEx
               type="button"
               outerClassName="col-start-3 place-self-center"
-              className="w-35 bg-blue-500"
+              className="w-40 bg-blue-500"
               disabled={!user || !group || updating}
               onClick={handleAddOrRemove}
               help={

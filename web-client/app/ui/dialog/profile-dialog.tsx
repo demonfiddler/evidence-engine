@@ -35,6 +35,7 @@ import useAuth from "@/hooks/use-auth"
 import { dialog, LoggerEx } from "@/lib/logger"
 import { UserPenIcon } from "lucide-react"
 import CountryCombobox from "../ext/country-combobox"
+import ContextHelp from "../misc/context-help"
 
 const logger = new LoggerEx(dialog, "[ProfileDialog] ")
 
@@ -116,7 +117,10 @@ export default function ProfileDialog(
         <FormProvider {...form}>
           <form>
             <DialogHeader>
-              <DialogTitle><UserPenIcon className="inline" />&nbsp;User Profile</DialogTitle>
+              <DialogTitle>
+                <UserPenIcon className="inline" />&nbsp;User Profile
+                <ContextHelp href="/doc/profile/" />
+              </DialogTitle>
               <DialogDescription className="py-4">
                 Update your details then click &apos;Save&apos;.
               </DialogDescription>

@@ -62,6 +62,7 @@ import { Toggle } from "@/components/ui/toggle"
 import { QueryResult } from "@/lib/graphql-utils"
 import ITrackedEntity from "@/app/model/ITrackedEntity"
 import { Badge } from "@/components/ui/badge"
+import ContextHelp from "../misc/context-help"
 
 const logger = new LoggerEx(dialog, "[CommentsDialog] ")
 
@@ -400,7 +401,11 @@ export default function CommentsDialog({
       <SheetContent className="w-100" onInteractOutside={(e) => e.preventDefault()}>
         <Spinner loading={loading} className="absolute inset-0 bg-black/20 z-50" />
         <SheetHeader className="border-b">
-          <SheetTitle><MessagesSquareIcon className="inline" />&nbsp;Comments</SheetTitle>
+          <SheetTitle>
+            <MessagesSquareIcon className="inline" />&nbsp;Comments
+            <ContextHelp href="/doc/comments/#comments-dialog"
+          />
+          </SheetTitle>
           {/* <SheetDescription></SheetDescription> */}
           <Collapsible
             open={commentFilterOpen}

@@ -32,6 +32,7 @@ import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-fil
 import useLinkableEntityQueryFilter from '@/hooks/use-linkable-entity-query-filter'
 import { LoggerEx, page } from '@/lib/logger'
 import { UserIcon } from 'lucide-react'
+import ContextHelp from "@/app/ui/misc/context-help"
 
 const logger = new LoggerEx(page, "[Persons] ")
 
@@ -110,6 +111,7 @@ export default function Persons() {
         <UserIcon className="w-8 h-8"/>
         &nbsp;
         <h1>Persons</h1>
+        <ContextHelp href="/doc/persons/" />
       </div>
       <DataTable<Person, unknown>
         recordKind="Person"

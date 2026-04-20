@@ -61,6 +61,7 @@ import { CheckIcon, CircleAlertIcon, CircleXIcon, CopyMinusIcon, InfoIcon, Uploa
 import Spinner from "../misc/spinner";
 import CheckboxEx from "../ext/checkbox-ex";
 import { Label } from "@/components/ui/label";
+import ContextHelp from "../misc/context-help";
 
 const logger = new LoggerEx(dialog, "[ImportDialog] ")
 
@@ -197,7 +198,10 @@ export default function ImportDialog({recordKind, accept} : ImportDialogProps) {
       </DialogTrigger>
       <DialogContent className="flex flex-col items-center w-2/3 h-2/3 min-h-0 overflow-hidden">
         <DialogHeader>
-          <DialogTitle className="text-center"><UploadIcon className="inline" />&nbsp;Import {recordKind}s</DialogTitle>
+          <DialogTitle className="text-center">
+            <UploadIcon className="inline" />&nbsp;Import {recordKind}s
+            <ContextHelp href="/doc/import/" />
+          </DialogTitle>
           <DialogDescription>
             Import {recordKind}s from a file
           </DialogDescription>

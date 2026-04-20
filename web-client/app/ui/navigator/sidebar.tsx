@@ -20,75 +20,86 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
-import { categories } from "./sidebar-items"
 import useAuth from "@/hooks/use-auth"
+import { ForwardRefExoticComponent, RefAttributes } from 'react'
+import { LucideProps } from 'lucide-react'
+import { AuthorityKind } from '@/app/model/schema'
+import { cn } from '@/lib/utils'
 
-type SidebarProps = {
-  open: boolean
+type Icon = ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>
+
+export type SideBarItem = {
+  label: string
+  href: string
+  icon?: Icon
+  authority?: AuthorityKind
 }
 
-export default function Sidebar({open} : SidebarProps) {
+export type SideBarCategory = {
+  label: string
+  icon?: Icon
+  authority?: AuthorityKind
+  items: SideBarItem[]
+}
+
+type SidebarProps = {
+  categories: SideBarCategory[]
+  className?: string
+  categoryClassName?: string
+  itemClassName?: string
+}
+
+export default function Sidebar({categories, className, categoryClassName, itemClassName} : SidebarProps) {
   const {hasAuthority} = useAuth()
   const pathname = usePathname();
 
   return (
-    <div
-      className={open ? "flex flex-col w-50 border-r bg-gray-50" : "w-0 none overflow-clip"}
-      data-slot="sidebar-container"
-    >
-      <div className="flex place-content-center border-b h-24" data-slot="sidebar-header">
-        <Link href="/" title="Navigate to the Evidence Engine home page">
-          <Image src="/logo.svg" alt="The Evidence Engine logo" width={120} height={120} className="" />
-        </Link>
-      </div>
-      <div className="grow shrink overflow-y-auto">
-        {
-          categories.map((category, categoryIdx) => {
-            return !category.authority || hasAuthority(category.authority)
-            ? <div key={categoryIdx}>
-              <div className="flex justify-center mt-3">
-                {/*
-                  // I think it looks cleaner without the category icon and with the category label centred.
-                  (() => {
-                    const CategoryIcon = category.icon
-                    return <CategoryIcon className="inline size-6" />
-                  })()
-                */}
-                <p className="text-lg">{category.label}</p>
-              </div>
+    <div className={cn("grow shrink overflow-y-auto", className)}>
+    {
+      categories.filter(category => !category.authority || hasAuthority(category.authority)).map((category, categoryIdx) =>
+      {
+        return (
+          <div key={categoryIdx}>
+            <div className={cn("flex", categoryClassName)}>
               {
-                category.items.map((item, itemIdx) => {
-                  const LinkIcon = item.icon
-                  return (
-                    <Link
-                      key={itemIdx}
-                      href={item.href}
-                      className={clsx(
-                        'flex h-9 grow items-center justify-center gap-2 rounded-md p-3 text-sm font-medium hover:bg-sky-50 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3',
-                        {
-                          'bg-sky-100 text-blue-600': pathname === item.href,
-                        },
-                      )}
-                    >
-                      <LinkIcon className="w-6" />
-                      <p className="hidden md:block">{item.label}</p>
-                    </Link>
-                  )
-                })
+                (() => {
+                  const CategoryIcon = category.icon
+                  return CategoryIcon ? <CategoryIcon className="inline size-6" /> : null
+                })()
               }
+              <p className="text-lg">{category.label}</p>
             </div>
-            : null
-          })
-        }
-      </div>
-      <div className="flex place-content-center items-center border-t h-24" data-slot="sidebar-footer">
-        <Link href="https://campaign-resources.org" target="_blank" title="Navigate to the Campaign Resources home page">
-          <Image src="/cr-logo.svg" alt="The Campaign Resources logo" width={100} height={100} className="" />
-        </Link>
-      </div>
+            {
+              category.items.filter(item => !item.authority || hasAuthority(item.authority)).map((item, itemIdx) => {
+                const LinkIcon = item.icon
+                return (
+                  <Link
+                    key={itemIdx}
+                    href={item.href}
+                    className={clsx(
+                      'flex h-9 grow items-center justify-center gap-2 rounded-md p-3 text-sm font-medium hover:bg-sky-50 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3',
+                      {
+                        'bg-sky-100 text-blue-600': item.href !== '/' && pathname.startsWith(item.href),
+                      },
+                      itemClassName,
+                    )}
+                  >
+                    {
+                      LinkIcon
+                      ? <LinkIcon className="w-6" />
+                      : null
+                    }
+                    <p className="hidden md:block">{item.label}</p>
+                  </Link>
+                )
+              })
+            }
+          </div>
+        )
+      })
+    }
     </div>
   )
 }

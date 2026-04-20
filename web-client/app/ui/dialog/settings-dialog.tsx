@@ -25,6 +25,7 @@ import { GlobalContext } from "@/lib/context"
 import { Dispatch, SetStateAction, useCallback, useContext, useEffect } from "react"
 import { dialog, LoggerEx } from "@/lib/logger"
 import { SettingsIcon } from "lucide-react"
+import ContextHelp from "../misc/context-help"
 
 const logger = new LoggerEx(dialog, "[SettingsDialog] ")
 
@@ -60,6 +61,7 @@ export default function SettingsDialog(
         <DialogHeader>
           <DialogTitle>
             <SettingsIcon className="inline" />&nbsp;Settings
+            <ContextHelp href="/doc/settings/" />
           </DialogTitle>
           <DialogDescription className="py-4">
             You can clear all page, toggle, filter, sorting, pagination, etc. settings.

@@ -21,6 +21,7 @@
 
 import ButtonEx from "@/app/ui/ext/button-ex"
 import LabelEx from "@/app/ui/ext/label-ex"
+import ContextHelp from "@/app/ui/misc/context-help"
 import Spinner from "@/app/ui/misc/spinner"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -179,6 +180,7 @@ export default function BackupRestore() {
         <DatabaseBackupIcon className="w-8 h-8"/>
         &nbsp;
         <h1>Backup &amp; Restore</h1>
+        <ContextHelp href="/doc/backup/" />
       </div>
       <p className="w-1/2">
         <InfoIcon className="inline text-blue-600" />

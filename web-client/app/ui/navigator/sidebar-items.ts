@@ -21,65 +21,66 @@
 
 import {
   BookOpenCheckIcon,
-  BookOpenTextIcon,
+  // BookOpenTextIcon,
   Building2Icon,
   ChartColumnIcon,
   CircleQuestionMarkIcon,
   DatabaseBackupIcon,
-  DatabaseZapIcon,
+  // DatabaseZapIcon,
   FileClockIcon,
   FolderTreeIcon,
   HouseIcon,
   InfoIcon,
   LibraryIcon,
-  LockIcon,
+  // LockIcon,
   MessagesSquareIcon,
   NewspaperIcon,
   ScrollTextIcon,
   ShieldCheckIcon,
-  TableOfContentsIcon,
+  // TableOfContentsIcon,
   UserIcon
 } from 'lucide-react'
 import { MessageSquareQuoteIconEx } from '../icons'
 import { AuthorityKind } from '@/app/model/schema'
+import { SideBarCategory } from './sidebar'
 
 export const categories = [
   {
     label: "General",
-    icon: TableOfContentsIcon,
+    // icon: TableOfContentsIcon,
     items: [
       { label: "Home", href: "/", icon: HouseIcon },
-      { label: "Dashboard", href: "/dashboard", icon: ChartColumnIcon },
-      { label: "Comments", href: "/comments", icon: MessagesSquareIcon },
-      { label: "Log", href: "/log", icon: FileClockIcon },
-      { label: "Help", href: "/help", icon: CircleQuestionMarkIcon },
-      { label: "About", href: "/about", icon: InfoIcon },
+      { label: "Dashboard", href: "/dashboard/", icon: ChartColumnIcon },
+      { label: "Comments", href: "/comments/", icon: MessagesSquareIcon },
+      { label: "Log", href: "/log/", icon: FileClockIcon },
+      { label: "Documentation", href: "/doc/toc/", icon: CircleQuestionMarkIcon },
+      { label: "About", href: "/about/", icon: InfoIcon },
     ],
   }, {
     label: "Records",
-    icon: DatabaseZapIcon,
+    // icon: DatabaseZapIcon,
     items: [
-      { label: "Claims", href: "/claims", icon: BookOpenCheckIcon },
-      { label: "Declarations", href: "/declarations", icon: ScrollTextIcon },
-      { label: "Persons", href: "/persons", icon: UserIcon },
-      { label: "Publications", href: "/publications", icon: LibraryIcon },
-      { label: "Quotations", href: "/quotations", icon: MessageSquareQuoteIconEx },
-      { label: "Topics", href: "/topics", icon: FolderTreeIcon },
+      { label: "Claims", href: "/claims/", icon: BookOpenCheckIcon },
+      { label: "Declarations", href: "/declarations/", icon: ScrollTextIcon },
+      { label: "Persons", href: "/persons/", icon: UserIcon },
+      { label: "Publications", href: "/publications/", icon: LibraryIcon },
+      { label: "Quotations", href: "/quotations/", icon: MessageSquareQuoteIconEx },
+      { label: "Topics", href: "/topics/", icon: FolderTreeIcon },
     ],
   }, {
     label: "Sources",
-    icon: BookOpenTextIcon,
+    // icon: BookOpenTextIcon,
     items: [
-      { label: "Journals", href: "/journals", icon: NewspaperIcon },
-      { label: "Publishers", href: "/publishers", icon: Building2Icon },
+      { label: "Journals", href: "/journals/", icon: NewspaperIcon },
+      { label: "Publishers", href: "/publishers/", icon: Building2Icon },
     ],
   }, {
     label: "Administration",
-    icon: LockIcon,
+    // icon: LockIcon,
     authority: 'ADM' as AuthorityKind,
     items: [
-      { label: "Security", href: "/admin/security", icon: ShieldCheckIcon },
-      { label: "Backup", href: "/admin/backup", icon: DatabaseBackupIcon },
+      { label: "Security", href: "/admin/security/", icon: ShieldCheckIcon },
+      { label: "Backup", href: "/admin/backup/", icon: DatabaseBackupIcon },
     ],
   },
-]
+] as SideBarCategory[]

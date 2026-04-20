@@ -45,6 +45,7 @@ import { RecordKind } from "@/app/model/RecordKinds"
 import { dialog, LoggerEx } from "@/lib/logger"
 import { FileClockIcon } from "lucide-react"
 import { GlobalContext } from "@/lib/context"
+import ContextHelp from "../misc/context-help"
 
 const logger = new LoggerEx(dialog, "[LogDialog] ")
 
@@ -114,7 +115,10 @@ export default function LogDialog({
       </DialogTrigger>
       <DialogContent className="w-1/2 max-w-none!">
         <DialogHeader>
-          <DialogTitle><FileClockIcon className="inline" />&nbsp;{recordKind} Log</DialogTitle>
+          <DialogTitle>
+            <FileClockIcon className="inline" />&nbsp;{recordKind} Log
+            <ContextHelp href="/doc/log/#log-dialog" />
+          </DialogTitle>
           <DialogDescription>
             Log for {recordLabel}
           </DialogDescription>

@@ -33,6 +33,7 @@ import LinkableEntityTableFilter from '@/app/ui/filter/linkable-entity-table-fil
 import useTrackedEntityQueryFilter from '@/hooks/use-tracked-entity-query-filter'
 import { LoggerEx, page } from '@/lib/logger'
 import { Building2Icon } from 'lucide-react'
+import ContextHelp from "@/app/ui/misc/context-help"
 
 const logger = new LoggerEx(page, "[Publishers] ")
 
@@ -99,6 +100,7 @@ export default function Publishers() {
         <Building2Icon className="w-8 h-8"/>
         &nbsp;
         <h1>Publishers</h1>
+        <ContextHelp href="/doc/publishers/" />
       </div>
       <DataTable<Publisher, unknown>
         recordKind="Publisher"

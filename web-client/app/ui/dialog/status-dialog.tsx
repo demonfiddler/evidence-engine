@@ -110,6 +110,7 @@ import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
 import { Paginator } from "../filter/paginator"
+import ContextHelp from "../misc/context-help"
 
 const logger = new LoggerEx(dialog, "[StatusDialog] ")
 
@@ -652,14 +653,17 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
         onPointerDownOutside={e => e.preventDefault()}
       >
         <DialogHeader>
-          <DialogTitle className="text-center">{
-            recordKind
-              ? (() => {
-                const Icon = RecordIcons[recordKind]
-                return <Icon className="inline" />
-              })()
-              : null
-          }&nbsp;{recordKind} Status</DialogTitle>
+          <DialogTitle className="text-center">
+            {
+              recordKind
+                ? (() => {
+                  const Icon = RecordIcons[recordKind]
+                  return <Icon className="inline" />
+                })()
+                : null
+            }&nbsp;{recordKind} Status
+            <ContextHelp href="/doc/status/" />
+          </DialogTitle>
           <DialogDescription>
             Manage status for {recordLabel}
           </DialogDescription>

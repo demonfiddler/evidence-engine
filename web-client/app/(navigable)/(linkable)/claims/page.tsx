@@ -33,6 +33,7 @@ import LinkableEntityTableFilter from "@/app/ui/filter/linkable-entity-table-fil
 import useLinkableEntityQueryFilter from "@/hooks/use-linkable-entity-query-filter"
 import { LoggerEx, page } from "@/lib/logger"
 import { BookOpenCheckIcon } from "lucide-react"
+import ContextHelp from "@/app/ui/misc/context-help"
 
 const logger = new LoggerEx(page, "[Claims] ")
 
@@ -100,6 +101,7 @@ export default function Claims() {
         <BookOpenCheckIcon className="w-8 h-8"/>
         &nbsp;
         <h1>Claims</h1>
+        <ContextHelp href="/doc/claims/" />
       </div>
       <DataTable<Claim, unknown>
         recordKind="Claim"

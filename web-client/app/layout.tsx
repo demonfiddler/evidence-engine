@@ -626,7 +626,7 @@ export default function RootLayout({
             <GlobalContext value={globalContext}>
               <Toaster position="top-center" duration={8000} closeButton={true} expand />
               <Suspense>
-                <div className="relative flex flex-row overflow-y-auto h-screen w-screen">
+                <div className="relative flex flex-row">
                   {children}
                 </div>
               </Suspense>
