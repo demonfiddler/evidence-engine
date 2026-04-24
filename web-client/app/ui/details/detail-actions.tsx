@@ -143,7 +143,6 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
         // 'Create' logic
         if (form.formState.isDirty) {
           if (form.formState.isValid) {
-            toast.info(`Saving new ${recordKind}...`)
             const options = linkMasterTopic || linkMasterRecord
               ? {
                 linkMasterTopic,
@@ -164,7 +163,6 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
         // 'Save' logic
         if (form.formState.isDirty) {
           if (form.formState.isValid) {
-            toast.info(`Saving updated ${recordKind}...`)
             onFormAction("update", form.getValues())
             // NOTE: allow completion callback to reset mode to "view"
           }

@@ -26,6 +26,7 @@ def generated = "$buildDir/generated/sources/buildConfig/java"
 sourceSets.main.java.srcDir generated
 
 tasks.register("generateBuildConfig") {
+    inputs.property("version", project.version)
     outputs.dir generated
     doLast {
         def file = file("$generated/io/github/demonfiddler/ee/common/util/BuildConfig.java")

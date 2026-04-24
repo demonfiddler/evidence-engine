@@ -115,7 +115,6 @@ public class AuditUtils {
     }
 
     /** Field rule that enforces a mandatory field value. */
-    @SuppressWarnings("unused")
     private static final class Required extends FieldRule<Object> {
 
         static FieldRule<Object> info(String fieldName) {

@@ -23,12 +23,12 @@ import { z } from "zod/v4"
 import { Rateable } from "./tracked-entity"
 
 export const JournalSchema = Rateable.extend({
-  title: z.string().min(10).max(100),
+  title: z.string().min(3).max(200),
   abbreviation: z.string().max(50).optional(),
   url: z.url().min(10).max(200).or(z.string().length(0)).optional(),
   issn: z.string().regex(/(?:^[0-9]{4}-[0-9]{3}[0-9X]$)?/).optional(),
   publisherId: z.string().regex(/^\d*$/).optional(),
-  notes: z.string().max(200).optional(),
+  notes: z.string().optional(),
   peerReviewed: z.boolean().or(z.literal("indeterminate")),
 })
 

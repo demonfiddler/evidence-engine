@@ -24,7 +24,7 @@ import { Label } from "@/components/ui/label"
 import LogDialog from "../dialog/log-dialog"
 import { RecordKind } from "@/app/model/RecordKinds"
 import { DetailState } from "./detail-actions"
-import { formatDateTime, getRecordLabel } from "@/lib/utils"
+import { formatDateTime, getRecordLabel, isLinkableEntity } from "@/lib/utils"
 import InputEx from "../ext/input-ex"
 import StarRatingBasicEx from "../ext/star-rating-ex"
 import { detail, LoggerEx } from "@/lib/logger"
@@ -45,6 +45,8 @@ import { useMutation } from "@apollo/client/react"
 import { UPDATE_ENTITY_STATUS } from "@/lib/graphql-queries"
 
 const logger = new LoggerEx(detail, "[TrackingDetails] ")
+
+type Verb = "draft" | "delete" | "publish" | "suspend"
 
 const statusCodeForVerb = {
   draft: "DRA",
@@ -70,35 +72,29 @@ export default function TrackingDetails(
 
   logger.debug("render")
 
-  const handleChangeStatus = useCallback((verb: string) => {
+  const handleChangeStatus = useCallback((verb: Verb) => {
     if (!record)
       return
 
-    switch (verb) {
-      case "delete":
-      case "draft":
-      case "suspend":
-        if (confirm(`Confirm ${verb} '${recordLabel}'?`)) {
-          const status = statusCodeForVerb[verb]
-          toast.info(`Changing '${recordLabel}' status to ${status}...`)
-          updateStatusOp({
-            variables: {
-              entityId: record.id,
-              status
-            },
-            onCompleted: (/*data, clientOptions*/) => {
-              toast.info(`'${recordLabel}' status changed to ${status}`)
-            },
-            onError: (error/*, clientOptions*/) => {
-              toast.error(error.message)
-            }
-          })
-        }
-        break
-      case "publish":
+    if (verb == "publish" && isLinkableEntity(recordKind)) {
         setStatusDialogOpen(true)
         setStatusDialogItem(FIELD_AUDIT)
-        break
+        return
+    }
+    if (confirm(`Confirm ${verb} '${recordLabel}'?`)) {
+      const status = statusCodeForVerb[verb]
+      updateStatusOp({
+        variables: {
+          entityId: record.id,
+          status
+        },
+        onCompleted: (/*data, clientOptions*/) => {
+          toast.info(`'${recordLabel}' status changed to ${status}`)
+        },
+        onError: (error/*, clientOptions*/) => {
+          toast.error(error.message)
+        }
+      })
     }
   }, [record, recordLabel, setStatusDialogOpen, setStatusDialogItem, updateStatusOp])
 
@@ -161,7 +157,7 @@ export default function TrackingDetails(
           <DropdownMenuItem disabled={record?.status === "Draft" || !hasAuthority('UPD')} onClick={() => handleChangeStatus("draft")}>Draft</DropdownMenuItem>
           <DropdownMenuItem disabled={record?.status === "Deleted" || !hasAuthority('CHG')} onClick={() => handleChangeStatus("delete")}>Delete</DropdownMenuItem>
           <DropdownMenuItem disabled={record?.status === "Suspended" || !hasAuthority('UPD')} onClick={() => handleChangeStatus("suspend")}>Suspend</DropdownMenuItem>
-          <DropdownMenuItem disabled={record?.status === "Published" || !hasAuthority('UPD')} onClick={() => handleChangeStatus("publish")}>Publish...</DropdownMenuItem>
+          <DropdownMenuItem disabled={record?.status === "Published" || !hasAuthority('UPD')} onClick={() => handleChangeStatus("publish")}>Publish{isLinkableEntity(recordKind) ? "..." : ""}</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
       <Label htmlFor="created-by" className="col-start-1">Created by:</Label>

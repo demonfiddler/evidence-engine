@@ -46,7 +46,7 @@ export default function About() {
 
       <h2>Usage</h2>
       <p>
-        Evidence Engine is a complex application that presents large lists with linked detail panels. It works best 
+        Evidence Engine is a complex application that presents large lists with linked detail panels. It works best on
         large form-factor devices such as desktop computers and high-resolution tablets, and is optimized for a display
         resolution of 1920 x 1200. It is really <i>not</i> suitable for use on mobile phones, but if you absolutely
         insist on using one, at least orient it in landscape mode with auto-rotate active and be prepared to do lots of

@@ -111,6 +111,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import Link from "next/link"
 import { Paginator } from "../filter/paginator"
 import ContextHelp from "../misc/context-help"
+import { InputGroupAddon } from "@/components/ui/input-group"
+import { Badge } from "@/components/ui/badge"
+import Help from "../misc/help"
 
 const logger = new LoggerEx(dialog, "[StatusDialog] ")
 
@@ -554,7 +557,7 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
         if (confirm(`Confirm discard changes to ${target}?`)) {
           refreshEditableFields(selectedLink)
           setMode(VIEW)
-          toast.info(`Cancelled ${mode} ...`)
+          toast.info(`Cancelled ${mode}`)
         }
       } else {
         setMode(VIEW)
@@ -590,15 +593,15 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
   const handleUnlink = useCallback(() => {
     if (selectedLink) {
       if (confirm(`Confirm delete link with record '${selectedLink.otherRecordLabel}'?`)) {
-        toast.info(`Unlinking '${selectedLink.otherRecordLabel}'...`)
         deleteLinkOp({
           variables: { entityLinkId: selectedLink.id },
+          onCompleted: () => toast.info(`Unlinked '${selectedLink.otherRecordLabel}'`),
           onError: (error/*, clientOptions*/) => {
             toast.error(error.message)
           },
         })
       } else {
-        toast.info(`Cancelling unlink '${selectedLink?.otherRecordLabel}'...`)
+        toast.info(`Cancelled unlink '${selectedLink?.otherRecordLabel}'`)
       }
     }
   }, [selectedLink, deleteLinkOp])
@@ -617,7 +620,6 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
   }, [setStatusDialogOpen])
 
   const handlePublish = useCallback(() => {
-    toast.info(`Publishing ${recordLabel}...`)
     updateStatusOp({
       variables: {
         entityId: record?.id,
@@ -1076,7 +1078,12 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
                                   : "-Select a 'Links with' record kind-"
                               }
                               showClear
-                            />
+                            >
+                              <InputGroupAddon className="gap-1" align="inline-end">
+                                <Badge variant="outline" title="The number of other records on this page">{otherRecords.length.toLocaleString()}</Badge>
+                                <Help text={`A filtered, paginated list of matching ${otherRecordKind ?? "record"}s. Already linked ones are shown disabled, unlinked ones are selectable. Select one in order to link it.`} />
+                              </InputGroupAddon>
+                            </ComboboxInput>
                             <ComboboxContent className="z-50 pointer-events-auto">
                               <ComboboxEmpty>-No records found-</ComboboxEmpty>
                               <ComboboxList>
@@ -1109,7 +1116,7 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
                         </div>
                       </fieldset>
                       <fieldset className="flex border rounded-md ml-1 p-2 gap-2">
-                        <legend>&nbsp;{`Existing ${otherRecordKind ?? "record"} links (${(filteredRecordLinks?.length ?? 0).toLocaleString()})`}&nbsp;</legend>
+                        <legend>&nbsp;{`Existing ${otherRecordKind ?? "record"} links`}&nbsp;</legend>
                         <Combobox
                           items={filteredRecordLinks}
                           itemToStringValue={link => link.otherRecordLabel}
@@ -1129,7 +1136,12 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
                                 : "-Select a 'Link with' record kind-"
                             }
                             showClear
-                          />
+                          >
+                            <InputGroupAddon className="gap-1" align="inline-end">
+                              <Badge variant="outline" title="The number of record links">{filteredRecordLinks.length.toLocaleString()}</Badge>
+                              <Help text={`A list of all the links to ${otherRecordKind}s which are linked with the contextual ${recordKind}. Select one to see its settings.`} />
+                            </InputGroupAddon>
+                          </ComboboxInput>
                           <ComboboxContent className="z-50 pointer-events-auto">
                             <ComboboxEmpty>-No record links found-</ComboboxEmpty>
                             <ComboboxList>

@@ -67,6 +67,14 @@ export const columns: ColumnDef<Publication>[] = [
     header: "Journal",
   },
   {
+    id: "publisher",
+    accessorKey: "publisher.name",
+    enableHiding: true,
+    enableSorting: true,
+    size: 200,
+    header: "Publisher",
+  },
+  {
     id: "date",
     accessorKey: "date",
     enableHiding: true,
@@ -352,6 +360,7 @@ export const columnVisibility = {
   title: true,
   authors: false,
   journal: false,
+  publisher: false,
   kind: true,
   date: false,
   year: true,

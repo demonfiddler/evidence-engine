@@ -50,7 +50,7 @@ export default function PersonsDocPage() {
             <td>Title</td>
             <td>Text</td>
             <td>Yes</td>
-            <td>The person's formal honorific title (Dr, Prof, Sir, etc.), <b>without periods</b></td>
+            <td>The person's formal honorific title (Dr., Prof., Sir, etc.), <b>with periods</b> for abbreviations</td>
           </tr>
           <tr>
             <td>First Name(s)</td>
@@ -98,7 +98,9 @@ export default function PersonsDocPage() {
             <td>Qualifications</td>
             <td>Text</td>
             <td>No</td>
-            <td>The person's formal academic qualifications, including degree, subject, graduation year and academic institution</td>
+            <td>The person's formal academic qualifications, including degree, subject, graduation year and academic
+              institution. Degree abbreviations should include periods but no spaces (e.g.,  B.A., M.Sc., Ph.D., etc.)
+            </td>
           </tr>
           <tr>
             <td>Country</td>

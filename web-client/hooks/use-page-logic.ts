@@ -462,6 +462,7 @@ export default function usePageLogic<
               // FIXME: this doesn't set the selection in the data table.
               setSelectedRecord(newRecord)
               setMode("view")
+              toast(`Created new ${recordKind} #${newRecord.id}`)
             },
             onError: (error) => setError(error),
           })
@@ -475,6 +476,7 @@ export default function usePageLogic<
             },
             onCompleted: () => {
               setMode("view")
+              toast(`Updated ${recordKind} #${selectedRecordId}`)
             },
             onError: (error) => setError(error),
           })
@@ -484,6 +486,9 @@ export default function usePageLogic<
         deleteOp?.({
           variables: {
             [deleteVarName]: selectedRecordId
+          },
+          onCompleted: () => {
+            toast(`Deleted ${recordKind} #${selectedRecordId}`)
           },
           onError: (error) => setError(error),
         })
