@@ -276,7 +276,7 @@ public abstract class AbstractTrackedEntity implements ITrackedEntity {
 	*/
 	@Override
 	public void setComments(CommentPage comments) {
-	this.comments = comments;
+		this.comments = comments;
 	}
 
 	/**
@@ -284,7 +284,7 @@ public abstract class AbstractTrackedEntity implements ITrackedEntity {
 	*/
 	@Override
 	public CommentPage getComments() {
-	return this.comments;
+		return this.comments;
 	}
 
 	/**

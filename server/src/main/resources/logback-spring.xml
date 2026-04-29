@@ -5,7 +5,7 @@
     <!-- ================================= -->
     <!-- DEVELOPMENT MODE (console output) -->
     <!-- ================================= -->
-    <springProfile name="development">
+    <springProfile name="!production">
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
                 <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>

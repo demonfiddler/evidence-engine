@@ -52,6 +52,7 @@ import io.github.demonfiddler.ee.server.model.Claim;
 import io.github.demonfiddler.ee.server.model.ClaimInput;
 import io.github.demonfiddler.ee.server.model.Comment;
 import io.github.demonfiddler.ee.server.model.CommentInput;
+import io.github.demonfiddler.ee.server.model.CommentQueryFilter;
 import io.github.demonfiddler.ee.server.model.Declaration;
 import io.github.demonfiddler.ee.server.model.DeclarationInput;
 import io.github.demonfiddler.ee.server.model.EntityKind;
@@ -1257,26 +1258,36 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     }
 
     private Object setEntityStatus(DataFetchingEnvironment dataFetchingEnvironment, AbstractTrackedEntity entity,
-        StatusKind status) {
+        StatusKind newStatus) {
 
-        if (entity.getStatus().equals(status.name()))
+        StatusKind curStatus = StatusKind.valueOf(entity.getStatus());
+        if (curStatus == newStatus)
             return entity;
+        List<StatusKind> filterStatus = List.of(curStatus);
 
+        // Cascade the status update to all outbound entity links with the same status as the entity.
         if (entity instanceof ILinkableEntity) {
-            // Cascade the status update to all outbound entity links with the same status as the entity.
-            StatusKind curStatus = StatusKind.valueOf(entity.getStatus());
             EntityLinkQueryFilter filter = EntityLinkQueryFilter.builderForEntityLinkQueryFilter() //
                 .withFromEntityId(entity.getId()) //
-                .withStatus(List.of(curStatus)) //
+                .withStatus(filterStatus) //
                 .build();
-            Page<EntityLink> matchingLinks = entityLinkRepository.findByFilter(filter, Pageable.unpaged());
-            for (EntityLink entityLink : matchingLinks.getContent())
-                setEntityStatus(dataFetchingEnvironment, entityLink, status);
+            Page<EntityLink> entityLinks = entityLinkRepository.findByFilter(filter, Pageable.unpaged());
+            for (EntityLink entityLink : entityLinks.getContent())
+                setEntityStatus(dataFetchingEnvironment, entityLink, newStatus);
         }
 
-        entity.setStatus(status.name());
+        // Cascade the status update to all associated comments with the same status as the target entity.
+        CommentQueryFilter filter = CommentQueryFilter.builderForCommentQueryFilter() //
+            .withTargetId(entity.getId()) //
+            .withStatus(filterStatus) //
+            .build();
+        Page<Comment> comments = commentRepository.findByFilter(filter, null);
+        for (Comment comment : comments.getContent())
+            setEntityStatus(dataFetchingEnvironment, comment, newStatus);
+
+        entity.setStatus(newStatus.name());
         setUpdatedFields(entity);
-        TransactionKind txnKind = switch (status) {
+        TransactionKind txnKind = switch (newStatus) {
             case DEL -> TransactionKind.DEL;
             case DRA -> TransactionKind.DRA;
             case PUB -> TransactionKind.PUB;

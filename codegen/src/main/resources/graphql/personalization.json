@@ -16,8 +16,7 @@
 		},
 		{
 			"name": "ClaimPage",
-			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
-			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.Claim>"
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional"
 		},
 		{
 			"name": "Declaration",
@@ -35,8 +34,7 @@
 		},
 		{
 			"name": "DeclarationPage",
-			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
-			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.Declaration>"
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional"
 		},
 		{
 			"name": "EntityLink",
@@ -44,8 +42,7 @@
 		},
 		{
 			"name": "EntityLinkPage",
-			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
-			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.EntityLink>"
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional"
 		},
 		{
 			"name": "Journal",
@@ -67,8 +64,7 @@
 		},
 		{
 			"name": "JournalPage",
-			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
-			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.Journal>"
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional"
 		},
 		{
 			"name": "Log",
@@ -76,8 +72,7 @@
 		},
 		{
 			"name": "LogPage",
-			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
-			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.Log>"
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional"
 		},
 		{
 			"name": "Mutation",
@@ -99,8 +94,7 @@
 		},
 		{
 			"name": "PersonPage",
-			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
-			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.Person>"
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional"
 		},
 		{
 			"name": "Publication",
@@ -118,8 +112,7 @@
 		},
 		{
 			"name": "PublicationPage",
-			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
-			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.Publication>"
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional"
 		},
 		{
 			"name": "Publisher",
@@ -137,8 +130,7 @@
 		},
 		{
 			"name": "PublisherPage",
-			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
-			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.Publisher>"
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional"
 		},
 		{
 			"name": "Query",
@@ -160,8 +152,7 @@
 		},
 		{
 			"name": "QuotationPage",
-			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
-			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.Quotation>"
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional"
 		},
 		{
 			"name": "Topic",
@@ -187,8 +178,7 @@
 		},
 		{
 			"name": "TopicPage",
-			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
-			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.Topic>"
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional"
 		},
 		{
 			"name": "User",
@@ -206,8 +196,7 @@
 		},
 		{
 			"name": "UserPage",
-			"addAnnotation": "@org.springframework.transaction.annotation.Transactional",
-			"addInterface": "io.github.demonfiddler.ee.server.util.IBaseEntityPage<io.github.demonfiddler.ee.server.User>"
+			"addAnnotation": "@org.springframework.transaction.annotation.Transactional"
 		}
 	]
 }

@@ -19,8 +19,9 @@
 
 package io.github.demonfiddler.ee.client;
 
-import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 
@@ -29,13 +30,18 @@ import org.springframework.context.annotation.ComponentScan;
  * @see <a href=
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
-@SpringBootApplication()
+@SpringBootApplication(exclude = {
+    org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration.class,
+    org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration.class,
+    org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration.class,
+    org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class
+})
 @ComponentScan(basePackages = { "io.github.demonfiddler.ee.client", "com.graphql_java_generator.client" })
 @EnableConfigurationProperties
 public class GraphQLClientMain {
 
 	public static void main(String[] args) {
-		SpringApplication.run(GraphQLClientMain.class, args);
+		new SpringApplicationBuilder(GraphQLClientMain.class).web(WebApplicationType.NONE).run(args);
 	}
 
 }

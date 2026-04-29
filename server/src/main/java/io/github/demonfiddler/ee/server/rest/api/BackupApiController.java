@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -120,11 +121,12 @@ public class BackupApiController implements BackupApi {
             return ResponseEntity.badRequest().build();
 
         // MariaDB may not have permission to access ${java.io.tmpdir}, so we'll have to use a different location.
-        String outputPath = tmpDir + (tmpDir.endsWith(File.separator) ? "" : File.separatorChar) + "ee-backup" + File.separatorChar;
+        String outputPath = backupUtils.getBackupPath();
         File outputDir = new File(outputPath);
-        if (!outputDir.mkdirs()) {
-            // The directory already existed, so make sure it's empty.
-            backupUtils.deleteFile(outputDir, true);
+        String errmsg = backupUtils.createBackupDirectory();
+        if (errmsg != null) {
+            return ResponseEntity.internalServerError().contentType(MediaType.TEXT_PLAIN)
+                .body(new InMemoryResource(errmsg));
         }
 
         String backupId = databaseUtils.getConfigString(DatabaseUtils.PROP_BACKUP_ID);
@@ -204,13 +206,12 @@ public class BackupApiController implements BackupApi {
                         zipOut.closeEntry();
                     }
                 }
-            } catch (IOException e) {
+            } catch (DataAccessException | IOException e) {
                 txManager.rollback(status);
 
                 LOGGER.error("Error creating backup set ZIP", e);
-                backupUtils.deleteFile(outputDir, false);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
-                    .body(new InMemoryResource("500: Internal Server Error: Unable to create backup set"));
+                return ResponseEntity.internalServerError().contentType(MediaType.TEXT_PLAIN)
+                    .body(new InMemoryResource("Unable to create backup set"));
             }
 
             String ts = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(now);
@@ -237,14 +238,15 @@ public class BackupApiController implements BackupApi {
             } catch (IOException e) {
                 txManager.rollback(status);
 
-                String errmsg = "Error returning backup set";
+                errmsg = "Error returning backup set";
                 LOGGER.error(errmsg, e);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
-                    .body(new InMemoryResource("500: Internal Server Error: " + errmsg));
+                return ResponseEntity.internalServerError().contentType(MediaType.TEXT_PLAIN)
+                    .body(new InMemoryResource(errmsg));
             }
         } catch (Throwable t) {
             txManager.rollback(status);
-            throw t;
+            return ResponseEntity.internalServerError().contentType(MediaType.TEXT_PLAIN)
+                .body(new InMemoryResource(t.getClass().getSimpleName()));
         } finally {
             backupUtils.deleteFile(outputDir, false);
         }
@@ -260,7 +262,7 @@ public class BackupApiController implements BackupApi {
      * The count excludes static tables and those which cannot be backed up incrementally.
      */
     private int backupTables(TableDescriptor[] tables, String outputPath, BackupKind backupKind,
-        Timestamp lastBackupTimestamp) {
+        Timestamp lastBackupTimestamp) throws DataAccessException {
 
         int[] rowCount = {0};
         boolean isIncremental = backupKind == BackupKind.INCREMENTAL;

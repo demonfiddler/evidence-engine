@@ -27,19 +27,48 @@ dependencies {
 	implementation project(':common')
 
 	// GraphQL client support
-	implementation 'org.springframework.boot:spring-boot-starter-graphql'
-	implementation "com.graphql-java-generator:graphql-java-client-runtime:${graphQLPluginVersion}"
+	implementation 'org.springframework.boot:spring-boot-starter'
+	// implementation 'org.springframework.boot:spring-boot-starter-graphql'
+	implementation 'org.springframework.graphql:spring-graphql'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+	implementation 'com.fasterxml.jackson.core:jackson-core'
+	implementation 'com.fasterxml.jackson.core:jackson-annotations'
 	implementation 'com.graphql-java:graphql-java-extended-scalars:22.0'
+
+	implementation "com.graphql-java-generator:graphql-java-client-runtime:${graphQLPluginVersion}"
+	// The following are the transitive dependencies of the above but their internal dependencies on a POM artifact breaks JDT LS.
+	// So we have to block the POM, unwrap these dependencies and include them explicitly:
+	// BEGIN graphql-java-common-dependencies-2.8.pom
+	implementation 'com.graphql-java:graphql-java'
+	implementation 'org.springframework:spring-context'
+	implementation 'org.reactivestreams:reactive-streams'
+	// END graphql-java-common-dependencies-2.8.pom
+	// BEGIN graphql-java-client-dependencies-2.8.pom
+	implementation 'org.springframework.graphql:spring-graphql'
+	// implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'org.springframework:spring-webflux'   // NOT the Boot starter
+	implementation 'io.projectreactor.netty:reactor-netty-http' // Part of spring-boot-starter-webflux
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.security:spring-security-oauth2-client'
+	implementation 'commons-io:commons-io'
+	implementation 'org.apache.commons:commons-text:1.10.0'
+	// implementation 'javax.xml.bind:jaxb-api'
+	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
+	implementation 'com.google.code.findbugs:jsr305:3.0.2'
+	implementation 'org.slf4j:slf4j-api'
+	// END graphql-java-client-dependencies-2.8.pom
 
 	// Utilities
 	implementation 'org.jsoup:jsoup:1.18.3'
 	implementation 'org.apache.commons:commons-csv:1.14.1'
 	implementation 'commons-cli:commons-cli:1.11.0'
 	// Optional (harmless without a web server)
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	// implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
 	// Dev tools
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	// BEWARE: According to CoPilot, when running with WebApplicationType.NONE, devtools suppresses the stripping out
+	// of the --spring.* command line arguments, so the whole command tail gets passed raw to CommandLineRunners.
+	// developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
 	// Testing
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

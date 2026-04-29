@@ -21,16 +21,16 @@ package io.github.demonfiddler.ee.server.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import io.github.demonfiddler.ee.common.util.BuildConfig;
+
 /**
- * A bean to initialise the database for integration testing. It creates the database and tables then populates the lookup tables.
+ * A bean to log the Evidence Engine version on startup.
  */
 @Component
-@Profile("integration-test")
 public class StartupListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StartupListener.class);
@@ -39,7 +39,7 @@ public class StartupListener {
 
     @EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        LOGGER.info("Integration test context initialised");
+        LOGGER.info("Evidence Engine Server v.{}", BuildConfig.VERSION);
         contextInitialised = true;
     }
 

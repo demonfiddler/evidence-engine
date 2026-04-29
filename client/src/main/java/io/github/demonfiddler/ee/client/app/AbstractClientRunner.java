@@ -61,27 +61,40 @@ abstract class AbstractClientRunner implements CommandLineRunner {
     }
 
     // N.B. Keep the initial value up to date with the number of AbstractClientRunner subclasses.
-    private static final AtomicInteger runnerCount = new AtomicInteger(3);
+    private static final AtomicInteger runnerCount = new AtomicInteger(4);
     protected static final String OPT_DRY_RUN = "dry-run";
+    protected static final String OPT_ENDPOINT = "endpoint";
+    protected static final String OPT_FORCE = "force";
     protected static final String OPT_LINK = "link";
     protected static final String OPT_LOAD = "load";
     protected static final String OPT_PAGE_SIZE = "page-size";
+    protected static final String OPT_PASSWORD = "password";
     protected static final String OPT_PUBLISH = "publish";
     protected static final String OPT_RECURSIVE = "recursive";
     protected static final String OPT_STATUS = "status";
+    protected static final String OPT_SPRING_PROFILES = "spring.profiles.active";
     protected static final String OPT_TOPIC_ID = "topic-id";
+    protected static final String OPT_UPDATE_PUBLICATIONS = "update-publications";
+    protected static final String OPT_USERNAME = "username";
     protected static final Options OPTIONS;
 
     static {
         OPTIONS = new Options() //
             .addOption("d", OPT_DRY_RUN, false, "Dry run - no database updates")
+            .addOption("E", OPT_FORCE, true, "GraphQL endpoint") //
+            .addOption("f", OPT_FORCE, false, "Force update") //
             .addOption("h", OPT_PUBLISH, true, "Publish records of the specified types") //
             .addOption("k", OPT_LINK, true, "Link Publications (PUB) / Quotations (QUO) to Topics and author/quotee Persons (PER) to Claims & Topics") //
             .addOption("l", OPT_LOAD, true, "Load data from CSV file") //
             .addOption("p", OPT_PAGE_SIZE, true, "Number of items to read per page (default 100)") //
+            .addOption("P", OPT_PASSWORD, true, "The password with which to login") //
+            .addOption(null, OPT_SPRING_PROFILES, true, "Active Spring profiles") //
             .addOption("s", OPT_STATUS, true, "Filter on status") //
             .addOption("r", OPT_RECURSIVE, false, "Include records linked to sub-topics") //
-            .addOption("t", OPT_TOPIC_ID, true, "Link imported records to specified topic OR filter on topic ID");
+            .addOption("t", OPT_TOPIC_ID, true, "Link imported records to specified topic OR filter on topic ID")
+            .addOption("u", OPT_UPDATE_PUBLICATIONS, false, "Update Publications with journal.publisher")
+            .addOption("U", OPT_USERNAME, true, "Username to login as")
+            ;
     }
 
     private final ConfigurableApplicationContext context;
@@ -90,6 +103,7 @@ abstract class AbstractClientRunner implements CommandLineRunner {
     final MutationExecutor mutationExecutor;
     CommandLine cmdline;
     boolean dryRun;
+    boolean force;
     int pageSize;
     Boolean recursive;
     Long topicId;
@@ -108,15 +122,27 @@ abstract class AbstractClientRunner implements CommandLineRunner {
         try {
             getLogger().trace("Starting {}, runnerCount={}", getClass().getSimpleName(), runnerCount.get());
 
-            if (!authenticator.login())
-                throw new BadCredentialsException("Authentication failed");
-
             CommandLineParser parser = new DefaultParser();
             this.cmdline = parser.parse(OPTIONS, args);
             this.dryRun = cmdline.hasOption(OPT_DRY_RUN);
+            this.force = cmdline.hasOption(OPT_FORCE);
             this.pageSize = cmdline.hasOption(OPT_PAGE_SIZE) ? Integer.valueOf(cmdline.getOptionValue(OPT_PAGE_SIZE)) : 100;
             this.recursive = cmdline.hasOption(OPT_RECURSIVE) ? Boolean.TRUE : null;
             this.topicId = cmdline.hasOption(OPT_TOPIC_ID) ? Long.valueOf(cmdline.getOptionValue(OPT_TOPIC_ID)) : null;
+
+            boolean loggedIn;
+            String endpoint = cmdline.getOptionValue(OPT_ENDPOINT);
+            String username = cmdline.getOptionValue(OPT_USERNAME);
+            String password = cmdline.getOptionValue(OPT_PASSWORD);
+            if (endpoint != null || username != null || password != null) {
+                if (endpoint == null || username == null || password == null)
+                    throw new BadCredentialsException("endpoint, username and password must all be specified");
+                loggedIn = authenticator.login(endpoint, username, password);
+            } else {
+                loggedIn = authenticator.login();
+            }
+            if (!loggedIn)
+                throw new BadCredentialsException("Authentication failed");
 
             doRun();
         } catch (Exception e) {

@@ -18,9 +18,41 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 group = 'io.github.demonfiddler.evidence-engine'
-version = '1.0.1'
+version = '1.0.2'
 
 allprojects {
     group = rootProject.group
     version = rootProject.version
+}
+
+// This code suppresses the expansion of the referenced POM dependencies. It is necessary because the VS Code
+// Java Language Server errors out when incorrectly attempting to load .pom dependencies as a ZIP. This results in hard
+// build errors that prevent compilation prior to launch. Our solution is to unwrap these dependencies and express them
+// explicitly in client/build.gradle, codegen/build.gradle and server/build.gradle.
+subprojects {
+    dependencies {
+        components {
+            withModule("com.graphql-java-generator:graphql-java-common-dependencies") {
+                allVariants {
+                    withDependencies { deps ->
+                        deps.clear()  // remove bogus runtime deps
+                    }
+                }
+            }
+            withModule("com.graphql-java-generator:graphql-java-client-dependencies") {
+                allVariants {
+                    withDependencies { deps ->
+                        deps.clear()
+                    }
+                }
+            }
+            withModule("com.graphql-java-generator:graphql-java-server-dependencies") {
+                allVariants {
+                    withDependencies { deps ->
+                        deps.clear()
+                    }
+                }
+            }
+        }
+    }
 }

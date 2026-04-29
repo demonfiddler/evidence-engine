@@ -26,12 +26,22 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.GroupPrincipal;
+import java.nio.file.attribute.PosixFileAttributeView;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -157,6 +167,81 @@ public class BackupUtils {
         AND TABLE_NAME = ?
         ORDER BY ORDINAL_POSITION;
         """;
+
+    @Value("${data.server.tmpdir}")
+    private String tmpDir;
+
+    /**
+     * Returns the path to the backup/restore temporary directory.
+     * @return The backup/restore path, with a trailing file separator character.
+     */
+    public String getBackupPath() {
+        return tmpDir + (tmpDir.endsWith(File.separator) ? "" : File.separatorChar) + "ee-backup" + File.separatorChar;
+    }
+
+    /**
+     * Prepares a temporary directory for a backup or restore operation. The backup path is given by {@link #getBackupPath()}.
+     * @return An HTTP error response if the operation failed; otherwise {@code null}.
+     */
+    public String createBackupDirectory() {
+        String outputPath = getBackupPath();
+        Path tmpdir = Paths.get(outputPath);
+        File outputDir = tmpdir.toFile();
+
+        try {
+            Files.createDirectories(tmpdir);
+            deleteFile(outputDir, true);
+            LOGGER.info("Files.createDirectories succeeded");
+        } catch (Exception e) {
+            String errmsg = "Failed to create directory " + tmpdir;
+            LOGGER.error(errmsg);
+            return errmsg;
+        }
+        if (!outputDir.exists()) {
+            String errmsg = "Failed to create temporary directory " + outputDir.getAbsolutePath();
+            LOGGER.error(errmsg);
+            return errmsg;
+        } else if (!outputDir.isDirectory()) {
+            String errmsg = "Path " + tmpdir + " exists but is not a directory";
+            LOGGER.error(errmsg);
+            return errmsg;
+        }
+
+        // Ensure that MariaDB can write to the temporary directory in production.
+
+        try {
+            // Linux: apply POSIX permissions
+            Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwxrwx---"); // 770
+            Files.setPosixFilePermissions(tmpdir, perms);
+            LOGGER.info("Set POSIX file permissions on " + tmpdir);
+        } catch (UnsupportedOperationException e) {
+            // Windows: ignore, filesystem does not support POSIX permissions
+            // LOGGER.error("Failed to set POSIX file permissions on " + tmpdir, e);
+        } catch (IOException e) {
+            String errmsg = "Failed to set permissions on " + tmpdir;
+            LOGGER.error(errmsg);
+            return errmsg;
+        }
+
+        try {
+            // Linux: change POSIX group to ee so that both Tomcat and MariaDB can read/write to the directory.
+            PosixFileAttributeView view = Files.getFileAttributeView(outputDir.toPath(), PosixFileAttributeView.class);
+            GroupPrincipal eeGroup =
+                tmpdir.getFileSystem().getUserPrincipalLookupService().lookupPrincipalByGroupName("ee");
+            view.setGroup(eeGroup);
+            LOGGER.info("Set POSIX file group on " + tmpdir);
+        } catch (UnsupportedOperationException _) {
+            // Windows: ignore, filesystem does not support POSIX permissions
+        } catch (UserPrincipalNotFoundException _) {
+            // Assume this means we're on Windows, where the group doesn't matter.
+        } catch (IOException e) {
+            String errmsg = "Failed to set group on " + tmpdir;
+            LOGGER.error(errmsg);
+            return errmsg;
+        }
+
+        return null;
+    }
 
     /**
      * Recursively deletes a file/directory.

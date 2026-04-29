@@ -21,7 +21,6 @@ plugins {
 	id 'org.springframework.boot' version "${springBootVersion}"
 	id 'io.spring.dependency-management' version "${dependencyManagementPluginVersion}"
 	id 'java'
-	// Uncomment the following line to enable GraphQL code generation
 	id "com.graphql-java-generator.graphql-gradle-plugin3" version "${graphQLPluginVersion}"
 	// id "com.netflix.dgs.codegen" version "${netflixDgsCodegenVersion}"
 	id "org.openapi.generator" version "${openapiGeneratorVersion}"
@@ -30,10 +29,51 @@ plugins {
 dependencies {
 	implementation project(':common')
 	implementation 'org.springframework.boot:spring-boot-starter-logging'
-	implementation 'org.springframework.boot:spring-boot-starter-graphql'
+	// implementation 'org.springframework.boot:spring-boot-starter-graphql'
+	implementation 'org.springframework.graphql:spring-graphql'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+	implementation 'com.fasterxml.jackson.core:jackson-core'
+	implementation 'com.fasterxml.jackson.core:jackson-annotations'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation "com.graphql-java-generator:graphql-java-client-runtime:${graphQLPluginVersion}" // only if copyRuntimeSources = false
+
+	// implementation "com.graphql-java-generator:graphql-java-client-runtime:${graphQLPluginVersion}" // only if copyRuntimeSources = false
+	// The following are the transitive dependencies of the above but their internal dependencies on a POM artifact breaks JDT LS.
+	// So we have to block the POM, unwrap these dependencies and include them explicitly:
+	// BEGIN graphql-java-common-dependencies-2.8.pom:
+	implementation 'com.graphql-java:graphql-java'
+	implementation 'org.springframework:spring-context'
+	implementation 'org.reactivestreams:reactive-streams'
+	// END graphql-java-common-dependencies-2.8.pom:
+	// BEGIN graphql-java-client-dependencies-2.8.pom
+	implementation 'org.springframework.graphql:spring-graphql'
+	// implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'org.springframework:spring-webflux'   // NOT the Boot starter
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.security:spring-security-oauth2-client'
+	implementation 'commons-io:commons-io'
+	implementation 'org.apache.commons:commons-text:1.10.0'
+	// implementation 'javax.xml.bind:jaxb-api'
+	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
+	implementation 'com.google.code.findbugs:jsr305:3.0.2'
+	implementation 'org.slf4j:slf4j-api'
+	// END graphql-java-client-dependencies-2.8.pom
+
 	implementation "com.graphql-java-generator:graphql-java-server-runtime:${graphQLPluginVersion}" // only if copyRuntimeSources = false
+	// The following are the transitive dependencies of the above but their internal dependencies on a POM artifact breaks JDT LS.
+	// So we have to block the POM, unwrap these dependencies and include them explicitly:
+	// BEGIN graphql-java-common-dependencies-2.8.pom:
+	// implementation 'com.graphql-java:graphql-java'
+	// implementation 'org.springframework:spring-context'
+	// implementation 'org.reactivestreams:reactive-streams'
+	// END graphql-java-common-dependencies-2.8.pom
+	// BEGIN graphql-java-server-dependencies-2.8.pom
+	// implementation 'org.springframework.graphql:spring-graphql'
+	// implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'javax.servlet:javax.servlet-api:4.0.1'
+	// implementation 'javax.xml.bind:jaxb-api'
+	// implementation 'com.google.code.findbugs:jsr305'
+	// END graphql-java-server-dependencies-2.8.pom
+
 	implementation 'com.graphql-java:graphql-java-extended-scalars:22.0'
 	implementation('org.openapitools:openapi-generator') {
 		version {
@@ -76,32 +116,34 @@ java {
 }
 
 // Netflix DGS code generator configuration. See https://netflix.github.io/dgs/generating-code-from-schema/.
-// generateJava{
-// 	schemaPaths = ["${projectDir}/src/main/resources/graphql"] // List of directories containing schema files
-// 	packageName = 'io.github.demonfiddler.ee.server' // The package name to use to generate sources
-// 	// subPackageNameClient = client
-// 	// subPackageNameDatafetchers = datafetchers
-// 	// subPackageNameTypes = types
-// 	// language = java
-// 	// typeMapping (A Map where each key is a GraphQL type, and the value the FQN of a Java class)
-// 	// generateBoxedTypes = false
-// 	generateServer = true // false
-// 	// generateDataTypes = true
-// 	// generateInterfaces = false
-// 	// generatedSourcesDir = build
-// 	// includeQueries = [...]
-// 	// includeMutations = [...]
-// 	// includeSubscriptions= [...]
-// 	// skipEntityQueries = false
-// 	// shortProjectionNames = false
-// 	// maxProjectionDepth = 10
-// 	// includeEnumImports = (map)
-// 	// includeImports = mapOf(Pair("validator", "com.test.validator")),
-// 	// includeClassImports = mapOf("ValidPerson" to mapOf(Pair("BasicValidation", "com.test.validator.groups")))
-// 	// generateCustomAnnotations = false
-// 	// addGeneratedAnnotation = false
-// 	// disableDatesInGeneratedAnnotation = false
-// }
+/*
+generateJava{
+	schemaPaths = ["${projectDir}/src/main/resources/graphql"] // List of directories containing schema files
+	packageName = 'io.github.demonfiddler.ee.server' // The package name to use to generate sources
+	// subPackageNameClient = client
+	// subPackageNameDatafetchers = datafetchers
+	// subPackageNameTypes = types
+	// language = java
+	// typeMapping (A Map where each key is a GraphQL type, and the value the FQN of a Java class)
+	// generateBoxedTypes = false
+	generateServer = true // false
+	// generateDataTypes = true
+	// generateInterfaces = false
+	// generatedSourcesDir = build
+	// includeQueries = [...]
+	// includeMutations = [...]
+	// includeSubscriptions= [...]
+	// skipEntityQueries = false
+	// shortProjectionNames = false
+	// maxProjectionDepth = 10
+	// includeEnumImports = (map)
+	// includeImports = mapOf(Pair("validator", "com.test.validator")),
+	// includeClassImports = mapOf("ValidPerson" to mapOf(Pair("BasicValidation", "com.test.validator.groups")))
+	// generateCustomAnnotations = false
+	// addGeneratedAnnotation = false
+	// disableDatesInGeneratedAnnotation = false
+}
+*/
 
 openApiGenerate {
     generatorName.set("spring")
@@ -118,5 +160,4 @@ openApiValidate {
     inputSpec.set("$rootDir/server/src/main/resources/rest/openapi.yaml".replace('\\', '/'))
 }
 
-// Uncomment the following line to enable GraphQL code generation (NOTE: the generated code has been heavily modified).
 apply from: 'graphql-codegen.gradle'

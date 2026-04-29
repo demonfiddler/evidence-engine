@@ -43,7 +43,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -119,16 +118,11 @@ public class RestoreApiController implements RestoreApi {
         // because unzipping writes to, and the LOAD DATA LOCAL INFILE statement reads from, local files.
 
         // MariaDB may not have permission to access ${java.io.tmpdir}, so we'll have to use a different location.
-        String outputPath = tmpDir + (tmpDir.endsWith(File.separator) ? "" : File.separatorChar) + "ee-backup" + File.separatorChar;
+        String outputPath = backupUtils.getBackupPath();
         File outputDir = new File(outputPath);
-        if (!outputDir.mkdirs()) {
-            // The directory already existed, so make sure it's empty.
-            backupUtils.deleteFile(outputDir, true);
-
-            LOGGER.trace("Work directory '{}' already existed, cleaned", outputPath);
-        } else {
-            LOGGER.trace("Work directory '{}' created", outputPath);
-        }
+        String errmsg = backupUtils.createBackupDirectory();
+        if (errmsg != null)
+            return ResponseEntity.internalServerError().contentType(MediaType.TEXT_PLAIN).body(errmsg);
 
         // Unzip the backup set by copying each entry to disk.
         List<String> csvFilenames = new ArrayList<>();
@@ -152,8 +146,7 @@ public class RestoreApiController implements RestoreApi {
             }
         } catch (IOException e) {
             LOGGER.error("Error unzipping backup set", e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                .body("400 Bad Request: Unable to read backup set");
+            return ResponseEntity.badRequest().contentType(MediaType.TEXT_PLAIN).body("Unable to read backup set");
         }
 
         // First check that the backup set contains all the required files.
@@ -162,10 +155,9 @@ public class RestoreApiController implements RestoreApi {
             checkForMissingFiles(STATIC_TABLES, csvFilenames, missingFilenames);
         checkForMissingFiles(APPDATA_TABLES, csvFilenames, missingFilenames);
         if (!missingFilenames.isEmpty()) {
-            String errmsg = "Files missing from backup set: " + missingFilenames;
+            errmsg = "Files missing from backup set: " + missingFilenames;
             LOGGER.error(errmsg);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                .body("400 Bad Request: " + errmsg);
+            return ResponseEntity.badRequest().contentType(MediaType.TEXT_PLAIN).body(errmsg);
         }
 
         // Read the backup set config file.
@@ -175,18 +167,17 @@ public class RestoreApiController implements RestoreApi {
             config = backupUtils.readConfiguration(configFile);
         } catch (IOException | NumberFormatException e) {
             LOGGER.error("Error reading backup set configuration", e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                .body("400 Bad Request: Unable to read configuration from backup set");
+            return ResponseEntity.badRequest().contentType(MediaType.TEXT_PLAIN)
+                .body("Unable to read configuration from backup set");
         }
 
         // Check that the backup set's database schema version matches that of this server.
         int schemaVersion = Integer.parseInt(config.getOrDefault(PROP_SCHEMA_VERSION, "0"));
         if (!databaseUtils.checkDatabaseSchemaVersion(schemaVersion)) {
-            String errmsg = "Backup set has an incompatible schema version; expected: "
+            errmsg = "Backup set has an incompatible schema version; expected: "
                 + DatabaseUtils.CURRENT_SCHEMA_VERSION + ", found: " + schemaVersion;
             LOGGER.error(errmsg);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                .body("400 Bad Request: " + errmsg);
+            return ResponseEntity.badRequest().contentType(MediaType.TEXT_PLAIN).body(errmsg);
         }
 
         // Read and validate incoming configuration.
@@ -194,11 +185,10 @@ public class RestoreApiController implements RestoreApi {
         Integer newBackupNumber = databaseUtils.parseInteger(config.get(DatabaseUtils.PROP_BACKUP_NUMBER));
         Timestamp newBackupTimestamp = databaseUtils.parseTimestamp(config.get(DatabaseUtils.PROP_BACKUP_TIMESTAMP));
         if (newBackupId == null || newBackupNumber == null || newBackupTimestamp == null) {
-            String errmsg = "Backup set configuration invalid; backup_id = " + newBackupId + ", backup_number = "
+            errmsg = "Backup set configuration invalid; backup_id = " + newBackupId + ", backup_number = "
                 + newBackupNumber + ", backup_timestamp = " + newBackupTimestamp;
             LOGGER.error(errmsg);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                .body("400 Bad Request: " + errmsg);
+            return ResponseEntity.badRequest().contentType(MediaType.TEXT_PLAIN).body(errmsg);
         }
 
         // If restoring an incremental backup, make sure that we have already restored the full backup and all previous
@@ -210,37 +200,33 @@ public class RestoreApiController implements RestoreApi {
             Timestamp previousBackupTimestamp = databaseUtils.getConfigTimestamp(DatabaseUtils.PROP_BACKUP_TIMESTAMP);
 
             if (previousBackupId == null || previousBackupNumber == null || previousBackupTimestamp == null) {
-                String errmsg = "Database configuration invalid; backup_id = " + previousBackupId + ", backup_number = "
+                errmsg = "Database configuration invalid; backup_id = " + previousBackupId + ", backup_number = "
                     + previousBackupNumber + ", last_backup_timestamp = " + previousBackupTimestamp;
                 LOGGER.error(errmsg);
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body("400 Bad Request: " + errmsg);
+                return ResponseEntity.badRequest().contentType(MediaType.TEXT_PLAIN).body(errmsg);
             }
 
             if (!Objects.equals(newBackupId, previousBackupId)) {
-                String errmsg =
+                errmsg =
                     "Cannot restore incremental backup set because it is from a different series; expected: "
                         + previousBackupId + ", found: " + newBackupId;
                 LOGGER.error(errmsg);
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body("400 Bad Request: " + errmsg);
+                return ResponseEntity.badRequest().contentType(MediaType.TEXT_PLAIN).body(errmsg);
             }
 
             if (newBackupNumber == 0) {
-                String errmsg = "Cannot restore a full backup set incrementally";
+                errmsg = "Cannot restore a full backup set incrementally";
                 LOGGER.error(errmsg);
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body("400 Bad Request: " + errmsg);
+                return ResponseEntity.badRequest().contentType(MediaType.TEXT_PLAIN).body(errmsg);
             }
 
             int expectedBackupNumber = previousBackupNumber + 1;
             if (newBackupNumber != expectedBackupNumber) {
-                String errmsg =
+                errmsg =
                     "Cannot restore incremental backup set out of sequence; expected backup number: "
                         + expectedBackupNumber + ", found: " + newBackupNumber;
                 LOGGER.error(errmsg);
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body("400 Bad Request: " + errmsg);
+                return ResponseEntity.badRequest().contentType(MediaType.TEXT_PLAIN).body(errmsg);
             }
 
             // Check whether any records have been added or updated since the incoming backup timestamp.
@@ -253,18 +239,16 @@ public class RestoreApiController implements RestoreApi {
             if (timestamps[0] != null && timestamps[0].after(previousBackupTimestamp)
                 || timestamps[1] != null && timestamps[1].after(previousBackupTimestamp)) {
 
-                String errmsg =
+                errmsg =
                     "Cannot restore incremental backup set as target database has been modified since the backup date of: "
                         + previousBackupTimestamp;
                 LOGGER.error(errmsg);
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                    .body("400 Bad Request: " + errmsg);
+                return ResponseEntity.badRequest().contentType(MediaType.TEXT_PLAIN).body(errmsg);
             }
         } else if (newBackupNumber != 0) {
-            String errmsg = "Cannot perform a full restore: supplied backup set is incremental";
+            errmsg = "Cannot perform a full restore: supplied backup set is incremental";
             LOGGER.error(errmsg);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN)
-                .body("400 Bad Request: " + errmsg);
+            return ResponseEntity.badRequest().contentType(MediaType.TEXT_PLAIN).body(errmsg);
         }
 
         // The entire restore operation must be performed transactionally.
@@ -282,10 +266,9 @@ public class RestoreApiController implements RestoreApi {
                     } catch (DataAccessException e) {
                         txManager.rollback(status);
 
-                        String errmsg = "Error deleting lookup data from table: " + table.name();
+                        errmsg = "Error deleting lookup data from table: " + table.name();
                         LOGGER.error(errmsg, e);
-                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
-                            .body("500 Internal Server Error: " + errmsg);
+                        return ResponseEntity.internalServerError().contentType(MediaType.TEXT_PLAIN).body(errmsg);
                     }
                 }
                 restoreTables(STATIC_TABLES, outputPath, backupKind);
@@ -299,10 +282,9 @@ public class RestoreApiController implements RestoreApi {
                 } catch (DataAccessException e) {
                     txManager.rollback(status);
     
-                    String errmsg = "Error deleting existing config/application data";
+                    errmsg = "Error deleting existing config/application data";
                     LOGGER.error(errmsg, e);
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
-                        .body("500 Internal Server Error: " + errmsg);
+                    return ResponseEntity.internalServerError().contentType(MediaType.TEXT_PLAIN).body(errmsg);
                 }
             }
 
@@ -315,20 +297,18 @@ public class RestoreApiController implements RestoreApi {
             } catch (DataAccessException e) {
                 txManager.rollback(status);
 
-                String errmsg = "Error restoring entity tables";
+                errmsg = "Error restoring entity tables";
                 LOGGER.error(errmsg, e);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
-                    .body("500 Internal Server Error: " + errmsg);
+                return ResponseEntity.internalServerError().contentType(MediaType.TEXT_PLAIN).body(errmsg);
             } finally {
                 try {
                     jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS=1;");
                 } catch (DataAccessException e) {
                     txManager.rollback(status);
 
-                    String errmsg = "Error setting FOREIGN_KEY_CHECKS=1";
+                    errmsg = "Error setting FOREIGN_KEY_CHECKS=1";
                     LOGGER.error(errmsg, e);
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
-                        .body("500 Internal Server Error: " + errmsg);
+                    return ResponseEntity.internalServerError().contentType(MediaType.TEXT_PLAIN).body(errmsg);
                 }
                 // This 'nice-to-have' code requires the database user (typically 'ee') to have ALTER permission.
                 try {
@@ -337,10 +317,9 @@ public class RestoreApiController implements RestoreApi {
                 } catch (DataAccessException e) {
                     txManager.rollback(status);
 
-                    String errmsg = "Error resetting AUTO_INCREMENT";
+                    errmsg = "Error resetting AUTO_INCREMENT";
                     LOGGER.error(errmsg, e);
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
-                        .body("500 Internal Server Error: " + errmsg);
+                    return ResponseEntity.internalServerError().contentType(MediaType.TEXT_PLAIN).body(errmsg);
                 }
             }
 
@@ -349,12 +328,11 @@ public class RestoreApiController implements RestoreApi {
 
             LOGGER.debug("Restore complete");
 
-            return ResponseEntity.ok().contentType(MediaType.parseMediaType("text/html")) //
-                .body("<html><body>Backup set restored successfully</body></html>");
+            return ResponseEntity.ok().contentType(MediaType.parseMediaType("text/plain")) //
+                .body("Backup set restored successfully");
         } catch (Throwable t) {
             txManager.rollback(status);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_PLAIN)
-                .body("500 Internal Server Error: " + t.getMessage());
+            return ResponseEntity.internalServerError().contentType(MediaType.TEXT_PLAIN).body(t.getMessage());
         } finally {
             backupUtils.deleteFile(outputDir, false);
         }

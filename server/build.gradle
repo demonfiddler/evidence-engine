@@ -41,7 +41,25 @@ dependencies {
 //	implementation 'org.springframework.hateoas:spring-hateoas' // Necessary when hateoas used with webflux
 //	implementation 'de.codecentric:spring-boot-admin-starter-server'
 	implementation 'org.springframework.session:spring-session-core'
+
     implementation "com.graphql-java-generator:graphql-java-server-runtime:${graphQLPluginVersion}" // only if copyRuntimeSources = false
+	// The following are the transitive dependencies of the above but their internal dependencies on a POM artifact breaks JDT LS.
+	// So we have to block the POM, unwrap these dependencies and include them explicitly:
+	// BEGIN graphql-java-common-dependencies-2.8.pom:
+	implementation 'com.graphql-java:graphql-java'
+	implementation 'org.springframework:spring-context'
+	implementation 'org.reactivestreams:reactive-streams'
+	// END graphql-java-common-dependencies-2.8.pom
+	// BEGIN graphql-java-server-dependencies-2.8.pom
+	implementation 'org.springframework.graphql:spring-graphql'
+	// implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'javax.servlet:javax.servlet-api:4.0.1'
+	// implementation 'org.glassfish.jersey.containers:jersey-container-servlet-core'
+	// implementation 'javax.xml.bind:jaxb-api'
+	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
+	implementation 'com.google.code.findbugs:jsr305:3.0.2'
+	// END graphql-java-server-dependencies-2.8.pom
+
 	implementation 'com.graphql-java:graphql-java-extended-scalars:22.0'
 	implementation 'org.apache.commons:commons-collections4:4.5.0'
 	implementation 'org.apache.commons:commons-beanutils2:2.0.0-M2'
