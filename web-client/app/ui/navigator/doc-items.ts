@@ -64,6 +64,7 @@ export const categories = [
       { label: "Profile", href: "/doc/profile/", authority: "REA" },
       { label: "Password", href: "/doc/password/", authority: "REA" },
       { label: "Settings", href: "/doc/settings/", authority: "REA" },
+      { label: "Logging Levels", href: "/doc/logging-levels/" },
     ],
   }, {
     label: "Content Management",
