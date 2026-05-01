@@ -191,7 +191,7 @@ export default function CommentDialogFilter(
         href="https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/optimization-and-indexes/full-text-indexes/full-text-index-overview#in-boolean-mode"
         target="_blank"
       >
-        <LabelEx htmlFor="cf-advanced" help="Use advanced ('Boolean mode') text search syntax. Click the ? icon for details.">Advanced</LabelEx>
+        <LabelEx htmlFor="cf-advanced" help="Use advanced ('Boolean mode') text search syntax. Click the ⓘ icon for details.">Advanced</LabelEx>
       </Link>
       {
         user

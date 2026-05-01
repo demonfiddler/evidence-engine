@@ -87,13 +87,13 @@ abstract class AbstractClientRunner implements CommandLineRunner {
             .addOption("k", OPT_LINK, true, "Link Publications (PUB) / Quotations (QUO) to Topics and author/quotee Persons (PER) to Claims & Topics") //
             .addOption("l", OPT_LOAD, true, "Load data from CSV file") //
             .addOption("p", OPT_PAGE_SIZE, true, "Number of items to read per page (default 100)") //
-            .addOption("P", OPT_PASSWORD, true, "The password with which to login") //
+            .addOption("P", OPT_PASSWORD, true, "The password with which to authenticate") //
             .addOption(null, OPT_SPRING_PROFILES, true, "Active Spring profiles") //
             .addOption("s", OPT_STATUS, true, "Filter on status") //
             .addOption("r", OPT_RECURSIVE, false, "Include records linked to sub-topics") //
             .addOption("t", OPT_TOPIC_ID, true, "Link imported records to specified topic OR filter on topic ID")
             .addOption("u", OPT_UPDATE_PUBLICATIONS, false, "Update Publications with journal.publisher")
-            .addOption("U", OPT_USERNAME, true, "Username to login as")
+            .addOption("U", OPT_USERNAME, true, "The username with which to authenticate")
             ;
     }
 
