@@ -38,7 +38,7 @@ export default function Help({text} : {text?: string}) {
   return (
     <HoverCard>
       <HoverCardTrigger asChild>
-        <InfoIcon className="w-6 h-6 text-sky-200"/>
+        <InfoIcon className="w-5 h-5 text-sky-200"/>
       </HoverCardTrigger>
       <HoverCardContent className="w-80 bg-sky-50" side="left">
         <p className="text-sm">

@@ -133,7 +133,9 @@ input[type='number']::-webkit-outer-spin-button {
   overflow-wrap: anywhere;
 }
 
+/*
 svg.lucide {
   width: unset;
   height: unset;
 }
+*/

@@ -48,7 +48,7 @@ export default function ContextHelp({className, href} : {className?: string, hre
       onClick={handleClick}
       title="Display context-sensitive help in another browser tab"
     >
-      <CircleQuestionMarkIcon className="w-6 h-6 text-green-600" />
+      <CircleQuestionMarkIcon className="w-6! h-6! text-green-600" />
     </Button>
   )
 }

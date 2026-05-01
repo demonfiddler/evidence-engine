@@ -27,7 +27,7 @@ type LinkExProps = StarRatingBasicProps & HelpProps
 
 export default function StarRatingBasicEx({help, outerClassName, ...props} : LinkExProps) {
   return (
-    <div className={cn("flex flex-row items-center gap-1", outerClassName)}>
+    <div className={cn("flex flex-row items-center gap-1 pr-3 border rounded-md", outerClassName)}>
       <StarRatingBasic {...props} />
       <Help text={help} />
     </div>
