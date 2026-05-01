@@ -19,6 +19,17 @@
 
 'use client'
 
-export default function EditDocPage() {
-  return <h1>Edit an Existing Record</h1>
+import Link from "next/link"
+
+export default function CreateEditDocPage() {
+  return (
+    <article className="prose">
+      <h2>Create and Editing Records</h2>
+      <p>The Evidence Engine web interface supports the creation of new records and the editing of existing records by
+        authenticated users with the <Link href="/doc/cm-security#authorities">requisite authorities</Link> (permissions).
+        To create new records you must have <b>Create</b> authority. To edit existing records you must have <b>Update</b>
+        {" "}authority. See <Link href="/doc/details/#form-commands">Form Commands</Link> for further information.
+      </p>
+    </article>
+  )
 }

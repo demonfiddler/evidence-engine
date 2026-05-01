@@ -25,9 +25,13 @@ export default function ProfileDocPage() {
   return (
     <article className="prose">
       <h2>Profile Dialog</h2>
-      <Image src="/doc/profile.png" alt="Screen-shot of the Profile dialog" width={512} height={590} />
+      <Image src="/doc/profile.png" alt="Screen-shot of the Profile dialog" width={512} height={850} />
       <p>The 'Profile' dialog allows you to manage the following user profile settings:</p>
       <dl>
+        <dt>User ID</dt>
+        <dd>Your user ID (read-only)</dd>
+        <dt>Username</dt>
+        <dd>Your username (read-only)</dd>
         <dt>First name</dt>
         <dd>Your first/given name (required)</dd>
         <dt>Last name</dt>
@@ -38,6 +42,8 @@ export default function ProfileDocPage() {
         <dd>Your country of residence (required)</dd>
         <dt>Notes</dt>
         <dd>Free-form notes about your background, education and qualifications, accomplishments, activities, etc.</dd>
+        <dt>Granted Authorities</dt>
+        <dd>The authorities (permissions) granted to you, either directly or via group memberships (read-only)</dd>
       </dl>
     </article>
   )

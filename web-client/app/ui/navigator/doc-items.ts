@@ -58,20 +58,22 @@ export const categories = [
     label: "Dialogs",
     items: [
       { label: "Export", href: "/doc/export/" },
-      { label: "Import", href: "/doc/import/", authority: "CRE" },
+      { label: "Import", href: "/doc/import/", authority: "UPL" },
       { label: "Status/Link Manager", href: "/doc/status/", authority: "CHG" },
       { label: "Sign-in", href: "/doc/sign-in/", authority: "REA" },
       { label: "Profile", href: "/doc/profile/", authority: "REA" },
       { label: "Password", href: "/doc/password/", authority: "REA" },
       { label: "Settings", href: "/doc/settings/", authority: "REA" },
     ],
-  // }, {
-  //   label: "Content Management",
-  //   items: [
-  //     { label: "Security", href: "/doc/cm-security/", authority: "ADM" },
-  //     { label: "Create New Record", href: "/doc/cm-create/", authority: "CRE" },
-  //     { label: "Edit Existing Record", href: "/doc/cm-edit/", authority: "UPD" },
-  //     { label: "Status Lifecycle", href: "/doc/cm-status/", authority: "CHG" },
-  //   ],
+  }, {
+    label: "Content Management",
+    authority: "REA",
+    items: [
+      { label: "Security", href: "/doc/cm-security/", authority: "REA" },
+      { label: "Create & Editing", href: "/doc/cm-create-edit/", authority: "CRE" },
+      { label: "Data Quality", href: "/doc/cm-data-quality/", authority: "CRE" },
+      { label: "Record Status", href: "/doc/cm-status/", authority: "CHG" },
+      { label: "Command Line", href: "/doc/cm-cmdline/", authority: "CRE" },
+    ],
   },
 ] as SideBarCategory[]

@@ -52,7 +52,7 @@ export default function RecordsDocPage() {
       <p>A Person record represents a subject matter expert who has publicly expressed contrarian views, by
         publishing information of a scientific or other evidential nature. The Persons in this database are typically
         eminent, highly qualified and may be recipients of prestigious awards.
-        They include university professors, graduates at PhD and higher levels, practising and credentialled professionals.
+        They include university professors, graduates at Ph.D. and higher levels, practising and credentialled professionals.
       </p>
       <h4><LibraryIcon className="inline" />&nbsp;Publication</h4>
       <p>A Publication represents material published in the form of books, papers and research studies in scientific journals,
@@ -78,8 +78,8 @@ export default function RecordsDocPage() {
       </p>
       <h4><LinkIcon className="inline" />&nbsp;Record Link</h4>
       <p>A Record Link represents an association between two records. Record Links are used indicate a claimant (the
-        maker of a Claim), the fact that a Publication is evidence supporting a Claim, the signatories of a declaration,
-        the author of a publication, the utterer of a quotation, and so on.
+        maker of a Claim), the fact that a Publication is evidence supporting a Claim, the signatories of a Declaration,
+        the author of a Publication, the utterer of a Quotation, and so on.
       </p>
       <h4><MessagesSquareIcon className="inline" />&nbsp;Comment</h4>
       <p>Comments about a record, made by authenticated users. Such comments can be read by anyone.</p>

@@ -53,11 +53,12 @@ export default function DetailsDocPage() {
       <p>The following command buttons are present:</p>
       <dl>
         <dt>Comments</dt>
-        <dd>Opens the <Link href="/doc/comments/">Comments</Link> Dialog to show any comments associated with the record</dd>
+        <dd>Opens the <Link href="/doc/comments/#comments-dialog">Comments</Link> Dialog to show any comments associated
+          with the record</dd>
         <dt>Status</dt>
         <dd>Presents a popup menu for changing the record Status</dd>
         <dt>Log</dt>
-        <dd>Opens the <Link href="/doc/log/">Log</Link> Dialog to show the Log entries associated with the record</dd>
+        <dd>Opens the <Link href="/doc/log/#log-dialog">Log</Link> Dialog to show the Log entries associated with the record</dd>
       </dl>
       <a id="linking" /><h3>Linking</h3>
       <p>The Linking section displays information about Record Links involving the selected record. It is only displayed
@@ -87,11 +88,11 @@ export default function DetailsDocPage() {
       <p>The following command buttons are present:</p>
       <dl>
         <dt>Manage</dt>
-        <dd>Opens the <Link href="/doc/link-mgr/">Link Manager</Link> Dialog to manage the links associated with the record</dd>
+        <dd>Opens the <Link href="/doc/status/">Link Manager</Link> Dialog to manage the links associated with the record</dd>
         <dt>Log</dt>
         <dd>Opens the <Link href="/doc/log/">Log</Link> Dialog to show the Log entries associated with the record link</dd>
       </dl>
-      <h3>Details</h3>
+      <a id="details" /><h3>Details</h3>
       <p>All pages showing records include a form containing the record-type-specific fields. The form is used to
         display field values in read-only 'view' mode, and in 'edit' mode to create new records and edit existing ones.
         Some fields are constrained as to the kind of value they can accept, and while creating or editing show a red

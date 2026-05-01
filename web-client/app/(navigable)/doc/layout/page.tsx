@@ -77,9 +77,12 @@ export default function LayoutDocPage() {
         <CircleQuestionMarkIcon className="inline w-6 h-6 text-green-600" /> context help icon button. Clicking the
         button opens the documentation for the current page in another browser tab that is reused for subsequent help
         requests.</p>
+      <h3>Master Filter</h3>
+      <p>The master filter section is described <Link href="/doc/filter/">here</Link>.</p>
       <h3>Table</h3>
-      <p></p>
+      <p>The table section is described <Link href="/doc/tables/">here</Link>.</p>
       <h3>Details</h3>
+      <p>The details section is described <Link href="/doc/details/">here</Link>.</p>
       <p></p>
     </article>
   )

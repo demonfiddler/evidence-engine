@@ -18,7 +18,7 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 group = 'io.github.demonfiddler.evidence-engine'
-version = '1.0.2'
+version = '1.0.3'
 
 allprojects {
     group = rootProject.group
