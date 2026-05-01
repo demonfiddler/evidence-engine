@@ -36,6 +36,11 @@ import { dialog, LoggerEx } from "@/lib/logger"
 import { UserPenIcon } from "lucide-react"
 import CountryCombobox from "../ext/country-combobox"
 import ContextHelp from "../misc/context-help"
+import FieldsetEx from "../ext/fieldset-ex"
+import { authorities } from "../details/authority-ui"
+import CheckboxEx from "../ext/checkbox-ex"
+import { AuthorityKind } from "@/app/model/schema"
+import { Label } from "@/components/ui/label"
 
 const logger = new LoggerEx(dialog, "[ProfileDialog] ")
 
@@ -48,6 +53,19 @@ const ProfileSchema = z.object({
   country: z.string().uppercase().min(2).max(2),
   notes: z.string(),
 })
+
+/*
+const state = {
+  mode: "view" as DetailMode,
+  allowCreate: false,
+  allowEdit: false,
+  allowUpdate: false,
+  allowDelete: false,
+  allowLink: false,
+  allowRead: true,
+  updating: true
+}
+*/
 
 type ProfileFields = z.infer<typeof ProfileSchema>
 
@@ -112,7 +130,7 @@ export default function ProfileDialog(
 
   return open ? (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent>
+      <DialogContent className="">
         <Spinner loading={loading} label="Saving..." className="absolute inset-0 bg-black/20 z-50" />
         <FormProvider {...form}>
           <form>
@@ -126,6 +144,17 @@ export default function ProfileDialog(
               </DialogDescription>
             </DialogHeader>
             <div className="grid grid-cols-2 gap-4">
+              {/* <div className="colspan-2 rowspan-5">
+                <StandardDetails recordKind="User" record={user ?? undefined} state={state} showLinkingDetails={false} />
+              </div> */}
+              <div className="grid gap-2">
+                <Label htmlFor="id">User ID</Label>
+                <InputEx disabled={true} value={user?.id ?? ''} />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="id">Username</Label>
+                <InputEx disabled={true} value={user?.username ?? ''} />
+              </div>
               <FormField
                 control={form.control}
                 name="firstName"
@@ -197,13 +226,35 @@ export default function ProfileDialog(
                         id="notes"
                         className="h-40 overflow-y-auto"
                         {...field}
-                        help="Notes about your background, education and qualifications, accomplishments, activities, etc."
+                        help="Notes about your background, interests, education and qualifications, accomplishments, activities, etc."
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              <div className="col-span-2 ">
+                <FieldsetEx
+                  className="w-full grid grid-cols-4 justify-items-center border rounded-md p-4 gap-4"
+                  disabled={true}
+                  help="The authorities granted to this user"
+                >
+                  <legend>&nbsp;Granted Authorities&nbsp;</legend>
+                  {
+                    authorities.map((auth, idx) => (
+                      <div key={idx} className="flex flex-col items-center gap-1">
+                        <Label htmlFor={auth.key}>{auth.label}</Label>
+                        <CheckboxEx
+                          id={auth.key}
+                          checked={user?.authorities?.includes(auth.key.toUpperCase() as AuthorityKind)}
+                          disabled={true}
+                          help={auth.description}
+                        />
+                      </div>
+                    ))
+                  }
+                </FieldsetEx>
+              </div>
               <p className="col-span-2 text-red-500">{error}</p>
             </div>
             <DialogFooter>

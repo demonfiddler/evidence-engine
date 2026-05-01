@@ -31,9 +31,9 @@ export const authorities : AuthorityUI[] = [
   {key: "adm", label: "Administer", description: "Administer system"},
   {key: "chg", label: "Change", description: "Change record status"},
   {key: "com", label: "Comment", description: "Comment on records"},
-  {key: "cre", label: "Create", description: "Create records"},
+  {key: "cre", label: "Create", description: "Create new records"},
   {key: "lnk", label: "Link", description: "Link/unlink records"},
   {key: "rea", label: "Read", description: "Read records"},
-  {key: "upd", label: "Update", description: "Update records"},
+  {key: "upd", label: "Update", description: "Update existing records"},
   {key: "upl", label: "Upload", description: "Upload files"},
 ]
