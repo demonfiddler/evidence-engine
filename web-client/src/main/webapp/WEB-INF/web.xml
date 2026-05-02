@@ -10,4 +10,22 @@
         Static Next.js client application for the Evidence Engine platform.
     </description>
 
+    <!-- Build-time profile injected by Gradle -->
+    <context-param>
+        <param-name>cacheProfile</param-name>
+        <param-value>${cacheProfile}</param-value>
+    </context-param>
+
+    <!-- Cache control filter -->
+    <filter>
+        <filter-name>CacheControlFilter</filter-name>
+        <filter-class>io.github.demonfiddler.ee.webclient.filter.CacheControlFilter</filter-class>
+    </filter>
+
+    <!-- Apply filter to HTML pages -->
+    <filter-mapping>
+        <filter-name>CacheControlFilter</filter-name>
+        <url-pattern>*.html</url-pattern>
+    </filter-mapping>
+
 </web-app>
