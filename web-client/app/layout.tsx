@@ -282,7 +282,7 @@ function reducer(draft: AppState, action: ReducerArg) {
       const record = action.value as RecordKindValueOpt<string>
       draft.masterRecordKind = record.recordKind
       draft.masterRecordId = record.value
-      draft.masterRecordLabel = `${record.recordKind}#${record.value}`
+      draft.masterRecordLabel = `${record.recordKind} #${record.value}`
       break
     }
     case "setShowOnlyLinkedRecords": {
@@ -387,7 +387,7 @@ export default function RootLayout({
 }) {
   logger.debug("render")
 
-  const [appStateSs/*, storeAppStateSs*/] = useSessionStorage<AppState>("app-state", defaultAppState)
+  const [appStateSs, storeAppStateSs] = useSessionStorage<AppState>("app-state", defaultAppState)
   const [appState, dispatch] = useImmerReducer<AppState, ReducerArg>(reducer, appStateSs)
 
   const setDefaults = useCallback(() => {
@@ -524,9 +524,9 @@ export default function RootLayout({
 
   const storeAppState = useCallback(() => {
     if (appState.modified) {
-      // storeAppStateSs(appState)
+      storeAppStateSs(appState)
       dispatch({command: "flush", value: undefined})
-      logger.debug("Flushed app state to session storage (would have!)")
+      logger.debug("Flushed app state to session storage")
     }
   }, [dispatch, appState])
 

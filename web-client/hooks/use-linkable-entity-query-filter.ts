@@ -96,7 +96,16 @@ export default function useLinkableEntityQueryFilter() : QueryFilterLogic<Linkab
       setShowOnlyLinkedRecords(newShowOnlyLinkedRecords)
 
     return filter
-  }, [showOnlyLinkedRecords, setFilter, setMasterTopicId, setMasterTopicRecursive, setMasterRecordId, setShowOnlyLinkedRecords])
+  }, [
+    masterTopicId,
+    masterTopicRecursive,
+    showOnlyLinkedRecords,
+    setFilter,
+    setMasterTopicId,
+    setMasterTopicRecursive,
+    setMasterRecordId,
+    setShowOnlyLinkedRecords
+  ])
 
   const createSearchParams = useCallback((filter: LinkableEntityQueryFilter) => {
     return createSearchParamsImpl<LinkableEntityQueryFilter, FilterValue>(filter, convertFilterValue)
