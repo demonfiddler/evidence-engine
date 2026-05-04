@@ -91,7 +91,7 @@ export const PublicationSchema = Rateable.extend({
   date: z.date({message: "Publication date is required"})
     .max(Date.now(), { message: "Publication date cannot be in the future" }),
   year: z.string().regex(/^(?:19|20)\d{2}$/).or(z.uint32().min(1900).max(2099)),
-  keywords: z.string().max(255),
+  keywords: z.string().max(500),
   abstract: z.string(),
   notes: z.string(),
   peerReviewed: z.boolean().or(z.literal("indeterminate")),

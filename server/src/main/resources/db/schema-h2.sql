@@ -195,7 +195,7 @@ CREATE TABLE "publication" (
   "kind" VARCHAR(6) NOT NULL COMMENT 'The kind of publication',
   "date" DATE DEFAULT NULL COMMENT 'Publication date',
   "year" SMALLINT DEFAULT NULL COMMENT 'Publication year',
-	"keywords" VARCHAR(255) DEFAULT NULL COMMENT 'Keywords per publication metadata',
+	"keywords" VARCHAR(500) DEFAULT NULL COMMENT 'Keywords per publication metadata',
 	"location" VARCHAR(50) DEFAULT NULL COMMENT 'The location of the relevant section within the publication',
   "abstract" VARCHAR(65535) DEFAULT NULL COMMENT 'Abstract from the article',
   "notes" VARCHAR(65535) DEFAULT NULL COMMENT 'Added notes about the publication',

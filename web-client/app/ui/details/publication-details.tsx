@@ -117,12 +117,22 @@ export default function PublicationDetails(
   const handleJournalChange = useCallback((journal: Journal | null) => {
     logger.trace("handleJournalChange(%s)", journal?.id ?? null)
 
-    // If there is no publisher currently set, or if the current publisher matches that of the current journal,
-    // update the publication's publisher to match that of the newly selected journal.
-    if (journal?.publisher && !selectedPublisher || selectedJournal?.publisher?.id === selectedPublisher?.id) {
-      logger.trace("handleJournalChange: setting publisherId = %s", journal?.publisher?.id ?? '')
+    if (journal) {
+      // If Publication peerReviewed is currently unset, and the journal is peer reviewed, set it now to true.
+      if (form.getValues().peerReviewed == "indeterminate" && journal.peerReviewed)
+        form.setValue("peerReviewed", true)
 
-      form.setValue("publisherId", journal?.publisher?.id ?? null)
+      // If there is no Publication Kind currently set, set it now to JOUR / 'Journal'.
+      if (!form.getValues().kind)
+        form.setValue("kind", "JOUR")
+
+      // If there is no publisher currently set, or if the current publisher matches that of the current journal,
+      // update the publication's publisher to match that of the newly selected journal.
+      if (journal.publisher && !selectedPublisher || selectedJournal?.publisher?.id === selectedPublisher?.id) {
+        logger.trace("handleJournalChange: setting publisherId = %s", journal.publisher?.id ?? '')
+
+        form.setValue("publisherId", journal?.publisher?.id ?? null)
+      }
     }
   }, [form, selectedJournal, selectedPublisher])
 

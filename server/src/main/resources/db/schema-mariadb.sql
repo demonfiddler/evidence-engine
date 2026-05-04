@@ -291,7 +291,7 @@ CREATE TABLE IF NOT EXISTS "publication" (
   "kind" VARCHAR(6) NOT NULL COMMENT 'The kind of publication',
   "date" DATE DEFAULT NULL COMMENT 'Publication date',
   "year" year(4) DEFAULT NULL COMMENT 'Publication year',
-  "keywords" VARCHAR(255) DEFAULT NULL COMMENT 'Keywords per publication metadata',
+  "keywords" VARCHAR(500) DEFAULT NULL COMMENT 'Keywords per publication metadata',
   "location" VARCHAR(50) DEFAULT NULL COMMENT 'The location of the relevant section within the publication',
   "abstract" TEXT DEFAULT NULL COMMENT 'Abstract from the article',
   "notes" TEXT DEFAULT NULL COMMENT 'Added notes about the publication',

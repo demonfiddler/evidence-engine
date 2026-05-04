@@ -390,7 +390,7 @@ export default function usePageLogic<
   const origFieldValues = useMemo(() => createFieldValues(selectedRecord), [createFieldValues, selectedRecord])
   const form = useForm<TFieldValues>({
     // Only validate form when actively editing an existing record or creating a new one.
-    resolver: state.updating && selectedRecord && schema //
+    resolver: state.updating && schema //
       ? standardSchemaResolver(schema) //
       : undefined,
     mode: "all",
