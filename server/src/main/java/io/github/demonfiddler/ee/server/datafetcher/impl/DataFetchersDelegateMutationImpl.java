@@ -1281,7 +1281,7 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
             .withTargetId(entity.getId()) //
             .withStatus(filterStatus) //
             .build();
-        Page<Comment> comments = commentRepository.findByFilter(filter, null);
+        Page<Comment> comments = commentRepository.findByFilter(filter, Pageable.unpaged());
         for (Comment comment : comments.getContent())
             setEntityStatus(dataFetchingEnvironment, comment, newStatus);
 
