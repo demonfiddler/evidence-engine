@@ -37,7 +37,7 @@ export default function Search(
 
   const [text, setText] = useState(value)
 
-  // If the supplied value changes externally, update text state to match and notify supplied listener.
+  // If the supplied value changes externally, update text state to match.
   const prevValue = useRef<string | number | readonly string[] | undefined>('')
   useEffect(() => {
     logger.trace("effect (1)")
@@ -49,14 +49,14 @@ export default function Search(
         setText(value)
       }
     }
-  }, [value, text, onChangeValue])
+  }, [value, prevValue, text, setText])
 
   // If the input component value changes, update text state to match and notify supplied listener.
   const onChangeText = useCallback((s: string) => {
     logger.trace("onChangeText: s = '%s', text='%s'", s, text)
     setText(s)
     onChangeValue(s)
-  }, [onChangeValue])
+  }, [setText, onChangeValue])
 
   return (
     <div className={cn("flex flex-row items-center gap-2 px-2 pr-2 border rounded-md", className)}>

@@ -108,14 +108,14 @@ export default function ImportDialog({recordKind, accept} : ImportDialogProps) {
       href += `${sep}recordId=${masterRecordId}`
     console.log(`href='${href}'`)
     return href
-  }, [recordKind, linkMasterTopic, linkMasterRecord, masterTopicId, masterRecordId])
+  }, [recordKind, linkMasterTopic, masterTopicId, linkMasterRecord, masterRecordId])
 
   const handleDrop = useCallback((files: File[]) => {
     logger.trace("Files dropped: %o", files)
     setFiles(files)
     setError("")
     setImportedRecords([])
-  }, [setFiles, setError])
+  }, [setFiles, setError, setImportedRecords])
 
   const handleError = useCallback((error : Error) => {
     logger.error("Error: %o", error)
@@ -161,19 +161,19 @@ export default function ImportDialog({recordKind, accept} : ImportDialogProps) {
     .catch(error => {
       setError(error.message)
     }).finally(() => setIsLoading(false))
-  }, [files, jwtToken, getHref, api])
+  }, [files, jwtToken, setError, setImportedRecords, setIsLoading, getHref, api, recordKind])
 
   const handleCopy = useCallback(() => {
     logger.trace("handleCopy")
     navigator.clipboard.writeText(JSON.stringify(importedRecords, null, 2))
     toast.info("Messages copied to clipboard (JSON format)")
-  }, [])
+  }, [importedRecords])
 
   const handleClose = useCallback(() => {
     logger.trace("handleClose")
     setFiles([])
     setImportedRecords([])
-  }, [])
+  }, [setFiles, setImportedRecords])
 
   const handleNavigate = useCallback((id?: number) => {
     logger.trace("handleNavigate")
@@ -182,7 +182,7 @@ export default function ImportDialog({recordKind, accept} : ImportDialogProps) {
       ...queries[recordKind]?.filter,
       recordId: id
     })
-  }, [queries, recordKind, setFilter])
+  }, [setIsOpen, setFilter, recordKind, queries])
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

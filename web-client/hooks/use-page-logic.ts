@@ -192,7 +192,9 @@ export default function usePageLogic<
   const selectedRecordId = selectedRecords[recordKind]?.id
   const [mode, setMode] = useState<DetailMode>("view")
   const state = useMemo(() => createDetailState(hasAuthority, mode), [hasAuthority, mode])
-  const setSelectedRecord = useCallback((record?: TData) => globalContext.setSelectedRecord(recordKind, record), [globalContext])
+  const setSelectedRecord = useCallback((record?: TData) => {
+    globalContext.setSelectedRecord(recordKind, record)
+  }, [globalContext, recordKind])
 
   // Get the current filter from the global context.
   const query = queries[recordKind] as QueryState<TFilter>
@@ -211,7 +213,7 @@ export default function usePageLogic<
         logger.trace("updateUrlQuery: Updated query from '%s' to '%s'", searchParams, newSearchParams)
       }
     }
-  }, [loadingPathWithSearchParamsRef, filter, searchParams, router])
+  }, [loadingPathWithSearchParamsRef, filterLogic, filter, searchParams, router])
 
   // Whenever path changes, adjust filter or query string as appropriate.
   const prevPath = useRef('')
@@ -247,7 +249,17 @@ export default function usePageLogic<
           updateUrlQuery()
       }
     }
-  }, [loadingPathWithSearchParamsRef, pathname, filterLogic, setFilter, updateUrlQuery]);
+  }, [
+    pathname,
+    prevPath,
+    loadingPathWithSearchParamsRef,
+    filterLogic,
+    searchParams,
+    filter,
+    setFilter,
+    recordKind,
+    updateUrlQuery,
+  ]);
 
   const prevPageSort = useRef<PageableInput>({})
   const pageSort = useMemo(() => {
@@ -273,7 +285,7 @@ export default function usePageLogic<
       newPageSort = prevPageSort.current
     }
     return newPageSort
-  }, [manualPagination && pagination, manualSorting && sorting])
+  }, [manualPagination, pagination, manualSorting, sorting, prevPageSort])
 
   const [readFieldName] = useMemo(() => introspect(readQuery, OperationTypeNode.QUERY), [readQuery])
   const [createFieldName, createVarName] = useMemo(() => introspect(createMutation, OperationTypeNode.MUTATION), [createMutation])
@@ -307,7 +319,7 @@ export default function usePageLogic<
       prevReadErrorRef.current = readResult.error
       setError(readResult.error)
     }
-  }, [readResult.error, prevReadErrorRef])
+  }, [readResult, prevReadErrorRef, setError])
 
   // Whenever filter or pagination (actually) changes, update query string and ask Apollo to refetch.
   const prevFilter = useRef<TFilter>(filter);
@@ -324,7 +336,16 @@ export default function usePageLogic<
       updateUrlQuery()
       refetch()
     }
-  }, [loadingPathWithSearchParamsRef, filter, manualPagination && pageSort, updateUrlQuery, refetch]);
+  }, [
+    loadingPathWithSearchParamsRef,
+    filter,
+    prevFilter,
+    manualPagination,
+    pageSort,
+    prevPageSort2,
+    updateUrlQuery,
+    refetch
+  ])
 
   const loading = (readResult.loading || createResult?.loading || updateResult?.loading || deleteResult?.loading || linkResult?.loading) ?? false
 
@@ -500,7 +521,31 @@ export default function usePageLogic<
     }
     // Dependencies assume (reasonably) that createOp, updateOp, deleteOp, createVarName, updateVarName, deleteVarName
     // will never change during the page lifetime.
-  }, [selectedRecordId, form, origFieldValues, masterTopicId, masterRecordKind, masterRecordId, createInput, filter, setFilter])
+  }, [
+    setError,
+    form,
+    createFieldValues,
+    setSelectedRecord,
+    createOp,
+    createVarName,
+    createInput,
+    createFieldName,
+    masterTopicId,
+    masterRecordId,
+    recordKind,
+    masterRecordKind,
+    linkOp,
+    filter,
+    setFilter,
+    setMode,
+    setError,
+    updateOp,
+    updateVarName,
+    deleteOp,
+    deleteVarName,
+    selectedRecordId,
+    origFieldValues
+  ])
 
   const handleRowSelectionChange = useCallback((recordId?: string) => {
     if (mode !== "view") {
@@ -511,7 +556,7 @@ export default function usePageLogic<
     const record = getRecord(recordId)
     setSelectedRecord(record)
     form?.reset(createFieldValues(record))
-  }, [form, mode, getRecord, setSelectedRecord])
+  }, [mode, form, getRecord, setSelectedRecord, createFieldValues])
 
   // TODO: re-enable reducer logic to avoid query re-execution on completion of a mutation
   /*

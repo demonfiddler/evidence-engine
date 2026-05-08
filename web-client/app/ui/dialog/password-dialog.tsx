@@ -84,7 +84,7 @@ export default function PasswordDialog(
       id: user?.id,
       password: `{bcrypt}${hash}`
     }
-  }, [user, form])
+  }, [form, user])
 
   const handleCancel = useCallback(() => {
     if (!form.formState.isDirty || confirm("Confirm discard changes?")) {
@@ -106,7 +106,7 @@ export default function PasswordDialog(
         onError: (e) => setError(e.message),
       })
     }
-  }, [form, updateUserProfileOp, createInput, setOpen])
+  }, [form, setError, updateUserProfileOp, createInput, setOpen])
 
   return open ? (
     <Dialog open={open} onOpenChange={setOpen}>

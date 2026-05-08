@@ -375,7 +375,7 @@ function FlushOnPathChange({flushFn} : {flushFn: () => void}) {
       flushFn();
       prevPath.current = pathname;
     }
-  }, [pathname, flushFn]);
+  }, [prevPath, pathname, flushFn]);
 
   return null;
 }
@@ -591,18 +591,6 @@ export default function RootLayout({
     storeAppState,
   ]) as GlobalContextType
 
-  // On navigation, store the application state to session storage.
-  // useEffect(() => {
-  //   return () => {
-  //     storeAppState()
-  //   }
-  // }, [])
-  // const router = useRouter()
-  // useEffect(() => {
-  //   router.events.on("routeChangeStart", storeAppState)
-  //   return () => router.events.off("routeChangeStart", storeAppState)
-  // }, [router, storeAppState])
-
   const [logLevelsDrawerOpen, setLogLevelsDrawerOpen] = useState(false)
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLBodyElement>) => {
     if (e.ctrlKey) {
@@ -611,7 +599,7 @@ export default function RootLayout({
       else if (e.key === 'l' && e.altKey)
         setLogLevelsDrawerOpen(!logLevelsDrawerOpen)
     }
-  }, [logLevelsDrawerOpen, appState, setLogLevelsDrawerOpen, setSidebarOpen])
+  }, [setSidebarOpen, appState, setLogLevelsDrawerOpen, logLevelsDrawerOpen])
 
   return (
     <html lang="en">

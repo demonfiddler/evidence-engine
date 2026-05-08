@@ -132,7 +132,7 @@ export default function BackupRestore() {
       toast.error("Database backup failed")
       setError(reason)
     }).finally(() => setIsLoading(false))
-  }, [jwtToken, getHref])
+  }, [jwtToken, setError, setIsLoading, getHref])
 
   const handleRestore = useCallback(() => {
     if (!files || files.length == 0 || !jwtToken ||
@@ -172,7 +172,7 @@ export default function BackupRestore() {
       toast.error("Database restore failed")
       setError(error.message)
     }).finally(() => setIsLoading(false))
-  }, [files, jwtToken, getHref])
+  }, [files, jwtToken, kind, setError, setIsLoading, getHref, setFiles])
 
   return (
     <main className="flex flex-col items-start m-4 gap-4">

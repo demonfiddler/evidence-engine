@@ -80,7 +80,7 @@ export default function TopicDetails(
   const flatTopics = useMemo(() => {
     // A topic can't be its own ancestor, so exclude this record and all of its descendants.
     return flatten(record, topics, [])
-  }, [topics, record])
+  }, [record, topics])
 
   const topicsById = useMemo(() => {
     return Object.fromEntries(

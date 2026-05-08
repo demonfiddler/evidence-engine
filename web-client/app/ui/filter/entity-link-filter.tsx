@@ -149,7 +149,7 @@ export default function EntityLinkFilter() {
     const masterTopic = findTopic(topics, masterTopicId)
     setTopicDescription(masterTopic?.description ?? '')
     setTopicPath(masterTopic?.path ?? '')
-  }, [topics, masterTopicId])
+  }, [setTreeData, topics, masterTopicId, setTopicDescription, setTopicPath])
 
   const getMasterRecordLabel = useCallback(() => {
     if (masterRecordKind == "None")
@@ -169,7 +169,7 @@ export default function EntityLinkFilter() {
     const searchParams = createSearchParams(newFilter)
     uri += `?${searchParams.toString()}`
     return uri
-  }, [masterRecordKind, masterRecordId, queries, createSearchParams])
+  }, [masterRecordKind, queries, masterRecordId, createSearchParams])
 
   const handleTopicChange = useCallback((currentNode: TreeNode, selectedNodes: TreeNode[]) => {
     const topic = selectedNodes.length != 0 ? selectedNodes[0].topic : undefined
@@ -186,7 +186,7 @@ export default function EntityLinkFilter() {
     const label = currentNode.topic.label;
     const verb = currentNode.checked ? "selected" : "deselected"
     toast.success(`You ${verb} Topic#${topicId} (${label} - ${description})`);
-  }, [topics, setMasterTopicId])
+  }, [topics, setChecked, setTreeData, setMasterTopicId, setTopicDescription, setTopicPath])
 
   return (
     <Collapsible

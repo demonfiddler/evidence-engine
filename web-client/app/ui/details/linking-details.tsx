@@ -68,21 +68,21 @@ export default function LinkingDetails(
   const getSelectedLink = useCallback((linkId?: string) : RecordLink | null => {
     linkId ??= selectedLinkId
     return linkId ? recordLinksById[linkId] ?? null : null
-  }, [selectedLinkId, recordLinks])
+  }, [selectedLinkId, recordLinksById])
   const selectedLink = getSelectedLink(selectedLinkId)
 
   const refreshEditableFields = useCallback((linkId : string) => {
     const selectedLink = getSelectedLink(linkId)
     setThisRecordLocations(selectedLink?.thisLocations ?? '')
     setOtherRecordLocations(selectedLink?.otherLocations ?? '')
-  }, [getSelectedLink])
+  }, [getSelectedLink, setThisRecordLocations, setOtherRecordLocations])
 
   const handleSelectedLinkChange = useCallback((linkId : string) => {
     if (linkId === "CLEAR")
       linkId = ''
     setSelectedLinkId(linkId)
     refreshEditableFields(linkId)
-  }, [refreshEditableFields])
+  }, [setSelectedLinkId, refreshEditableFields])
 
   const prevRecord = useRef<ILinkableEntity>(undefined)
   useEffect(() => {
@@ -90,7 +90,7 @@ export default function LinkingDetails(
       prevRecord.current = record
       handleSelectedLinkChange('')
     }
-  }, [handleSelectedLinkChange, record])
+  }, [record, prevRecord, handleSelectedLinkChange])
 
   const getOtherRecordUri = useCallback(() => {
     let uri = ""

@@ -78,7 +78,7 @@ export default function LoggingLevelDialog(
         logger.info("'%s' logging level set to '%s'", label, levelToLabel[newLevel])
       }
     }
-  }, [])
+  }, [forceUpdate])
 
   const handleSetAll = useCallback(() => {
     let modified = false
@@ -92,7 +92,7 @@ export default function LoggingLevelDialog(
     }
     if (modified)
       forceUpdate()
-  }, [allLevel])
+  }, [allLevel, forceUpdate])
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>

@@ -134,7 +134,7 @@ export default function PublicationDetails(
         form.setValue("publisherId", journal?.publisher?.id ?? null)
       }
     }
-  }, [form, selectedJournal, selectedPublisher])
+  }, [form, selectedPublisher, selectedJournal])
 
   const kind = form.getValues().kind
   const selectedPublicationKind = kind ? publicationKindsByKind[kind] ?? null : null

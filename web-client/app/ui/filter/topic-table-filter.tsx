@@ -55,15 +55,19 @@ export default function TopicTableFilter({
   const [treeView, setTreeView] = useState(filter.parentId === "-1")
   const [recordId, setRecordId] = useState(filter.recordId ?? '')
 
-  const updateFilter = useCallback((status: string, text: string, advanced: boolean, treeView: boolean, recordId: string) => {
-    logger.trace("updateFilter: status=%s, text=%s, advanced=%s, recursive=%s, recordId=%s", status, text, advanced, treeView, recordId)
+  const updateFilter = useCallback((newStatus: string, newText: string, newAdvanced: boolean, newTreeView: boolean,
+    newRecordId: string) => {
+
+    logger.trace("updateFilter: status=%s, text=%s, advanced=%s, recursive=%s, recordId=%s", newStatus, newText,
+      newAdvanced, newTreeView, newRecordId)
+
     if (!loadingPathWithSearchParams) {
       const newFilter = {
-        status: status ? [status] : undefined,
-        text: text || undefined,
-        advancedSearch: advanced || undefined,
-        parentId: treeView ? "-1" : undefined,
-        recordId: recordId || undefined,
+        status: newStatus ? [newStatus] : undefined,
+        text: newText || undefined,
+        advancedSearch: newAdvanced || undefined,
+        parentId: newTreeView ? "-1" : undefined,
+        recordId: newRecordId || undefined,
       } as TopicQueryFilter
       if (!isEqual(newFilter, filter)) {
         logger.trace("updateFilter from %o to %o", filter, newFilter)
@@ -95,33 +99,46 @@ export default function TopicTableFilter({
       if (recordId !== (filter?.recordId ?? ''))
         setRecordId(filter?.recordId ?? '')
     }
-  }, [filter, status, text, advanced, treeView, recordId])
+  }, [
+    filter,
+    prevFilter,
+    status,
+    setStatus,
+    text,
+    setText,
+    advanced,
+    setAdvanced,
+    treeView,
+    setTreeView,
+    recordId,
+    setRecordId,
+  ])
 
   const handleStatusChange = useCallback((status: string) => {
     status = status === "ALL" ? '' : status
     setStatus(status)
     updateFilter(status, text, advanced, treeView, recordId)
-  }, [updateFilter, text, advanced, treeView, recordId])
+  }, [setStatus, updateFilter, text, advanced, treeView, recordId])
 
   const handleTextChange = useCallback((text: string) => {
     setText(text)
     updateFilter(status, text, advanced, treeView, recordId)
-  }, [updateFilter, status, advanced, treeView, recordId])
+  }, [setText, updateFilter, status, advanced, treeView, recordId])
 
   const handleAdvancedSearchChange = useCallback((advanced: boolean) => {
     setAdvanced(advanced)
     updateFilter(status, text, advanced, treeView, recordId)
-  }, [updateFilter, status, text, treeView, recordId])
+  }, [setAdvanced, updateFilter, status, text, treeView, recordId])
 
   const handleTreeViewChange = useCallback((treeView: boolean) => {
     setTreeView(treeView)
     updateFilter(status, text, advanced, treeView, recordId)
-  }, [updateFilter, status, text, advanced, recordId])
+  }, [setTreeView, updateFilter, status, text, advanced, recordId])
 
   const handleRecordIdChange = useCallback((recordId: string) => {
     setRecordId(recordId)
     updateFilter(status, text, advanced, treeView, recordId)
-  }, [updateFilter])
+  }, [setRecordId, updateFilter, status, text, advanced, treeView])
 
   const handleClear = useCallback(() => {
     setStatus('')
@@ -130,7 +147,7 @@ export default function TopicTableFilter({
     setTreeView(true)
     setRecordId('')
     updateFilter('', '', false, true, '')
-  }, [updateFilter])
+  }, [setStatus, setText, setAdvanced, setTreeView, setRecordId, updateFilter])
 
   return (
     <div className="flex flex-col gap-2">

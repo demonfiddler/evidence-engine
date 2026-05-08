@@ -84,7 +84,7 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
   useEffect(() => {
     if (linkMasterTopic != allowTopicLink)
       setLinkMasterTopic(allowTopicLink)
-  }, [linkMasterTopic, allowTopicLink])
+  }, [linkMasterTopic, allowTopicLink, setLinkMasterTopic])
   useEffect(() => {
     if (linkMasterRecord != allowMasterRecordLink)
       setLinkMasterRecord(allowMasterRecordLink)
@@ -94,7 +94,15 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
       if (otherRecordLocationsForMaster)
         setOtherRecordLocationsForMaster('')
     }
-  }, [linkMasterRecord, allowMasterRecordLink, thisRecordLocationsForMaster, otherRecordLocationsForMaster])
+  }, [
+    linkMasterRecord,
+    allowMasterRecordLink,
+    setLinkMasterRecord,
+    thisRecordLocationsForMaster,
+    setThisRecordLocationsForMaster,
+    otherRecordLocationsForMaster,
+    setOtherRecordLocationsForMaster
+  ])
   useEffect(() => {
     if (!linkMasterTopic && thisRecordLocationsForTopic)
       setThisRecordLocationsForTopic('')
@@ -104,14 +112,23 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
       if (otherRecordLocationsForMaster)
         setOtherRecordLocationsForMaster('')
     }
-  }, [linkMasterTopic, thisRecordLocationsForTopic, linkMasterRecord, thisRecordLocationsForMaster, otherRecordLocationsForMaster])
+  }, [
+    linkMasterTopic,
+    thisRecordLocationsForTopic,
+    setThisRecordLocationsForTopic,
+    linkMasterRecord,
+    thisRecordLocationsForMaster,
+    setThisRecordLocationsForMaster,
+    otherRecordLocationsForMaster,
+    setOtherRecordLocationsForMaster
+  ])
   useEffect(() => {
     if (state.mode == "view") {
       setThisRecordLocationsForTopic('')
       setThisRecordLocationsForMaster('')
       setOtherRecordLocationsForMaster('')
     }
-  }, [state.mode])
+  }, [state, setThisRecordLocationsForTopic, setThisRecordLocationsForMaster, setOtherRecordLocationsForMaster])
 
   const recordLabel = getRecordLabel(recordKind, record)
   const isLinkableEntity = ["Claim", "Declaration", "Person", "Publication", "Quotation"].includes(recordKind)
@@ -134,7 +151,7 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
       onFormAction("new")
       setMode("create")
     }
-  }, [state, form, recordLabel, recordKind, onFormAction, setMode])
+  }, [state, form, recordKind, recordLabel, onFormAction, setMode])
 
   const handleEditOrSave = useCallback(() => {
     logger.trace("ENTER handleEditOrSave(): state = %o, isDirty = %s, isValid = %s", state, form.formState.isDirty, form.formState.isValid)
@@ -181,13 +198,13 @@ export default function DetailActions<T extends ITrackedEntity, V extends FieldV
     state,
     form,
     linkMasterTopic,
-    thisRecordLocationsForTopic,
     linkMasterRecord,
+    thisRecordLocationsForTopic,
     thisRecordLocationsForMaster,
     otherRecordLocationsForMaster,
-    recordKind,
     onFormAction,
     setMode,
+    recordKind,
   ])
 
   const handleDelete = useCallback(() => {

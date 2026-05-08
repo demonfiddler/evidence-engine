@@ -64,7 +64,7 @@ export function Paginator<TData>({
   const handleGotoPage = useCallback((pageNumber: number) => {
     if (page && pageNumber != page.number && pageNumber >= 0 && pageNumber < page.totalPages)
       setPageSort({pageNumber, pageSize: pageSort.pageSize})
-  }, [page, pageSort, setPageSort])
+  }, [page, setPageSort, pageSort])
 
   const handlePageNumberChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value

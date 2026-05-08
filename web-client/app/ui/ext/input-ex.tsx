@@ -80,7 +80,7 @@ export default function InputEx(
         }
       }
     }
-  }, [value, text, event, onChange])
+  }, [value, prevValue, text, setText, event, onChange])
 
   // When the debounced event changes, invoke the supplied listener function.
   const prevEvent = useRef(event)
@@ -91,7 +91,7 @@ export default function InputEx(
       logger.trace("effect2 (2)")
       onChange?.(event)
     }
-  }, [event, onChange])
+  }, [event, prevEvent, onChange])
 
   // To clear, empty text value and invoke supplied change handler immediately.
   const handleClear = useCallback(() => {
@@ -100,14 +100,14 @@ export default function InputEx(
       inputRef.current.value = ''
       onChange(createChangeEvent(inputRef.current))
     }
-  }, [event, onChange])
+  }, [setText, onChange, inputRef])
 
   // On typing, sync the controlled text value and trigger event debouncing.
   const handleChangeText = useCallback((e:  ChangeEvent<HTMLInputElement>) => {
     logger.trace("onChangeText: e.target.value='%s'", e?.target.value)
     setText(e.target.value ?? '')
     setEvent(e)
-  }, [setEvent])
+  }, [setText, setEvent])
 
   const handleKeyDown = useCallback((e: KeyboardEvent<HTMLInputElement>) => {
     if (e.code == "Escape") {

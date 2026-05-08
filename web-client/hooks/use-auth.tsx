@@ -86,7 +86,7 @@ export function AuthProvider({children} : AuthProviderProps) {
     setJwtToken('')
     setUser(null)
     setJwtExpiryInterval(null)
-  }, [])
+  }, [setJwtToken, setUser, setJwtExpiryInterval])
   useInterval(handleExpiry, jwtExpiryInterval)
 
   const parseToken = useCallback((token: string | null) => {
@@ -106,7 +106,7 @@ export function AuthProvider({children} : AuthProviderProps) {
       }
     }
     setJwtExpiryInterval(expiryInterval)
-  }, [])
+  }, [setJwtToken, setUser, setJwtExpiryInterval])
 
   // If there is initially a JWT token in local storage:
   // - parse it
@@ -124,7 +124,7 @@ export function AuthProvider({children} : AuthProviderProps) {
         setUser(cur.data?.currentUser ?? null)
       })
     }
-  }, [jwtToken, user, parseToken, currentUserResult])
+  }, [jwtToken, user, parseToken, currentUserResult, setUser])
   useEffect(init, [])
 
   const login = useCallback((username: string, password: string) => {

@@ -77,33 +77,32 @@ export default function useLinkableEntityQueryFilter() : QueryFilterLogic<Linkab
   } = useContext(GlobalContext)
 
   const createFilter = useCallback((searchParams: URLSearchParams) => {
-    const filter = createFilterImpl<LinkableEntityQueryFilter, FilterValue>(searchParams, convertQueryValue)
+    const newFilter = createFilterImpl<LinkableEntityQueryFilter, FilterValue>(searchParams, convertQueryValue)
 
     // Update EntityLinkFilter fields to match searchParams.
-    if (filter.topicId != masterTopicId)
-      setMasterTopicId(filter.topicId)
-    if (filter.recursive != masterTopicRecursive)
-      setMasterTopicRecursive(!!filter.recursive)
-    if (filter.fromEntityKind && filter.fromEntityId) {
-      const newMasterRecordKind = getRecordKind(filter.fromEntityKind)
-      setMasterRecordId(newMasterRecordKind, filter.fromEntityId)
-    } else if (filter.toEntityKind && filter.toEntityId) {
-      const newMasterRecordKind = getRecordKind(filter.toEntityKind)
-      setMasterRecordId(newMasterRecordKind, filter.toEntityId)
+    if (newFilter.topicId != masterTopicId)
+      setMasterTopicId(newFilter.topicId)
+    if (newFilter.recursive != masterTopicRecursive)
+      setMasterTopicRecursive(!!newFilter.recursive)
+    if (newFilter.fromEntityKind && newFilter.fromEntityId) {
+      const newMasterRecordKind = getRecordKind(newFilter.fromEntityKind)
+      setMasterRecordId(newMasterRecordKind, newFilter.fromEntityId)
+    } else if (newFilter.toEntityKind && newFilter.toEntityId) {
+      const newMasterRecordKind = getRecordKind(newFilter.toEntityKind)
+      setMasterRecordId(newMasterRecordKind, newFilter.toEntityId)
     }
-    const newShowOnlyLinkedRecords = !!(filter.topicId || filter.fromEntityId ||  filter.toEntityId)
+    const newShowOnlyLinkedRecords = !!(newFilter.topicId || newFilter.fromEntityId ||  newFilter.toEntityId)
     if (newShowOnlyLinkedRecords !== showOnlyLinkedRecords)
       setShowOnlyLinkedRecords(newShowOnlyLinkedRecords)
 
-    return filter
+    return newFilter
   }, [
     masterTopicId,
-    masterTopicRecursive,
-    showOnlyLinkedRecords,
-    setFilter,
     setMasterTopicId,
+    masterTopicRecursive,
     setMasterTopicRecursive,
     setMasterRecordId,
+    showOnlyLinkedRecords,
     setShowOnlyLinkedRecords
   ])
 

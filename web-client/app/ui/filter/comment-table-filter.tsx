@@ -141,66 +141,89 @@ export default function CommentTableFilter(
       if (to?.valueOf() !== filter?.to?.valueOf())
         setTo(filter?.to)
     }
-  }, [filter, status, text, advanced, recordId, targetKind, targetId, parentId, userId, from, to])
+  }, [
+    filter,
+    prevFilter,
+    status,
+    setStatus,
+    text,
+    setText,
+    advanced,
+    setAdvanced,
+    recordId,
+    setRecordId,
+    targetKind,
+    setTargetKind,
+    targetId,
+    setTargetId,
+    parentId,
+    setParentId,
+    userId,
+    setUserId,
+    from,
+    setFrom,
+    to,
+    setTo,
+  ])
 
   const handleStatusChange = useCallback((status: string) => {
     logger.trace("handleStatusChange: status='%s'", status)
     status = status === "ALL" ? '' : status
     setStatus(status)
     updateFilter(status, text, advanced, recordId, targetKind, targetId, parentId, userId, from, to)
-  }, [updateFilter, text, advanced, recordId, targetKind, targetId, parentId, userId, from, to])
+  }, [setStatus, updateFilter, text, advanced, recordId, targetKind, targetId, parentId, userId, from, to])
 
   const handleTextChange = useCallback((text: string) => {
     logger.trace("handleTextChange: text='%s'", text)
     setText(text)
     updateFilter(status, text, advanced, recordId, targetKind, targetId, parentId, userId, from, to)
-  }, [updateFilter, status, advanced, recordId, targetKind, targetId, parentId, userId, from, to])
+  }, [setText, updateFilter, status, advanced, recordId, targetKind, targetId, parentId, userId, from, to])
 
   const handleAdvancedSearchChange = useCallback((advanced: boolean) => {
     logger.trace("handleAdvancedSearchChange: advanced=%s", advanced)
     setAdvanced(advanced)
     updateFilter(status, text, advanced, recordId, targetKind, targetId, parentId, userId, from, to)
-  }, [updateFilter, status, text, recordId, targetKind, targetId, parentId, userId, from, to])
+  }, [setAdvanced, updateFilter, status, text, recordId, targetKind, targetId, parentId, userId, from, to])
 
   const handleRecordIdChange = useCallback((recordId: string) => {
     logger.trace("handleRecordIdChange: recordId='%s'", recordId)
     setRecordId(recordId)
     updateFilter(status, text, advanced, recordId, targetKind, targetId, parentId, userId, from, to)
-  }, [updateFilter, status, text, advanced, targetKind, targetId, parentId, userId, from, to])
+  }, [setRecordId, updateFilter, status, text, advanced, targetKind, targetId, parentId, userId, from, to])
 
   const handleTargetKindChange = useCallback((targetKind: string) => {
     targetKind = targetKind === "ALL" ? '' : targetKind
     setTargetKind(targetKind)
     updateFilter(status, text, advanced, recordId, targetKind, targetId, parentId, userId, from, to)
-  }, [updateFilter, status, text, advanced, recordId, targetId, parentId, from, to])
+  }, [setTargetKind, updateFilter, status, text, advanced, recordId, targetId, parentId, from, to])
 
   const handleTargetIdChange = useCallback((targetId: string) => {
     setTargetId(targetId)
     updateFilter(status, text, advanced, recordId, targetKind, targetId, parentId, userId, from, to)
-  }, [updateFilter, status, text, advanced, recordId, targetKind, parentId, from, to])
+  }, [setTargetId, updateFilter, status, text, advanced, recordId, targetKind, parentId, from, to])
 
   const handleParentIdChange = useCallback((parentId: string) => {
     setParentId(parentId)
     updateFilter(status, text, advanced, recordId, targetKind, targetId, parentId, userId, from, to)
-  }, [updateFilter, status, text, advanced, recordId, targetKind, targetId, userId, from, to])
+  }, [setParentId, updateFilter, status, text, advanced, recordId, targetKind, targetId, userId, from, to])
 
   const handleUserIdChange = useCallback((userId: string) => {
     userId = userId === "ALL" ? '' : userId
     setUserId(userId)
     updateFilter(status, text, advanced, recordId, targetKind, targetId, parentId, userId, from, to)
-  }, [updateFilter, status, text, advanced, recordId, targetKind, targetId, parentId, from, to])
+  }, [setUserId, updateFilter, status, text, advanced, recordId, targetKind, targetId, parentId, from, to])
 
   const handleFromChange = useCallback((from?: Date) => {
     setFrom(from)
     setFromOpen(false)
     updateFilter(status, text, advanced, recordId, targetKind, targetId, parentId, userId, from, to)
-  }, [updateFilter, status, text, advanced, recordId, targetKind, targetId, parentId, userId, to])
+  }, [setFrom, setFromOpen, updateFilter, status, text, advanced, recordId, targetKind, targetId, parentId, userId, to])
 
   const handleToChange = useCallback((to?: Date) => {
     setTo(to)
     setToOpen(false)
     updateFilter(status, text, advanced, recordId, targetKind, targetId, parentId, userId, from, to)
-  }, [updateFilter, status, text, advanced, recordId, targetKind, targetId, parentId, userId, from])
+  }, [setTo, setToOpen, updateFilter, status, text, advanced, recordId, targetKind, targetId, parentId, userId, from])
 
   const handleClear = useCallback(() => {
     setStatus('')
@@ -214,7 +237,19 @@ export default function CommentTableFilter(
     setFrom(undefined)
     setTo(undefined)
     updateFilter('', '', false, '', '', '', '', '', undefined, undefined)
-  }, [setUserId, setFrom, setTo, updateFilter])
+  }, [
+    setStatus,
+    setText,
+    setAdvanced,
+    setRecordId,
+    setTargetKind,
+    setTargetId,
+    setParentId,
+    setUserId,
+    setFrom,
+    setTo,
+    updateFilter
+  ])
 
   const result = useQuery(
     READ_USERS,

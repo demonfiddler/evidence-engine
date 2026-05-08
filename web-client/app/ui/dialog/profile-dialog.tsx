@@ -126,7 +126,7 @@ export default function ProfileDialog(
         onError: (e) => setError(e.message),
       })
     }
-  }, [form, updateUserProfileOp, createInput, setOpen])
+  }, [form, updateUserProfileOp, createInput, setOpen, setError])
 
   return open ? (
     <Dialog open={open} onOpenChange={setOpen}>

@@ -102,37 +102,37 @@ export default function CommentDialogFilter(
     status = status === "ALL" ? '' : status
     setStatus(status)
     updateFilter(status, text, advanced, userId, from, to)
-  }, [updateFilter, text, advanced, userId, from, to])
+  }, [setStatus, updateFilter, text, advanced, userId, from, to])
 
   const handleTextChange = useCallback((text: string) => {
     logger.trace("handleTextChange: text='%s'", text)
     setText(text)
     updateFilter(status, text, advanced, userId, from, to)
-  }, [updateFilter, status, advanced, userId, from, to])
+  }, [setText, updateFilter, status, advanced, userId, from, to])
 
   const handleAdvancedSearchChange = useCallback((advanced: boolean) => {
     logger.trace("handleAdvancedSearchChange: advanced=%s", advanced)
     setAdvanced(advanced)
     updateFilter(status, text, advanced, userId, from, to)
-  }, [updateFilter, status, text, userId, from, to])
+  }, [setAdvanced, updateFilter, status, text, userId, from, to])
 
   const handleUserIdChange = useCallback((userId: string) => {
     userId = userId === "ALL" ? '' : userId
     setUserId(userId)
     updateFilter(status, text, advanced, userId, from, to)
-  }, [updateFilter, status, text, advanced, from, to])
+  }, [setUserId, updateFilter, status, text, advanced, from, to])
 
   const handleFromChange = useCallback((from?: Date) => {
     setFrom(from)
     setFromOpen(false)
     updateFilter(status, text, advanced, userId, from, to)
-  }, [updateFilter, status, text, advanced, userId, to])
+  }, [setFrom, setFromOpen, updateFilter, status, text, advanced, userId, to])
 
   const handleToChange = useCallback((to?: Date) => {
     setTo(to)
     setToOpen(false)
     updateFilter(status, text, advanced, userId, from, to)
-  }, [updateFilter, status, text, advanced, userId, from])
+  }, [setTo, setToOpen, updateFilter, status, text, advanced, userId, from])
 
   const handleClear = useCallback(() => {
     setStatus('')
@@ -142,7 +142,7 @@ export default function CommentDialogFilter(
     setFrom(undefined)
     setTo(undefined)
     updateFilter('', '', false, '', undefined, undefined)
-  }, [updateFilter])
+  }, [setStatus, setText, setAdvanced, setUserId, setFrom, setTo, updateFilter])
 
   const result = useQuery(
     READ_USERS,

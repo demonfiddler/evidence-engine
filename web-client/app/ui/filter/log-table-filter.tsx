@@ -108,43 +108,58 @@ export default function LogTableFilter(
       if (to?.valueOf() !== filter?.to?.valueOf())
         setTo(filter?.to)
     }
-  }, [filter, entityKind, entityId, userId, transactionKind, from, to])
+  }, [
+    filter,
+    prevFilter,
+    entityKind,
+    setEntityKind,
+    entityId,
+    setEntityId,
+    userId,
+    setUserId,
+    transactionKind,
+    setTransactionKind,
+    from,
+    setFrom,
+    to,
+    setTo,
+  ])
 
   const handleFromChange = useCallback((from?: Date) => {
     setFrom(from)
     setFromOpen(false)
     updateFilter(entityKind, entityId, userId, transactionKind, from, to)
-  }, [entityKind, entityId, userId, transactionKind, to, updateFilter])
+  }, [setFrom, setFromOpen, updateFilter, entityKind, entityId, userId, transactionKind, to])
 
   const handleToChange = useCallback((to?: Date) => {
     setTo(to)
     setToOpen(false)
     updateFilter(entityKind, entityId, userId, transactionKind, from, to)
-  }, [entityKind, entityId, userId, transactionKind, from, updateFilter])
+  }, [setTo, setToOpen, updateFilter, entityKind, entityId, userId, transactionKind, from])
 
   const handleUserIdChange = useCallback((userId: string) => {
     userId = userId === "ALL" ? '' : userId
     setUserId(userId)
     updateFilter(entityKind, entityId, userId, transactionKind, from, to)
-  }, [entityKind, entityId, transactionKind, from, to, updateFilter])
+  }, [setUserId, updateFilter, entityKind, entityId, transactionKind, from, to])
 
   const handleTransactionKindChange = useCallback((transactionKind: string) => {
     transactionKind = transactionKind === "ALL" ? '' : transactionKind
     setTransactionKind(transactionKind)
     updateFilter(entityKind, entityId, userId, transactionKind, from, to)
-  }, [entityKind, entityId, userId, from, to, updateFilter])
+  }, [setTransactionKind, updateFilter, entityKind, entityId, userId, from, to])
 
   const handleEntityKindChange = useCallback((entityKind: string) => {
     entityKind = entityKind === "ALL" ? '' : entityKind
     setEntityKind(entityKind)
     updateFilter(entityKind, entityId, userId, transactionKind, from, to)
-  }, [entityId, userId, transactionKind, from, to, updateFilter])
+  }, [setEntityKind, updateFilter, entityId, userId, transactionKind, from, to])
 
   const handleEntityIdChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const entityId = e.target.value?.toString() ?? ''
     setEntityId(entityId)
     updateFilter(entityKind, entityId, userId, transactionKind, from, to)
-  }, [entityKind, userId, transactionKind, from, to, updateFilter])
+  }, [setEntityId, updateFilter, entityKind, userId, transactionKind, from, to])
 
   const handleClear = useCallback(() => {
     setFrom(undefined)
@@ -154,7 +169,7 @@ export default function LogTableFilter(
     setEntityKind('')
     setEntityId('')
     updateFilter('', '', '', '', undefined, undefined)
-  }, [setFrom, setTo, setUserId, setTransactionKind, updateFilter])
+  }, [setFrom, setTo, setUserId, setTransactionKind, setEntityKind, setEntityId, updateFilter])
 
   return (
     <div className="flex flex-col gap-2">

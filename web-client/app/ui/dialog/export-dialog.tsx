@@ -123,7 +123,20 @@ export default function ExportDialog<T>({ recordKind }: { recordKind: RecordKind
     }
 
     return `${process.env.NEXT_PUBLIC_SERVER_URL}/rest/export${path}?${newSearchParams.toString()}`
-  }, [searchParams, contentType, pages, paper, orientation, fontSize, renderTable, renderDetails, columns, queries, recordKind, pathname])
+  }, [
+    searchParams,
+    contentType,
+    renderTable,
+    renderDetails,
+    pages,
+    queries,
+    recordKind,
+    paper,
+    orientation,
+    fontSize,
+    columns,
+    pathname
+  ])
 
   const prevRenderTable = useRef(false);
   const prevRenderDetails = useRef(false);
@@ -147,7 +160,7 @@ export default function ExportDialog<T>({ recordKind }: { recordKind: RecordKind
       if (!renderDetails)
         setRenderDetails(true)
     }
-  }, [contentType, renderTable, prevRenderTable, renderDetails, prevRenderDetails])
+  }, [contentType, renderTable, prevRenderTable, setRenderDetails, renderDetails, prevRenderDetails, setRenderTable])
 
   const handleExport = useCallback(() => {
     // This commented-out approach works fine for unauthenticated users but doesn't work for authenticated users,
@@ -194,7 +207,7 @@ export default function ExportDialog<T>({ recordKind }: { recordKind: RecordKind
     }).catch((reason) => {
       setError(reason)
     }).finally(() => setIsLoading(false))
-  }, [getHref])
+  }, [setIsLoading, contentType, jwtToken, getHref, setError, setIsLoading, setIsOpen, recordKind])
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

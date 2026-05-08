@@ -129,10 +129,10 @@ const StarRating_Basic = ({
   }, [
     maxStars,
     getStarStyle,
+    disabled,
     iconSize,
     handleStarClick,
     handleStarHover,
-    disabled,
   ]);
 
   return (

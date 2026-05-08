@@ -96,7 +96,7 @@ export default function TrackingDetails(
         }
       })
     }
-  }, [record, recordLabel, setStatusDialogOpen, setStatusDialogItem, updateStatusOp])
+  }, [record, recordKind, setStatusDialogOpen, setStatusDialogItem, recordLabel, updateStatusOp])
 
   return (
     <div className="w-full grid grid-cols-5 mb-2 gap-2">

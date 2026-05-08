@@ -278,7 +278,7 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
   const fuzzyItemCount = useMemo(() => {
     let fuzzySearchValue = (fuzzySearchField ? record?.[fuzzySearchField as keyof ILinkableEntity] : '') as string
     return lineCount(fuzzySearchValue)
-  }, [record, fuzzySearchField])
+  }, [fuzzySearchField, record])
 
   const otherRecordsPage = useMemo(() => {
     const data = (otherRecordsResult?.loading
@@ -384,7 +384,7 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
     // NOTE: when editing a new record, selectedLink is undefined.
     return thisRecordLocations != (selectedLink?.thisLocations ?? '') ||
       otherRecordLocations != (selectedLink?.otherLocations ?? '')
-  }, [thisRecordLocations, otherRecordLocations, selectedLink])
+  }, [thisRecordLocations, selectedLink, otherRecordLocations])
 
   const createInput = useCallback((recordLink: Partial<RecordLink>) => {
     logger.trace("createInput: recordLink=%o", recordLink)
@@ -403,7 +403,7 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
         toEntityId: recordLink.otherRecordId,
         toEntityLocations: otherRecordLocations || null,
       }
-  }, [thisRecordLocations, otherRecordLocations])
+  }, [otherRecordLocations, thisRecordLocations])
 
   const handleOtherRecordKindChange = useCallback((otherRecordKind: LinkableEntityKind) => {
     logger.trace("handleOtherRecordKindChange: otherRecordKind='%s'", otherRecordKind)
@@ -446,7 +446,17 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
 
   useEffect(() => {
     updateFilter(otherRecordKind, filterStatus, filterText, filterAdvanced, filterFuzzy, filterRecordId)
-  }, [updateFilter, recordKind, record, otherRecordKind, filterStatus, filterText, filterAdvanced, filterFuzzy, filterRecordId])
+  }, [
+    updateFilter,
+    otherRecordKind,
+    filterStatus,
+    filterText,
+    filterAdvanced,
+    filterFuzzy,
+    filterRecordId,
+    recordKind,
+    record
+  ])
 
   const handleReset = useCallback(() => {
     logger.trace("handleReset")
@@ -456,7 +466,15 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
     setFilterFuzzy(false)
     setFilterRecordId('')
     updateFilter(otherRecordKind, '', '', false, false, '')
-  }, [setFilterStatus, setFilterText, setFilterAdvanced, setFilterFuzzy, setFilterRecordId, updateFilter, otherRecordKind])
+  }, [
+    setFilterStatus,
+    setFilterText,
+    setFilterAdvanced,
+    setFilterFuzzy,
+    setFilterRecordId,
+    updateFilter,
+    otherRecordKind
+  ])
 
   const handleLink = useCallback(() => {
     logger.trace("handleLink")
@@ -468,7 +486,15 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
       setMode(CREATE)
       requestAnimationFrame(() => requestAnimationFrame(() => thisLocationsRef.current?.focus()))
     }
-  }, [mode, otherRecordLabel, setSelectedLink, setThisRecordLocations, setOtherRecordLocations, setMode])
+  }, [
+    mode,
+    otherRecordLabel,
+    setSelectedLink,
+    setThisRecordLocations,
+    setOtherRecordLocations,
+    setMode,
+    thisLocationsRef
+  ])
 
   const handleEdit = useCallback(() => {
     logger.trace("handleEdit")
@@ -477,7 +503,7 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
       setMode(EDIT)
       requestAnimationFrame(() => requestAnimationFrame(() => thisLocationsRef.current?.focus()))
     }
-  }, [mode, setMode])
+  }, [mode, setMode, thisLocationsRef])
 
   const handleSave = useCallback(() => {
     if (mode === CREATE) {
@@ -532,20 +558,21 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
     }
   }, [
     mode,
-    setMode,
     record,
+    setMode,
     recordKind,
     otherRecordKind,
     otherRecordId,
-    otherRecordLabel,
-    otherRecordLocations,
-    thisRecordLocations,
-    selectedLink,
     createLinkOp,
     createInput,
-    updateLinkOp,
+    thisRecordLocations,
+    otherRecordLocations,
+    otherRecordLabel,
     setOtherRecord,
     setSelectedLink,
+    recordLinks,
+    selectedLink,
+    updateLinkOp,
   ])
 
   const handleCancel = useCallback(() => {
@@ -563,7 +590,7 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
         setMode(VIEW)
       }
     }
-  }, [mode, setMode, selectedLink, isModified, refreshEditableFields])
+  }, [mode, isModified, selectedLink, refreshEditableFields, setMode])
 
   const handleRelink = useCallback(() => {
     if (confirm(`Change target of link from ${selectedLink?.otherRecordLabel} to ${otherRecordLabel}?${otherRecordLocations ? "\n\nN.B. The 'Location(s) in other record' value will be retained but may not be appropriate to the new target record. Change it if necessary." : ""}`)) {
@@ -588,7 +615,16 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
         }
       })
     }
-  }, [selectedLink, record, otherRecordId, otherRecordLabel, thisRecordLocations, otherRecordLocations, updateLinkOp])
+  }, [
+    selectedLink,
+    otherRecordLabel,
+    otherRecordLocations,
+    updateLinkOp,
+    otherRecordId,
+    record,
+    thisRecordLocations,
+    setOtherRecord
+  ])
 
   const handleUnlink = useCallback(() => {
     if (selectedLink) {
@@ -613,7 +649,7 @@ export default function StatusDialog({ recordKind, record }: { recordKind?: Link
         setSelectedLink(null)
       prevRecord.current = record
     }
-  }, [record, setSelectedLink])
+  }, [record, prevRecord, setSelectedLink])
 
   const handleClose = useCallback(() => {
     setStatusDialogOpen(false)

@@ -50,7 +50,7 @@ export default function TableOfContents({categories, className, categoryClassNam
       if (!values.includes(value))
         setValues([...values, value])
     }
-  }, [categories, categoryIdx])
+  }, [categoryIdx, categories, values, setValues])
 
   return (
     <div className={cn("grow shrink overflow-y-auto", className)}>

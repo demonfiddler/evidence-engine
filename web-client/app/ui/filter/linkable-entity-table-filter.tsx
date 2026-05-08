@@ -106,13 +106,13 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
   }, [
     loadingPathWithSearchParams,
     isLinkableEntity,
-    recordKind,
-    filter,
+    showOnlyLinkedRecords,
     masterTopicId,
     masterTopicRecursive,
-    masterRecordKind,
     masterRecordId,
-    showOnlyLinkedRecords,
+    recordKind,
+    masterRecordKind,
+    filter,
     setFilter,
     pagination,
     setPagination
@@ -135,7 +135,7 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
       if (recordId !== (filter?.recordId ?? ''))
         setRecordId(filter?.recordId ?? '')
     }
-  }, [filter, status, text, advanced, recordId]) // previously [queries[recordKind]?.filter]
+  }, [filter, prevFilter, status, setStatus, text, setText, advanced, setAdvanced, recordId, setRecordId])
 
   // If MasterEntityFilter is already set or changes, update the filter.
   const prevMasterTopicId = useRef<string>(undefined)
@@ -160,32 +160,48 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
       prevShowOnlyLinkedRecords.current = showOnlyLinkedRecords
       updateFilter(status, text, advanced, recordId)
     }
-  }, [updateFilter, status, text, advanced, recordId, masterTopicId, masterTopicRecursive, masterRecordKind, masterRecordId, showOnlyLinkedRecords])
+  }, [
+    masterTopicId,
+    prevMasterTopicId,
+    masterTopicRecursive,
+    prevMasterTopicRecursive,
+    masterRecordKind,
+    prevMasterRecordKind,
+    masterRecordId,
+    prevMasterRecordId,
+    showOnlyLinkedRecords,
+    prevShowOnlyLinkedRecords,
+    updateFilter,
+    status,
+    text,
+    advanced,
+    recordId,
+  ])
 
   const handleStatusChange = useCallback((status: string) => {
     logger.trace("handleStatusChange: status='%s'", status)
     status = status === "ALL" ? '' : status
     setStatus(status)
     updateFilter(status, text, advanced, recordId)
-  }, [updateFilter, text, advanced, recordId])
+  }, [setStatus, updateFilter, text, advanced, recordId])
 
   const handleTextChange = useCallback((text: string) => {
     logger.trace("handleTextChange: text='%s'", text)
     setText(text)
     updateFilter(status, text, advanced, recordId)
-  }, [updateFilter, status, advanced, recordId])
+  }, [setText, updateFilter, status, advanced, recordId])
 
   const handleAdvancedSearchChange = useCallback((advanced: boolean) => {
     logger.trace("handleAdvancedSearchChange: advanced=%s", advanced)
     setAdvanced(advanced)
     updateFilter(status, text, advanced, recordId)
-  }, [updateFilter, status, text, recordId])
+  }, [setAdvanced, updateFilter, status, text, recordId])
 
   const handleRecordIdChange = useCallback((recordId: string) => {
     logger.trace("handleRecordIdChange: recordId='%s'", recordId)
     setRecordId(recordId)
     updateFilter(status, text, advanced, recordId)
-  }, [updateFilter])
+  }, [setRecordId, updateFilter, status, text, advanced])
 
   const handleClear = useCallback(() => {
     logger.trace("handleClear")
@@ -194,7 +210,7 @@ export default function LinkableEntityTableFilter<TData, TFilter>({
     setAdvanced(false)
     setRecordId('')
     updateFilter('', '', false, '')
-  }, [updateFilter])
+  }, [setStatus, setText, setAdvanced, setRecordId, updateFilter])
 
   return (
     <div className="flex flex-col gap-2">

@@ -165,35 +165,35 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
       logger.trace("onColumnOrderChange: %s columnOrder changed from %o to %o", recordKind, columnOrder, newColumnOrder)
       setColumnOrder(recordKind, newColumnOrder)
     }
-  }, [recordKind, columnOrder, setColumnOrder])
+  }, [columnOrder, recordKind, setColumnOrder])
   const onColumnSizingChange = useCallback((updaterOrValue: Updater<ColumnSizingState>) => {
     const newColumnSizing = getValue(updaterOrValue, columnSizing)
     if (!isEqual(newColumnSizing, columnSizing)) {
       logger.trace("onColumnSizingChange: %s columnSizing changed from %o to %o", recordKind, columnSizing, newColumnSizing)
       setColumnSizing(recordKind, newColumnSizing)
     }
-  }, [recordKind, columnSizing, setColumnSizing])
+  }, [columnSizing, recordKind, setColumnSizing])
   const onColumnVisibilityChange = useCallback((updaterOrValue: Updater<VisibilityState>) => {
     const newColumnVisibility = getValue(updaterOrValue, columnVisibility)
     if (!isEqual(newColumnVisibility, columnVisibility)) {
       logger.trace("onColumnVisibilityChange: %s columnVisibility changed from %o to %o", recordKind, columnVisibility, newColumnVisibility)
       setColumnVisibility(recordKind, newColumnVisibility)
     }
-  }, [recordKind, columnVisibility, setColumnVisibility])
+  }, [columnVisibility, recordKind, setColumnVisibility])
   const onSortingChange = useCallback((updaterOrValue: Updater<SortingState>) => {
     const newSorting = getValue(updaterOrValue, sorting)
     if (!isEqual(newSorting, sorting)) {
       logger.trace("onSortingChange: %s sorting changed from %o to %o", recordKind, sorting, newSorting)
       setSorting(recordKind, newSorting)
     }
-  }, [recordKind, sorting, setSorting])
+  }, [sorting, recordKind, setSorting])
   const onPaginationChange = useCallback((updaterOrValue: Updater<PaginationState>) => {
     const newPagination = getValue(updaterOrValue, pagination)
     if (!isEqual(newPagination, pagination)) {
       logger.trace("onPaginationChange: %s pagination changed from %o to %o", recordKind, pagination, newPagination)
       setPagination(recordKind, newPagination)
     }
-  }, [recordKind, pagination, setPagination])
+  }, [pagination, recordKind, setPagination])
 
   const selectedRecord = selectedRecords[recordKind]
   const [rowSelection, setRowSelection] = useState(selectedRecord ? {[selectedRecord.id]: true} : {})
@@ -227,14 +227,13 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
         selectedRecord = findItem(id, page?.content)
     }
     setSelectedRecord(recordKind, selectedRecord)
-    if (onRowSelectionChange)
-      onRowSelectionChange(selectedRecord?.id)
-  }, [findItem, page, setSelectedRecord, recordKind, onRowSelectionChange])
+    onRowSelectionChange?.(selectedRecord?.id)
+  }, [setRowSelection, findItem, page, setSelectedRecord, recordKind, onRowSelectionChange])
 
   useEffect(() => {
     // If the selected record is changed programmatically, update the table selection to match it.
     setRowSelection(selectedRecord ? {[selectedRecord.id]: true} : {})
-  }, [selectedRecord])
+  }, [setRowSelection, selectedRecord])
 
   const table = useReactTable({
     // aggregationFns: ,
@@ -348,7 +347,7 @@ export default function DataTable<TData extends IBaseEntity, TValue>({
       logger.trace(`effect: %s totalElements changed from %d to %d`, recordKind, prevTotalElements.current, newTotalElements)
       prevTotalElements.current = newTotalElements
     }
-  }, [manualPagination, table, page]);
+  }, [page, manualPagination, prevTotalElements, table, recordKind]);
 
   // function computeTableMetrics() {
   //   let length = 0

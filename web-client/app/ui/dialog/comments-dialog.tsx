@@ -161,7 +161,7 @@ export default function CommentsDialog({
       logger.debug("effect1: closing Comments dialog as Comments page is now displayed")
       setCommentsDialogOpen(false)
     }
-  }, [commentsDialogOpen, targetKind])
+  }, [commentsDialogOpen, targetKind, setCommentsDialogOpen])
   useEffect(() => {
     if (targetId !== prevTargetId.current) {
       logger.trace("effect2: targetId has changed from '%s' to '%s'", prevTargetId.current, targetId)
@@ -174,12 +174,12 @@ export default function CommentsDialog({
         setFilter("Comment", newFilter)
       }
     }
-  }, [prevTargetId, targetId])
+  }, [targetId, prevTargetId, setFilter])
   useEffect(() => {
     logger.trace("effect3: filter has changed to %o", filter)
     if (targetKind !== "Comment")
       refetch()
-  }, [filter, refetch])
+  }, [filter, targetKind, refetch])
 
   const comments = targetId && (readResult.data as QueryResult<IPage<Comment>>)?.comments //
     ? ((readResult.data as QueryResult<IPage<Comment>>)?.comments).content //
@@ -214,7 +214,7 @@ export default function CommentsDialog({
     const pattern = date.getFullYear() == currentYear ? "dd MMMM" : "dd MMMM yyyy"
     const dateStr = format(date, pattern)
     return dateStr
-  }, [currentYear, dateRef])
+  }, [dateRef, currentYear])
   // For some unfathomable reason, the expression doesn't work if used inline, as in disabled={!!(comment || parent)}
   const isEditing = useCallback(() => !!(comment || parent), [comment, parent])
   const needsScroller = useCallback(() => {
@@ -265,7 +265,7 @@ export default function CommentsDialog({
   //   // TODO: implement Show Comment Log
   // }, [])
   const handleDelete = useCallback((comment: Comment) => {
-    const label = `Comment#${comment.id}`
+    const label = `Comment #${comment.id}`
     if (confirm(`Confirm delete ${label}?`)) {
       toast.info("Deleting " + label)
       logger.trace("handleDelete comment: %o", comment)
@@ -283,7 +283,7 @@ export default function CommentsDialog({
       setText(comment?.text ?? '')
       editorRef.current?.focus()
     }
-  }, [parent])
+  }, [parent, setComment, setText, editorRef])
   const handleReply = useCallback((parent: Comment) => {
     if (comment == null) {
       logger.trace("handleReply parent: %o", parent)
@@ -291,13 +291,13 @@ export default function CommentsDialog({
       setText('')
       editorRef.current?.focus()
     }
-  }, [comment])
+  }, [comment, setParent, setText, editorRef])
   const handleCancel = useCallback(() => {
     logger.trace("handleCancel comment: %o, parent: %o", comment, parent)
     setComment(undefined)
     setParent(undefined)
     setText('')
-  }, [comment, parent])
+  }, [comment, parent, setComment, setParent, setText])
   const filtered = useMemo(() => {
     return !!(filter.text || filter.status || filter.userId || filter.from || filter.to)
   }, [filter])
@@ -353,32 +353,32 @@ export default function CommentsDialog({
         })
       }
     }
-  }, [targetId, comment, parent, text, canSave, handleCancel, scroll])
+  }, [canSave, comment, text, updateOp, targetId, handleCancel, scroll, parent, createOp, requestScrollToBottom])
   const handleKeyDown = useCallback((e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.ctrlKey && e.key === "Enter")
       handleSave()
   }, [handleSave])
   const handleTextChange = useCallback((value: string) => {
     setText(value)
-  }, [])
+  }, [setText])
   const handleScroll = useCallback(() => {
     logger.trace("handleScroll")
     setShowScroller(needsScroller())
-  }, [needsScroller])
+  }, [setShowScroller, needsScroller])
 
   const setLastCommentRef = useCallback((elt: HTMLDivElement) => {
     if (elt) {
       lastCommentRef.current = elt
       setRenderComplete(true);
     }
-  }, [lastCommentRef])
+  }, [lastCommentRef, setRenderComplete])
 
   useEffect(() => {
     if (renderComplete && lastCommentRef.current && scrollToBottom.current) {
       logger.trace("Effect2: all comments rendered - scrolling to bottom");
       scroll()
     }
-  }, [comments, renderComplete, scroll])
+  }, [renderComplete, lastCommentRef, scrollToBottom, scroll, comments])
 
   return (
     <Sheet modal={false} open={commentsDialogOpen} onOpenChange={setCommentsDialogOpen}>

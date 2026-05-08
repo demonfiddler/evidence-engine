@@ -64,7 +64,7 @@ export default function SignInDialog() {
       .then(
         () => {setError(''); setSignInOpen(false)},
         (reason) => setError(`Login failed: ${reason}`))
-  }, [form, login])
+  }, [form, login, setError, setSignInOpen])
 
   return (
     <Dialog open={signInOpen} onOpenChange={setSignInOpen}>

@@ -170,7 +170,7 @@ export default function Dashboard() {
 
   const handleStatusChange = useCallback((value: string) => {
     setStatus(value === "ALL" ? '' : value)
-  }, [])
+  }, [setStatus])
 
   const table = useReactTable({
     columns,

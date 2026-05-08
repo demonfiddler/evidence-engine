@@ -55,7 +55,7 @@ export default function Page() {
     return () => {
       api.off("select", onSelect)
     }
-  }, [api])
+  }, [api, setItem])
 
   useEffect(() => {
     api?.scrollTo(item)
@@ -69,7 +69,7 @@ export default function Page() {
       autoplay.current.play()
     else
       autoplay.current.stop()
-  }, [api, play])
+  }, [api, play, autoplay])
 
   return (
     <div className="flex flex-col">

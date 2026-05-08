@@ -83,13 +83,13 @@ export default function LogDialogFilter(
       prevAuxRecordId.current = auxRecordId
       updateFilter(userId, transactionKind, from, to)
     }
-  }, [updateFilter, userId, transactionKind, from, to, auxRecordId])
+  }, [auxRecordId, prevAuxRecordId, updateFilter, userId, transactionKind, from, to])
 
   const handleFromChange = useCallback((from?: Date) => {
     setFrom(from)
     setFromOpen(false)
     updateFilter(userId, transactionKind, from, to)
-  }, [userId, transactionKind, to, updateFilter])
+  }, [setFrom, setFromOpen, updateFilter, userId, transactionKind, to])
 
   const handleToChange = useCallback((to?: Date) => {
     setTo(to)
@@ -101,13 +101,13 @@ export default function LogDialogFilter(
     userId = userId === "ALL" ? '' : userId
     setUserId(userId)
     updateFilter(userId, transactionKind, from, to)
-  }, [transactionKind, from, to, updateFilter])
+  }, [setUserId, updateFilter, transactionKind, from, to])
 
   const handleTransactionKindChange = useCallback((transactionKind: string) => {
     transactionKind = transactionKind === "ALL" ? '' : transactionKind
     setTransactionKind(transactionKind)
     updateFilter(userId, transactionKind, from, to)
-  }, [userId, from, to, updateFilter])
+  }, [setTransactionKind, updateFilter, userId, from, to])
 
   const handleClear = useCallback(() => {
     setFrom(undefined)
@@ -115,7 +115,7 @@ export default function LogDialogFilter(
     setUserId('')
     setTransactionKind('')
     updateFilter('', '', undefined, undefined)
-  }, [updateFilter])
+  }, [setFrom, setTo, setUserId, setTransactionKind, updateFilter])
 
   return (
     <div className="flex flex-col gap-2">

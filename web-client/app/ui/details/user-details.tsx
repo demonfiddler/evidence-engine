@@ -77,7 +77,7 @@ export default function UserDetails(
     const groupLabel = getRecordLabel("Group", group)
     if (userInGroup) {
       if (confirm(`Remove user ${userLabel} from ${groupLabel}?`)) {
-        toast.warning(`Removing user ${userLabel} to ${groupLabel} ...`)
+        toast.warning(`Removing user ${userLabel} from ${groupLabel} ...`)
         onFormAction("remove", form.getValues())
       }
     } else {
