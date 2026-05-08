@@ -47,7 +47,7 @@ export default function StatusDocPage() {
         <code>java -jar ee-client.jar OPTIONS [FILE]</code>
         <a id="options" /><h3>Options</h3>
         <p>The following table describes the options that can be passed to the CLI. Some options which take arguments
-          use <Link href="#abbreviations">abbreviations</Link>.
+          use <a href="#abbreviations">abbreviations</a>.
         </p>
         <table>
           <thead>

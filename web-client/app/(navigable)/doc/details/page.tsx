@@ -29,8 +29,8 @@ export default function DetailsDocPage() {
       <h2>Details Section</h2>
       <Image src="/doc/details.png" alt="Screen-shot of a typical details section" width={640} height={390} />
       <p>The Details section has three parts: a collapsible 'Tracking & Linking' section containing the{" "}
-        <Link href="#tracking">Tracking</Link> and <Link href="#linking">Linking</Link> parts, and a third part labelled
-        {" "}<Link href="#details">Details</Link>.</p>
+        <a href="#tracking">Tracking</a> and <a href="#linking">Linking</a> parts, and a third part labelled
+        {" "}<a href="#details">Details</a>.</p>
       <a id="tracking" /><h3>Tracking</h3>
       <p>The Tracking section displays the following information. All fields are read-only and immutable.</p>
       <dl>
@@ -68,7 +68,7 @@ export default function DetailsDocPage() {
         <dt>Record links</dt>
         <dd>A searchable drop-down list of other records linked with the contextual record. The
           {" "}<ArrowRightIcon className="inline" />{" "}right arrow takes you to the page containing the other record and the
-          {" "}<RotateCwIcon className="inline" />{" "}refresh button refreshes the list from the database.</dd>
+          {" "}<RotateCwIcon className="inline" />{" "} button refreshes the list from the database.</dd>
         <dt>Link ID</dt>
         <dd>The unique identifier of the record link.</dd>
         <dt>Status</dt>

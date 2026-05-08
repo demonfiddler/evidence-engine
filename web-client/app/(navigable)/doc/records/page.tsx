@@ -38,23 +38,26 @@ export default function RecordsDocPage() {
     <article className="prose">
       <h2>Record Types</h2>
       <a id="linkable-record-types" /><h3>Linkable Record Types</h3>
-      <p>Evidence Engine supports five main types of information record: Claim, Declaration, Person, Publication and Quotation,
-        each of which can be linked to an extensible Topic hierarchy and cross-linked with linkable records of other
-        types. Publications are supported by two further record types: Journal and Publisher.</p>
-      <h4><BookOpenCheckIcon className="inline" />&nbsp;Claim</h4>
+      <p>Evidence Engine supports five main types of information record: <a href="#claim">Claim</a>,
+        {" "}<a href="#declaration">Declaration</a>, <a href="#person">Person</a>,
+        {" "}<a href="#publication">Publication</a> and <a href="#quotation">Quotation</a>, each of which can be
+        {" "}<a href="#record-link">linked</a> to an extensible <a href="#topic">Topic</a> hierarchy and cross-linked
+        with linkable records of other types. Publications are supported by two further record types:
+        {" "}<a href="#journal">Journal</a> and <a href="#publisher">Publisher</a>.</p>
+      <a id="claim" /><h4><BookOpenCheckIcon className="inline" />&nbsp;Claim</h4>
       <p>A Claim is an assertion of fact that can be supported by evidence of various kinds.</p>
-      <h4><ScrollTextIcon className="inline" />&nbsp;Declaration</h4>
+      <a id="declaration" /><h4><ScrollTextIcon className="inline" />&nbsp;Declaration</h4>
       <p>A Declaration is a public statement of consensus, support for certain views, and/or a call for certain actions.
         They are typically contrarian in nature, opposing some prevailing official narrative or orthodox position.
         There are three kinds: Declaration, Open Letter and Petition, though that distinction can be blurred.
         Declaration signatories can be represented in the database as Person records linked to the Declaration.</p>
-      <h4><UserIcon className="inline" />&nbsp;Person</h4>
+      <a id="person" /><h4><UserIcon className="inline" />&nbsp;Person</h4>
       <p>A Person record represents a subject matter expert who has publicly expressed contrarian views, by
         publishing information of a scientific or other evidential nature. The Persons in this database are typically
         eminent, highly qualified and may be recipients of prestigious awards.
         They include university professors, graduates at Ph.D. and higher levels, practising and credentialled professionals.
       </p>
-      <h4><LibraryIcon className="inline" />&nbsp;Publication</h4>
+      <a id="publication" /><h4><LibraryIcon className="inline" />&nbsp;Publication</h4>
       <p>A Publication represents material published in the form of books, papers and research studies in scientific journals,
         magazines and other periodicals. When a Publication appears in a Journal or other periodical or series, the Publication
         can make a direct reference to that Journal. It can also make a direct reference to the Publisher, which would either
@@ -62,29 +65,29 @@ export default function RecordsDocPage() {
         Publications can be of many kinds, which correspond to the allowed values of the&nbsp;
         <a href="https://en.wikipedia.org/wiki/RIS_(file_format)" target="_blank">RIS TY tag</a>.
         Publication authors can be represented in the database as Person records linked to the Publication record.</p>
-      <h4><MessageSquareQuoteIconEx className="inline" />&nbsp;Quotation</h4>
+      <a id="quotation" /><h4><MessageSquareQuoteIconEx className="inline" />&nbsp;Quotation</h4>
       <p>A Quotation is a verbal or written statement or opinion made by an individual (the 'quotee'). The quotee can be modelled
         in the database as a Person record linked to the Quotation record.</p>
-      <h4><FolderTreeIcon className="inline" />&nbsp;Topic</h4>
+      <a id="topic" /><h4><FolderTreeIcon className="inline" />&nbsp;Topic</h4>
       <p>A Topic is a subject that can be linked with records of any of the aforementioned types. Topics can have sub-topics,
         to a maximum nesting depth of ten.</p>
       <a id="tracked-record-types" /><h3>Tracked Record Types</h3>
-      <h4><NewspaperIcon className="inline" />&nbsp;Journal</h4>
+      <a id="journal" /><h4><NewspaperIcon className="inline" />&nbsp;Journal</h4>
       <p>A Journal is a periodical, typically scientific. It can hold a direct reference to its Publisher record in the database.</p>
-      <h4><Building2Icon className="inline" />&nbsp;Publisher</h4>
+      <a id="publisher" /><h4><Building2Icon className="inline" />&nbsp;Publisher</h4>
       <p>A Publisher is an organisation or body that publishes scientific or other works. They include the big publishing houses,
         some of whom publish hundreds or thousands of journals, traditional book publishers, and universities and other academic
         research institutions.
       </p>
-      <h4><LinkIcon className="inline" />&nbsp;Record Link</h4>
+      <a id="record-link" /><h4><LinkIcon className="inline" />&nbsp;Record Link</h4>
       <p>A Record Link represents an association between two records. Record Links are used indicate a claimant (the
         maker of a Claim), the fact that a Publication is evidence supporting a Claim, the signatories of a Declaration,
         the author of a Publication, the utterer of a Quotation, and so on.
       </p>
-      <h4><MessagesSquareIcon className="inline" />&nbsp;Comment</h4>
+      <a id="comment" /><h4><MessagesSquareIcon className="inline" />&nbsp;Comment</h4>
       <p>Comments about a record, made by authenticated users. Such comments can be read by anyone.</p>
       <a id="other-record-types" /><h3>Other Record Types</h3>
-      <h4><FileClockIcon className="inline" />&nbsp;Log</h4>
+      <a id="log" /><h4><FileClockIcon className="inline" />&nbsp;Log</h4>
       <p>A Log is a timestamped history showing every change made to a record, who made it and when.
         Logs can be viewed by anyone.</p>
       <h2>Tracking Data</h2>
