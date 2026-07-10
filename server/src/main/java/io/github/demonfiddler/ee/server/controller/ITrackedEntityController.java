@@ -26,7 +26,6 @@ import java.util.Optional;
 
 import org.dataloader.BatchLoaderEnvironment;
 import org.dataloader.DataLoader;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
@@ -56,11 +55,17 @@ import io.github.demonfiddler.ee.server.model.User;
 @SchemaMapping(typeName = "ITrackedEntity")
 public class ITrackedEntityController {
 
-	@Autowired
-	protected DataFetchersDelegateITrackedEntity<AbstractTrackedEntity> dataFetchersDelegateITrackedEntity;
+	protected final DataFetchersDelegateITrackedEntity<AbstractTrackedEntity> dataFetchersDelegateITrackedEntity;
 
-	@Autowired
-	protected GraphqlServerUtils graphqlServerUtils;
+	protected final GraphqlServerUtils graphqlServerUtils;
+
+	public ITrackedEntityController(
+		DataFetchersDelegateITrackedEntity<AbstractTrackedEntity> dataFetchersDelegateITrackedEntity,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		this.dataFetchersDelegateITrackedEntity = dataFetchersDelegateITrackedEntity;
+		this.graphqlServerUtils = graphqlServerUtils;
+	}
 
 	/**
 	 * Loads the data for ITrackedEntity.entityKind. It returns an Object: the data fetcher

@@ -25,7 +25,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import freemarker.template.Configuration;
@@ -35,8 +34,11 @@ import freemarker.template.TemplateException;
 @Component
 public class TemplateUtils {
 
-    @Autowired
-    Configuration cfg;
+    private final Configuration cfg;
+
+    public TemplateUtils(Configuration cfg) {
+        this.cfg = cfg;
+    }
 
     public Template getTemplateFor(String templateName) throws IOException {
         return cfg.getTemplate(templateName + ".ftl");

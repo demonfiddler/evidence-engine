@@ -31,7 +31,9 @@ import io.github.demonfiddler.ee.server.model.StatisticsQueryFilter;
 import io.github.demonfiddler.ee.server.model.StatusKind;
 import io.github.demonfiddler.ee.server.model.TopicStatisticsDto;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
-import jakarta.annotation.Resource;
+import io.github.demonfiddler.ee.server.util.ProfileUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -47,8 +49,12 @@ public class CustomStatisticsRepositoryImpl extends AbstractCustomRepositoryImpl
 
     @PersistenceContext
     EntityManager em;
-    @Resource
-    EntityUtils entityUtils;
+
+    public CustomStatisticsRepositoryImpl(EntityUtils entityUtils, ProfileUtils profileUtils,
+        SecurityUtils securityUtils) {
+
+        super(entityUtils, profileUtils, securityUtils);
+    }
 
     @Override
     Logger getLogger() {

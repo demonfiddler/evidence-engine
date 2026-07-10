@@ -26,7 +26,6 @@ import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
@@ -62,8 +61,6 @@ public class Authenticator {
         }
         """;
 
-    @Autowired
-    @Qualifier("webClient")
     private WebClient webClient;
     @Value(value = "${graphql.endpoint.url}")
     private String _url;
@@ -71,19 +68,26 @@ public class Authenticator {
     private String _username;
     @Value("${spring.security.user.password}")
     private String _password;
-    @Autowired
     private QueryExecutor queryExecutor;
-    @Autowired
     private QueryReactiveExecutor queryReactiveExecutor;
-    @Autowired
     private MutationExecutor mutationExecutor;
-    @Autowired
     private MutationReactiveExecutor mutationReactiveExecutor;
 
     private String url;
     private String username;
     private String jwtToken;
     private User user;
+
+    Authenticator(@Qualifier("webClient") WebClient webClient, QueryExecutor queryExecutor,
+        QueryReactiveExecutor queryReactiveExecutor, MutationExecutor mutationExecutor,
+        MutationReactiveExecutor mutationReactiveExecutor) {
+
+        this.webClient = webClient;
+        this.queryExecutor = queryExecutor;
+        this.queryReactiveExecutor = queryReactiveExecutor;
+        this.mutationExecutor = mutationExecutor;
+        this.mutationReactiveExecutor = mutationReactiveExecutor;
+    }
 
     /** Returns the logged-in user. */
     public User getUser() {

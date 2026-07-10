@@ -29,7 +29,6 @@ import org.springframework.stereotype.Component;
 import io.github.demonfiddler.ee.server.model.Country;
 import io.github.demonfiddler.ee.server.model.CountryFormatKind;
 import io.github.demonfiddler.ee.server.repository.CountryRepository;
-import jakarta.annotation.Resource;
 
 /**
  * A bean for working with {@code Country} objects.
@@ -40,8 +39,11 @@ public class CountryUtils {
     private static final Map<String, Country> ALPHA_2_TO_COUNTRY = Collections.synchronizedMap(new HashMap<>());
     private static final Map<String, Country> COMMON_NAME_TO_COUNTRY = Collections.synchronizedMap(new HashMap<>());
 
-    @Resource
-    CountryRepository countryRepository;
+    private final CountryRepository countryRepository;
+
+    public CountryUtils(CountryRepository countryRepository) {
+        this.countryRepository = countryRepository;
+    }
 
     /**
      * Returns the requested field of the country with specified country code.

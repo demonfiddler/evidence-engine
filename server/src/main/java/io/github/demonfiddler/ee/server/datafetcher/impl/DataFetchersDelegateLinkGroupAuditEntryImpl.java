@@ -30,14 +30,17 @@ import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateLinkGrou
 import io.github.demonfiddler.ee.server.model.LinkAuditEntry;
 import io.github.demonfiddler.ee.server.model.LinkGroupAuditEntry;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
-import jakarta.annotation.Resource;
 
 @Component
 public class DataFetchersDelegateLinkGroupAuditEntryImpl implements DataFetchersDelegateLinkGroupAuditEntry {
 
-    @Resource
-    protected EntityUtils entityUtils;
+    private final EntityUtils entityUtils;
 
+    public DataFetchersDelegateLinkGroupAuditEntryImpl(EntityUtils entityUtils) {
+        this.entityUtils = entityUtils;
+    }
+
+    @SuppressWarnings("null")
     @Override
     public Map<LinkGroupAuditEntry, List<LinkAuditEntry>> links(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<LinkGroupAuditEntry> keys) {

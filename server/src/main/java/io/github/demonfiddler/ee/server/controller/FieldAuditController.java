@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
@@ -45,11 +44,15 @@ import io.github.demonfiddler.ee.server.model.FieldGroupAuditEntry;
 @SchemaMapping(typeName = "FieldAudit")
 public class FieldAuditController {
 
-	@Autowired
-	protected DataFetchersDelegateFieldAudit dataFetchersDelegateFieldAudit;
+	protected final DataFetchersDelegateFieldAudit dataFetchersDelegateFieldAudit;
+	protected final GraphqlServerUtils graphqlServerUtils;
 
-	@Autowired
-	protected GraphqlServerUtils graphqlServerUtils;
+	public FieldAuditController(DataFetchersDelegateFieldAudit dataFetchersDelegateFieldAudit,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		this.dataFetchersDelegateFieldAudit = dataFetchersDelegateFieldAudit;
+		this.graphqlServerUtils = graphqlServerUtils;
+	}
 
 	/**
 	 * This methods loads the data for FieldAudit.fields. It is generated as the

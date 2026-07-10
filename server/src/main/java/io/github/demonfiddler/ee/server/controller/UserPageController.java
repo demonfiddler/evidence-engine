@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.graphql.execution.BatchLoaderRegistry;
@@ -48,13 +47,16 @@ import reactor.core.publisher.Mono;
 @SchemaMapping(typeName = "UserPage")
 public class UserPageController {
 
-	@Autowired
 	protected DataFetchersDelegateUserPage dataFetchersDelegateUserPage;
 
-	@Autowired
 	protected GraphqlServerUtils graphqlServerUtils;
 
-	public UserPageController(BatchLoaderRegistry registry) {
+	public UserPageController(BatchLoaderRegistry registry, DataFetchersDelegateUserPage dataFetchersDelegateUserPage,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		this.dataFetchersDelegateUserPage = dataFetchersDelegateUserPage;
+		this.graphqlServerUtils = graphqlServerUtils;
+
 		// Registering the data loaders is useless if @BatchMapping is used. But we need it here, for backward
 		// compatibility with code developed against previous plugin versions.
 		registry.forTypePair(Long.class, UserPage.class).registerMappedBatchLoader((keysSet, env) -> {

@@ -27,14 +27,26 @@ import org.springframework.stereotype.Component;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateClaim;
 import io.github.demonfiddler.ee.server.model.Claim;
 import io.github.demonfiddler.ee.server.repository.ClaimRepository;
-import jakarta.annotation.Resource;
+import io.github.demonfiddler.ee.server.repository.CommentRepository;
+import io.github.demonfiddler.ee.server.repository.EntityLinkRepository;
+import io.github.demonfiddler.ee.server.repository.LogRepository;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.FormatUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 
 @Component
 public class DataFetchersDelegateClaimImpl extends DataFetchersDelegateILinkableEntityBaseImpl<Claim>
     implements DataFetchersDelegateClaim {
 
-    @Resource
-    private ClaimRepository claimRepository;
+    private final ClaimRepository claimRepository;
+
+    public DataFetchersDelegateClaimImpl(CommentRepository commentRepository, LogRepository logRepository,
+        EntityUtils entityUtils, FormatUtils formatUtils, SecurityUtils securityUtils,
+        EntityLinkRepository entityLinkRepository, ClaimRepository claimRepository) {
+
+        super(commentRepository, logRepository, entityUtils, formatUtils, securityUtils, entityLinkRepository);
+        this.claimRepository = claimRepository;
+    }
 
     @Override
     public List<Claim> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {

@@ -32,14 +32,18 @@ import io.github.demonfiddler.ee.server.model.FieldAudit;
 import io.github.demonfiddler.ee.server.model.ITrackedEntity;
 import io.github.demonfiddler.ee.server.model.LinkAudit;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
-import jakarta.annotation.Resource;
+ 
 
 @Component
 public class DataFetchersDelegateEntityAuditImpl implements DataFetchersDelegateEntityAudit {
 
-    @Resource
-    protected EntityUtils entityUtils;
+    protected final EntityUtils entityUtils;
 
+    public DataFetchersDelegateEntityAuditImpl(EntityUtils entityUtils) {
+        this.entityUtils = entityUtils;
+    }
+
+    @SuppressWarnings("null")
     @Override
     public Map<EntityAudit, ITrackedEntity> entity(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<EntityAudit> keys) {
@@ -47,6 +51,7 @@ public class DataFetchersDelegateEntityAuditImpl implements DataFetchersDelegate
         return entityUtils.getValuesMap(keys, EntityAudit::getEntity);
     }
 
+    @SuppressWarnings("null")
     @Override
     public Map<EntityAudit, LinkAudit> linkAudit(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<EntityAudit> keys) {
@@ -54,6 +59,7 @@ public class DataFetchersDelegateEntityAuditImpl implements DataFetchersDelegate
         return entityUtils.getValuesMap(keys, EntityAudit::getLinkAudit);
     }
 
+    @SuppressWarnings("null")
     @Override
     public Map<EntityAudit, FieldAudit> fieldAudit(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<EntityAudit> keys) {

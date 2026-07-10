@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 public class DatabaseUtils {
 
     /** The database schema version expected by the server code. */
-    public static final int CURRENT_SCHEMA_VERSION = 1;
+    public static final int CURRENT_SCHEMA_VERSION = 2;
     /** The property name for the backup set ID. */
     public static final String PROP_BACKUP_ID = "backup_id";
     /** The property name for the backup number. */

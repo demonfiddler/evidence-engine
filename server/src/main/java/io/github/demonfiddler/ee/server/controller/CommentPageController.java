@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.graphql.execution.BatchLoaderRegistry;
@@ -48,13 +47,16 @@ import reactor.core.publisher.Mono;
 @SchemaMapping(typeName = "CommentPage")
 public class CommentPageController {
 
-	@Autowired
 	protected DataFetchersDelegateCommentPage dataFetchersDelegateCommentPage;
 
-	@Autowired
 	protected GraphqlServerUtils graphqlServerUtils;
 
-	public CommentPageController(BatchLoaderRegistry registry) {
+	public CommentPageController(BatchLoaderRegistry registry,
+		DataFetchersDelegateCommentPage dataFetchersDelegateCommentPage, GraphqlServerUtils graphqlServerUtils) {
+
+		this.dataFetchersDelegateCommentPage = dataFetchersDelegateCommentPage;
+		this.graphqlServerUtils = graphqlServerUtils;
+
 		// Registering the data loaders is useless if the @BatchMapping is used. But we need it here, for backward
 		// compatibility with code developed against the previous plugin versions
 		registry.forTypePair(Long.class, CommentPage.class).registerMappedBatchLoader((keysSet, env) -> {
@@ -70,7 +72,6 @@ public class CommentPageController {
 				return map;
 			});
 		});
-
 	}
 
 	/**

@@ -26,7 +26,6 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -65,12 +64,9 @@ public class SecurityConfig {
 
     private static final String REMEMBER_ME_KEY = "auth";
 
-    @Autowired
-    private ProfileUtils profileUtils;
-    @Autowired
-    private JwtUtils jwtUtils;
-    @Autowired
-    private DataSource dataSource;
+    private final ProfileUtils profileUtils;
+    private final JwtUtils jwtUtils;
+    private final DataSource dataSource;
     private JdbcUserDetailsManager userDetailsManager;
     private ProviderManager authenticationManager;
     private DaoAuthenticationProvider daoAuthenticationProvider;
@@ -80,6 +76,12 @@ public class SecurityConfig {
     private UsernamePasswordAuthenticationFilter usernamePasswordAuthenticationFilter;
     private JwtAuthenticationFilter jwtAuthenticationFilter;
     private RememberMeAuthenticationFilter rememberMeFilter;
+
+    public SecurityConfig(ProfileUtils profileUtils, JwtUtils jwtUtils, DataSource dataSource) {
+        this.profileUtils = profileUtils;
+        this.jwtUtils = jwtUtils;
+        this.dataSource = dataSource;
+    }
 
     private void init() {
         if (userDetailsManager == null) {

@@ -19,7 +19,6 @@
 
 package io.github.demonfiddler.ee.server.util;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -29,8 +28,11 @@ import io.github.demonfiddler.ee.server.rest.util.DatabaseUtils;
 @Component
 public class SchemaVersionValidator implements ApplicationRunner {
 
-    @Autowired
-    private DatabaseUtils databaseUtils;
+    private final DatabaseUtils databaseUtils;
+
+    public SchemaVersionValidator(DatabaseUtils databaseUtils) {
+        this.databaseUtils = databaseUtils;
+    }
 
     @Override
     public void run(ApplicationArguments args) {

@@ -23,7 +23,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.dataloader.DataLoader;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
@@ -46,11 +45,17 @@ import io.github.demonfiddler.ee.server.model.EntityLinkPage;
 @SchemaMapping(typeName = "ILinkableEntity")
 public class ILinkableEntityController {
 
-	@Autowired
-	protected DataFetchersDelegateILinkableEntity<AbstractLinkableEntity> dataFetchersDelegateILinkableEntity;
+	protected final DataFetchersDelegateILinkableEntity<AbstractLinkableEntity> dataFetchersDelegateILinkableEntity;
 
-	@Autowired
-	protected GraphqlServerUtils graphqlServerUtils;
+	protected final GraphqlServerUtils graphqlServerUtils;
+
+	public ILinkableEntityController(
+		DataFetchersDelegateILinkableEntity<AbstractLinkableEntity> dataFetchersDelegateILinkableEntity,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		this.dataFetchersDelegateILinkableEntity = dataFetchersDelegateILinkableEntity;
+		this.graphqlServerUtils = graphqlServerUtils;
+	}
 
 	/**
 	 * Loads the data for ILinkableEntity.fromEntityLinks. It returns an Object: the data fetcher

@@ -115,6 +115,7 @@ abstract class AbstractGraphQLTests {
 	 * @return A range spanning {@code dt} minus {@code tolerance} {@code unit}s to {@code dt} plus {@code tolerance}
 	 * {@code unit}s.
 	 */
+	@SuppressWarnings("null")
 	static Range<OffsetDateTime> createRange(OffsetDateTime dt, long tolerance, TemporalUnit unit) {
 		OffsetDateTime dtMin = dt.minus(tolerance, unit);
 		OffsetDateTime dtMax = dt.plus(tolerance, unit);

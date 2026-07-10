@@ -32,8 +32,12 @@ import io.github.demonfiddler.ee.server.model.LinkableEntityQueryFilter;
 import io.github.demonfiddler.ee.server.model.ILinkableEntity;
 import io.github.demonfiddler.ee.server.model.PageableInput;
 import io.github.demonfiddler.ee.server.model.StatusKind;
+import io.github.demonfiddler.ee.server.repository.CommentRepository;
 import io.github.demonfiddler.ee.server.repository.EntityLinkRepository;
-import jakarta.annotation.Resource;
+import io.github.demonfiddler.ee.server.repository.LogRepository;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.FormatUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 
 /**
  * Base class containing implementations of common methods. It is necessary because the generated DataFetchersDelegate*
@@ -42,8 +46,15 @@ import jakarta.annotation.Resource;
 abstract class DataFetchersDelegateILinkableEntityBaseImpl<T extends ILinkableEntity>
     extends DataFetchersDelegateITrackedEntityBaseImpl<T> {
 
-    @Resource
-    protected EntityLinkRepository entityLinkRepository;
+    protected final EntityLinkRepository entityLinkRepository;
+
+    protected DataFetchersDelegateILinkableEntityBaseImpl(CommentRepository commentRepository,
+        LogRepository logRepository, EntityUtils entityUtils, FormatUtils formatUtils,
+        SecurityUtils securityUtils, EntityLinkRepository entityLinkRepository) {
+
+        super(commentRepository, logRepository, entityUtils, formatUtils, securityUtils);
+        this.entityLinkRepository = entityLinkRepository;
+    }
 
     /**
      * Outbound links for which {@code origin} is the 'linked-from' entity.

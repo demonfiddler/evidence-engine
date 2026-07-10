@@ -20,9 +20,18 @@
 package io.github.demonfiddler.ee.server.repository;
 
 import io.github.demonfiddler.ee.server.model.Declaration;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.ProfileUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 
 public class CustomDeclarationRepositoryImpl extends CustomLinkableEntityRepositoryImpl<Declaration>
     implements CustomDeclarationRepository {
+
+    protected CustomDeclarationRepositoryImpl(EntityUtils entityUtils, ProfileUtils profileUtils,
+        SecurityUtils securityUtils, LinkableEntityRepository linkableEntityRepository) {
+
+        super(entityUtils, profileUtils, securityUtils, linkableEntityRepository);
+    }
 
     @Override
     protected Class<Declaration> getEntityClass() {

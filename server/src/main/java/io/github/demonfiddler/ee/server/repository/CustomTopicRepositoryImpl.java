@@ -39,6 +39,9 @@ import io.github.demonfiddler.ee.server.model.Countable;
 import io.github.demonfiddler.ee.server.model.StatusKind;
 import io.github.demonfiddler.ee.server.model.Topic;
 import io.github.demonfiddler.ee.server.model.TopicQueryFilter;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.ProfileUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 import jakarta.persistence.Query;
 
 @Transactional
@@ -51,6 +54,10 @@ public class CustomTopicRepositoryImpl extends AbstractCustomRepositoryImpl impl
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomTopicRepositoryImpl.class);
+
+    CustomTopicRepositoryImpl(EntityUtils entityUtils, ProfileUtils profileUtils, SecurityUtils securityUtils) {
+        super(entityUtils, profileUtils, securityUtils);
+    }
 
     public Logger getLogger() {
         return LOGGER;

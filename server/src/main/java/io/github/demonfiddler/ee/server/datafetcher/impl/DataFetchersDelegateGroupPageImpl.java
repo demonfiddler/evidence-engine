@@ -30,14 +30,17 @@ import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateGroupPag
 import io.github.demonfiddler.ee.server.model.Group;
 import io.github.demonfiddler.ee.server.model.GroupPage;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
-import jakarta.annotation.Resource;
 
 @Component
 public class DataFetchersDelegateGroupPageImpl implements DataFetchersDelegateGroupPage {
 
-    @Resource
-    private EntityUtils entityUtils;
+    private final EntityUtils entityUtils;
 
+    public DataFetchersDelegateGroupPageImpl(EntityUtils entityUtils) {
+        this.entityUtils = entityUtils;
+    }
+
+    @SuppressWarnings("null")
     @Override
     public Map<GroupPage, List<Group>> content(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<GroupPage> keys) {

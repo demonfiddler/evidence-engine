@@ -55,7 +55,9 @@ import io.github.demonfiddler.ee.server.model.Publication;
 import io.github.demonfiddler.ee.server.model.Quotation;
 import io.github.demonfiddler.ee.server.model.StatusKind;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
-import jakarta.annotation.Resource;
+import io.github.demonfiddler.ee.server.util.ProfileUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
+
 import jakarta.persistence.Query;
 
 /**
@@ -123,10 +125,14 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
         return name != null ? name.getLastName() : null;
     }
 
-    @Resource
-    LinkableEntityRepository linkableEntityRepository;
-    @Resource
-    EntityUtils entityUtils;
+    private LinkableEntityRepository linkableEntityRepository;
+
+    protected CustomLinkableEntityRepositoryImpl(EntityUtils entityUtils, ProfileUtils profileUtils,
+        SecurityUtils securityUtils, LinkableEntityRepository linkableEntityRepository) {
+
+        super(entityUtils, profileUtils, securityUtils);
+        this.linkableEntityRepository = linkableEntityRepository;
+    }
 
     @Override
     Logger getLogger() {
@@ -155,7 +161,7 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
      * @param pageable Specifies sorting and pagination, must not be {@code null}.
      * @return Query metadata.
      */
-    @SuppressWarnings({ "null", "unused" })
+    @SuppressWarnings({ "null" })
     private QueryMetaData getQueryMetaData(@Nullable LinkableEntityQueryFilter filter, @NonNull Pageable pageable) {
         boolean hasFilter = filter != null;
         boolean hasRecordId = hasFilter && filter.getRecordId() != null;

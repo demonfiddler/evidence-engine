@@ -30,18 +30,31 @@ import io.github.demonfiddler.ee.server.model.CountryFormatKind;
 import io.github.demonfiddler.ee.server.model.Declaration;
 import io.github.demonfiddler.ee.server.model.DeclarationKind;
 import io.github.demonfiddler.ee.server.model.FormatKind;
+import io.github.demonfiddler.ee.server.repository.CommentRepository;
 import io.github.demonfiddler.ee.server.repository.DeclarationRepository;
+import io.github.demonfiddler.ee.server.repository.EntityLinkRepository;
+import io.github.demonfiddler.ee.server.repository.LogRepository;
 import io.github.demonfiddler.ee.server.util.CountryUtils;
-import jakarta.annotation.Resource;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.FormatUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 
 @Component
 public class DataFetchersDelegateDeclarationImpl extends DataFetchersDelegateILinkableEntityBaseImpl<Declaration>
     implements DataFetchersDelegateDeclaration {
 
-    @Resource
-    private CountryUtils countryUtils;
-    @Resource
-    private DeclarationRepository declarationRepository;
+    private final DeclarationRepository declarationRepository;
+    private final CountryUtils countryUtils;
+
+    public DataFetchersDelegateDeclarationImpl(CommentRepository commentRepository, LogRepository logRepository,
+        EntityUtils entityUtils, FormatUtils formatUtils, SecurityUtils securityUtils,
+        EntityLinkRepository entityLinkRepository, DeclarationRepository declarationRepository,
+        CountryUtils countryUtils) {
+
+        super(commentRepository, logRepository, entityUtils, formatUtils, securityUtils, entityLinkRepository);
+        this.declarationRepository = declarationRepository;
+        this.countryUtils = countryUtils;
+    }
 
     @Override
     public List<Declaration> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {

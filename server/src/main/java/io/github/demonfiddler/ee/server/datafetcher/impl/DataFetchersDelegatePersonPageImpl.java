@@ -30,14 +30,17 @@ import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegatePersonPa
 import io.github.demonfiddler.ee.server.model.Person;
 import io.github.demonfiddler.ee.server.model.PersonPage;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
-import jakarta.annotation.Resource;
 
 @Component
 public class DataFetchersDelegatePersonPageImpl implements DataFetchersDelegatePersonPage {
 
-    @Resource
-    private EntityUtils entityUtils;
+    private final EntityUtils entityUtils;
 
+    public DataFetchersDelegatePersonPageImpl(EntityUtils entityUtils) {
+        this.entityUtils = entityUtils;
+    }
+
+    @SuppressWarnings("null")
     @Override
     public Map<PersonPage, List<Person>> content(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<PersonPage> keys) {

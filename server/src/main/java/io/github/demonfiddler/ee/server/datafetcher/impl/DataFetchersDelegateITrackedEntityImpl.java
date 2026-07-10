@@ -26,16 +26,28 @@ import org.springframework.stereotype.Component;
 
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateITrackedEntity;
 import io.github.demonfiddler.ee.server.model.AbstractTrackedEntity;
+import io.github.demonfiddler.ee.server.repository.CommentRepository;
+import io.github.demonfiddler.ee.server.repository.LogRepository;
 import io.github.demonfiddler.ee.server.repository.TrackedEntityRepository;
-import jakarta.annotation.Resource;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.FormatUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
+    
 
 @Component
 public class DataFetchersDelegateITrackedEntityImpl
     extends DataFetchersDelegateITrackedEntityBaseImpl<AbstractTrackedEntity>
     implements DataFetchersDelegateITrackedEntity<AbstractTrackedEntity> {
 
-    @Resource
-    TrackedEntityRepository trackedEntityRepository;
+    private final TrackedEntityRepository trackedEntityRepository;
+
+    public DataFetchersDelegateITrackedEntityImpl(CommentRepository commentRepository, LogRepository logRepository,
+        EntityUtils entityUtils, FormatUtils formatUtils, SecurityUtils securityUtils,
+        TrackedEntityRepository trackedEntityRepository) {
+
+        super(commentRepository, logRepository, entityUtils, formatUtils, securityUtils);
+        this.trackedEntityRepository = trackedEntityRepository;
+    }
 
     @Override
     public List<AbstractTrackedEntity> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {

@@ -30,14 +30,17 @@ import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateAuthPayl
 import io.github.demonfiddler.ee.server.model.AuthPayload;
 import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
-import jakarta.annotation.Resource;
 
 @Component
 public class DataFetchersDelegateAuthPayloadImpl implements DataFetchersDelegateAuthPayload {
 
-    @Resource
-    EntityUtils entityUtils;
+    private final EntityUtils entityUtils;
 
+    public DataFetchersDelegateAuthPayloadImpl(EntityUtils entityUtils) {
+        this.entityUtils = entityUtils;
+    }
+
+    @SuppressWarnings("null")
     @Override
     public Map<AuthPayload, User> user(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
         List<AuthPayload> keys) {

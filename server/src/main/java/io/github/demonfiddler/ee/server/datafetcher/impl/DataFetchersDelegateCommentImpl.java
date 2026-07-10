@@ -31,16 +31,20 @@ import io.github.demonfiddler.ee.server.model.Comment;
 import io.github.demonfiddler.ee.server.model.ITrackedEntity;
 import io.github.demonfiddler.ee.server.model.StatusKind;
 import io.github.demonfiddler.ee.server.repository.CommentRepository;
-import jakarta.annotation.Resource;
+import io.github.demonfiddler.ee.server.repository.LogRepository;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.FormatUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 
 @Component
 public class DataFetchersDelegateCommentImpl extends DataFetchersDelegateITrackedEntityBaseImpl<Comment>
     implements DataFetchersDelegateComment {
 
-    @Resource
-    private CommentRepository commentRepository;
-    // @Resource
-    // protected SecurityUtils securityUtils;
+    public DataFetchersDelegateCommentImpl(CommentRepository commentRepository, LogRepository logRepository,
+        EntityUtils entityUtils, FormatUtils formatUtils, SecurityUtils securityUtils) {
+
+        super(commentRepository, logRepository, entityUtils, formatUtils, securityUtils);
+    }
 
     public static String getCommentText(Comment comment) {
         return comment.getStatus().equals(StatusKind.DEL.name())
@@ -55,6 +59,7 @@ public class DataFetchersDelegateCommentImpl extends DataFetchersDelegateITracke
         return commentRepository.findAllById(keys);
     }
 
+    @SuppressWarnings("null")
     @Override
     public Map<Comment, ITrackedEntity> target(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<Comment> keys) {
@@ -62,6 +67,7 @@ public class DataFetchersDelegateCommentImpl extends DataFetchersDelegateITracke
         return entityUtils.getValuesMap(keys, Comment::getTarget);
     }
 
+    @SuppressWarnings("null")
     @Override
     public Map<Comment, Comment> parent(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
         List<Comment> keys) {

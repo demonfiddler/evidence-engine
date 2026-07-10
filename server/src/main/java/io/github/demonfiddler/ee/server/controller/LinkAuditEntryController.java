@@ -22,7 +22,6 @@ package io.github.demonfiddler.ee.server.controller;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
@@ -44,11 +43,16 @@ import io.github.demonfiddler.ee.server.model.LinkAuditEntry;
 @SchemaMapping(typeName = "LinkAuditEntry")
 public class LinkAuditEntryController {
 
-	@Autowired
-	protected DataFetchersDelegateLinkAuditEntry dataFetchersDelegateLinkAuditEntry;
+	protected final DataFetchersDelegateLinkAuditEntry dataFetchersDelegateLinkAuditEntry;
 
-	@Autowired
 	protected GraphqlServerUtils graphqlServerUtils;
+
+	public LinkAuditEntryController(DataFetchersDelegateLinkAuditEntry dataFetchersDelegateLinkAuditEntry,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		this.dataFetchersDelegateLinkAuditEntry = dataFetchersDelegateLinkAuditEntry;
+		this.graphqlServerUtils = graphqlServerUtils;
+	}
 
 	/**
 	 * This method loads the data for ${dataFetcher.graphQLType}.linkedEntityKind. It returns an Object: the data

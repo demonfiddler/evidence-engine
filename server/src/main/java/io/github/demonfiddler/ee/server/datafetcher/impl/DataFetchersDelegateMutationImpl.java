@@ -101,7 +101,6 @@ import io.github.demonfiddler.ee.server.security.jwt.JwtUtils;
 import io.github.demonfiddler.ee.server.util.CollectionUtils;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
 import io.github.demonfiddler.ee.server.util.SecurityUtils;
-import jakarta.annotation.Resource;
 import jakarta.persistence.EntityNotFoundException;
 
 @Component
@@ -111,46 +110,57 @@ public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMut
     private static final Pattern PASSWORD_PATTERN = Pattern.compile(
         "^(?:(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,})|(\\{bcrypt\\}\\$[a-zA-Z0-9/$.]{59})$");
 
-    @Resource
-    private ClaimRepository claimRepository;
-    @Resource
-    private CommentRepository commentRepository;
-    @Resource
-    private DeclarationRepository declarationRepository;
-    @Resource
-    private JournalRepository journalRepository;
-    @Resource
-    private EntityLinkRepository entityLinkRepository;
-    @Resource
-    LinkableEntityRepository linkableEntityRepository;
-    @Resource
-    private LogRepository logRepository;
-    @Resource
-    private PersonRepository personRepository;
-    @Resource
-    private PublicationRepository publicationRepository;
-    @Resource
-    private PublisherRepository publisherRepository;
-    @Resource
-    private QuotationRepository quotationRepository;
-    @Resource
-    private TopicRepository topicRepository;
-    @Resource
-    TrackedEntityRepository trackedEntityRepository;
-    @Resource
-    private UserRepository userRepository;
-    @Resource
-    private GroupRepository groupRepository;
-    @Resource
-    private EntityUtils entityUtils;
-    @Resource
-    private SecurityUtils securityUtils;
-    @Resource
-    private JwtUtils jwtUtils;
-    @Resource
-    private AuthenticationManager authManager;
-    @Resource
-    PasswordEncoder passwordEncoder;
+    private final ClaimRepository claimRepository;
+    private final CommentRepository commentRepository;
+    private final DeclarationRepository declarationRepository;
+    private final JournalRepository journalRepository;
+    private final EntityLinkRepository entityLinkRepository;
+    private final LinkableEntityRepository linkableEntityRepository;
+    private final LogRepository logRepository;
+    private final PersonRepository personRepository;
+    private final PublicationRepository publicationRepository;
+    private final PublisherRepository publisherRepository;
+    private final QuotationRepository quotationRepository;
+    private final TopicRepository topicRepository;
+    private final TrackedEntityRepository trackedEntityRepository;
+    private final UserRepository userRepository;
+    private final GroupRepository groupRepository;
+    private final EntityUtils entityUtils;
+    private final SecurityUtils securityUtils;
+    private final JwtUtils jwtUtils;
+    private final AuthenticationManager authManager;
+    private final PasswordEncoder passwordEncoder;
+
+    public DataFetchersDelegateMutationImpl(ClaimRepository claimRepository, CommentRepository commentRepository,
+        DeclarationRepository declarationRepository, JournalRepository journalRepository,
+        EntityLinkRepository entityLinkRepository, LinkableEntityRepository linkableEntityRepository,
+        LogRepository logRepository, PersonRepository personRepository, PublicationRepository publicationRepository,
+        PublisherRepository publisherRepository, QuotationRepository quotationRepository,
+        TopicRepository topicRepository, TrackedEntityRepository trackedEntityRepository, UserRepository userRepository,
+        GroupRepository groupRepository, EntityUtils entityUtils, SecurityUtils securityUtils, JwtUtils jwtUtils,
+        AuthenticationManager authManager, PasswordEncoder passwordEncoder) {
+
+        this.claimRepository = claimRepository;
+        this.commentRepository = commentRepository;
+        this.declarationRepository = declarationRepository;
+        this.journalRepository = journalRepository;
+        this.entityLinkRepository = entityLinkRepository;
+        this.linkableEntityRepository = linkableEntityRepository;
+        this.logRepository = logRepository;
+        this.personRepository = personRepository;
+        this.publicationRepository = publicationRepository;
+        this.publisherRepository = publisherRepository;
+        this.quotationRepository = quotationRepository;
+        this.topicRepository = topicRepository;
+        this.trackedEntityRepository = trackedEntityRepository;
+        this.userRepository = userRepository;
+        this.groupRepository = groupRepository;
+        this.entityUtils = entityUtils;
+        this.securityUtils = securityUtils;
+        this.jwtUtils = jwtUtils;
+        this.authManager = authManager;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     private void setCreatedFields(ITrackedEntity entity) {
         entity.setStatus(StatusKind.DRA.name());

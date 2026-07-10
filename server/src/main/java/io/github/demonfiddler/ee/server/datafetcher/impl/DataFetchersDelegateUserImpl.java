@@ -34,18 +34,29 @@ import io.github.demonfiddler.ee.server.model.AggregationKind;
 import io.github.demonfiddler.ee.server.model.AuthorityKind;
 import io.github.demonfiddler.ee.server.model.CountryFormatKind;
 import io.github.demonfiddler.ee.server.model.User;
+import io.github.demonfiddler.ee.server.repository.CommentRepository;
+import io.github.demonfiddler.ee.server.repository.LogRepository;
 import io.github.demonfiddler.ee.server.repository.UserRepository;
 import io.github.demonfiddler.ee.server.util.CountryUtils;
-import jakarta.annotation.Resource;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.FormatUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 
 @Component
 public class DataFetchersDelegateUserImpl extends DataFetchersDelegateITrackedEntityBaseImpl<User>
     implements DataFetchersDelegateUser {
 
-    @Resource
-    private CountryUtils countryUtils;
-    @Resource
-    private UserRepository userRepository;
+    private final CountryUtils countryUtils;
+    private final UserRepository userRepository;
+
+    public DataFetchersDelegateUserImpl(CommentRepository commentRepository, LogRepository logRepository,
+        EntityUtils entityUtils, FormatUtils formatUtils, SecurityUtils securityUtils, CountryUtils countryUtils,
+        UserRepository userRepository) {
+
+        super(commentRepository, logRepository, entityUtils, formatUtils, securityUtils);
+        this.countryUtils = countryUtils;
+        this.userRepository = userRepository;
+    }
 
     @Override
     public List<User> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {
@@ -75,6 +86,7 @@ public class DataFetchersDelegateUserImpl extends DataFetchersDelegateITrackedEn
         return formatUtils.formatAuthorityKinds(authorities, format);
     }
 
+    @SuppressWarnings("null")
     @Override
     public Map<User, List<Group>> groups(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
         List<User> keys) {

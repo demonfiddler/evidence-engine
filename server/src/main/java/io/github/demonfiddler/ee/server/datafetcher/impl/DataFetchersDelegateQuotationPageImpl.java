@@ -30,14 +30,17 @@ import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateQuotatio
 import io.github.demonfiddler.ee.server.model.Quotation;
 import io.github.demonfiddler.ee.server.model.QuotationPage;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
-import jakarta.annotation.Resource;
 
 @Component
 public class DataFetchersDelegateQuotationPageImpl implements DataFetchersDelegateQuotationPage {
 
-    @Resource
-    private EntityUtils entityUtils;
+    private final EntityUtils entityUtils;
 
+    public DataFetchersDelegateQuotationPageImpl(EntityUtils entityUtils) {
+        this.entityUtils = entityUtils;
+    }
+
+    @SuppressWarnings("null")
     @Override
     public Map<QuotationPage, List<Quotation>> content(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<QuotationPage> keys) {

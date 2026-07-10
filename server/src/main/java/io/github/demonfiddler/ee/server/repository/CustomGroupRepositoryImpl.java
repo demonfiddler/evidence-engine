@@ -20,8 +20,15 @@
 package io.github.demonfiddler.ee.server.repository;
 
 import io.github.demonfiddler.ee.server.model.Group;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.ProfileUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 
 public class CustomGroupRepositoryImpl extends CustomTrackedEntityRepositoryImpl<Group> implements CustomGroupRepository {
+
+    CustomGroupRepositoryImpl(EntityUtils entityUtils, ProfileUtils profileUtils, SecurityUtils securityUtils) {
+        super(entityUtils, profileUtils, securityUtils);
+    }
 
     @Override
     protected Class<Group> getEntityClass() {

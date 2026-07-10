@@ -36,6 +36,9 @@ import io.github.demonfiddler.ee.server.model.CountPageImpl;
 import io.github.demonfiddler.ee.server.model.Countable;
 import io.github.demonfiddler.ee.server.model.Log;
 import io.github.demonfiddler.ee.server.model.LogQueryFilter;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.ProfileUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 import jakarta.persistence.Query;
 
 /**
@@ -43,6 +46,10 @@ import jakarta.persistence.Query;
  */
 @Transactional
 public class CustomLogRepositoryImpl extends AbstractCustomRepositoryImpl implements CustomLogRepository {
+
+    CustomLogRepositoryImpl(EntityUtils entityUtils, ProfileUtils profileUtils, SecurityUtils securityUtils) {
+        super(entityUtils, profileUtils, securityUtils);
+    }
 
     /** Describes the elements of a query. */
     static record QueryMetaData(@Nullable LogQueryFilter filter, @NonNull Pageable pageable, String countQueryName,

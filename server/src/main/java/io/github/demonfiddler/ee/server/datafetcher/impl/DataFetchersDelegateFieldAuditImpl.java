@@ -31,14 +31,17 @@ import io.github.demonfiddler.ee.server.model.FieldAudit;
 import io.github.demonfiddler.ee.server.model.FieldAuditEntry;
 import io.github.demonfiddler.ee.server.model.FieldGroupAuditEntry;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
-import jakarta.annotation.Resource;
 
 @Component
 public class DataFetchersDelegateFieldAuditImpl implements DataFetchersDelegateFieldAudit {
 
-    @Resource
-    protected EntityUtils entityUtils;
+    protected final EntityUtils entityUtils;
 
+    public DataFetchersDelegateFieldAuditImpl(EntityUtils entityUtils) {
+        this.entityUtils = entityUtils;
+    }
+
+    @SuppressWarnings("null")
     @Override
     public Map<FieldAudit, List<FieldAuditEntry>> fields(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<FieldAudit> keys) {
@@ -46,6 +49,7 @@ public class DataFetchersDelegateFieldAuditImpl implements DataFetchersDelegateF
         return entityUtils.getListValuesMap(keys, FieldAudit::getFields);
     }
 
+    @SuppressWarnings("null")
     @Override
     public Map<FieldAudit, List<FieldGroupAuditEntry>> groups(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<FieldAudit> keys) {

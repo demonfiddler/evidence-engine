@@ -39,6 +39,9 @@ import io.github.demonfiddler.ee.server.model.CountPageImpl;
 import io.github.demonfiddler.ee.server.model.Countable;
 import io.github.demonfiddler.ee.server.model.EntityLink;
 import io.github.demonfiddler.ee.server.model.EntityLinkQueryFilter;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.ProfileUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.Query;
 
@@ -58,6 +61,10 @@ public class CustomEntityLinkRepositoryImpl extends AbstractCustomRepositoryImpl
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomEntityLinkRepositoryImpl.class);
+
+    CustomEntityLinkRepositoryImpl(EntityUtils entityUtils, ProfileUtils profileUtils, SecurityUtils securityUtils) {
+        super(entityUtils, profileUtils, securityUtils);
+    }
 
     @Override
     Logger getLogger() {

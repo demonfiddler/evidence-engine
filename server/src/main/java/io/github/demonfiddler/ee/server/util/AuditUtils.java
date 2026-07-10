@@ -54,7 +54,6 @@ import io.github.demonfiddler.ee.server.model.LinkGroupAuditEntry;
 import io.github.demonfiddler.ee.server.model.LinkableEntityQueryFilter;
 import io.github.demonfiddler.ee.server.model.SeverityKind;
 import io.github.demonfiddler.ee.server.repository.EntityLinkRepository;
-import jakarta.annotation.Resource;
 
 @Component
 public class AuditUtils {
@@ -376,8 +375,11 @@ public class AuditUtils {
         RULES = Collections.unmodifiableMap(rules);
     }
 
-    @Resource
-    protected EntityLinkRepository entityLinkRepository;
+    protected final EntityLinkRepository entityLinkRepository;
+
+    public AuditUtils(EntityLinkRepository entityLinkRepository) {
+        this.entityLinkRepository = entityLinkRepository;
+    }
 
     private void auditFields(Collection<FieldRule<?>> fieldRules, boolean and, ITrackedEntity entity,
         IFieldAudit fieldAudit) {

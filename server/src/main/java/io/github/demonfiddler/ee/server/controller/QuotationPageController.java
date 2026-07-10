@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.graphql.execution.BatchLoaderRegistry;
@@ -49,13 +48,16 @@ import reactor.core.publisher.Mono;
 
 public class QuotationPageController {
 
-	@Autowired
-	protected DataFetchersDelegateQuotationPage dataFetchersDelegateQuotationPage;
+	protected final DataFetchersDelegateQuotationPage dataFetchersDelegateQuotationPage;
 
-	@Autowired
-	protected GraphqlServerUtils graphqlServerUtils;
+	protected final GraphqlServerUtils graphqlServerUtils;
 
-	public QuotationPageController(BatchLoaderRegistry registry) {
+	public QuotationPageController(BatchLoaderRegistry registry,
+		DataFetchersDelegateQuotationPage dataFetchersDelegateQuotationPage, GraphqlServerUtils graphqlServerUtils) {
+
+		this.dataFetchersDelegateQuotationPage = dataFetchersDelegateQuotationPage;
+		this.graphqlServerUtils = graphqlServerUtils;
+
 		// Registering the data loaders is useless if @BatchMapping is used. But we need it here, for backward
 		// compatibility with code developed against previous plugin versions.
 		registry.forTypePair(Long.class, QuotationPage.class).registerMappedBatchLoader((keysSet, env) -> {

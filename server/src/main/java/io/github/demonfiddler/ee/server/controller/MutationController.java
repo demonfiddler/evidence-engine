@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
@@ -59,11 +58,16 @@ import io.github.demonfiddler.ee.server.model.UserProfileInput;
 @SchemaMapping(typeName = "Mutation")
 public class MutationController {
 
-	@Autowired
-	protected DataFetchersDelegateMutation dataFetchersDelegateMutation;
+	protected final DataFetchersDelegateMutation dataFetchersDelegateMutation;
 
-	@Autowired
-	protected GraphqlServerUtils graphqlServerUtils;
+	protected final GraphqlServerUtils graphqlServerUtils;
+
+	public MutationController(DataFetchersDelegateMutation dataFetchersDelegateMutation,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		this.dataFetchersDelegateMutation = dataFetchersDelegateMutation;
+		this.graphqlServerUtils = graphqlServerUtils;
+	}
 
 	/**
 	 * This method loads the data for Mutation.login. It returns an Object: the data fetcher implementation may return

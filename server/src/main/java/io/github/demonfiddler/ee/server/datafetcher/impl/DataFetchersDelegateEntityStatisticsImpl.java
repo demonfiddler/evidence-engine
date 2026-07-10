@@ -27,13 +27,15 @@ import io.github.demonfiddler.ee.server.model.EntityKind;
 import io.github.demonfiddler.ee.server.model.EntityStatistics;
 import io.github.demonfiddler.ee.server.model.FormatKind;
 import io.github.demonfiddler.ee.server.util.FormatUtils;
-import jakarta.annotation.Resource;
 
 @Component
 public class DataFetchersDelegateEntityStatisticsImpl implements DataFetchersDelegateEntityStatistics {
 
-    @Resource
-    protected FormatUtils formatUtils;
+    protected final FormatUtils formatUtils;
+
+    public DataFetchersDelegateEntityStatisticsImpl(FormatUtils formatUtils) {
+        this.formatUtils = formatUtils;
+    }
 
     @Override
     public Object entityKind(DataFetchingEnvironment dataFetchingEnvironment, EntityStatistics origin,

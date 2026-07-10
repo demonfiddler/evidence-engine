@@ -20,9 +20,18 @@
 package io.github.demonfiddler.ee.server.repository;
 
 import io.github.demonfiddler.ee.server.model.Claim;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.ProfileUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 
 public class CustomClaimRepositoryImpl extends CustomLinkableEntityRepositoryImpl<Claim>
     implements CustomClaimRepository {
+
+    protected CustomClaimRepositoryImpl(EntityUtils entityUtils, ProfileUtils profileUtils, SecurityUtils securityUtils,
+        LinkableEntityRepository linkableEntityRepository) {
+
+        super(entityUtils, profileUtils, securityUtils, linkableEntityRepository);
+    }
 
     @Override
     protected Class<Claim> getEntityClass() {

@@ -29,7 +29,6 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.graphql.client.GraphQlClient;
 import org.springframework.stereotype.Component;
@@ -115,16 +114,15 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 	/** Logger for this class */
 	private static final Logger LOGGER = LoggerFactory.getLogger(QueryReactiveExecutor.class);
 
-	@Autowired
-	@Qualifier("httpGraphQlClient")
 	GraphQlClient graphQlClient;
 
-	@Autowired
-	GraphqlClientUtilsEx graphqlClientUtils;
+	final GraphqlClientUtilsEx graphqlClientUtils;
 
-	GraphqlUtils graphqlUtils = GraphqlUtils.graphqlUtils; // must be set that way, to be used in the constructor
+	final GraphqlUtils graphqlUtils = GraphqlUtils.graphqlUtils; // must be set that way, to be used in the constructor
 
-	public QueryReactiveExecutor() {
+	public QueryReactiveExecutor(@Qualifier("httpGraphQlClient") GraphQlClient graphQlClient,
+		GraphqlClientUtilsEx graphqlClientUtils) {
+
 		if (!"2.8".equals(this.graphqlUtils.getRuntimeVersion())) {
 			throw new RuntimeException(
 				"The GraphQL runtime version doesn't match the GraphQL plugin version. The runtime's version is '"
@@ -132,6 +130,8 @@ public class QueryReactiveExecutor implements GraphQLQueryReactiveExecutor {
 		}
 		CustomScalarRegistryInitializer.initCustomScalarRegistry();
 		DirectiveRegistryInitializer.initDirectiveRegistry();
+		this.graphQlClient = graphQlClient;
+		this.graphqlClientUtils = graphqlClientUtils;
 	}
 
 	/**

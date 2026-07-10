@@ -20,9 +20,16 @@
 package io.github.demonfiddler.ee.server.repository;
 
 import io.github.demonfiddler.ee.server.model.Publisher;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.ProfileUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 
 public class CustomPublisherRepositoryImpl extends CustomTrackedEntityRepositoryImpl<Publisher>
     implements CustomPublisherRepository {
+
+    CustomPublisherRepositoryImpl(EntityUtils entityUtils, ProfileUtils profileUtils, SecurityUtils securityUtils) {
+        super(entityUtils, profileUtils, securityUtils);
+    }
 
     @Override
     protected Class<Publisher> getEntityClass() {

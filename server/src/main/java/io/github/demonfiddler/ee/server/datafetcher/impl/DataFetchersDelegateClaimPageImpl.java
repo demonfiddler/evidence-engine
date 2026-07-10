@@ -30,14 +30,17 @@ import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateClaimPag
 import io.github.demonfiddler.ee.server.model.Claim;
 import io.github.demonfiddler.ee.server.model.ClaimPage;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
-import jakarta.annotation.Resource;
 
 @Component
 public class DataFetchersDelegateClaimPageImpl implements DataFetchersDelegateClaimPage {
 
-    @Resource
-    private EntityUtils util;
+    private final EntityUtils util;
 
+    public DataFetchersDelegateClaimPageImpl(EntityUtils util) {
+        this.util = util;
+    }
+
+    @SuppressWarnings("null")
     @Override
     public Map<ClaimPage, List<Claim>> content(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<ClaimPage> keys) {

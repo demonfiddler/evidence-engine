@@ -28,21 +28,34 @@ import org.springframework.stereotype.Component;
 import graphql.GraphQLContext;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateTopic;
 import io.github.demonfiddler.ee.server.model.Topic;
+import io.github.demonfiddler.ee.server.repository.CommentRepository;
+import io.github.demonfiddler.ee.server.repository.EntityLinkRepository;
+import io.github.demonfiddler.ee.server.repository.LogRepository;
 import io.github.demonfiddler.ee.server.repository.TopicRepository;
-import jakarta.annotation.Resource;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.FormatUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 
 @Component
 public class DataFetchersDelegateTopicImpl extends DataFetchersDelegateILinkableEntityBaseImpl<Topic>
     implements DataFetchersDelegateTopic {
 
-    @Resource
-    private TopicRepository topicRepository;
+    private final TopicRepository topicRepository;
+
+    public DataFetchersDelegateTopicImpl(CommentRepository commentRepository, LogRepository logRepository,
+        EntityUtils entityUtils, FormatUtils formatUtils, SecurityUtils securityUtils,
+        EntityLinkRepository entityLinkRepository, TopicRepository topicRepository) {
+
+        super(commentRepository, logRepository, entityUtils, formatUtils, securityUtils, entityLinkRepository);
+        this.topicRepository = topicRepository;
+    }
 
     @Override
     public List<Topic> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {
         return topicRepository.findAllById(keys);
     }
 
+    @SuppressWarnings("null")
     @Override
     public Map<Topic, Topic> parent(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
         List<Topic> keys) {
@@ -50,6 +63,7 @@ public class DataFetchersDelegateTopicImpl extends DataFetchersDelegateILinkable
         return entityUtils.getValuesMap(keys, Topic::getParent);
     }
 
+    @SuppressWarnings("null")
     @Override
     public Map<Topic, List<Topic>> children(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<Topic> keys) {

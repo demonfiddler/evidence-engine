@@ -77,7 +77,6 @@ import io.github.demonfiddler.ee.server.model.TrackedEntityQueryFilter;
 import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.repository.CustomRepository;
 import io.github.demonfiddler.ee.server.repository.QueryPair;
-import jakarta.annotation.Resource;
 import jakarta.persistence.Query;
 
 /**
@@ -131,8 +130,11 @@ public class EntityUtils {
 		ENTITY_NAMES.put(User.class, "user");
 	}
 
-	@Resource
-	private SecurityUtils securityUtils;
+	private final SecurityUtils securityUtils;
+
+	public EntityUtils(SecurityUtils securityUtils) {
+		this.securityUtils = securityUtils;
+	}
 
 	@SuppressWarnings("unchecked")
 	public <T> List<T> unproxy(List<T> list) {

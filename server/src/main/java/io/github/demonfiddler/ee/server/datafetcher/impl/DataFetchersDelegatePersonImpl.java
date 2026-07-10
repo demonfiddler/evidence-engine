@@ -28,18 +28,30 @@ import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegatePerson;
 import io.github.demonfiddler.ee.server.model.CountryFormatKind;
 import io.github.demonfiddler.ee.server.model.Person;
+import io.github.demonfiddler.ee.server.repository.CommentRepository;
+import io.github.demonfiddler.ee.server.repository.EntityLinkRepository;
+import io.github.demonfiddler.ee.server.repository.LogRepository;
 import io.github.demonfiddler.ee.server.repository.PersonRepository;
 import io.github.demonfiddler.ee.server.util.CountryUtils;
-import jakarta.annotation.Resource;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.FormatUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 
 @Component
 public class DataFetchersDelegatePersonImpl extends DataFetchersDelegateILinkableEntityBaseImpl<Person>
     implements DataFetchersDelegatePerson {
 
-    @Resource
-    private CountryUtils countryUtils;
-    @Resource
-    private PersonRepository personRepository;
+    private final CountryUtils countryUtils;
+    private final PersonRepository personRepository;
+
+    public DataFetchersDelegatePersonImpl(CommentRepository commentRepository, LogRepository logRepository,
+        EntityUtils entityUtils, FormatUtils formatUtils, SecurityUtils securityUtils,
+        EntityLinkRepository entityLinkRepository, CountryUtils countryUtils, PersonRepository personRepository) {
+
+        super(commentRepository, logRepository, entityUtils, formatUtils, securityUtils, entityLinkRepository);
+        this.countryUtils = countryUtils;
+        this.personRepository = personRepository;
+    }
 
     @Override
     public List<Person> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {

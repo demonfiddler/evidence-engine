@@ -20,9 +20,18 @@
 package io.github.demonfiddler.ee.server.repository;
 
 import io.github.demonfiddler.ee.server.model.Quotation;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.ProfileUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 
 public class CustomQuotationRepositoryImpl extends CustomLinkableEntityRepositoryImpl<Quotation>
     implements CustomQuotationRepository {
+
+    protected CustomQuotationRepositoryImpl(EntityUtils entityUtils, ProfileUtils profileUtils,
+        SecurityUtils securityUtils, LinkableEntityRepository linkableEntityRepository) {
+
+        super(entityUtils, profileUtils, securityUtils, linkableEntityRepository);
+    }
 
     @Override
     protected Class<Quotation> getEntityClass() {

@@ -38,6 +38,9 @@ import io.github.demonfiddler.ee.server.model.Countable;
 import io.github.demonfiddler.ee.server.model.ITrackedEntity;
 import io.github.demonfiddler.ee.server.model.StatusKind;
 import io.github.demonfiddler.ee.server.model.TrackedEntityQueryFilter;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.ProfileUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 import jakarta.persistence.Query;
 
 /**
@@ -46,6 +49,10 @@ import jakarta.persistence.Query;
  */
 public abstract class CustomTrackedEntityRepositoryImpl<T extends ITrackedEntity> extends AbstractCustomRepositoryImpl
     implements CustomRepository<T, TrackedEntityQueryFilter> {
+
+    CustomTrackedEntityRepositoryImpl(EntityUtils entityUtils, ProfileUtils profileUtils, SecurityUtils securityUtils) {
+        super(entityUtils, profileUtils, securityUtils);
+    }
 
     /** Describes the elements of a query. */
     private static record QueryMetaData(@Nullable TrackedEntityQueryFilter filter, @NonNull Pageable pageable,

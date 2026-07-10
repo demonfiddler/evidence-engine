@@ -29,21 +29,33 @@ import graphql.GraphQLContext;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateEntityLink;
 import io.github.demonfiddler.ee.server.model.EntityLink;
 import io.github.demonfiddler.ee.server.model.ILinkableEntity;
+import io.github.demonfiddler.ee.server.repository.CommentRepository;
 import io.github.demonfiddler.ee.server.repository.EntityLinkRepository;
-import jakarta.annotation.Resource;
+import io.github.demonfiddler.ee.server.repository.LogRepository;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.FormatUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 
 @Component
 public class DataFetchersDelegateEntityLinkImpl extends DataFetchersDelegateITrackedEntityBaseImpl<EntityLink>
     implements DataFetchersDelegateEntityLink {
 
-    @Resource
-    private EntityLinkRepository entityLinkRepository;
+    private final EntityLinkRepository entityLinkRepository;
+
+    public DataFetchersDelegateEntityLinkImpl(CommentRepository commentRepository, LogRepository logRepository,
+        EntityUtils entityUtils, FormatUtils formatUtils, SecurityUtils securityUtils,
+        EntityLinkRepository entityLinkRepository) {
+
+        super(commentRepository, logRepository, entityUtils, formatUtils, securityUtils);
+        this.entityLinkRepository = entityLinkRepository;
+    }
 
     @Override
     public List<EntityLink> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {
         return entityLinkRepository.findAllById(keys);
     }
 
+    @SuppressWarnings("null")
     @Override
     public Map<EntityLink, ILinkableEntity> fromEntity(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<EntityLink> keys) {
@@ -51,6 +63,7 @@ public class DataFetchersDelegateEntityLinkImpl extends DataFetchersDelegateITra
         return entityUtils.getValuesMap(keys, EntityLink::getFromEntity);
     }
 
+    @SuppressWarnings("null")
     @Override
     public Map<EntityLink, ILinkableEntity> toEntity(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<EntityLink> keys) {

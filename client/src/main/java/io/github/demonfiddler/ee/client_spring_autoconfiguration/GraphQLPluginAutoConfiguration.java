@@ -25,7 +25,6 @@ import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -57,16 +56,19 @@ public class GraphQLPluginAutoConfiguration {
 
 	// Creating this bean makes sure that its static field is set. This is mandatory for some part of the code that must
 	// be kept, to allow compliance with existing projects.
-	@Autowired
-	SpringContextBean springContextBean;
+	final SpringContextBean springContextBean;
 
 	@Value(value = "${graphql.endpoint.url}")
 	private String graphqlEndpointUrl;
 
-	@Autowired
-	ApplicationContext applicationContext;
+	final ApplicationContext applicationContext;
 	
-	final SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+	final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+	GraphQLPluginAutoConfiguration(SpringContextBean springContextBean, ApplicationContext applicationContext) {
+		this.springContextBean = springContextBean;
+		this.applicationContext = applicationContext;
+	}
 
 	/**
 	 * This beans defines the GraphQL endpoint for the current GraphQL schema, as a {@link String}. The <I>application.properties</I> 
@@ -90,7 +92,7 @@ public class GraphQLPluginAutoConfiguration {
 	@ConditionalOnMissingBean(name = "webClient")
 	public WebClient webClient(String graphqlEndpoint) {
 		logger.debug("Creating default webClient (from the GraphQLSpringAutoConfiguration class) for graphqlEndpoint [webSocketGraphQlClientAllGraphQLCases: context startup date={}}]",
-				formater.format(new Date(applicationContext.getStartupDate())));
+				formatter.format(new Date(applicationContext.getStartupDate())));
 		return WebClient.builder()//
 				.baseUrl(graphqlEndpoint)//
 				.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -102,7 +104,7 @@ public class GraphQLPluginAutoConfiguration {
 	@ConditionalOnMissingBean(name = "httpGraphQlClient")
 	GraphQlClient httpGraphQlClient() {
 		logger.debug("Creating default httpGraphQlClient (from the GraphQLSpringAutoConfiguration class) [webSocketGraphQlClientAllGraphQLCases: context startup date={}}]",
-				formater.format(new Date(applicationContext.getStartupDate())));
+				formatter.format(new Date(applicationContext.getStartupDate())));
 		// The usual way to autowire other beans is to define them as parameters of the bean definition methods. But this doesn't
 		// seem to work when several beans of the same type exist, and one is defined as "@Primary". 
 		// So we retrieve "manually" the needed bean from its name:
@@ -114,7 +116,7 @@ public class GraphQLPluginAutoConfiguration {
 	@ConditionalOnMissingBean(name = "webSocketGraphQlClient")
 	GraphQlClient webSocketGraphQlClient() {
 		logger.debug("Creating default webSocketGraphQlClient (from the GraphQLSpringAutoConfiguration class) [webSocketGraphQlClientAllGraphQLCases: context startup date={}}]",
-				formater.format(new Date(applicationContext.getStartupDate())));
+				formatter.format(new Date(applicationContext.getStartupDate())));
 		WebSocketClient client = new ReactorNettyWebSocketClient();
 		return WebSocketGraphQlClient.builder(graphqlEndpointUrl, client).build();
 	}

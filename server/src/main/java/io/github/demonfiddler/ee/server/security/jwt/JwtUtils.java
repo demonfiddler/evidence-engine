@@ -23,7 +23,6 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -49,8 +48,11 @@ public class JwtUtils {
     private long expirationTime;
     @Value("${jwt.authority-claim}")
     private String authorityClaim;
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public JwtUtils(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public String getHeaderString() {
         return headerString;

@@ -28,18 +28,29 @@ import graphql.schema.DataFetchingEnvironment;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegatePublisher;
 import io.github.demonfiddler.ee.server.model.CountryFormatKind;
 import io.github.demonfiddler.ee.server.model.Publisher;
+import io.github.demonfiddler.ee.server.repository.CommentRepository;
+import io.github.demonfiddler.ee.server.repository.LogRepository;
 import io.github.demonfiddler.ee.server.repository.PublisherRepository;
 import io.github.demonfiddler.ee.server.util.CountryUtils;
-import jakarta.annotation.Resource;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.FormatUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 
 @Component
 public class DataFetchersDelegatePublisherImpl extends DataFetchersDelegateITrackedEntityBaseImpl<Publisher>
     implements DataFetchersDelegatePublisher {
 
-    @Resource
-    private CountryUtils countryUtils;
-    @Resource
-    private PublisherRepository publisherRepository;
+    private final CountryUtils countryUtils;
+    private final PublisherRepository publisherRepository;
+
+    public DataFetchersDelegatePublisherImpl(CommentRepository commentRepository, LogRepository logRepository,
+        EntityUtils entityUtils, FormatUtils formatUtils, SecurityUtils securityUtils, CountryUtils countryUtils,
+        PublisherRepository publisherRepository) {
+
+        super(commentRepository, logRepository, entityUtils, formatUtils, securityUtils);
+        this.countryUtils = countryUtils;
+        this.publisherRepository = publisherRepository;
+    }
 
     @Override
     public List<Publisher> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {

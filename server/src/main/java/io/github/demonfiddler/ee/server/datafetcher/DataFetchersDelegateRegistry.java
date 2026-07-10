@@ -19,7 +19,6 @@
 
 package io.github.demonfiddler.ee.server.datafetcher;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -50,70 +49,96 @@ public class DataFetchersDelegateRegistry {
 	// This singleton is used by POJO to access to the DataFetchersDelegateMyQueryType created by Spring.
 	public static DataFetchersDelegateRegistry dataFetchersDelegateRegistry;
 
-	@Autowired
-	ApplicationContext ctx;
+	@SuppressWarnings("unused")
+	private final ApplicationContext ctx;
+	private final DataFetchersDelegateClaim dataFetchersDelegateClaim;
+	private final DataFetchersDelegateClaimPage dataFetchersDelegateClaimPage;
+	private final DataFetchersDelegateDeclaration dataFetchersDelegateDeclaration;
+	private final DataFetchersDelegateDeclarationPage dataFetchersDelegateDeclarationPage;
+	private final DataFetchersDelegateEntityLink dataFetchersDelegateEntityLink;
+	private final DataFetchersDelegateEntityLinkPage dataFetchersDelegateEntityLinkPage;
+	private final DataFetchersDelegateJournal dataFetchersDelegateJournal;
+	private final DataFetchersDelegateJournalPage dataFetchersDelegateJournalPage;
+	private final DataFetchersDelegateLog dataFetchersDelegateLog;
+	private final DataFetchersDelegateLogPage dataFetchersDelegateLogPage;
+	private final DataFetchersDelegatePerson dataFetchersDelegatePerson;
+	private final DataFetchersDelegatePersonPage dataFetchersDelegatePersonPage;
+	private final DataFetchersDelegatePublication dataFetchersDelegatePublication;
+	private final DataFetchersDelegatePublicationPage dataFetchersDelegatePublicationPage;
+	private final DataFetchersDelegatePublisher dataFetchersDelegatePublisher;
+	private final DataFetchersDelegatePublisherPage dataFetchersDelegatePublisherPage;
+	private final DataFetchersDelegateQuotation dataFetchersDelegateQuotation;
+	private final DataFetchersDelegateQuotationPage dataFetchersDelegateQuotationPage;
+	private final DataFetchersDelegateTopic dataFetchersDelegateTopic;
+	private final DataFetchersDelegateTopicPage dataFetchersDelegateTopicPage;
+	private final DataFetchersDelegateUser dataFetchersDelegateUser;
+	private final DataFetchersDelegateUserPage dataFetchersDelegateUserPage;
+	private final DataFetchersDelegateAuthPayload dataFetchersDelegateAuthPayload;
+	private final DataFetchersDelegateQuery dataFetchersDelegateQuery;
+	private final DataFetchersDelegateMutation dataFetchersDelegateMutation;
+	private final DataFetchersDelegateITrackedEntity<AbstractTrackedEntity> dataFetchersDelegateITrackedEntity;
+	private final DataFetchersDelegateILinkableEntity<AbstractLinkableEntity> dataFetchersDelegateILinkableEntity;
+	private final DataFetchersDelegateIBaseEntity<IBaseEntity> dataFetchersDelegateIBaseEntity;
+	private final DataFetchersDelegateIPage dataFetchersDelegateIPage;
 
-	@Autowired
-	DataFetchersDelegateClaim dataFetchersDelegateClaim;
-	@Autowired
-	DataFetchersDelegateClaimPage dataFetchersDelegateClaimPage;
-	@Autowired
-	DataFetchersDelegateDeclaration dataFetchersDelegateDeclaration;
-	@Autowired
-	DataFetchersDelegateDeclarationPage dataFetchersDelegateDeclarationPage;
-	@Autowired
-	DataFetchersDelegateEntityLink dataFetchersDelegateEntityLink;
-	@Autowired
-	DataFetchersDelegateEntityLinkPage dataFetchersDelegateEntityLinkPage;
-	@Autowired
-	DataFetchersDelegateJournal dataFetchersDelegateJournal;
-	@Autowired
-	DataFetchersDelegateJournalPage dataFetchersDelegateJournalPage;
-	@Autowired
-	DataFetchersDelegateLog dataFetchersDelegateLog;
-	@Autowired
-	DataFetchersDelegateLogPage dataFetchersDelegateLogPage;
-	@Autowired
-	DataFetchersDelegatePerson dataFetchersDelegatePerson;
-	@Autowired
-	DataFetchersDelegatePersonPage dataFetchersDelegatePersonPage;
-	@Autowired
-	DataFetchersDelegatePublication dataFetchersDelegatePublication;
-	@Autowired
-	DataFetchersDelegatePublicationPage dataFetchersDelegatePublicationPage;
-	@Autowired
-	DataFetchersDelegatePublisher dataFetchersDelegatePublisher;
-	@Autowired
-	DataFetchersDelegatePublisherPage dataFetchersDelegatePublisherPage;
-	@Autowired
-	DataFetchersDelegateQuotation dataFetchersDelegateQuotation;
-	@Autowired
-	DataFetchersDelegateQuotationPage dataFetchersDelegateQuotationPage;
-	@Autowired
-	DataFetchersDelegateTopic dataFetchersDelegateTopic;
-	@Autowired
-	DataFetchersDelegateTopicPage dataFetchersDelegateTopicPage;
-	@Autowired
-	DataFetchersDelegateUser dataFetchersDelegateUser;
-	@Autowired
-	DataFetchersDelegateUserPage dataFetchersDelegateUserPage;
-	@Autowired
-	DataFetchersDelegateAuthPayload dataFetchersDelegateAuthPayload;
-	@Autowired
-	DataFetchersDelegateQuery dataFetchersDelegateQuery;
-	@Autowired
-	DataFetchersDelegateMutation dataFetchersDelegateMutation;
-	@Autowired
-	DataFetchersDelegateITrackedEntity<AbstractTrackedEntity> dataFetchersDelegateITrackedEntity;
-	@Autowired
-	DataFetchersDelegateILinkableEntity<AbstractLinkableEntity> dataFetchersDelegateILinkableEntity;
-	@Autowired
-	DataFetchersDelegateIBaseEntity<IBaseEntity> dataFetchersDelegateIBaseEntity;
-	@Autowired
-	DataFetchersDelegateIPage dataFetchersDelegateIPage;
+	public DataFetchersDelegateRegistry(ApplicationContext ctx, DataFetchersDelegateClaim dataFetchersDelegateClaim,
+		DataFetchersDelegateClaimPage dataFetchersDelegateClaimPage,
+		DataFetchersDelegateDeclaration dataFetchersDelegateDeclaration,
+		DataFetchersDelegateDeclarationPage dataFetchersDelegateDeclarationPage,
+		DataFetchersDelegateEntityLink dataFetchersDelegateEntityLink,
+		DataFetchersDelegateEntityLinkPage dataFetchersDelegateEntityLinkPage,
+		DataFetchersDelegateJournal dataFetchersDelegateJournal,
+		DataFetchersDelegateJournalPage dataFetchersDelegateJournalPage,
+		DataFetchersDelegateLog dataFetchersDelegateLog, DataFetchersDelegateLogPage dataFetchersDelegateLogPage,
+		DataFetchersDelegatePerson dataFetchersDelegatePerson,
+		DataFetchersDelegatePersonPage dataFetchersDelegatePersonPage,
+		DataFetchersDelegatePublication dataFetchersDelegatePublication,
+		DataFetchersDelegatePublicationPage dataFetchersDelegatePublicationPage,
+		DataFetchersDelegatePublisher dataFetchersDelegatePublisher,
+		DataFetchersDelegatePublisherPage dataFetchersDelegatePublisherPage,
+		DataFetchersDelegateQuotation dataFetchersDelegateQuotation,
+		DataFetchersDelegateQuotationPage dataFetchersDelegateQuotationPage,
+		DataFetchersDelegateTopic dataFetchersDelegateTopic,
+		DataFetchersDelegateTopicPage dataFetchersDelegateTopicPage, DataFetchersDelegateUser dataFetchersDelegateUser,
+		DataFetchersDelegateUserPage dataFetchersDelegateUserPage,
+		DataFetchersDelegateAuthPayload dataFetchersDelegateAuthPayload,
+		DataFetchersDelegateQuery dataFetchersDelegateQuery, DataFetchersDelegateMutation dataFetchersDelegateMutation,
+		DataFetchersDelegateITrackedEntity<AbstractTrackedEntity> dataFetchersDelegateITrackedEntity,
+		DataFetchersDelegateILinkableEntity<AbstractLinkableEntity> dataFetchersDelegateILinkableEntity,
+		DataFetchersDelegateIBaseEntity<IBaseEntity> dataFetchersDelegateIBaseEntity,
+		DataFetchersDelegateIPage dataFetchersDelegateIPage) {
 
-	public DataFetchersDelegateRegistry() {
-		dataFetchersDelegateRegistry = this;
+		this.ctx = ctx;
+		this.dataFetchersDelegateClaim = dataFetchersDelegateClaim;
+		this.dataFetchersDelegateClaimPage = dataFetchersDelegateClaimPage;
+		this.dataFetchersDelegateDeclaration = dataFetchersDelegateDeclaration;
+		this.dataFetchersDelegateDeclarationPage = dataFetchersDelegateDeclarationPage;
+		this.dataFetchersDelegateEntityLink = dataFetchersDelegateEntityLink;
+		this.dataFetchersDelegateEntityLinkPage = dataFetchersDelegateEntityLinkPage;
+		this.dataFetchersDelegateJournal = dataFetchersDelegateJournal;
+		this.dataFetchersDelegateJournalPage = dataFetchersDelegateJournalPage;
+		this.dataFetchersDelegateLog = dataFetchersDelegateLog;
+		this.dataFetchersDelegateLogPage = dataFetchersDelegateLogPage;
+		this.dataFetchersDelegatePerson = dataFetchersDelegatePerson;
+		this.dataFetchersDelegatePersonPage = dataFetchersDelegatePersonPage;
+		this.dataFetchersDelegatePublication = dataFetchersDelegatePublication;
+		this.dataFetchersDelegatePublicationPage = dataFetchersDelegatePublicationPage;
+		this.dataFetchersDelegatePublisher = dataFetchersDelegatePublisher;
+		this.dataFetchersDelegatePublisherPage = dataFetchersDelegatePublisherPage;
+		this.dataFetchersDelegateQuotation = dataFetchersDelegateQuotation;
+		this.dataFetchersDelegateQuotationPage = dataFetchersDelegateQuotationPage;
+		this.dataFetchersDelegateTopic = dataFetchersDelegateTopic;
+		this.dataFetchersDelegateTopicPage = dataFetchersDelegateTopicPage;
+		this.dataFetchersDelegateUser = dataFetchersDelegateUser;
+		this.dataFetchersDelegateUserPage = dataFetchersDelegateUserPage;
+		this.dataFetchersDelegateAuthPayload = dataFetchersDelegateAuthPayload;
+		this.dataFetchersDelegateQuery = dataFetchersDelegateQuery;
+		this.dataFetchersDelegateMutation = dataFetchersDelegateMutation;
+		this.dataFetchersDelegateITrackedEntity = dataFetchersDelegateITrackedEntity;
+		this.dataFetchersDelegateILinkableEntity = dataFetchersDelegateILinkableEntity;
+		this.dataFetchersDelegateIBaseEntity = dataFetchersDelegateIBaseEntity;
+		this.dataFetchersDelegateIPage = dataFetchersDelegateIPage;
+		DataFetchersDelegateRegistry.dataFetchersDelegateRegistry = this;
 	}
 
 	public DataFetchersDelegateClaim getDataFetchersDelegateClaim() {

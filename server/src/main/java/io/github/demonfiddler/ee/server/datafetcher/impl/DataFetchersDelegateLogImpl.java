@@ -36,22 +36,25 @@ import io.github.demonfiddler.ee.server.model.User;
 import io.github.demonfiddler.ee.server.repository.LogRepository;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
 import io.github.demonfiddler.ee.server.util.FormatUtils;
-import jakarta.annotation.Resource;
 
 @Component
 public class DataFetchersDelegateLogImpl implements DataFetchersDelegateLog {
 
-    @Resource
-    private LogRepository logRepository;
-    @Resource
-    private EntityUtils entityUtils;
-    @Resource
-    private FormatUtils formatUtils;
+    private final LogRepository logRepository;
+    private final EntityUtils entityUtils;
+    private final FormatUtils formatUtils;
+
+    public DataFetchersDelegateLogImpl(LogRepository logRepository, EntityUtils entityUtils, FormatUtils formatUtils) {
+        this.logRepository = logRepository;
+        this.entityUtils = entityUtils;
+        this.formatUtils = formatUtils;
+    }
 
     public List<Log> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {
         return logRepository.findAllById(keys);
     }
 
+    @SuppressWarnings("null")
     @Override
     public Map<Log, User> user(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
         List<Log> keys) {

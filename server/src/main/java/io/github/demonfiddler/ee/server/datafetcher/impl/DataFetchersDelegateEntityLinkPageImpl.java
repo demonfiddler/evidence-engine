@@ -30,14 +30,17 @@ import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateEntityLi
 import io.github.demonfiddler.ee.server.model.EntityLink;
 import io.github.demonfiddler.ee.server.model.EntityLinkPage;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
-import jakarta.annotation.Resource;
 
 @Component
 public class DataFetchersDelegateEntityLinkPageImpl implements DataFetchersDelegateEntityLinkPage {
 
-    @Resource
-    private EntityUtils entityUtils;
+    private final EntityUtils entityUtils;
 
+    public DataFetchersDelegateEntityLinkPageImpl(EntityUtils entityUtils) {
+        this.entityUtils = entityUtils;
+    }
+
+    @SuppressWarnings("null")
     @Override
     public Map<EntityLinkPage, List<EntityLink>> content(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<EntityLinkPage> keys) {

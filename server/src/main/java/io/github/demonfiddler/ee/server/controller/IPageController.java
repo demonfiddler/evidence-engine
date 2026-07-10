@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.graphql.execution.BatchLoaderRegistry;
 import org.springframework.stereotype.Controller;
@@ -44,13 +43,16 @@ import reactor.core.publisher.Mono;
 @SchemaMapping(typeName = "IPage")
 public class IPageController {
 
-	@Autowired
-	protected DataFetchersDelegateIPage dataFetchersDelegateIPage;
+	protected final DataFetchersDelegateIPage dataFetchersDelegateIPage;
 
-	@Autowired
-	protected GraphqlServerUtils graphqlServerUtils;
+	protected final GraphqlServerUtils graphqlServerUtils;
 
-	public IPageController(BatchLoaderRegistry registry) {
+	public IPageController(BatchLoaderRegistry registry, DataFetchersDelegateIPage dataFetchersDelegateIPage,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		this.dataFetchersDelegateIPage = dataFetchersDelegateIPage;
+		this.graphqlServerUtils = graphqlServerUtils;
+
 		// Registering the data loaders is useless if @BatchMapping is used. But we need it here, for backward
 		// compatibility with code developed against previous plugin versions
 		registry.forTypePair(Long.class, IPage.class).registerMappedBatchLoader((keysSet, env) -> {
@@ -66,7 +68,6 @@ public class IPageController {
 				return map;
 			});
 		});
-
 	}
 	
  }

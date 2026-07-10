@@ -22,7 +22,6 @@ package io.github.demonfiddler.ee.server.controller;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
@@ -49,10 +48,14 @@ import io.github.demonfiddler.ee.server.model.TrackedEntityQueryFilter;
 @SchemaMapping(typeName = "Query")
 public class QueryController {
 
-	@Autowired
-	protected DataFetchersDelegateQuery dataFetchersDelegateQuery;
-	@Autowired
-	protected GraphqlServerUtils graphqlServerUtils;
+	private final DataFetchersDelegateQuery dataFetchersDelegateQuery;
+	@SuppressWarnings("unused")
+	private final GraphqlServerUtils graphqlServerUtils;
+
+	public QueryController(DataFetchersDelegateQuery dataFetchersDelegateQuery, GraphqlServerUtils graphqlServerUtils) {
+		this.dataFetchersDelegateQuery = dataFetchersDelegateQuery;
+		this.graphqlServerUtils = graphqlServerUtils;
+	}
 
 	/**
 	 * Loads the data for Query.claims. It returns an Object: the data fetcher implementation may return any type that

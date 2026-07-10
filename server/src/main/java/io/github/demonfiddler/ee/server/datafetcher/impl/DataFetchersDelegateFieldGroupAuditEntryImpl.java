@@ -30,14 +30,17 @@ import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateFieldGro
 import io.github.demonfiddler.ee.server.model.FieldAuditEntry;
 import io.github.demonfiddler.ee.server.model.FieldGroupAuditEntry;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
-import jakarta.annotation.Resource;
 
 @Component
 public class DataFetchersDelegateFieldGroupAuditEntryImpl implements DataFetchersDelegateFieldGroupAuditEntry {
 
-    @Resource
-    protected EntityUtils entityUtils;
+    private final EntityUtils entityUtils;
 
+    public DataFetchersDelegateFieldGroupAuditEntryImpl(EntityUtils entityUtils) {
+        this.entityUtils = entityUtils;
+    }
+
+    @SuppressWarnings("null")
     @Override
     public Map<FieldGroupAuditEntry, List<FieldAuditEntry>> fields(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<FieldGroupAuditEntry> keys) {

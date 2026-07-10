@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
@@ -44,11 +43,15 @@ import io.github.demonfiddler.ee.server.model.LinkGroupAuditEntry;
 @SchemaMapping(typeName = "LinkGroupAuditEntry")
 public class LinkGroupAuditEntryController {
 
-	@Autowired
-	protected DataFetchersDelegateLinkGroupAuditEntry dataFetchersDelegateLinkGroupAuditEntry;
+	protected final DataFetchersDelegateLinkGroupAuditEntry dataFetchersDelegateLinkGroupAuditEntry;
+	protected final GraphqlServerUtils graphqlServerUtils;
 
-	@Autowired
-	protected GraphqlServerUtils graphqlServerUtils;
+	public LinkGroupAuditEntryController(DataFetchersDelegateLinkGroupAuditEntry dataFetchersDelegateLinkGroupAuditEntry,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		this.dataFetchersDelegateLinkGroupAuditEntry = dataFetchersDelegateLinkGroupAuditEntry;
+		this.graphqlServerUtils = graphqlServerUtils;
+	}
 
 	/**
 	 * This methods loads the data for ${dataFetcher.graphQLType}.links. It is generated as the

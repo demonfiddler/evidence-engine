@@ -27,13 +27,15 @@ import io.github.demonfiddler.ee.server.model.EntityKind;
 import io.github.demonfiddler.ee.server.model.FormatKind;
 import io.github.demonfiddler.ee.server.model.LinkAuditEntry;
 import io.github.demonfiddler.ee.server.util.FormatUtils;
-import jakarta.annotation.Resource;
 
 @Component
 public class DataFetchersDelegateLinkAuditEntryImpl implements DataFetchersDelegateLinkAuditEntry {
 
-    @Resource
-    protected FormatUtils formatUtils;
+    protected final FormatUtils formatUtils;
+
+    public DataFetchersDelegateLinkAuditEntryImpl(FormatUtils formatUtils) {
+        this.formatUtils = formatUtils;
+    }
 
     @Override
     public Object linkedEntityKind(DataFetchingEnvironment dataFetchingEnvironment, LinkAuditEntry origin,

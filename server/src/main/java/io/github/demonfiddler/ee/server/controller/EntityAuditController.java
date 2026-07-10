@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
@@ -46,11 +45,15 @@ import io.github.demonfiddler.ee.server.model.LinkAudit;
 @SchemaMapping(typeName = "EntityAudit")
 public class EntityAuditController {
 
-	@Autowired
-	protected DataFetchersDelegateEntityAudit dataFetchersDelegateEntityAudit;
+	protected final DataFetchersDelegateEntityAudit dataFetchersDelegateEntityAudit;
+	protected final GraphqlServerUtils graphqlServerUtils;
 
-	@Autowired
-	protected GraphqlServerUtils graphqlServerUtils;
+	public EntityAuditController(DataFetchersDelegateEntityAudit dataFetchersDelegateEntityAudit,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		this.dataFetchersDelegateEntityAudit = dataFetchersDelegateEntityAudit;
+		this.graphqlServerUtils = graphqlServerUtils;
+	}
 
 	/**
 	 * This methods loads the data for EntityAudit.entity. It is generated as the

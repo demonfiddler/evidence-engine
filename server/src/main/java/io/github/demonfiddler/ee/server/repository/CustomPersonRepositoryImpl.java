@@ -20,9 +20,18 @@
 package io.github.demonfiddler.ee.server.repository;
 
 import io.github.demonfiddler.ee.server.model.Person;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.ProfileUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 
 public class CustomPersonRepositoryImpl extends CustomLinkableEntityRepositoryImpl<Person>
     implements CustomPersonRepository {
+
+    protected CustomPersonRepositoryImpl(EntityUtils entityUtils, ProfileUtils profileUtils,
+        SecurityUtils securityUtils, LinkableEntityRepository linkableEntityRepository) {
+
+        super(entityUtils, profileUtils, securityUtils, linkableEntityRepository);
+    }
 
     @Override
     protected Class<Person> getEntityClass() {

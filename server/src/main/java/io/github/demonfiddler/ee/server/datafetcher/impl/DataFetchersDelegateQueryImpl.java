@@ -78,49 +78,56 @@ import io.github.demonfiddler.ee.server.repository.TrackedEntityRepository;
 import io.github.demonfiddler.ee.server.repository.UserRepository;
 import io.github.demonfiddler.ee.server.util.AuditUtils;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
-import io.github.demonfiddler.ee.server.util.SecurityUtils;
-import jakarta.annotation.Resource;
 import jakarta.persistence.EntityNotFoundException;
 
 @Component
 public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery {
 
-    @Resource
-    private ClaimRepository claimRepository;
-    @Resource
-    private CommentRepository commentRepository;
-    @Resource
-    private DeclarationRepository declarationRepository;
-    @Resource
-    private EntityLinkRepository entityLinkRepository;
-    @Resource
-    private GroupRepository groupRepository;
-    @Resource
-    private JournalRepository journalRepository;
-    @Resource
-    private LogRepository logRepository;
-    @Resource
-    private PersonRepository personRepository;
-    @Resource
-    private PublicationRepository publicationRepository;
-    @Resource
-    private PublisherRepository publisherRepository;
-    @Resource
-    private QuotationRepository quotationRepository;
-    @Resource
-    private StatisticsRepository statisticsRepository;
-    @Resource
-    private TopicRepository topicRepository;
-    @Resource
-    private TrackedEntityRepository trackedEntityRepository;
-    @Resource
-    private UserRepository userRepository;
-    @Resource
-    private EntityUtils entityUtils;
-    @Resource
-    private SecurityUtils securityUtils;
-    @Resource
-    private AuditUtils auditUtils;
+    private final ClaimRepository claimRepository;
+    private final CommentRepository commentRepository;
+    private final DeclarationRepository declarationRepository;
+    private final EntityLinkRepository entityLinkRepository;
+    private final GroupRepository groupRepository;
+    private final JournalRepository journalRepository;
+    private final LogRepository logRepository;
+    private final PersonRepository personRepository;
+    private final PublicationRepository publicationRepository;
+    private final PublisherRepository publisherRepository;
+    private final QuotationRepository quotationRepository;
+    private final StatisticsRepository statisticsRepository;
+    private final TopicRepository topicRepository;
+    private final TrackedEntityRepository trackedEntityRepository;
+    private final UserRepository userRepository;
+    private final EntityUtils entityUtils;
+    private final AuditUtils auditUtils;
+
+    public DataFetchersDelegateQueryImpl(ClaimRepository claimRepository, CommentRepository commentRepository,
+        DeclarationRepository declarationRepository, EntityLinkRepository entityLinkRepository,
+        GroupRepository groupRepository, JournalRepository journalRepository, LogRepository logRepository,
+        PersonRepository personRepository, PublicationRepository publicationRepository,
+        PublisherRepository publisherRepository, QuotationRepository quotationRepository,
+        StatisticsRepository statisticsRepository, TopicRepository topicRepository,
+        TrackedEntityRepository trackedEntityRepository, UserRepository userRepository, EntityUtils entityUtils,
+        AuditUtils auditUtils) {
+
+        this.claimRepository = claimRepository;
+        this.commentRepository = commentRepository;
+        this.declarationRepository = declarationRepository;
+        this.entityLinkRepository = entityLinkRepository;
+        this.groupRepository = groupRepository;
+        this.journalRepository = journalRepository;
+        this.logRepository = logRepository;
+        this.personRepository = personRepository;
+        this.publicationRepository = publicationRepository;
+        this.publisherRepository = publisherRepository;
+        this.quotationRepository = quotationRepository;
+        this.statisticsRepository = statisticsRepository;
+        this.topicRepository = topicRepository;
+        this.trackedEntityRepository = trackedEntityRepository;
+        this.userRepository = userRepository;
+        this.entityUtils = entityUtils;
+        this.auditUtils = auditUtils;
+    }
 
     @Override
     public Claim claimById(DataFetchingEnvironment dataFetchingEnvironment, Long id) {

@@ -28,7 +28,6 @@ import java.util.Optional;
 
 import org.dataloader.BatchLoaderEnvironment;
 import org.dataloader.DataLoader;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
@@ -61,13 +60,16 @@ import reactor.core.publisher.Mono;
 @SchemaMapping(typeName = "Journal")
 public class JournalController {
 
-	@Autowired
 	protected DataFetchersDelegateJournal dataFetchersDelegateJournal;
 
-	@Autowired
 	protected GraphqlServerUtils graphqlServerUtils;
 
-	public JournalController(BatchLoaderRegistry registry) {
+	public JournalController(BatchLoaderRegistry registry, DataFetchersDelegateJournal dataFetchersDelegateJournal,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		this.dataFetchersDelegateJournal = dataFetchersDelegateJournal;
+		this.graphqlServerUtils = graphqlServerUtils;
+
 		// Registering the data loaders is useless if @BatchMapping is used. But we need it here, for backward
 		// compatibility with code developed against previous plugin versions
 		registry.forTypePair(Long.class, Journal.class).registerMappedBatchLoader((keysSet, env) -> {

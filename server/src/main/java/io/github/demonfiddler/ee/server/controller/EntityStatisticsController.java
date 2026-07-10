@@ -22,7 +22,6 @@ package io.github.demonfiddler.ee.server.controller;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
@@ -44,11 +43,15 @@ import io.github.demonfiddler.ee.server.model.FormatKind;
 @SchemaMapping(typeName = "EntityStatistics")
 public class EntityStatisticsController {
 
-	@Autowired
-	protected DataFetchersDelegateEntityStatistics dataFetchersDelegateEntityStatistics;
+	protected final DataFetchersDelegateEntityStatistics dataFetchersDelegateEntityStatistics;
+	protected final GraphqlServerUtils graphqlServerUtils;
 
-	@Autowired
-	protected GraphqlServerUtils graphqlServerUtils;
+	public EntityStatisticsController(DataFetchersDelegateEntityStatistics dataFetchersDelegateEntityStatistics,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		this.dataFetchersDelegateEntityStatistics = dataFetchersDelegateEntityStatistics;
+		this.graphqlServerUtils = graphqlServerUtils;
+	}
 
 	/**
 	 * This method loads the data for ${dataFetcher.graphQLType}.entityKind. It returns an Object: the data fetcher

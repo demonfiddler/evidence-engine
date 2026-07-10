@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.dataloader.BatchLoaderEnvironment;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
@@ -45,11 +44,16 @@ import io.github.demonfiddler.ee.server.model.TopicStatistics;
 @SchemaMapping(typeName = "TopicStatistics")
 public class TopicStatisticsController {
 
-	@Autowired
-	protected DataFetchersDelegateTopicStatistics dataFetchersDelegateTopicStatistics;
+	protected final DataFetchersDelegateTopicStatistics dataFetchersDelegateTopicStatistics;
 
-	@Autowired
-	protected GraphqlServerUtils graphqlServerUtils;
+	protected final GraphqlServerUtils graphqlServerUtils;
+
+	public TopicStatisticsController(DataFetchersDelegateTopicStatistics dataFetchersDelegateTopicStatistics,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		this.dataFetchersDelegateTopicStatistics = dataFetchersDelegateTopicStatistics;
+		this.graphqlServerUtils = graphqlServerUtils;
+	}
 
 	/**
 	 * This methods loads the data for ${dataFetcher.graphQLType}.topic. It is generated as the

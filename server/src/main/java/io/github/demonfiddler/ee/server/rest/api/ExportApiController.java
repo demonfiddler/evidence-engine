@@ -57,7 +57,6 @@ import org.openpdf.text.pdf.PdfPageEventHelper;
 import org.openpdf.text.pdf.PdfWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -136,50 +135,56 @@ public class ExportApiController implements ExportApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExportApiController.class);
     private static final Pattern COLUMN = Pattern.compile("^([a-zA-Z]+)(?:\s+([aA][sS][cC]|[dD][eE][sS][cC]))?$");
 
-    @Autowired
-    private NativeWebRequest request;
-    @Autowired
-    private SecurityUtils securityUtils;
-    @Autowired
-    private TemplateUtils templateUtils;
-    @Autowired
-    private EntityUtils entityUtils;
-    @Autowired
-    private RenderUtils utils;
-    @Autowired
-    private ClaimRepository claimRepository;
-    @Autowired
-    private CommentRepository commentRepository;
-    @Autowired
-    private DeclarationRepository declarationRepository;
-    @Autowired
-    private GroupRepository groupRepository;
-    @Autowired
-    private JournalRepository journalRepository;
-    @Autowired
-    private LogRepository logRepository;
-    @Autowired
-    private PersonRepository personRepository;
-    @Autowired
-    private PublicationRepository publicationRepository;
-    @Autowired
-    private PublisherRepository publisherRepository;
-    @Autowired
-    private QuotationRepository quotationRepository;
-    @Autowired
-    private TopicRepository topicRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private TrackedEntityRepository trackedEntityRepository;
-    @Autowired
-    private RenderUtils renderUtils;
+    private final NativeWebRequest request;
+    private final SecurityUtils securityUtils;
+    private final TemplateUtils templateUtils;
+    private final EntityUtils entityUtils;
+    private final RenderUtils renderUtils;
+    private final ClaimRepository claimRepository;
+    private final CommentRepository commentRepository;
+    private final DeclarationRepository declarationRepository;
+    private final GroupRepository groupRepository;
+    private final JournalRepository journalRepository;
+    private final LogRepository logRepository;
+    private final PersonRepository personRepository;
+    private final PublicationRepository publicationRepository;
+    private final PublisherRepository publisherRepository;
+    private final QuotationRepository quotationRepository;
+    private final TopicRepository topicRepository;
+    private final UserRepository userRepository;
+    private final TrackedEntityRepository trackedEntityRepository;
     @Value("${web.server.url}")
     private String webServerUrl;
     @Value("${data.server.url}")
     private String dataServerUrl;
 
-    public ExportApiController() {
+    public ExportApiController(NativeWebRequest request, SecurityUtils securityUtils, TemplateUtils templateUtils,
+        EntityUtils entityUtils, RenderUtils renderUtils, ClaimRepository claimRepository,
+        CommentRepository commentRepository, DeclarationRepository declarationRepository,
+        GroupRepository groupRepository, JournalRepository journalRepository, LogRepository logRepository,
+        PersonRepository personRepository, PublicationRepository publicationRepository,
+        PublisherRepository publisherRepository, QuotationRepository quotationRepository,
+        TopicRepository topicRepository, UserRepository userRepository,
+        TrackedEntityRepository trackedEntityRepository) {
+
+        this.request = request;
+        this.securityUtils = securityUtils;
+        this.templateUtils = templateUtils;
+        this.entityUtils = entityUtils;
+        this.renderUtils = renderUtils;
+        this.claimRepository = claimRepository;
+        this.commentRepository = commentRepository;
+        this.declarationRepository = declarationRepository;
+        this.groupRepository = groupRepository;
+        this.journalRepository = journalRepository;
+        this.logRepository = logRepository;
+        this.personRepository = personRepository;
+        this.publicationRepository = publicationRepository;
+        this.publisherRepository = publisherRepository;
+        this.quotationRepository = quotationRepository;
+        this.topicRepository = topicRepository;
+        this.userRepository = userRepository;
+        this.trackedEntityRepository = trackedEntityRepository;
     }
 
     @Override
@@ -489,7 +494,7 @@ public class ExportApiController implements ExportApi {
         root.put("renderDetails", renderDetails);
         root.put("allColumns", allColumns);
         root.put("columns", tableColumns);
-        root.put("utils", utils);
+        root.put("utils", renderUtils);
 
         // Set up output streams to pass to FreeMarker.
         String fileExt;

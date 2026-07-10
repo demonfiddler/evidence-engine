@@ -51,6 +51,7 @@ public class TrackedEntityColumns {
 
     private static final Column<ITrackedEntity> STATUS = new Column<>("status", "Status", ColumnType.STRING, SINGLE,
         (rec, raw) -> StatusKind.valueOf(rec.getStatus()).label());
+    @SuppressWarnings("null")
     private static final Column<ITrackedEntity> RATING =
         new Column<>("rating", "Rating", ColumnType.NUMBER, SINGLE, TrackedEntityColumns::renderRating);
     private static final Column<ITrackedEntity> CREATED = new Column<>("created", "Created", ColumnType.DATETIME, SINGLE, null);

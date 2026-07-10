@@ -27,7 +27,6 @@ import java.time.temporal.TemporalAccessor;
 
 import org.hibernate.Hibernate;
 import org.hibernate.proxy.HibernateProxy;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import io.github.demonfiddler.ee.server.model.Claim;
@@ -56,11 +55,11 @@ public class RenderUtils {
     private static final DateTimeFormatter DATETIME = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
     private static final String[] EMPTY_STRINGS = {};
 
-    @Autowired
-    private CountryUtils countryUtils;
+    private final CountryUtils countryUtils;
 
-    public RenderUtils() {
-        instance = this;
+    public RenderUtils(CountryUtils countryUtils) {
+        this.countryUtils = countryUtils;
+        RenderUtils.instance = this;
     }
 
     public String[] split(String s) {

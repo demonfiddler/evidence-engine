@@ -43,7 +43,6 @@ import io.github.demonfiddler.ee.server.repository.LogRepository;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
 import io.github.demonfiddler.ee.server.util.FormatUtils;
 import io.github.demonfiddler.ee.server.util.SecurityUtils;
-import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
@@ -53,18 +52,23 @@ import jakarta.persistence.PersistenceContext;
  */
 abstract class DataFetchersDelegateITrackedEntityBaseImpl<T extends ITrackedEntity> {
 
-    @Resource
-    protected CommentRepository commentRepository;
-    @Resource
-    protected LogRepository logRepository;
-    @Resource
-    protected EntityUtils entityUtils;
-    @Resource
-    protected FormatUtils formatUtils;
-    @Resource
-    protected SecurityUtils securityUtils;
+    protected final CommentRepository commentRepository;
+    protected final LogRepository logRepository;
+    protected final EntityUtils entityUtils;
+    protected final FormatUtils formatUtils;
+    protected final SecurityUtils securityUtils;
     @PersistenceContext
     EntityManager em;
+
+    public DataFetchersDelegateITrackedEntityBaseImpl(CommentRepository commentRepository, LogRepository logRepository,
+        EntityUtils entityUtils, FormatUtils formatUtils, SecurityUtils securityUtils) {
+
+        this.commentRepository = commentRepository;
+        this.logRepository = logRepository;
+        this.entityUtils = entityUtils;
+        this.formatUtils = formatUtils;
+        this.securityUtils = securityUtils;
+    }
 
     public final Object entityKind(DataFetchingEnvironment dataFetchingEnvironment, T origin, FormatKind format) {
         EntityKind entityKind = EntityKind.valueOf(origin.getEntityKind());
@@ -84,6 +88,7 @@ abstract class DataFetchersDelegateITrackedEntityBaseImpl<T extends ITrackedEnti
         return formatUtils.formatStatusKind(status, format);
     }
 
+    @SuppressWarnings("null")
     public final Map<T, User> createdByUser(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<T> keys) {
 
@@ -93,6 +98,7 @@ abstract class DataFetchersDelegateITrackedEntityBaseImpl<T extends ITrackedEnti
         return entityUtils.getValuesMap(keys, ITrackedEntity::getCreatedByUser);
     }
 
+    @SuppressWarnings("null")
     public final Map<T, User> updatedByUser(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<T> keys) {
 

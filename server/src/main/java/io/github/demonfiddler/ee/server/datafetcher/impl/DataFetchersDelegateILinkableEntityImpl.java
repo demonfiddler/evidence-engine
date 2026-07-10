@@ -26,16 +26,28 @@ import org.springframework.stereotype.Component;
 
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateILinkableEntity;
 import io.github.demonfiddler.ee.server.model.AbstractLinkableEntity;
+import io.github.demonfiddler.ee.server.repository.CommentRepository;
+import io.github.demonfiddler.ee.server.repository.EntityLinkRepository;
 import io.github.demonfiddler.ee.server.repository.LinkableEntityRepository;
-import jakarta.annotation.Resource;
+import io.github.demonfiddler.ee.server.repository.LogRepository;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.FormatUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 
 @Component
 public class DataFetchersDelegateILinkableEntityImpl
     extends DataFetchersDelegateILinkableEntityBaseImpl<AbstractLinkableEntity>
     implements DataFetchersDelegateILinkableEntity<AbstractLinkableEntity> {
 
-    @Resource
-    LinkableEntityRepository linkableEntityRepository;
+    private final LinkableEntityRepository linkableEntityRepository;
+
+    public DataFetchersDelegateILinkableEntityImpl(CommentRepository commentRepository, LogRepository logRepository,
+        EntityUtils entityUtils, FormatUtils formatUtils, SecurityUtils securityUtils,
+        EntityLinkRepository entityLinkRepository, LinkableEntityRepository linkableEntityRepository) {
+
+        super(commentRepository, logRepository, entityUtils, formatUtils, securityUtils, entityLinkRepository);
+        this.linkableEntityRepository = linkableEntityRepository;
+    }
 
     @Override
     public List<AbstractLinkableEntity> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {

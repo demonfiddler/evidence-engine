@@ -28,7 +28,6 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.graphql.client.GraphQlClient;
 import org.springframework.stereotype.Component;
@@ -113,19 +112,18 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(QueryExecutor.class);
 
-	@Autowired
-	@Qualifier("httpGraphQlClient")
 	GraphQlClient graphQlClient;
 
-	@Autowired
-	GraphqlClientUtilsEx graphqlClientUtils;
+	final GraphqlClientUtilsEx graphqlClientUtils;
 
-	@Autowired
-	@Qualifier("queryReactiveExecutor")
-	QueryReactiveExecutor queryReactiveExecutor;
+	final QueryReactiveExecutor queryReactiveExecutor;
 
-	GraphqlUtils graphqlUtils = GraphqlUtils.graphqlUtils; // must be set that way, to be used in the constructor
-	public QueryExecutor() {
+	final GraphqlUtils graphqlUtils = GraphqlUtils.graphqlUtils; // must be set that way, to be used in the constructor
+
+	public QueryExecutor(@Qualifier("httpGraphQlClient") GraphQlClient graphQlClient,
+		GraphqlClientUtilsEx graphqlClientUtils,
+		@Qualifier("queryReactiveExecutor") QueryReactiveExecutor queryReactiveExecutor) {
+
 		if (!"2.8".equals(this.graphqlUtils.getRuntimeVersion())) {
 			throw new RuntimeException(
 				"The GraphQL runtime version doesn't match the GraphQL plugin version. The runtime's version is '"
@@ -133,6 +131,9 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 		}
 		CustomScalarRegistryInitializer.initCustomScalarRegistry();
 		DirectiveRegistryInitializer.initDirectiveRegistry();
+		this.graphQlClient = graphQlClient;
+		this.graphqlClientUtils = graphqlClientUtils;
+		this.queryReactiveExecutor = queryReactiveExecutor;
 	}
 
 	/**

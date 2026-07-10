@@ -27,7 +27,6 @@ import org.slf4j.Logger;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
 import io.github.demonfiddler.ee.server.util.ProfileUtils;
 import io.github.demonfiddler.ee.server.util.SecurityUtils;
-import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
@@ -43,19 +42,19 @@ abstract class AbstractCustomRepositoryImpl {
 
     @PersistenceContext
     EntityManager em;
-    @Resource
-    EntityUtils entityUtils;
-    @Resource
-    ProfileUtils profileUtils;
-    @Resource
-    SecurityUtils securityUtils;
+    final EntityUtils entityUtils;
+    final ProfileUtils profileUtils;
+    final SecurityUtils securityUtils;
     /**
      * Keeps track of which named queries have been registered in JPA. N.B. Requires external synchronisation: access is
      * typically synchronized in the findByXxx() methods of subclasses.
      */
     final Set<String> queryNames = new HashSet<>();
 
-    AbstractCustomRepositoryImpl() {
+    AbstractCustomRepositoryImpl(EntityUtils entityUtils, ProfileUtils profileUtils, SecurityUtils securityUtils) {
+        this.entityUtils = entityUtils;
+        this.profileUtils = profileUtils;
+        this.securityUtils = securityUtils;
     }
 
     abstract Logger getLogger();

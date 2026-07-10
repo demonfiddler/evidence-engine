@@ -24,7 +24,6 @@ import static io.github.demonfiddler.ee.server.util.Constants.PROFILE_INTEGRATIO
 import static io.github.demonfiddler.ee.server.util.Constants.PROFILE_PRODUCTION;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -34,8 +33,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProfileUtils {
 
-    @Autowired
-    Environment env;
+    private final Environment env;
+
+    public ProfileUtils(Environment env) {
+        this.env = env;
+    }
 
     /**
      * Indicates whether the specified profile is active.

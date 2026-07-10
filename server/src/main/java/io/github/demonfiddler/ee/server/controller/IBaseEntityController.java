@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.graphql.execution.BatchLoaderRegistry;
 import org.springframework.stereotype.Controller;
@@ -44,13 +43,17 @@ import reactor.core.publisher.Mono;
 @SchemaMapping(typeName = "IBaseEntity")
 public class IBaseEntityController {
 
-	@Autowired
-	protected DataFetchersDelegateIBaseEntity<IBaseEntity> dataFetchersDelegateIBaseEntity;
+	protected final DataFetchersDelegateIBaseEntity<IBaseEntity> dataFetchersDelegateIBaseEntity;
 
-	@Autowired
-	protected GraphqlServerUtils graphqlServerUtils;
+	protected final GraphqlServerUtils graphqlServerUtils;
 
-	public IBaseEntityController(BatchLoaderRegistry registry) {
+	public IBaseEntityController(BatchLoaderRegistry registry,
+		DataFetchersDelegateIBaseEntity<IBaseEntity> dataFetchersDelegateIBaseEntity,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		this.dataFetchersDelegateIBaseEntity = dataFetchersDelegateIBaseEntity;
+		this.graphqlServerUtils = graphqlServerUtils;
+
 		// Registering the data loaders is useless if @BatchMapping is used. But we need it here, for backward
 		// compatibility with code developed against previous plugin versions.
 		registry.forTypePair(Long.class, IBaseEntity.class).registerMappedBatchLoader((keysSet, env) -> {

@@ -31,14 +31,17 @@ import io.github.demonfiddler.ee.server.model.EntityStatistics;
 import io.github.demonfiddler.ee.server.model.Topic;
 import io.github.demonfiddler.ee.server.model.TopicStatistics;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
-import jakarta.annotation.Resource;
 
 @Component
 public class DataFetchersDelegateTopicStatisticsImpl implements DataFetchersDelegateTopicStatistics {
 
-    @Resource
-    protected EntityUtils entityUtils;
+    protected final EntityUtils entityUtils;
 
+    public DataFetchersDelegateTopicStatisticsImpl(EntityUtils entityUtils) {
+        this.entityUtils = entityUtils;
+    }
+
+    @SuppressWarnings("null")
     @Override
     public Map<TopicStatistics, Topic> topic(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<TopicStatistics> keys) {
@@ -46,6 +49,7 @@ public class DataFetchersDelegateTopicStatisticsImpl implements DataFetchersDele
         return entityUtils.getValuesMap(keys, TopicStatistics::getTopic);
     }
 
+    @SuppressWarnings("null")
     @Override
     public Map<TopicStatistics, List<EntityStatistics>> entityStatistics(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<TopicStatistics> keys) {

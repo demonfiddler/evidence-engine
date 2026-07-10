@@ -30,14 +30,16 @@ import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateJournalP
 import io.github.demonfiddler.ee.server.model.Journal;
 import io.github.demonfiddler.ee.server.model.JournalPage;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
-import jakarta.annotation.Resource;
-
 @Component
 public class DataFetchersDelegateJournalPageImpl implements DataFetchersDelegateJournalPage {
 
-    @Resource
-    private EntityUtils entityUtils;
+    private final EntityUtils entityUtils;
 
+    public DataFetchersDelegateJournalPageImpl(EntityUtils entityUtils) {
+        this.entityUtils = entityUtils;
+    }
+
+    @SuppressWarnings("null")
     @Override
     public Map<JournalPage, List<Journal>> content(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<JournalPage> keys) {

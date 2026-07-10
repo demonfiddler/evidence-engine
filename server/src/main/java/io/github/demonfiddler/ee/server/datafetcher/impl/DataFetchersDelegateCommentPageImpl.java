@@ -30,14 +30,18 @@ import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateCommentP
 import io.github.demonfiddler.ee.server.model.Comment;
 import io.github.demonfiddler.ee.server.model.CommentPage;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
-import jakarta.annotation.Resource;
+ 
 
 @Component
 public class DataFetchersDelegateCommentPageImpl implements DataFetchersDelegateCommentPage {
 
-    @Resource
-    private EntityUtils util;
+    private final EntityUtils util;
 
+    public DataFetchersDelegateCommentPageImpl(EntityUtils util) {
+        this.util = util;
+    }
+
+    @SuppressWarnings("null")
     @Override
     public Map<CommentPage, List<Comment>> content(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<CommentPage> keys) {

@@ -26,15 +26,27 @@ import org.springframework.stereotype.Component;
 
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateQuotation;
 import io.github.demonfiddler.ee.server.model.Quotation;
+import io.github.demonfiddler.ee.server.repository.CommentRepository;
+import io.github.demonfiddler.ee.server.repository.EntityLinkRepository;
+import io.github.demonfiddler.ee.server.repository.LogRepository;
 import io.github.demonfiddler.ee.server.repository.QuotationRepository;
-import jakarta.annotation.Resource;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.FormatUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 
 @Component
 public class DataFetchersDelegateQuotationImpl extends DataFetchersDelegateILinkableEntityBaseImpl<Quotation>
     implements DataFetchersDelegateQuotation {
 
-    @Resource
-    private QuotationRepository quotationRepository;
+    private final QuotationRepository quotationRepository;
+
+    public DataFetchersDelegateQuotationImpl(CommentRepository commentRepository, LogRepository logRepository,
+        EntityUtils entityUtils, FormatUtils formatUtils, SecurityUtils securityUtils,
+        EntityLinkRepository entityLinkRepository, QuotationRepository quotationRepository) {
+
+        super(commentRepository, logRepository, entityUtils, formatUtils, securityUtils, entityLinkRepository);
+        this.quotationRepository = quotationRepository;
+    }
 
     @Override
     public List<Quotation> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {

@@ -24,6 +24,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.graphql.execution.BatchLoaderRegistry;
 
+import com.graphql_java_generator.server.util.GraphqlServerUtils;
+
 import io.github.demonfiddler.ee.server.controller.AuthPayloadController;
 import io.github.demonfiddler.ee.server.controller.ClaimController;
 import io.github.demonfiddler.ee.server.controller.ClaimPageController;
@@ -65,6 +67,50 @@ import io.github.demonfiddler.ee.server.controller.TopicPageController;
 import io.github.demonfiddler.ee.server.controller.TopicStatisticsController;
 import io.github.demonfiddler.ee.server.controller.UserController;
 import io.github.demonfiddler.ee.server.controller.UserPageController;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateAuthPayload;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateClaim;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateClaimPage;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateComment;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateCommentPage;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateDeclaration;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateDeclarationPage;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateEntityAudit;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateEntityLink;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateEntityLinkPage;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateEntityStatistics;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateFieldAudit;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateFieldGroupAuditEntry;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateGroup;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateGroupPage;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateIBaseEntity;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateILinkableEntity;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateIPage;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateITrackedEntity;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateJournal;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateJournalPage;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateLinkAudit;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateLinkAuditEntry;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateLinkGroupAuditEntry;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateLog;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateLogPage;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateMutation;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegatePerson;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegatePersonPage;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegatePublication;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegatePublicationPage;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegatePublisher;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegatePublisherPage;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateQuery;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateQuotation;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateQuotationPage;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateTopic;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateTopicPage;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateTopicStatistics;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateUser;
+import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateUserPage;
+import io.github.demonfiddler.ee.server.model.AbstractLinkableEntity;
+import io.github.demonfiddler.ee.server.model.AbstractTrackedEntity;
+import io.github.demonfiddler.ee.server.model.IBaseEntity;
 
 /**
  * This Spring autoconfiguration class is used to declare default beans, that can then be overridden, thanks to the
@@ -83,8 +129,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "claimController")
-	ClaimController claimController(BatchLoaderRegistry registry) {
-		return new ClaimController(registry);
+	ClaimController claimController(BatchLoaderRegistry registry, DataFetchersDelegateClaim dataFetchersDelegateClaim,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		return new ClaimController(registry, dataFetchersDelegateClaim, graphqlServerUtils);
 	}
 
 	/**
@@ -97,8 +145,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "claimPageController")
-	ClaimPageController claimPageController(BatchLoaderRegistry registry) {
-		return new ClaimPageController(registry);
+	ClaimPageController claimPageController(BatchLoaderRegistry registry,
+		DataFetchersDelegateClaimPage dataFetchersDelegateClaimPage, GraphqlServerUtils graphqlServerUtils) {
+
+		return new ClaimPageController(registry, dataFetchersDelegateClaimPage, graphqlServerUtils);
 	}
 
 	/**
@@ -111,8 +161,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "commentController")
-	CommentController commentController(BatchLoaderRegistry registry) {
-		return new CommentController(registry);
+	CommentController commentController(BatchLoaderRegistry registry,
+		DataFetchersDelegateComment dataFetchersDelegateComment, GraphqlServerUtils graphqlServerUtils) {
+
+		return new CommentController(registry, dataFetchersDelegateComment, graphqlServerUtils);
 	}
 
 	/**
@@ -125,8 +177,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "commentPageController")
-	CommentPageController commentPageController(BatchLoaderRegistry registry) {
-		return new CommentPageController(registry);
+	CommentPageController commentPageController(BatchLoaderRegistry registry,
+		DataFetchersDelegateCommentPage dataFetchersDelegateCommentPage, GraphqlServerUtils graphqlServerUtils) {
+
+		return new CommentPageController(registry, dataFetchersDelegateCommentPage, graphqlServerUtils);
 	}
 
 	/**
@@ -139,8 +193,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "declarationController")
-	DeclarationController declarationController(BatchLoaderRegistry registry) {
-		return new DeclarationController(registry);
+	DeclarationController declarationController(BatchLoaderRegistry registry,
+		DataFetchersDelegateDeclaration dataFetchersDelegateDeclaration, GraphqlServerUtils graphqlServerUtils) {
+
+		return new DeclarationController(registry, dataFetchersDelegateDeclaration, graphqlServerUtils);
 	}
 
 	/**
@@ -153,8 +209,11 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "declarationPageController")
-	DeclarationPageController declarationPageController(BatchLoaderRegistry registry) {
-		return new DeclarationPageController(registry);
+	DeclarationPageController declarationPageController(BatchLoaderRegistry registry,
+		DataFetchersDelegateDeclarationPage dataFetchersDelegateDeclarationPage,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		return new DeclarationPageController(registry, dataFetchersDelegateDeclarationPage, graphqlServerUtils);
 	}
 
 	/**
@@ -167,8 +226,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "entityLinkController")
-	EntityLinkController entityLinkController(BatchLoaderRegistry registry) {
-		return new EntityLinkController(registry);
+	EntityLinkController entityLinkController(BatchLoaderRegistry registry,
+		DataFetchersDelegateEntityLink dataFetchersDelegateEntityLink, GraphqlServerUtils graphqlServerUtils) {
+
+		return new EntityLinkController(registry, dataFetchersDelegateEntityLink, graphqlServerUtils);
 	}
 
 	/**
@@ -181,8 +242,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "entityLinkPageController")
-	EntityLinkPageController entityLinkPageController(BatchLoaderRegistry registry) {
-		return new EntityLinkPageController(registry);
+	EntityLinkPageController entityLinkPageController(BatchLoaderRegistry registry,
+		DataFetchersDelegateEntityLinkPage dataFetchersDelegateEntityLinkPage, GraphqlServerUtils graphqlServerUtils) {
+
+		return new EntityLinkPageController(registry, dataFetchersDelegateEntityLinkPage, graphqlServerUtils);
 	}
 
 	/**
@@ -195,8 +258,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "journalController")
-	JournalController journalController(BatchLoaderRegistry registry) {
-		return new JournalController(registry);
+	JournalController journalController(BatchLoaderRegistry registry,
+		DataFetchersDelegateJournal dataFetchersDelegateJournal, GraphqlServerUtils graphqlServerUtils) {
+
+		return new JournalController(registry, dataFetchersDelegateJournal, graphqlServerUtils);
 	}
 
 	/**
@@ -209,8 +274,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "journalPageController")
-	JournalPageController journalPageController(BatchLoaderRegistry registry) {
-		return new JournalPageController(registry);
+	JournalPageController journalPageController(BatchLoaderRegistry registry,
+		DataFetchersDelegateJournalPage dataFetchersDelegateJournalPage, GraphqlServerUtils graphqlServerUtils) {
+
+		return new JournalPageController(registry, dataFetchersDelegateJournalPage, graphqlServerUtils);
 	}
 
 	/**
@@ -222,8 +289,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "entityAuditController")
-	EntityAuditController entityAuditController(BatchLoaderRegistry registry) {
-		return new EntityAuditController();
+	EntityAuditController entityAuditController(BatchLoaderRegistry registry,
+		DataFetchersDelegateEntityAudit dataFetchersDelegateEntityAudit, GraphqlServerUtils graphqlServerUtils) {
+
+		return new EntityAuditController(dataFetchersDelegateEntityAudit, graphqlServerUtils);
 	}
 
 	/**
@@ -235,8 +304,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "linkAuditController")
-	LinkAuditController linkAuditController(BatchLoaderRegistry registry) {
-		return new LinkAuditController();
+	LinkAuditController linkAuditController(BatchLoaderRegistry registry,
+		DataFetchersDelegateLinkAudit dataFetchersDelegateLinkAudit, GraphqlServerUtils graphqlServerUtils) {
+
+		return new LinkAuditController(dataFetchersDelegateLinkAudit, graphqlServerUtils);
 	}
 
 	/**
@@ -248,8 +319,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "linkAuditEntryController")
-	LinkAuditEntryController linkAuditEntryController(BatchLoaderRegistry registry) {
-		return new LinkAuditEntryController();
+	LinkAuditEntryController linkAuditEntryController(BatchLoaderRegistry registry,
+		DataFetchersDelegateLinkAuditEntry dataFetchersDelegateLinkAuditEntry, GraphqlServerUtils graphqlServerUtils) {
+
+		return new LinkAuditEntryController(dataFetchersDelegateLinkAuditEntry, graphqlServerUtils);
 	}
 
 	/**
@@ -261,8 +334,11 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "linkGroupAuditEntryController")
-	LinkGroupAuditEntryController linkGroupAuditEntryController(BatchLoaderRegistry registry) {
-		return new LinkGroupAuditEntryController();
+	LinkGroupAuditEntryController linkGroupAuditEntryController(BatchLoaderRegistry registry,
+		DataFetchersDelegateLinkGroupAuditEntry dataFetchersDelegateLinkGroupAuditEntry,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		return new LinkGroupAuditEntryController(dataFetchersDelegateLinkGroupAuditEntry, graphqlServerUtils);
 	}
 
 	/**
@@ -274,8 +350,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "fieldAuditController")
-	FieldAuditController fieldAuditController(BatchLoaderRegistry registry) {
-		return new FieldAuditController();
+	FieldAuditController fieldAuditController(BatchLoaderRegistry registry,
+		DataFetchersDelegateFieldAudit dataFetchersDelegateFieldAudit, GraphqlServerUtils graphqlServerUtils) {
+
+		return new FieldAuditController(dataFetchersDelegateFieldAudit, graphqlServerUtils);
 	}
 
 	/**
@@ -288,8 +366,11 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "fieldGroupAuditEntryController")
-	FieldGroupAuditEntryController fieldGroupAuditEntryController(BatchLoaderRegistry registry) {
-		return new FieldGroupAuditEntryController();
+	FieldGroupAuditEntryController fieldGroupAuditEntryController(BatchLoaderRegistry registry,
+		DataFetchersDelegateFieldGroupAuditEntry dataFetchersDelegateFieldGroupAuditEntry,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		return new FieldGroupAuditEntryController(dataFetchersDelegateFieldGroupAuditEntry, graphqlServerUtils);
 	}
 
 	/**
@@ -302,8 +383,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "logController")
-	LogController logController(BatchLoaderRegistry registry) {
-		return new LogController(registry);
+	LogController logController(BatchLoaderRegistry registry, DataFetchersDelegateLog dataFetchersDelegateLog,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		return new LogController(registry, dataFetchersDelegateLog, graphqlServerUtils);
 	}
 
 	/**
@@ -316,8 +399,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "logPageController")
-	LogPageController logPageController(BatchLoaderRegistry registry) {
-		return new LogPageController(registry);
+	LogPageController logPageController(BatchLoaderRegistry registry,
+		DataFetchersDelegateLogPage dataFetchersDelegateLogPage, GraphqlServerUtils graphqlServerUtils) {
+
+		return new LogPageController(registry, dataFetchersDelegateLogPage, graphqlServerUtils);
 	}
 
 	/**
@@ -330,8 +415,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "personController")
-	PersonController personController(BatchLoaderRegistry registry) {
-		return new PersonController(registry);
+	PersonController personController(BatchLoaderRegistry registry,
+		DataFetchersDelegatePerson dataFetchersDelegatePerson, GraphqlServerUtils graphqlServerUtils) {
+
+		return new PersonController(registry, dataFetchersDelegatePerson, graphqlServerUtils);
 	}
 
 	/**
@@ -344,8 +431,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "personPageController")
-	PersonPageController personPageController(BatchLoaderRegistry registry) {
-		return new PersonPageController(registry);
+	PersonPageController personPageController(BatchLoaderRegistry registry,
+		DataFetchersDelegatePersonPage dataFetchersDelegatePersonPage, GraphqlServerUtils graphqlServerUtils) {
+
+		return new PersonPageController(registry, dataFetchersDelegatePersonPage, graphqlServerUtils);
 	}
 
 	/**
@@ -358,8 +447,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "publicationController")
-	PublicationController publicationController(BatchLoaderRegistry registry) {
-		return new PublicationController(registry);
+	PublicationController publicationController(BatchLoaderRegistry registry,
+		DataFetchersDelegatePublication dataFetchersDelegatePublication, GraphqlServerUtils graphqlServerUtils) {
+
+		return new PublicationController(registry, dataFetchersDelegatePublication, graphqlServerUtils);
 	}
 
 	/**
@@ -372,8 +463,11 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "publicationPageController")
-	PublicationPageController publicationPageController(BatchLoaderRegistry registry) {
-		return new PublicationPageController(registry);
+	PublicationPageController publicationPageController(BatchLoaderRegistry registry,
+		DataFetchersDelegatePublicationPage dataFetchersDelegatePublicationPage,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		return new PublicationPageController(registry, dataFetchersDelegatePublicationPage, graphqlServerUtils);
 	}
 
 	/**
@@ -386,8 +480,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "publisherController")
-	PublisherController publisherController(BatchLoaderRegistry registry) {
-		return new PublisherController(registry);
+	PublisherController publisherController(BatchLoaderRegistry registry,
+		DataFetchersDelegatePublisher dataFetchersDelegatePublisher, GraphqlServerUtils graphqlServerUtils) {
+
+		return new PublisherController(registry, dataFetchersDelegatePublisher, graphqlServerUtils);
 	}
 
 	/**
@@ -400,8 +496,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "publisherPageController")
-	PublisherPageController publisherPageController(BatchLoaderRegistry registry) {
-		return new PublisherPageController(registry);
+	PublisherPageController publisherPageController(BatchLoaderRegistry registry,
+		DataFetchersDelegatePublisherPage dataFetchersDelegatePublisherPage, GraphqlServerUtils graphqlServerUtils) {
+
+		return new PublisherPageController(registry, dataFetchersDelegatePublisherPage, graphqlServerUtils);
 	}
 
 	/**
@@ -414,8 +512,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "quotationController")
-	QuotationController quotationController(BatchLoaderRegistry registry) {
-		return new QuotationController(registry);
+	QuotationController quotationController(BatchLoaderRegistry registry,
+		DataFetchersDelegateQuotation dataFetchersDelegateQuotation, GraphqlServerUtils graphqlServerUtils) {
+
+		return new QuotationController(registry, dataFetchersDelegateQuotation, graphqlServerUtils);
 	}
 
 	/**
@@ -428,8 +528,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "quotationPageController")
-	QuotationPageController quotationPageController(BatchLoaderRegistry registry) {
-		return new QuotationPageController(registry);
+	QuotationPageController quotationPageController(BatchLoaderRegistry registry,
+		DataFetchersDelegateQuotationPage dataFetchersDelegateQuotationPage, GraphqlServerUtils graphqlServerUtils) {
+
+		return new QuotationPageController(registry, dataFetchersDelegateQuotationPage, graphqlServerUtils);
 	}
 
 	/**
@@ -442,8 +544,11 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "entityStatisticsController")
-	EntityStatisticsController entityStatisticsController(BatchLoaderRegistry registry) {
-		return new EntityStatisticsController();
+	EntityStatisticsController entityStatisticsController(BatchLoaderRegistry registry,
+		DataFetchersDelegateEntityStatistics dataFetchersDelegateEntityStatistics,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		return new EntityStatisticsController(dataFetchersDelegateEntityStatistics, graphqlServerUtils);
 	}
 
 	/**
@@ -456,8 +561,11 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "topicStatisticsController")
-	TopicStatisticsController topicStatisticsController(BatchLoaderRegistry registry) {
-		return new TopicStatisticsController();
+	TopicStatisticsController topicStatisticsController(BatchLoaderRegistry registry,
+		DataFetchersDelegateTopicStatistics dataFetchersDelegateTopicStatistics,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		return new TopicStatisticsController(dataFetchersDelegateTopicStatistics, graphqlServerUtils);
 	}
 
 	/**
@@ -470,8 +578,8 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "topicController")
-	TopicController topicController(BatchLoaderRegistry registry) {
-		return new TopicController(registry);
+	TopicController topicController(BatchLoaderRegistry registry, DataFetchersDelegateTopic dataFetchersDelegateTopic) {
+		return new TopicController(registry, dataFetchersDelegateTopic);
 	}
 
 	/**
@@ -484,8 +592,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "topicPageController")
-	TopicPageController topicPageController(BatchLoaderRegistry registry) {
-		return new TopicPageController(registry);
+	TopicPageController topicPageController(BatchLoaderRegistry registry,
+		DataFetchersDelegateTopicPage dataFetchersDelegateTopicPage, GraphqlServerUtils graphqlServerUtils) {
+
+		return new TopicPageController(registry, dataFetchersDelegateTopicPage, graphqlServerUtils);
 	}
 
 	/**
@@ -498,8 +608,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "userController")
-	UserController userController(BatchLoaderRegistry registry) {
-		return new UserController(registry);
+	UserController userController(BatchLoaderRegistry registry, DataFetchersDelegateUser dataFetchersDelegateUser,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		return new UserController(registry, dataFetchersDelegateUser, graphqlServerUtils);
 	}
 
 	/**
@@ -512,8 +624,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "userPageController")
-	UserPageController userPageController(BatchLoaderRegistry registry) {
-		return new UserPageController(registry);
+	UserPageController userPageController(BatchLoaderRegistry registry,
+		DataFetchersDelegateUserPage dataFetchersDelegateUserPage, GraphqlServerUtils graphqlServerUtils) {
+
+		return new UserPageController(registry, dataFetchersDelegateUserPage, graphqlServerUtils);
 	}
 
 	/**
@@ -526,8 +640,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "groupController")
-	GroupController groupController(BatchLoaderRegistry registry) {
-		return new GroupController(registry);
+	GroupController groupController(BatchLoaderRegistry registry, DataFetchersDelegateGroup dataFetchersDelegateGroup,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		return new GroupController(registry, dataFetchersDelegateGroup, graphqlServerUtils);
 	}
 
 	/**
@@ -540,8 +656,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "groupPageController")
-	GroupPageController groupPageController(BatchLoaderRegistry registry) {
-		return new GroupPageController(registry);
+	GroupPageController groupPageController(BatchLoaderRegistry registry,
+		DataFetchersDelegateGroupPage dataFetchersDelegateGroupPage, GraphqlServerUtils graphqlServerUtils) {
+
+		return new GroupPageController(registry, dataFetchersDelegateGroupPage, graphqlServerUtils);
 	}
 
 	/**
@@ -554,8 +672,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "authPayloadController")
-	AuthPayloadController authPayloadController(BatchLoaderRegistry registry) {
-		return new AuthPayloadController();
+	AuthPayloadController authPayloadController(BatchLoaderRegistry registry,
+		DataFetchersDelegateAuthPayload dataFetchersDelegateAuthPayload, GraphqlServerUtils graphqlServerUtils) {
+
+		return new AuthPayloadController(dataFetchersDelegateAuthPayload, graphqlServerUtils);
 	}
 
 	/**
@@ -568,8 +688,8 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "queryController")
-	QueryController queryController(BatchLoaderRegistry registry) {
-		return new QueryController();
+	QueryController queryController(DataFetchersDelegateQuery dataFetchersDelegateQuery, GraphqlServerUtils graphqlServerUtils) {
+		return new QueryController(dataFetchersDelegateQuery, graphqlServerUtils);
 	}
 
 	/**
@@ -582,8 +702,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "mutationController")
-	MutationController mutationController(BatchLoaderRegistry registry) {
-		return new MutationController();
+	MutationController mutationController(DataFetchersDelegateMutation dataFetchersDelegateMutation,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		return new MutationController(dataFetchersDelegateMutation, graphqlServerUtils);
 	}
 
 	/**
@@ -596,8 +718,11 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "iBaseEntityController")
-	IBaseEntityController iBaseEntityController(BatchLoaderRegistry registry) {
-		return new IBaseEntityController(registry);
+	IBaseEntityController iBaseEntityController(BatchLoaderRegistry registry,
+		DataFetchersDelegateIBaseEntity<IBaseEntity> dataFetchersDelegateIBaseEntity,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		return new IBaseEntityController(registry, dataFetchersDelegateIBaseEntity, graphqlServerUtils);
 	}
 
 	/**
@@ -610,8 +735,11 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "iTrackedEntityController")
-	ITrackedEntityController iTrackedEntityController(BatchLoaderRegistry registry) {
-		return new ITrackedEntityController();
+	ITrackedEntityController iTrackedEntityController(
+		DataFetchersDelegateITrackedEntity<AbstractTrackedEntity> dataFetchersDelegateITrackedEntity,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		return new ITrackedEntityController(dataFetchersDelegateITrackedEntity, graphqlServerUtils);
 	}
 
 	/**
@@ -624,8 +752,11 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "iLinkableEntityController")
-	ILinkableEntityController iLinkableEntityController(BatchLoaderRegistry registry) {
-		return new ILinkableEntityController();
+	ILinkableEntityController iLinkableEntityController(
+		DataFetchersDelegateILinkableEntity<AbstractLinkableEntity> dataFetchersDelegateILinkableEntity,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		return new ILinkableEntityController(dataFetchersDelegateILinkableEntity, graphqlServerUtils);
 	}
 
 	/**
@@ -638,8 +769,10 @@ public class GraphQLPluginAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "iPageController")
-	IPageController iPageController(BatchLoaderRegistry registry) {
-		return new IPageController(registry);
+	IPageController iPageController(BatchLoaderRegistry registry, DataFetchersDelegateIPage dataFetchersDelegateIPage,
+		GraphqlServerUtils graphqlServerUtils) {
+
+		return new IPageController(registry, dataFetchersDelegateIPage, graphqlServerUtils);
 	}
 
 }

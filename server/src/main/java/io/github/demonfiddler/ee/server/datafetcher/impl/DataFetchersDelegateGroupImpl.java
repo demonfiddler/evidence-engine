@@ -32,15 +32,26 @@ import io.github.demonfiddler.ee.server.model.FormatKind;
 import io.github.demonfiddler.ee.server.model.AuthorityKind;
 import io.github.demonfiddler.ee.server.model.Group;
 import io.github.demonfiddler.ee.server.model.User;
+import io.github.demonfiddler.ee.server.repository.CommentRepository;
 import io.github.demonfiddler.ee.server.repository.GroupRepository;
-import jakarta.annotation.Resource;
+import io.github.demonfiddler.ee.server.repository.LogRepository;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.FormatUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 
 @Component
 public class DataFetchersDelegateGroupImpl extends DataFetchersDelegateITrackedEntityBaseImpl<Group>
     implements DataFetchersDelegateGroup {
 
-    @Resource
-    private GroupRepository groupRepository;
+    private final GroupRepository groupRepository;
+
+    public DataFetchersDelegateGroupImpl(CommentRepository commentRepository, LogRepository logRepository,
+        EntityUtils entityUtils, FormatUtils formatUtils, SecurityUtils securityUtils,
+        GroupRepository groupRepository) {
+
+        super(commentRepository, logRepository, entityUtils, formatUtils, securityUtils);
+        this.groupRepository = groupRepository;
+    }
 
     @Override
     public List<Group> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {
@@ -53,6 +64,7 @@ public class DataFetchersDelegateGroupImpl extends DataFetchersDelegateITrackedE
         return formatUtils.formatAuthorityKinds(authorities, format);
     }
 
+    @SuppressWarnings("null")
     @Override
     public Map<Group, List<User>> members(BatchLoaderEnvironment batchLoaderEnvironment, GraphQLContext graphQLContext,
         List<Group> keys) {

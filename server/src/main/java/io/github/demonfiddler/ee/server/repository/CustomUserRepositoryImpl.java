@@ -28,6 +28,9 @@ import org.springframework.context.annotation.Lazy;
 
 import io.github.demonfiddler.ee.server.model.AuthorityKind;
 import io.github.demonfiddler.ee.server.model.User;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.ProfileUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 import jakarta.persistence.Query;
 
 public class CustomUserRepositoryImpl extends CustomTrackedEntityRepositoryImpl<User> implements CustomUserRepository {
@@ -49,7 +52,10 @@ public class CustomUserRepositoryImpl extends CustomTrackedEntityRepositoryImpl<
 
     private final UserRepository userRepository;
 
-    public CustomUserRepositoryImpl(@Lazy UserRepository userRepository) {
+    public CustomUserRepositoryImpl(EntityUtils entityUtils, ProfileUtils profileUtils, SecurityUtils securityUtils,
+        @Lazy UserRepository userRepository) {
+
+        super(entityUtils, profileUtils, securityUtils);
         this.userRepository = userRepository;
     }
 

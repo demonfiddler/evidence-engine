@@ -33,21 +33,34 @@ import io.github.demonfiddler.ee.server.model.Journal;
 import io.github.demonfiddler.ee.server.model.Publication;
 import io.github.demonfiddler.ee.server.model.PublicationKind;
 import io.github.demonfiddler.ee.server.model.Publisher;
+import io.github.demonfiddler.ee.server.repository.CommentRepository;
+import io.github.demonfiddler.ee.server.repository.EntityLinkRepository;
+import io.github.demonfiddler.ee.server.repository.LogRepository;
 import io.github.demonfiddler.ee.server.repository.PublicationRepository;
-import jakarta.annotation.Resource;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.FormatUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 
 @Component
 public class DataFetchersDelegatePublicationImpl extends DataFetchersDelegateILinkableEntityBaseImpl<Publication>
     implements DataFetchersDelegatePublication {
 
-    @Resource
-    private PublicationRepository publicationRepository;
+    private final PublicationRepository publicationRepository;
+
+    public DataFetchersDelegatePublicationImpl(CommentRepository commentRepository, LogRepository logRepository,
+        EntityUtils entityUtils, FormatUtils formatUtils, SecurityUtils securityUtils,
+        EntityLinkRepository entityLinkRepository, PublicationRepository publicationRepository) {
+
+        super(commentRepository, logRepository, entityUtils, formatUtils, securityUtils, entityLinkRepository);
+        this.publicationRepository = publicationRepository;
+    }
 
     @Override
     public List<Publication> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {
         return publicationRepository.findAllById(keys);
     }
 
+    @SuppressWarnings("null")
     @Override
     public Map<Publication, Journal> journal(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<Publication> keys) {
@@ -55,6 +68,7 @@ public class DataFetchersDelegatePublicationImpl extends DataFetchersDelegateILi
         return entityUtils.getValuesMap(keys, Publication::getJournal);
     }
 
+    @SuppressWarnings("null")
     @Override
     public Map<Publication, Publisher> publisher(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<Publication> keys) {

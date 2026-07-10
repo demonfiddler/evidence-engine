@@ -29,21 +29,33 @@ import graphql.GraphQLContext;
 import io.github.demonfiddler.ee.server.datafetcher.DataFetchersDelegateJournal;
 import io.github.demonfiddler.ee.server.model.Journal;
 import io.github.demonfiddler.ee.server.model.Publisher;
+import io.github.demonfiddler.ee.server.repository.CommentRepository;
 import io.github.demonfiddler.ee.server.repository.JournalRepository;
-import jakarta.annotation.Resource;
+import io.github.demonfiddler.ee.server.repository.LogRepository;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.FormatUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 
 @Component
 public class DataFetchersDelegateJournalImpl extends DataFetchersDelegateITrackedEntityBaseImpl<Journal>
     implements DataFetchersDelegateJournal {
 
-    @Resource
-    private JournalRepository journalRepository;
+    private final JournalRepository journalRepository;
+
+    public DataFetchersDelegateJournalImpl(CommentRepository commentRepository, LogRepository logRepository,
+        EntityUtils entityUtils, FormatUtils formatUtils, SecurityUtils securityUtils,
+        JournalRepository journalRepository) {
+
+        super(commentRepository, logRepository, entityUtils, formatUtils, securityUtils);
+        this.journalRepository = journalRepository;
+    }
 
     @Override
     public List<Journal> unorderedReturnBatchLoader(List<Long> keys, BatchLoaderEnvironment environment) {
         return journalRepository.findAllById(keys);
     }
 
+    @SuppressWarnings("null")
     @Override
     public Map<Journal, Publisher> publisher(BatchLoaderEnvironment batchLoaderEnvironment,
         GraphQLContext graphQLContext, List<Journal> keys) {

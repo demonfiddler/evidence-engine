@@ -35,6 +35,9 @@ import org.springframework.lang.Nullable;
 
 import io.github.demonfiddler.ee.server.model.Comment;
 import io.github.demonfiddler.ee.server.model.StatusKind;
+import io.github.demonfiddler.ee.server.util.EntityUtils;
+import io.github.demonfiddler.ee.server.util.ProfileUtils;
+import io.github.demonfiddler.ee.server.util.SecurityUtils;
 import io.github.demonfiddler.ee.server.model.CommentQueryFilter;
 import io.github.demonfiddler.ee.server.model.CountPageImpl;
 import io.github.demonfiddler.ee.server.model.Countable;
@@ -55,6 +58,10 @@ public class CustomCommentRepositoryImpl extends AbstractCustomRepositoryImpl im
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomCommentRepositoryImpl.class);
+
+    CustomCommentRepositoryImpl(EntityUtils entityUtils, ProfileUtils profileUtils, SecurityUtils securityUtils) {
+        super(entityUtils, profileUtils, securityUtils);
+    }
 
     @Override
     Logger getLogger() {
