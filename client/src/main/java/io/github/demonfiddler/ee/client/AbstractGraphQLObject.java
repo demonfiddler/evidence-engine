@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.graphql_java_generator.annotation.GraphQLIgnore;
-import com.graphql_java_generator.client.GraphQLObjectMapper;
+import com.graphql_java_generator.client.GraphQLJsonMapper;
 
 /**
  * An abstract base class for all GraphQL model objects.
@@ -38,7 +38,7 @@ public abstract class AbstractGraphQLObject implements IGraphQLObject {
     Map<String, Object> aliasValues = new HashMap<>();
 
     /**
-     * This method is called during the JSON deserialization process, by the {@link GraphQLObjectMapper}, each time an
+     * This method is called during the JSON deserialization process, by the {@link GraphQLJsonMapper}, each time an
      * alias value is read from the JSON.
      * @param aliasName
      * @param aliasDeserializedValue

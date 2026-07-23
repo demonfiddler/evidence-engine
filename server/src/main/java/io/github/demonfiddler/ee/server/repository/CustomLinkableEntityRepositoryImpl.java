@@ -33,6 +33,8 @@ import java.util.StringTokenizer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -40,13 +42,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 
 import io.github.demonfiddler.ee.server.model.CountPageImpl;
 import io.github.demonfiddler.ee.server.model.Countable;
 import io.github.demonfiddler.ee.server.model.Declaration;
 import io.github.demonfiddler.ee.server.model.EntityKind;
+import io.github.demonfiddler.ee.server.model.IBaseEntity;
 import io.github.demonfiddler.ee.server.model.ILinkableEntity;
 import io.github.demonfiddler.ee.server.model.LinkableEntityQueryFilter;
 import io.github.demonfiddler.ee.server.model.Name;
@@ -57,7 +58,6 @@ import io.github.demonfiddler.ee.server.model.StatusKind;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
 import io.github.demonfiddler.ee.server.util.ProfileUtils;
 import io.github.demonfiddler.ee.server.util.SecurityUtils;
-
 import jakarta.persistence.Query;
 
 /**
@@ -210,7 +210,7 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
         // FT_SEARCH_DATA can result in records duplicated across successive pages, OR result sets involving JOINs can
         // be returned in a nondeterministic order.
         if (isPaged && pageable.getSort().filter(o -> o.getProperty().equals("id")).isEmpty()) {
-            Sort sort = pageable.getSort().and(Sort.by("id"));
+            Sort sort = pageable.getSort().and(Sort.by(IBaseEntity::getId));
             pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
             isSorted = true;
         }

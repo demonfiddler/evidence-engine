@@ -28,6 +28,8 @@ public class Constants {
     public static final String PROFILE_DEVELOPMENT = "development";
     /** The name of the Spring profile used to run the server as the integration test target. */
     public static final String PROFILE_INTEGRATION_TEST = "integration-test";
+    /** The name of the Spring profile used to run the server locally in production mode. */
+    public static final String PROFILE_LOCAL = "local";
     /** The name of the Spring profile used to run the server in production mode. */
     public static final String PROFILE_PRODUCTION = "production";
 

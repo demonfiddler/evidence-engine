@@ -22,7 +22,7 @@ package io.github.demonfiddler.ee.client;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 import com.graphql_java_generator.annotation.GraphQLInputType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
 

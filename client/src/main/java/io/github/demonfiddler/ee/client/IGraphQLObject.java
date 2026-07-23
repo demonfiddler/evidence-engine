@@ -19,12 +19,12 @@
 
 package io.github.demonfiddler.ee.client;
 
-import com.graphql_java_generator.client.GraphQLObjectMapper;
+import com.graphql_java_generator.client.GraphQLJsonMapper;
 
 public interface IGraphQLObject {
 
     /**
-     * This method is called during the JSON deserialization process, by the {@link GraphQLObjectMapper}, each time an
+     * This method is called during the JSON deserialization process, by the {@link GraphQLJsonMapper}, each time an
      * alias value is read from the JSON.
      * @param aliasName
      * @param aliasDeserializedValue

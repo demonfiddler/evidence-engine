@@ -18,77 +18,51 @@
  *--------------------------------------------------------------------------------------------------------------------*/
 
 plugins {
-	id 'org.springframework.boot' version "${springBootVersion}"
-	id 'io.spring.dependency-management' version "${dependencyManagementPluginVersion}"
 	id 'java'
+	alias(libs.plugins.springBootPlugin)
 }
 
 dependencies {
 	implementation project(':common')
 
-	// GraphQL client support
-	implementation 'org.springframework.boot:spring-boot-starter'
-	// implementation 'org.springframework.boot:spring-boot-starter-graphql'
-	implementation 'org.springframework.graphql:spring-graphql'
-	implementation 'com.fasterxml.jackson.core:jackson-databind'
-	implementation 'com.fasterxml.jackson.core:jackson-core'
-	implementation 'com.fasterxml.jackson.core:jackson-annotations'
-	implementation 'com.graphql-java:graphql-java-extended-scalars:22.0'
+	// Spring Boot platform
+	implementation(platform(libs.springBootBom))
 
-	implementation "com.graphql-java-generator:graphql-java-client-runtime:${graphQLPluginVersion}"
-	// The following are the transitive dependencies of the above but their internal dependencies on a POM artifact breaks JDT LS.
-	// So we have to block the POM, unwrap these dependencies and include them explicitly:
-	// BEGIN graphql-java-common-dependencies-2.8.pom
-	implementation 'com.graphql-java:graphql-java'
-	implementation 'org.springframework:spring-context'
-	implementation 'org.reactivestreams:reactive-streams'
-	// END graphql-java-common-dependencies-2.8.pom
-	// BEGIN graphql-java-client-dependencies-2.8.pom
-	implementation 'org.springframework.graphql:spring-graphql'
-	// implementation 'org.springframework.boot:spring-boot-starter-webflux'
-	implementation 'org.springframework:spring-webflux'   // NOT the Boot starter
-	implementation 'io.projectreactor.netty:reactor-netty-http' // Part of spring-boot-starter-webflux
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.security:spring-security-oauth2-client'
-	implementation 'commons-io:commons-io'
-	implementation 'org.apache.commons:commons-text:1.10.0'
-	// implementation 'javax.xml.bind:jaxb-api'
-	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
-	implementation 'com.google.code.findbugs:jsr305:3.0.2'
-	implementation 'org.slf4j:slf4j-api'
-	// END graphql-java-client-dependencies-2.8.pom
+	// GraphQL client support
+	implementation libs.springBootStarter
+	implementation libs.springGraphql
+	implementation libs.jacksonAnnotations
+	implementation libs.jacksonCore
+	implementation libs.jacksonDatabind
+	implementation libs.bundles.graphqlJavaGeneratorClientRuntimeImpl
+	implementation libs.graphqlJavaExtScalars
 
 	// Utilities
-	implementation 'org.jsoup:jsoup:1.18.3'
-	implementation 'org.apache.commons:commons-csv:1.14.1'
-	implementation 'commons-cli:commons-cli:1.11.0'
-	// Optional (harmless without a web server)
-	// implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation libs.jsoup
+	implementation libs.commonsCsv
+	implementation libs.commonsCli
 
 	// Dev tools
 	// BEWARE: According to CoPilot, when running with WebApplicationType.NONE, devtools suppresses the stripping out
 	// of the --spring.* command line arguments, so the whole command tail gets passed raw to CommandLineRunners.
-	// developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	// developmentOnly libs.springBootDevTools
 
 	// Testing
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.restdocs:spring-restdocs-webtestclient'
-	testImplementation 'org.springframework.security:spring-security-test'
-	testImplementation 'org.springframework:spring-webflux'
-	testImplementation 'org.springframework.graphql:spring-graphql-test'
-	testImplementation 'org.junit.platform:junit-platform-suite'
-	testImplementation 'com.google.truth:truth:1.4.4'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
-
-dependencyManagement {
+	testImplementation libs.junitPlatform
+	testImplementation libs.springBootStarterTest
+	testImplementation libs.springGraphqlTest
+	testImplementation libs.springRestdocsWebtestClient
+	testImplementation libs.springSecurityTest
+	testImplementation libs.springWebflux
+	testImplementation libs.truth
+	testRuntimeOnly libs.junitPlatformLauncher
 }
 
 bootJar {
     enabled = true   // produce an executable Spring Boot JAR.
-	archiveBaseName = "ee-client"
-    archiveVersion = "" // removes version from filename
-	archiveClassifier = ""// removes classifier from filename
+	archiveBaseName = 'ee-client'
+    archiveVersion = '' // removes version from filename
+	archiveClassifier = '' // removes classifier from filename
 }
 
 jar {
@@ -99,36 +73,20 @@ tasks.assemble {
     dependsOn bootJar
 }
 
-repositories {
-	mavenLocal()
-	mavenCentral()
-}
-
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(25)
-	}
-	sourceCompatibility = JavaVersion.VERSION_25
-}
-
-compileJava {
-    options.compilerArgs.add('-g')
-    options.compilerArgs.add('-parameters')
-}
-
 ext {
 	set('snippetsDir', file('build/generated-snippets'))
-	// set('springBootAdminVersion', '3.3.4')
 }
 
-tasks.named('test') {
-	dependsOn project(':server').tasks.named('bootIntegrationTestServerBG')
-	outputs.dir snippetsDir
-	useJUnitPlatform()
-	if (project.hasProperty('caseInsensitive')) {
-		println 'Case insensitive testing selected'
-	    systemProperty('ee.test.case-insensitive', true)
+gradle.projectsEvaluated {
+	tasks.named('test') {
+		dependsOn project(':server').tasks.named('bootIntegrationTestServerBG')
+		outputs.dir snippetsDir
+		// useJUnitPlatform()
+		if (project.hasProperty('caseInsensitive')) {
+			println 'Case insensitive testing selected'
+			systemProperty('ee.test.case-insensitive', true)
+		}
+		systemProperty('junit.jupiter.testclass.order.default', 'org.junit.jupiter.api.ClassOrderer$OrderAnnotation')
+		finalizedBy project(':server').tasks.named('terminateIntegrationTestServer')
 	}
-	systemProperty('junit.jupiter.testclass.order.default', 'org.junit.jupiter.api.ClassOrderer$OrderAnnotation')
-	finalizedBy project(':server').tasks.named('terminateIntegrationTestServer')
 }

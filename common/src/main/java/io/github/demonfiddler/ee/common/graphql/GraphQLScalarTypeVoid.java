@@ -19,6 +19,7 @@
 
 package io.github.demonfiddler.ee.common.graphql;
 
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +49,7 @@ class GraphQLScalarTypeVoid {
 			 * @return null always
 			 */
 			@Override
-			public String serialize(Object input) throws CoercingSerializeException {
+			public String serialize(@NonNull Object input) throws CoercingSerializeException {
 				return null;
 			}
 
@@ -57,7 +58,7 @@ class GraphQLScalarTypeVoid {
 			 * @return null always
 			 */
 			@Override
-			public Void parseValue(Object input) throws CoercingParseValueException {
+			public Void parseValue(@NonNull Object input) throws CoercingParseValueException {
 				return null;
 			}
 
@@ -66,7 +67,7 @@ class GraphQLScalarTypeVoid {
 			 * @return null always
 			 */
 			@Override
-			public Void parseLiteral(Object input) throws CoercingParseLiteralException {
+			public Void parseLiteral(@NonNull Object input) throws CoercingParseLiteralException {
 				// input is an AST, that is: an instance of a class that implements graphql.language.Value
 				if (!(input instanceof StringValue)) {
 					throw new CoercingParseValueException("Can't parse the '" + input.toString()

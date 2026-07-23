@@ -19,8 +19,6 @@
 
 package io.github.demonfiddler.ee.client;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.graphql_java_generator.annotation.GraphQLDirective;
 import com.graphql_java_generator.annotation.GraphQLEnumType;
 
 /**
@@ -30,7 +28,6 @@ import com.graphql_java_generator.annotation.GraphQLEnumType;
  * @see <a href="https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
 @GraphQLEnumType("SeverityKind")
-@SuppressWarnings("unused")
 public enum SeverityKind {
 	INFO("INFO"),  //
 	WARNING("WARNING"),  //

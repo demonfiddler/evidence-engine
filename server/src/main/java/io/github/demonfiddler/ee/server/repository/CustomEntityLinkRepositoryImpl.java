@@ -31,7 +31,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.lang.NonNull;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +39,7 @@ import io.github.demonfiddler.ee.server.model.CountPageImpl;
 import io.github.demonfiddler.ee.server.model.Countable;
 import io.github.demonfiddler.ee.server.model.EntityLink;
 import io.github.demonfiddler.ee.server.model.EntityLinkQueryFilter;
+import io.github.demonfiddler.ee.server.model.IBaseEntity;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
 import io.github.demonfiddler.ee.server.util.ProfileUtils;
 import io.github.demonfiddler.ee.server.util.SecurityUtils;
@@ -95,7 +96,7 @@ public class CustomEntityLinkRepositoryImpl extends AbstractCustomRepositoryImpl
         // For paged queries involving an H2 full text filter, we need to ensure that the sort order includes "id"
         // because otherwise the join with FT_SEARCH_DATA can result in records duplicated across successive pages.
         if (/*hasTextH2 && */isPaged && pageable.getSort().filter(o -> o.getProperty().equals("id")).isEmpty()) {
-            Sort sort = pageable.getSort().and(Sort.by("id"));
+            Sort sort = pageable.getSort().and(Sort.by(IBaseEntity::getId));
             pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
             isSorted = true;
         }

@@ -21,6 +21,7 @@ package io.github.demonfiddler.ee.server.util;
 
 import static io.github.demonfiddler.ee.server.util.Constants.PROFILE_DEVELOPMENT;
 import static io.github.demonfiddler.ee.server.util.Constants.PROFILE_INTEGRATION_TEST;
+import static io.github.demonfiddler.ee.server.util.Constants.PROFILE_LOCAL;
 import static io.github.demonfiddler.ee.server.util.Constants.PROFILE_PRODUCTION;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -62,6 +63,14 @@ public class ProfileUtils {
      */
     public boolean isIntegrationTesting() {
         return isProfileActive(PROFILE_INTEGRATION_TEST);
+    }
+
+    /**
+     * Indicates whether the server is running locally in production mode.
+     * @return {@code true} if the {@code local} profile is active.
+     */
+    public boolean isLocal() {
+        return isProfileActive(PROFILE_LOCAL);
     }
 
     /**

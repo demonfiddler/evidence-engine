@@ -1,0 +1,147 @@
+[versions]
+# Codegen plugin versions
+graphQLPluginVersion = '4.0.2'
+netflixDgsCodegenPluginVersion = '6.3.0'
+openapiGeneratorPluginVersion = '7.23.0'
+
+# Project dependency versions
+# N.B. refer to https://docs.spring.io/spring-boot/appendix/dependency-versions/properties.html to determine whether the platform springBootBOM
+# provides version for a 3rd party dependency.
+commonsBeanutilsVersion = '2.0.0-M2'
+commonsCliVersion = '1.11.0'
+commonsCollections4Version = '4.5.0'
+commonsCsvVersion = '1.14.1'
+commonsIoVersion = '2.22.0'
+commonsTextVersion = '1.15.0'
+graphiqlSpringBootStarterVersion = '6.0.1'
+graphqlJavaExtScalarsVersion = '24.0'
+jacksonDatabindNullableVersion = '0.2.8'
+javaJwtVersion = '4.5.0'
+jsoupVersion = '1.22.2'
+jsr305Version = '3.0.2'
+openpdfFontsExtraVersion = '1.3.43'
+openpdfHtmlVersion = '3.0.0'
+springBootVersion = '4.1.0'
+swaggerAnnotationsVersion = '2.2.31'
+swaggerModelsVersion = '2.2.31'
+truthVersion = '1.4.5'
+nodeGradlePluginVersion = '7.1.0'
+
+[libraries]
+
+# Spring Platform libraries & BOM-managed dependencies
+commonsLang3 = { group = 'org.apache.commons', name = 'commons-lang3' }
+freemarker = { group = 'org.freemarker', name = 'freemarker' }
+graphqlJava = { group = 'com.graphql-java', name = 'graphql-java' }
+h2 = { group = 'com.h2database', name = 'h2' }
+jacksonAnnotations = { group = 'com.fasterxml.jackson.core', name = 'jackson-annotations' }
+jacksonCore = { group = 'tools.jackson.core', name = 'jackson-core' }
+jacksonDatabind = { group = 'tools.jackson.core', name = 'jackson-databind' }
+jakartaServletApi = { group = 'jakarta.servlet', name = 'jakarta.servlet-api' }
+jakartaXmlBindApi = { group = 'jakarta.xml.bind', name = 'jakarta.xml.bind-api' }
+junitPlatform = { group = 'org.junit.platform', name = 'junit-platform-suite' }
+junitPlatformLauncher = { group = 'org.junit.platform', name = 'junit-platform-launcher' }
+mariadbJavaClient = { group = 'org.mariadb.jdbc', name = 'mariadb-java-client' }
+reactiveStreams = { group = 'org.reactivestreams', name = 'reactive-streams' }
+reactorNettyHttp = { group = 'io.projectreactor.netty', name = 'reactor-netty-http' }
+slf4jApi = { group = 'org.slf4j', name = 'slf4j-api' }
+springBootBom = { group = 'org.springframework.boot', name = 'spring-boot-dependencies', version.ref = 'springBootVersion' }
+springBootDevTools = { group = 'org.springframework.boot', name = 'spring-boot-devtools', version.ref = 'springBootVersion' }
+springBootStarterActuator = { group = 'org.springframework.boot', name = 'spring-boot-starter-actuator' }
+springBootStarterDataJpa = { group = 'org.springframework.boot', name = 'spring-boot-starter-data-jpa' }
+springBootStarter = { group = 'org.springframework.boot', name = 'spring-boot-starter' }
+springBootStarterGraphql = { group = 'org.springframework.boot', name = 'spring-boot-starter-graphql' }
+springBootStarterLogging = { group = 'org.springframework.boot', name = 'spring-boot-starter-logging' }
+springBootStarterSecurity = { group = 'org.springframework.boot', name = 'spring-boot-starter-security' }
+springBootStarterTest = { group = 'org.springframework.boot', name = 'spring-boot-starter-test' }
+springBootStarterValidation = { group = 'org.springframework.boot', name = 'spring-boot-starter-validation' }
+springBootStarterWeb = { group = 'org.springframework.boot', name = 'spring-boot-starter-web' }
+springBootStarterWebsocket  = { group = 'org.springframework.boot', name = 'spring-boot-starter-websocket' }
+springContext = { group = 'org.springframework', name = 'spring-context' }
+springGraphql = { group = 'org.springframework.graphql', name = 'spring-graphql' }
+springGraphqlTest = { group = 'org.springframework.graphql', name = 'spring-graphql-test' }
+springRestdocsWebtestClient = { group = 'org.springframework.restdocs', name = 'spring-restdocs-webtestclient' }
+springSecurityOauth2Client = { group = 'org.springframework.security', name = 'spring-security-oauth2-client' }
+springSecurityTest = { group = 'org.springframework.security', name = 'spring-security-test' }
+springSessionCore = { group = 'org.springframework.session', name = 'spring-session-core' }
+springWebflux = { group = 'org.springframework', name = 'spring-webflux' }
+
+# External libraries
+commonsBeanutils = { group = 'org.apache.commons', name = 'commons-beanutils2', version.ref = 'commonsBeanutilsVersion' }
+commonsCli = { group = 'commons-cli', name = 'commons-cli', version.ref = 'commonsCliVersion' }
+commonsCollections4 = { group = 'org.apache.commons', name = 'commons-collections4', version.ref = 'commonsCollections4Version' }
+commonsCsv = { group = 'org.apache.commons', name = 'commons-csv', version.ref = 'commonsCsvVersion' }
+commonsIo = { group = 'commons-io', name = 'commons-io', version.ref = 'commonsIoVersion' }
+commonsText = { group = 'org.apache.commons', name = 'commons-text', version.ref = 'commonsTextVersion' }
+graphiqlSpringBootStarter = { group = 'com.graphql-java-kickstart', name = 'graphiql-spring-boot-starter', version.ref = 'graphiqlSpringBootStarterVersion' }
+graphqlJavaGeneratorClientRuntime = { group = 'com.graphql-java-generator', name = 'graphql-java-client-runtime', version.ref = 'graphQLPluginVersion' }
+graphqlJavaExtScalars = { group = 'com.graphql-java', name = 'graphql-java-extended-scalars', version.ref = 'graphqlJavaExtScalarsVersion' }
+graphqlJavaGeneratorServerRuntime = { group = 'com.graphql-java-generator', name = 'graphql-java-server-runtime', version.ref = 'graphQLPluginVersion' }
+jacksonDatabindNullable = { group = 'org.openapitools', name = 'jackson-databind-nullable', version.ref = 'jacksonDatabindNullableVersion' }
+javaJwt = { group = 'com.auth0', name = 'java-jwt', version.ref = 'javaJwtVersion' }
+jerseyContainerServlet = { group = 'org.glassfish.jersey.containers', name = 'jersey-container-servlet-core' }
+jsoup = { group = 'org.jsoup', name = 'jsoup', version.ref = 'jsoupVersion' }
+jsr305 = { group = 'com.google.code.findbugs', name = 'jsr305', version.ref = 'jsr305Version' }
+openapiGenerator = { group = 'org.openapitools', name = 'openapi-generator', version.ref = 'openapiGeneratorPluginVersion' }
+openapiGeneratorCli = { group = 'org.openapitools', name = 'openapi-generator-cli', version.ref = 'openapiGeneratorPluginVersion' }
+openpdfFontsExtra = { group = 'com.github.librepdf', name = 'openpdf-fonts-extra', version.ref = 'openpdfFontsExtraVersion' }
+openpdfHtml = { group = 'com.github.librepdf', name = 'openpdf-html', version.ref = 'openpdfHtmlVersion' }
+swaggerAnnotations = { group = 'io.swagger.core.v3', name = 'swagger-annotations', version.ref = 'swaggerAnnotationsVersion' }
+swaggerModels = { group = 'io.swagger.core.v3', name = 'swagger-models', version.ref = 'swaggerModelsVersion' }
+truth = { group = 'com.google.truth', name = 'truth', version.ref = 'truthVersion' }
+
+[bundles]
+graphqlJavaGeneratorClientRuntimeImpl = [
+    'graphqlJavaGeneratorClientRuntime',
+	# The following are the transitive dependencies of the above but their internal dependencies on a POM artifact breaks JDT LS.
+	# So we have to block the POM, unwrap these dependencies and include them explicitly:
+
+	# BEGIN graphql-java-common-dependencies-4.0.2.pom
+    'graphqlJava',
+    'springContext',
+    'reactiveStreams',
+	# END graphql-java-common-dependencies-4.0.2.pom
+
+	# BEGIN graphql-java-client-dependencies-4.0.2.pom
+    'springGraphql',
+    'springWebflux',
+    'reactorNettyHttp',
+    'springBootStarterSecurity',
+    'springSecurityOauth2Client',
+    'commonsIo',
+    'commonsText',
+    'jakartaXmlBindApi',
+    'jsr305',
+    'slf4jApi'
+	# END graphql-java-client-dependencies-4.0.2.pom
+]
+graphqlJavaGeneratorServerRuntimeImpl = [
+    'graphqlJavaGeneratorServerRuntime',
+	# The following are the transitive dependencies of the above but their internal dependencies on a POM artifact breaks JDT LS.
+	# So we have to block the POM, unwrap these dependencies and include them explicitly:
+
+	# BEGIN graphql-java-common-dependencies-4.0.2.pom:
+    'graphqlJava',
+    'springContext',
+    'reactiveStreams',
+	# END graphql-java-common-dependencies-4.0.2.pom
+
+	# BEGIN graphql-java-server-dependencies-4.0.2.pom
+    'springGraphql',
+    'springBootStarterGraphql',
+    'jakartaXmlBindApi',
+    'jsr305',
+	# END graphql-java-server-dependencies-4.0.2.pom
+]
+graphqlJavaGeneratorServerRuntimeCompileOnly = [
+	# BEGIN graphql-java-server-dependencies-4.0.2.pom
+    'jakartaServletApi',
+	# END graphql-java-server-dependencies-4.0.2.pom
+]
+
+[plugins]
+springBootPlugin = { id = 'org.springframework.boot', version.ref = 'springBootVersion' }
+graphqlJavaGeneratorPlugin = { id = 'com.graphql-java-generator.graphql-gradle-plugin3', version.ref = 'graphQLPluginVersion' }
+openapiGeneratorPlugin = { id = 'org.openapi.generator', version.ref = 'openapiGeneratorPluginVersion' }
+netflixDgsCodegenPlugin = { id = 'com.netflix.dgs.codegen', version.ref = 'netflixDgsCodegenPluginVersion' }
+nodeGradlePlugin = { id = 'com.github.node-gradle.node', version.ref = 'nodeGradlePluginVersion' }

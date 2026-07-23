@@ -36,6 +36,7 @@ import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLScalar;
 import com.graphql_java_generator.annotation.RequestType;
 import com.graphql_java_generator.client.GraphQLQueryExecutor;
+import com.graphql_java_generator.client.RegistriesInitializer;
 import com.graphql_java_generator.client.request.Builder;
 import com.graphql_java_generator.client.request.InputParameter;
 import com.graphql_java_generator.client.request.InputParameter.InputParameterType;
@@ -112,25 +113,27 @@ public class QueryExecutor implements GraphQLQueryExecutor {
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(QueryExecutor.class);
 
+	/** Insures that the registries are initialized */
+	@SuppressWarnings("unused")
+	private static RegistriesInitializer registriesInitializer = RegistriesInitializerImpl.registriesInitializer;
+
 	GraphQlClient graphQlClient;
 
+	final QueryReactiveExecutor queryReactiveExecutor;
+	
+	final GraphqlUtils graphqlUtils = GraphqlUtils.graphqlUtils; // must be set that way, to be used in the constructor
+	
 	final GraphqlClientUtilsEx graphqlClientUtils;
 
-	final QueryReactiveExecutor queryReactiveExecutor;
-
-	final GraphqlUtils graphqlUtils = GraphqlUtils.graphqlUtils; // must be set that way, to be used in the constructor
-
 	public QueryExecutor(@Qualifier("httpGraphQlClient") GraphQlClient graphQlClient,
-		GraphqlClientUtilsEx graphqlClientUtils,
-		@Qualifier("queryReactiveExecutor") QueryReactiveExecutor queryReactiveExecutor) {
+		@Qualifier("queryReactiveExecutor") QueryReactiveExecutor queryReactiveExecutor,
+		GraphqlClientUtilsEx graphqlClientUtils) {
 
-		if (!"2.8".equals(this.graphqlUtils.getRuntimeVersion())) {
+		if (!"4.0.2".equals(this.graphqlUtils.getRuntimeVersion())) {
 			throw new RuntimeException(
 				"The GraphQL runtime version doesn't match the GraphQL plugin version. The runtime's version is '"
-					+ this.graphqlUtils.getRuntimeVersion() + "' whereas the GraphQL plugin version is '2.8'");
+					+ this.graphqlUtils.getRuntimeVersion() + "' whereas the GraphQL plugin version is '4.0.2'");
 		}
-		CustomScalarRegistryInitializer.initCustomScalarRegistry();
-		DirectiveRegistryInitializer.initDirectiveRegistry();
 		this.graphQlClient = graphQlClient;
 		this.graphqlClientUtils = graphqlClientUtils;
 		this.queryReactiveExecutor = queryReactiveExecutor;

@@ -36,6 +36,7 @@ import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLScalar;
 import com.graphql_java_generator.annotation.RequestType;
 import com.graphql_java_generator.client.GraphQLMutationExecutor;
+import com.graphql_java_generator.client.RegistriesInitializer;
 import com.graphql_java_generator.client.request.Builder;
 import com.graphql_java_generator.client.request.InputParameter;
 import com.graphql_java_generator.client.request.InputParameter.InputParameterType;
@@ -104,6 +105,10 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(MutationExecutor.class);
 
+	/** Insures that the registries are initialized */
+	@SuppressWarnings("unused")
+	private static RegistriesInitializer registriesInitializer = RegistriesInitializerImpl.registriesInitializer;
+
 	GraphQlClient graphQlClient;
 	final GraphqlClientUtilsEx graphqlClientUtils;
 	final MutationReactiveExecutor mutationReactiveExecutor;
@@ -114,13 +119,11 @@ public class MutationExecutor implements GraphQLMutationExecutor {
 		GraphqlClientUtilsEx graphqlClientUtils,
 		@Qualifier("mutationReactiveExecutor") MutationReactiveExecutor mutationReactiveExecutor) {
 
-		if (!"2.8".equals(this.graphqlUtils.getRuntimeVersion())) {
+		if (!"4.0.2".equals(this.graphqlUtils.getRuntimeVersion())) {
 			throw new RuntimeException(
 				"The GraphQL runtime version doesn't match the GraphQL plugin version. The runtime's version is '"
-					+ this.graphqlUtils.getRuntimeVersion() + "' whereas the GraphQL plugin version is '2.8'");
+					+ this.graphqlUtils.getRuntimeVersion() + "' whereas the GraphQL plugin version is '4.0.2'");
 		}
-		CustomScalarRegistryInitializer.initCustomScalarRegistry();
-		DirectiveRegistryInitializer.initDirectiveRegistry();
 		this.graphQlClient = graphQlClient;
 		this.graphqlClientUtils = graphqlClientUtils;
 		this.mutationReactiveExecutor = mutationReactiveExecutor;

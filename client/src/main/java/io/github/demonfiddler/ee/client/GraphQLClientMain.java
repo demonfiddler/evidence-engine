@@ -30,12 +30,7 @@ import org.springframework.context.annotation.ComponentScan;
  * @see <a href=
  * "https://github.com/graphql-java-generator/graphql-java-generator">https://github.com/graphql-java-generator/graphql-java-generator</a>
  */
-@SpringBootApplication(exclude = {
-    org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration.class,
-    org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration.class,
-    org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration.class,
-    org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class
-})
+@SpringBootApplication
 @ComponentScan(basePackages = { "io.github.demonfiddler.ee.client", "com.graphql_java_generator.client" })
 @EnableConfigurationProperties
 public class GraphQLClientMain {

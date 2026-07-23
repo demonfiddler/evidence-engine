@@ -23,7 +23,7 @@ import java.time.OffsetDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 import com.graphql_java_generator.annotation.GraphQLDirective;
 import com.graphql_java_generator.annotation.GraphQLInputParameters;
 import com.graphql_java_generator.annotation.GraphQLNonScalar;

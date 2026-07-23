@@ -11,9 +11,9 @@ The application supports lists of the following entities:
 
 - **Claim**: an assertion or factual statement that is supported by evidence, generally of a scientific nature
 - **Declaration**: a public declaration or open letter signed by multiple individuals
-- **Quotation**: a spoken or written statement taken verbatim from a declaration, publication or person
-- **Publication**: A publication containing evidence, for example an article in a scientific journal, book, newspaper, etc.
 - **Person**: an individual who makes or endorses claims, signs declarations, makes public statements or is listed as a publication author 
+- **Publication**: A publication containing evidence, for example an article in a scientific journal, book, newspaper, etc.
+- **Quotation**: a spoken or written statement taken verbatim from a declaration, publication or person
 
 ## Filtering
 

@@ -20,33 +20,19 @@
 package io.github.demonfiddler.ee.client;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
-import org.dataloader.DataLoader;
-
-import graphql.schema.DataFetchingEnvironment;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.graphql_java_generator.annotation.GraphQLIgnore;
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
 import com.graphql_java_generator.annotation.GraphQLObjectType;
 import com.graphql_java_generator.annotation.GraphQLScalar;
-import com.graphql_java_generator.client.GraphQLObjectMapper;
 
 import io.github.demonfiddler.ee.client.util.CustomJacksonDeserializers;
-import java.util.List;
-
-import com.graphql_java_generator.annotation.GraphQLDirective;
-import com.graphql_java_generator.annotation.GraphQLIgnore;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * Statistics about a given topic.
@@ -56,7 +42,6 @@ import com.graphql_java_generator.annotation.GraphQLIgnore;
  */
 @GraphQLObjectType("TopicStatistics")
 @JsonInclude(Include.NON_NULL)
-@SuppressWarnings("unused")
 public class TopicStatistics {
 
 	/**

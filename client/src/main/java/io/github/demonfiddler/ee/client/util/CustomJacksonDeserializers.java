@@ -58,6 +58,7 @@ import io.github.demonfiddler.ee.common.graphql.CustomScalars;
  * This class is a standard Deserializer for Jackson. It uses the {@link GraphQLScalarType} that is implemented by the
  * project for this scalar
  */
+@SuppressWarnings("unused")
 public class CustomJacksonDeserializers {
 
 	public static class List__InputValue extends AbstractCustomJacksonDeserializer<List<__InputValue>> {

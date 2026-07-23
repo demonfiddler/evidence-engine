@@ -28,9 +28,10 @@ import org.springframework.core.log.LogMessage;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+
+import io.github.demonfiddler.springframework.jdbc.core.support.JdbcDaoSupport;
 
 /**
  * A custom reimplementation of the built-in Spring {@code JdbcTokenRepositoryImpl}. This was necessary because the

@@ -21,9 +21,9 @@ package io.github.demonfiddler.ee.server.repository;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 
 import io.github.demonfiddler.ee.server.model.EntityStatistics;
@@ -33,7 +33,6 @@ import io.github.demonfiddler.ee.server.model.TopicStatisticsDto;
 import io.github.demonfiddler.ee.server.util.EntityUtils;
 import io.github.demonfiddler.ee.server.util.ProfileUtils;
 import io.github.demonfiddler.ee.server.util.SecurityUtils;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;

@@ -19,12 +19,14 @@
 
 package io.github.demonfiddler.ee.server;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.autoconfigure.graphql.GraphQlSourceBuilderCustomizer;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.graphql.autoconfigure.GraphQlSourceBuilderCustomizer;
+import org.springframework.boot.persistence.autoconfigure.EntityScan;
+import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -57,17 +59,24 @@ import com.graphql_java_generator.server.util.GraphqlServerUtils;
 @EnableConfigurationProperties
 public class EvidenceEngineServer extends SpringBootServletInitializer {
 
-	protected final ApplicationContext applicationContext;
+	@Autowired
+	protected ApplicationContext applicationContext;
 
-	protected final GraphqlServerUtils graphqlServerUtils;
+	@Autowired
+	protected GraphqlServerUtils graphqlServerUtils;
 
-	public EvidenceEngineServer(ApplicationContext applicationContext, GraphqlServerUtils graphqlServerUtils) {
-		this.applicationContext = applicationContext;
-		this.graphqlServerUtils = graphqlServerUtils;
+	// N.B. SpringServletContainerInitializer requires a public no-args ctor for Spring Boot to instantiate the class.
+	// So we must use auto-wiring rather than constructor injection.
+	public EvidenceEngineServer() {
 	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(EvidenceEngineServer.class, args);
+	}
+
+	@Override
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+		return application.sources(EvidenceEngineServer.class);
 	}
 
 	/**

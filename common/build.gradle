@@ -21,12 +21,19 @@ plugins {
 	id 'java'
 }
 
+dependencies {
+	implementation libs.commonsCsv
+	implementation libs.graphqlJava
+	implementation libs.graphqlJavaExtScalars
+	implementation libs.slf4jApi
+}
+
 def generated = "$buildDir/generated/sources/buildConfig/java"
 
 sourceSets.main.java.srcDir generated
 
-tasks.register("generateBuildConfig") {
-    inputs.property("version", project.version)
+tasks.register('generateBuildConfig') {
+    inputs.property('version', project.version)
     outputs.dir generated
     doLast {
         def file = file("$generated/io/github/demonfiddler/ee/common/util/BuildConfig.java")
@@ -35,8 +42,8 @@ tasks.register("generateBuildConfig") {
             package io.github.demonfiddler.ee.common.util;
 
             public final class BuildConfig {
-                public static final String VERSION = "${project.version}";
                 public static final String GROUP = "${project.group}";
+                public static final String VERSION = "${project.version}";
             }
         """.stripIndent()
     }
@@ -44,43 +51,15 @@ tasks.register("generateBuildConfig") {
 
 jar {
     enabled = true
-    archiveBaseName = "ee-common"
-    archiveVersion = "" // removes version from filename
-    archiveClassifier = ""// removes classifier from filename
-}
-
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(25)
-	}
-	sourceCompatibility = JavaVersion.VERSION_25
+    archiveBaseName = 'ee-common'
+    archiveVersion = '' // removes version from filename
+    archiveClassifier = '' // removes classifier from filename
 }
 
 compileJava {
-    options.compilerArgs.add("-g")
-    options.compilerArgs.add("-parameters")
-
     dependsOn tasks.generateBuildConfig
-}
-
-repositories {
-	mavenLocal()
-	mavenCentral()
-}
-
-dependencies {
-	implementation 'org.slf4j:slf4j-api:2.0.16'
-	implementation 'com.graphql-java:graphql-java:22.3'
-	implementation 'com.graphql-java:graphql-java-extended-scalars:22.0'
-	implementation 'org.apache.commons:commons-csv:1.14.1'
-//  implementation platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
-//  implementation 'org.springframework:spring-context'
 }
 
 tasks.assemble {
     dependsOn jar
-}
-
-tasks.named('test') {
-	useJUnitPlatform()
 }

@@ -24,10 +24,10 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import com.graphql_java_generator.annotation.GraphQLDirective;
 import com.graphql_java_generator.annotation.GraphQLInputParameters;
 import com.graphql_java_generator.annotation.GraphQLNonScalar;
@@ -1932,9 +1932,9 @@ public class Mutation extends AbstractGraphQLEntity implements GraphQLRequestObj
 	 * @param t
 	 * @return null if the key is not in the <I>extensions</I> map. Otherwise: the value for this _key_, as a _t_
 	 * instance
-	 * @throws JsonProcessingException When there is an error when converting the key's value into the _t_ class
+	 * @throws JacksonException When there is an error when converting the key's value into the _t_ class
 	 */
-	public <T> T getExtensionsField(String key, Class<T> t) throws JsonProcessingException {
+	public <T> T getExtensionsField(String key, Class<T> t) throws JacksonException {
 		JsonNode node = getExtensionsAsMap().get(key);
 		return (node == null) ? null : getMapper().treeToValue(node, t);
 	}

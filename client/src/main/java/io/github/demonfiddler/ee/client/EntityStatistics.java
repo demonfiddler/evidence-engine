@@ -21,27 +21,14 @@ package io.github.demonfiddler.ee.client;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
-import org.dataloader.DataLoader;
-
-import graphql.schema.DataFetchingEnvironment;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.graphql_java_generator.annotation.GraphQLObjectType;
-import com.graphql_java_generator.annotation.GraphQLScalar;
-import com.graphql_java_generator.client.GraphQLObjectMapper;
-import com.graphql_java_generator.annotation.GraphQLDirective;
 import com.graphql_java_generator.annotation.GraphQLIgnore;
 import com.graphql_java_generator.annotation.GraphQLInputParameters;
+import com.graphql_java_generator.annotation.GraphQLObjectType;
+import com.graphql_java_generator.annotation.GraphQLScalar;
 
 /**
  * Statistics about a given entity kind.
@@ -51,7 +38,6 @@ import com.graphql_java_generator.annotation.GraphQLInputParameters;
  */
 @GraphQLObjectType("EntityStatistics")
 @JsonInclude(Include.NON_NULL)
-@SuppressWarnings("unused")
 public class EntityStatistics {
 
 	/**

@@ -106,19 +106,18 @@ public class MutationReactiveExecutor implements GraphQLMutationReactiveExecutor
 
 	GraphQlClient graphQlClient;
 
-	GraphqlClientUtilsEx graphqlClientUtils;
-
 	GraphqlUtils graphqlUtils = GraphqlUtils.graphqlUtils; // must be set that way, to be used in the constructor
 
-	public MutationReactiveExecutor(@Qualifier("httpGraphQlClient") GraphQlClient graphQlClient) {
-		if (!"2.8".equals(this.graphqlUtils.getRuntimeVersion())) {
+	GraphqlClientUtilsEx graphqlClientUtils;
+
+	public MutationReactiveExecutor(@Qualifier("httpGraphQlClient") GraphQlClient graphQlClient, GraphqlClientUtilsEx graphqlClientUtils) {
+		if (!"4.0.2".equals(this.graphqlUtils.getRuntimeVersion())) {
 			throw new RuntimeException(
 				"The GraphQL runtime version doesn't match the GraphQL plugin version. The runtime's version is '"
-					+ this.graphqlUtils.getRuntimeVersion() + "' whereas the GraphQL plugin version is '2.8'");
+					+ this.graphqlUtils.getRuntimeVersion() + "' whereas the GraphQL plugin version is '4.0.2'");
 		}
-		CustomScalarRegistryInitializer.initCustomScalarRegistry();
-		DirectiveRegistryInitializer.initDirectiveRegistry();
 		this.graphQlClient = graphQlClient;
+		this.graphqlClientUtils = graphqlClientUtils;
 	}
 
 	/**

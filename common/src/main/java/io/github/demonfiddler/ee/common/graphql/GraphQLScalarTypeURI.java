@@ -22,6 +22,7 @@ package io.github.demonfiddler.ee.common.graphql;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +61,7 @@ class GraphQLScalarTypeURI {
 			 * @throws graphql.schema.CoercingSerializeException if value input can't be serialized
 			 */
 			@Override
-			public String serialize(Object input) throws CoercingSerializeException {
+			public String serialize(@NonNull Object input) throws CoercingSerializeException {
 				if (input instanceof URI) {
 					return input.toString();
 				} else {
@@ -80,7 +81,7 @@ class GraphQLScalarTypeURI {
 			 * @throws graphql.schema.CoercingParseValueException if value input can't be parsed
 			 */
 			@Override
-			public URI parseValue(Object input) throws CoercingParseValueException {
+			public URI parseValue(@NonNull Object input) throws CoercingParseValueException {
 				if (!(input instanceof String)) {
 					throw new CoercingParseValueException("Can't parse the '" + input.toString()
 						+ "' string to a URI (it should be a String but is a " + input.getClass().getName() + ')');
@@ -104,7 +105,7 @@ class GraphQLScalarTypeURI {
 			 * @throws graphql.schema.CoercingParseLiteralException if input literal can't be parsed
 			 */
 			@Override
-			public URI parseLiteral(Object input) throws CoercingParseLiteralException {
+			public URI parseLiteral(@NonNull Object input) throws CoercingParseLiteralException {
 				// input is an AST, that is: an instance of a class that implements graphql.language.Value
 				if (!(input instanceof StringValue)) {
 					throw new CoercingParseValueException("Can't parse the '" + input.toString()

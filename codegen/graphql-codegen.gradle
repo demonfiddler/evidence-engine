@@ -1,3 +1,22 @@
+/*----------------------------------------------------------------------------------------------------------------------
+ * Evidence Engine: A system for managing evidence on arbitrary scientific topics.
+ * Comprises an SQL database, GraphQL public API, Java app server, Java and web clients.
+ * Copyright © 2024-26 Adrian Price. All rights reserved.
+ *
+ * This file is part of Evidence Engine.
+ *
+ * Evidence Engine is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * Evidence Engine is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
+ * If not, see <https://www.gnu.org/licenses/>. 
+ *--------------------------------------------------------------------------------------------------------------------*/
+
 // GraphQL Java Generator configuration for server codegen.
 // Because we have modified the generated code, we now generate it only
 // for reference/comparison purposes, and we don't put it on the class path.
@@ -147,4 +166,21 @@ generateClientCodeConf {
 	// unionPrefix = 
 	// unionSuffix = 
 	// useJakartaEE9 = false
+}
+
+def generatedJavaDirs = [
+    file("$buildDir/generated/sources/graphqlClient"),
+    file("$buildDir/generated/sources/graphqlServer")
+]
+
+// Remove the generated sources from the source sets once the GraphQL plugin has finished registering them.
+afterEvaluate {
+    sourceSets.configureEach { sourceSet ->
+        sourceSet.java.srcDirs = sourceSet.java.srcDirs.findAll { dir ->
+            !generatedJavaDirs.contains(file(dir))
+        }
+        sourceSet.resources.srcDirs = sourceSet.resources.srcDirs.findAll { dir ->
+            !generatedJavaDirs.contains(file(dir))
+        }
+    }
 }

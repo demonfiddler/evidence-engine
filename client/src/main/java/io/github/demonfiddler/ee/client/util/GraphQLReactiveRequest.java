@@ -26,16 +26,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.graphql.client.GraphQlClient;
 
 import com.graphql_java_generator.annotation.RequestType;
-import com.graphql_java_generator.client.GraphQLRequestObject;
+import com.graphql_java_generator.client.RegistriesInitializer;
 import com.graphql_java_generator.client.request.InputParameter;
 import com.graphql_java_generator.client.request.ObjectResponse;
-import com.graphql_java_generator.client.request.QueryField;
 import com.graphql_java_generator.exception.GraphQLRequestExecutionException;
 import com.graphql_java_generator.exception.GraphQLRequestPreparationException;
 import com.graphql_java_generator.util.GraphqlUtils;
 
-import io.github.demonfiddler.ee.client.Mutation;
 // Utility classes are generated in the util subpackage. We need to import the ${object.classSimpleName} from the 'main' package
+import io.github.demonfiddler.ee.client.Mutation;
 import io.github.demonfiddler.ee.client.Query;
 import reactor.core.publisher.Mono;
 
@@ -48,17 +47,13 @@ public class GraphQLReactiveRequest extends ObjectResponse {
 
 	/** Logger for this class */
 	@SuppressWarnings("unused")
-	private static Logger logger = LoggerFactory.getLogger(GraphQLRequest.class);
+	private static final Logger logger = LoggerFactory.getLogger(GraphQLRequest.class);
+
+	/** Insures that the registries are initialized */
+	private static RegistriesInitializer registriesInitializer = RegistriesInitializerImpl.registriesInitializer;
 
 	final GraphqlUtils graphqlUtils = new GraphqlUtils();
 	final GraphqlClientUtilsEx graphqlClientUtils = new GraphqlClientUtilsEx();
-
-	// This initialization must occur before the execution of the constructors, in order to properly parse the GraphQL
-	// request.
-	static {
-		CustomScalarRegistryInitializer.initCustomScalarRegistry();
-		DirectiveRegistryInitializer.initDirectiveRegistry();
-	}
 
 	/**
 	 * Creates the GraphQL request, in reactive mode, for a full request. It will:
@@ -83,7 +78,7 @@ public class GraphQLReactiveRequest extends ObjectResponse {
 	 * @throws GraphQLRequestPreparationException
 	 */
 	public GraphQLReactiveRequest(String graphQLRequest) throws GraphQLRequestPreparationException {
-		super(null, "", graphQLRequest);
+		super(null, registriesInitializer, graphQLRequest);
 	}
 
 	/**
@@ -109,7 +104,7 @@ public class GraphQLReactiveRequest extends ObjectResponse {
 	public GraphQLReactiveRequest(GraphQlClient graphQlClient, String graphQLRequest, RequestType requestType,
 		String fieldName, InputParameter... inputParams) throws GraphQLRequestPreparationException {
 
-		super(graphQlClient, "", graphQLRequest, requestType, fieldName, inputParams);
+		super(graphQlClient, registriesInitializer, graphQLRequest, requestType, fieldName, inputParams);
 	}
 
 	/**
@@ -262,36 +257,5 @@ public class GraphQLReactiveRequest extends ObjectResponse {
 	 */
 	public Mono<Mutation> execMutation(Object... paramsAndValues) throws GraphQLRequestExecutionException {
 		return execReactive(Mutation.class, this.graphqlClientUtils.generatesBindVariableValuesMap(paramsAndValues));
-	}
-
-	/**
-	 * This method returns the package name, where the GraphQL generated classes are. It's used to load the class
-	 * definition, and get the GraphQL metadata coming from the GraphQL schema.
-	 * @return
-	 */
-	@Override
-	protected String getGraphQLClassesPackageName() {
-		return "io.github.demonfiddler.ee.client";
-	}
-
-	@Override
-	public QueryField getQueryContext() throws GraphQLRequestPreparationException {
-		return new QueryField(QueryRootResponse.class, "query");
-	}
-
-	@Override
-	public QueryField getMutationContext() throws GraphQLRequestPreparationException {
-		return new QueryField(MutationRootResponse.class, "mutation");
-	}
-
-	@Override
-	public QueryField getSubscriptionContext() throws GraphQLRequestPreparationException {
-		// No subscription in this GraphQL schema
-		return null;
-	}
-
-	@Override
-	public Class<? extends GraphQLRequestObject> getSubscriptionClass() {
-		return null;
 	}
 }

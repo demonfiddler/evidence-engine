@@ -1,5 +1,5 @@
 DELETE FROM "abbreviation";
-LOAD DATA LOCAL INFILE 'ltwa_current.csv'
+LOAD DATA LOCAL INFILE '/home/adrian/dev/GitHub/demonfiddler/evidence-engine/server/sql/ltwa_current.csv'
     INTO TABLE "abbreviation"
     FIELDS TERMINATED BY '\t'
     OPTIONALLY ENCLOSED BY '"'
