@@ -1,0 +1,61 @@
+# ----------------------------------------------------------------------------------------------------------------------
+#  Evidence Engine: A system for managing evidence on arbitrary scientific topics.
+#  Comprises an SQL database, GraphQL public API, Java app server, Java and web clients.
+#  Copyright © 2024-26 Adrian Price. All rights reserved.
+#
+#  This file is part of Evidence Engine.
+#
+#  Evidence Engine is free software: you can redistribute it and/or modify it under the terms of the
+#  GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License,
+#  or (at your option) any later version.
+#
+#  Evidence Engine is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+#  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#  See the GNU Affero General Public License for more details.
+#
+#  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
+#  If not, see <https://www.gnu.org/licenses/>. 
+# ----------------------------------------------------------------------------------------------------------------------
+
+# Defines the build backend and its dependencies.
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+# Contains metadata like name, version, description, and license.
+[project]
+authors = [
+  {name = "Adrian Price", email = "adrian@campaign-resources.org"},
+]
+maintainers = [
+  {name = "Adrian Price", email = "adrian@campaign-resources.org"},
+]
+requires-python = "== 3.12.13"
+name = "ee-ai-service"
+version = "0.1.0"
+description = "AI service for the Evidence Engine"
+dependencies = [
+#    "fastapi",
+#    "fastapi[standard-no-fastapi-cloud-cli]",
+    "fastapi[standard]",
+    "gql",
+    "httpx",
+    "langgraph",
+    "langchain-ollama",
+    "numpy",
+    "pydantic",
+    "pydantic_extra_types",
+    "pycountry",
+    "regex",
+    "StrTokenizer",
+    "uvicorn",
+]
+
+# Configures settings for specific tools (e.g., linters, type checkers).
+#[tool]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ee_ai_service"]
+
+[tool.setuptools]
+include-package-data = true

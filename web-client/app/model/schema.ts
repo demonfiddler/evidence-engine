@@ -57,6 +57,16 @@ export type CommentQueryFilter = TrackedEntityQueryFilter & {
   to?: Date
 }
 
+export type EntityLinkQueryFilter = {
+  fromEntityId?: string
+  fromEntityKind?: EntityKind
+  toEntityId?: string
+  toEntityKind?: EntityKind
+  status?: StatusKind[]
+  text?: string
+  advancedSearch?: boolean
+}
+
 export type LinkableEntityQueryFilter = TrackedEntityQueryFilter & {
   topicId?: string
   recursive?: boolean
@@ -113,7 +123,7 @@ export interface ClaimInput extends TrackedEntityInput {
 
 export interface CommentInput extends TrackedEntityInput {
   targetId?: string
-  parent?: Comment
+  parentId?: string
   text: string
 }
 

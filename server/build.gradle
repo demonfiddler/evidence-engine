@@ -36,6 +36,7 @@ dependencies {
 	implementation libs.springBootStarterDataJpa
 	implementation libs.springBootStarterValidation
 	implementation libs.springBootStarterSecurity
+	// implementation libs.springDocOpenApiStarter
 	implementation libs.springSessionCore
 
 	implementation libs.bundles.graphqlJavaGeneratorServerRuntimeImpl

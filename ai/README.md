@@ -1,0 +1,1 @@
+The ai subproject holds a LangGraph / FastAPI Python application and an Open WebUI plugin to invoke it.

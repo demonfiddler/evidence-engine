@@ -51,7 +51,9 @@ integration-testing.txt
 react-dev-notes.txt
 **/application*.properties
 .env
+ai/**/__pycache__
 server/src/main/resources/graphql/relay.graphqlsxxx
 server/database design.txt
 web-client/design.md
 web-client/lib/generated/build-info.ts
+ai/service/src/ee_ai_service/runtime/config*.ini

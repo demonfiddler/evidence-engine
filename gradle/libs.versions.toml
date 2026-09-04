@@ -57,6 +57,7 @@ springBootStarterTest = { group = 'org.springframework.boot', name = 'spring-boo
 springBootStarterValidation = { group = 'org.springframework.boot', name = 'spring-boot-starter-validation' }
 springBootStarterWeb = { group = 'org.springframework.boot', name = 'spring-boot-starter-web' }
 springBootStarterWebsocket  = { group = 'org.springframework.boot', name = 'spring-boot-starter-websocket' }
+springDocOpenApiStarter = { group = 'org.springdoc', name = 'springdoc-openapi-starter-webmvc-ui' }
 springContext = { group = 'org.springframework', name = 'spring-context' }
 springGraphql = { group = 'org.springframework.graphql', name = 'spring-graphql' }
 springGraphqlTest = { group = 'org.springframework.graphql', name = 'spring-graphql-test' }

@@ -25,7 +25,7 @@ import Publisher from "./Publisher"
 export default interface Journal extends ITrackedEntity {
   /** The full journal title. */
   title?: string
-  /** The official abbreviation. */
+  /** The official ISO 4 abbreviation. */
   abbreviation?: string | null
   /** Web link to the journal's home page. */
   url?: /*URL | */string | null

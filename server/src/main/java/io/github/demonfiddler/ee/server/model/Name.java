@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 public class Name {
 
     private static final Pattern TITLE = Pattern.compile(
-        "^Ambassador|Baroness|Baronet|Captain|Capt\\.?|Cllr\\.?|Col\\.?|Dame|Dr\\.?|Fr\\.?|Gen\\.?|King|Lady|Lord|Lt\\.?|Lt\\.?|Major|Maj\\.?|Miss|Mr\\.?|Mrs\\.?|Ms\\.?|nat\\.?|Prince|Princess|Prof\\.?|Queen|Rabbi|rer\\.?|\\(?[Rr]et\\.?\\)?|Rev\\.?|Sen\\.?|Sargeant|Sgt\\?|Sir$");
+        "^Ambassador|Baroness|Baronet|Bart\\.?|Bt\\.?|Captain|Capt?\\.?|Cllr\\.?|Col\\.?|Commander|Cdr\\.?|Dame|Dr\\.?|Fr\\.?|Gen\\.?|King|Lady|Lord|Lieutenant|Lieut\\.?|Lt\\.?|Major|Maj\\.?|Miss|Mr\\.?|Mrs\\.?|Ms\\.?|nat\\.?|Prince|Princess|Prof\\.?|Queen|Rabbi|rer\\.?|\\(?[Rr]et\\.?\\)?|Rev\\.?|Sen\\.?|Sergeant|Sgt\\?|Sir$");
     private static final Pattern FIRST_NAME = Pattern.compile("^[\\p{IsAlphabetic}()'.-]+$");
     private static final Pattern NICKNAME = Pattern.compile("^[(\"']([\\p{IsAlphabetic}]+)[)\"']$");
     private static final Pattern PREFIX = Pattern.compile("^[dD]e[nlr]?|[dD]u|[lL][ae]|[vV][ao]n|[zZ]u|St\\.?|[tT]e$");

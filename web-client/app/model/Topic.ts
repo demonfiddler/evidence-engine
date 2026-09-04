@@ -30,7 +30,7 @@ export default interface Topic extends ILinkableEntity {
   path?: string | null
   /** The parent topic, if any. */
   parent?: Topic | null
-  /** The ID of the parent topic, if any. */
+  /** The ID of the parent topic, if any. N.B: this field is not part of the GraphQL type. */
   parentId?: string | null
   /** The sub-topics. */
   children?: Topic[]
