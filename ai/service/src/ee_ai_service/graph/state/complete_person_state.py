@@ -21,14 +21,35 @@ from pydantic import BaseModel, Field
 
 from ee_ai_service.graph.workflows.workflow import WorkflowState
 from ee_ai_service.models.person import Person
+from ee_ai_service.models.person_facts import PersonFacts
 from ee_ai_service.models.person_info import PersonInfo
+from ee_ai_service.models.record_info import RecordInfo
+from ee_ai_service.models.search_result import SearchResult
 
 class CompletePersonResult(BaseModel):
-    person: Person
+    person_updated: RecordInfo
 
 class CompletePersonState(WorkflowState):
     """State used to complete a person's description, qualifications, etc."""
 
     person: Person
-    person_info: PersonInfo | None
-    result: CompletePersonResult = Field(default_factory = CompletePersonResult)
+    """The Person to complete."""
+
+    person_info: PersonInfo | None = None
+    """Information about the person, either extracted from person or gathered from research."""
+
+    search_results: list[SearchResult] = Field(default_factory=list)
+    """The results of a web search for the person."""
+
+    facts_per_result: list[PersonFacts] = Field(default_factory=list)
+    """Candidate facts about a person extracted from a given search result."""
+
+    reconciled_notes: str | None = None
+    """The combination of existing and discovered notes."""
+
+    reconciled_qualifications: str | None = None
+    """The combination of existing and discovered qualifications."""
+
+    # Result fields
+    person_updated: RecordInfo | None = None
+    """Selected fields from the updated person."""

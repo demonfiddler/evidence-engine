@@ -17,7 +17,6 @@
 #  If not, see <https://www.gnu.org/licenses/>. 
 # ----------------------------------------------------------------------------------------------------------------------
 
-from functools import partial
 from langgraph.graph import END, START
 from typing import override
 
@@ -27,11 +26,11 @@ from ee_ai_service.graph.state.complete_publications_state import CompletePublic
 from ee_ai_service.graph.workflows.workflow import Workflow
 from ee_ai_service.runtime.runtime_state import RuntimeState
 
-def advance_publication_index(state: CompletePublicationsState) -> CompletePublicationsState:
-    state.index += 1
+def advance_publication_index(state: CompletePublicationsState) -> dict[str, any]:
+    return {"index": state.index + 1}
 
 def loop_control(state: CompletePublicationsState):
-    if state.index < state.publications:
+    if state.index < len(state.publications):
         return "complete_publication"
     else:
         return END
@@ -40,12 +39,12 @@ class CompletePublications(Workflow[CompletePublicationsState, CompletePublicati
     """A LangGraph workflow for completing a collection of Publications."""
 
     def __init__(self, runtime: RuntimeState):
-        super().__init__(self, runtime)
+        super().__init__(runtime)
     
     @override
     def register_nodes(self):
-        self.graph.add_node("load_publications", partial(load_publications, runtime=self.runtime))
-        self.graph.add_node("complete_publication", partial(complete_publication, runtime = self.runtime))
+        self.graph.add_node("load_publications", load_publications)
+        self.graph.add_node("complete_publication", complete_publication)
         self.graph.add_node("advance_publication_index", advance_publication_index)
 
     @override
@@ -56,5 +55,10 @@ class CompletePublications(Workflow[CompletePublicationsState, CompletePublicati
         self.graph.add_conditional_edges("advance_publication_index", loop_control)
 
     @override
-    def validate(self, state, runtime: RuntimeState):
-        super.validate(state, runtime)
+    def get_result(self, state: dict[str, any]) -> CompletePublicationsResult:
+        """Returns the result of the workflow, which includes lists of all claims, authors and links added."""
+        return CompletePublicationsResult(
+            claims_added = state["claims_added"],
+            persons_added = state["persons_added"],
+            links_added = state["links_added"]
+        )

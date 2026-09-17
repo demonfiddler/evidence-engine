@@ -19,14 +19,16 @@
 
 from __future__ import annotations
 from datetime import date as Date
-from pydantic import Field, field_validator
+from ee_ai_service.models.record_info import RecordInfo
+from pydantic import field_validator
+from typing import Literal, override
 
 from ee_ai_service.models.enums.entity_kind import EntityKind
 from ee_ai_service.models.linkable_entity import LinkableEntity
 from ee_ai_service.models.validators import validate_not_future
 
 class Claim(LinkableEntity):
-    entityKind: EntityKind = Field(EntityKind.CLAIM, frozen=True)
+    entityKind: Literal[EntityKind.CLAIM] = EntityKind.CLAIM
 
     # The text of the claim.
     text: str | None = None
@@ -38,3 +40,11 @@ class Claim(LinkableEntity):
     @field_validator("date")
     def check_date(cls, v):
         return validate_not_future(v)
+
+    @override
+    def info(self) -> RecordInfo:
+        return RecordInfo(
+            id = self.id,
+            text = self.text,
+            notes = self.notes
+        )

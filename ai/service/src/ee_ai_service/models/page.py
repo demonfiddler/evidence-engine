@@ -27,7 +27,7 @@ class Page(BaseModel, Generic[T]):
     hasContent: bool | None = None
     isEmpty: bool | None = None
     number: NonNegativeInt | None = None
-    size: PositiveInt | None = None
+    size: NonNegativeInt | None = None
     numberOfElements: NonNegativeInt | None = None
     totalPages: NonNegativeInt | None = None
     totalElements: NonNegativeInt | None = None

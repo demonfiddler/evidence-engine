@@ -24,6 +24,6 @@ class UserInput(SecurityPrincipalInput):
   firstName: str
   lastName: str
   email: str
-  password: str | None
-  country: str | None
-  notes: str | None
+  password: str | None = None
+  country: str | None = None
+  notes: str | None = None

@@ -17,12 +17,19 @@
 #  If not, see <https://www.gnu.org/licenses/>. 
 # ----------------------------------------------------------------------------------------------------------------------
 
+import json
+from logging import getLogger, DEBUG
 from textwrap import dedent
 
 from ee_ai_service.graph.state.complete_person_state import CompletePersonState
 from ee_ai_service.runtime.runtime_state import RuntimeState
+from ee_ai_service.utils.string import indent_lines
 
-async def reconcile_qualifications(state: CompletePersonState, *, runtime: RuntimeState) -> CompletePersonState:
+logger = getLogger(__name__)
+
+async def reconcile_qualifications(state: CompletePersonState, *, config) -> dict[str, any]:
+    """Reconcile existing and discovered qualifications of a scientist using an LLM call. N.B. This can be non-deterministic with smaller models."""
+
     prompt = dedent(f"""
     You are an agent who specializes in documenting the academic qualifications of scientists.
 
@@ -39,15 +46,20 @@ async def reconcile_qualifications(state: CompletePersonState, *, runtime: Runti
     - If <institution> is a university, state both the college and the university names;
     - Do not output exact duplicate qualifications.
 
-    BEGIN EXISTING DESCRIPTION
-    {state.person.qualifications}
-    END EXISTING DESCRIPTION
+    BEGIN EXISTING QUALIFICATIONS
+    {indent_lines(state.person.qualifications, indent_first = False) if state.person.qualifications else "(unknown)"}
+    END EXISTING QUALIFICATIONS
 
-    BEGIN DISCOVERED DESCRIPTION
-    {state.qualifications}
-    END DISCOVERED DESCRIPTION
+    BEGIN DISCOVERED QUALIFICATIONS
+    {indent_lines(state.person_info.qualifications, indent_first = False) if state.person_info.qualifications else "(not found)"}
+    END DISCOVERED QUALIFICATIONS
     """)
 
-    state.qualifications = await runtime.inference_client.ainvoke(prompt)
+    runtime: RuntimeState = config["metadata"]["runtime"]
+    ai_message = await runtime.inference_client.ainvoke(prompt)
+    reconciled_qualifications: str = ai_message.content
 
-    return state
+    logger.info(f"Reconciled existing qualifications with discovered qualifications for Person#{state.person.id}: {state.person.firstName} {state.person.lastName}")
+    logger.debug(f"Qualifications: {reconciled_qualifications}")
+
+    return {"reconciled_qualifications": reconciled_qualifications}

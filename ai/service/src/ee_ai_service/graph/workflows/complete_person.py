@@ -17,15 +17,14 @@
 #  If not, see <https://www.gnu.org/licenses/>. 
 # ----------------------------------------------------------------------------------------------------------------------
 
-from functools import partial
 from typing import override
-from ee_ai_service.graph.state.complete_person_state import CompletePersonResult, CompletePersonState
 from langgraph.graph import END, START
 
-from ee_ai_service.graph.nodes.reconcile_description import reconcile_description
-from ee_ai_service.graph.nodes.reconcile_qualifications import reconcile_qualifications
+from ee_ai_service.graph.nodes.analyse_person_results import analyse_person_results
+from ee_ai_service.graph.nodes.extract_person_facts import extract_person_facts
 from ee_ai_service.graph.nodes.research_person import research_person
 from ee_ai_service.graph.nodes.update_person import update_person
+from ee_ai_service.graph.state.complete_person_state import CompletePersonResult, CompletePersonState
 from ee_ai_service.graph.workflows.workflow import Workflow
 from ee_ai_service.runtime.runtime_state import RuntimeState
 
@@ -37,23 +36,22 @@ class CompletePerson(Workflow[CompletePersonState, CompletePersonResult]):
 
     @override
     def register_nodes(self):
-        self.graph.add_node("research_person", partial(research_person, runtime = self.runtime))
-        self.graph.add_node("reconcile_description", partial(reconcile_description, runtime = self.runtime))
-        self.graph.add_node("reconcile_qualifications", partial(reconcile_qualifications, runtime = self.runtime))
-        self.graph.add_node("update_person", partial(update_person, runtime = self.runtime))
+        self.graph.add_node("research_person", research_person)
+        self.graph.add_node("extract_person_facts", extract_person_facts)
+        self.graph.add_node("analyse_person_results", analyse_person_results)
+        self.graph.add_node("update_person", update_person)
 
     @override
     def wire_edges(self):
         self.graph.add_edge(START, "research_person")
-        self.graph.add_edge("research_person", "reconcile_description")
-        self.graph.add_edge("research_person", "reconcile_qualifications")
-        self.graph.add_edge("reconcile_description", "update_person")
-        self.graph.add_edge("reconcile_qualifications", "update_person")
+        self.graph.add_edge("research_person", "extract_person_facts")
+        self.graph.add_edge("extract_person_facts", "analyse_person_results")
+        self.graph.add_edge("analyse_person_results", "update_person")
         self.graph.add_edge("update_person", END)
 
     @override
-    def validate(self, state, runtime: RuntimeState):
-        super.validate(state, runtime)
-
-# def create_complete_person_workflow(runtime: RuntimeState):
-#     return CompletePerson(runtime)
+    def get_result(self, state: dict[str, any]) -> CompletePersonResult:
+        """Returns the result of the workflow, which is information about the completed Person."""
+        return CompletePersonResult(
+            person_updated = state["person"].info()
+        )

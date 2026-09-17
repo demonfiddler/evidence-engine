@@ -19,20 +19,28 @@
 
 from __future__ import annotations
 from pydantic import Field
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 # N.B. Although unused here, Optional must be imported to avoid Pydantic failures during model_rebuild() calls on recursive models.
-from typing import Optional
+from typing import Literal
 
 if TYPE_CHECKING:
     from ee_ai_service.models.user import User
 from ee_ai_service.models.enums.entity_kind import EntityKind
+from ee_ai_service.models.record_info import RecordInfo
 from ee_ai_service.models.security_principal import SecurityPrincipal
 
 class Group(SecurityPrincipal):
     # The dicriminator value.
-    entityKind: EntityKind = Field(EntityKind.GROUP, frozen=True)
+    entityKind: Literal[EntityKind.GROUP] = EntityKind.GROUP
 
     # The unique group name. */
     groupname: str | None = None
     # The group members. */
-    members: list[User] | None = None
+    members: list[User] | None = Field(default_factory=list)
+
+    @override
+    def info(self) -> RecordInfo:
+        return RecordInfo(
+            id = self.id,
+            text = self.groupname
+        )

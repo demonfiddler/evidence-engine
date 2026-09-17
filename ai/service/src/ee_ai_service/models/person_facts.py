@@ -17,23 +17,18 @@
 #  If not, see <https://www.gnu.org/licenses/>. 
 # ----------------------------------------------------------------------------------------------------------------------
 
-from datetime import date as Date
-from pydantic import HttpUrl, field_validator
-from pydantic_extra_types.country import CountryAlpha2
+from pydantic import BaseModel, Field
 
-from ee_ai_service.models.enums.declaration_kind import DeclarationKind
-from ee_ai_service.models.inputs.tracked_entity_input import TrackedEntityInput
-from ee_ai_service.models.validators import validate_not_future
+from ee_ai_service.models.search_result import SearchResult
+from ee_ai_service.utils.name import Name
 
-class DeclarationInput(TrackedEntityInput):
-    kind: DeclarationKind
-    title: str
-    date: Date
-    country: CountryAlpha2 | None = None
-    url: HttpUrl | None = None
-    signatories: str | None = None
-    notes: str | None = None
+class PersonFacts(BaseModel):
+    """Facts extracted from an individual search result"""
 
-    @field_validator("date")
-    def check_date(cls, v):
-        return validate_not_future(v)
+    search_result: SearchResult | None = None
+    names: list[Name | str] = Field(default_factory=list)
+    topics: list[str] = Field(default_factory=list)
+    publications: list[str] = Field(default_factory=list)
+    affiliations: list[str] = Field(default_factory=list)
+    countries: list[str] = Field(default_factory=list)
+    emails: list[str] = Field(default_factory=list)

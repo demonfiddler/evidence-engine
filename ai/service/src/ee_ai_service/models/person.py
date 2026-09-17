@@ -18,16 +18,17 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 from __future__ import annotations
-from pydantic import Field
 from pydantic_extra_types.country import CountryAlpha2
+from typing import Literal, override
 
 from ee_ai_service.models.enums.entity_kind import EntityKind
 from ee_ai_service.models.linkable_entity import LinkableEntity
+from ee_ai_service.models.record_info import RecordInfo
 from ee_ai_service.utils.name import Name
 
 class Person(LinkableEntity):
     # The dicriminator value.
-    entityKind: EntityKind = Field(EntityKind.PERSON, frozen = True)
+    entityKind: Literal[EntityKind.PERSON] = EntityKind.PERSON
 
     # The person's title(s).
     title: str | None = None
@@ -54,7 +55,7 @@ class Person(LinkableEntity):
     # Whether the person has authored any peer-reviewed publications.
     published: bool | None = None
 
-    def to_name(self) -> Name:
+    def name(self) -> Name:
         return Name(
             title = self.title,
             first_names = self.firstName,
@@ -63,4 +64,12 @@ class Person(LinkableEntity):
             last_name = self.lastName,
             suffix = self.suffix,
             alias = self.alias,
+        )
+
+    @override
+    def info(self) -> RecordInfo:
+        return RecordInfo(
+            id = self.id,
+            text = str(self.name()),
+            notes = self.notes
         )

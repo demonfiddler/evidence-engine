@@ -19,6 +19,7 @@
 
 from enum import StrEnum
 
+from StrTokenizer import StrTokenizer
 from ee_ai_service.models.enums.publication_kind import PublicationKind
 from ee_ai_service.models.publication import Publication
 from ee_ai_service.utils.name import Name
@@ -26,16 +27,12 @@ from ee_ai_service.utils.name import Name
 class CitationFormat(StrEnum):
     CSE_NAME_YEAR = "cse-name-year"
 
-def cite(publication: Publication, format: CitationFormat = CitationFormat.CSE_NAME_YEAR) -> str:
-    citation = None
-    match format:
-        case CitationFormat.CSE_NAME_YEAR:
-            citation = _cse_name_year(publication)
-    return citation
-
 def _cse_name_year(publication) -> str:
     sb = []
-    authors = publication.authors.split()
+    authors = []
+    tok = StrTokenizer(publication.authors, "\r\n")
+    while tok.hasMoreTokens():
+        authors.append(tok.nextToken())
     for i in range(4):
         if i < len(authors):
             if i > 0:
@@ -55,3 +52,10 @@ def _cse_name_year(publication) -> str:
     if publication.doi is not None:
         sb.append(f" doi: {publication.doi}")
     return "".join(sb)
+
+def cite(publication: Publication, format: CitationFormat = CitationFormat.CSE_NAME_YEAR) -> str:
+    citation = None
+    match format:
+        case CitationFormat.CSE_NAME_YEAR:
+            citation = _cse_name_year(publication)
+    return citation

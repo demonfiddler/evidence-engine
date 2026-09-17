@@ -37,7 +37,7 @@ export const columns: ColumnDef<Claim>[] = [
     enableHiding: false,
     enableSorting: true,
     size: 500,
-    maxSize: 750,
+    maxSize: 1500,
     // enableColumnFilter: false,
     header: "Text",
   },
@@ -58,7 +58,7 @@ export const columns: ColumnDef<Claim>[] = [
     enableHiding: true,
     enableSorting: false,
     size: 500,
-    maxSize: 750,
+    maxSize: 1500,
     header: "Notes",
   },
   actionColumn

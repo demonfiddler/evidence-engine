@@ -24,6 +24,6 @@ from ee_ai_service.models.enums.null_handling_kind import NullHandlingKind
 
 class OrderInput(BaseModel):
     property: str
-    direction: DirectionKind | None  # = ASC
-    ignoreCase: bool | None  # = true (MariaDB default collation is case-insensitive)
-    nullHandling: NullHandlingKind | None  # = NATIVE
+    direction: DirectionKind | None = None # = ASC
+    ignoreCase: bool | None = None  # = true (MariaDB default collation is case-insensitive)
+    nullHandling: NullHandlingKind | None = None  # = NATIVE

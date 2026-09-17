@@ -26,37 +26,37 @@ from ee_ai_service.models.inputs.tracked_entity_input import TrackedEntityInput
 from ee_ai_service.models.validators import validate_not_future
 
 class PublicationInput(TrackedEntityInput):
-    authorNames: str | None # TODO: rename to authors
-    # authorIds: str[] | None # TODO: remove from schema.graphqls
+    authorNames: str | None = None # TODO: rename to authors
+    # authorIds: str[] | None = None # TODO: remove from schema.graphqls
     title: str
-    journalId: ID | None
-    publisherId: ID | None
+    journalId: ID | None = None
+    publisherId: ID | None = None
     kind: PublicationKind
-    date: Date | None
-    year: PositiveInt | None
-    keywords: str | None
-    abstract: str | None
-    notes: str | None
-    peerReviewed: bool | None
-    doi: str | None
-    isbn: str | None
-    pmcid: str | None
-    pmid: str | None
-    hsid: str | None
-    arxivid: str | None
-    biorxivid: str | None
-    medrxivid: str | None
-    ericid: str | None
-    ihepid: str | None
-    oaipmhid: str | None
-    halid: str | None
-    zenodoid: str | None
-    scopuseid: str | None
-    wsan: str | None
-    pinfoan: str | None
-    url: HttpUrl | None
-    accessed: Date | str | None
-    cached: bool
+    date: Date | None = None
+    year: PositiveInt | None = None
+    keywords: str | None = None
+    abstract: str | None = None
+    notes: str | None = None
+    peerReviewed: bool | None = None
+    doi: str | None = None
+    isbn: str | None = None
+    pmcid: str | None = None
+    pmid: str | None = None
+    hsid: str | None = None
+    arxivid: str | None = None
+    biorxivid: str | None = None
+    medrxivid: str | None = None
+    ericid: str | None = None
+    ihepid: str | None = None
+    oaipmhid: str | None = None
+    halid: str | None = None
+    zenodoid: str | None = None
+    scopuseid: str | None = None
+    wsan: str | None = None
+    pinfoan: str | None = None
+    url: HttpUrl | None = None
+    accessed: Date | str | None = None
+    cached: bool = False
 
     @field_validator("date")
     def check_date(cls, v):

@@ -17,23 +17,9 @@
 #  If not, see <https://www.gnu.org/licenses/>. 
 # ----------------------------------------------------------------------------------------------------------------------
 
-from datetime import date as Date
-from pydantic import HttpUrl, field_validator
-from pydantic_extra_types.country import CountryAlpha2
+from httpx import Response
+from langchain_core.tools import tool
 
-from ee_ai_service.models.enums.declaration_kind import DeclarationKind
-from ee_ai_service.models.inputs.tracked_entity_input import TrackedEntityInput
-from ee_ai_service.models.validators import validate_not_future
-
-class DeclarationInput(TrackedEntityInput):
-    kind: DeclarationKind
-    title: str
-    date: Date
-    country: CountryAlpha2 | None = None
-    url: HttpUrl | None = None
-    signatories: str | None = None
-    notes: str | None = None
-
-    @field_validator("date")
-    def check_date(cls, v):
-        return validate_not_future(v)
+@tool
+async def get(url: str) -> Response:
+    pass

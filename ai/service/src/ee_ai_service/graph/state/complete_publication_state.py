@@ -27,20 +27,32 @@ from ee_ai_service.models.publication import Publication
 from ee_ai_service.models.claim import Claim
 from ee_ai_service.models.entity_link import EntityLink
 from ee_ai_service.models.person import Person
+from ee_ai_service.models.record_info import RecordInfo
 from ee_ai_service.utils.name import Name
 
 class CompletePublicationResult(BaseModel):
-    authors_added: list[Person] = Field(default_factory=list)
-    claims_added: list[Claim] = Field(default_factory=list)
-    links_added: list[EntityLink] = Field(default_factory=list)
+    """The result returned as workflow's output."""
+    persons_added: list[RecordInfo] = Field(default_factory=list)
+    claims_added: list[RecordInfo] = Field(default_factory=list)
+    links_added: list[RecordInfo] = Field(default_factory=list)
 
 class CompletePublicationState(WorkflowState):
     """State used to complete a publication's claims and authors"""
 
-    topic_id: ID | None
+    topic_id: ID | None = None
+    create_claims: bool = True
+    create_authors: bool = True
+    create_links: bool = True
+    topic_id: ID | None = None
+    master_record_id: ID | None = None
     publication: Publication
     extracted_claims: list[ClaimInput] = Field(default_factory=list)
+    claim_ids_to_link: list[ID] = Field(default_factory=list)
     claims_to_add: list[ClaimInput] = Field(default_factory=list)
     extracted_authors: list[Name] = Field(default_factory=list)
+    person_ids_to_link: list[ID] = Field(default_factory=list)
     persons_to_add: list[PersonInput] = Field(default_factory=list)
-    result: CompletePublicationResult = Field(default_factory=CompletePublicationResult)
+    # Result fields
+    persons_added: list[RecordInfo] = Field(default_factory=list)
+    claims_added: list[RecordInfo] = Field(default_factory=list)
+    links_added: list[RecordInfo] = Field(default_factory=list)

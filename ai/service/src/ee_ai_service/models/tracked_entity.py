@@ -18,13 +18,16 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 from __future__ import annotations
+from abc import abstractmethod
 from datetime import datetime
+from ee_ai_service.models.record_info import RecordInfo
 from pydantic import ConfigDict, Field
 from typing import Annotated, TYPE_CHECKING, Optional
 
 from ee_ai_service.models.base_entity import BaseEntity
 from ee_ai_service.models.enums.entity_kind import EntityKind
 from ee_ai_service.models.enums.status_kind import StatusKind
+from ee_ai_service.models.page import Page
 if TYPE_CHECKING:
     from ee_ai_service.models.comment import Comment
     from ee_ai_service.models.log import Log
@@ -44,4 +47,9 @@ class TrackedEntity(BaseEntity):
     updated: datetime | None = None
     updatedByUser: Optional[User] = None
     log: list[Log] | None = None
-    comments: list[Comment] | None = None
+    comments: Page[Comment] | None = None
+
+    @abstractmethod
+    def info(self) -> RecordInfo:
+        """Return the record info for this entity."""
+        pass

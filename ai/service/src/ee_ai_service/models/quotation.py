@@ -19,15 +19,17 @@
 
 from __future__ import annotations
 from datetime import date as Date
-from pydantic import Field, HttpUrl, field_validator
+from pydantic import HttpUrl, field_validator
+from typing import Literal, override
 
 from ee_ai_service.models.enums.entity_kind import EntityKind
 from ee_ai_service.models.linkable_entity import LinkableEntity
+from ee_ai_service.models.record_info import RecordInfo
 from ee_ai_service.models.validators import validate_not_future
 
 class Quotation(LinkableEntity):
     # The dicriminator value.
-    entityKind: EntityKind = Field(EntityKind.QUOTATION, frozen=True)
+    entityKind: Literal[EntityKind.QUOTATION] = EntityKind.QUOTATION
 
     # The text of the quotation.
     text: str | None = None
@@ -45,3 +47,11 @@ class Quotation(LinkableEntity):
     @field_validator("date")
     def check_date(cls, v):
         return validate_not_future(v)
+
+    @override
+    def info(self) -> RecordInfo:
+        return RecordInfo(
+            id = self.id,
+            text = self.text,
+            notes = self.notes
+        )

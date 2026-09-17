@@ -23,6 +23,7 @@ from typing import Optional
 from ee_ai_service.models.base_entity import BaseEntity
 from ee_ai_service.models.claim import Claim
 from ee_ai_service.models.comment import Comment
+from ee_ai_service.models.declaration import Declaration
 from ee_ai_service.models.entity_link import EntityLink
 from ee_ai_service.models.group import Group
 from ee_ai_service.models.id import ID
@@ -41,7 +42,6 @@ from ee_ai_service.models.tracked_entity import TrackedEntity
 from ee_ai_service.models.user import User
 
 # Leaf models
-#ID.model_rebuild()
 BaseEntity.model_rebuild()
 SecurityPrincipal.model_rebuild()
 User.model_rebuild()
@@ -57,10 +57,11 @@ Comment.model_rebuild()
 
 # Recursive root models
 EntityLink.model_rebuild()
-Page.model_rebuild()
 LinkableEntity.model_rebuild()
 Person.model_rebuild()
 Claim.model_rebuild()
+Declaration.model_rebuild()
 Quotation.model_rebuild()
 Publication.model_rebuild()
 Topic.model_rebuild()
+Page.model_rebuild()

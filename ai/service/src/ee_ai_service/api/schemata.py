@@ -17,36 +17,36 @@
 #  If not, see <https://www.gnu.org/licenses/>. 
 # ----------------------------------------------------------------------------------------------------------------------
 
-from __future__ import annotations
-from typing import Literal, TYPE_CHECKING, override
+"""Pydantic request/response models."""
 
-if TYPE_CHECKING:
-    from ee_ai_service.models.topic import Topic
-from ee_ai_service.models.enums.entity_kind import EntityKind
+from pydantic import BaseModel, Field
+
 from ee_ai_service.models.id import ID
-from ee_ai_service.models.linkable_entity import LinkableEntity
+from ee_ai_service.models.inputs.linkable_entity_query_filter import LinkableEntityQueryFilter
+from ee_ai_service.models.inputs.pageable_input import PageableInput
 from ee_ai_service.models.record_info import RecordInfo
 
-class Topic(LinkableEntity):
-    # The dicriminator value.
-    entityKind: Literal[EntityKind.TOPIC] = EntityKind.TOPIC
+class CompletePersonsApiRequest(BaseModel):
+    """Request to the CompletePersons workflow."""
+    filter: LinkableEntityQueryFilter | None = None
+    pageSort: PageableInput | None = None
 
-    # The topic label for display in the user interface.
-    label: str | None = None
-    # The topic description.
-    description: str | None = None
-    # The full path to the topic.
-    path: str | None = None
-    # The parent topic, if any.
-    parent: Topic | None = None
-    # The ID of the parent topic, if any. N.B: this field is not part of the GraphQL type.
-    parentId: ID | None = None
-    # The sub-topics.
-    children: list[Topic] | None = None
+class CompletePersonsApiResponse(BaseModel):
+    """Response returned by CompletePersons workflow."""
+    persons: list[RecordInfo] = Field(default_factory=list)
 
-    @override
-    def info(self) -> RecordInfo:
-        return RecordInfo(
-            id = self.id,
-            text = self.label
-        )
+class CompletePublicationsApiRequest(BaseModel):
+    """Request to the CompletePublications workflow."""
+    filter: LinkableEntityQueryFilter | None = None
+    pageSort: PageableInput | None = None
+    create_claims: bool = True
+    create_authors: bool = True
+    create_links: bool = True
+    topic_id: ID | None = None
+
+class CompletePublicationsApiResponse(BaseModel):
+    """Response returned by CompletePublications workflow."""
+    claims_added: list[RecordInfo] = Field(default_factory=list)
+    persons_added: list[RecordInfo] = Field(default_factory=list)
+    links_added: list[RecordInfo] = Field(default_factory=list)
+

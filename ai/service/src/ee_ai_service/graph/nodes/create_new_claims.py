@@ -17,12 +17,26 @@
 #  If not, see <https://www.gnu.org/licenses/>. 
 # ----------------------------------------------------------------------------------------------------------------------
 
+from logging import getLogger
+
 from ee_ai_service.graph.state.complete_publication_state import CompletePublicationState
+from ee_ai_service.models.record_info import RecordInfo
 from ee_ai_service.runtime.runtime_state import RuntimeState
 
-async def create_new_claims(state: CompletePublicationState, *, runtime: RuntimeState) -> CompletePublicationState:
-    for input in state.claims_to_add:
-        claim = await runtime.graphql_client.createClaim(input)
-        state.result.claims_added.append(claim)
+logger = getLogger(__name__)
 
-    return state
+async def create_new_claims(state: CompletePublicationState, *, config) -> dict[str, any]:
+    """Create new claims in the database using the provided claim information."""
+
+    claims_added: list[RecordInfo] = []
+    if state.create_claims:
+        runtime: RuntimeState = config["metadata"]["runtime"]
+        for input in state.claims_to_add:
+            claim = await runtime.graphql_client.createClaim(input)
+            claims_added.append(claim.info())
+
+        logger.info(f"Created {len(claims_added)} new Claims for Publication#{state.publication.id}: {state.publication.title}")
+    else:
+        logger.info(f"Skipping creation of new Claims for Publication#{state.publication.id}: {state.publication.title}")
+
+    return {"claims_added": claims_added}

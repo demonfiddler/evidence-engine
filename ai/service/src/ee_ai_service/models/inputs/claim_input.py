@@ -26,8 +26,8 @@ from ee_ai_service.models.validators import validate_not_future
 
 class ClaimInput(TrackedEntityInput):
     text: Annotated[str, Field(max_length=500)]
-    date: Date | None
-    notes: str | None
+    date: Date | None = None
+    notes: str | None = None
 
     @field_validator("date")
     def check_date(cls, v):

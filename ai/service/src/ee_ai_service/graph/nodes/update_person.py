@@ -17,30 +17,45 @@
 #  If not, see <https://www.gnu.org/licenses/>. 
 # ----------------------------------------------------------------------------------------------------------------------
 
+from logging import getLogger
+
 from ee_ai_service.graph.state.complete_person_state import CompletePersonState
 from ee_ai_service.models.inputs.person_input import PersonInput
 from ee_ai_service.runtime.runtime_state import RuntimeState
 from ee_ai_service.utils.name import Name
 
-async def update_person(state: CompletePersonState, *, runtime: RuntimeState) -> CompletePersonState:
-    name = Name.parse(state.person_info.name)
+logger = getLogger(__name__)
+
+async def update_person(state: CompletePersonState, *, config) -> dict[str, any]:
+    """Update a person in the database using the provided person information."""
+
+    name = state.person_info.name
+    # state.person_info.notes = state.reconciled_notes
+    # state.person_info.qualifications = state.reconciled_qualifications
+    notes = "\n".join(state.person_info.notes + state.person_info.affiliations)
+    qualifications = "\n".join(state.person_info.qualifications)
     input = PersonInput(
         id = state.person.id,
+        title = name.title,
         firstName = name.first_names,
         nickname = name.nickname,
         prefix = name.prefix,
         lastName = name.last_name,
         suffix = name.suffix,
         alias = name.alias,
+        notes = notes,
+        qualifications = qualifications,
         country = state.person_info.country,
-        notes = state.person_info.notes,
-        orcid = state.person_info.orcid,
-        qualifications = state.person_info.qualifications,
+        # orcid = state.person_info.orcid,
         checked = state.person.checked,
         published = state.person.published,
         rating = state.person.rating,
     )
-    person = await runtime.graphql_client.updatePerson(input)
-    state.result.person = person
 
-    return state
+    runtime: RuntimeState = config["metadata"]["runtime"]
+    person = await runtime.graphql_client.updatePerson(input)
+
+    logger.info(f"Updated Person#{person.id}: {person.firstName} {person.lastName} with new information: {state.person_info}")
+
+
+    return {"person": person}

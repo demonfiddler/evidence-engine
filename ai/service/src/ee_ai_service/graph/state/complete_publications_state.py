@@ -19,26 +19,31 @@
 
 from pydantic import BaseModel, Field
 
+from ee_ai_service.api.routes import CompletePublicationsApiRequest
 from ee_ai_service.graph.workflows.workflow import WorkflowState
 from ee_ai_service.models.claim import Claim
 from ee_ai_service.models.entity_link import EntityLink
 from ee_ai_service.models.inputs.linkable_entity_query_filter import LinkableEntityQueryFilter
 from ee_ai_service.models.person import Person
 from ee_ai_service.models.publication import Publication
+from ee_ai_service.models.record_info import RecordInfo
 from ee_ai_service.models.topic import Topic
 
 class CompletePublicationsResult(BaseModel):
     """The result returned as workflow's output."""
 
-    claims_added: list[Claim] = Field(default_factory=list)
-    authors_added: list[Person] = Field(default_factory=list)
-    links_added: list[EntityLink] = Field(default_factory=list)
+    claims_added: list[RecordInfo] = Field(default_factory=list)
+    persons_added: list[RecordInfo] = Field(default_factory=list)
+    links_added: list[RecordInfo] = Field(default_factory=list)
 
 class CompletePublicationsState(WorkflowState):
     """State used to complete claims and authors for collection of publications"""
 
-    filter: LinkableEntityQueryFilter | None
-    topic: Topic | None
+    request: CompletePublicationsApiRequest
+    topic: Topic | None = None
     publications: list[Publication] = Field(default_factory=list)
     index: int = 0
-    result: CompletePublicationsResult = Field(default_factory=CompletePublicationsResult)
+    # Result fields
+    claims_added: list[RecordInfo] = Field(default_factory=list)
+    persons_added: list[RecordInfo] = Field(default_factory=list)
+    links_added: list[RecordInfo] = Field(default_factory=list)

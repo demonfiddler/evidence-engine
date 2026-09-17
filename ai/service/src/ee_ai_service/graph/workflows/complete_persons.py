@@ -27,9 +27,8 @@ from ee_ai_service.graph.state.complete_persons_state import CompletePersonsResu
 from ee_ai_service.graph.workflows.workflow import Workflow
 from ee_ai_service.runtime.runtime_state import RuntimeState
 
-def advance_person_index(state: CompletePersonsState) -> CompletePersonsState:
-    state.index += 1
-    return state
+def advance_person_index(state: CompletePersonsState) -> dict[str, any]:
+    return {"index": state.index + 1}
 
 def loop_control(state: CompletePersonsState) -> str:
     if state.index < len(state.persons):
@@ -45,8 +44,8 @@ class CompletePersons(Workflow[CompletePersonsState, CompletePersonsResult]):
 
     @override
     def register_nodes(self):
-        self.graph.add_node("load_persons", partial(load_persons, runtime = self.runtime))
-        self.graph.add_node("complete_person", partial(complete_person, runtime = self.runtime))
+        self.graph.add_node("load_persons", load_persons)
+        self.graph.add_node("complete_person", complete_person)
         self.graph.add_node("advance_person_index", advance_person_index)
 
     @override
@@ -57,5 +56,8 @@ class CompletePersons(Workflow[CompletePersonsState, CompletePersonsResult]):
         self.graph.add_conditional_edges("advance_person_index", loop_control)
 
     @override
-    def validate(self, state, runtime: RuntimeState):
-        super.validate(state, runtime)
+    def get_result(self, state: dict[str, any]) -> CompletePersonsResult:
+        """Returns the result of the workflow, which includes a list of all persons completed."""
+        return CompletePersonsResult(
+            persons_updated = state["persons_updated"]
+        )

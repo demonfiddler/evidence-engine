@@ -22,6 +22,6 @@ from pydantic import BaseModel, NonNegativeInt
 from ee_ai_service.models.inputs.sort_input import SortInput
 
 class PageableInput(BaseModel):
-  pageNumber: NonNegativeInt | None
-  pageSize: NonNegativeInt | None
-  sort: SortInput | None
+  pageNumber: NonNegativeInt | None = None
+  pageSize: NonNegativeInt | None = None
+  sort: SortInput | None = None

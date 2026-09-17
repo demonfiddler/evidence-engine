@@ -17,20 +17,44 @@
 #  If not, see <https://www.gnu.org/licenses/>. 
 # ----------------------------------------------------------------------------------------------------------------------
 
+from logging import getLogger
+
 from ee_ai_service.graph.state.complete_publication_state import CompletePublicationState
 from ee_ai_service.graph.state.complete_publications_state import CompletePublicationsState
 from ee_ai_service.graph.workflows.complete_publication import CompletePublication
 from ee_ai_service.runtime.runtime_state import RuntimeState
 
-async def complete_publication(state: CompletePublicationsState, *, runtime: RuntimeState) -> CompletePublicationsState:
-    publication = state.publications[state.index]
-    substate = CompletePublicationState(publication = publication, topic_id = state.filter.topicId)
-    subflow = CompletePublication(runtime)
-    subflow.validate(substate, runtime)
+logger = getLogger(__name__)
 
-    result = await subflow.run(substate)
-    state.result.authors_added.extend(result.authors_added)
-    state.result.claims_added.extend(result.claims_added)
-    state.result.links_added.extend(result.links_added)
+async def complete_publication(state: CompletePublicationsState, *, config) -> dict[str, any]:
+    """Complete a publication in the database using the provided publication information."""
 
-    return state
+    result = {
+        "persons_added": [],
+        "claims_added": [],
+        "links_added": []
+    }
+
+    if state.index < len(state.publications):
+        runtime: RuntimeState = config["metadata"]["runtime"]
+
+        publication = state.publications[state.index]
+        substate = CompletePublicationState(
+            publication = publication,
+            create_claims = state.request.create_claims,
+            create_authors = state.request.create_authors,
+            create_links = state.request.create_links,
+            topic_id = state.request.topic_id,
+        )
+        subflow = CompletePublication(runtime)
+        subflow.validate(substate, runtime)
+
+        final_state = await subflow.run(substate)
+
+        logger.info(f"Completed Publication#{publication.id}: {publication.title}")
+
+        result["persons_added"].extend(final_state.persons_added)
+        result["claims_added"].extend(final_state.claims_added)
+        result["links_added"].extend(final_state.links_added)
+
+    return result

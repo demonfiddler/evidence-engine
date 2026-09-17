@@ -17,18 +17,26 @@
 #  If not, see <https://www.gnu.org/licenses/>. 
 # ----------------------------------------------------------------------------------------------------------------------
 
+from logging import getLogger
+
 from ee_ai_service.graph.state.complete_person_state import CompletePersonState
 from ee_ai_service.graph.state.complete_persons_state import CompletePersonsState
 from ee_ai_service.graph.workflows.complete_person import CompletePerson
 from ee_ai_service.runtime.runtime_state import RuntimeState
 
-async def complete_person(state: CompletePersonsState, *, runtime: RuntimeState) -> CompletePersonsState:
+logger = getLogger(__name__)
+
+async def complete_person(state: CompletePersonsState, *, config) -> dict[str, any]:
+    """Complete a person in the database using the provided person information."""
+
     person = state.persons[state.index]
     substate = CompletePersonState(person = person)
+    runtime: RuntimeState = config["metadata"]["runtime"]
     subflow = CompletePerson(runtime)
     subflow.validate(substate, runtime)
 
     result = await subflow.run(substate)
-    state.result.persons.append(result.person)
 
-    return state
+    logger.info(f"Completed Person#{result.person_updated.id}: {result.person_updated.firstName} {result.person_updated.lastName}")
+
+    return {"person_updated": [result.person_updated]}

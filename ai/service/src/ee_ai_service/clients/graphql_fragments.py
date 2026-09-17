@@ -118,14 +118,16 @@ fragment linkedEntityFields on ILinkableEntity {
     id
   }
   ...on ITrackedEntity {
-    entityKind(format: LONG)
-    status(format: LONG)
+    entityKind(format: SHORT)
+    status(format: SHORT)
   }
   ...on Claim {
     text
+    notes
   }
   ...on Declaration {
     title
+    notes
   }
   ...on Person {
     title
@@ -133,15 +135,22 @@ fragment linkedEntityFields on ILinkableEntity {
     prefix
     lastName
     suffix
+    notes
+    qualifications
+    country(format: ALPHA_2)
   }
   ...on Publication {
     title
+    notes
+    authors
   }
   ...on Quotation {
     text
+    notes
   }
   ...on Topic {
     label
+    description
   }
 }
 """
@@ -152,7 +161,7 @@ fragment labelFields on ITrackedEntity {
     id
   }
   ...on ITrackedEntity {
-    entityKind(format: LONG)
+    entityKind(format: SHORT)
   }
   ...on Claim {
     text
@@ -383,10 +392,10 @@ fragment logFields on Log {
   user {
     username
   }
-  transactionKind(format: LONG)
-  entityKind(format: LONG)
+  transactionKind(format: SHORT)
+  entityKind(format: SHORT)
   entityId
-  linkedEntityKind(format: LONG)
+  linkedEntityKind(format: SHORT)
   linkedEntityId
 }
 """
@@ -600,7 +609,7 @@ FRAGMENT_TOPIC_STATS_FIELDS = """
 fragment topicStatsFields on TopicStatistics {
   topic {
     id
-    status(format: LONG)
+    status(format: SHORT)
     label
     description
   }

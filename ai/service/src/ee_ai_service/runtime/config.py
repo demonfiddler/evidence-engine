@@ -26,6 +26,21 @@ import logging
 import os
 
 class Config:
+    """Application-wide configuration loaded from a config.ini file."""
+
+    ollama_url: str
+    api_key: str
+    inference_model: str
+    embedding_model: str
+    existing_threshold: float
+    discovered_threshold: float
+    ee_graphql_url: str
+    rest_base_url: str
+    username: str
+    password: str
+    log_level: int
+    user_agent: str
+
     @staticmethod
     def load(filename: str) -> Config:
         """Load configuration from a file or package resource."""
@@ -62,5 +77,6 @@ class Config:
 
         misc = parser['misc']
         config.log_level = getattr(logging, misc['log_level'].upper(), logging.INFO)
+        config.user_agent = misc["user_agent"]
 
         return config

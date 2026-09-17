@@ -19,7 +19,9 @@
 
 from __future__ import annotations
 from datetime import date as Date
+from ee_ai_service.models.record_info import RecordInfo
 from pydantic import Field, HttpUrl, PositiveInt, field_validator, model_validator
+from typing import Literal, override
 
 from ee_ai_service.models.enums.entity_kind import EntityKind
 from ee_ai_service.models.enums.publication_kind import PublicationKind
@@ -30,7 +32,7 @@ from ee_ai_service.models.validators import validate_not_future
 
 class Publication(LinkableEntity):
     # The dicriminator value.
-    entityKind: EntityKind = Field(EntityKind.PUBLICATION, frozen=True)
+    entityKind: Literal[EntityKind.PUBLICATION] = EntityKind.PUBLICATION
 
     # The publication title.
     title: str | None = None
@@ -40,8 +42,10 @@ class Publication(LinkableEntity):
     journal: Journal | None = None
     # The publisher of the publication.
     publisher: Publisher | None = None
-    # The publication kind.
+    # The publication kind (coded).
     kind: PublicationKind | None = None
+    # The publication kind (human readable).
+    kindLabel: str | None = None
     # The publication date.
     date: Date | None = None
     # The publication year.
@@ -112,3 +116,11 @@ class Publication(LinkableEntity):
         if self.year is not None and self.date is not None and self.year != self.date.year:
             raise ValueError("year must match the year component of date")
         return self
+
+    @override
+    def info(self) -> RecordInfo:
+        return RecordInfo(
+            id = self.id,
+            text = self.title,
+            notes = self.notes
+        )

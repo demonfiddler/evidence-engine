@@ -22,11 +22,11 @@ from ee_ai_service.models.enums.entity_kind import EntityKind
 from ee_ai_service.models.inputs.tracked_entity_query_filter import TrackedEntityQueryFilter
 
 class LinkableEntityQueryFilter(TrackedEntityQueryFilter):
-    topicId: ID | None
-    recursive: bool | None
-    fromEntityId: ID | None
-    fromEntityKind: EntityKind | None
-    fromEntityFuzzy: bool | None
-    toEntityId: ID | None
-    toEntityKind: EntityKind | None
-    toEntityFuzzy: bool | None
+    topicId: ID | None = None
+    recursive: bool | None = None
+    fromEntityId: ID | None = None
+    fromEntityKind: EntityKind | None = None
+    fromEntityFuzzy: bool | None = None
+    toEntityId: ID | None = None
+    toEntityKind: EntityKind | None = None
+    toEntityFuzzy: bool | None = None

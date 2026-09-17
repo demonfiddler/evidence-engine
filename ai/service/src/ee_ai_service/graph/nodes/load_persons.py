@@ -17,15 +17,23 @@
 #  If not, see <https://www.gnu.org/licenses/>. 
 # ----------------------------------------------------------------------------------------------------------------------
 
+from logging import getLogger
+
 from ee_ai_service.graph.state.complete_persons_state import CompletePersonsState
-from ee_ai_service.models.inputs.pageable_input import PageableInput
 from ee_ai_service.runtime.runtime_state import RuntimeState
 
-async def load_persons(state: CompletePersonsState, *, runtime: RuntimeState) -> CompletePersonsState:
-    page = await runtime.graphql_client.persons(
-        filter = state.filter,
-        pageable = PageableInput(page = 0, size = 100)
-    )
-    state.persons = page.content
+logger = getLogger(__name__)
 
-    return state
+async def load_persons(state: CompletePersonsState, *, config) -> dict[str, any]:
+    """Load persons from the database using the provided filter and pagination information."""
+
+    runtime: RuntimeState = config["metadata"]["runtime"]
+    page = await runtime.graphql_client.persons(
+        filter = state.request.filter,
+        pageSort = state.request.pageSort
+    )
+    persons = page.content
+
+    logger.info(f"Loaded {len(persons)} Persons from the database with filter: {state.request.filter} and pageSort: {state.request.pageSort}")
+
+    return {"persons": persons}

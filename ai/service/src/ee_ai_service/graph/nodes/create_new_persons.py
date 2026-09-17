@@ -17,12 +17,24 @@
 #  If not, see <https://www.gnu.org/licenses/>. 
 # ----------------------------------------------------------------------------------------------------------------------
 
+from logging import getLogger
+
 from ee_ai_service.graph.state.complete_publication_state import CompletePublicationState
+from ee_ai_service.models.record_info import RecordInfo
 from ee_ai_service.runtime.runtime_state import RuntimeState
 
-async def create_new_persons(state: CompletePublicationState, *, runtime: RuntimeState) -> CompletePublicationState:
-    for input in state.persons_to_add:
-        person = await runtime.graphql_client.createPerson(input)
-        state.result.authors_added.append(person)
+logger = getLogger(__name__)
 
-    return state
+async def create_new_persons(state: CompletePublicationState, *, config) -> dict[str, any]:
+    persons_added: list[RecordInfo] = []
+    if state.create_authors:
+        runtime: RuntimeState = config["metadata"]["runtime"]
+        for input in state.persons_to_add:
+            person = await runtime.graphql_client.createPerson(input)
+            persons_added.append(person.info())
+
+        logger.info(f"Created {len(persons_added)} new Persons for Publication#{state.publication.id}: {state.publication.title}")
+    else:
+        logger.info(f"Skipping creation of new Persons for Publication#{state.publication.id}: {state.publication.title}")
+
+    return {"persons_added": persons_added}

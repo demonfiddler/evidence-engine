@@ -24,9 +24,9 @@ from ee_ai_service.models.inputs.tracked_entity_input import TrackedEntityInput
 
 class JournalInput(TrackedEntityInput):
     title: str
-    abbreviation: str | None
-    url: HttpUrl | None
-    issn: str | None
-    publisherId: ID | None
-    notes: str | None
-    peerReviewed: bool | None
+    abbreviation: str | None = None
+    url: HttpUrl | None = None
+    issn: str | None = None
+    publisherId: ID | None = None
+    notes: str | None = None
+    peerReviewed: bool | None = None

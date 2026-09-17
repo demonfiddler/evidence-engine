@@ -18,17 +18,34 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 from __future__ import annotations
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from pydantic_extra_types.country import CountryAlpha2
 
+from ee_ai_service.utils.name import Name
+
 class PersonInfo(BaseModel):
-    # The person's formal full name, with format '<title> <first_names_or_initials> '<nickname>' <prefix> <last_name> <suffix> <post_nominals>', omitting empty fields.
-    name: str | None = None
-    # The person's ORCID researcher ID if known, otherwise null.
+    """Information about a person as extracted by a workflow node"""
+
+    name: Name | None = None
+    """The person's parsed name."""
+
+    emails: list[str] | None = Field(default_factory=list)
+    """Known e-mail addresses."""
+
     orcid: str | None = None
-    # The uppercase ISO-3166-1 alpha-2 code for the country with which the person is primarily associated if known, otherwise null.
+    """The person's ORCID researcher ID if known, otherwise null."""
+
+    scopus_author_id: str | None = None
+    """The person's SCOPUS author ID."""
+
     country: CountryAlpha2 | None = None
-    # Brief biographical highlights including specialisms, professional positions held, institutional affiliations if known, otherwise null.
-    notes: str | None = None
-    # Academic qualifications held, one per Unix line, each with format '<degree> in <subject> from <institution> (<year>).' if known, otherwise null.
-    qualifications: str | None = None
+    """The uppercase ISO-3166-1 alpha-2 code for the country with which the person is primarily associated if known, otherwise null."""
+
+    qualifications: list[str] = Field(default_factory=list)
+    """Academic qualifications held, each with format '<degree> in <subject> from <institution> (<year>).' if known, otherwise null."""
+
+    affiliations: list[str] = Field(default_factory=list)
+    """Institutional affiliations."""
+
+    notes: list[str] = Field(default_factory=list)
+    """Brief biographical highlights including specialisms, professional positions held, institutional affiliations if known, otherwise null."""

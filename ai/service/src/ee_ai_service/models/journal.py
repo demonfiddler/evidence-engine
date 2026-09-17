@@ -18,15 +18,17 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 from __future__ import annotations
-from pydantic import Field, HttpUrl
+from pydantic import HttpUrl
+from typing import Literal, override
 
 from ee_ai_service.models.enums.entity_kind import EntityKind
 from ee_ai_service.models.publisher import Publisher
+from ee_ai_service.models.record_info import RecordInfo
 from ee_ai_service.models.tracked_entity import TrackedEntity
 
 class Journal(TrackedEntity):
     # The dicriminator value.
-    entityKind: EntityKind = Field(EntityKind.JOURNAL, frozen=True)
+    entityKind: Literal[EntityKind.JOURNAL] = EntityKind.JOURNAL
 
     # The full journal title.
     title: str | None = None
@@ -42,3 +44,11 @@ class Journal(TrackedEntity):
     notes: str | None = None
     # Whether the journal publishes peer-reviewed articles.
     peerReviewed: bool | None = None
+
+    @override
+    def info(self) -> RecordInfo:
+        return RecordInfo(
+            id = self.id,
+            text = self.title,
+            notes = self.notes
+        )

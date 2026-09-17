@@ -24,8 +24,8 @@ from ee_ai_service.models.inputs.tracked_entity_input import TrackedEntityInput
 
 class PublisherInput(TrackedEntityInput):
     name: str
-    location: str | None
-    country: CountryAlpha2 | None # TODO: use Country type
-    url: HttpUrl | None
-    journalCount: NonNegativeInt | None
-    notes: str | None
+    location: str | None = None
+    country: CountryAlpha2 | None = None # TODO: use Country type
+    url: HttpUrl | None = None
+    journalCount: NonNegativeInt | None = None
+    notes: str | None = None

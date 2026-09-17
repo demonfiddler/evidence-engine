@@ -19,48 +19,35 @@
 
 """defines HTTP endpoints"""
 
-from pydantic import BaseModel, Field
+from __future__ import annotations
 from fastapi import APIRouter, Request
 
-from ee_ai_service.graph.state.complete_persons_state import CompletePersonsResult, CompletePersonsState
-from ee_ai_service.graph.state.complete_publications_state import CompletePublicationsResult, CompletePublicationsState
+from ee_ai_service.api.schemata import CompletePersonsApiRequest, CompletePersonsApiResponse, CompletePublicationsApiRequest, CompletePublicationsApiResponse
+from ee_ai_service.graph.state.complete_persons_state import CompletePersonsState
+from ee_ai_service.graph.state.complete_publications_state import CompletePublicationsState
 from ee_ai_service.graph.workflows.complete_persons import CompletePersons
 from ee_ai_service.graph.workflows.complete_publications import CompletePublications
-from ee_ai_service.models.claim import Claim
-from ee_ai_service.models.entity_link import EntityLink
-from ee_ai_service.models.inputs.linkable_entity_query_filter import LinkableEntityQueryFilter
-from ee_ai_service.models.person import Person
 
 router = APIRouter(prefix="/ai", tags=["ai"])
 
-class CompletePersonsApiResponse(BaseModel):
-    """Response returned by CompletePersons workflow."""
-    persons: list[Person] = Field(default_factory=list)
-
 @router.post("/persons/complete", response_model = CompletePersonsApiResponse)
-async def complete_persons(request: Request, filter: LinkableEntityQueryFilter):
+async def complete_persons(request: Request, body: CompletePersonsApiRequest):
     runtime = request.app.state.runtime
     workflow = CompletePersons(runtime)
-    state = CompletePersonsState(filter = filter)
+    state = CompletePersonsState(request = body)
     workflow.validate(state, runtime)
     final_state = await workflow.run(state)
-    return CompletePersonsApiResponse(persons = final_state.persons)
-
-class CompletePublicationsApiResponse(BaseModel):
-    """Response returned by CompletePublications workflow."""
-    claims_added: list[Claim] = Field(default_factory=list)
-    authors_added: list[Person] = Field(default_factory=list)
-    links_added: list[EntityLink] = Field(default_factory=list)
+    return CompletePersonsApiResponse(persons = final_state.persons_updated)
 
 @router.post("/publications/complete", response_model = CompletePublicationsApiResponse)
-async def complete_publications(request: Request, filter: LinkableEntityQueryFilter):
+async def complete_publications(request: Request, body: CompletePublicationsApiRequest):
     runtime = request.app.state.runtime
     workflow = CompletePublications(runtime)
-    state = CompletePublicationsState(filter = filter)
+    state = CompletePublicationsState(request = body)
     workflow.validate(state, runtime)
     final_state = await workflow.run(state)
     return CompletePublicationsApiResponse(
         claims_added = final_state.claims_added,
-        authors_added = final_state.authors_added,
+        persons_added = final_state.persons_added,
         links_added = final_state.links_added
     )

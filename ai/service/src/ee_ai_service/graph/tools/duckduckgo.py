@@ -17,11 +17,16 @@
 #  If not, see <https://www.gnu.org/licenses/>. 
 # ----------------------------------------------------------------------------------------------------------------------
 
-from langchain_core.tools import tool
 import httpx
+from logging import getLogger
+from langchain_core.tools import tool
+
+from ee_ai_service.models.search_result import SearchResult
+
+logger = getLogger(__name__)
 
 @tool
-def web_search(query: str, num_results: int = 5) -> str:
+def web_search(query: str, num_results: int = 5) -> list[SearchResult]:
     """
     Search the web for current information about a subject.
     Returns titles, URLs, and snippets.
@@ -46,5 +51,11 @@ def web_search(query: str, num_results: int = 5) -> str:
     for item in data.get("RelatedTopics", []):
         if "Text" in item:
             results.append(item["Text"])
+    results = "\n".join(results[:num_results])
 
-    return "\n".join(results[:num_results]) or "No results found."
+    logger.info(f"web_search returned {len(results)} results")
+
+    return {
+        "results": results,
+        "status": "complete"
+    }

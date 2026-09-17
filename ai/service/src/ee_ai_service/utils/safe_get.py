@@ -17,23 +17,20 @@
 #  If not, see <https://www.gnu.org/licenses/>. 
 # ----------------------------------------------------------------------------------------------------------------------
 
-from datetime import date as Date
-from pydantic import HttpUrl, field_validator
-from pydantic_extra_types.country import CountryAlpha2
+from functools import reduce
+from operator import getitem
 
-from ee_ai_service.models.enums.declaration_kind import DeclarationKind
-from ee_ai_service.models.inputs.tracked_entity_input import TrackedEntityInput
-from ee_ai_service.models.validators import validate_not_future
+def safe_get(data, path, default=None):
+    """
+    Navigates the specified path from a dict or list
 
-class DeclarationInput(TrackedEntityInput):
-    kind: DeclarationKind
-    title: str
-    date: Date
-    country: CountryAlpha2 | None = None
-    url: HttpUrl | None = None
-    signatories: str | None = None
-    notes: str | None = None
+    Args:
+        data: The base object.
+        path: The path to navigate.
+        default: The default value to return if any path segment is missing.
+    """
 
-    @field_validator("date")
-    def check_date(cls, v):
-        return validate_not_future(v)
+    try:
+        return reduce(getitem, path, data)
+    except Exception:
+        return default

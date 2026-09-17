@@ -21,21 +21,25 @@ from __future__ import annotations
 from datetime import date as Date
 from pydantic import Field, HttpUrl, field_validator
 from pydantic_extra_types.country import CountryAlpha2
-from typing import Annotated, Optional
+from typing import Annotated, Literal, Optional, override
+
 
 from ee_ai_service.models.enums.declaration_kind import DeclarationKind
 from ee_ai_service.models.enums.entity_kind import EntityKind
 from ee_ai_service.models.linkable_entity import LinkableEntity
+from ee_ai_service.models.record_info import RecordInfo
 from ee_ai_service.models.validators import validate_not_future
 
 class Declaration(LinkableEntity):
     # The dicriminator value.
-    entityKind: EntityKind = Field(EntityKind.DECLARATION, frozen=True)
+    entityKind: Literal[EntityKind.DECLARATION] = EntityKind.DECLARATION
 
     # The date the declaration was published.
     date: Date | None = None
-    # The kind of declaration.
+    # The kind of declaration (coded).
     kind: DeclarationKind | None = None
+    # The kind of declaration (human readable).
+    kindLabel: str | None = None
     # The declaration name or title.
     title: str | None = None
     # The country to which the declaration relates. TODO: handle 'WD'.
@@ -54,3 +58,11 @@ class Declaration(LinkableEntity):
     @field_validator("date")
     def check_date(cls, v):
         return validate_not_future(v)
+
+    @override
+    def info(self) -> RecordInfo:
+        return RecordInfo(
+            id = self.id,
+            text = self.title,
+            notes = self.notes
+        )

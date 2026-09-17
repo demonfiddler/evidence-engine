@@ -22,15 +22,15 @@ from pydantic_extra_types.country import CountryAlpha2
 from ee_ai_service.models.inputs.tracked_entity_input import TrackedEntityInput
 
 class PersonInput(TrackedEntityInput):
-    title: str | None
+    title: str | None = None
     firstName: str
-    nickname: str | None
-    prefix: str | None
+    nickname: str | None = None
+    prefix: str | None = None
     lastName: str
-    suffix: str | None
-    alias: str | None
-    notes: str | None
-    qualifications: str | None
-    country: CountryAlpha2 | None # TODO: use Country type
+    suffix: str | None = None
+    alias: str | None = None
+    notes: str | None = None
+    qualifications: str | None = None
+    country: CountryAlpha2 | None = None # TODO: use Country type
     checked: bool = False
-    published: bool | None
+    published: bool | None = None

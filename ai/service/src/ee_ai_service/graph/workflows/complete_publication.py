@@ -17,7 +17,6 @@
 #  If not, see <https://www.gnu.org/licenses/>. 
 # ----------------------------------------------------------------------------------------------------------------------
 
-from functools import partial
 from langgraph.graph import END, START
 from typing import override
 
@@ -40,13 +39,13 @@ class CompletePublication(Workflow[CompletePublicationState, CompletePublication
 
     @override
     def register_nodes(self):
-        self.graph.add_node("extract_claims", partial(extract_claims, runtime = self.runtime))
-        self.graph.add_node("reconcile_claims", partial(reconcile_claims, runtime = self.runtime))
-        self.graph.add_node("create_new_claims", partial(create_new_claims, runtime = self.runtime))
+        self.graph.add_node("extract_claims", extract_claims)
+        self.graph.add_node("reconcile_claims", reconcile_claims)
+        self.graph.add_node("create_new_claims", create_new_claims)
         self.graph.add_node("extract_authors", extract_authors)
         self.graph.add_node("reconcile_authors", reconcile_authors)
-        self.graph.add_node("create_new_persons", partial(create_new_persons, runtime = self.runtime))
-        self.graph.add_node("create_new_entity_links", partial(create_new_entity_links, runtime = self.runtime))
+        self.graph.add_node("create_new_persons", create_new_persons)
+        self.graph.add_node("create_new_entity_links", create_new_entity_links)
 
     @override
     def wire_edges(self):
@@ -61,5 +60,10 @@ class CompletePublication(Workflow[CompletePublicationState, CompletePublication
         self.graph.add_edge("create_new_entity_links", END)
 
     @override
-    def validate(self, state, runtime: RuntimeState):
-        super.validate(state, runtime)
+    def get_result(self, state: dict[str, any]) -> CompletePublicationResult:
+        """Returns the result of the workflow, which includes lists of all claims, authors and links added."""
+        return CompletePublicationResult(
+            claims_added = state["claims_added"],
+            persons_added = state["persons_added"],
+            links_added = state["links_added"]
+        )

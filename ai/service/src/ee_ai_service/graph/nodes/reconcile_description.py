@@ -17,12 +17,19 @@
 #  If not, see <https://www.gnu.org/licenses/>. 
 # ----------------------------------------------------------------------------------------------------------------------
 
+import json
+from logging import getLogger, DEBUG
 from textwrap import dedent
 
 from ee_ai_service.graph.state.complete_person_state import CompletePersonState
 from ee_ai_service.runtime.runtime_state import RuntimeState
+from ee_ai_service.utils.string import indent_lines
 
-async def reconcile_description(state: CompletePersonState, *, runtime: RuntimeState) -> CompletePersonState:
+logger = getLogger(__name__)
+
+async def reconcile_description(state: CompletePersonState, *, config) -> dict[str, any]:
+    """Reconcile existing and discovered descriptions of a scientist using an LLM call. N.B. This can be non-deterministic with smaller models."""
+
     prompt = dedent(f"""
     You are an agent who specializes in documenting the biographies of scientists.
 
@@ -36,18 +43,23 @@ async def reconcile_description(state: CompletePersonState, *, runtime: RuntimeS
     - Include professional specialisms and research areas;
     - Include institutional affiliations;
     - Include positions held, especially professorships;
-    - Do not include academic qualifications;
-    - Do not duplicate information.
+    - Do NOT include academic qualifications;
+    - Do NOT duplicate information.
 
     BEGIN EXISTING DESCRIPTION
-    {state.person.notes}
+    {indent_lines(state.person.notes, indent_first = False) if state.person.notes else "(none)"}
     END EXISTING DESCRIPTION
 
     BEGIN DISCOVERED DESCRIPTION
-    {state.notes}
+    {indent_lines(state.person_info.notes, indent_first = False) if state.person_info.notes else "(none)"}
     END DISCOVERED DESCRIPTION
     """)
 
-    state.notes = await runtime.inference_client.ainvoke(prompt)
+    runtime: RuntimeState = config["metadata"]["runtime"]
+    ai_message = await runtime.inference_client.ainvoke(prompt)
+    reconciled_notes: str = ai_message.content
 
-    return state
+    logger.info(f"Reconciled existing notes with discovered notes for Person#{state.person.id}: {state.person.firstName} {state.person.lastName}")
+    logger.debug(f"Notes: {reconciled_notes}")
+
+    return {"reconciled_notes": reconciled_notes}

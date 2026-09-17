@@ -17,13 +17,29 @@
 #  If not, see <https://www.gnu.org/licenses/>. 
 # ----------------------------------------------------------------------------------------------------------------------
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from logging import getLogger
 
 from ee_ai_service.api.routes import router
 from ee_ai_service.runtime.lifespan import lifespan
+from fastapi.responses import JSONResponse
+
+logger = getLogger(__name__)
 
 def create_app(config_file: str | None = None) -> FastAPI:
     app = FastAPI(lifespan=lifespan)
     app.state.config_file = config_file
     app.include_router(router)
+
+    @app.exception_handler(Exception)
+    async def global_exception_handler(request: Request, exc: Exception):
+        logger.exception(f"Unhandled exception during request processing: {exc}")
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": "Internal server error",
+                "detail": str(exc)
+            }
+        )
+
     return app

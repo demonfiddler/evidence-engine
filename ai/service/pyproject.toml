@@ -35,20 +35,23 @@ name = "ee-ai-service"
 version = "0.1.0"
 description = "AI service for the Evidence Engine"
 dependencies = [
-#    "fastapi",
-#    "fastapi[standard-no-fastapi-cloud-cli]",
-    "fastapi[standard]",
-    "gql",
-    "httpx",
-    "langgraph",
-    "langchain-ollama",
-    "numpy",
-    "pydantic",
-    "pydantic_extra_types",
-    "pycountry",
-    "regex",
-    "StrTokenizer",
-    "uvicorn",
+  "bs4",
+#   "fastapi",
+#   "fastapi[standard-no-fastapi-cloud-cli]",
+  "fastapi[standard]",
+  "fast-json-repair",
+  "gql",
+  "httpx",
+  "langgraph",
+  "langchain-ollama",
+  "numpy",
+  "pydantic",
+  "pydantic_extra_types",
+  "pycountry",
+  "readability-lxml",
+  "regex",
+  "StrTokenizer",
+  "uvicorn",
 ]
 
 # Configures settings for specific tools (e.g., linters, type checkers).

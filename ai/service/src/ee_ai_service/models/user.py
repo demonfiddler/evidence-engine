@@ -18,11 +18,12 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 from __future__ import annotations
+from ee_ai_service.models.record_info import RecordInfo
 from pydantic import Field
 from pydantic_extra_types.country import CountryAlpha2
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 # N.B. Although unused here, Optional must be imported to avoid Pydantic failures during model_rebuild() calls on recursive models.
-from typing import Optional
+from typing import Literal, Optional
 
 if TYPE_CHECKING:
     from ee_ai_service.models.group import Group
@@ -31,7 +32,7 @@ from ee_ai_service.models.security_principal import SecurityPrincipal
 
 class User(SecurityPrincipal):
     # The dicriminator value.
-    entityKind: EntityKind = Field(EntityKind.USER, frozen=True)
+    entityKind: Literal[EntityKind.USER] = EntityKind.USER
 
     # The (mutable?) unique user name (user-assigned).
     username: str | None = None
@@ -49,3 +50,10 @@ class User(SecurityPrincipal):
     password: str | None = None
     # The groups of which the user is a member.
     groups: list[Group] | None = None
+
+    @override
+    def info(self) -> RecordInfo:
+        return RecordInfo(
+            id = self.id,
+            text = self.username
+        )

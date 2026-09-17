@@ -17,4 +17,11 @@
 #  If not, see <https://www.gnu.org/licenses/>. 
 # ----------------------------------------------------------------------------------------------------------------------
 
-"""Pydantic request/response models."""
+from pydantic import AnyHttpUrl, BaseModel
+
+class SearchResult(BaseModel):
+    """Results returned by web_search tools have this shape."""
+
+    title: str
+    url: str
+    text: str | None = None

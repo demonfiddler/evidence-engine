@@ -17,6 +17,7 @@
 #  If not, see <https://www.gnu.org/licenses/>. 
 # ----------------------------------------------------------------------------------------------------------------------
 
+from logging import getLogger
 from copy import copy
 from gql import Client, GraphQLRequest
 from gql.transport.httpx import HTTPXAsyncTransport
@@ -69,6 +70,8 @@ from ee_ai_service.models.tracked_entity import TrackedEntity
 from ee_ai_service.models.user import User
 from ee_ai_service.runtime.config import Config
 
+logger = getLogger(__name__)
+
 class EEGraphQLClient:
     """
     Strongly typed GraphQL client for the Evidence Engine API.
@@ -84,9 +87,14 @@ class EEGraphQLClient:
         self.config = config
         self.auth = None
         self.create_client()
+        self.session = None
 
     def create_client(self) -> None:
-        headers = {} if self.auth is None or not "token" in self.auth else {"Authorization": f"Bearer {self.auth.token}"}
+        """
+        Creates a new GraphQL client instance with the current configuration and authentication state.
+        """
+
+        headers = {} if self.auth is None or not hasattr(self.auth, "token") else {"Authorization": f"Bearer {self.auth.token}"}
         transport = HTTPXAsyncTransport(
             url = self.config.ee_graphql_url,
             timeout = 10.0,
@@ -99,25 +107,52 @@ class EEGraphQLClient:
             fetch_schema_from_transport = False,
         )
 
+    async def get_session(self):
+        """
+        Returns an active session for executing GraphQL requests. If no session is active, a new session is created.
+        """
+
+        if self.session is None:
+            self.session = await self.client.__aenter__()
+        return self.session
+
     def bind_query_args(self, request: GraphQLRequest, **variables: dict[str, any]) -> GraphQLRequest:
         """
-        Shallow clones a GraphQLRequest with new variable values. Empty variables are not bound, and Pydantic models
-        are converted to JSON-compatible dictionaries before binding to the request.
+        Shallow-clones a GraphQLRequest with new variable values.
+        Empty variables are not bound, and Pydantic models are converted to JSON-compatible
+        dictionaries before binding to the request.
         Args:
             request: The GraphQLRequest to clone.
             variables: The variables and values to bind to the new request.
         Returns:
             A shallow clone of request, with variable_values set to kwargs.
         """
-        # Delete empty variables and convert Pydantic models to JSON.
-        for key, value in variables.items():
-            if value is None:
-                del variables[key]
-            elif isinstance(value, BaseModel):
-                variables[key] = value.model_dump()
-        request = copy(request)
-        request.variable_values = variables
+
+        # Shallow clone the request and bind variables to the new request.
+        if len(variables) > 0:
+            request = copy(request)
+            for key, value in variables.items():
+                # Convert Pydantic models to JSON.
+                if isinstance(value, BaseModel):
+                    variables[key] = value.model_dump()
+            request.variable_values = variables
+
         return request
+
+    async def execute(self, request: GraphQLRequest, **variables: dict[str, any]) -> dict:
+        """
+        Executes a GraphQL request with the given variables, returning the result as a dictionary.
+        Args:
+            request: The GraphQLRequest to execute.
+            variables: The variables and values to bind to the request.
+        Returns:
+            The result of the GraphQL request as a dictionary.
+        """
+
+        session = await self.get_session()
+        result = await session.execute(self.bind_query_args(request, **variables))
+
+        return result
 
     # --------------------
     # CLAIMS
@@ -131,7 +166,7 @@ class EEGraphQLClient:
         Returns:
             The requested Claim.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_CLAIM_BY_ID, id = id))
+        result = await self.execute(READ_CLAIM_BY_ID, id = id)
         return Claim.model_validate(result["claimById"])
 
     async def claims(self, filter: LinkableEntityQueryFilter = None, pageSort: PageableInput = None) -> Page[Claim]:
@@ -141,10 +176,10 @@ class EEGraphQLClient:
             filter: Selects which Claims to return.
             pageSort: Paginates the results and optionally specifies custom ordering.
         Returns:
-            The requested pagefull of Claims.
+            The requested pageful of Claims.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_CLAIMS, filter = filter, pageSort = pageSort))
-        return Page.model_validate(result["claims"])
+        result = await self.execute(READ_CLAIMS, filter = filter, pageSort = pageSort)
+        return Page[Claim].model_validate(result["claims"])
 
     async def createClaim(self, input: ClaimInput) -> Claim:
         """
@@ -154,7 +189,7 @@ class EEGraphQLClient:
         Returns:
             The new Claim.
         """
-        result = await self.client.execute_async(self.bind_query_args(CREATE_CLAIM, input = input))
+        result = await self.execute(CREATE_CLAIM, input = input)
         return Claim.model_validate(result["createClaim"])
 
     async def updateClaim(self, input: ClaimInput) -> Claim:
@@ -165,7 +200,7 @@ class EEGraphQLClient:
         Returns:
             The updated Claim.
         """
-        result = await self.client.execute_async(self.bind_query_args(UPDATE_CLAIM, input = input))
+        result = await self.execute(UPDATE_CLAIM, input = input)
         return Claim.model_validate(result["updateClaim"])
 
     async def deleteClaim(self, id: ID) -> Claim:
@@ -176,7 +211,7 @@ class EEGraphQLClient:
         Returns:
             The deleted Claim.
         """
-        result = await self.client.execute_async(self.bind_query_args(DELETE_CLAIM, id = id))
+        result = await self.execute(DELETE_CLAIM, id = id)
         return Claim.model_validate(result["deleteClaim"])
 
     # --------------------
@@ -191,7 +226,7 @@ class EEGraphQLClient:
         Returns:
             The requested Comment.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_COMMENT_BY_ID, id = id))
+        result = await self.execute(READ_COMMENT_BY_ID, id = id)
         return Comment.model_validate(result["commentById"])
 
     async def comments(self, filter: CommentQueryFilter = None, pageSort: PageableInput = None) -> Page[Comment]:
@@ -201,10 +236,10 @@ class EEGraphQLClient:
             filter: Selects which Comments to return.
             pageSort: Paginates the results and optionally specifies custom ordering.
         Returns:
-            The requested pagefull of Comments.
+            The requested pageful of Comments.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_COMMENTS, filter = filter, pageSort = pageSort))
-        return Page.model_validate(result["comments"])
+        result = await self.execute(READ_COMMENTS, filter = filter, pageSort = pageSort)
+        return Page[Comment].model_validate(result["comments"])
 
     async def createComment(self, input: CommentInput) -> Comment:
         """
@@ -214,7 +249,7 @@ class EEGraphQLClient:
         Returns:
             The new Comment.
         """
-        result = await self.client.execute_async(self.bind_query_args(CREATE_COMMENT, input = input))
+        result = await self.execute(CREATE_COMMENT, input = input)
         return Comment.model_validate(result["createComment"])
 
     async def updateComment(self, input: CommentInput) -> Comment:
@@ -225,7 +260,7 @@ class EEGraphQLClient:
         Returns:
             The updated Comment.
         """
-        result = await self.client.execute_async(self.bind_query_args(UPDATE_COMMENT, input = input))
+        result = await self.execute(UPDATE_COMMENT, input = input)
         return Comment.model_validate(result["updateComment"])
 
     async def deleteComment(self, id: ID) -> Comment:
@@ -236,7 +271,7 @@ class EEGraphQLClient:
         Returns:
             The deleted Comment.
         """
-        result = await self.client.execute_async(self.bind_query_args(DELETE_COMMENT, id = id))
+        result = await self.execute(DELETE_COMMENT, id = id)
         return Comment.model_validate(result["deleteComment"])
 
     # --------------------
@@ -263,7 +298,7 @@ class EEGraphQLClient:
         Returns:
             The requested Declaration.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_DECLARATION_BY_ID, id = id))
+        result = await self.execute(READ_DECLARATION_BY_ID, id = id)
         return Declaration.model_validate(result["declarationById"])
 
     async def declarations(self, filter: LinkableEntityQueryFilter = None, pageSort: PageableInput = None) -> Page[Declaration]:
@@ -273,10 +308,10 @@ class EEGraphQLClient:
             filter: Selects which Declarations to return.
             pageSort: Paginates the results and optionally specifies custom ordering.
         Returns:
-            The requested pagefull of Declarations.
+            The requested pageful of Declarations.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_DECLARATIONS, filter = filter, pageSort = pageSort))
-        return Page.model_validate(result["declarations"])
+        result = await self.execute(READ_DECLARATIONS, filter = filter, pageSort = pageSort)
+        return Page[Declaration].model_validate(result["declarations"])
 
 
     async def createDeclaration(self, input: DeclarationInput) -> Declaration:
@@ -287,7 +322,7 @@ class EEGraphQLClient:
         Returns:
             The new Declaration.
         """
-        result = await self.client.execute_async(self.bind_query_args(CREATE_DECLARATION, input = input))
+        result = await self.execute(CREATE_DECLARATION, input = input)
         return Declaration.model_validate(result["createDeclaration"])
 
     async def updateDeclaration(self, input: DeclarationInput) -> Declaration:
@@ -298,7 +333,7 @@ class EEGraphQLClient:
         Returns:
             The updated Declaration.
         """
-        result = await self.client.execute_async(self.bind_query_args(UPDATE_DECLARATION, input = input))
+        result = await self.execute(UPDATE_DECLARATION, input = input)
         return Declaration.model_validate(result["updateDeclaration"])
 
     async def deleteDeclaration(self, id: ID) -> Declaration:
@@ -309,7 +344,7 @@ class EEGraphQLClient:
         Returns:
             The deleted Declaration.
         """
-        result = await self.client.execute_async(self.bind_query_args(DELETE_DECLARATION, id = id))
+        result = await self.execute(DELETE_DECLARATION, id = id)
         return Declaration.model_validate(result["deleteDeclaration"])
 
     # --------------------
@@ -329,10 +364,10 @@ class EEGraphQLClient:
             filter: Selects which EntityLinks to return.
             pageSort: Paginates the results and optionally specifies custom ordering.
         Returns:
-            The requested pagefull of EntityLinks.
+            The requested pageful of EntityLinks.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_ENTITY_LINKS, filter = filter, pageSort = pageSort))
-        return Page.model_validate(result["entityLinks"])
+        result = await self.execute(READ_ENTITY_LINKS, filter = filter, pageSort = pageSort)
+        return Page[EntityLink].model_validate(result["entityLinks"])
 
     async def createEntityLink(self, input: EntityLinkInput) -> EntityLink:
         """
@@ -342,7 +377,7 @@ class EEGraphQLClient:
         Returns:
             The new EntityLink.
         """
-        result = await self.client.execute_async(self.bind_query_args(CREATE_ENTITY_LINK, input = input))
+        result = await self.execute(CREATE_ENTITY_LINK, input = input)
         return EntityLink.model_validate(result["createEntityLink"])
 
     async def updateEntityLink(self, input: EntityLinkInput) -> EntityLink:
@@ -353,7 +388,7 @@ class EEGraphQLClient:
         Returns:
             The updated EntityLink.
         """
-        result = await self.client.execute_async(self.bind_query_args(UPDATE_ENTITY_LINK, input = input))
+        result = await self.execute(UPDATE_ENTITY_LINK, input = input)
         return EntityLink.model_validate(result["updateEntityLink"])
 
     async def deleteEntityLink(self, entityLinkId: ID, hard: bool = False) -> EntityLink:
@@ -364,7 +399,7 @@ class EEGraphQLClient:
         Returns:
             The deleted EntityLink.
         """
-        result = await self.client.execute_async(DELETE_ENTITY_LINK, entityLinkId = entityLinkId, hard = hard)
+        result = await self.execute(DELETE_ENTITY_LINK, entityLinkId = entityLinkId, hard = hard)
         return EntityLink.model_validate(result["deleteEntityLink"])
 
     # --------------------
@@ -379,7 +414,7 @@ class EEGraphQLClient:
         Returns:
             The requested Group.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_GROUP_BY_ID, id = id))
+        result = await self.execute(READ_GROUP_BY_ID, id = id)
         return Group.model_validate(result["groupById"])
 
     # "Fetches a Group given its groupname."
@@ -392,10 +427,10 @@ class EEGraphQLClient:
             filter: Selects which Groups to return.
             pageSort: Paginates the results and optionally specifies custom ordering.
         Returns:
-            The requested pagefull of Groups.
+            The requested pageful of Groups.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_GROUPS, filter = filter, pageSort = pageSort))
-        return Page.model_validate(result["groups"])
+        result = await self.execute(READ_GROUPS, filter = filter, pageSort = pageSort)
+        return Page[Group].model_validate(result["groups"])
 
     async def createGroup(self, input: GroupInput) -> Group:
         """
@@ -405,7 +440,7 @@ class EEGraphQLClient:
         Returns:
             The new Group.
         """
-        result = await self.client.execute_async(self.bind_query_args(CREATE_GROUP, input = input))
+        result = await self.execute(CREATE_GROUP, input = input)
         return Group.model_validate(result["createGroup"])
 
     async def updateGroup(self, input: GroupInput) -> Group:
@@ -416,7 +451,7 @@ class EEGraphQLClient:
         Returns:
             The updated Group.
         """
-        result = await self.client.execute_async(self.bind_query_args(UPDATE_GROUP, input = input))
+        result = await self.execute(UPDATE_GROUP, input = input)
         return Group.model_validate(result["updateGroup"])
 
     async def deleteGroup(self, id: ID) -> Group:
@@ -427,7 +462,7 @@ class EEGraphQLClient:
         Returns:
             The deleted Group.
         """
-        result = await self.client.execute_async(self.bind_query_args(DELETE_GROUP, id = id))
+        result = await self.execute(DELETE_GROUP, id = id)
         return Group.model_validate(result["deleteGroup"])
 
     async def addGroupMember(self, groupId: ID, userId: ID) -> Group:
@@ -439,7 +474,7 @@ class EEGraphQLClient:
         Returns:
             The updated Group.
         """
-        result = await self.client.execute_async(self.bind_query_args(ADD_GROUP_MEMBER, groupId = groupId, userId = userId))
+        result = await self.execute(ADD_GROUP_MEMBER, groupId = groupId, userId = userId)
         return Group.model_validate(result["addGroupMember"])
 
     async def removeGroupMember(self, groupId: ID, userId: ID) -> Group:
@@ -451,7 +486,7 @@ class EEGraphQLClient:
         Returns:
             The updated Group.
         """
-        result = await self.client.execute_async(self.bind_query_args(REMOVE_GROUP_MEMBER, groupId = groupId, userId = userId))
+        result = await self.execute(REMOVE_GROUP_MEMBER, groupId = groupId, userId = userId)
         return Group.model_validate(result["removeGroupMember"])
 
     async def grantGroupAuthorities(self, groupId: ID, authorities: list[AuthorityKind]) -> Group:
@@ -463,7 +498,7 @@ class EEGraphQLClient:
         Returns:
             The updated Group.
         """
-        result = await self.client.execute_async(self.bind_query_args(GRANT_GROUP_AUTHORITIES, groupId = groupId, authorities = authorities))
+        result = await self.execute(GRANT_GROUP_AUTHORITIES, groupId = groupId, authorities = authorities)
         return Group.model_validate(result["grantGroupAuthorities"])
 
     async def revokeGroupAuthorities(self, groupId: ID, authorities: list[AuthorityKind]) -> Group:
@@ -475,7 +510,7 @@ class EEGraphQLClient:
         Returns:
             The updated Group.
         """
-        result = await self.client.execute_async(self.bind_query_args(REVOKE_GROUP_AUTHORITIES, groupId = groupId, authorities = authorities))
+        result = await self.execute(REVOKE_GROUP_AUTHORITIES, groupId = groupId, authorities = authorities)
         return Group.model_validate(result["revokeGroupAuthorities"])
 
     # --------------------
@@ -490,7 +525,7 @@ class EEGraphQLClient:
         Returns:
             The requested Journal.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_JOURNAL_BY_ID, id = id))
+        result = await self.execute(READ_JOURNAL_BY_ID, id = id)
         return Journal.model_validate(result["journalById"])
 
     async def journals(self, filter: TrackedEntityQueryFilter = None, pageSort: PageableInput = None) -> Page[Journal]:
@@ -500,10 +535,10 @@ class EEGraphQLClient:
             filter: Selects which Journals to return.
             pageSort: Paginates the results and optionally specifies custom ordering.
         Returns:
-            The requested pagefull of Journals.
+            The requested pageful of Journals.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_JOURNALS, filter = filter, pageSort = pageSort))
-        return Page.model_validate(result["journals"])
+        result = await self.execute(READ_JOURNALS, filter = filter, pageSort = pageSort)
+        return Page[Journal].model_validate(result["journals"])
 
     async def createJournal(self, input: JournalInput) -> Journal:
         """
@@ -513,7 +548,7 @@ class EEGraphQLClient:
         Returns:
             The new Journal.
         """
-        result = await self.client.execute_async(self.bind_query_args(CREATE_JOURNAL, input = input))
+        result = await self.execute(CREATE_JOURNAL, input = input)
         return Journal.model_validate(result["createJournal"])
 
     async def updateJournal(self, input: JournalInput) -> Journal:
@@ -524,7 +559,7 @@ class EEGraphQLClient:
         Returns:
             The updated Journal.
         """
-        result = await self.client.execute_async(self.bind_query_args(UPDATE_JOURNAL, input = input))
+        result = await self.execute(UPDATE_JOURNAL, input = input)
         return Journal.model_validate(result["updateJournal"])
 
     async def deleteJournal(self, id: ID) -> Journal:
@@ -535,7 +570,7 @@ class EEGraphQLClient:
         Returns:
             The deleted Journal.
         """
-        result = await self.client.execute_async(self.bind_query_args(DELETE_JOURNAL, id = id))
+        result = await self.execute(DELETE_JOURNAL, id = id)
         return Journal.model_validate(result["deleteJournal"])
 
     # --------------------
@@ -549,10 +584,10 @@ class EEGraphQLClient:
             filter: Selects which Logs to return.
             pageSort: Paginates the results and optionally specifies custom ordering.
         Returns:
-            The requested pagefull of Logs.
+            The requested pageful of Logs.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_LOGS, filter = filter, pageSort = pageSort))
-        return Page.model_validate(result["logs"])
+        result = await self.execute(READ_LOGS, filter = filter, pageSort = pageSort)
+        return Page[Log].model_validate(result["logs"])
 
     # --------------------
     # PERSONS
@@ -566,7 +601,7 @@ class EEGraphQLClient:
         Returns:
             The requested Person.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_PERSON_BY_ID, id = id))
+        result = await self.execute(READ_PERSON_BY_ID, id = id)
         return Person.model_validate(result["personById"])
 
     async def persons(self, filter: LinkableEntityQueryFilter = None, pageSort: PageableInput = None) -> Page[Person]:
@@ -576,10 +611,10 @@ class EEGraphQLClient:
             filter: Selects which Persons to return.
             pageSort: Paginates the results and optionally specifies custom ordering.
         Returns:
-            The requested pagefull of Persons.
+            The requested pageful of Persons.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_PERSONS, filter = filter, pageSort = pageSort))
-        return Page.model_validate(result["persons"])
+        result = await self.execute(READ_PERSONS, filter = filter, pageSort = pageSort)
+        return Page[Person].model_validate(result["persons"])
 
     async def createPerson(self, input: PersonInput) -> Person:
         """
@@ -589,7 +624,7 @@ class EEGraphQLClient:
         Returns:
             The new Person.
         """
-        result = await self.client.execute_async(self.bind_query_args(CREATE_PERSON, input = input))
+        result = await self.execute(CREATE_PERSON, input = input)
         return Person.model_validate(result["createPerson"])
 
     async def updatePerson(self, input: PersonInput) -> Person:
@@ -600,8 +635,8 @@ class EEGraphQLClient:
         Returns:
             The updated Person.
         """
-        result = await self.client.execute_async(self.bind_query_args(UPDATE_PERSON, input = input))
-        return EntityLink.model_validate(result["updateEntityLink"])
+        result = await self.execute(UPDATE_PERSON, input = input)
+        return Person.model_validate(result["updatePerson"])
 
     async def deletePerson(self, id: ID) -> Person:
         """
@@ -611,7 +646,7 @@ class EEGraphQLClient:
         Returns:
             The deleted Person.
         """
-        result = await self.client.execute_async(self.bind_query_args(DELETE_PERSON, id = id))
+        result = await self.execute(DELETE_PERSON, id = id)
         return Person.model_validate(result["deletePerson"])
 
     # --------------------
@@ -626,7 +661,7 @@ class EEGraphQLClient:
         Returns:
             The requested Publication.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_PUBLICATION_BY_ID, id = id))
+        result = await self.execute(READ_PUBLICATION_BY_ID, id = id)
         return Publication.model_validate(result["publicationById"])
 
     async def publications(self, filter: LinkableEntityQueryFilter = None, pageSort: PageableInput = None) -> Page[Publication]:
@@ -636,9 +671,9 @@ class EEGraphQLClient:
             filter: Selects which Publications to return.
             pageSort: Paginates the results and optionally specifies custom ordering.
         Returns:
-            The requested pagefull of Publications.
+            The requested pageful of Publications.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_PUBLICATIONS, filter = filter, pageSort = pageSort))
+        result = await self.execute(READ_PUBLICATIONS, filter = filter, pageSort = pageSort)
         return Page[Publication].model_validate(result["publications"])
 
     async def createPublication(self, input: PublicationInput) -> Publication:
@@ -649,7 +684,7 @@ class EEGraphQLClient:
         Returns:
             The new Publication.
         """
-        result = await self.client.execute_async(self.bind_query_args(CREATE_PUBLICATION, input = input))
+        result = await self.execute(CREATE_PUBLICATION, input = input)
         return Publication.model_validate(result["createPublication"])
 
     async def updatePublication(self, input: PublicationInput) -> Publication:
@@ -660,7 +695,7 @@ class EEGraphQLClient:
         Returns:
             The updated Publication.
         """
-        result = await self.client.execute_async(self.bind_query_args(UPDATE_PUBLICATION, input = input))
+        result = await self.execute(UPDATE_PUBLICATION, input = input)
         return Publication.model_validate(result["updatePublication"])
 
     async def deletePublication(self, id: ID) -> Publication:
@@ -671,7 +706,7 @@ class EEGraphQLClient:
         Returns:
             The deleted Publication.
         """
-        result = await self.client.execute_async(self.bind_query_args(DELETE_PUBLICATION, id = id))
+        result = await self.execute(DELETE_PUBLICATION, id = id)
         return Publication.model_validate(result["deletePublication"])
 
     # --------------------
@@ -686,7 +721,7 @@ class EEGraphQLClient:
         Returns:
             The requested Publisher.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_PUBLISHER_BY_ID, id = id))
+        result = await self.execute(READ_PUBLISHER_BY_ID, id = id)
         return Publisher.model_validate(result["publisherById"])
 
     async def publishers(self, filter: TrackedEntityQueryFilter = None, pageSort: PageableInput = None) -> Page[Publisher]:
@@ -696,10 +731,10 @@ class EEGraphQLClient:
             filter: Selects which Publishers to return.
             pageSort: Paginates the results and optionally specifies custom ordering.
         Returns:
-            The requested pagefull of Publishers.
+            The requested pageful of Publishers.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_PUBLISHERS, filter = filter, pageSort = pageSort))
-        return Page.model_validate(result["publishers"])
+        result = await self.execute(READ_PUBLISHERS, filter = filter, pageSort = pageSort)
+        return Page[Publisher].model_validate(result["publishers"])
 
     async def createPublisher(self, input: PublisherInput) -> Publisher:
         """
@@ -709,7 +744,7 @@ class EEGraphQLClient:
         Returns:
             The new Publisher.
         """
-        result = await self.client.execute_async(self.bind_query_args(CREATE_PUBLISHER, input = input))
+        result = await self.execute(CREATE_PUBLISHER, input = input)
         return Publisher.model_validate(result["createPublisher"])
 
     async def updatePublisher(self, input: PublisherInput) -> Publisher:
@@ -720,7 +755,7 @@ class EEGraphQLClient:
         Returns:
             The updated Publisher.
         """
-        result = await self.client.execute_async(self.bind_query_args(UPDATE_PUBLISHER, input = input))
+        result = await self.execute(UPDATE_PUBLISHER, input = input)
         return Publisher.model_validate(result["updatePublisher"])
 
     async def deletePublisher(self, id: ID) -> Publisher:
@@ -731,7 +766,7 @@ class EEGraphQLClient:
         Returns:
             The deleted Publisher.
         """
-        result = await self.client.execute_async(self.bind_query_args(DELETE_PUBLISHER, id = id))
+        result = await self.execute(DELETE_PUBLISHER, id = id)
         return Publisher.model_validate(result["deletePublisher"])
 
     # --------------------
@@ -746,7 +781,7 @@ class EEGraphQLClient:
         Returns:
             The requested Quotation.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_QUOTATION_BY_ID, id = id))
+        result = await self.execute(READ_QUOTATION_BY_ID, id = id)
         return Quotation.model_validate(result["quotationById"])
 
     async def quotations(self, filter: LinkableEntityQueryFilter = None, pageSort: PageableInput = None) -> Page[Quotation]:
@@ -756,10 +791,10 @@ class EEGraphQLClient:
             filter: Selects which Quotations to return.
             pageSort: Paginates the results and optionally specifies custom ordering.
         Returns:
-            The requested pagefull of Quotations.
+            The requested pageful of Quotations.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_QUOTATIONS, filter = filter, pageSort = pageSort))
-        return Page.model_validate(result["quotations"])
+        result = await self.execute(READ_QUOTATIONS, filter = filter, pageSort = pageSort)
+        return Page[Quotation].model_validate(result["quotations"])
 
     async def createQuotation(self, input: QuotationInput) -> Quotation:
         """
@@ -769,7 +804,7 @@ class EEGraphQLClient:
         Returns:
             The new Quotation.
         """
-        result = await self.client.execute_async(self.bind_query_args(CREATE_QUOTATION, input = input))
+        result = await self.execute(CREATE_QUOTATION, input = input)
         return Quotation.model_validate(result["createQuotation"])
 
     async def updateQuotation(self, input: QuotationInput) -> Quotation:
@@ -780,7 +815,7 @@ class EEGraphQLClient:
         Returns:
             The updated Quotation.
         """
-        result = await self.client.execute_async(self.bind_query_args(UPDATE_QUOTATION, input = input))
+        result = await self.execute(UPDATE_QUOTATION, input = input)
         return Quotation.model_validate(result["updateQuotation"])
 
     async def deleteQuotation(self, id: ID) -> Quotation:
@@ -791,7 +826,7 @@ class EEGraphQLClient:
         Returns:
             The deleted Quotation.
         """
-        result = await self.client.execute_async(self.bind_query_args(DELETE_QUOTATION, id = id))
+        result = await self.execute(DELETE_QUOTATION, id = id)
         return Quotation.model_validate(result["deleteQuotation"])
 
     # --------------------
@@ -806,7 +841,7 @@ class EEGraphQLClient:
         Returns:
             The requested Topic.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_TOPIC_BY_ID, id = id))
+        result = await self.execute(READ_TOPIC_BY_ID, id = id)
         return Topic.model_validate(result["topicById"])
 
     async def topics(self, filter: TopicQueryFilter = None, pageSort: PageableInput = None) -> Page[Topic]:
@@ -816,10 +851,10 @@ class EEGraphQLClient:
             filter: Selects which Topics to return.
             pageSort: Paginates the results and optionally specifies custom ordering.
         Returns:
-            The requested pagefull of Topics.
+            The requested pageful of Topics.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_TOPICS, filter = filter, pageSort = pageSort))
-        return Page.model_validate(result["topics"])
+        result = await self.execute(READ_TOPICS, filter = filter, pageSort = pageSort)
+        return Page[Topic].model_validate(result["topics"])
 
     # "Fetches a Topic given its identifier."
     # topicById(id: ID!): Topic
@@ -832,7 +867,7 @@ class EEGraphQLClient:
         Returns:
             The new Topic.
         """
-        result = await self.client.execute_async(self.bind_query_args(CREATE_TOPIC, input = input))
+        result = await self.execute(CREATE_TOPIC, input = input)
         return Topic.model_validate(result["createTopic"])
 
     async def updateTopic(self, input: TopicInput) -> Topic:
@@ -843,7 +878,7 @@ class EEGraphQLClient:
         Returns:
             The updated Topic.
         """
-        result = await self.client.execute_async(self.bind_query_args(UPDATE_TOPIC, input = input))
+        result = await self.execute(UPDATE_TOPIC, input = input)
         return Topic.model_validate(result["updateTopic"])
 
     async def deleteTopic(self, id: ID) -> Topic:
@@ -854,7 +889,7 @@ class EEGraphQLClient:
         Returns:
             The deleted Topic.
         """
-        result = await self.client.execute_async(self.bind_query_args(DELETE_TOPIC, id = id))
+        result = await self.execute(DELETE_TOPIC, id = id)
         return Topic.model_validate(result["deleteTopic"])
 
     # --------------------
@@ -869,7 +904,7 @@ class EEGraphQLClient:
         Returns:
             The requested User.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_USER_BY_ID, id = id))
+        result = await self.execute(READ_USER_BY_ID, id = id)
         return User.model_validate(result["userById"])
 
     # "Fetches a User given its username."
@@ -885,10 +920,10 @@ class EEGraphQLClient:
             filter: Selects which Users to return.
             pageSort: Paginates the results and optionally specifies custom ordering.
         Returns:
-            The requested pagefull of Users.
+            The requested pageful of Users.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_USERS, filter = filter, pageSort = pageSort))
-        return Page.model_validate(result["users"])
+        result = await self.execute(READ_USERS, filter = filter, pageSort = pageSort)
+        return Page[User].model_validate(result["users"])
 
     async def createUser(self, input: UserInput) -> User:
         """
@@ -898,7 +933,7 @@ class EEGraphQLClient:
         Returns:
             The new User.
         """
-        result = await self.client.execute_async(self.bind_query_args(CREATE_USER, input = input))
+        result = await self.execute(CREATE_USER, input = input)
         return User.model_validate(result["createUser"])
 
     async def updateUser(self, input: UserInput) -> User:
@@ -909,35 +944,35 @@ class EEGraphQLClient:
         Returns:
             The updated User.
         """
-        result = await self.client.execute_async(self.bind_query_args(UPDATE_USER, input = input))
+        result = await self.execute(UPDATE_USER, input = input)
         return User.model_validate(result["updateUser"])
 
     async def updateUserPassword(self, input: UserPasswordInput) -> User:
         """
         Updates an existing user's password.
         """
-        result = await self.client.execute_async(self.bind_query_args(UPDATE_USER_PASSWORD, input = input))
+        result = await self.execute(UPDATE_USER_PASSWORD, input = input)
         return User.model_validate(result["updateUserPassword"])
 
     async def updateUserProfile(self, input: UserProfileInput) -> User:
         """
         Updates an existing user's profile.
         """
-        result = await self.client.execute_async(self.bind_query_args(UPDATE_USER_PROFILE, input = input))
+        result = await self.execute(UPDATE_USER_PROFILE, input = input)
         return User.model_validate(result["updateUserPassword"])
 
     async def grantUserAuthorities(self, userId: ID, authorities: list[AuthorityKind]) -> User:
         """
         Grants authorities to a user. The specified authorities are added to any existing ones.
         """
-        result = await self.client.execute_async(self.bind_query_args(GRANT_USER_AUTHORITIES, userId = userId, authorities = authorities))
+        result = await self.execute(GRANT_USER_AUTHORITIES, userId = userId, authorities = authorities)
         return User.model_validate(result["grantUserAuthorities"])
 
     async def revokeUserAuthorities(self, userId: ID, authorities: list[AuthorityKind]) -> User:
         """
         Revokes authorities from a user. The specified authorities are removed from the user; other authorities remain intact.
         """
-        result = await self.client.execute_async(self.bind_query_args(REVOKE_USER_AUTHORITIES, userId = userId, authorities = authorities))
+        result = await self.execute(REVOKE_USER_AUTHORITIES, userId = userId, authorities = authorities)
         return User.model_validate(result["revokeUserAuthorities"])
 
     async def deleteUser(self, id: ID) -> User:
@@ -948,7 +983,7 @@ class EEGraphQLClient:
         Returns:
             The deleted User.
         """
-        result = await self.client.execute_async(self.bind_query_args(DELETE_USER, id = id))
+        result = await self.execute(DELETE_USER, id = id)
         return User.model_validate(result["deleteUser"])
 
     # --------------------
@@ -963,7 +998,7 @@ class EEGraphQLClient:
         Returns:
             An object to audit the entity's fields and links.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_ENTITY_AUDIT, id = id))
+        result = await self.execute(READ_ENTITY_AUDIT, id = id)
         return EntityAudit.model_validate(result["audit"])
 
     async def login(self, username: str, password: str) -> AuthPayload:
@@ -975,11 +1010,19 @@ class EEGraphQLClient:
         Returns:
             An object containing the JWT authentication token to use in subsequent API requests, and the authenticated User object.
         """
-        result = await self.client.execute_async(self.bind_query_args(LOGIN, username = username, password = password))
+        result = await self.execute(LOGIN, username = username, password = password)
         if not "login" in result:
             raise Exception(f"Failed to authenticate {username}.")
         self.auth = AuthPayload.model_validate(result["login"])
-        self.create_client() # re-create client with Authorization header
+
+        # Create a new client and a new session so next execute() request includes the Authorization header.
+        self.client = None
+        self.session = None
+        self.create_client()
+        await self.get_session()
+
+        logger.info(f"Authenticated as User#{self.auth.user.id} {self.auth.user.username} with authorities: {', '.join([a.value for a in self.auth.user.authorities])}.")
+
         return self.auth
 
     def logout(self) -> None:
@@ -997,7 +1040,7 @@ class EEGraphQLClient:
         Returns:
             An object containing record counts for all supported entity kinds.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_ENTITY_STATISTICS, filter = filter))
+        result = await self.execute(READ_ENTITY_STATISTICS, filter = filter)
         adapter = TypeAdapter(list[EntityStatistics])
         return adapter.validate_python(result["entityStatistics"])
 
@@ -1009,7 +1052,7 @@ class EEGraphQLClient:
         Returns:
             An object containing record counts for all supported entity kinds, organised by their linked Topics.
         """
-        result = await self.client.execute_async(self.bind_query_args(READ_TOPIC_STATISTICS, filter = filter))
+        result = await self.execute(READ_TOPIC_STATISTICS, filter = filter)
         adapter = TypeAdapter(list[TopicStatistics])
         return adapter.validate_python(result["topicStatistics"])
 
@@ -1022,5 +1065,5 @@ class EEGraphQLClient:
         Returns:
             The updated record.
         """
-        result = await self.client.execute_async(self.bind_query_args(UPDATE_ENTITY_STATUS, entityId = entityId, status = status))
+        result = await self.execute(UPDATE_ENTITY_STATUS, entityId = entityId, status = status)
         return TrackedEntity.model_validate(result["setEntityStatus"])

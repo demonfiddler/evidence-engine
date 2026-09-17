@@ -23,7 +23,7 @@ from ee_ai_service.models.enums.status_kind import StatusKind
 from ee_ai_service.models.id import ID
 
 class TrackedEntityQueryFilter(BaseModel):
-    status: list[StatusKind] | None
-    text: str | None
-    advancedSearch: bool | None
-    recordId: ID | None
+    status: list[StatusKind] | None = None
+    text: str | None = None
+    advancedSearch: bool | None = None
+    recordId: ID | None = None

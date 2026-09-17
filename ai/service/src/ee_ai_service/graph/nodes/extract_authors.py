@@ -17,15 +17,28 @@
 #  If not, see <https://www.gnu.org/licenses/>. 
 # ----------------------------------------------------------------------------------------------------------------------
 
+from logging import getLogger
 from regex import compile, split
 
 from ee_ai_service.graph.state.complete_publication_state import CompletePublicationState
 from ee_ai_service.utils.name import Name
 
+logger = getLogger(__name__)
+
 _NEWLINE = compile(r"[\r\n]+")
 
-async def extract_authors(state: CompletePublicationState) -> CompletePublicationState:
-    raw_names = split(_NEWLINE, state.publication.authors)
-    state.extracted_authors = [Name.parse(raw_name) for raw_name in raw_names]
+async def extract_authors(state: CompletePublicationState) -> dict[str, any]:
+    """Extract authors from a publication's author string and parse them into Name objects."""
 
-    return state
+    # Extract raw names, one per line, filtering out any blank lines.
+    raw_names: list[str] = split(_NEWLINE, state.publication.authors)
+    i = len(raw_names) - 1
+    while i >= 0:
+        if len(raw_names[i].strip()) == 0:
+            raw_names.pop(i)
+        i -= 1
+    extracted_authors: list[Name] = [Name.parse(raw_name) for raw_name in raw_names]
+
+    logger.info(f"Extracted {len(extracted_authors)} authors from Publication#{state.publication.id}: {state.publication.title}")
+
+    return {"extracted_authors": extracted_authors}

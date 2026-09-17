@@ -19,14 +19,15 @@
 
 from __future__ import annotations
 from pydantic import Field
-from typing import Optional
+from typing import Literal, Optional, override
 
 from ee_ai_service.models.enums.entity_kind import EntityKind
+from ee_ai_service.models.record_info import RecordInfo
 from ee_ai_service.models.tracked_entity import TrackedEntity
 
 class Comment(TrackedEntity):
     # The dicriminator value.
-    entityKind: EntityKind = Field(EntityKind.COMMENT, frozen=True)
+    entityKind: Literal[EntityKind.COMMENT] = EntityKind.COMMENT
 
     # The entity to which this comment is attached.
     target: TrackedEntity | None = None
@@ -34,3 +35,10 @@ class Comment(TrackedEntity):
     parent: Optional[Comment] = None
     # The text of the comment.
     text: str | None = None
+
+    @override
+    def info(self) -> RecordInfo:
+        return RecordInfo(
+            id = self.id,
+            text = self.text
+        )

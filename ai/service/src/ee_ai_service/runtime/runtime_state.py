@@ -18,6 +18,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 from dataclasses import dataclass
+from httpx import AsyncClient
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.embeddings import Embeddings
 
@@ -30,5 +31,6 @@ class RuntimeState:
     config: Config
     graphql_client: EEGraphQLClient
     rest_client: EERestClient
+    web_client: AsyncClient
     inference_client: BaseChatModel
     embedding_client: Embeddings

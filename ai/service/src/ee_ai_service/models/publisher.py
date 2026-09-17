@@ -18,15 +18,17 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 from __future__ import annotations
-from pydantic import Field, HttpUrl, NonNegativeInt
+from pydantic import HttpUrl, NonNegativeInt
 from pydantic_extra_types.country import CountryAlpha2
+from typing import Literal, override
 
 from ee_ai_service.models.enums.entity_kind import EntityKind
+from ee_ai_service.models.record_info import RecordInfo
 from ee_ai_service.models.tracked_entity import TrackedEntity
 
 class Publisher(TrackedEntity):
     # The dicriminator value.
-    entityKind: EntityKind = Field(EntityKind.PUBLISHER, frozen=True)
+    entityKind: Literal[EntityKind.PUBLISHER] = EntityKind.PUBLISHER
 
     # The publisher name.
     name: str | None = None
@@ -40,3 +42,11 @@ class Publisher(TrackedEntity):
     journalCount: NonNegativeInt | None = None
     # Notes on the publisher.
     notes: str | None = None
+
+    @override
+    def info(self) -> RecordInfo:
+        return RecordInfo(
+            id = self.id,
+            text = self.name,
+            notes = self.notes
+        )

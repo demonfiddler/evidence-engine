@@ -17,12 +17,15 @@
 #  If not, see <https://www.gnu.org/licenses/>. 
 # ----------------------------------------------------------------------------------------------------------------------
 
+from logging import getLogger
 from abc import ABC, abstractmethod
-from langgraph.graph import StateGraph
+from langgraph.graph import END, START, StateGraph
 from pydantic import BaseModel
-from typing import Generic, TypeVar, final
+from typing import Generic, TypeVar, final, get_args
 
 from ee_ai_service.runtime.runtime_state import RuntimeState
+
+logger = getLogger(__name__)
 
 ResultT = TypeVar("ResultT")
 
@@ -39,7 +42,11 @@ class Workflow(Generic[StateT, ResultT], ABC):
 
     def __init__(self, runtime: RuntimeState):
         self.runtime = runtime
-        self.graph = StateGraph(StateT)
+
+        # Create the graph with the actual runtime StateT type from the subclass
+        state_type = get_args(self.__orig_bases__[0])[0]
+        self.graph = StateGraph(state_type)
+
         self.register_nodes()
         self.wire_edges()
         self.workflow = self.graph.compile()
@@ -70,8 +77,8 @@ class Workflow(Generic[StateT, ResultT], ABC):
         if runtime is None:
             raise ValueError("runtime must not be None")
 
-        if getattr(runtime, "model_client", None) is None:
-            raise ValueError("runtime.model_client must not be None")
+        if getattr(runtime, "inference_client", None) is None:
+            raise ValueError("runtime.inference_client must not be None")
 
         if getattr(runtime, "embedding_client", None) is None:
             raise ValueError("runtime.embedding_client must not be None")
@@ -94,24 +101,29 @@ class Workflow(Generic[StateT, ResultT], ABC):
         if not nodes or not isinstance(nodes, dict):
             raise ValueError("workflow.graph.nodes must be a dict of node definitions")
 
-        # START and END are required for all workflows
-        if "START" not in nodes:
-            raise ValueError("workflow.graph must contain a START node")
-
-        if "END" not in nodes:
-            raise ValueError("workflow.graph must contain an END node")
-
         # All edges must reference valid nodes
         edges = getattr(self.graph, "edges", None)
         if edges:
             for src, dst in edges:
-                if src not in nodes:
+                if src is not START and src not in nodes:
                     raise ValueError(f"Graph edge references unknown node: {src}")
-                if dst not in nodes:
+                if dst is not END and dst not in nodes:
                     raise ValueError(f"Graph edge references unknown node: {dst}")
 
         # If we reach here, the workflow is structurally valid
         return True
+
+    @abstractmethod
+    def get_result(self, state: dict[str, any]) -> ResultT:
+        """
+        Extracts the result from the final workflow state.
+
+        Args:
+            state: The final workflow state.
+        Returns:
+            The result extracted from the final workflow state.
+        """
+        pass
 
     @final
     async def run(self, state: StateT) -> ResultT:
@@ -124,5 +136,9 @@ class Workflow(Generic[StateT, ResultT], ABC):
             The final workflow result state.
         """
 
-        final_state: StateT = await self.workflow.ainvoke(state)
-        return final_state.result
+        final_state = await self.workflow.ainvoke(state, config = {"metadata": {"runtime": self.runtime}})
+        result = self.get_result(final_state)
+
+        logger.info(f"Workflow {self.__class__.__name__} returned result: {result}")
+
+        return result

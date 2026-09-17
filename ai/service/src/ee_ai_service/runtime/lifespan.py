@@ -18,8 +18,9 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 from contextlib import asynccontextmanager
-from os import getenv
 from fastapi import FastAPI
+from httpx import AsyncClient
+from os import getenv
 
 from ee_ai_service.clients.ee_graphql_client import EEGraphQLClient
 from ee_ai_service.clients.ee_rest_client import EERestClient
@@ -47,10 +48,20 @@ async def lifespan(app: FastAPI):
 
     rest_client = EERestClient(config)
 
-    inference_client = ChatOllama(model = config.inference_model)
-    embedding_client = OllamaEmbeddings(model = config.embedding_model)
+    headers = {"User-Agent": config.user_agent} if config.user_agent else None
+    web_client = AsyncClient(headers = headers)
 
-    runtime = RuntimeState(config, graphql_client, rest_client, inference_client, embedding_client)
+    inference_client = ChatOllama(model=config.inference_model, num_predict=128)
+    embedding_client = OllamaEmbeddings(model=config.embedding_model)
+
+    runtime = RuntimeState(
+        config = config,
+        graphql_client = graphql_client,
+        rest_client = rest_client,
+        web_client = web_client,
+        inference_client = inference_client,
+        embedding_client = embedding_client
+    )
 
     app.state.runtime = runtime
 

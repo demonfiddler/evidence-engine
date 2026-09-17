@@ -17,20 +17,23 @@
 #  If not, see <https://www.gnu.org/licenses/>. 
 # ----------------------------------------------------------------------------------------------------------------------
 
+from __future__ import annotations
 from pydantic import BaseModel, Field
 
+from ee_ai_service.api.routes import CompletePersonsApiRequest
 from ee_ai_service.graph.workflows.workflow import WorkflowState
-from ee_ai_service.models.inputs.linkable_entity_query_filter import LinkableEntityQueryFilter
 from ee_ai_service.models.person import Person
+from ee_ai_service.models.record_info import RecordInfo
 
 class CompletePersonsResult(BaseModel):
     """Response returned by CompletePersons workflow."""
-    persons: list[Person] = Field(default_factory=list)
+    persons_updated: list[RecordInfo] = Field(default_factory=list)
 
 class CompletePersonsState(WorkflowState):
     """State used to complete description and qualifications for a collection of persons"""
 
-    filter: LinkableEntityQueryFilter
+    request: CompletePersonsApiRequest
     persons: list[Person] = Field(default_factory = list)
     index: int = 0
-    result: CompletePersonsResult = Field(default_factory=CompletePersonsResult)
+    # Result fields
+    persons_updated: list[RecordInfo] = Field(default_factory=list)
