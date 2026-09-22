@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from logging import getLogger
@@ -23,14 +23,15 @@ import regex
 
 from ee_ai_service.graph.state.complete_person_state import CompletePersonState
 from ee_ai_service.models.enums.entity_kind import EntityKind
-from ee_ai_service.models.inputs.linkable_entity_query_filter import LinkableEntityQueryFilter
+from ee_ai_service.models.inputs.linkable_entity_query_filter import (
+    LinkableEntityQueryFilter,
+)
 from ee_ai_service.models.person_facts import PersonFacts
 from ee_ai_service.models.person_info import PersonInfo
 from ee_ai_service.runtime.runtime_state import RuntimeState
 from ee_ai_service.utils.citation import cite
 from ee_ai_service.utils.name import MATCH_THRESHOLD, Name
 from ee_ai_service.utils.string import jaccard
-
 
 logger = getLogger(__name__)
 
@@ -387,6 +388,7 @@ def canonicalise(text: str) -> list[str]:
 
 DOI_REGEX = regex.compile(r"10\.\d{4,9}/[-._;()/:A-Za-z0-9]+")
 
+
 def extract_dois(text: str) -> list[str]:
     return DOI_REGEX.findall(text)
 
@@ -404,8 +406,13 @@ def doi_match(hint_dois: list[str], extracted_dois: list[str]) -> float:
 # Publication similarity (DOI-aware)
 # ---------------------------------------------------------------------------
 
-def publication_similarity(hints: list[str], extracted: list[str],
-                           hint_dois: list[str], extracted_dois: list[str]) -> float:
+
+def publication_similarity(
+    hints: list[str],
+    extracted: list[str],
+    hint_dois: list[str],
+    extracted_dois: list[str],
+) -> float:
     """Hybrid DOI + canonicalised title matching."""
     # DOI exact match
     doi_score = doi_match(hint_dois, extracted_dois)
@@ -427,6 +434,7 @@ def publication_similarity(hints: list[str], extracted: list[str],
 # Affiliation similarity
 # ---------------------------------------------------------------------------
 
+
 def affiliation_similarity(hints: list[str], extracted: list[str]) -> float:
     scores = []
     for h in hints:
@@ -440,6 +448,7 @@ def affiliation_similarity(hints: list[str], extracted: list[str]) -> float:
 # ---------------------------------------------------------------------------
 # Topic similarity
 # ---------------------------------------------------------------------------
+
 
 def topic_similarity(hints: list[str], extracted: list[str]) -> float:
     scores = []
@@ -455,6 +464,7 @@ def topic_similarity(hints: list[str], extracted: list[str]) -> float:
 # Country matching
 # ---------------------------------------------------------------------------
 
+
 # TODO: reimplement using ISO-3166-1 country codes
 def country_match(hints: list[str], extracted: list[str]) -> float:
     if not hints or not extracted:
@@ -468,6 +478,7 @@ def country_match(hints: list[str], extracted: list[str]) -> float:
 # Name matching (your existing logic)
 # ---------------------------------------------------------------------------
 
+
 def best_name(target: "Name", names: list[Name]) -> Name | None:
     if not names:
         return None
@@ -479,9 +490,10 @@ def best_name(target: "Name", names: list[Name]) -> Name | None:
 # Candidate scoring
 # ---------------------------------------------------------------------------
 
-def score_candidate(target_name: Name,
-                    hints: DisambiguationHints,
-                    facts: "PersonFacts") -> float:
+
+def score_candidate(
+    target_name: Name, hints: DisambiguationHints, facts: "PersonFacts"
+) -> float:
 
     # Name score
     name_score = max((target_name.match_score(n) for n in facts.names), default=0.0)
@@ -494,7 +506,7 @@ def score_candidate(target_name: Name,
         hints.publications,
         facts.publications,
         hints.dois,
-        facts.dois if hasattr(facts, "dois") else []
+        facts.dois if hasattr(facts, "dois") else [],
     )
 
     # Affiliation score
@@ -505,11 +517,11 @@ def score_candidate(target_name: Name,
 
     # Weighted score
     score = (
-        0.40 * name_score +
-        0.20 * topic_score +
-        0.20 * pub_score +
-        0.10 * aff_score +
-        0.10 * country_score
+        0.40 * name_score
+        + 0.20 * topic_score
+        + 0.20 * pub_score
+        + 0.10 * aff_score
+        + 0.10 * country_score
     )
 
     # Hard filters
@@ -526,6 +538,7 @@ def score_candidate(target_name: Name,
 # ---------------------------------------------------------------------------
 # Main Node B: analyse_person_node
 # ---------------------------------------------------------------------------
+
 
 def analyse_person_node(
     state: CompletePersonState,
@@ -561,10 +574,7 @@ def analyse_person_node(
     # 2. Select cluster: all results within epsilon of best score
     # ------------------------------------------------------------
     EPSILON = 0.15
-    cluster = [
-        facts for facts, score in scored
-        if score >= best_score - EPSILON
-    ]
+    cluster = [facts for facts, score in scored if score >= best_score - EPSILON]
 
     if not cluster:
         return {"person_info": {}}
@@ -693,7 +703,10 @@ def analyse_person_node(
 
     return {"person_info": person_info}
 
-async def analyse_person_results(state: CompletePersonState, *, config) -> dict[str, any]:
+
+async def analyse_person_results(
+    state: CompletePersonState, *, config
+) -> dict[str, any]:
     """Deterministically analyses person search results."""
 
     topics = [
@@ -704,21 +717,16 @@ async def analyse_person_results(state: CompletePersonState, *, config) -> dict[
 
     # NOTE: can't use state.person.toEntityLinks to get linked Publications because EntityLink.fromEntity only has a small subset of Publication fields.
     runtime: RuntimeState = config["metadata"]["runtime"]
-    filter = LinkableEntityQueryFilter(toEntityId = state.person.id)
+    filter = LinkableEntityQueryFilter(toEntityId=state.person.id)
     page = await runtime.graphql_client.publications(filter)
     publications = page.content
-    citations = [
-        cite(p)
-        for p in publications
-    ]
-    dois = [
-        p.doi
-        for p in publications
-        if p.doi
-    ]
+    citations = [cite(p) for p in publications]
+    dois = [p.doi for p in publications if p.doi]
 
     countries = [state.person_info.country] if state.person_info.country else []
-    hints = DisambiguationHints(topics, citations, state.person_info.affiliations, countries, dois)
+    hints = DisambiguationHints(
+        topics, citations, state.person_info.affiliations, countries, dois
+    )
     pi_dict = analyse_person_node(
         state,
         hints,

@@ -14,13 +14,14 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from pydantic import ConfigDict, Field
 from typing import Annotated, Optional
 
 from ee_ai_service.models.inputs.base_entity_input import BaseEntityInput
+
 
 class TrackedEntityInput(BaseEntityInput):
     model_config = ConfigDict(abstract=True)

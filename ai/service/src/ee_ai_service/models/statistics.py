@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from __future__ import annotations
@@ -22,12 +22,14 @@ from pydantic import BaseModel
 
 from ee_ai_service.models.topic import Topic
 
+
 # Statistics about a given entity kind.
 class EntityStatistics(BaseModel):
     # The entity kind.
     entityKind: str
     # The number of entities of that kind.
     count: int
+
 
 class TopicStatistics(BaseModel):
     # The topic in question.

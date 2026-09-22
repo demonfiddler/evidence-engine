@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from __future__ import annotations
@@ -22,6 +22,7 @@ from pydantic import BaseModel, Field
 from pydantic_extra_types.country import CountryAlpha2
 
 from ee_ai_service.utils.name import Name
+
 
 class PersonInfo(BaseModel):
     """Information about a person as extracted by a workflow node"""

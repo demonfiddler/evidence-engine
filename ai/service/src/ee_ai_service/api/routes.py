@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 """defines HTTP endpoints"""
@@ -22,32 +22,41 @@
 from __future__ import annotations
 from fastapi import APIRouter, Request
 
-from ee_ai_service.api.schemata import CompletePersonsApiRequest, CompletePersonsApiResponse, CompletePublicationsApiRequest, CompletePublicationsApiResponse
+from ee_ai_service.api.schemata import (
+    CompletePersonsApiRequest,
+    CompletePersonsApiResponse,
+    CompletePublicationsApiRequest,
+    CompletePublicationsApiResponse,
+)
 from ee_ai_service.graph.state.complete_persons_state import CompletePersonsState
-from ee_ai_service.graph.state.complete_publications_state import CompletePublicationsState
+from ee_ai_service.graph.state.complete_publications_state import (
+    CompletePublicationsState,
+)
 from ee_ai_service.graph.workflows.complete_persons import CompletePersons
 from ee_ai_service.graph.workflows.complete_publications import CompletePublications
 
 router = APIRouter(prefix="/ai", tags=["ai"])
 
-@router.post("/persons/complete", response_model = CompletePersonsApiResponse)
+
+@router.post("/persons/complete", response_model=CompletePersonsApiResponse)
 async def complete_persons(request: Request, body: CompletePersonsApiRequest):
     runtime = request.app.state.runtime
     workflow = CompletePersons(runtime)
-    state = CompletePersonsState(request = body)
+    state = CompletePersonsState(request=body)
     workflow.validate(state, runtime)
     final_state = await workflow.run(state)
-    return CompletePersonsApiResponse(persons = final_state.persons_updated)
+    return CompletePersonsApiResponse(persons=final_state.persons_updated)
 
-@router.post("/publications/complete", response_model = CompletePublicationsApiResponse)
+
+@router.post("/publications/complete", response_model=CompletePublicationsApiResponse)
 async def complete_publications(request: Request, body: CompletePublicationsApiRequest):
     runtime = request.app.state.runtime
     workflow = CompletePublications(runtime)
-    state = CompletePublicationsState(request = body)
+    state = CompletePublicationsState(request=body)
     workflow.validate(state, runtime)
     final_state = await workflow.run(state)
     return CompletePublicationsApiResponse(
-        claims_added = final_state.claims_added,
-        persons_added = final_state.persons_added,
-        links_added = final_state.links_added
+        claims_added=final_state.claims_added,
+        persons_added=final_state.persons_added,
+        links_added=final_state.links_added,
     )

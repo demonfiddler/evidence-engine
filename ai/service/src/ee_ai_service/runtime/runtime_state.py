@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from dataclasses import dataclass
@@ -25,6 +25,7 @@ from langchain_core.embeddings import Embeddings
 from ee_ai_service.clients.ee_graphql_client import EEGraphQLClient
 from ee_ai_service.clients.ee_rest_client import EERestClient
 from ee_ai_service.runtime.config import Config
+
 
 @dataclass
 class RuntimeState:

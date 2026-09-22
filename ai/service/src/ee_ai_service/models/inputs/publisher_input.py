@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from pydantic import HttpUrl, NonNegativeInt
@@ -22,10 +22,11 @@ from pydantic_extra_types.country import CountryAlpha2
 
 from ee_ai_service.models.inputs.tracked_entity_input import TrackedEntityInput
 
+
 class PublisherInput(TrackedEntityInput):
     name: str
     location: str | None = None
-    country: CountryAlpha2 | None = None # TODO: use Country type
+    country: CountryAlpha2 | None = None  # TODO: use Country type
     url: HttpUrl | None = None
     journalCount: NonNegativeInt | None = None
     notes: str | None = None

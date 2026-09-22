@@ -14,14 +14,15 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from __future__ import annotations
 from pydantic import BaseModel, NonNegativeInt, PositiveInt
 from typing import Generic, TypeVar
 
-T = TypeVar('T')
+T = TypeVar("T")
+
 
 class Page(BaseModel, Generic[T]):
     hasContent: bool | None = None

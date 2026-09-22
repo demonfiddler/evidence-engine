@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from enum import StrEnum
@@ -24,8 +24,10 @@ from ee_ai_service.models.enums.publication_kind import PublicationKind
 from ee_ai_service.models.publication import Publication
 from ee_ai_service.utils.name import Name
 
+
 class CitationFormat(StrEnum):
     CSE_NAME_YEAR = "cse-name-year"
+
 
 def _cse_name_year(publication) -> str:
     sb = []
@@ -53,7 +55,10 @@ def _cse_name_year(publication) -> str:
         sb.append(f" doi: {publication.doi}")
     return "".join(sb)
 
-def cite(publication: Publication, format: CitationFormat = CitationFormat.CSE_NAME_YEAR) -> str:
+
+def cite(
+    publication: Publication, format: CitationFormat = CitationFormat.CSE_NAME_YEAR
+) -> str:
     citation = None
     match format:
         case CitationFormat.CSE_NAME_YEAR:

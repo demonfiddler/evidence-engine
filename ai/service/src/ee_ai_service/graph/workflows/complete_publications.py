@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from langgraph.graph import END, START
@@ -22,12 +22,17 @@ from typing import override
 
 from ee_ai_service.graph.nodes.complete_publication import complete_publication
 from ee_ai_service.graph.nodes.load_publications import load_publications
-from ee_ai_service.graph.state.complete_publications_state import CompletePublicationsResult, CompletePublicationsState
+from ee_ai_service.graph.state.complete_publications_state import (
+    CompletePublicationsResult,
+    CompletePublicationsState,
+)
 from ee_ai_service.graph.workflows.workflow import Workflow
 from ee_ai_service.runtime.runtime_state import RuntimeState
 
+
 def advance_publication_index(state: CompletePublicationsState) -> dict[str, any]:
     return {"index": state.index + 1}
+
 
 def loop_control(state: CompletePublicationsState):
     if state.index < len(state.publications):
@@ -35,12 +40,15 @@ def loop_control(state: CompletePublicationsState):
     else:
         return END
 
-class CompletePublications(Workflow[CompletePublicationsState, CompletePublicationsResult]):
+
+class CompletePublications(
+    Workflow[CompletePublicationsState, CompletePublicationsResult]
+):
     """A LangGraph workflow for completing a collection of Publications."""
 
     def __init__(self, runtime: RuntimeState):
         super().__init__(runtime)
-    
+
     @override
     def register_nodes(self):
         self.graph.add_node("load_publications", load_publications)
@@ -58,7 +66,7 @@ class CompletePublications(Workflow[CompletePublicationsState, CompletePublicati
     def get_result(self, state: dict[str, any]) -> CompletePublicationsResult:
         """Returns the result of the workflow, which includes lists of all claims, authors and links added."""
         return CompletePublicationsResult(
-            claims_added = state["claims_added"],
-            persons_added = state["persons_added"],
-            links_added = state["links_added"]
+            claims_added=state["claims_added"],
+            persons_added=state["persons_added"],
+            links_added=state["links_added"],
         )

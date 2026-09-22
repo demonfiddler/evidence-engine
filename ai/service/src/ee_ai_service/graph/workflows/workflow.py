@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from logging import getLogger
@@ -29,13 +29,16 @@ logger = getLogger(__name__)
 
 ResultT = TypeVar("ResultT")
 
+
 # class WorkflowState(BaseModel, Generic[ResultT]):
 class WorkflowState(BaseModel):
     # result: ResultT | None = None
     pass
 
+
 # StateT = TypeVar("StateT", bound = WorkflowState[ResultT])
-StateT = TypeVar("StateT", bound = WorkflowState)
+StateT = TypeVar("StateT", bound=WorkflowState)
+
 
 class Workflow(Generic[StateT, ResultT], ABC):
     "Abstract base class for workflow implementations."
@@ -136,9 +139,11 @@ class Workflow(Generic[StateT, ResultT], ABC):
             The final workflow result state.
         """
 
-        final_state = await self.workflow.ainvoke(state, config = {"metadata": {"runtime": self.runtime}})
+        final_state = await self.workflow.ainvoke(
+            state, config={"metadata": {"runtime": self.runtime}}
+        )
         result = self.get_result(final_state)
 
-        logger.info(f"Workflow {self.__class__.__name__} returned result: {result}")
+        logger.info("Workflow %s returned result: %s", self.__class__.__name__, result)
 
         return result

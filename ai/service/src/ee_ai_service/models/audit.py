@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from __future__ import annotations
@@ -23,6 +23,7 @@ from typing import Annotated
 
 from ee_ai_service.models.enums.severity_kind import SeverityKind
 from ee_ai_service.models.tracked_entity import TrackedEntity
+
 
 # An individual field audit entry.
 class FieldAuditEntry(BaseModel):
@@ -35,6 +36,7 @@ class FieldAuditEntry(BaseModel):
     # Whether the field meets the standard required for publication.
     _pass: Annotated[bool, Field(alias="pass")]
 
+
 # Holds field group audit information. At least one field in the group must be set.
 class FieldGroupAuditEntry(BaseModel):
     # Field group audit entries.
@@ -46,6 +48,7 @@ class FieldGroupAuditEntry(BaseModel):
     # Whether the field group meets the standard required for publication.
     _pass: Annotated[bool, Field(alias="pass")]
 
+
 # An individual field audit entry.
 class FieldAudit(BaseModel):
     # The individual field audit entries.
@@ -54,6 +57,7 @@ class FieldAudit(BaseModel):
     groups: list[FieldGroupAuditEntry]
     # Whether the fields meet the standard required for publication.
     _pass: Annotated[bool, Field(alias="pass")]
+
 
 # An individual link audit entry.
 class LinkAuditEntry(BaseModel):
@@ -66,12 +70,14 @@ class LinkAuditEntry(BaseModel):
     # Whether the link meets the standard required for publication.
     _pass: Annotated[bool, Field(alias="pass")]
 
+
 # Holds link group audit information. At least one link in the group must be present.
 class LinkGroupAuditEntry(BaseModel):
     # Link group audit entries.
     links: list[LinkAuditEntry]
     # Whether the link group meets the standard required for publication.
     _pass: Annotated[bool, Field(alias="pass")]
+
 
 # Holds aggregated link audit information.
 class LinkAudit(BaseModel):
@@ -82,13 +88,14 @@ class LinkAudit(BaseModel):
     # Whether the links meet the standard required for publication.
     _pass: Annotated[bool, Field(alias="pass")]
 
+
 # Holds aggregated audit information for an entity.
-class EntityAudit(BaseModel) :
+class EntityAudit(BaseModel):
     # The entity to which the audit relates.
     entity: TrackedEntity
     # Field audit information.
     fieldAudit: FieldAudit
-    # Link audit information. Only populated if entity is an ILinkableEntity# 
+    # Link audit information. Only populated if entity is an ILinkableEntity#
     linkAudit: LinkAudit
     # Whether the entity meets the standard required for publication.
     _pass: Annotated[bool, Field(alias="pass")]

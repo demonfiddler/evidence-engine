@@ -14,26 +14,34 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from logging import getLogger
 
-from ee_ai_service.graph.state.complete_publication_state import CompletePublicationState
+from ee_ai_service.graph.state.complete_publication_state import (
+    CompletePublicationState,
+)
 from ee_ai_service.graph.workflows.workflow import RuntimeState
 from ee_ai_service.models.entity_link import Person
 from ee_ai_service.models.enums.entity_kind import EntityKind
 from ee_ai_service.models.id import ID
-from ee_ai_service.models.inputs.linkable_entity_query_filter import LinkableEntityQueryFilter
+from ee_ai_service.models.inputs.linkable_entity_query_filter import (
+    LinkableEntityQueryFilter,
+)
 from ee_ai_service.models.inputs.person_input import PersonInput
 from ee_ai_service.utils.name import MATCH_THRESHOLD, Name
 
 logger = getLogger(__name__)
 
+
 def fn_score(t: tuple):
     return t[1]
 
-async def reconcile_authors(state: CompletePublicationState, *, config) -> dict[str, any]:
+
+async def reconcile_authors(
+    state: CompletePublicationState, *, config
+) -> dict[str, any]:
     """Reconcile extracted authors with existing authors in the database, and prepare new authors to be added."""
 
     if not state.extracted_authors:
@@ -48,9 +56,13 @@ async def reconcile_authors(state: CompletePublicationState, *, config) -> dict[
 
     # Determine which existing persons matching on last name are linked to the specified topic (if any).
     text = " ".join([n.last_name for n in state.extracted_authors])
-    filter = LinkableEntityQueryFilter(text = text, topicId = state.topic_id, recursive = True) if state.topic_id is not None else None
+    filter = (
+        LinkableEntityQueryFilter(text=text, topicId=state.topic_id, recursive=True)
+        if state.topic_id is not None
+        else None
+    )
     runtime: RuntimeState = config["metadata"]["runtime"]
-    page = await runtime.graphql_client.persons(filter = filter)
+    page = await runtime.graphql_client.persons(filter=filter)
     existing_persons = page.content
 
     person_ids_to_link: list[ID] = []
@@ -65,7 +77,7 @@ async def reconcile_authors(state: CompletePublicationState, *, config) -> dict[
             if score >= MATCH_THRESHOLD:
                 existing_matches.append((existing_person.id, score))
         # To disambiguate multiple matching names, sort matches by descending score.
-        existing_matches.sort(key = fn_score, reverse = True)
+        existing_matches.sort(key=fn_score, reverse=True)
         if len(existing_matches) > 0:
             # We found at least one matching person, so pick the best match and decide whether it needs to be linked.
             # N.B. If lesser-matching person(s) are already linked, we'll end up with multiple links to matching names.
@@ -82,16 +94,23 @@ async def reconcile_authors(state: CompletePublicationState, *, config) -> dict[
         # If no matching person was found, we must create it.
         persons_to_add.append(
             PersonInput(
-                title = extracted_author.title,
-                firstName = extracted_author.first_names,
-                nickname = extracted_author.nickname,
-                prefix = extracted_author.prefix,
-                lastName = extracted_author.last_name,
+                title=extracted_author.title,
+                firstName=extracted_author.first_names,
+                nickname=extracted_author.nickname,
+                prefix=extracted_author.prefix,
+                lastName=extracted_author.last_name,
                 # alias = extracted_author.alias, # TODO: support alias
-                suffix = extracted_author.suffix
+                suffix=extracted_author.suffix,
             )
         )
 
-    logger.info(f"Reconciled {len(state.extracted_authors)} extracted authors with {len(linked_person_ids)}/{len(existing_persons)} existing linked/unlinked persons, resulting in {len(person_ids_to_link)} existing Persons to link and {len(persons_to_add)} new Persons to add.")
+    logger.info(
+        "Reconciled %d extracted authors with %d/%d existing linked/unlinked persons, resulting in %d existing Persons to link and %d new Persons to add.",
+        len(state.extracted_authors),
+        len(linked_person_ids),
+        len(existing_persons),
+        len(person_ids_to_link),
+        len(persons_to_add),
+    )
 
     return {"person_ids_to_link": person_ids_to_link, "persons_to_add": persons_to_add}

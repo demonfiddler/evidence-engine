@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from __future__ import annotations
@@ -33,8 +33,9 @@ from ee_ai_service.models.tracked_entity import TrackedEntity
 
 LinkableUnion = Annotated[
     Claim | Declaration | Person | Publication | Quotation | Topic,
-    Field(discriminator="entityKind")
+    Field(discriminator="entityKind"),
 ]
+
 
 class EntityLink(TrackedEntity):
     # The dicriminator value.
@@ -48,6 +49,6 @@ class EntityLink(TrackedEntity):
     @override
     def info(self) -> RecordInfo:
         return RecordInfo(
-            id = self.id,
-            text = f"EntityLink{{{self.fromEntity.entityKind}#{self.fromEntity.id} to {self.toEntity.entityKind}#{self.toEntity.id}}}"
+            id=self.id,
+            text=f"EntityLink{{{self.fromEntity.entityKind}#{self.fromEntity.id} to {self.toEntity.entityKind}#{self.toEntity.id}}}",
         )

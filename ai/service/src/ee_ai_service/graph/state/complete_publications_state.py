@@ -14,20 +14,17 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from pydantic import BaseModel, Field
 
 from ee_ai_service.api.routes import CompletePublicationsApiRequest
 from ee_ai_service.graph.workflows.workflow import WorkflowState
-from ee_ai_service.models.claim import Claim
-from ee_ai_service.models.entity_link import EntityLink
-from ee_ai_service.models.inputs.linkable_entity_query_filter import LinkableEntityQueryFilter
-from ee_ai_service.models.person import Person
 from ee_ai_service.models.publication import Publication
 from ee_ai_service.models.record_info import RecordInfo
 from ee_ai_service.models.topic import Topic
+
 
 class CompletePublicationsResult(BaseModel):
     """The result returned as workflow's output."""
@@ -35,6 +32,7 @@ class CompletePublicationsResult(BaseModel):
     claims_added: list[RecordInfo] = Field(default_factory=list)
     persons_added: list[RecordInfo] = Field(default_factory=list)
     links_added: list[RecordInfo] = Field(default_factory=list)
+
 
 class CompletePublicationsState(WorkflowState):
     """State used to complete claims and authors for collection of publications"""

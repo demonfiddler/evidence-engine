@@ -14,18 +14,21 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from logging import getLogger
 from regex import compile, split
 
-from ee_ai_service.graph.state.complete_publication_state import CompletePublicationState
+from ee_ai_service.graph.state.complete_publication_state import (
+    CompletePublicationState,
+)
 from ee_ai_service.utils.name import Name
 
 logger = getLogger(__name__)
 
 _NEWLINE = compile(r"[\r\n]+")
+
 
 async def extract_authors(state: CompletePublicationState) -> dict[str, any]:
     """Extract authors from a publication's author string and parse them into Name objects."""
@@ -39,6 +42,11 @@ async def extract_authors(state: CompletePublicationState) -> dict[str, any]:
         i -= 1
     extracted_authors: list[Name] = [Name.parse(raw_name) for raw_name in raw_names]
 
-    logger.info(f"Extracted {len(extracted_authors)} authors from Publication#{state.publication.id}: {state.publication.title}")
+    logger.info(
+        "Extracted %d authors from Publication#%s: %s",
+        len(extracted_authors),
+        state.publication.id,
+        state.publication.title,
+    )
 
     return {"extracted_authors": extracted_authors}

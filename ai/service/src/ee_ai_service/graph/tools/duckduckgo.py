@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 import httpx
@@ -24,6 +24,7 @@ from langchain_core.tools import tool
 from ee_ai_service.models.search_result import SearchResult
 
 logger = getLogger(__name__)
+
 
 @tool
 def web_search(query: str, num_results: int = 5) -> list[SearchResult]:
@@ -41,7 +42,7 @@ def web_search(query: str, num_results: int = 5) -> list[SearchResult]:
     with httpx.Client(timeout=15) as client:
         resp = client.get(
             "https://api.duckduckgo.com/",
-            params={"q": query, "format": "json", "no_redirect": 1}
+            params={"q": query, "format": "json", "no_redirect": 1},
         )
         resp.raise_for_status()
         data = resp.json()
@@ -53,9 +54,6 @@ def web_search(query: str, num_results: int = 5) -> list[SearchResult]:
             results.append(item["Text"])
     results = "\n".join(results[:num_results])
 
-    logger.info(f"web_search returned {len(results)} results")
+    logger.info("web_search returned %d results", len(results))
 
-    return {
-        "results": results,
-        "status": "complete"
-    }
+    return {"results": results, "status": "complete"}

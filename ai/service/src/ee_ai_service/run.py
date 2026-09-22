@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 """uvicorn entry point."""
@@ -25,21 +25,18 @@ import uvicorn
 
 from ee_ai_service.main import create_app
 
+
 def parse_args():
     """Parse command line arguments."""
     parser = ArgumentParser()
     parser.add_argument(
         "--config-file",
         default="config.ini",
-        help="Name of the configuration file to load"
+        help="Name of the configuration file to load",
     )
     return parser.parse_args()
 
+
 if __name__ == "__main__":
     args = parse_args()
-    uvicorn.run(
-        create_app(args.config_file),
-        host="127.0.0.1",
-        port=8000,
-        reload=True
-    )
+    uvicorn.run(create_app(args.config_file), host="127.0.0.1", port=8000, reload=True)

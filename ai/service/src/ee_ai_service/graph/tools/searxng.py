@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from httpx import AsyncClient
@@ -29,6 +29,7 @@ from ee_ai_service.runtime.config import Config
 logger = getLogger(__name__)
 
 client = AsyncClient(timeout=15)
+
 
 # async def web_search(runtime: ToolRuntime, query: str, num_results: int = 5) -> list[SearchResult]:
 @tool
@@ -50,18 +51,16 @@ async def web_search(query: str, num_results: int = 5) -> list[SearchResult]:
     # ee_runtime: RuntimeState = config["metadata"]["runtime"] if config else None
     # ee_config: Config = ee_runtime.config if ee_runtime else None
     # user_agent = ee_config.user_agent if ee_config.user_agent else "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:155.0) Gecko/20100101 Firefox/155.0"
-    user_agent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:155.0) Gecko/20100101 Firefox/155.0"
+    user_agent = (
+        "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:155.0) Gecko/20100101 Firefox/155.0"
+    )
     headers = {"User-Agent": user_agent}
 
     # Perform search using our local SearXNG instance.
     response = await client.get(
         "http://localhost:8001/search",
-        params = {
-            "q": query,
-            "format": "json",
-            "categories": "biography, science"
-        },
-        headers = headers
+        params={"q": query, "format": "json", "categories": "biography, science"},
+        headers=headers,
     )
     response.raise_for_status()
     data = response.json()
@@ -71,9 +70,6 @@ async def web_search(query: str, num_results: int = 5) -> list[SearchResult]:
         for r in data.get("results", [])[:num_results]
     ]
 
-    logger.info(f"web_search for '{query}' returned {len(results)} results")
+    logger.info("web_search for '%s' returned %d results", query, len(results))
 
-    return {
-        "results": results,
-        "status": "complete"
-    }
+    return {"results": results, "status": "complete"}

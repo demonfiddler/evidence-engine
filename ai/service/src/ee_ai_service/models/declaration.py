@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from __future__ import annotations
@@ -23,12 +23,12 @@ from pydantic import Field, HttpUrl, field_validator
 from pydantic_extra_types.country import CountryAlpha2
 from typing import Annotated, Literal, Optional, override
 
-
 from ee_ai_service.models.enums.declaration_kind import DeclarationKind
 from ee_ai_service.models.enums.entity_kind import EntityKind
 from ee_ai_service.models.linkable_entity import LinkableEntity
 from ee_ai_service.models.record_info import RecordInfo
 from ee_ai_service.models.validators import validate_not_future
+
 
 class Declaration(LinkableEntity):
     # The dicriminator value.
@@ -61,8 +61,4 @@ class Declaration(LinkableEntity):
 
     @override
     def info(self) -> RecordInfo:
-        return RecordInfo(
-            id = self.id,
-            text = self.title,
-            notes = self.notes
-        )
+        return RecordInfo(id=self.id, text=self.title, notes=self.notes)

@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 """Application configuration."""
@@ -24,6 +24,7 @@ from configparser import ConfigParser
 from importlib.resources import files
 import logging
 import os
+
 
 class Config:
     """Application-wide configuration loaded from a config.ini file."""
@@ -61,22 +62,22 @@ class Config:
 
         config = Config()
 
-        ai = parser['ai']
-        config.ollama_url = ai['ollama_url']
-        config.api_key = ai.get('api_key')
-        config.inference_model = ai['inference_model']
-        config.embedding_model = ai['embedding_model']
-        config.existing_threshold = ai.getfloat('existing_threshold')
-        config.discovered_threshold = ai.getfloat('discovered_threshold')
+        ai = parser["ai"]
+        config.ollama_url = ai["ollama_url"]
+        config.api_key = ai.get("api_key")
+        config.inference_model = ai["inference_model"]
+        config.embedding_model = ai["embedding_model"]
+        config.existing_threshold = ai.getfloat("existing_threshold")
+        config.discovered_threshold = ai.getfloat("discovered_threshold")
 
-        ee = parser['ee']
-        config.ee_graphql_url = ee['graphql_url']
-        config.rest_base_url = ee['rest_base_url']
-        config.username = ee['username']
-        config.password = ee['password']
+        ee = parser["ee"]
+        config.ee_graphql_url = ee["graphql_url"]
+        config.rest_base_url = ee["rest_base_url"]
+        config.username = ee["username"]
+        config.password = ee["password"]
 
-        misc = parser['misc']
-        config.log_level = getattr(logging, misc['log_level'].upper(), logging.INFO)
+        misc = parser["misc"]
+        config.log_level = getattr(logging, misc["log_level"].upper(), logging.INFO)
         config.user_agent = misc["user_agent"]
 
         return config

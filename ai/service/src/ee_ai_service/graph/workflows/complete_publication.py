@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from langgraph.graph import END, START
@@ -27,11 +27,17 @@ from ee_ai_service.graph.nodes.extract_authors import extract_authors
 from ee_ai_service.graph.nodes.extract_claims import extract_claims
 from ee_ai_service.graph.nodes.reconcile_authors import reconcile_authors
 from ee_ai_service.graph.nodes.reconcile_claims import reconcile_claims
-from ee_ai_service.graph.state.complete_publication_state import CompletePublicationResult, CompletePublicationState
+from ee_ai_service.graph.state.complete_publication_state import (
+    CompletePublicationResult,
+    CompletePublicationState,
+)
 from ee_ai_service.graph.workflows.workflow import Workflow
 from ee_ai_service.runtime.runtime_state import RuntimeState
 
-class CompletePublication(Workflow[CompletePublicationState, CompletePublicationResult]):
+
+class CompletePublication(
+    Workflow[CompletePublicationState, CompletePublicationResult]
+):
     """A LangGraph workflow for completing a Publication with claims and authors."""
 
     def __init__(self, runtime: RuntimeState):
@@ -63,7 +69,7 @@ class CompletePublication(Workflow[CompletePublicationState, CompletePublication
     def get_result(self, state: dict[str, any]) -> CompletePublicationResult:
         """Returns the result of the workflow, which includes lists of all claims, authors and links added."""
         return CompletePublicationResult(
-            claims_added = state["claims_added"],
-            persons_added = state["persons_added"],
-            links_added = state["links_added"]
+            claims_added=state["claims_added"],
+            persons_added=state["persons_added"],
+            links_added=state["links_added"],
         )

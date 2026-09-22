@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from typing import override
@@ -24,9 +24,13 @@ from ee_ai_service.graph.nodes.analyse_person_results import analyse_person_resu
 from ee_ai_service.graph.nodes.extract_person_facts import extract_person_facts
 from ee_ai_service.graph.nodes.research_person import research_person
 from ee_ai_service.graph.nodes.update_person import update_person
-from ee_ai_service.graph.state.complete_person_state import CompletePersonResult, CompletePersonState
+from ee_ai_service.graph.state.complete_person_state import (
+    CompletePersonResult,
+    CompletePersonState,
+)
 from ee_ai_service.graph.workflows.workflow import Workflow
 from ee_ai_service.runtime.runtime_state import RuntimeState
+
 
 class CompletePerson(Workflow[CompletePersonState, CompletePersonResult]):
     """A LangGraph workflow for completing a Person with a biographical description and academic qualifications, etc."""
@@ -52,6 +56,4 @@ class CompletePerson(Workflow[CompletePersonState, CompletePersonResult]):
     @override
     def get_result(self, state: dict[str, any]) -> CompletePersonResult:
         """Returns the result of the workflow, which is information about the completed Person."""
-        return CompletePersonResult(
-            person_updated = state["person"].info()
-        )
+        return CompletePersonResult(person_updated=state["person"].info())

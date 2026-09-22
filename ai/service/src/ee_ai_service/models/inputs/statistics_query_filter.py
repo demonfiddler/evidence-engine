@@ -14,12 +14,13 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from pydantic import BaseModel
 
 from ee_ai_service.models.enums.status_kind import StatusKind
+
 
 class StatisticsQueryFilter(BaseModel):
     # Include only entities with these statuses.

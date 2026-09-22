@@ -14,12 +14,13 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 """Structured logging setup."""
 
 from ee_ai_service.runtime.config import Config
+
 
 def configure_logging(config: Config):
     import logging

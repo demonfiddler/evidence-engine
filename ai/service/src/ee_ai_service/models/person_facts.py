@@ -14,13 +14,14 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from pydantic import BaseModel, Field
 
 from ee_ai_service.models.search_result import SearchResult
 from ee_ai_service.utils.name import Name
+
 
 class PersonFacts(BaseModel):
     """Facts extracted from an individual search result"""

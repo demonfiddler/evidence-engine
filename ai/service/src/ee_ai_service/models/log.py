@@ -14,11 +14,12 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from __future__ import annotations
 from datetime import datetime
+
 # N.B. Although unused here, Optional must be imported to avoid Pydantic failures during model_rebuild() calls on recursive models.
 from typing import Optional
 
@@ -27,6 +28,7 @@ from ee_ai_service.models.enums.transaction_kind import TransactionKind
 from ee_ai_service.models.base_entity import BaseEntity
 from ee_ai_service.models.id import ID
 from ee_ai_service.models.user import User
+
 
 class Log(BaseEntity):
     # The date-time stamp.

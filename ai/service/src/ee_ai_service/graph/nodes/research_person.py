@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from bs4 import BeautifulSoup
@@ -36,14 +36,17 @@ logger = getLogger(__name__)
 
 _HEADERS = {"Accept": "text/plain, text/html"}
 
+
 async def research_person(state: CompletePersonState, *, config) -> dict[str, any]:
     """Research a person using web searches."""
 
-    topics = " ".join([
-        link.fromEntity.label.lower()
-        for link in state.person.toEntityLinks.content
-        if link.fromEntity.entityKind == EntityKind.TOPIC
-    ])
+    topics = " ".join(
+        [
+            link.fromEntity.label.lower()
+            for link in state.person.toEntityLinks.content
+            if link.fromEntity.entityKind == EntityKind.TOPIC
+        ]
+    )
     person_name = state.person.name()
     person_info = PersonInfo(name=person_name)
 
@@ -61,7 +64,10 @@ async def research_person(state: CompletePersonState, *, config) -> dict[str, an
         # Fetch the full ORCID record. N.B. returns XML unless JSON is requested.
         orcid = orcid_results[i].title
         i += 1
-        orcid_response: Response = await runtime.web_client.get(f"https://pub.orcid.org/v3.0/{orcid}/record", headers = {"Accept": "application/json"})
+        orcid_response: Response = await runtime.web_client.get(
+            f"https://pub.orcid.org/v3.0/{orcid}/record",
+            headers={"Accept": "application/json"},
+        )
         orcid_record = orcid_response.raise_for_status().json()
         # orcid-identifier
         #   path (e.g., "0000-0003-3922-9833")
@@ -127,7 +133,7 @@ async def research_person(state: CompletePersonState, *, config) -> dict[str, an
         family_name = safe_get(orcid_person_name, ["family-name", "value"])
         if not family_name:
             continue
-        name = Name(first_names = given_names, last_name = family_name)
+        name = Name(first_names=given_names, last_name=family_name)
         similarity = name.match_score(person_name)
         if similarity < MATCH_THRESHOLD:
             continue
@@ -144,10 +150,15 @@ async def research_person(state: CompletePersonState, *, config) -> dict[str, an
     if len(orcid_records) == 1:
         orcid_record = orcid_records[0]
         orcid = safe_get(orcid_record, ["orcid-identifier", "path"])
-        emails = [email["email"] for email in safe_get(orcid_record, ["person", "emails", "email"])]
+        emails = [
+            email["email"]
+            for email in safe_get(orcid_record, ["person", "emails", "email"])
+        ]
         qualifications = []
         affiliations = []
-        affiliation_groups = safe_get(orcid_record, ["activities-summary", "educations", "affiliation-group"])
+        affiliation_groups = safe_get(
+            orcid_record, ["activities-summary", "educations", "affiliation-group"]
+        )
         if affiliation_groups:
             for affiliation_group in affiliation_groups:
                 summaries = affiliation_group["summaries"]
@@ -157,7 +168,9 @@ async def research_person(state: CompletePersonState, *, config) -> dict[str, an
                         if education_summary:
                             department_name = education_summary["department-name"]
                             role_title = education_summary["role-title"]
-                            end_year = safe_get(education_summary, ["end-date", "year", "value"])
+                            end_year = safe_get(
+                                education_summary, ["end-date", "year", "value"]
+                            )
                             organization = education_summary["organization"]
                             if organization:
                                 name = organization["name"]
@@ -168,7 +181,9 @@ async def research_person(state: CompletePersonState, *, config) -> dict[str, an
                                     country = address["country"]
                                     qualification = f"{f'{role_title} from ' if role_title else ''}{f'{department_name} at ' if department_name else ''}{f'{name}: ' if name else ''}{f'{city}, ' if city else ''}{f'{region}, ' if region else ''}{country if country else ''}{f' ({end_year})' if end_year else ''}."
                                     qualifications.append(qualification.strip())
-        affiliation_groups = safe_get(orcid_record, ["activities-summary", "employments", "affiliation-group"])
+        affiliation_groups = safe_get(
+            orcid_record, ["activities-summary", "employments", "affiliation-group"]
+        )
         if affiliation_groups:
             for affiliation_group in affiliation_groups:
                 summaries = affiliation_group["summaries"]
@@ -178,8 +193,12 @@ async def research_person(state: CompletePersonState, *, config) -> dict[str, an
                         if employment_summary:
                             department_name = employment_summary["department-name"]
                             role_title = employment_summary["role-title"]
-                            start_year = safe_get(employment_summary, ["start-date", "year", "value"])
-                            end_year = safe_get(employment_summary, ["end-date", "year", "value"])
+                            start_year = safe_get(
+                                employment_summary, ["start-date", "year", "value"]
+                            )
+                            end_year = safe_get(
+                                employment_summary, ["end-date", "year", "value"]
+                            )
                             organization = employment_summary["organization"]
                             if organization:
                                 name = organization["name"]
@@ -194,14 +213,22 @@ async def research_person(state: CompletePersonState, *, config) -> dict[str, an
         person_info.emails = emails
         person_info.qualifications = qualifications
         person_info.affiliations = affiliations
-        logger.info(f"Found ORCID for {person_name}: {orcid}")
+        logger.info("Found ORCID for %s: %s", person_name, orcid)
     elif len(orcid_records) > 1:
         # Multiple equal matches - human disambiguation required.
-        orcids = [safe_get(orcid_record, ["orcid-identifier", "path"]) for orcid_record in orcid_records]
+        orcids = [
+            safe_get(orcid_record, ["orcid-identifier", "path"])
+            for orcid_record in orcid_records
+        ]
         person_info.notes = f"Possible ORCID matches: {orcids}"
-        logger.info(f"Found {len(orcid_records)} ORCID records matching {person_name}: {orcids}")
+        logger.info(
+            "Found %d ORCID records matching %s: %s",
+            len(orcid_records),
+            person_name,
+            orcids,
+        )
     else:
-        logger.warning(f"Failed to obtain ORCID record for {person_name}")
+        logger.warning("Failed to obtain ORCID record for %s", person_name)
 
     # Search generally for biographical/affiliation info.
     query = f"!general {person_name} {topics} biography affiliations"
@@ -213,16 +240,18 @@ async def research_person(state: CompletePersonState, *, config) -> dict[str, an
         # Fetch the full page of the search result.
         url = general_result.url
         try:
-            detail_response: Response = await runtime.web_client.get(url, headers = _HEADERS)
+            detail_response: Response = await runtime.web_client.get(
+                url, headers=_HEADERS
+            )
         except Exception as e:
-            logger.warning(f"Exception {str(e)} fetching {url}")
+            logger.warning("Exception %s fetching %s", str(e), url)
             continue
         if not detail_response.is_success:
-            logger.warning(f"{detail_response.status_code} Failed to fetch {url}")
+            logger.warning("%s Failed to fetch %s", detail_response.status_code, url)
             continue
         raw = detail_response.text
         text = None
-        content_type = detail_response.headers.get("Content-Type").split(';')[0]
+        content_type = detail_response.headers.get("Content-Type").split(";")[0]
         match content_type:
             case "text/html":
                 # Convert the HTML markup to plain text.
@@ -230,14 +259,16 @@ async def research_person(state: CompletePersonState, *, config) -> dict[str, an
                     doc = Document(raw)
                     html = doc.summary()
                     soup = BeautifulSoup(html, "html.parser")
-                    text = soup.get_text(separator = " ", strip = True)
+                    text = soup.get_text(separator=" ", strip=True)
                 except Exception as e:
-                    logger.warning(f"Exception '{e}' when parsing result from {url}")
+                    logger.warning("Exception '%s' when parsing result from %s", e, url)
                     continue
             case "text/plain":
                 text = raw
             case _:
-                logger.warning(f"Received unsupported Content-Type '{content_type}' from {url}")
+                logger.warning(
+                    "Received unsupported Content-Type '%s' from %s", content_type, url
+                )
                 continue
         if not text:
             continue

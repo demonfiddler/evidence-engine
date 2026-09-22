@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from __future__ import annotations
@@ -26,6 +26,7 @@ from ee_ai_service.models.enums.entity_kind import EntityKind
 from ee_ai_service.models.id import ID
 from ee_ai_service.models.linkable_entity import LinkableEntity
 from ee_ai_service.models.record_info import RecordInfo
+
 
 class Topic(LinkableEntity):
     # The dicriminator value.
@@ -46,7 +47,4 @@ class Topic(LinkableEntity):
 
     @override
     def info(self) -> RecordInfo:
-        return RecordInfo(
-            id = self.id,
-            text = self.label
-        )
+        return RecordInfo(id=self.id, text=self.label)

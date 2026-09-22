@@ -14,12 +14,15 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from ee_ai_service.models.id import ID
-from ee_ai_service.models.inputs.tracked_entity_query_filter import TrackedEntityQueryFilter
+from ee_ai_service.models.inputs.tracked_entity_query_filter import (
+    TrackedEntityQueryFilter,
+)
+
 
 class TopicQueryFilter(TrackedEntityQueryFilter):
     parentId: ID | None = None
-    recursive: bool | None = None # False
+    recursive: bool | None = None  # False

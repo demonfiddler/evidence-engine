@@ -14,20 +14,19 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from __future__ import annotations
 from pydantic import Field
-from typing import TYPE_CHECKING, override
-# N.B. Although unused here, Optional must be imported to avoid Pydantic failures during model_rebuild() calls on recursive models.
-from typing import Literal
+from typing import TYPE_CHECKING, Literal, override
 
 if TYPE_CHECKING:
     from ee_ai_service.models.user import User
 from ee_ai_service.models.enums.entity_kind import EntityKind
 from ee_ai_service.models.record_info import RecordInfo
 from ee_ai_service.models.security_principal import SecurityPrincipal
+
 
 class Group(SecurityPrincipal):
     # The dicriminator value.
@@ -40,7 +39,4 @@ class Group(SecurityPrincipal):
 
     @override
     def info(self) -> RecordInfo:
-        return RecordInfo(
-            id = self.id,
-            text = self.groupname
-        )
+        return RecordInfo(id=self.id, text=self.groupname)

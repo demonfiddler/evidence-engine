@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from __future__ import annotations
@@ -26,6 +26,7 @@ from typing import Literal, override
 from ee_ai_service.models.enums.entity_kind import EntityKind
 from ee_ai_service.models.linkable_entity import LinkableEntity
 from ee_ai_service.models.validators import validate_not_future
+
 
 class Claim(LinkableEntity):
     entityKind: Literal[EntityKind.CLAIM] = EntityKind.CLAIM
@@ -43,8 +44,4 @@ class Claim(LinkableEntity):
 
     @override
     def info(self) -> RecordInfo:
-        return RecordInfo(
-            id = self.id,
-            text = self.text,
-            notes = self.notes
-        )
+        return RecordInfo(id=self.id, text=self.text, notes=self.notes)

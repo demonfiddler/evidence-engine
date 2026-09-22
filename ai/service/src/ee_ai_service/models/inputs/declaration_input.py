@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from datetime import date as Date
@@ -24,6 +24,7 @@ from pydantic_extra_types.country import CountryAlpha2
 from ee_ai_service.models.enums.declaration_kind import DeclarationKind
 from ee_ai_service.models.inputs.tracked_entity_input import TrackedEntityInput
 from ee_ai_service.models.validators import validate_not_future
+
 
 class DeclarationInput(TrackedEntityInput):
     kind: DeclarationKind

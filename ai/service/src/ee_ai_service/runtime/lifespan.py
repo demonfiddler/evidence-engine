@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from contextlib import asynccontextmanager
@@ -28,6 +28,7 @@ from ee_ai_service.runtime.logging import configure_logging
 from ee_ai_service.runtime.runtime_state import RuntimeState
 from ee_ai_service.runtime.config import Config
 from langchain_ollama import ChatOllama, OllamaEmbeddings
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -43,24 +44,24 @@ async def lifespan(app: FastAPI):
     graphql_client = EEGraphQLClient(config)
     auth = await graphql_client.login(config.username, config.password)
     if auth is None:
-        raise Exception(f"Failed to authenticate user {config.username}" )
+        raise Exception(f"Failed to authenticate user {config.username}")
     config.api_key = auth.token
 
     rest_client = EERestClient(config)
 
     headers = {"User-Agent": config.user_agent} if config.user_agent else None
-    web_client = AsyncClient(headers = headers)
+    web_client = AsyncClient(headers=headers)
 
     inference_client = ChatOllama(model=config.inference_model, num_predict=128)
     embedding_client = OllamaEmbeddings(model=config.embedding_model)
 
     runtime = RuntimeState(
-        config = config,
-        graphql_client = graphql_client,
-        rest_client = rest_client,
-        web_client = web_client,
-        inference_client = inference_client,
-        embedding_client = embedding_client
+        config=config,
+        graphql_client=graphql_client,
+        rest_client=rest_client,
+        web_client=web_client,
+        inference_client=inference_client,
+        embedding_client=embedding_client,
     )
 
     app.state.runtime = runtime

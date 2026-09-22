@@ -14,18 +14,23 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from logging import getLogger
 
-from ee_ai_service.graph.state.complete_publication_state import CompletePublicationState
+from ee_ai_service.graph.state.complete_publication_state import (
+    CompletePublicationState,
+)
 from ee_ai_service.models.record_info import RecordInfo
 from ee_ai_service.runtime.runtime_state import RuntimeState
 
 logger = getLogger(__name__)
 
-async def create_new_persons(state: CompletePublicationState, *, config) -> dict[str, any]:
+
+async def create_new_persons(
+    state: CompletePublicationState, *, config
+) -> dict[str, any]:
     persons_added: list[RecordInfo] = []
     if state.create_authors:
         runtime: RuntimeState = config["metadata"]["runtime"]
@@ -33,8 +38,17 @@ async def create_new_persons(state: CompletePublicationState, *, config) -> dict
             person = await runtime.graphql_client.createPerson(input)
             persons_added.append(person.info())
 
-        logger.info(f"Created {len(persons_added)} new Persons for Publication#{state.publication.id}: {state.publication.title}")
+        logger.info(
+            "Created %d new Persons for Publication#%s: %s",
+            len(persons_added),
+            state.publication.id,
+            state.publication.title,
+        )
     else:
-        logger.info(f"Skipping creation of new Persons for Publication#{state.publication.id}: {state.publication.title}")
+        logger.info(
+            "Skipping creation of new Persons for Publication#%s: %s",
+            state.publication.id,
+            state.publication.title,
+        )
 
     return {"persons_added": persons_added}

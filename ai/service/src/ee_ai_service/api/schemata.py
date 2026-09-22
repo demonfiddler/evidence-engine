@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 """Pydantic request/response models."""
@@ -22,21 +22,29 @@
 from pydantic import BaseModel, Field
 
 from ee_ai_service.models.id import ID
-from ee_ai_service.models.inputs.linkable_entity_query_filter import LinkableEntityQueryFilter
+from ee_ai_service.models.inputs.linkable_entity_query_filter import (
+    LinkableEntityQueryFilter,
+)
 from ee_ai_service.models.inputs.pageable_input import PageableInput
 from ee_ai_service.models.record_info import RecordInfo
 
+
 class CompletePersonsApiRequest(BaseModel):
     """Request to the CompletePersons workflow."""
+
     filter: LinkableEntityQueryFilter | None = None
     pageSort: PageableInput | None = None
 
+
 class CompletePersonsApiResponse(BaseModel):
     """Response returned by CompletePersons workflow."""
+
     persons: list[RecordInfo] = Field(default_factory=list)
+
 
 class CompletePublicationsApiRequest(BaseModel):
     """Request to the CompletePublications workflow."""
+
     filter: LinkableEntityQueryFilter | None = None
     pageSort: PageableInput | None = None
     create_claims: bool = True
@@ -44,9 +52,10 @@ class CompletePublicationsApiRequest(BaseModel):
     create_links: bool = True
     topic_id: ID | None = None
 
+
 class CompletePublicationsApiResponse(BaseModel):
     """Response returned by CompletePublications workflow."""
+
     claims_added: list[RecordInfo] = Field(default_factory=list)
     persons_added: list[RecordInfo] = Field(default_factory=list)
     links_added: list[RecordInfo] = Field(default_factory=list)
-

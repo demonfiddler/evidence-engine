@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from __future__ import annotations
@@ -28,16 +28,15 @@ from ee_ai_service.models.base_entity import BaseEntity
 from ee_ai_service.models.enums.entity_kind import EntityKind
 from ee_ai_service.models.enums.status_kind import StatusKind
 from ee_ai_service.models.page import Page
+
 if TYPE_CHECKING:
     from ee_ai_service.models.comment import Comment
     from ee_ai_service.models.log import Log
     from ee_ai_service.models.user import User
 
+
 class TrackedEntity(BaseEntity):
-    model_config = ConfigDict(
-        abstract=True,
-        discriminator="entityKind"
-    )
+    model_config = ConfigDict(abstract=True, discriminator="entityKind")
 
     entityKind: EntityKind | None = None
     status: StatusKind | None = None

@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from logging import getLogger
@@ -26,17 +26,22 @@ from ee_ai_service.runtime.runtime_state import RuntimeState
 
 logger = getLogger(__name__)
 
+
 async def complete_person(state: CompletePersonsState, *, config) -> dict[str, any]:
     """Complete a person in the database using the provided person information."""
 
     person = state.persons[state.index]
-    substate = CompletePersonState(person = person)
+    substate = CompletePersonState(person=person)
     runtime: RuntimeState = config["metadata"]["runtime"]
     subflow = CompletePerson(runtime)
     subflow.validate(substate, runtime)
 
     result = await subflow.run(substate)
 
-    logger.info(f"Completed Person#{result.person_updated.id}: {result.person_updated.firstName} {result.person_updated.lastName}")
+    logger.info(
+        "Completed Person#%s: %s",
+        result.person_updated.id,
+        result.person_updated.text,
+    )
 
     return {"person_updated": [result.person_updated]}

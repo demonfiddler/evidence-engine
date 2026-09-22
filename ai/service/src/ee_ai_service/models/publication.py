@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from __future__ import annotations
@@ -29,6 +29,7 @@ from ee_ai_service.models.journal import Journal
 from ee_ai_service.models.linkable_entity import LinkableEntity
 from ee_ai_service.models.publisher import Publisher
 from ee_ai_service.models.validators import validate_not_future
+
 
 class Publication(LinkableEntity):
     # The dicriminator value.
@@ -113,14 +114,14 @@ class Publication(LinkableEntity):
 
     @model_validator(mode="after")
     def check_year_matches_date(self):
-        if self.year is not None and self.date is not None and self.year != self.date.year:
+        if (
+            self.year is not None
+            and self.date is not None
+            and self.year != self.date.year
+        ):
             raise ValueError("year must match the year component of date")
         return self
 
     @override
     def info(self) -> RecordInfo:
-        return RecordInfo(
-            id = self.id,
-            text = self.title,
-            notes = self.notes
-        )
+        return RecordInfo(id=self.id, text=self.title, notes=self.notes)

@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 import json
@@ -24,12 +24,15 @@ from ee_ai_service.utils.string import indent_lines
 from pydantic import ValidationError
 from textwrap import dedent
 
-from ee_ai_service.graph.state.complete_publication_state import CompletePublicationState
+from ee_ai_service.graph.state.complete_publication_state import (
+    CompletePublicationState,
+)
 from ee_ai_service.models.claim import Claim
 from ee_ai_service.models.inputs.claim_input import ClaimInput
 from ee_ai_service.runtime.runtime_state import RuntimeState
 
 logger = getLogger(__name__)
+
 
 async def extract_claims(state: CompletePublicationState, *, config) -> dict[str, any]:
     """Extract scientific claims from a publication's abstract using an LLM call."""
@@ -120,7 +123,7 @@ async def extract_claims(state: CompletePublicationState, *, config) -> dict[str
             data = json.loads(ai_message.content)
             break
         except Exception as e:
-            logger.warning(f"Attempt {retry + 1} failed to extract claims: {e}")
+            logger.warning("Attempt %d failed to extract claims: %s", retry + 1, e)
             if retry == 4:
                 raise e
     extracted_claims: list[Claim] = []
@@ -131,6 +134,11 @@ async def extract_claims(state: CompletePublicationState, *, config) -> dict[str
             item["text"] = item["text"][:500]
             extracted_claims.append(ClaimInput.model_validate(item))
 
-    logger.info(f"Extracted {len(extracted_claims)} claims from Publication#{state.publication.id}: {state.publication.title}")
+    logger.info(
+        "Extracted %d claims from Publication#%s: %s",
+        len(extracted_claims),
+        state.publication.id,
+        state.publication.title,
+    )
 
     return {"extracted_claims": extracted_claims}

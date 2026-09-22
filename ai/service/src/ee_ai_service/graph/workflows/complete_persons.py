@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from functools import partial
@@ -23,18 +23,24 @@ from typing import override
 
 from ee_ai_service.graph.nodes.complete_person import complete_person
 from ee_ai_service.graph.nodes.load_persons import load_persons
-from ee_ai_service.graph.state.complete_persons_state import CompletePersonsResult, CompletePersonsState
+from ee_ai_service.graph.state.complete_persons_state import (
+    CompletePersonsResult,
+    CompletePersonsState,
+)
 from ee_ai_service.graph.workflows.workflow import Workflow
 from ee_ai_service.runtime.runtime_state import RuntimeState
 
+
 def advance_person_index(state: CompletePersonsState) -> dict[str, any]:
     return {"index": state.index + 1}
+
 
 def loop_control(state: CompletePersonsState) -> str:
     if state.index < len(state.persons):
         return "complete_person"
     else:
         return END
+
 
 class CompletePersons(Workflow[CompletePersonsState, CompletePersonsResult]):
     """A LangGraph workflow for completing a collection of Persons."""
@@ -58,6 +64,4 @@ class CompletePersons(Workflow[CompletePersonsState, CompletePersonsResult]):
     @override
     def get_result(self, state: dict[str, any]) -> CompletePersonsResult:
         """Returns the result of the workflow, which includes a list of all persons completed."""
-        return CompletePersonsResult(
-            persons_updated = state["persons_updated"]
-        )
+        return CompletePersonsResult(persons_updated=state["persons_updated"])

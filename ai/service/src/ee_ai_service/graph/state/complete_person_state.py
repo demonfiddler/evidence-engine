@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from pydantic import BaseModel, Field
@@ -26,8 +26,10 @@ from ee_ai_service.models.person_info import PersonInfo
 from ee_ai_service.models.record_info import RecordInfo
 from ee_ai_service.models.search_result import SearchResult
 
+
 class CompletePersonResult(BaseModel):
     person_updated: RecordInfo
+
 
 class CompletePersonState(WorkflowState):
     """State used to complete a person's description, qualifications, etc."""

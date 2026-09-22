@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from fastapi import FastAPI, Request
@@ -26,6 +26,7 @@ from fastapi.responses import JSONResponse
 
 logger = getLogger(__name__)
 
+
 def create_app(config_file: str | None = None) -> FastAPI:
     app = FastAPI(lifespan=lifespan)
     app.state.config_file = config_file
@@ -33,13 +34,10 @@ def create_app(config_file: str | None = None) -> FastAPI:
 
     @app.exception_handler(Exception)
     async def global_exception_handler(request: Request, exc: Exception):
-        logger.exception(f"Unhandled exception during request processing: {exc}")
+        logger.exception("Unhandled exception during request processing: %s", exc)
         return JSONResponse(
             status_code=500,
-            content={
-                "error": "Internal server error",
-                "detail": str(exc)
-            }
+            content={"error": "Internal server error", "detail": str(exc)},
         )
 
     return app

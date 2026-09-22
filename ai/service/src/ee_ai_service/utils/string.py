@@ -14,11 +14,11 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def indent_lines(text: str, *, num_spaces = 4, indent_first = True) -> str:
+def indent_lines(text: str, *, num_spaces=4, indent_first=True) -> str:
     """
     Indent each line of the given text by the specified number of spaces.
 
@@ -31,10 +31,10 @@ def indent_lines(text: str, *, num_spaces = 4, indent_first = True) -> str:
         text, with lines indented by the specified number of space characters.
     """
     indentation = " " * num_spaces
-    return prefix_lines(text, prefix = indentation, prefix_first = indent_first)
+    return prefix_lines(text, prefix=indentation, prefix_first=indent_first)
 
 
-def prefix_lines(text: str, *, prefix: str, prefix_first = True) -> str:
+def prefix_lines(text: str, *, prefix: str, prefix_first=True) -> str:
     """
     Indent each line of the given text by the specified number of spaces.
 
@@ -46,7 +46,10 @@ def prefix_lines(text: str, *, prefix: str, prefix_first = True) -> str:
     Returns:
         text, with lines prefixed by the specified prefix.
     """
-    return "\n".join(prefix + line if i > 0 or prefix_first else line for i, line in enumerate(text.splitlines()))
+    return "\n".join(
+        prefix + line if i > 0 or prefix_first else line
+        for i, line in enumerate(text.splitlines())
+    )
 
 
 def jaccard(a: list[str], b: list[str]) -> float:
@@ -59,12 +62,15 @@ def jaccard(a: list[str], b: list[str]) -> float:
 
 CHARS_PER_TOKEN = 6.54
 
-def truncate(text: str,
-             *,
-             token_count: int | None = None,
-             length: int | None = None,
-             split: float = 1.0,
-             use_ellipsis: bool = False) -> str:
+
+def truncate(
+    text: str,
+    *,
+    token_count: int | None = None,
+    length: int | None = None,
+    split: float = 1.0,
+    use_ellipsis: bool = False
+) -> str:
     """Truncate a string to a given length or token count.
     Optionally split between a leading section from the start of the text and a trailing section from the end of the text.
 
@@ -82,7 +88,9 @@ def truncate(text: str,
     use_tc = isinstance(token_count, int)
     use_len = isinstance(length, int)
     if not (use_tc ^ use_len):
-        raise Exception("Exactly ONE of token_count OR length must be specified, as an int.")
+        raise Exception(
+            "Exactly ONE of token_count OR length must be specified, as an int."
+        )
     if use_tc and token_count < 0:
         raise Exception("token_count must be a non-negative integer.")
     elif use_len and length < 0:

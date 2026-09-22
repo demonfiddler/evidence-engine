@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from datetime import datetime
@@ -23,6 +23,7 @@ from typing import Annotated, Optional
 
 from ee_ai_service.models.enums.entity_kind import EntityKind
 from ee_ai_service.models.enums.transaction_kind import TransactionKind
+
 
 class LogQueryFilter(BaseModel):
     entityKind: EntityKind | None = None

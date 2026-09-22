@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from __future__ import annotations
@@ -25,6 +25,7 @@ if TYPE_CHECKING:
     from ee_ai_service.models.entity_link import EntityLink
 from ee_ai_service.models.page import Page
 from ee_ai_service.models.tracked_entity import TrackedEntity
+
 
 class LinkableEntity(TrackedEntity):
     model_config = ConfigDict(abstract=True)

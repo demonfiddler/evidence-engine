@@ -14,18 +14,23 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from logging import getLogger
 
-from ee_ai_service.graph.state.complete_publication_state import CompletePublicationState
+from ee_ai_service.graph.state.complete_publication_state import (
+    CompletePublicationState,
+)
 from ee_ai_service.models.record_info import RecordInfo
 from ee_ai_service.runtime.runtime_state import RuntimeState
 
 logger = getLogger(__name__)
 
-async def create_new_claims(state: CompletePublicationState, *, config) -> dict[str, any]:
+
+async def create_new_claims(
+    state: CompletePublicationState, *, config
+) -> dict[str, any]:
     """Create new claims in the database using the provided claim information."""
 
     claims_added: list[RecordInfo] = []
@@ -35,8 +40,17 @@ async def create_new_claims(state: CompletePublicationState, *, config) -> dict[
             claim = await runtime.graphql_client.createClaim(input)
             claims_added.append(claim.info())
 
-        logger.info(f"Created {len(claims_added)} new Claims for Publication#{state.publication.id}: {state.publication.title}")
+        logger.info(
+            "Created %d new Claims for Publication#%s: %s",
+            len(claims_added),
+            state.publication.id,
+            state.publication.title,
+        )
     else:
-        logger.info(f"Skipping creation of new Claims for Publication#{state.publication.id}: {state.publication.title}")
+        logger.info(
+            "Skipping creation of new Claims for Publication#%s: %s",
+            state.publication.id,
+            state.publication.title,
+        )
 
     return {"claims_added": claims_added}

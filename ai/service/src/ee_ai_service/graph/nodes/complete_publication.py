@@ -14,44 +14,47 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from logging import getLogger
 
-from ee_ai_service.graph.state.complete_publication_state import CompletePublicationState
-from ee_ai_service.graph.state.complete_publications_state import CompletePublicationsState
+from ee_ai_service.graph.state.complete_publication_state import (
+    CompletePublicationState,
+)
+from ee_ai_service.graph.state.complete_publications_state import (
+    CompletePublicationsState,
+)
 from ee_ai_service.graph.workflows.complete_publication import CompletePublication
 from ee_ai_service.runtime.runtime_state import RuntimeState
 
 logger = getLogger(__name__)
 
-async def complete_publication(state: CompletePublicationsState, *, config) -> dict[str, any]:
+
+async def complete_publication(
+    state: CompletePublicationsState, *, config
+) -> dict[str, any]:
     """Complete a publication in the database using the provided publication information."""
 
-    result = {
-        "persons_added": [],
-        "claims_added": [],
-        "links_added": []
-    }
+    result = {"persons_added": [], "claims_added": [], "links_added": []}
 
     if state.index < len(state.publications):
         runtime: RuntimeState = config["metadata"]["runtime"]
 
         publication = state.publications[state.index]
         substate = CompletePublicationState(
-            publication = publication,
-            create_claims = state.request.create_claims,
-            create_authors = state.request.create_authors,
-            create_links = state.request.create_links,
-            topic_id = state.request.topic_id,
+            publication=publication,
+            create_claims=state.request.create_claims,
+            create_authors=state.request.create_authors,
+            create_links=state.request.create_links,
+            topic_id=state.request.topic_id,
         )
         subflow = CompletePublication(runtime)
         subflow.validate(substate, runtime)
 
         final_state = await subflow.run(substate)
 
-        logger.info(f"Completed Publication#{publication.id}: {publication.title}")
+        logger.info("Completed Publication#%s: %s", publication.id, publication.title)
 
         result["persons_added"].extend(final_state.persons_added)
         result["claims_added"].extend(final_state.claims_added)

@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 from __future__ import annotations
@@ -24,35 +24,40 @@ from StrTokenizer import StrTokenizer
 
 # TODO: support Name.alias
 _TITLE = compile(
-    "^Ambassador|Baroness|Baronet|Bart\\.?|Bt\\.?|Captain|Capt?\\.?|Cllr\\.?|Col\\.?|Commander|Cdr\\.?|Dame|Dr\\.?|Fr\\.?|Gen\\.?|King|Lady|Lord|Lt\\.?|Lieutenant|Lt\\.?|Major|Maj\\.?|Miss|Mrs?\\.?|Ms\\.?|nat\\.?|Prince|Princess|Prof\\.?|Queen|Rabbi|rer\\.?|\\(?[Rr]et\\.?\\)?|Rev\\.?|Sen\\.?|Sergeant|Sgt\\?|Sir$", IGNORECASE)
+    "^Ambassador|Baroness|Baronet|Bart\\.?|Bt\\.?|Captain|Capt?\\.?|Cllr\\.?|Col\\.?|Commander|Cdr\\.?|Dame|Dr\\.?|Fr\\.?|Gen\\.?|King|Lady|Lord|Lt\\.?|Lieutenant|Lt\\.?|Major|Maj\\.?|Miss|Mrs?\\.?|Ms\\.?|nat\\.?|Prince|Princess|Prof\\.?|Queen|Rabbi|rer\\.?|\\(?[Rr]et\\.?\\)?|Rev\\.?|Sen\\.?|Sergeant|Sgt\\?|Sir$",
+    IGNORECASE,
+)
 _FIRST_NAME = compile("^[\\p{IsAlphabetic}()'.-]+$")
 _NICKNAME = compile("^[(\"']([\\p{IsAlphabetic}]+)[)\"']$")
 _PREFIX = compile("^[dD]e[nlr]?|[dD]u|[lL][ae]|[vV][ao]n|[zZ]u|St\\.?|[tT]e$")
 _LAST_NAME = compile("^[\\p{IsAlphabetic}'’.-]+$")
 _SUFFIX = compile("^I{1,3}|IV|VI{0,3}|I?X|Jn?r\\.?|Sn?r\\.?$")
-_ALIAS = compile("^\(([\\p{IsAlphabetic}\\s]+)\)$")
-_POST_NOMINAL = compile("^[A-Z]{2,}|[B|M]\\.?A\\.?|[B|M|D]\\.?Sc\\.?|Ph\\.?D\\.?|D\\.?Phil\\.?$")
+_ALIAS = compile("^\\(([\\p{IsAlphabetic}\\s]+)\\)$")
+_POST_NOMINAL = compile(
+    "^[A-Z]{2,}|[B|M]\\.?A\\.?|[B|M|D]\\.?Sc\\.?|Ph\\.?D\\.?|D\\.?Phil\\.?$"
+)
 _PERIOD_NOSPACE = compile("\\.(?=[^ ])")
 _SPACES = compile(" +")
 
 # These scores must sum to unity, the highest possible match score if all fields match exactly.
 # Thus, a minimum match score of 0.8 ensures a match on at least last name and initials.
 # N.B. FIRST_NAMES_SCORE and INITIALS_SCORE are mutually exclusive.
-LAST_NAME_SCORE     = 0.6
-FIRST_NAMES_SCORE   = 0.25
-INITIALS_SCORE      = 0.2
-TITLE_SCORE         = 0.025
-NICKNAME_SCORE      = 0.025
-PREFIX_SCORE        = 0.025
-SUFFIX_SCORE        = 0.025
-ALIAS_SCORE         = 0.025
+LAST_NAME_SCORE = 0.6
+FIRST_NAMES_SCORE = 0.25
+INITIALS_SCORE = 0.2
+TITLE_SCORE = 0.025
+NICKNAME_SCORE = 0.025
+PREFIX_SCORE = 0.025
+SUFFIX_SCORE = 0.025
+ALIAS_SCORE = 0.025
 POST_NOMINALS_SCORE = 0.025
 
 MATCH_THRESHOLD = LAST_NAME_SCORE + INITIALS_SCORE
 NAME_SEP = " ."
 _MAX_INITIALS = 4
 
-def _parse(token : str, pattern: Pattern, result: list[str], prepend: bool) -> bool:
+
+def _parse(token: str, pattern: Pattern, result: list[str], prepend: bool) -> bool:
     """
     Attempts to match a token against a pattern. If successful, inserts the token into a buffer with, if necessary,
     a separator space character.
@@ -70,17 +75,20 @@ def _parse(token : str, pattern: Pattern, result: list[str], prepend: bool) -> b
     if match:
         match = match.group(1 if len(match.groups()) == 1 else 0)
         if prepend:
-            if len(result) != 0 and result[0] != ' ':
-                result.insert(0, ' ')
+            if len(result) != 0 and result[0] != " ":
+                result.insert(0, " ")
             result.insert(0, match)
         else:
-            if len(result) != 0 and result[-1] != ' ':
-                result.append(' ')
+            if len(result) != 0 and result[-1] != " ":
+                result.append(" ")
             result.append(match)
         return True
     return False
 
-def _append(sb: list[str], s: str | None, open_delim: str = None, close_delim: str = None):
+
+def _append(
+    sb: list[str], s: str | None, open_delim: str = None, close_delim: str = None
+):
     """
     Appends a string to a buffer, prepending a space if the buffer is not empty.
 
@@ -91,13 +99,14 @@ def _append(sb: list[str], s: str | None, open_delim: str = None, close_delim: s
         closeDelim: The character to append, if any.
     """
     if s is not None:
-        if len(sb) != 0 and sb[-1] != ' ':
-            sb.append(' ')
+        if len(sb) != 0 and sb[-1] != " ":
+            sb.append(" ")
         if open_delim != None:
             sb.append(open_delim)
         sb.append(s)
         if close_delim != None:
             sb.append(close_delim)
+
 
 def _join(sb: list[str]) -> str | None:
     """
@@ -110,16 +119,19 @@ def _join(sb: list[str]) -> str | None:
     """
     return None if len(sb) == 0 else "".join(sb)
 
+
 def _to_initials(name: str) -> list[str]:
     """Converts a name to space-separated initials if all characters are uppercase"""
     if len(name) <= _MAX_INITIALS and name.isupper():
         name = " ".join(name)
     return name
 
+
 def _first_to_upper(str: str) -> str:
     if len(str) == 0 or str[0].isupper():
         return str
     return str[0].upper() + str[1:]
+
 
 class Name(BaseModel):
     """Represents a person's name."""
@@ -172,7 +184,7 @@ class Name(BaseModel):
             # - prefix? lastName suffix?, title? firstName+ nickname? postNominals?
 
             # chunk1: prefix? lastName suffix?
-            chunk1 = namestr[0 : comma_pos]
+            chunk1 = namestr[0:comma_pos]
             tokens = split(_SPACES, chunk1)
 
             # Parse any suffixes first, so that they don't get consumed by lastName.
@@ -191,7 +203,9 @@ class Name(BaseModel):
                     break
 
             # chunk2: title? firstName+ nickname? suffix? postNominals?
-            chunk2 = namestr[comma_pos + 1 :].strip() if comma_pos < len(namestr) - 2 else ""
+            chunk2 = (
+                namestr[comma_pos + 1 :].strip() if comma_pos < len(namestr) - 2 else ""
+            )
             tokens = split(_SPACES, chunk2)
 
             i = len(tokens) - 1
@@ -204,8 +218,8 @@ class Name(BaseModel):
             while i > 0 and _parse(tokens[i], _NICKNAME, nickname, True):
                 i -= 1
 
-            max = i;
-            i = 0;
+            max = i
+            i = 0
             while i < max and _parse(tokens[i], _TITLE, title, False):
                 i += 1
 
@@ -243,7 +257,9 @@ class Name(BaseModel):
 
         name = Name()
         name.title = _join([_first_to_upper(t) for t in title])
-        name.first_names = _join([_first_to_upper(_to_initials(fn)) for fn in first_names])
+        name.first_names = _join(
+            [_first_to_upper(_to_initials(fn)) for fn in first_names]
+        )
         name.nickname = _join([_first_to_upper(n) for n in nickname])
         name.prefix = _join(prefix)
         name.last_name = _join([_first_to_upper(ln) for ln in last_name])
@@ -261,14 +277,16 @@ class Name(BaseModel):
         result: list[str] = []
         _append(result, self.title)
         _append(result, self.first_names)
-        _append(result, self.nickname, '\'', '\'')
+        _append(result, self.nickname, "'", "'")
         _append(result, self.prefix)
         _append(result, self.last_name)
         _append(result, self.suffix)
         _append(result, self.post_nominals)
         return "".join(result)
 
-    def get_initials(self, with_period: bool = True, with_space: bool = True) -> str | None:
+    def get_initials(
+        self, with_period: bool = True, with_space: bool = True
+    ) -> str | None:
         if self.first_names is None:
             return None
 
@@ -278,9 +296,9 @@ class Name(BaseModel):
             initial = tok.nextToken()[0].upper()
             result.append(initial)
             if with_period:
-                result.append('.')
+                result.append(".")
             if with_space and tok.hasMoreTokens():
-                result.append(' ')
+                result.append(" ")
         return "".join(result)
 
     # @Override
@@ -378,35 +396,35 @@ class Name(BaseModel):
         i = 0
         while i < len(fmt):
             c = fmt[i]
-            if c == '%':
+            if c == "%":
                 seen_percent = True
             elif seen_percent:
                 match c:
-                    case 't':
+                    case "t":
                         _append(result, self.title)
-                    case 'f':
+                    case "f":
                         _append(result, self.first_names)
-                    case 'n':
+                    case "n":
                         _append(result, self.nickname, "'", "'")
-                    case 'p':
+                    case "p":
                         _append(result, self.prefix)
-                    case 'l':
+                    case "l":
                         _append(result, self.last_name)
-                    case 's':
+                    case "s":
                         _append(result, self.suffix)
-                    case 'a':
+                    case "a":
                         _append(result, self.alias, "(", ")")
-                    case 'z':
+                    case "z":
                         _append(result, self.post_nominals)
-                    case 'i':
+                    case "i":
                         _append(result, self.get_initials())
-                    case 'I':
+                    case "I":
                         _append(result, self.get_initials(False, False))
-                    case 'J':
+                    case "J":
                         _append(result, self.get_initials(False, True))
-                    case 'K':
+                    case "K":
                         _append(result, self.get_initials(True, False))
-                    case '%':
+                    case "%":
                         result.append(c)
                     case _:
                         raise SyntaxError(f"%{c} is not a legal field specifier")
@@ -445,8 +463,12 @@ class Name(BaseModel):
             score += FIRST_NAMES_SCORE
         else:
             # First names don't match exactly, so check for a partial match on name and/or initials.
-            s_fn_tok = StrTokenizer(self.first_names if self.first_names else "", NAME_SEP)
-            o_fn_tok = StrTokenizer(other.first_names if other.first_names else "", NAME_SEP)
+            s_fn_tok = StrTokenizer(
+                self.first_names if self.first_names else "", NAME_SEP
+            )
+            o_fn_tok = StrTokenizer(
+                other.first_names if other.first_names else "", NAME_SEP
+            )
 
             fn_count_to_match = min(s_fn_tok.countTokens(), o_fn_tok.countTokens())
             for _ in range(fn_count_to_match):
@@ -458,22 +480,22 @@ class Name(BaseModel):
                     continue
 
                 # If the initials don't match or neither name is an initial, there is no match.
-                if s_fn[0] != o_fn[0] or not(len(s_fn) == 1 or len(o_fn) == 1):
+                if s_fn[0] != o_fn[0] or not (len(s_fn) == 1 or len(o_fn) == 1):
                     break
             else:
                 score += INITIALS_SCORE
         # TODO: Consider whether non-None mismatches should reset the score.
-        if (self.title is not None and self.title == other.title):
+        if self.title is not None and self.title == other.title:
             score += TITLE_SCORE
-        if (self.nickname is not None and self.nickname == other.nickname):
+        if self.nickname is not None and self.nickname == other.nickname:
             score += NICKNAME_SCORE
-        if (self.prefix is not None and self.prefix == other.prefix):
+        if self.prefix is not None and self.prefix == other.prefix:
             score += PREFIX_SCORE
-        if (self.suffix is not None and self.suffix == other.suffix):
+        if self.suffix is not None and self.suffix == other.suffix:
             score += SUFFIX_SCORE
-        if (self.alias is not None and self.alias == other.alias):
+        if self.alias is not None and self.alias == other.alias:
             score += ALIAS_SCORE
-        if (self.post_nominals is not None and self.post_nominals == other.post_nominals):
+        if self.post_nominals is not None and self.post_nominals == other.post_nominals:
             score += POST_NOMINALS_SCORE
 
         return score

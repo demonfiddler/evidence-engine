@@ -14,7 +14,7 @@
 #  See the GNU Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public License along with Evidence Engine.
-#  If not, see <https://www.gnu.org/licenses/>. 
+#  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------------------------------------------
 
 import json
@@ -27,7 +27,10 @@ from ee_ai_service.utils.string import indent_lines
 
 logger = getLogger(__name__)
 
-async def reconcile_qualifications(state: CompletePersonState, *, config) -> dict[str, any]:
+
+async def reconcile_qualifications(
+    state: CompletePersonState, *, config
+) -> dict[str, any]:
     """Reconcile existing and discovered qualifications of a scientist using an LLM call. N.B. This can be non-deterministic with smaller models."""
 
     prompt = dedent(f"""
@@ -59,7 +62,12 @@ async def reconcile_qualifications(state: CompletePersonState, *, config) -> dic
     ai_message = await runtime.inference_client.ainvoke(prompt)
     reconciled_qualifications: str = ai_message.content
 
-    logger.info(f"Reconciled existing qualifications with discovered qualifications for Person#{state.person.id}: {state.person.firstName} {state.person.lastName}")
-    logger.debug(f"Qualifications: {reconciled_qualifications}")
+    logger.info(
+        "Reconciled existing qualifications with discovered qualifications for Person#%s: %s %s",
+        state.person.id,
+        state.person.firstName,
+        state.person.lastName,
+    )
+    logger.debug("Qualifications: %s", reconciled_qualifications)
 
     return {"reconciled_qualifications": reconciled_qualifications}
