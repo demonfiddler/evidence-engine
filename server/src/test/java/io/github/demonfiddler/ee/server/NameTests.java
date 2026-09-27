@@ -37,7 +37,7 @@ class NameTests {
     private static final Name JOSE_CONTI = new Name("José Bueno", "Conti");
     private static final Name HORTENSE_COTE = new Name("Hortense", "Côté");
     private static final Name JOZSEF_BALLA = new Name("József", "Balla");
-    private static final Name REMY_PRUDHOMME = new Name("Rémy", "Prud’homme");
+    private static final Name REMY_PRUDHOMME = new Name("Rémy", "Prud’Homme");
     private static final Name HENRI_KERKDIJK_OTTEN = new Name("Henri G.", "Kerkdijk-Otten");
     private static final Name PATRICK_MICHAELS = new Name("Patrick J.", "Michaels");
     private static final Name PAUL_KNAPPENBERGER = new Name("Paul C.", "Knappenberger");
@@ -45,34 +45,52 @@ class NameTests {
     private static final Name IAN_PLIMER = new Name("Ian Rutherford", "Plimer");
     private static final Name JEAN_PIERRE_BARDINET = new Name("Jean-Pierre", "Bardinet");
     private static final Name PAUL_OKEEFFE = new Name("Paul John", "O’Keeffe");
-    private static final Name GEORGE_RYAN = new Name(null, "George", "Rob", null, "Ryan", null, null);
-    private static final Name ROBERT_BALLING = new Name(null, "Robert C.", null, null, "Balling", "Jr", null);
-    private static final Name DANA_SAYLOR = new Name(null, "Dana H.", null, null, "Saylor", "Snr.", null);
-    private static final Name JOSE_BRECHNER = new Name("Ambassador", "José", null, null, "Brechner", null, null);
-    private static final Name MICHAEL_CREECH = new Name("Dr.", "Michael", null, null, "Creech", null, null);
-    private static final Name STEPHEN_ENGLISH = new Name("Dr.", "Stephen David", null, null, "English", null, null);
-    private static final Name JONHSON_ANGELO = new Name("Dr.", "Jonhson Delibero", null, null, "Angelo", null, null);
-    private static final Name KEVIN_LOUGHREY = new Name("Lt. Col. (ret)", "Kevin A.", null, null, "Loughrey", null, null);
+    private static final Name GEORGE_RYAN = new Name(null, "George", "Rob", null, "Ryan", null, null, null);
+    private static final Name ROBERT_BALLING = new Name(null, "Robert C.", null, null, "Balling", "Jr", null, null);
+    private static final Name DANA_SAYLOR = new Name(null, "Dana H.", null, null, "Saylor", "Snr.", null, null);
+    private static final Name JOSE_BRECHNER = new Name("Ambassador", "José", null, null, "Brechner", null, null, null);
+    private static final Name MICHAEL_CREECH = new Name("Dr.", "Michael", null, null, "Creech", null, null, null);
+    private static final Name STEPHEN_ENGLISH =
+        new Name("Dr.", "Stephen David", null, null, "English", null, null, null);
+    private static final Name JONHSON_ANGELO =
+        new Name("Dr.", "Jonhson Delibero", null, null, "Angelo", null, null, null);
+    private static final Name KEVIN_LOUGHREY =
+        new Name("Lt. Col. (ret)", "Kevin A.", null, null, "Loughrey", null, null, null);
     private static final Name AUGUSTINUS_BERKHOUT =
-        new Name("Prof.", "Augustinus Johannes", "Guus", null, "Berkhout", null, null);
-    private static final Name RICARDO_FELICIO = new Name("Prof.", "Ricardo Augusto", null, null, "Felicio", null, null);
-    private static final Name CHRISTOPHE_BROUWER = new Name(null, "Christophe", null, "de", "Brouwer", null, null);
-    private static final Name PATRICK_CASANOVE = new Name(null, "Patrick", null, "de", "Casanove", null, null);
+        new Name("Prof.", "Augustinus Johannes", "Guus", null, "Berkhout", null, null, null);
+    private static final Name RICARDO_FELICIO =
+        new Name("Prof.", "Ricardo Augusto", null, null, "Felicio", null, null, null);
+    private static final Name CHRISTOPHE_BROUWER =
+        new Name(null, "Christophe", null, "de", "Brouwer", null, null, null);
+    private static final Name PATRICK_CASANOVE = new Name(null, "Patrick", null, "de", "Casanove", null, null, null);
     // private static final Name MARIO_NETO = new Name(null, "Mario", "de", "Carvalho Fontes Neto", null);
     // private static final Name DANIELA_ONCA = new Name(null, "Daniela", "de", "Souza Onça", null);
-    private static final Name FRANCIS_GAILLARD = new Name(null, "Francis", null, "le", "Gaillard", null, null);
-    private static final Name CORNELIS_PAIR = new Name("Dr.", "Cornelis", null, "le", "Pair", null, null);
-    private static final Name THI_DINH = new Name("Dr.", "Thi Thuy", null, "Van", "Dinh", null, null);
-    private static final Name EMIEL_BROEKHOVEN = new Name(null, "Emiel Jozef Jan", null, "van", "Broekhoven", null, null);
-    private static final Name APPO_WIEL = new Name(null, "Appo", null, "van der", "Wiel", null, null);
-    private static final Name CORNELIS_KOOTEN = new Name(null, "G. Cornelis", "Kees", "van", "Kooten", null, null);
-    private static final Name FRANK_VEGGEL = new Name("Prof.", "Frank C. J. M.", null, "van", "Veggel", null, null);
-    private static final Name WILLIAM_WIJNGAARDEN = new Name(null, "William", null, "van", "Wijngaarden", null, null);
-    private static final Name BRIGITTE_VLIET_LANOE = new Name(null, "Brigitte", null, "van", "Vliet-Lanoë", null, null);
-    private static final Name TOM_HOEVEN = new Name("Dr.", "Tom", null, "van der", "Hoeven", null, null);
-    private static final Name EVERT_GRAAFF = new Name(null, "W. J. Evert", null, "van de", "Graaff", null, null);
-    private static final Name ADELINO_SANTI = new Name("Mr.", "Adelino", null, "De", "Santi", "Jnr.", null);
-    private static final Name TERRY_DUNLEAVY = new Name(null, "Terry", null, null, "Dunleavy", null, "MBE");
+    private static final Name FRANCIS_GAILLARD = new Name(null, "Francis", null, "le", "Gaillard", null, null, null);
+    private static final Name CORNELIS_PAIR = new Name("Dr.", "Cornelis", null, "le", "Pair", null, null, null);
+    private static final Name THI_DINH = new Name("Dr.", "Thi Thuy", null, "van", "Dinh", null, null, null);
+    private static final Name EMIEL_BROEKHOVEN =
+        new Name(null, "Emiel Jozef Jan", null, "van", "Broekhoven", null, null, null);
+    private static final Name APPO_WIEL = new Name(null, "Appo", null, "van der", "Wiel", null, null, null);
+    private static final Name CORNELIS_KOOTEN =
+        new Name(null, "G. Cornelis", "Kees", "van", "Kooten", null, null, null);
+    private static final Name FRANK_VEGGEL =
+        new Name("Prof.", "Frank C. J. M.", null, "van", "Veggel", null, null, null);
+    private static final Name WILLIAM_WIJNGAARDEN =
+        new Name(null, "William", null, "van", "Wijngaarden", null, null, null);
+    private static final Name BRIGITTE_VLIET_LANOE =
+        new Name(null, "Brigitte", null, "van", "Vliet-Lanoë", null, null, null);
+    private static final Name TOM_HOEVEN = new Name("Dr.", "Tom", null, "van der", "Hoeven", null, null, null);
+    private static final Name EVERT_GRAAFF = new Name(null, "W. J. Evert", null, "van de", "Graaff", null, null, null);
+    private static final Name ADELINO_SANTI = new Name("Mr.", "Adelino", null, "de", "Santi", "Jnr.", null, null);
+    private static final Name TERRY_DUNLEAVY = new Name(null, "Terry", null, null, "Dunleavy", null, null, "MBE");
+    private static final Name A_T_J_LAAT = new Name("Dr.", "A. T. J.", null, null, "Laat", null, null, null);
+    private static final Name CHRISTOPHER_MONCTON =
+        new Name("Lord", "Christopher", null, null, "Moncton", null, null, null);
+    private static final Name OSAMA_LADEN = new Name(null, "Osama", null, "bin", "Laden", null, null, null);
+    private static final Name LIU_TUNGSHENG =
+        new Name("Prof.", "Liu", null, null, "Tungsheng", null, "Liu Dongsheng", null);
+    private static final Name ANTONIS_FOSKOLOS =
+        new Name("Prof.", "Antonis", "Anthony", null, "Foskolos", null, "Foscolos", null);
 
     private static final List<TestName> FIRST_NAMES_LAST_NAME = List.of( //
         new TestName("Bob Zybach", BOB_ZYBACH), //
@@ -80,7 +98,9 @@ class NameTests {
         new TestName("José Bueno Conti", JOSE_CONTI), //
         new TestName("József Balla", JOZSEF_BALLA), //
         new TestName("Rémy Prud’homme", REMY_PRUDHOMME), //
+        new TestName("rémy prud’homme", REMY_PRUDHOMME), //
         new TestName("Henri G. Kerkdijk-Otten", HENRI_KERKDIJK_OTTEN), //
+        new TestName("henri g. kerkdijk-otten", HENRI_KERKDIJK_OTTEN), //
         new TestName("Patrick J. Michaels", PATRICK_MICHAELS), //
         new TestName("Paul C. Knappenberger", PAUL_KNAPPENBERGER), //
         new TestName("G.-Fivos Sargentis", G_FIVOS_SARGENTIS), //
@@ -99,6 +119,7 @@ class NameTests {
         new TestName("Prof. Ricardo Augusto Felicio", RICARDO_FELICIO), //
         new TestName("Christophe de Brouwer", CHRISTOPHE_BROUWER), //
         new TestName("Patrick de Casanove", PATRICK_CASANOVE), //
+        // FIXME: multi-token lastName
         // new TestName("Mario de Carvalho Fontes Neto", MARIO_NETO), //
         // new TestName("Daniela de Souza Onça", DANIELA_ONCA), //
         new TestName("Francis le Gaillard", FRANCIS_GAILLARD), //
@@ -113,7 +134,19 @@ class NameTests {
         new TestName("Dr. Tom van der Hoeven", TOM_HOEVEN), //
         new TestName("W.J. Evert van de Graaff", EVERT_GRAAFF), //
         new TestName("Mr. Adelino De Santi Jnr.", ADELINO_SANTI), //
-        new TestName("Terry Dunleavy MBE", TERRY_DUNLEAVY) //
+        new TestName("Terry Dunleavy MBE", TERRY_DUNLEAVY), //
+        new TestName("Terry Dunleavy mbe", TERRY_DUNLEAVY), //
+        // FIXME: certain post-nominals with periods.
+        // new TestName("Terry Dunleavy M.B.E.", TERRY_DUNLEAVY),
+        // new TestName("Terry Dunleavy m.b.e.", TERRY_DUNLEAVY),
+        new TestName("Dr. A. T. J. Laat", A_T_J_LAAT), //
+        new TestName("Dr. A.T.J. Laat", A_T_J_LAAT), //
+        new TestName("Dr. ATJ Laat", A_T_J_LAAT), //
+        new TestName("Lord Christopher Moncton", CHRISTOPHER_MONCTON), //
+        new TestName("Osama bin Laden", OSAMA_LADEN), //
+        new TestName("Prof. Liu Tungsheng (Liu Dongsheng)", LIU_TUNGSHENG),
+        new TestName("Prof. Antonis 'Anthony' Foskolos (Foscolos)", ANTONIS_FOSKOLOS) //
+        // TODO: add more 'last-name-last' examples
     );
 
     private static final List<TestName> LAST_NAME_FIRST_NAMES = List.of( //
@@ -122,7 +155,9 @@ class NameTests {
         new TestName("Conti, José Bueno", JOSE_CONTI), //
         new TestName("Balla, József", JOZSEF_BALLA), //
         new TestName("Prud’homme, Rémy", REMY_PRUDHOMME), //
+        new TestName("prud’homme, rémy", REMY_PRUDHOMME), //
         new TestName("Kerkdijk-Otten, Henri G.", HENRI_KERKDIJK_OTTEN), //
+        new TestName("kerkdijk-otten, henri g.", HENRI_KERKDIJK_OTTEN), //
         new TestName("Michaels, Patrick J.", PATRICK_MICHAELS), //
         new TestName("Knappenberger, Paul C.", PAUL_KNAPPENBERGER), //
         new TestName("Sargentis, G.-Fivos", G_FIVOS_SARGENTIS), //
@@ -141,6 +176,7 @@ class NameTests {
         new TestName("Felicio, Prof. Ricardo Augusto", RICARDO_FELICIO), //
         new TestName("de Brouwer, Christophe", CHRISTOPHE_BROUWER), //
         new TestName("de Casanove, Patrick", PATRICK_CASANOVE), //
+        // FIXME: multi-token last_name
         // new TestName("de Carvalho Fontes Neto, Mario", MARIO_NETO), //
         // new TestName("de Souza Onça, Daniela", DANIELA_ONCA), //
         new TestName("le Gaillard, Francis", FRANCIS_GAILLARD), //
@@ -155,7 +191,21 @@ class NameTests {
         new TestName("van der Hoeven, Dr. Tom", TOM_HOEVEN), //
         new TestName("van de Graaff, W.J. Evert", EVERT_GRAAFF), //
         new TestName("De Santi Jnr., Mr. Adelino", ADELINO_SANTI), //
-        new TestName("Dunleavy, Terry MBE", TERRY_DUNLEAVY) //
+        new TestName("Dunleavy, Terry MBE", TERRY_DUNLEAVY), //
+        new TestName("Dunleavy, Terry mbe", TERRY_DUNLEAVY), //
+        // FIXME: certain post-nominals with periods.
+        // new TestName("Terry Dunleavy M.B.E.", TERRY_DUNLEAVY),
+        // new TestName("Terry Dunleavy m.b.e.", TERRY_DUNLEAVY),
+        new TestName("Laat, Dr. A. T. J.", A_T_J_LAAT), new TestName("Laat, Dr. A.T.J.", A_T_J_LAAT), //
+        new TestName("Laat, Dr. ATJ", A_T_J_LAAT), new TestName("LAAT Dr. ATJ", A_T_J_LAAT), //
+        new TestName("LAAT Dr. A.T.J.", A_T_J_LAAT), new TestName("LAAT Dr. A. T. J.", A_T_J_LAAT), //
+        // FIXME: 'title last_name, first_names' doesn't work:
+        // new TestName("Lord Moncton, Christopher", CHRISTOPHER_MONCTON),
+        new TestName("Moncton, Lord Christopher", CHRISTOPHER_MONCTON), //
+        new TestName("bin Laden, Osama", OSAMA_LADEN), //
+        new TestName("Tungsheng, Prof. Liu (Liu Dongsheng)", LIU_TUNGSHENG), //
+        new TestName("Foskolos, Prof. Antonis 'Anthony' (Foscolos)", ANTONIS_FOSKOLOS) //
+        // TODO: add more 'last-name-first' examples
     );
 
     @Test
@@ -179,10 +229,10 @@ class NameTests {
         };
         String[] expected = { //
             "Adelino Santi", //
-            "Mr. Adelino De Santi Jnr.", //
-            "Mr. A. De Santi Jnr.", //
-            "De Santi Jnr., Mr. Adelino", //
-            "De Santi Jnr., A.", //
+            "Mr. Adelino de Santi Jnr.", //
+            "Mr. A. de Santi Jnr.", //
+            "de Santi Jnr., Mr. Adelino", //
+            "de Santi Jnr., A.", //
         };
         checkFormat(ADELINO_SANTI, nameFormats, expected);
 
@@ -224,7 +274,7 @@ class NameTests {
         for (TestName test : tests) {
             Name name = Name.parse(test.string);
             assertNotNull(name, test.string + " parsed to null");
-            assertEquals(test.name, name);
+            assertEquals(test.name, name, test.string + " did not match");
         }
     }
 

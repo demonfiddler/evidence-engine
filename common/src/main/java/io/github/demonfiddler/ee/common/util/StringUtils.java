@@ -52,23 +52,70 @@ public final class StringUtils {
      * @return A copy of {@code s} with the first character uppercased and the remainder lowercased.
      */
     public static String firstToUpper(String s) {
+        return firstToUpper(s, true);
+    }
+
+    /**
+     * Uppercases the first character of a string and optionally lowercases the rest.
+     * @param s The string.
+     * @param lowercaseRest {@code true} to lowercase the rest of the string, {@code false} to leave unchanged.
+     * @return A copy of {@code s} with the first character uppercased and the remainder lowercased.
+     */
+    public static String firstToUpper(String s, boolean lowercaseRest) {
         if (s == null)
             return s;
 
         char[] c = s.toCharArray();
         c[0] = Character.toUpperCase(c[0]);
-        for (int i = 1; i < c.length; i++)
-            c[i] = Character.toLowerCase(c[i]);
+        if (lowercaseRest) {
+            for (int i = 1; i < c.length; i++)
+                c[i] = Character.toLowerCase(c[i]);
+        }
         return new String(c);
     }
 
     /**
-     * Returns whether a string is {@code null} or blank.
+     * Tests whether a string contains only alphabetic characters.
+     * @param s The string to test.
+     * @return {@code true} if {@code s} is non-{@code null} and contains only alphabetic characters.
+     */
+    public static boolean isAlpha(String s) {
+        if (s == null)
+            return false;
+        for (int i = 0; i < s.length(); i++) {
+            if (!Character.isLetter(s.charAt(i)))
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * Tests whether a string is {@code null} or blank.
      * @param s The string to test.
      * @return {@code true} if {@code s} is {@code null} or contains only spaces
      */
     public static boolean isBlank(String s) {
         return s == null || s.isBlank();
+    }
+
+    /**
+     * Tests whether a string consists entirely of uppercase letters.
+     * @param s The string to test.
+     * @return {@code true} if {@code s} is {@code null}, empty, or contains any character that is not an uppercase
+     * letter.
+     */
+    public static boolean isUpperCase(String s) {
+        if (s == null)
+            return false;
+        int len = s.length();
+        if (len == 0)
+            return false;
+
+        for (int i = 0; i < len; i++) {
+            if (!Character.isUpperCase(s.charAt(i)))
+                return false;
+        }
+        return true;
     }
 
     /**
@@ -87,7 +134,8 @@ public final class StringUtils {
     /**
      * Parses a {@code Boolean} from a {@code String}.
      * @param s The string to parse, or {@code null}.
-     * @return {@code null} if {@code s} is {@code null} or blank, otherwise the {@code Boolean} value of {@code s}, with {@code &quot;0&quot;} yielding {@code false} and all other values yielding {@code true}.
+     * @return {@code null} if {@code s} is {@code null} or blank, otherwise the {@code Boolean} value of {@code s},
+     * with {@code &quot;0&quot;} yielding {@code false} and all other values yielding {@code true}.
      */
     public static Boolean parseBoolean(String s) {
         return isBlank(s) ? null : !s.equals("0");
@@ -148,8 +196,38 @@ public final class StringUtils {
         return isBlank(s) ? null : URI.create(s).toURL();
     }
 
+    /**
+     * Replaces all occurrences of one substring with another.
+     * @param s The string to search.
+     * @param search The string to search for.
+     * @param replacement The replacement string.
+     * @return {@code s} with all occurrences of {@code search} replaced with {@code replacement} or {@code null} if
+     * {@code s} is {@code null}.
+     */
+    public static String replaceAll(String s, String search, String replacement) {
+        return s == null ? null : s.replaceAll(search, replacement);
+    }
+
+    /**
+     * Converts all of the characters in a string to lower case using {@code String.toLowerCase()}.
+     * @param s The string to lowercase.
+     * @return {@code s} converted to lowercase, or {@code null} if {@code s} is {@code null}.
+     */
+    public static String toLowerCase(String s) {
+        return s == null ? null : s.toLowerCase();
+    }
+
+    /**
+     * Converts all of the characters in a string to upper case using {@code String.toUpperCase()}.
+     * @param s The string to uppercase.
+     * @return {@code s} converted to uppercase, or {@code null} if {@code s} is {@code null}.
+     */
+    public static String toUpperCase(String s) {
+        return s == null ? null : s.toUpperCase();
+    }
+
     /** Private ctor prevents instantiation. */
     private StringUtils() {
-    }    
+    }
 
 }

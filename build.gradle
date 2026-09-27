@@ -25,14 +25,7 @@ allprojects {
     version = rootProject.version
 }
 
-def javaProjects = [
-    project('client'),
-    project('codegen'),
-    project('common'),
-    project('server')
-]
-
-configure(javaProjects) {
+subprojects {
     apply plugin: 'java'
 
     java {

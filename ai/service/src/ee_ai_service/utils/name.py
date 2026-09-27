@@ -19,29 +19,47 @@
 
 from __future__ import annotations
 from pydantic import BaseModel
-from regex import IGNORECASE, compile, Pattern, split, sub
+from regex import IGNORECASE, Pattern, compile, split, sub
 from StrTokenizer import StrTokenizer
 
-# TODO: support Name.alias
 _TITLE = compile(
-    "^Ambassador|Baroness|Baronet|Bart\\.?|Bt\\.?|Captain|Capt?\\.?|Cllr\\.?|Col\\.?|Commander|Cdr\\.?|Dame|Dr\\.?|Fr\\.?|Gen\\.?|King|Lady|Lord|Lt\\.?|Lieutenant|Lt\\.?|Major|Maj\\.?|Miss|Mrs?\\.?|Ms\\.?|nat\\.?|Prince|Princess|Prof\\.?|Queen|Rabbi|rer\\.?|\\(?[Rr]et\\.?\\)?|Rev\\.?|Sen\\.?|Sergeant|Sgt\\?|Sir$",
+    r"^(?:Ambassador|Amb\.?|Baroness|Baronet|Bart\.?|Bt\.?|Brigadier|Brig\.?|"
+    r"Captain|Capt?\.?|Cllr\.?|Colonel|Col\.?|Commander|Cdr\.?|Dame|Dr\.?|"
+    r"Fr\.?|General|Gen\.?|King|Lady|Lord|Lieutenant|Lieut\.?|Lt\.?|Major|"
+    r"Maj\.?|Miss|Mrs?\.?|Ms\.?|nat\.?|Prince|Princess|Professor|Prof\.?|"
+    r"Queen|Rabbi|Rab\.?|rer\.?|\(?[Rr]et\.?\)?|Reverend|Rev\.?|Senator|"
+    r"Sen\.?|Sergeant|Sgt\?|Sir)$",
     IGNORECASE,
 )
-_FIRST_NAME = compile("^[\\p{IsAlphabetic}()'.-]+$")
-_NICKNAME = compile("^[(\"']([\\p{IsAlphabetic}]+)[)\"']$")
-_PREFIX = compile("^[dD]e[nlr]?|[dD]u|[lL][ae]|[vV][ao]n|[zZ]u|St\\.?|[tT]e$")
-_LAST_NAME = compile("^[\\p{IsAlphabetic}'’.-]+$")
-_SUFFIX = compile("^I{1,3}|IV|VI{0,3}|I?X|Jn?r\\.?|Sn?r\\.?$")
-_ALIAS = compile("^\\(([\\p{IsAlphabetic}\\s]+)\\)$")
-_POST_NOMINAL = compile(
-    "^[A-Z]{2,}|[B|M]\\.?A\\.?|[B|M|D]\\.?Sc\\.?|Ph\\.?D\\.?|D\\.?Phil\\.?$"
+_INITIALS = compile(
+    r"[\p{Uppercase_Letter}](?![\p{Lowercase_Letter}])"
+    r"[\p{Uppercase_Letter}. ]*(?![\p{Lowercase_Letter}])"
 )
-_PERIOD_NOSPACE = compile("\\.(?=[^ ])")
+_NICKNAME = compile("([\"'])([\\p{IsAlphabetic}]+)\\1")
+_PREFIX = compile(
+    r"^(?:[bB]in|[dD]e[nlr]?|[dD]u|[lL][ae]|[vV][ao]n|[zZ]u|[sS]t\.?|[tT]e)$"
+)
+_LAST_NAME = compile(r"^[\p{IsAlphabetic}'’.-]+$")
+_SUFFIX = compile(
+    r"^(?:I{1,3}|IV|VI{0,3}|I?X|Jn?r\.?|Sn?r\.?)$",
+    IGNORECASE,
+)
+_ALIAS = compile(r"\((?![Rr]et\.?\))([\p{IsAlphabetic}\s]+)\)")
+
+# Explicit post‑nominals only, to avoid clashing with initials.
+_POST_NOMINAL = compile(
+    r"^(?:"
+    r"[CDGKMO]BE|"
+    r"Ph\.?D\.?|D\.?Phil\.?|"
+    r"[BM]\.?A\.?|[BM]\.?Sc?\.?|"
+    r"F\.?R\.?S\.?|Q\.?C\.?|K\.?C\.?|"
+    r"LL\.?B\.?|LL\.?M\.?"
+    ")$",
+    IGNORECASE,
+)
+_PERIOD_NOSPACE = compile(r"\.(?=[^ ])")
 _SPACES = compile(" +")
 
-# These scores must sum to unity, the highest possible match score if all fields match exactly.
-# Thus, a minimum match score of 0.8 ensures a match on at least last name and initials.
-# N.B. FIRST_NAMES_SCORE and INITIALS_SCORE are mutually exclusive.
 LAST_NAME_SCORE = 0.6
 FIRST_NAMES_SCORE = 0.25
 INITIALS_SCORE = 0.2
@@ -57,84 +75,85 @@ NAME_SEP = " ."
 _MAX_INITIALS = 4
 
 
-def _parse(token: str, pattern: Pattern, result: list[str], prepend: bool) -> bool:
+def _match(token: str, pattern: Pattern, result: list[str], prepend: bool):
     """
-    Attempts to match a token against a pattern. If successful, inserts the token into a buffer with, if necessary,
-    a separator space character.
-
-    Args:
-        token: The token to test.
-        pattern: The pattern to match.
-        result: The result buffer.
-        prepend: True to prepend token to result, False to append it.
-
+    Attempts to match a token against a pattern. If successful, inserts the token into a list.
+    token: The token to test.
+    pattern: The pattern to match.
+    result: The result buffer.
+    prepend: {@code true} to prepend {@code token} to {@code result}, {@code false} to append it.
     Returns:
-        True if token matched pattern, otherwise False.
+    True if token matched pattern, otherwise False.
     """
-    match = pattern.match(token)
-    if match:
-        match = match.group(1 if len(match.groups()) == 1 else 0)
+    matcher = pattern.match(token)
+    if matcher:
+        match = matcher.group(1 if len(matcher.groups()) == 1 else 0)
         if prepend:
-            if len(result) != 0 and result[0] != " ":
-                result.insert(0, " ")
             result.insert(0, match)
         else:
-            if len(result) != 0 and result[-1] != " ":
-                result.append(" ")
             result.append(match)
         return True
     return False
 
 
+def _split(s: str) -> list[str]:
+    return [t for t in split(_SPACES, s.strip()) if t]
+
+
 def _append(
     sb: list[str], s: str | None, open_delim: str = None, close_delim: str = None
 ):
-    """
-    Appends a string to a buffer, prepending a space if the buffer is not empty.
-
-    Args:
-        sb: The buffer.
-        s: The string to append.
-        openDelim: The character to prepend, if any.
-        closeDelim: The character to append, if any.
-    """
     if s is not None:
         if len(sb) != 0 and sb[-1] != " ":
             sb.append(" ")
-        if open_delim != None:
+        if open_delim is not None:
             sb.append(open_delim)
         sb.append(s)
-        if close_delim != None:
+        if close_delim is not None:
             sb.append(close_delim)
 
 
-def _join(sb: list[str]) -> str | None:
+def _to_initials(token: str) -> str:
     """
-    Converts a string buffer to a string.
+    Converts an all‑uppercase, letters‑only token to space‑separated,
+    period-terminated initials. Leaves tokens with periods or spaces
+    unchanged.
+    """
+    if (
+        len(token) <= _MAX_INITIALS
+        and token.isupper()
+        and token.isalpha()  # no periods, no spaces
+    ):
+        token = ". ".join(token)
+        if len(token) > 0 and token[-1] != ".":
+            token += "."
+    return token
+
+
+def _to_title_case(s: str) -> str:
+    """
+    Converts a string to title case. The first letter and any letter following
+    any of ' ’ . or - is converted to uppercase; all other letters are
+    converted to lowercase.
 
     Args:
-        sb: The buffer.
+        s: The input string to convert.
     Returns:
-        None if sb is empty, otherwise sb joined as a single string.
+        The input string converted to title case.
     """
-    return None if len(sb) == 0 else "".join(sb)
+    if not s:
+        return None
 
-
-def _to_initials(name: str) -> list[str]:
-    """Converts a name to space-separated initials if all characters are uppercase"""
-    if len(name) <= _MAX_INITIALS and name.isupper():
-        name = " ".join(name)
-    return name
-
-
-def _first_to_upper(str: str) -> str:
-    if len(str) == 0 or str[0].isupper():
-        return str
-    return str[0].upper() + str[1:]
+    buf: list[str] = []
+    at_start = True
+    for c in s:
+        buf.append(c.upper() if at_start else c.lower())
+        at_start = c in " '’.-"
+    return "".join(buf)
 
 
 class Name(BaseModel):
-    """Represents a person's name."""
+    """Represents a personal name."""
 
     title: str | None = None
     first_names: str | None = None
@@ -148,132 +167,174 @@ class Name(BaseModel):
     @classmethod
     def parse(cls, namestr: str) -> Name | None:
         """
-        Parses a string into a Name object.
+        Deterministic parser for personal names.
+
         Args:
             namestr: The name string to parse.
         Returns:
-            A corresponding object or None if parsing failed.
+            The parsed Name object or None if namestr is unparseable.
         """
 
-        # Make sure all periods are followed by a space, to facilitate tokenisation on spaces without using the period
-        # as a separator character. [FIXME] this fails for names of the form '<Lastname> <INITIALS>'
-        namestr = sub(_PERIOD_NOSPACE, ". ", namestr)
+        # Normalise periods so tokenisation on spaces works consistently.
+        namestr = sub(_PERIOD_NOSPACE, ". ", namestr).strip()
+        if not namestr:
+            return None
+
+        # Extract nickname (in quotes).
+        nickname_match = _NICKNAME.search(namestr)
+        nickname = nickname_match.group(2) if nickname_match else None
+        if nickname_match:
+            namestr = namestr.replace(nickname_match.group(0), "").strip()
+
+        # Extract alias (in parentheses).
+        alias_match = _ALIAS.search(namestr)
+        alias = alias_match.group(1) if alias_match else None
+        if alias_match:
+            namestr = namestr.replace(alias_match.group(0), "").strip()
+
+        # Split tokens.
+        tokens = _split(namestr)
+        if not tokens:
+            return None
+
+        # Check for comma after last name.
         try:
             comma_pos = namestr.index(",")
         except ValueError:
             comma_pos = -1
-        last_name_first = comma_pos != -1
 
-        # TODO: handle the Lastname INITIALS case if there is no comma
-        # TODO: handle the Lastname INITIALS case if initials are not space- or period-delimited
-        # TODO: handle nickname: 'Nickname'
-        # TODO: handle alias: (Fred Bloggs)
-        # TODO: handle post-nominal letters (all uppercase or degree abbreviation)
+        title_tokens: list[str] = []
+        first_tokens: list[str] = []
+        prefix_tokens: list[str] = []
+        last_tokens: list[str] = []
+        suffix_tokens: list[str] = []
+        post_tokens: list[str] = []
 
-        title = []
-        first_names = []
-        nickname = []
-        prefix = []
-        last_name = []
-        suffix = []
-        post_nominals = []
-
-        if last_name_first:
+        # ------------------------------------------------------------
+        # CASE 1 — Comma present: LAST, FIRST
+        # ------------------------------------------------------------
+        if comma_pos != -1:
             # Possible name formats:
             # - prefix? lastName, title? firstName+ nickname? suffix? postNominals?
             # - prefix? lastName suffix?, title? firstName+ nickname? postNominals?
 
-            # chunk1: prefix? lastName suffix?
-            chunk1 = namestr[0:comma_pos]
-            tokens = split(_SPACES, chunk1)
+            left = _split(namestr[:comma_pos])
+            right = _split(namestr[comma_pos + 1 :])
 
-            # Parse any suffixes first, so that they don't get consumed by lastName.
-            i = len(tokens) - 1
-            while i > 0 and _parse(tokens[i], _SUFFIX, suffix, True):
+            # LEFT: prefix? last_name suffix?
+            i = len(left) - 1
+            while i >= 0 and _match(left[i], _SUFFIX, suffix_tokens, True):
                 i -= 1
-
-            max = i
-            i = 0
-            while i <= max:
-                if _parse(tokens[i], _PREFIX, prefix, False):
-                    i += 1
-                elif _parse(tokens[i], _LAST_NAME, last_name, False):
-                    i += 1
-                else:
-                    break
-
-            # chunk2: title? firstName+ nickname? suffix? postNominals?
-            chunk2 = (
-                namestr[comma_pos + 1 :].strip() if comma_pos < len(namestr) - 2 else ""
-            )
-            tokens = split(_SPACES, chunk2)
-
-            i = len(tokens) - 1
-            while i > 0 and _parse(tokens[i], _POST_NOMINAL, post_nominals, True):
-                i -= 1
-
-            while i > 0 and _parse(tokens[i], _SUFFIX, suffix, True):
-                i -= 1
-
-            while i > 0 and _parse(tokens[i], _NICKNAME, nickname, True):
-                i -= 1
-
-            max = i
-            i = 0
-            while i < max and _parse(tokens[i], _TITLE, title, False):
-                i += 1
-
-            while i <= max and _parse(tokens[i], _FIRST_NAME, first_names, False):
-                i += 1
-        else:
-            # - title? firstName+ nickname? prefix? lastName suffix? postNominals?
-            tokens = split(_SPACES, namestr)
-
-            # Parse any suffixes first, so that they don't get consumed by lastName.
-            i = len(tokens) - 1
-            while i > 0 and _parse(tokens[i], _POST_NOMINAL, post_nominals, True):
-                i -= 1
-
-            while i > 0 and _parse(tokens[i], _SUFFIX, suffix, True):
-                i -= 1
-
-            max = i
-            i = 0
-            while i < max and _parse(tokens[i], _TITLE, title, False):
-                i += 1
-
-            while i < max:
-                if _parse(tokens[i], _PREFIX, prefix, False):
-                    i += 1
-                elif _parse(tokens[i], _NICKNAME, nickname, False):
-                    i += 1
-                elif _parse(tokens[i], _FIRST_NAME, first_names, False):
-                    i += 1
-                else:
-                    break
-
-            if i > max or not _parse(tokens[max], _LAST_NAME, last_name, False):
+            if i < 0:
                 return None
 
+            last_tokens.insert(0, left[i])
+            i -= 1
+
+            while i >= 0 and _match(left[i], _PREFIX, prefix_tokens, True):
+                i -= 1
+
+            # RIGHT: title? first_names suffix? postnominals?
+            j = len(right) - 1
+            while j >= 0 and _match(right[j], _POST_NOMINAL, post_tokens, True):
+                j -= 1
+
+            while j >= 0 and _match(right[j], _SUFFIX, suffix_tokens, True):
+                j -= 1
+
+            k = 0
+            while k <= j and _match(right[k], _TITLE, title_tokens, False):
+                k += 1
+
+            while k <= j:
+                first_tokens.append(right[k])
+                k += 1
+
+        # ------------------------------------------------------------
+        # CASE 2 — No comma: FIRST ... LAST
+        # ------------------------------------------------------------
+        else:
+            # Step 1: strip post-nominals and suffixes from end.
+            i = len(tokens) - 1
+            while i >= 0 and _match(tokens[i], _POST_NOMINAL, post_tokens, True):
+                i -= 1
+
+            while i >= 0 and _match(tokens[i], _SUFFIX, suffix_tokens, True):
+                i -= 1
+
+            if i < 0:
+                return None
+
+            # Step 2: last_name = last remaining token.
+            last_tokens.append(tokens[i])
+            i -= 1
+
+            # Step 3: prefixes immediately before last_name.
+            while i >= 0 and _match(tokens[i], _PREFIX, prefix_tokens, True):
+                i -= 1
+
+            # Step 4: titles at start.
+            k = 0
+            while k <= i and _match(tokens[k], _TITLE, title_tokens, False):
+                k += 1
+
+            # Step 5: everything between title and prefix = first_names.
+            while k <= i:
+                first_tokens.append(tokens[k])
+                k += 1
+
+            # --------------------------------------------------------
+            # SPECIAL CASE: UPPERCASE last_name + title + initials
+            # e.g. "LAAT Dr. ATJ"
+            # --------------------------------------------------------
+            if (
+                len(tokens) >= 3
+                and tokens[0].isupper()
+                and _LAST_NAME.match(tokens[0])
+                and _TITLE.match(tokens[1])
+                and _INITIALS.match(tokens[-1])
+            ):
+                last_tokens = [_to_title_case(tokens[0])]
+                title_tokens = [tokens[1]]
+                fn_tokens = tokens[2:]
+                first_tokens = fn_tokens
+
+        # ------------------------------------------------------------
+        # Build Name object
+        # ------------------------------------------------------------
         name = Name()
-        name.title = _join([_first_to_upper(t) for t in title])
-        name.first_names = _join(
-            [_first_to_upper(_to_initials(fn)) for fn in first_names]
+        name.title = " ".join(_to_title_case(t) for t in title_tokens) or None
+        name.first_names = (
+            " ".join(_to_title_case(_to_initials(t)) for t in first_tokens)
+            if first_tokens
+            else None
         )
-        name.nickname = _join([_first_to_upper(n) for n in nickname])
-        name.prefix = _join(prefix)
-        name.last_name = _join([_first_to_upper(ln) for ln in last_name])
-        name.suffix = _join(suffix)
-        name.post_nominals = _join(post_nominals)
+        name.nickname = _to_title_case(nickname)
+        name.prefix = " ".join(prefix_tokens).lower() or None
+        name.last_name = (
+            " ".join(_to_title_case(t) for t in last_tokens) if last_tokens else None
+        )
+        name.suffix = _to_title_case(" ".join(suffix_tokens)) or None
+        name.alias = _to_title_case(alias)
+        name.post_nominals = " ".join(post_tokens).upper().replace(".", "") or None
+
+        if not name.last_name:
+            return None
+
+        # Debug specific failing cases
+        # if namestr.find("Onça") != -1:
+        #     print("DEBUG namestr:", namestr)
+        #     print("  title      :", name.title)
+        #     print("  first_names:", name.first_names)
+        #     print("  prefix     :", name.prefix)
+        #     print("  last_name  :", name.last_name)
+        #     print("  suffix     :", name.suffix)
+        #     print("  alias     :", name.alias)
+        #     print("  post_nom   :", name.post_nominals)
 
         return name
 
     def __str__(self) -> str:
-        """
-        Returns a string representation of the object. The result is equivalent to calling format("%t%f%n%p%l%s%z").
-        Returns:
-            The string representation.
-        """
         result: list[str] = []
         _append(result, self.title)
         _append(result, self.first_names)
@@ -281,12 +342,80 @@ class Name(BaseModel):
         _append(result, self.prefix)
         _append(result, self.last_name)
         _append(result, self.suffix)
+        _append(result, self.alias, "(", ")")
         _append(result, self.post_nominals)
         return "".join(result)
 
-    def get_initials(
-        self, with_period: bool = True, with_space: bool = True
-    ) -> str | None:
+    def __hash__(self):
+        prime = 31
+        result = 1
+        result = prime * result + (0 if self.title is None else hash(self.title))
+        result = prime * result + (
+            0 if self.first_names is None else hash(self.first_names)
+        )
+        result = prime * result + (0 if self.nickname is None else hash(self.nickname))
+        result = prime * result + (0 if self.prefix is None else hash(self.prefix))
+        result = prime * result + (
+            0 if self.last_name is None else hash(self.last_name)
+        )
+        result = prime * result + (0 if self.suffix is None else hash(self.suffix))
+        result = prime * result + (0 if self.alias is None else hash(self.alias))
+        result = prime * result + (
+            0 if self.post_nominals is None else hash(self.post_nominals)
+        )
+        return result
+
+    def __eq__(self, obj):
+        if self is obj:
+            return True
+        if obj is None:
+            return False
+        if self.__class__ is not obj.__class__:
+            return False
+        other: Name = obj
+        if self.title is None:
+            if other.title is not None:
+                return False
+        elif self.title != other.title:
+            return False
+        if self.first_names is None:
+            if other.first_names is not None:
+                return False
+        elif self.first_names != other.first_names:
+            return False
+        if self.nickname is None:
+            if other.nickname is not None:
+                return False
+        elif self.nickname != other.nickname:
+            return False
+        if self.prefix is None:
+            if other.prefix is not None:
+                return False
+        elif self.prefix != other.prefix:
+            return False
+        if self.last_name is None:
+            if other.last_name is not None:
+                return False
+        elif self.last_name != other.last_name:
+            return False
+        if self.suffix is None:
+            if other.suffix is not None:
+                return False
+        elif self.suffix != other.suffix:
+            return False
+        if self.alias is None:
+            if other.alias is not None:
+                return False
+        elif self.alias != other.alias:
+            return False
+        if self.post_nominals is None:
+            if other.post_nominals is not None:
+                return False
+        elif self.post_nominals != other.post_nominals:
+            return False
+        return True
+
+    def initials(self, with_period: bool = True, with_space: bool = True) -> str | None:
         if self.first_names is None:
             return None
 
@@ -301,89 +430,36 @@ class Name(BaseModel):
                 result.append(" ")
         return "".join(result)
 
-    # @Override
-    # public int hashCode() {
-    #     final int prime = 31;
-    #     int result = 1;
-    #     result = prime * result + ((title == null) ? 0 : title.hashCode());
-    #     result = prime * result + ((firstNames == null) ? 0 : firstNames.hashCode());
-    #     result = prime * result + ((nickname == null) ? 0 : nickname.hashCode());
-    #     result = prime * result + ((prefix == null) ? 0 : prefix.hashCode());
-    #     result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
-    #     result = prime * result + ((suffix == null) ? 0 : suffix.hashCode());
-    #     result = prime * result + ((postNominals == null) ? 0 : postNominals.hashCode());
-    #     return result;
-    # }
-
-    # @Override
-    # public boolean equals(Object obj) {
-    #     if (this == obj)
-    #         return true;
-    #     if (obj == null)
-    #         return false;
-    #     if (getClass() != obj.getClass())
-    #         return false;
-    #     Name other = (Name)obj;
-    #     if (title == null) {
-    #         if (other.title != null)
-    #             return false;
-    #     } else if (!title.equals(other.title))
-    #         return false;
-    #     if (firstNames == null) {
-    #         if (other.firstNames != null)
-    #             return false;
-    #     } else if (!firstNames.equals(other.firstNames))
-    #         return false;
-    #     if (nickname == null) {
-    #         if (other.nickname != null)
-    #             return false;
-    #     } else if (!nickname.equals(other.nickname))
-    #         return false;
-    #     if (prefix == null) {
-    #         if (other.prefix != null)
-    #             return false;
-    #     } else if (!prefix.equals(other.prefix))
-    #         return false;
-    #     if (lastName == null) {
-    #         if (other.lastName != null)
-    #             return false;
-    #     } else if (!lastName.equals(other.lastName))
-    #         return false;
-    #     if (suffix == null) {
-    #         if (other.suffix != null)
-    #             return false;
-    #     } else if (!suffix.equals(other.suffix))
-    #         return false;
-    #     if (postNominals == null) {
-    #         if (other.postNominals != null)
-    #             return false;
-    #     } else if (!postNominals.equals(other.postNominals))
-    #         return false;
-    #     return true;
-    # }
-
     def format(self, fmt: str) -> str:
         """
-        Returns a string representation of the object, using a custom format. The format string consists of a sequence of
-        field specifiers, each of which starts with a % character followed by a field type character.
+        Returns a string representation of the object, using a custom format.
+        The format string consists of a sequence of field specifiers, each of
+        which consiists of a % character followed by a field type character.
 
         Field Specifiers
         ----------------
-        t : The title field
-        f : The firstNames field
-        n : The nickame field, wrapped in single quotes
-        p : The prefix field
-        l : The lastName field
-        s : The suffix field
-        a : The alias field, wrapped in parentheses
-        z : The postNominals field
-        i : The firstNames field represented as initials, each with a trailing period and space
-        I : The firstNames field represented as initials, each with neither trailing period nor space
-        J : The firstNames field represented as initials, each with a trailing space
-        K : The firstNames field represented as initials, each with a trailing period
-        Each of these field values is automatically space-separated from the preceding value, so there is no need to
-        include spaces between field specifiers. Other non-field-specifier characters in the format string are emitted
-        verbatim.
+        %t : The title field
+        %f : The firstNames field
+        %n : The nickame field, wrapped in single quotes
+        %p : The prefix field
+        %l : The last_name field
+        %s : The suffix field
+        %a : The alias field, wrapped in parentheses
+        %z : The post_nominals field
+        %i : The firstNames field represented as initials, each with a
+            trailing period and space
+        %I : The firstNames field represented as initials, each with neither
+            trailing period nor space
+        %J : The firstNames field represented as initials, each with a
+            trailing space
+        %K : The firstNames field represented as initials, each with a
+            trailing period
+        %% : A literal percent character
+
+        Each of these field values is automatically space-separated from the
+        preceding value, so there is no need to include spaces between field
+        specifiers. Other non-field-specifier characters in the format string
+        are emitted verbatim.
 
         Args:
             fmt: The format to use.
@@ -417,13 +493,13 @@ class Name(BaseModel):
                     case "z":
                         _append(result, self.post_nominals)
                     case "i":
-                        _append(result, self.get_initials())
+                        _append(result, self.initials())
                     case "I":
-                        _append(result, self.get_initials(False, False))
+                        _append(result, self.initials(False, False))
                     case "J":
-                        _append(result, self.get_initials(False, True))
+                        _append(result, self.initials(False, True))
                     case "K":
-                        _append(result, self.get_initials(True, False))
+                        _append(result, self.initials(True, False))
                     case "%":
                         result.append(c)
                     case _:
