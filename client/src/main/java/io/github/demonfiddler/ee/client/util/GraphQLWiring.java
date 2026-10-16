@@ -45,14 +45,15 @@ public class GraphQLWiring implements RuntimeWiringConfigurer {
 
 	public void configure(graphql.schema.idl.RuntimeWiring.Builder builder) {
 		builder //
-			.scalar(GraphQLScalarType.newScalar(CustomScalars.COUNTRY).name("Country").build())
+			.scalar(GraphQLScalarType.newScalar(CustomScalars.Country).name("Country").build())
 			.scalar(GraphQLScalarType.newScalar(ExtendedScalars.Date).name("Date").build())
 			.scalar(GraphQLScalarType.newScalar(ExtendedScalars.DateTime).name("DateTime").build())
+			.scalar(GraphQLScalarType.newScalar(ExtendedScalars.GraphQLLong).name("ID").build())
 			.scalar(GraphQLScalarType.newScalar(CustomScalars.ISSN).name("ISSN").build())
 			.scalar(GraphQLScalarType.newScalar(ExtendedScalars.GraphQLLong).name("Long").build())
 			.scalar(GraphQLScalarType.newScalar(CustomScalars.URI).name("URI").build())
 			.scalar(GraphQLScalarType.newScalar(CustomScalars.URL).name("URL").build())
-			.scalar(GraphQLScalarType.newScalar(CustomScalars.VOID).name("Void").build());
+			.scalar(GraphQLScalarType.newScalar(CustomScalars.Void).name("Void").build());
 	}
 
 }

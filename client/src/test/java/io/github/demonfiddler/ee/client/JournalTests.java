@@ -104,7 +104,10 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 				abbreviation
 				url
 				issn
-				publisher
+				publisher {
+					id
+					name
+				}
 				notes
 				peerReviewed
 			}
@@ -137,6 +140,10 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 					status%s
 					title
 					notes
+					publisher {
+						id
+						name
+					}
 				}
 			}
 			""";
@@ -178,7 +185,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 			.withTitle("Test title") //
 			.withAbbreviation("Tst jour") //
 			.withUrl(URI.create("http://domain.org").toURL()) //
-			.withIssn(generateRandomIssn()) // "^[0-9]{4}-[0-9]{3}[0-9X]$"
+			.withIssn(generateRandomIssn()) // "^\d{4}-\d{3}[\dX]$"
 			// .withPublisherId(0L) //
 			.withNotes("Test notes") //
 			.build();
@@ -222,7 +229,7 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 			.withTitle("Updated test Title") //
 			.withAbbreviation("Upd Tst Jour") //
 			.withUrl(URI.create("http://updated-domain.org").toURL()) //
-			.withIssn(generateRandomIssn()) // "^[0-9]{4}-[0-9]{3}[0-9X]$"
+			.withIssn(generateRandomIssn()) // "^\d{4}-\d{3}[\dX]$"
 			// .withPublisherId(0L) //
 			.withNotes("Updated test notes") //
 			.build();
@@ -807,10 +814,11 @@ class JournalTests extends AbstractTrackedEntityTests<Journal> {
 	}
 
 	private String generateRandomIssn() {
+		// ^\\d{4}-\\d{3}[\\dX]?$
 		StringBuilder issn = new StringBuilder(9);
 		issn.append(RANDOM.nextInt(100000000));
 		for (int i = 0, n = 8 - issn.length(); i < n; i++)
-			issn.insert(0, '0');
+			issn.append(RANDOM.nextInt(10));
 		issn.insert(4, '-');
 		return issn.toString();
 	}

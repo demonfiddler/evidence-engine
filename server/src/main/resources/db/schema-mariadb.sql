@@ -217,7 +217,7 @@ CREATE TABLE IF NOT EXISTS "journal" (
   FULLTEXT KEY "journal_fulltext" ("title","abbreviation","url","issn","notes"),
   CONSTRAINT "FK_journal_entity" FOREIGN KEY ("id") REFERENCES "entity" ("id") ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT "FK_journal_publisher" FOREIGN KEY ("publisher_id") REFERENCES "publisher" ("id") ON UPDATE CASCADE ON DELETE SET NULL,
-  CONSTRAINT "CC_journal_issn" CHECK ("issn" regexp '^(\\d{4}-\\d{3}[\\dX])?$')
+  CONSTRAINT "CC_journal_issn" CHECK ("issn" regexp '^\\d{4}-\\d{3}[\\dX]$')
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Definitive list of journal titles, abbreviations, etc.';
 
 -- Dumping structure for table evidence_engine.log

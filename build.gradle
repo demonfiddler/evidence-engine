@@ -25,7 +25,14 @@ allprojects {
     version = rootProject.version
 }
 
-subprojects {
+def javaProjects = [
+    project('client'),
+    project('codegen'),
+    project('common'),
+    project('server')
+]
+
+configure(javaProjects) {
     apply plugin: 'java'
 
     java {
@@ -37,6 +44,7 @@ subprojects {
 
     test {
         useJUnitPlatform()
+        systemProperty 'spring.profiles.active', 'integration-test'
     }
 
     tasks.withType(JavaCompile).configureEach {

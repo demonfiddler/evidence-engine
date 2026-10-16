@@ -30,7 +30,7 @@ generateServerCodeConf {
 		[
 			graphQLTypeName: 'Country',
 			javaType: 'java.lang.String',
-			graphQLScalarTypeStaticField: 'io.github.demonfiddler.ee.common.graphql.CustomScalars.COUNTRY'
+			graphQLScalarTypeStaticField: 'io.github.demonfiddler.ee.common.graphql.CustomScalars.Country'
 		], [
 			graphQLTypeName: 'Date',
 			javaType: 'java.time.LocalDate',
@@ -39,6 +39,10 @@ generateServerCodeConf {
 			graphQLTypeName: 'DateTime',
 			javaType: 'java.time.OffsetDateTime',
 			graphQLScalarTypeStaticField: 'graphql.scalars.ExtendedScalars.DateTime'
+		], [
+			graphQLTypeName: 'ID',
+			javaType: 'java.lang.Long',
+			graphQLScalarTypeStaticField: 'graphql.scalars.ExtendedScalars.GraphQLLong'
 		], [
 			graphQLTypeName: 'ISSN',
 			javaType: 'java.lang.String',
@@ -58,7 +62,7 @@ generateServerCodeConf {
 		], [
 			graphQLTypeName: 'Void',
 			javaType: 'java.lang.Void',
-			graphQLScalarTypeStaticField: 'io.github.demonfiddler.ee.common.graphql.CustomScalars.VOID'
+			graphQLScalarTypeStaticField: 'io.github.demonfiddler.ee.common.graphql.CustomScalars.Void'
 		]
 	]
 //	enumPrefix = 
@@ -108,7 +112,7 @@ generateClientCodeConf {
 		[
 			graphQLTypeName: "Country",
 			javaType: "java.lang.String",
-			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.common.graphql.CustomScalars.COUNTRY"
+			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.common.graphql.CustomScalars.Country"
 		], [
 			graphQLTypeName: "Date",
 			javaType: "java.time.LocalDate",
@@ -117,6 +121,10 @@ generateClientCodeConf {
 			graphQLTypeName: "DateTime",
 			javaType: "java.time.OffsetDateTime",
 			graphQLScalarTypeStaticField: "graphql.scalars.ExtendedScalars.DateTime"
+		], [
+			graphQLTypeName: "ID",
+			javaType: "java.lang.Long",
+			graphQLScalarTypeStaticField: "graphql.scalars.ExtendedScalars.GraphQLLong"
 		], [
 			graphQLTypeName: "ISSN",
 			javaType: "java.lang.String",
@@ -136,7 +144,7 @@ generateClientCodeConf {
 		], [
 			graphQLTypeName: "Void",
 			javaType: "java.lang.Void",
-			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.common.graphql.CustomScalars.VOID"
+			graphQLScalarTypeStaticField: "io.github.demonfiddler.ee.common.graphql.CustomScalars.Void"
 		]
 	]
 	// javaTypeForIDType = 'java.lang.Long' // Incredibly, this setting is not supported for client codegen!

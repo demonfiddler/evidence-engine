@@ -891,6 +891,7 @@ class PublicationTests extends AbstractLinkableEntityTests<Publication> {
 	}
 
 	private String generateRandomDoi() {
+		// ^10\.\d{4,9}/[A-Z0-9-._:;()<>/]+$
 		StringBuilder doi = new StringBuilder("10.");
 		int prefix = 1000 + RANDOM.nextInt(999);
 		doi.append(prefix);
@@ -901,7 +902,20 @@ class PublicationTests extends AbstractLinkableEntityTests<Publication> {
 	}
 
 	private String generateRandomIsbn() {
-		// ISBN format: prefix-registrationgroup-registrant-publication-checksum
+		// From: https://en.wikipedia.org/wiki/ISBN
+		// The single-digit registration groups within the 978-prefix element are: 0 or 1 for English-speaking countries; 2 for French-speaking countries; 3 for German-speaking countries; 4 for Japan; 5 for Russian-speaking countries; and 7 for the People's Republic of China.
+		// As of March 2026, the allocated registration groups for prefix 978- are: 0–5, 600–634, 65 , 69990, 7, 80–94, 950–989, 9905–9989, and 99901–99998
+		// The registration groups within prefix element 979 that have been assigned are 8 for the United States of America, 10 for France, 11 for the Republic of Korea, and 12 for Italy.
+		// <isbn> ::= [<prefix_element>-]<registration_group>-<registrant>-<publication>-<check_digit>
+		// <prefix_element> ::= 97[89]
+		// <registration_group-978> ::= [0-57]|6[0-2]\d|63[0-4]|65|69990|8\d|9[0-4]|9[5-8]\d|990[5-9]|99[1-8]\d|9990[1-9]|99[1-8]\d\d|9999[0-8]
+		// <registration_group-979> ::= 8|1[0-2]
+		// <registration_group> ::= \d{1,5}
+		// <registrant> ::= \d{1,7}
+		// <publication> ::= \d{1,6}
+		// <check_digit> ::= \d
+		// <isbn> ::= (?=[\d-]{10}|[\d-]{13,14}|[\d-]{17}$)^(?:97[89]-?)?(?:\d{1,5}-?)(?:\d{1,7}-?)(?:\d{1,6}-?)(?:[\dX])$
+		//
 		// For simplicity's sake, we will generate 13-digit ISBNs with a 978- prefix
 		// and a publication element length of 4-digits.
 		// Format: 978-x-xxxx-xxxx-x

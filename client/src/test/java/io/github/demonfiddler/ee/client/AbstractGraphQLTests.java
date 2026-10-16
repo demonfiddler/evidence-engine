@@ -43,6 +43,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.google.common.collect.Range;
 import com.google.common.truth.Ordered;
@@ -51,11 +52,14 @@ import io.github.demonfiddler.ee.client.util.Authenticator;
 import io.github.demonfiddler.ee.client.util.MutationExecutor;
 import io.github.demonfiddler.ee.client.util.QueryExecutor;
 
+@ActiveProfiles("integration-test")
 abstract class AbstractGraphQLTests {
 
 	static record EntityMetaData(String name, EntityKind kind) {
 	}
 
+	static final String FORMAT_LONG = "(format: LONG)";
+	static final String FORMAT_SHORT = "(format: SHORT)";
 	static final String NL = System.lineSeparator();
 	static final boolean CASE_INSENSITIVE = Boolean.getBoolean("ee.test.case-insensitive");
 

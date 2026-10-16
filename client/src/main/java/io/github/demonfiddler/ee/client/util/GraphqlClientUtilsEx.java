@@ -24,11 +24,14 @@ import java.lang.reflect.Method;
 
 import org.springframework.stereotype.Component;
 
+import com.graphql_java_generator.client.CustomScalarRegistryImpl;
 import com.graphql_java_generator.client.GraphqlClientUtils;
 import com.graphql_java_generator.client.request.InputParameter;
 import com.graphql_java_generator.client.request.ObjectResponse;
 import com.graphql_java_generator.exception.GraphQLRequestPreparationException;
 import com.graphql_java_generator.util.GraphqlUtils;
+
+import graphql.schema.GraphQLScalarType;
 
 /**
  * Extended to support field and method inheritance. The standard implementation only checks the most-derived class or
@@ -50,6 +53,37 @@ public class GraphqlClientUtilsEx extends GraphqlClientUtils {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Returns the GraphQL scalar type for the given Standard or Custom Scalar name, as defined in the GraphQL schema.
+	 * The {@link GraphQLScalarType} contains the method that allows to parse a String value, parse an AST value, or
+	 * serialize the value (for instance to write it into a JSON string)
+	 * 
+	 * @param typeName
+	 * @param schema
+	 *            value of the <i>springBeanSuffix</i> plugin parameter for the searched schema. When there is only one
+	 *            schema, this plugin parameter is usually not set. In this case, its default value ("") is used.
+	 * @return The GraphQL type. Or null if not found (enum, object, input type, interface, union)
+	 */
+	@Override
+	public GraphQLScalarType getGraphQLScalarTypeFromName(String typeName, String schema) {
+
+		// Is it a known type ?
+		if (typeName.equals("String")) {
+			return graphql.Scalars.GraphQLString;
+		} else if (typeName.equals("Boolean")) {
+			return graphql.Scalars.GraphQLBoolean;
+		} else if (typeName.equals("Float")) {
+			return graphql.Scalars.GraphQLFloat;
+		} else if (typeName.equals("Int")) {
+			return graphql.Scalars.GraphQLInt;
+		// Force the runtime to use our implementation of ID.
+		// } else if (typeName.equals("ID")) {
+		// 	return graphql.Scalars.GraphQLID;
+		}
+
+		return CustomScalarRegistryImpl.getGraphQLCustomScalarType(schema, typeName);
 	}
 
 	/**

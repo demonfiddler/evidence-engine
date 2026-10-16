@@ -8,6 +8,16 @@ EE_DEPLOYMENT_URI=scp://user@server.tld$EE_DEPLOYMENT_DIR
 ```
 
 ## Development
+
+### Building
+```bash
+$ cd $EE_BASE_DIR
+$ ./gradlew build -Pprofile=development|local|production|integration-test
+```
+See also [TESTING.md](TESTING.md)
+
+
+### Launching
 To launch the server as a Java process
 
 From your IDE, from the ``server`` project:
@@ -16,8 +26,8 @@ java io.github.demonfiddler.ee.server.EvidenceEngineServer --spring.profiles.act
 ```
 To launch the web client, from the ``web-client`` project:
 ```
-cd $EE_BASE_DIR/web-client
-pnpm dev
+$ cd $EE_BASE_DIR/web-client
+$ pnpm dev
 ```
 
 ## Production

@@ -91,7 +91,7 @@ public class EntityUtils {
 	private static final BidiMap<Class<?>, EntityKind> ENTITY_KINDS = new DualHashBidiMap<>();
 	private static final BidiMap<Class<?>, String> ENTITY_NAMES = new DualHashBidiMap<>();
 	private static final Collection<String> BASE_TABLE_FIELDS =
-		List.of("id", "dtype", "status", "rating", "created", "createdByUserId", "updated", "updatedByUserId");
+		List.of("dtype", "status", "rating", "created", "createdByUserId", "updated", "updatedByUserId");
 	/** Maps 'from' entity kind to legal 'to' entity kinds. */
 	private static final Map<EntityKind, Collection<EntityKind>> ENTITY_KIND_LINK_MAP = Map.of( //
 		CLA, List.of(DEC, PER, PUB, QUO), //

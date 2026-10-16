@@ -77,9 +77,9 @@ public class Log implements IBaseEntity {
 		listDepth = 0)
 	String transactionKind;
 
-	@Column(name = "entity_id", nullable = false, insertable=false, updatable=false)
-	@GraphQLScalar(fieldName = "entityId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
-	Long entityId;
+	// @Column(name = "entity_id", nullable = false, insertable=false, updatable=false)
+	// @GraphQLScalar(fieldName = "entityId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
+	// Long entityId;
 
 	/**
 	 * The entity affected.
@@ -88,9 +88,9 @@ public class Log implements IBaseEntity {
 	@JoinColumn(name = "entity_id")
 	AbstractTrackedEntity entity;
 
-	@Column(name = "linked_entity_id", insertable=false, updatable=false)
-	@GraphQLScalar(fieldName = "linkedEntityId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
-	Long linkedEntityId;
+	// @Column(name = "linked_entity_id", insertable=false, updatable=false)
+	// @GraphQLScalar(fieldName = "linkedEntityId", graphQLTypeSimpleName = "Long", javaClass = Long.class, listDepth = 0)
+	// Long linkedEntityId;
 
 	/**
 	 * The linked/unlinked entity (where applicable).
@@ -170,7 +170,8 @@ public class Log implements IBaseEntity {
 	 */
 	@Transient
 	public Long getEntityId() {
-		return entityId;
+		// return entityId;
+		return entity != null ? entity.getId() : null;
 	}
 
 	/**
@@ -200,7 +201,8 @@ public class Log implements IBaseEntity {
 	 */
 	@Transient
 	public Long getLinkedEntityId() {
-		return linkedEntityId;
+		// return linkedEntityId;
+		return linkedEntity != null ? linkedEntity.getId() : null;
 	}
 
 	/**
@@ -229,11 +231,11 @@ public class Log implements IBaseEntity {
 			+ ", " //
 			+ "entityKind: " + this.getEntityKind() //
 			+ ", " //
-			+ "entityId: " + this.entityId //
+			+ "entityId: " + this.getEntityId() //
 			+ ", " //
 			+ "linkedEntityKind: " + this.getLinkedEntityKind() //
 			+ ", " //
-			+ "linkedEntityId: " + this.linkedEntityId //
+			+ "linkedEntityId: " + this.getLinkedEntityId() //
 			+ "}"; //
 	}
 

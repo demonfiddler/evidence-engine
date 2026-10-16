@@ -7,7 +7,7 @@ DateTime,java.time.OffsetDateTime
 LogQueryFilter,io.github.demonfiddler.ee.client.LogQueryFilter
 QuotationInput,io.github.demonfiddler.ee.client.QuotationInput
 LinkAudit,io.github.demonfiddler.ee.client.LinkAudit
-ID,java.lang.String
+ID,java.lang.Long
 Boolean,java.lang.Boolean
 EntityStatistics,io.github.demonfiddler.ee.client.EntityStatistics
 ClaimInput,io.github.demonfiddler.ee.client.ClaimInput

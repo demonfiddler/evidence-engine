@@ -31,8 +31,10 @@ public class CustomScalars {
 	 * Custom Scalar for ISO-3166-1 alpha-2 country code. Values represented as strings and validated using a regular
 	 * expression.
 	 */
-	public static GraphQLScalarType COUNTRY =
+	public static GraphQLScalarType Country =
 		ExtendedScalars.newRegexScalar("Country").addPattern(Pattern.compile("^[A-Z]{2}$")).build();
+	/** Custom Scalar for ID values. Values represented as {@code java.lang.Long} instances. */
+	public static GraphQLScalarType ID = GraphQLScalarTypeID.INSTANCE;
 	/**
 	 * Custom Scalar for ISSN values (International Standard Serial Number). Values represented as strings and validated
 	 * using a regular expression.
@@ -44,6 +46,6 @@ public class CustomScalars {
 	/** Custom Scalar for URL values. Values represented as {@code java.net.URL} instances. */
 	public static GraphQLScalarType URL = GraphQLScalarTypeURL.INSTANCE;
 	/** Custom Scalar for Void values. Values represented as {@code null} references. */
-	public static GraphQLScalarType VOID = GraphQLScalarTypeVoid.INSTANCE;
+	public static GraphQLScalarType Void = GraphQLScalarTypeVoid.INSTANCE;
 
 }

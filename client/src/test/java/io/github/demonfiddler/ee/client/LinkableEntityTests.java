@@ -980,7 +980,7 @@ class LinkableEntityTests extends AbstractLinkTests {
             default:
                 throw new IllegalArgumentException("Unsupported EntityKind: " + entityKind);
         }
-        return responseDef.formatted("");
+        return responseDef.formatted(FORMAT_LONG);
     }
 
     private void checkPage(AbstractPage<?> actual, boolean status, boolean text, Long topicId, boolean recursive,

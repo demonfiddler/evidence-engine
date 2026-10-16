@@ -36,6 +36,7 @@ import org.apache.commons.csv.QuoteMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.graphql_java_generator.exception.GraphQLRequestExecutionException;
@@ -63,6 +64,7 @@ import io.github.demonfiddler.ee.client.util.QueryExecutor;
  * the <a href="https://campaign-resources.org/climate-scence-client/" target="_blank">climate-scence-client</a> application.
  */
 @Component
+@Profile("!integration-test")
 public class LoadCsvRunner extends AbstractClientRunner {
 
     static enum RecordKind {

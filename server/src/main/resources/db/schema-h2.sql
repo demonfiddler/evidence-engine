@@ -33,8 +33,8 @@ CREATE INDEX "abbreviation_abbreviation" ON "abbreviation" ("abbreviation");
 
 CREATE TABLE "config" (
   "property" VARCHAR(50) NOT NULL COMMENT 'The property name',
-  "subscript" TINYINT(4) NOT NULL DEFAULT '0' COMMENT 'For a multi-valued property, the unique item index',
-  "value" VARCHAR(255) NULL DEFAULT NULL COMMENT 'The property value as a string',
+  "subscript" SMALLINT NOT NULL DEFAULT '0' COMMENT 'For a multi-valued property, the unique item index',
+  "value" VARCHAR(255) DEFAULT NULL COMMENT 'The property value as a string',
   PRIMARY KEY ("property", "subscript")
 );
 
@@ -71,7 +71,7 @@ CREATE TABLE "comment" (
 CALL FT_CREATE_INDEX('PUBLIC', 'comment', 'text');
 
 CREATE TABLE "country" (
-  "alpha_2" CHAR(2) PRIMARY KEYCOMMENT 'ISO-3166-1 alpha-2 code',
+  "alpha_2" CHAR(2) PRIMARY KEY COMMENT 'ISO-3166-1 alpha-2 code',
   "alpha_3" CHAR(3) NOT NULL UNIQUE COMMENT 'ISO-3166-1 alpha-3 code',
   "numeric" CHAR(3) NOT NULL UNIQUE CHECK ("numeric" REGEXP '^\d{3}$') COMMENT 'ISO-3166-1 numeric code',
   "iso_name" VARCHAR(100) NOT NULL UNIQUE COMMENT 'Official/ISO country name',
@@ -132,10 +132,10 @@ CREATE TABLE "journal" (
   "title" VARCHAR(200) NOT NULL COMMENT 'The journal, etc. title',
   "abbreviation" VARCHAR(100) DEFAULT NULL COMMENT 'The official ISO 4 title abbreviation, with periods',
   "url" VARCHAR(200) DEFAULT NULL COMMENT 'Web link to the journal''s home page',
-  "issn" CHAR(9) DEFAULT NULL UNIQUE CHECK ("issn" REGEXP '^\\d{4}-\\d{3}[\\dX]$') COMMENT 'The International Standard Serial Number',
+  "issn" CHAR(9) DEFAULT NULL UNIQUE CHECK ("issn" REGEXP '^\d{4}-\d{3}[\dX]$') COMMENT 'The International Standard Serial Number',
   "publisher_id" BIGINT DEFAULT NULL COMMENT 'The ID of the publisher',
   "notes" VARCHAR(65535) DEFAULT NULL COMMENT 'A brief description of the journal',
-  "peer_reviewed" BOOLEAN DEFAULT NULL COMMENT 'Whether the journal publishes peer-reviewed articles',
+  "peer_reviewed" BOOLEAN DEFAULT NULL COMMENT 'Whether the journal publishes peer-reviewed articles'
 );
 CREATE UNIQUE INDEX "journal_issn" ON "journal" ("issn");
 CREATE INDEX "journal_title" ON "journal" ("title");
@@ -200,22 +200,22 @@ CREATE TABLE "publication" (
   "abstract" VARCHAR(65535) DEFAULT NULL COMMENT 'Abstract from the article',
   "notes" VARCHAR(65535) DEFAULT NULL COMMENT 'Added notes about the publication',
   "peer_reviewed" BOOLEAN DEFAULT NULL COMMENT 'Whether the article was peer-reviewed',
-  "doi" VARCHAR(100) DEFAULT NULL UNIQUE CHECK("doi" REGEXP '^10\\.\\d{4,9}/[A-Z0-9-._:;()<>/]+$') COMMENT 'Digital Object Identifier',
-  "isbn" VARCHAR(20) DEFAULT NULL UNIQUE CHECK("isbn" REGEXP '^(?=(?:\d[- ]?){13}$|(?:\\d[- ]?){9}[\dXx]$)\\d{1,5}[- ]?\\d{1,7}[- ]?\\d{1,7}[- ]?[\\dXx]$') COMMENT 'International Standard Book Number (printed publications only)',
-	"pmcid" VARCHAR(10) DEFAULT NULL UNIQUE CHECK("pmid" REGEXP '^PMC\\d{7}$') COMMENT 'The U.S. National Library of Medicine''s PubMed Central ID',
-	"pmid" VARCHAR(10) DEFAULT NULL UNIQUE CHECK("pmid" REGEXP '^\\d{1,10}$') COMMENT 'The U.S. National Library of Medicine''s PubMed ID',
-	"hsid" VARCHAR(12) DEFAULT NULL UNIQUE CHECK("hsid" REGEXP '^[^/]+/.+$') COMMENT 'The Corporation for National Research Initiatives''s Handle System ID',
-	"arxivid" VARCHAR(15) DEFAULT NULL UNIQUE CHECK("arxivid" REGEXP '^\\d{4}\\.\\d{4,5}(v\\d+)?$') COMMENT 'Cornell University Library''s arXiv.org ID',
-	"biorxivid" VARCHAR(20) DEFAULT NULL UNIQUE CHECK("biorxivid" REGEXP '^10\\.1101\\/\\d+$') COMMENT 'Cold Spring Harbor Laboratory''s bioRxiv.org ID',
-	"medrxivid" VARCHAR(20) DEFAULT NULL UNIQUE CHECK("medrxivid" REGEXP '^10\\.1101\\/\\d+$') COMMENT 'Cold Spring Harbor Laboratory''s medRxiv.org ID',
-	"ericid" VARCHAR(8) DEFAULT NULL UNIQUE CHECK("ericid" REGEXP '^(?i)ED\\d{6}$') COMMENT 'U.S. Department of Education''s ERIC database ID (niche)',
-	"ihepid" VARCHAR(10) DEFAULT NULL UNIQUE CHECK("ihepid" REGEXP '^\\d{6,10}$') COMMENT 'CERN''s INSPIRE-HEP ID',
-	"oaipmhid" VARCHAR(50) DEFAULT NULL UNIQUE CHECK("oaipmhid" REGEXP '^oai:[^:]+:[^:]+$') COMMENT 'Open Archives Initiative''s OAI-PMH ID',
-	"halid" VARCHAR(20) DEFAULT NULL UNIQUE CHECK("halid" REGEXP '^hal-\\d{6,10}$') COMMENT 'CNRS (France)''s HAL ID',
-	"zenodoid" VARCHAR(10) DEFAULT NULL UNIQUE CHECK("zenodoid" REGEXP '^\\d{6,10}$') COMMENT 'CERN''s Zenodo Record ID',
-	"scopuseid" VARCHAR(16) DEFAULT NULL UNIQUE CHECK("scopuseid" REGEXP '^\\d{8,16}$') COMMENT 'Elsevier''s SCOPUS database EID (proprietary)',
-	"wsan" VARCHAR(25) DEFAULT NULL UNIQUE CHECK("wsan" REGEXP '[A-Z0-9]{15,25}$') COMMENT 'Clarivate''s Web of Science Accession Number (UT) (proprietary)',
-	"pinfoan" VARCHAR(30) DEFAULT NULL UNIQUE CHECK("pinfoan" REGEXP '^[A-Z0-9\\-]{10,30}$') COMMENT 'American Psychological Association''s PsycINFO Accession Number (proprietary/niche)',
+  "doi" VARCHAR(100) DEFAULT NULL UNIQUE CHECK ("doi" REGEXP '^10\.\d{4,9}/[A-Z0-9-._:;()<>/]+$') COMMENT 'Digital Object Identifier',
+  "isbn" VARCHAR(20) DEFAULT NULL UNIQUE COMMENT 'International Standard Book Number (printed publications only)',
+	"pmcid" VARCHAR(10) DEFAULT NULL UNIQUE CHECK ("pmid" REGEXP '^PMC\d{7}$') COMMENT 'The U.S. National Library of Medicine''s PubMed Central ID',
+	"pmid" VARCHAR(10) DEFAULT NULL UNIQUE CHECK ("pmid" REGEXP '^\d{1,10}$') COMMENT 'The U.S. National Library of Medicine''s PubMed ID',
+	"hsid" VARCHAR(12) DEFAULT NULL UNIQUE CHECK ("hsid" REGEXP '^[^/]+/.+$') COMMENT 'The Corporation for National Research Initiatives''s Handle System ID',
+	"arxivid" VARCHAR(15) DEFAULT NULL UNIQUE CHECK ("arxivid" REGEXP '^\d{4}\.\d{4,5}(v\d+)?$') COMMENT 'Cornell University Library''s arXiv.org ID',
+	"biorxivid" VARCHAR(20) DEFAULT NULL UNIQUE CHECK ("biorxivid" REGEXP '^10\.1101\/\d+$') COMMENT 'Cold Spring Harbor Laboratory''s bioRxiv.org ID',
+	"medrxivid" VARCHAR(20) DEFAULT NULL UNIQUE CHECK ("medrxivid" REGEXP '^10\.1101\/\d+$') COMMENT 'Cold Spring Harbor Laboratory''s medRxiv.org ID',
+	"ericid" VARCHAR(8) DEFAULT NULL UNIQUE CHECK ("ericid" REGEXP '^(?i)ED\d{6}$') COMMENT 'U.S. Department of Education''s ERIC database ID (niche)',
+	"ihepid" VARCHAR(10) DEFAULT NULL UNIQUE CHECK ("ihepid" REGEXP '^\d{6,10}$') COMMENT 'CERN''s INSPIRE-HEP ID',
+	"oaipmhid" VARCHAR(50) DEFAULT NULL UNIQUE CHECK ("oaipmhid" REGEXP '^oai:[^:]+:[^:]+$') COMMENT 'Open Archives Initiative''s OAI-PMH ID',
+	"halid" VARCHAR(20) DEFAULT NULL UNIQUE CHECK ("halid" REGEXP '^hal-\d{6,10}$') COMMENT 'CNRS (France)''s HAL ID',
+	"zenodoid" VARCHAR(10) DEFAULT NULL UNIQUE CHECK ("zenodoid" REGEXP '^\d{6,10}$') COMMENT 'CERN''s Zenodo Record ID',
+	"scopuseid" VARCHAR(16) DEFAULT NULL UNIQUE CHECK ("scopuseid" REGEXP '^\d{8,16}$') COMMENT 'Elsevier''s SCOPUS database EID (proprietary)',
+	"wsan" VARCHAR(25) DEFAULT NULL UNIQUE CHECK ("wsan" REGEXP '[A-Z0-9]{15,25}$') COMMENT 'Clarivate''s Web of Science Accession Number (UT) (proprietary)',
+	"pinfoan" VARCHAR(30) DEFAULT NULL UNIQUE CHECK ("pinfoan" REGEXP '^[A-Z0-9\-]{10,30}$') COMMENT 'American Psychological Association''s PsycINFO Accession Number (proprietary/niche)',
   "url" VARCHAR(200) DEFAULT NULL COMMENT 'URL of the publication',
   "cached" BOOLEAN DEFAULT FALSE NOT NULL COMMENT 'Flag to indicate that url content is cached on this application server',
   "accessed" DATE DEFAULT NULL COMMENT 'Date a web page was accessed'

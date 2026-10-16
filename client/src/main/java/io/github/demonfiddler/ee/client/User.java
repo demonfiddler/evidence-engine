@@ -296,7 +296,7 @@ public class User extends AbstractTrackedEntity {
 			+ ", " //
 			+ "authorities: " + this.authorities //
 			+ ", " //
-			+ "groups: " + this.getGroups().stream().map(g -> g.getGroupname()).toList() //
+			+ "groups: " + (this.getGroups() == null ? null :this.getGroups().stream().map(g -> g.getGroupname()).toList()) //
 			+ ", " //
 			+ "__typename: " + this.__typename //
 			+ "}";

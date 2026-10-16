@@ -35,6 +35,7 @@ directive @label(label: String!) on ENUM_VALUE
 scalar Country @specifiedBy(url: "https://www.iso.org/obp/ui/#search")
 scalar Date @specifiedBy(url: "https://www.iso.org/iso-8601-date-and-time-format.html")
 scalar DateTime @specifiedBy(url: "https://www.iso.org/iso-8601-date-and-time-format.html")
+scalar ID @specifiedBy(url: "https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Long.html")
 scalar ISSN @specifiedBy(url: "https://www.issn.org/understanding-the-issn/what-is-an-issn/")
 scalar Long @specifiedBy(url: "https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Long.html")
 scalar URI @specifiedBy(url: "http://www.ietf.org/rfc/rfc2396.txt")

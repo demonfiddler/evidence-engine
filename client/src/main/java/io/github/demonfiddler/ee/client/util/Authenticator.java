@@ -62,7 +62,7 @@ public class Authenticator {
         """;
 
     private WebClient webClient;
-    @Value(value = "${graphql.endpoint.url}")
+    @Value("${graphql.endpoint.url}")
     private String _url;
     @Value("${spring.security.user.name}")
     private String _username;

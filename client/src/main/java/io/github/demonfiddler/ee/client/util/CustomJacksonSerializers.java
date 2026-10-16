@@ -20,6 +20,7 @@
 package io.github.demonfiddler.ee.client.util;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 import com.graphql_java_generator.client.request.AbstractCustomJacksonSerializer;
 
@@ -38,34 +39,7 @@ public class CustomJacksonSerializers {
 
 		private static final long serialVersionUID = 1L;
 		public Country() {
-			super(String.class, 0, CustomScalars.COUNTRY);
-		}
-
-	}
-
-	public static class ISSN extends AbstractCustomJacksonSerializer<String> {
-
-		private static final long serialVersionUID = 1L;
-		public ISSN() {
-			super(String.class, 0, io.github.demonfiddler.ee.common.graphql.CustomScalars.ISSN);
-		}
-
-	}
-
-	public static class Long extends AbstractCustomJacksonSerializer<Long> {
-
-		private static final long serialVersionUID = 1L;
-		public Long() {
-			super(Long.class, 0, graphql.scalars.ExtendedScalars.GraphQLLong);
-		}
-
-	}
-
-	public static class DateTime extends AbstractCustomJacksonSerializer<java.time.OffsetDateTime> {
-
-		private static final long serialVersionUID = 1L;
-		public DateTime() {
-			super(java.time.OffsetDateTime.class, 0, graphql.scalars.ExtendedScalars.DateTime);
+			super(String.class, 0, CustomScalars.Country);
 		}
 
 	}
@@ -79,11 +53,56 @@ public class CustomJacksonSerializers {
 
 	}
 
-	public static class URL extends AbstractCustomJacksonSerializer<URL> {
+	public static class DateTime extends AbstractCustomJacksonSerializer<OffsetDateTime> {
+
+		private static final long serialVersionUID = 1L;
+		public DateTime() {
+			super(OffsetDateTime.class, 0, ExtendedScalars.DateTime);
+		}
+
+	}
+
+	public static class ID extends AbstractCustomJacksonSerializer<java.lang.Long> {
+
+		private static final long serialVersionUID = 1L;
+		public ID() {
+			super(java.lang.Long.class, 0, ExtendedScalars.GraphQLLong);
+		}
+
+	}
+
+	public static class ISSN extends AbstractCustomJacksonSerializer<String> {
+
+		private static final long serialVersionUID = 1L;
+		public ISSN() {
+			super(String.class, 0, CustomScalars.ISSN);
+		}
+
+	}
+
+	public static class Long extends AbstractCustomJacksonSerializer<java.lang.Long> {
+
+		private static final long serialVersionUID = 1L;
+		public Long() {
+			super(java.lang.Long.class, 0, ExtendedScalars.GraphQLLong);
+		}
+
+	}
+
+	public static class URI extends AbstractCustomJacksonSerializer<java.net.URI> {
+
+		private static final long serialVersionUID = 1L;
+		public URI() {
+			super(java.net.URI.class, 0, CustomScalars.URI);
+		}
+
+	}
+
+	public static class URL extends AbstractCustomJacksonSerializer<java.net.URL> {
 
 		private static final long serialVersionUID = 1L;
 		public URL() {
-			super(URL.class, 0, CustomScalars.URL);
+			super(java.net.URL.class, 0, CustomScalars.URL);
 		}
 
 	}

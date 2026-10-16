@@ -43,6 +43,7 @@ import com.graphql_java_generator.client.SpringContextBean;
 import com.graphql_java_generator.util.GraphqlUtils;
 
 import io.github.demonfiddler.ee.client.util.GraphqlClientUtilsEx;
+import jakarta.annotation.PostConstruct;
 
 /**
  * This Spring {@link AutoConfiguration} class defines the default Spring Beans for this GraphQL schema.
@@ -131,6 +132,11 @@ public class GraphQLPluginAutoConfiguration {
 	@ConditionalOnMissingBean(name = "graphqlUtils")
 	GraphqlUtils graphqlUtils() {
 		return GraphqlUtils.graphqlUtils;
+	}
+
+	@PostConstruct
+	public void logEndpoint() {
+		System.out.println("graphql.endpoint.url=" + graphqlEndpointUrl);
 	}
 
 }

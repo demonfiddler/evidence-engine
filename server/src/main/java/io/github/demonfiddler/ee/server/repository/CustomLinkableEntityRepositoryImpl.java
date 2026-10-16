@@ -405,8 +405,8 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
          * -- if (m.hasTextH2) { ftJoinClause =
          * JOIN FT_SEARCH_DATA(:text, 0, 0) ft
          * ON
-         * ft."TABLE" = '${m.toEntityName}'
-         * AND ft."KEYS"[1] = e."id"
+         * ft."TABLE" = '${m.entityName}'
+         * AND ft."KEYS"[1] = ee."id"
          * -- }
          * 
          * JOIN "${m.entityName}" ee
@@ -574,8 +574,8 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
             ftJoinClause.append(NL) //
                 .append("JOIN FT_SEARCH_DATA(:text, 0, 0) ft").append(NL) //
                 .append("ON").append(NL) //
-                .append("    ft.\"TABLE\" = '").append(m.toEntityName).append('\'').append(NL) //
-                .append("    AND ft.\"KEYS\"[1] = e.\"id\"");
+                .append("    ft.\"TABLE\" = '").append(m.entityName).append('\'').append(NL) //
+                .append("    AND ft.\"KEYS\"[1] = ee.\"id\"");
         }
 
         StringBuilder eeJoinClause = new StringBuilder();

@@ -24,6 +24,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import io.github.demonfiddler.ee.client.ClaimPage;
@@ -50,6 +51,7 @@ import io.github.demonfiddler.ee.client.util.MutationExecutor;
 import io.github.demonfiddler.ee.client.util.QueryExecutor;
 
 @Component
+@Profile("!integration-test")
 public class PublishRunner extends AbstractClientRunner {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PublishRunner.class);

@@ -31,6 +31,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.graphql_java_generator.exception.GraphQLRequestExecutionException;
@@ -61,6 +62,7 @@ import io.github.demonfiddler.ee.client.util.QueryExecutor;
  * Links Publications and Quotations to Claim Topics, and Persons to Claims and Topics linked to authored Publications.
  */
 @Component
+@Profile("!integration-test")
 public class LinkRunner extends AbstractClientRunner {
 
     /**

@@ -61,200 +61,11 @@ import io.github.demonfiddler.ee.common.graphql.CustomScalars;
 @SuppressWarnings("unused")
 public class CustomJacksonDeserializers {
 
-	public static class List__InputValue extends AbstractCustomJacksonDeserializer<List<__InputValue>> {
+	public static class Country extends AbstractCustomJacksonDeserializer<LocalDate> {
 
 		private static final long serialVersionUID = 1L;
-		public List__InputValue() {
-			super(null, true, __InputValue.class, null);
-		}
-
-	}
-
-	public static class List__Directive extends AbstractCustomJacksonDeserializer<List<__Directive>> {
-
-		private static final long serialVersionUID = 1L;
-		public List__Directive() {
-			super(null, true, __Directive.class, null);
-		}
-
-	}
-
-	public static class ListJournal extends AbstractCustomJacksonDeserializer<List<Journal>> {
-
-		private static final long serialVersionUID = 1L;
-		public ListJournal() {
-			super(null, true, Journal.class, null);
-		}
-
-	}
-
-	public static class ListTopic extends AbstractCustomJacksonDeserializer<List<Topic>> {
-
-		private static final long serialVersionUID = 1L;
-		public ListTopic() {
-			super(null, true, Topic.class, null);
-		}
-
-	}
-
-	public static class ListLog extends AbstractCustomJacksonDeserializer<List<Log>> {
-
-		private static final long serialVersionUID = 1L;
-		public ListLog() {
-			super(null, true, Log.class, null);
-		}
-
-	}
-
-	public static class ListEntityStatistics extends AbstractCustomJacksonDeserializer<List<EntityStatistics>> {
-
-		private static final long serialVersionUID = 1L;
-		public ListEntityStatistics() {
-			super(null, true, EntityStatistics.class, null);
-		}
-
-	}
-
-	public static class List__EnumValue extends AbstractCustomJacksonDeserializer<List<__EnumValue>> {
-
-		private static final long serialVersionUID = 1L;
-		public List__EnumValue() {
-			super(null, true, __EnumValue.class, null);
-		}
-
-	}
-
-	public static class List__Field extends AbstractCustomJacksonDeserializer<List<__Field>> {
-
-		private static final long serialVersionUID = 1L;
-		public List__Field() {
-			super(null, true, __Field.class, null);
-		}
-
-	}
-
-	public static class ListClaim extends AbstractCustomJacksonDeserializer<List<Claim>> {
-
-		private static final long serialVersionUID = 1L;
-		public ListClaim() {
-			super(null, true, Claim.class, null);
-		}
-
-	}
-
-	public static class ListTopicStatistics extends AbstractCustomJacksonDeserializer<List<TopicStatistics>> {
-
-		private static final long serialVersionUID = 1L;
-		public ListTopicStatistics() {
-			super(null, true, TopicStatistics.class, null);
-		}
-
-	}
-
-	public static class ListDeclaration extends AbstractCustomJacksonDeserializer<List<Declaration>> {
-
-		private static final long serialVersionUID = 1L;
-		public ListDeclaration() {
-			super(null, true, Declaration.class, null);
-		}
-
-	}
-
-	public static class List__Type extends AbstractCustomJacksonDeserializer<List<__Type>> {
-
-		private static final long serialVersionUID = 1L;
-		public List__Type() {
-			super(null, true, __Type.class, null);
-		}
-
-	}
-
-	public static class List__DirectiveLocation extends AbstractCustomJacksonDeserializer<List<__DirectiveLocation>> {
-
-		private static final long serialVersionUID = 1L;
-		public List__DirectiveLocation() {
-			super(null, true, __DirectiveLocation.class, null);
-		}
-
-	}
-
-	public static class ListPerson extends AbstractCustomJacksonDeserializer<List<Person>> {
-
-		private static final long serialVersionUID = 1L;
-		public ListPerson() {
-			super(null, true, Person.class, null);
-		}
-
-	}
-
-	public static class ListEntityLink extends AbstractCustomJacksonDeserializer<List<EntityLink>> {
-
-		private static final long serialVersionUID = 1L;
-		public ListEntityLink() {
-			super(null, true, EntityLink.class, null);
-		}
-
-	}
-
-	public static class URL extends AbstractCustomJacksonDeserializer<URL> {
-
-		private static final long serialVersionUID = 1L;
-		public URL() {
-			super(null, false, URL.class, CustomScalars.URL);
-		}
-
-	}
-
-	public static class ListPublication extends AbstractCustomJacksonDeserializer<List<Publication>> {
-
-		private static final long serialVersionUID = 1L;
-		public ListPublication() {
-			super(null, true, Publication.class, null);
-		}
-
-	}
-
-	public static class ListString extends AbstractCustomJacksonDeserializer<List<String>> {
-
-		private static final long serialVersionUID = 1L;
-		public ListString() {
-			super(null, true, String.class, null);
-		}
-
-	}
-
-	public static class ISSN extends AbstractCustomJacksonDeserializer<String> {
-
-		private static final long serialVersionUID = 1L;
-		public ISSN() {
-			super(null, false, String.class, CustomScalars.ISSN);
-		}
-
-	}
-
-	public static class DateTime extends AbstractCustomJacksonDeserializer<OffsetDateTime> {
-
-		private static final long serialVersionUID = 1L;
-		public DateTime() {
-			super(null, false, OffsetDateTime.class, ExtendedScalars.DateTime);
-		}
-
-	}
-
-	public static class Long extends AbstractCustomJacksonDeserializer<Long> {
-
-		private static final long serialVersionUID = 1L;
-		public Long() {
-			super(null, false, Long.class, ExtendedScalars.GraphQLLong);
-		}
-
-	}
-
-	public static class ListQuotation extends AbstractCustomJacksonDeserializer<List<Quotation>> {
-
-		private static final long serialVersionUID = 1L;
-		public ListQuotation() {
-			super(null, true, Quotation.class, null);
+		public Country() {
+			super(null, false, String.class, CustomScalars.Country);
 		}
 
 	}
@@ -268,20 +79,119 @@ public class CustomJacksonDeserializers {
 
 	}
 
-	public static class ListPublisher extends AbstractCustomJacksonDeserializer<List<Publisher>> {
+	public static class DateTime extends AbstractCustomJacksonDeserializer<OffsetDateTime> {
 
 		private static final long serialVersionUID = 1L;
-		public ListPublisher() {
-			super(null, true, Publisher.class, null);
+		public DateTime() {
+			super(null, false, OffsetDateTime.class, ExtendedScalars.DateTime);
 		}
 
 	}
 
-	public static class ListUser extends AbstractCustomJacksonDeserializer<List<User>> {
+	public static class ID extends AbstractCustomJacksonDeserializer<java.lang.Long> {
 
 		private static final long serialVersionUID = 1L;
-		public ListUser() {
-			super(null, true, User.class, null);
+		public ID() {
+			super(null, false, java.lang.Long.class, ExtendedScalars.GraphQLLong);
+		}
+
+	}
+
+	public static class ISSN extends AbstractCustomJacksonDeserializer<String> {
+
+		private static final long serialVersionUID = 1L;
+		public ISSN() {
+			super(null, false, String.class, CustomScalars.ISSN);
+		}
+
+	}
+
+	public static class Long extends AbstractCustomJacksonDeserializer<java.lang.Long> {
+
+		private static final long serialVersionUID = 1L;
+		public Long() {
+			super(null, false, java.lang.Long.class, ExtendedScalars.GraphQLLong);
+		}
+
+	}
+
+	public static class URI extends AbstractCustomJacksonDeserializer<java.net.URI> {
+
+		private static final long serialVersionUID = 1L;
+		public URI() {
+			super(null, false, java.net.URI.class, CustomScalars.URI);
+		}
+
+	}
+
+	public static class URL extends AbstractCustomJacksonDeserializer<java.net.URL> {
+
+		private static final long serialVersionUID = 1L;
+		public URL() {
+			super(null, false, java.net.URL.class, CustomScalars.URL);
+		}
+
+	}
+
+	public static class ListClaim extends AbstractCustomJacksonDeserializer<List<Claim>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListClaim() {
+			super(null, true, Claim.class, null);
+		}
+
+	}
+
+	public static class ListComment extends AbstractCustomJacksonDeserializer<List<Comment>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListComment() {
+			super(null, true, Comment.class, null);
+		}
+
+	}
+
+	public static class ListDeclaration extends AbstractCustomJacksonDeserializer<List<Declaration>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListDeclaration() {
+			super(null, true, Declaration.class, null);
+		}
+
+	}
+
+	public static class ListEntityLink extends AbstractCustomJacksonDeserializer<List<EntityLink>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListEntityLink() {
+			super(null, true, EntityLink.class, null);
+		}
+
+	}
+
+	public static class ListEntityStatistics extends AbstractCustomJacksonDeserializer<List<EntityStatistics>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListEntityStatistics() {
+			super(null, true, EntityStatistics.class, null);
+		}
+
+	}
+
+	public static class ListFieldAuditEntry extends AbstractCustomJacksonDeserializer<List<FieldAuditEntry>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListFieldAuditEntry() {
+			super(null, true, FieldAuditEntry.class, null);
+		}
+
+	}
+
+	public static class ListFieldGroupAuditEntry extends AbstractCustomJacksonDeserializer<List<FieldGroupAuditEntry>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListFieldGroupAuditEntry() {
+			super(null, true, FieldGroupAuditEntry.class, null);
 		}
 
 	}
@@ -295,11 +205,11 @@ public class CustomJacksonDeserializers {
 
 	}
 
-	public static class ListComment extends AbstractCustomJacksonDeserializer<List<Comment>> {
+	public static class ListJournal extends AbstractCustomJacksonDeserializer<List<Journal>> {
 
 		private static final long serialVersionUID = 1L;
-		public ListComment() {
-			super(null, true, Comment.class, null);
+		public ListJournal() {
+			super(null, true, Journal.class, null);
 		}
 
 	}
@@ -322,20 +232,137 @@ public class CustomJacksonDeserializers {
 
 	}
 
-	public static class ListFieldAuditEntry extends AbstractCustomJacksonDeserializer<List<FieldAuditEntry>> {
+	public static class ListLog extends AbstractCustomJacksonDeserializer<List<Log>> {
 
 		private static final long serialVersionUID = 1L;
-		public ListFieldAuditEntry() {
-			super(null, true, FieldAuditEntry.class, null);
+		public ListLog() {
+			super(null, true, Log.class, null);
 		}
 
 	}
 
-	public static class ListFieldGroupAuditEntry extends AbstractCustomJacksonDeserializer<List<FieldGroupAuditEntry>> {
+	public static class ListPerson extends AbstractCustomJacksonDeserializer<List<Person>> {
 
 		private static final long serialVersionUID = 1L;
-		public ListFieldGroupAuditEntry() {
-			super(null, true, FieldGroupAuditEntry.class, null);
+		public ListPerson() {
+			super(null, true, Person.class, null);
+		}
+
+	}
+
+	public static class ListPublication extends AbstractCustomJacksonDeserializer<List<Publication>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListPublication() {
+			super(null, true, Publication.class, null);
+		}
+
+	}
+
+	public static class ListPublisher extends AbstractCustomJacksonDeserializer<List<Publisher>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListPublisher() {
+			super(null, true, Publisher.class, null);
+		}
+
+	}
+
+	public static class ListQuotation extends AbstractCustomJacksonDeserializer<List<Quotation>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListQuotation() {
+			super(null, true, Quotation.class, null);
+		}
+
+	}
+
+	public static class ListString extends AbstractCustomJacksonDeserializer<List<String>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListString() {
+			super(null, true, String.class, null);
+		}
+
+	}
+
+	public static class ListTopic extends AbstractCustomJacksonDeserializer<List<Topic>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListTopic() {
+			super(null, true, Topic.class, null);
+		}
+
+	}
+
+	public static class ListTopicStatistics extends AbstractCustomJacksonDeserializer<List<TopicStatistics>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListTopicStatistics() {
+			super(null, true, TopicStatistics.class, null);
+		}
+
+	}
+
+	public static class ListUser extends AbstractCustomJacksonDeserializer<List<User>> {
+
+		private static final long serialVersionUID = 1L;
+		public ListUser() {
+			super(null, true, User.class, null);
+		}
+
+	}
+
+	public static class List__Directive extends AbstractCustomJacksonDeserializer<List<__Directive>> {
+
+		private static final long serialVersionUID = 1L;
+		public List__Directive() {
+			super(null, true, __Directive.class, null);
+		}
+
+	}
+
+	public static class List__DirectiveLocation extends AbstractCustomJacksonDeserializer<List<__DirectiveLocation>> {
+
+		private static final long serialVersionUID = 1L;
+		public List__DirectiveLocation() {
+			super(null, true, __DirectiveLocation.class, null);
+		}
+
+	}
+
+	public static class List__EnumValue extends AbstractCustomJacksonDeserializer<List<__EnumValue>> {
+
+		private static final long serialVersionUID = 1L;
+		public List__EnumValue() {
+			super(null, true, __EnumValue.class, null);
+		}
+
+	}
+
+	public static class List__Field extends AbstractCustomJacksonDeserializer<List<__Field>> {
+
+		private static final long serialVersionUID = 1L;
+		public List__Field() {
+			super(null, true, __Field.class, null);
+		}
+
+	}
+
+	public static class List__InputValue extends AbstractCustomJacksonDeserializer<List<__InputValue>> {
+
+		private static final long serialVersionUID = 1L;
+		public List__InputValue() {
+			super(null, true, __InputValue.class, null);
+		}
+
+	}
+
+	public static class List__Type extends AbstractCustomJacksonDeserializer<List<__Type>> {
+
+		private static final long serialVersionUID = 1L;
+		public List__Type() {
+			super(null, true, __Type.class, null);
 		}
 
 	}

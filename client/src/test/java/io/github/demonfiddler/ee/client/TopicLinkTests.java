@@ -385,7 +385,7 @@ class TopicLinkTests extends AbstractGraphQLTests {
         PublicationTests.ensureExpectedPublications();
         QuotationTests.ensureExpectedQuotations();
         TopicTests.ensureExpectedTopics();
-        init();
+        TopicLinkTests.init();
     }
 
     @Test
@@ -492,7 +492,7 @@ class TopicLinkTests extends AbstractGraphQLTests {
         TopicLinkTests.publicationTopicLink = null;
         TopicLinkTests.quotationTopicLink = null;
 
-        String deletedStatus = StatusKind.DEL.label();
+        String deletedStatus = StatusKind.DEL.name();
         claimTopicLink = mutationExecutor.deleteEntityLink(RESPONSE_SPEC, claimTopicLink.getId(), Boolean.FALSE);
         assertThat(claimTopicLink).hasStatus(deletedStatus);
         declarationTopicLink = mutationExecutor.deleteEntityLink(RESPONSE_SPEC, declarationTopicLink.getId(), Boolean.FALSE);
@@ -856,7 +856,7 @@ class TopicLinkTests extends AbstractGraphQLTests {
             assertThat(actual).hasId(id);
         assertThat(actual).fromEntity().hasId(topicId);
         assertThat(actual).toEntity().hasId(entityId);
-        assertThat(actual).toEntity().hasEntityKind(entityKind.label());
+        assertThat(actual).toEntity().hasEntityKind(entityKind.name());
         assertThat(actual).hasToEntityLocations(locations);
     }
 

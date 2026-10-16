@@ -229,8 +229,7 @@ abstract class AbstractSecurityTests extends AbstractTrackedEntityTests<ITracked
         });
         List<ResponseError> errors = e.getErrors();
         assertThat(errors).hasSize(1);
-        assertThat(errors.get(0).getMessage())
-            .isEqualTo(authenticator.isAuthenticated() ? "Forbidden" : "Unauthorized");
+        assertThat(errors.get(0).getMessage()).startsWith("You are not authorised to perform the operation.");
     }
 
     private void mutateClaim(OperationKind opcode)

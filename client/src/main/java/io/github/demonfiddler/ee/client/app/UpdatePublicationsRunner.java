@@ -25,6 +25,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import io.github.demonfiddler.ee.client.Journal;
@@ -43,6 +44,7 @@ import io.github.demonfiddler.ee.client.util.QueryExecutor;
  * Runner to update {@code publication.publisher} to match {@code publication.journal.publisher}.
  */
 @Component
+@Profile("!integration-test")
 public class UpdatePublicationsRunner extends AbstractClientRunner {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UpdatePublicationsRunner.class);

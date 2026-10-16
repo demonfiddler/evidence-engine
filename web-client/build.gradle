@@ -95,14 +95,14 @@ task installDependencies(type: Exec) {
     commandLine 'pnpm', 'install'
     inputs.file 'package.json' // Dependency file
     outputs.dir 'node_modules' // Output directory
-    workingDir 'web-client'
+    workingDir projectDir
 }
 
 task buildReact(type: Exec) {
     description = 'Build the Next.js/React application'
     group = 'build'
     commandLine 'pnpm', 'build'
-    workingDir 'web-client'
+    workingDir projectDir
 //    dependsOn installDependencies
 }
 
@@ -110,7 +110,7 @@ task startReact(type: Exec) {
     description = 'Start the Next.js/React development server'
     group = 'application'
     commandLine 'pnpm', 'dev'
-    workingDir 'web-client'
+    workingDir projectDir
 //    dependsOn installDependencies
 }
 

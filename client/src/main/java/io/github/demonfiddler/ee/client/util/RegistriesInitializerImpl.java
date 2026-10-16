@@ -31,7 +31,6 @@ import com.graphql_java_generator.client.directive.DirectiveLocation;
 import com.graphql_java_generator.client.directive.DirectiveRegistry;
 import com.graphql_java_generator.client.directive.DirectiveRegistryImpl;
 import com.graphql_java_generator.client.request.InputParameter;
-import com.graphql_java_generator.customscalars.GraphQLScalarTypeIDClient;
 
 import graphql.scalars.ExtendedScalars;
 import io.github.demonfiddler.ee.common.graphql.CustomScalars;
@@ -170,15 +169,15 @@ public class RegistriesInitializerImpl implements RegistriesInitializer {
 	 */
 	private static void initCustomScalarRegistry() {
 		CustomScalarRegistryImpl.registerCustomScalarRegistry("", (registry) -> {
-			registry.registerGraphQLScalarType("ID", GraphQLScalarTypeIDClient.ID, String.class);
-			registry.registerGraphQLScalarType("Country", CustomScalars.COUNTRY, String.class);
+			registry.registerGraphQLScalarType("ID", CustomScalars.ID, String.class);
+			registry.registerGraphQLScalarType("Country", CustomScalars.Country, String.class);
 			registry.registerGraphQLScalarType("Date", ExtendedScalars.Date, LocalDate.class);
 			registry.registerGraphQLScalarType("DateTime", ExtendedScalars.DateTime, OffsetDateTime.class);
 			registry.registerGraphQLScalarType("ISSN", CustomScalars.ISSN, String.class);
 			registry.registerGraphQLScalarType("Long", ExtendedScalars.GraphQLLong, Long.class);
 			registry.registerGraphQLScalarType("URI", CustomScalars.URI, URI.class);
 			registry.registerGraphQLScalarType("URL", CustomScalars.URL, URL.class);
-			registry.registerGraphQLScalarType("Void", CustomScalars.VOID, Void.class);
+			registry.registerGraphQLScalarType("Void", CustomScalars.Void, Void.class);
 		});
 	}
 
@@ -194,7 +193,7 @@ public class RegistriesInitializerImpl implements RegistriesInitializer {
 
 	@Override
 	public String getPackageName() {
-		return "io.github.demonfiddler.ee.client";
+		return "io.github.demonfiddler.ee.client.util";
 	}
 
 	@Override

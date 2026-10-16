@@ -46,7 +46,9 @@ public class EntityStatusTests extends AbstractGraphQLTests {
 
 	private static final String MINIMAL_RESPONSE_SPEC = """
         {
-            id
+            ... on IBaseEntity {
+                id
+            }
             status%s
         }
         """;
@@ -54,7 +56,9 @@ public class EntityStatusTests extends AbstractGraphQLTests {
         {
             size
             content {
-                id
+                ... on IBaseEntity {
+                    id
+                }
                 status(format: LONG)
             }
         }
@@ -78,15 +82,15 @@ public class EntityStatusTests extends AbstractGraphQLTests {
     @Order(1)
     @EnabledIf("io.github.demonfiddler.ee.client.TestState#hasExpectedEntities")
     void publishEntities() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-        String responseSpec = MINIMAL_RESPONSE_SPEC.formatted("(format: SHORT)");
+        String responseSpec = MINIMAL_RESPONSE_SPEC.formatted(FORMAT_SHORT);
         for (List<? extends ITrackedEntity> list : TestState.getExpectedTrackedEntities()) {
             for (int i = list == TopicTests.topics ? 2 : 1; i < list.size(); i++) {
                 ITrackedEntity entity = list.get(i);
                 Long entityId = entity.getId();
                 ITrackedEntity result = mutationExecutor.setEntityStatus(responseSpec, entityId, PUB);
                 assertThat(result).isNotNull();
-                assertThat(result.getStatus()).isEqualTo("PUB");
-                entity.setStatus(StatusKind.PUB.label());
+                assertThat(result.getStatus()).isEqualTo(PUB.name());
+                entity.setStatus(PUB.label());
             }
         }
     }
@@ -95,9 +99,10 @@ public class EntityStatusTests extends AbstractGraphQLTests {
     @Order(2)
     @EnabledIf("io.github.demonfiddler.ee.client.TestState#hasExpectedEntities")
     void readPublishedEntities() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
-        TrackedEntityQueryFilter trackedEntityFilter = TrackedEntityQueryFilter.builder().withStatus(List.of(PUB)).build();
-        LinkableEntityQueryFilter topicalEntityFilter = LinkableEntityQueryFilter.builder().withStatus(List.of(PUB)).build();
-        TopicQueryFilter topicQueryFilter = TopicQueryFilter.builder().withStatus(List.of(PUB)).build();
+        List<StatusKind> status = List.of(PUB);
+        TrackedEntityQueryFilter trackedEntityFilter = TrackedEntityQueryFilter.builder().withStatus(status).build();
+        LinkableEntityQueryFilter topicalEntityFilter = LinkableEntityQueryFilter.builder().withStatus(status).build();
+        TopicQueryFilter topicQueryFilter = TopicQueryFilter.builder().withStatus(status).build();
 
         ClaimPage claimPage = queryExecutor.claims(MINIMAL_PAGED_RESPONSE, topicalEntityFilter, null);
         checkPage(claimPage, ClaimTests.claims.size() - 1, PUB);
@@ -127,7 +132,7 @@ public class EntityStatusTests extends AbstractGraphQLTests {
     private void checkPage(AbstractPage<? extends ITrackedEntity> actual, int size, StatusKind status) {
         assertThat(actual).hasSize(size);
         assertThat(actual).content().hasSize(size);
-        assertThat(actual.getContent().stream().allMatch(c -> c.getStatus() == status.label()));
+        assertThat(actual.getContent().stream().allMatch(c -> c.getStatus().equals(status.label())));
     }
 
 }

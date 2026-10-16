@@ -162,24 +162,35 @@ tasks.register('bootIntegrationTestServer', BootRun) {
 	setIgnoreExitValue(true)
 }
 
+import org.gradle.internal.os.OperatingSystem
 tasks.register('bootIntegrationTestServerBG') {
 	dependsOn 'classes'
     group = 'application'
 	description = 'Launch the integration test target server in the background'
-    def classpath = project.sourceSets.main.runtimeClasspath.asPath
     doLast {
         println 'Launching server...'
 		// For now, use the same Java installation as Gradle
+		// String javaExe = javaLauncher.get().executablePath.asFile.absolutePath
+    	def classpath = project.sourceSets.main.runtimeClasspath.asPath
         String javaHome = System.getProperty('java.home')
-        File javaFile = new File(new File(new File(javaHome), 'bin'), 'java.exe')
+		String javaBin = OperatingSystem.current().isWindows()
+			? 'java.exe'
+			: 'java'
+        File javaFile = new File(new File(new File(javaHome), 'bin'), javaBin)
         String javaExe = javaFile.getCanonicalPath()
-		File build = new File(new File('server'), 'build')
-		build.mkdirs()
+		// File buildDir = new File(new File('server'), 'build')
+		File buildDir = project.layout.buildDirectory.get().asFile
+		buildDir.mkdirs()
         new ProcessBuilder()
-            .command(javaExe, '-cp', classpath, 'io.github.demonfiddler.ee.server.EvidenceEngineServer',
+            .command(
+				javaExe,
+				'-cp',
+				classpath,
+				'io.github.demonfiddler.ee.server.EvidenceEngineServer',
 				'--spring.profiles.active=integration-test')
-            .redirectOutput(new File(build, 'server.log'))
-            .redirectError(new File(build, 'server-error.log'))
+			.directory(project.projectDir)
+            .redirectOutput(new File(buildDir, 'server.log'))
+            .redirectError(new File(buildDir, 'server-error.log'))
             .start()
         println 'bootIntegrationTestServerBG task finished'
     }
@@ -195,7 +206,7 @@ tasks.register('waitForIntegrationTestServer', Exec) {
 	group = 'application'
 	description = 'Wait for the integration test server to be fully operational'
 	// TODO: test STDOUT for '{"status":"UP"}'
-	commandLine 'curl', '-s', '--retry', '10', '--retry-delay', '5', '--retry-connrefused', 'http://localhost:8080/actuator/health'
+	commandLine 'curl', '-s', '--retry', '10', '--retry-delay', '5', '--retry-connrefused', 'http://localhost:8082/api/actuator/health'
 	standardOutput = new ByteArrayOutputStream()
 	ext.output = {
 		return standardOutput.toString()
@@ -212,7 +223,7 @@ tasks.register('terminateIntegrationTestServer', Exec) {
 	group = 'application'
 	description = 'Terminate the integration test server'
 	// TODO: test STDOUT for '{"message":"Shutting down, bye..."}'
-	commandLine 'curl', '-s', '-X', 'POST', 'http://localhost:8080/actuator/shutdown'
+	commandLine 'curl', '-s', '-X', 'POST', 'http://localhost:8082/api/actuator/shutdown'
 	standardOutput = new ByteArrayOutputStream()
 	ext.output = {
 		return standardOutput.toString()

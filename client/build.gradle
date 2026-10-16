@@ -84,8 +84,9 @@ gradle.projectsEvaluated {
 		// useJUnitPlatform()
 		if (project.hasProperty('caseInsensitive')) {
 			println 'Case insensitive testing selected'
-			systemProperty('ee.test.case-insensitive', true)
+			systemProperty 'ee.test.case-insensitive', true
 		}
+		systemProperty 'spring.profiles.active', 'integration-test'
 		systemProperty('junit.jupiter.testclass.order.default', 'org.junit.jupiter.api.ClassOrderer$OrderAnnotation')
 		finalizedBy project(':server').tasks.named('terminateIntegrationTestServer')
 	}
