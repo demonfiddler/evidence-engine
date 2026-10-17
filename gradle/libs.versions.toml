@@ -82,6 +82,7 @@ jacksonDatabindNullable = { group = 'org.openapitools', name = 'jackson-databind
 javaJwt = { group = 'com.auth0', name = 'java-jwt', version.ref = 'javaJwtVersion' }
 jerseyContainerServlet = { group = 'org.glassfish.jersey.containers', name = 'jersey-container-servlet-core' }
 jsoup = { group = 'org.jsoup', name = 'jsoup', version.ref = 'jsoupVersion' }
+junitJupiter = { group = "org.junit.jupiter", name = "junit-jupiter" }
 jsr305 = { group = 'com.google.code.findbugs', name = 'jsr305', version.ref = 'jsr305Version' }
 openapiGenerator = { group = 'org.openapitools', name = 'openapi-generator', version.ref = 'openapiGeneratorPluginVersion' }
 openapiGeneratorCli = { group = 'org.openapitools', name = 'openapi-generator-cli', version.ref = 'openapiGeneratorPluginVersion' }

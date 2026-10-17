@@ -43,6 +43,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import io.github.demonfiddler.ee.common.model.Name;
 import io.github.demonfiddler.ee.server.model.CountPageImpl;
 import io.github.demonfiddler.ee.server.model.Countable;
 import io.github.demonfiddler.ee.server.model.Declaration;
@@ -50,7 +51,6 @@ import io.github.demonfiddler.ee.server.model.EntityKind;
 import io.github.demonfiddler.ee.server.model.IBaseEntity;
 import io.github.demonfiddler.ee.server.model.ILinkableEntity;
 import io.github.demonfiddler.ee.server.model.LinkableEntityQueryFilter;
-import io.github.demonfiddler.ee.server.model.Name;
 import io.github.demonfiddler.ee.server.model.Person;
 import io.github.demonfiddler.ee.server.model.Publication;
 import io.github.demonfiddler.ee.server.model.Quotation;

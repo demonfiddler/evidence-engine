@@ -58,3 +58,4 @@ web-client/design.md
 web-client/lib/generated/build-info.ts
 ai/service/src/ee_ai_service/runtime/config*.ini
 **/*.log
+.github/**

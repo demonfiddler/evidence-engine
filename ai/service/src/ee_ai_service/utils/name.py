@@ -24,11 +24,11 @@ from StrTokenizer import StrTokenizer
 
 _TITLE = compile(
     r"^(?:Ambassador|Amb\.?|Baroness|Baronet|Bart\.?|Bt\.?|Brigadier|Brig\.?|"
-    r"Captain|Capt?\.?|Cllr\.?|Colonel|Col\.?|Commander|Cdr\.?|Dame|Dr\.?|"
-    r"Fr\.?|General|Gen\.?|King|Lady|Lord|Lieutenant|Lieut\.?|Lt\.?|Major|"
-    r"Maj\.?|Miss|Mrs?\.?|Ms\.?|nat\.?|Prince|Princess|Professor|Prof\.?|"
-    r"Queen|Rabbi|Rab\.?|rer\.?|\(?[Rr]et\.?\)?|Reverend|Rev\.?|Senator|"
-    r"Sen\.?|Sergeant|Sgt\?|Sir)$",
+    r"Captain|Capt?\.?|Councillor|Cllr\.?|Colonel|Col\.?|Commander|Cdr\.?|"
+    r"Dame|Doctor|Dr\.?|Fr\.?|General|Gen\.?|King|Lady|Lord|Lieutenant|"
+    "Lieut\.?|Lt\.?|Major|Maj\.?|Miss|Mrs?\.?|Ms\.?|nat\.?|Prince|Princess"
+    r"|Professor|Prof\.?|Queen|Rabbi|Rab\.?|rer\.?|\(?[Rr]et\.?\)?|Reverend|"
+    "Rev\.?|Senator|Sen\.?|Sergeant|Sgt\?|Sir)$",
     IGNORECASE,
 )
 _INITIALS = compile(
@@ -37,11 +37,11 @@ _INITIALS = compile(
 )
 _NICKNAME = compile("([\"'])([\\p{IsAlphabetic}]+)\\1")
 _PREFIX = compile(
-    r"^(?:[bB]in|[dD]e[nlr]?|[dD]u|[lL][ae]|[vV][ao]n|[zZ]u|[sS]t\.?|[tT]e)$"
+    r"^(?:[aA]l|[bB]in|[dD]e[nlr]?|[dD]u|[lL][ae]|[vV][ao]n|[zZ]u|[sS]t\.?|[tT]e)$"
 )
 _LAST_NAME = compile(r"^[\p{IsAlphabetic}'’.-]+$")
 _SUFFIX = compile(
-    r"^(?:I{1,3}|IV|VI{0,3}|I?X|Jn?r\.?|Sn?r\.?)$",
+    r"^(?:I{1,3}|I?V|VI{1,3}|I?X|Jn?r\.?|Sn?r\.?)$",
     IGNORECASE,
 )
 _ALIAS = compile(r"\((?![Rr]et\.?\))([\p{IsAlphabetic}\s]+)\)")
@@ -52,8 +52,8 @@ _POST_NOMINAL = compile(
     r"[CDGKMO]BE|"
     r"Ph\.?D\.?|D\.?Phil\.?|"
     r"[BM]\.?A\.?|[BM]\.?Sc?\.?|"
-    r"F\.?R\.?S\.?|Q\.?C\.?|K\.?C\.?|"
-    r"LL\.?B\.?|LL\.?M\.?"
+    r"F\.?R\.?S\.?|[QK]\.?C\.?|"
+    r"LL\.?[BM]\.?"
     ")$",
     IGNORECASE,
 )
@@ -296,8 +296,9 @@ class Name(BaseModel):
             ):
                 last_tokens = [_to_title_case(tokens[0])]
                 title_tokens = [tokens[1]]
-                fn_tokens = tokens[2:]
-                first_tokens = fn_tokens
+                # fn_tokens = tokens[2:]
+                # first_tokens = fn_tokens
+                first_tokens = tokens[2:]
 
         # ------------------------------------------------------------
         # Build Name object

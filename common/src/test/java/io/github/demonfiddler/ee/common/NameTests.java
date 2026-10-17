@@ -17,16 +17,17 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-package io.github.demonfiddler.ee.server;
+package io.github.demonfiddler.ee.common;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 
-import io.github.demonfiddler.ee.server.model.Name;
+import io.github.demonfiddler.ee.common.model.Name;
 
 class NameTests {
 
@@ -63,8 +64,8 @@ class NameTests {
     private static final Name CHRISTOPHE_BROUWER =
         new Name(null, "Christophe", null, "de", "Brouwer", null, null, null);
     private static final Name PATRICK_CASANOVE = new Name(null, "Patrick", null, "de", "Casanove", null, null, null);
-    // private static final Name MARIO_NETO = new Name(null, "Mario", "de", "Carvalho Fontes Neto", null);
-    // private static final Name DANIELA_ONCA = new Name(null, "Daniela", "de", "Souza Onça", null);
+    // private static final Name MARIO_NETO = new Name(null, "Mario", null, "de", "Carvalho Fontes Neto", null, null, null);
+    // private static final Name DANIELA_ONCA = new Name(null, "Daniela", null, "de", "Souza Onça", null, null, null);
     private static final Name FRANCIS_GAILLARD = new Name(null, "Francis", null, "le", "Gaillard", null, null, null);
     private static final Name CORNELIS_PAIR = new Name("Dr.", "Cornelis", null, "le", "Pair", null, null, null);
     private static final Name THI_DINH = new Name("Dr.", "Thi Thuy", null, "van", "Dinh", null, null, null);
@@ -92,7 +93,7 @@ class NameTests {
     private static final Name ANTONIS_FOSKOLOS =
         new Name("Prof.", "Antonis", "Anthony", null, "Foskolos", null, "Foscolos", null);
 
-    private static final List<TestName> FIRST_NAMES_LAST_NAME = List.of( //
+    private static final List<@NonNull TestName> FIRST_NAMES_LAST_NAME = List.of( //
         new TestName("Bob Zybach", BOB_ZYBACH), //
         new TestName("Hortense Côté", HORTENSE_COTE), //
         new TestName("José Bueno Conti", JOSE_CONTI), //
@@ -114,6 +115,7 @@ class NameTests {
         new TestName("Dr. Michael Creech", MICHAEL_CREECH), //
         new TestName("Dr. Stephen David English", STEPHEN_ENGLISH), //
         new TestName("Dr. Jonhson Delibero Angelo", JONHSON_ANGELO), //
+        new TestName("Lt. Col. (ret) Kevin A. Loughrey", KEVIN_LOUGHREY), //
         new TestName("Lt.Col.(ret) Kevin A. Loughrey", KEVIN_LOUGHREY), //
         new TestName("Prof. Augustinus Johannes 'Guus' Berkhout", AUGUSTINUS_BERKHOUT), //
         new TestName("Prof. Ricardo Augusto Felicio", RICARDO_FELICIO), //
@@ -149,7 +151,7 @@ class NameTests {
         // TODO: add more 'last-name-last' examples
     );
 
-    private static final List<TestName> LAST_NAME_FIRST_NAMES = List.of( //
+    private static final List<@NonNull TestName> LAST_NAME_FIRST_NAMES = List.of( //
         new TestName("Zybach, Bob", BOB_ZYBACH), //
         new TestName("Côté, Hortense", HORTENSE_COTE), //
         new TestName("Conti, José Bueno", JOSE_CONTI), //
@@ -171,6 +173,7 @@ class NameTests {
         new TestName("Creech, Dr. Michael", MICHAEL_CREECH), //
         new TestName("English, Dr. Stephen David", STEPHEN_ENGLISH), //
         new TestName("Angelo, Dr. Jonhson Delibero", JONHSON_ANGELO), //
+        new TestName("Loughrey, Lt. Col. (ret) Kevin A.", KEVIN_LOUGHREY), //
         new TestName("Loughrey, Lt.Col.(ret) Kevin A.", KEVIN_LOUGHREY), //
         new TestName("Berkhout, Prof. Augustinus Johannes 'Guus'", AUGUSTINUS_BERKHOUT), //
         new TestName("Felicio, Prof. Ricardo Augusto", RICARDO_FELICIO), //
@@ -196,9 +199,12 @@ class NameTests {
         // FIXME: certain post-nominals with periods.
         // new TestName("Terry Dunleavy M.B.E.", TERRY_DUNLEAVY),
         // new TestName("Terry Dunleavy m.b.e.", TERRY_DUNLEAVY),
-        new TestName("Laat, Dr. A. T. J.", A_T_J_LAAT), new TestName("Laat, Dr. A.T.J.", A_T_J_LAAT), //
-        new TestName("Laat, Dr. ATJ", A_T_J_LAAT), new TestName("LAAT Dr. ATJ", A_T_J_LAAT), //
-        new TestName("LAAT Dr. A.T.J.", A_T_J_LAAT), new TestName("LAAT Dr. A. T. J.", A_T_J_LAAT), //
+        new TestName("Laat, Dr. A. T. J.", A_T_J_LAAT), //
+        new TestName("Laat, Dr. A.T.J.", A_T_J_LAAT), //
+        new TestName("Laat, Dr. ATJ", A_T_J_LAAT), //
+        new TestName("LAAT Dr. ATJ", A_T_J_LAAT), //
+        new TestName("LAAT Dr. A.T.J.", A_T_J_LAAT), //
+        new TestName("LAAT Dr. A. T. J.", A_T_J_LAAT), //
         // FIXME: 'title last_name, first_names' doesn't work:
         // new TestName("Lord Moncton, Christopher", CHRISTOPHER_MONCTON),
         new TestName("Moncton, Lord Christopher", CHRISTOPHER_MONCTON), //

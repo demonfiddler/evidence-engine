@@ -17,7 +17,7 @@
  * If not, see <https://www.gnu.org/licenses/>. 
  *--------------------------------------------------------------------------------------------------------------------*/
 
-package io.github.demonfiddler.ee.server.model;
+package io.github.demonfiddler.ee.common.model;
 
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static io.github.demonfiddler.ee.common.util.StringUtils.*;
@@ -36,19 +36,20 @@ import java.util.regex.Pattern;
 public class Name {
 
     private static final Pattern TITLE = Pattern.compile(
-        "^(?:Ambassador|Amb\\.?|Baroness|Baronet|Bart\\.?|Bt\\.?|Brigadier|Brig\\.?|Captain|Capt?\\.?|Cllr\\.?|" +
-        "Colonel|Col\\.?|Commander|Cdr\\.?|Dame|Dr\\.?|Fr\\.?|General|Gen\\.?|King|Lady|Lord|Lieutenant|Lieut\\.?|" +
-        "Lt\\.?|Major|Maj\\.?|Miss|Mrs?\\.?|Ms\\.?|nat\\.?|Prince|Princess|Professor|Prof\\.?|Queen|Rabbi|Rab\\.?|" +
-        "rer\\.?|\\(?[Rr]et\\.?\\)?|Reverend|Rev\\.?|Senator|Sen\\.?|Sergeant|Sgt\\?|Sir)$", CASE_INSENSITIVE);
+        "^(?:Ambassador|Amb\\.?|Baroness|Baronet|Bart\\.?|Bt\\.?|Brigadier|Brig\\.?|Captain|Capt?\\.?|Councillor|" +
+        "Cllr\\.?|Colonel|Col\\.?|Commander|Cdr\\.?|Dame|Doctor|Dr\\.?|Fr\\.?|General|Gen\\.?|King|Lady|Lord|" +
+        "Lieutenant|Lieut\\.?|Lt\\.?|Major|Maj\\.?|Miss|Mrs?\\.?|Ms\\.?|nat\\.?|Prince|Princess|Professor|Prof\\.?|" +
+        "Queen|Rabbi|Rab\\.?|rer\\.?|\\(?[Rr]et\\.?\\)?|Reverend|Rev\\.?|Senator|Sen\\.?|Sergeant|Sgt\\?|Sir)$",
+        CASE_INSENSITIVE);
     private static final Pattern INITIALS = Pattern.compile(
         "[\\p{javaUpperCase}](?![\\p{javaLowerCase}])" +
         "[\\p{javaUpperCase}. ]*(?![\\p{javaLowerCase}])"
     );
     private static final Pattern NICKNAME = Pattern.compile("([\"'])([\\p{IsAlphabetic}]+)\\1");
     private static final Pattern PREFIX = Pattern.compile(
-        "^(?:[bB]in|[dD]e[nlr]?|[dD]u|[lL][ae]|[vV][ao]n|[zZ]u|[sS]t\\.?|[tT]e)$");
+        "^(?:[aA]l|[bB]in|[dD]e[nlr]?|[dD]u|[lL][ae]|[vV][ao]n|[zZ]u|[sS]t\\.?|[tT]e)$");
     private static final Pattern LAST_NAME = Pattern.compile("^[\\p{IsAlphabetic}'’.-]+$");
-    private static final Pattern SUFFIX = Pattern.compile("^(?:I{1,3}|IV|VI{0,3}|I?X|Jn?r\\.?|Sn?r\\.?)$",
+    private static final Pattern SUFFIX = Pattern.compile("^(?:I{1,3}|I?V|VI{1,3}|I?X|Jn?r\\.?|Sn?r\\.?)$",
         CASE_INSENSITIVE);
     private static final Pattern ALIAS = Pattern.compile("\\((?![Rr]et\\.?\\))([\\p{IsAlphabetic}\s]+)\\)");
 
@@ -58,8 +59,8 @@ public class Name {
         "[CDGKMO]BE|" + //
         "Ph\\.?D\\.?|D\\.?Phil\\.?|" + //
         "[BM]\\.?A\\.?|[BM]\\.?Sc?\\.?|" + //
-        "F\\.?R\\.?S\\.?|Q\\.?C\\.?|K\\.?C\\.?|" + //
-        "LL\\.?B\\.?|LL\\.?M\\.?" + //
+        "F\\.?R\\.?S\\.?|[QK]\\.?C\\.?" + //
+        "LL\\.?[BM]\\.?" + //
         ")$", //
         CASE_INSENSITIVE //
     );
@@ -88,7 +89,7 @@ public class Name {
      */
     public static Name parse(String namestr) {
         // Normalise periods so tokenisation on spaces works consistently.
-        namestr = replaceAll(PERIOD_NOSPACE, namestr, ". ");
+        namestr = replaceAll(namestr, PERIOD_NOSPACE, ". ");
         if (namestr.isBlank())
             return null;
 
@@ -110,7 +111,7 @@ public class Name {
             return null;
 
         // Check for comma after last name.
-        int commapos = namestr.indexOf(",");
+        int commaPos = namestr.indexOf(",");
 
         List<String> title_tokens = new ArrayList<>();
         List<String> first_tokens = new ArrayList<>();
@@ -122,13 +123,13 @@ public class Name {
         // ------------------------------------------------------------
         // CASE 1 — Comma present: LAST, FIRST
         // ------------------------------------------------------------
-        if (commapos != -1) {
+        if (commaPos != -1) {
             // Possible name formats:
             // - prefix? lastName, title? firstName+ nickname? suffix? postNominals?
             // - prefix? lastName suffix?, title? firstName+ nickname? postNominals?
 
-            String[] left = split(namestr.substring(0, commapos).trim());
-            String[] right = split(namestr.substring(commapos + 1).trim());
+            String[] left = split(namestr.substring(0, commaPos).trim());
+            String[] right = split(namestr.substring(commaPos + 1).trim());
 
             // LEFT: prefix? lastName suffix?
             int i = left.length - 1;
@@ -225,7 +226,7 @@ public class Name {
         name.lastName = join(last_tokens, Name::toTitleCase);
         name.suffix = toTitleCase(join(suffix_tokens));
         name.alias = toTitleCase(alias);
-        name.postNominals = replaceAll(PERIOD, toUpperCase(join(post_tokens)), "");
+        name.postNominals = replaceAll(toUpperCase(join(post_tokens)), PERIOD, "");
 
         if (name.lastName == null)
             return null;
@@ -272,12 +273,12 @@ public class Name {
 
     /**
      * Replaces all regular expression matches in a given string with a specified replacement.
-     * @param pattern
      * @param s The string to search.
+     * @param pattern
      * @param repl The replacement string.
      * @return The transformed string.
      */
-    private static String replaceAll(Pattern pattern, String s, String repl) {
+    private static String replaceAll(String s, Pattern pattern, String repl) {
         if (s == null)
             return null;
 
@@ -346,7 +347,7 @@ public class Name {
      * @return The space-separated concatenation of the transformed elements of {@code tokens}.
      */
     private static String join(List<String> tokens, Function<String, String> fn) {
-        if (tokens.isEmpty())
+        if (tokens == null || tokens.isEmpty())
             return null;
 
         StringBuilder sb = new StringBuilder();
