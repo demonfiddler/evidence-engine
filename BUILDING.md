@@ -4,7 +4,7 @@ Example directories:
 ```bash
 EE_BASE_DIR=~/dev/src/evidence-engine
 EE_DEPLOYMENT_DIR=/var/lib/evidence-engine/webapps
-EE_DEPLOYMENT_URI=scp://user@server.tld$EE_DEPLOYMENT_DIR
+EE_DEPLOYMENT_DEST=user@server.tld:$EE_DEPLOYMENT_DIR
 ```
 
 ## Development
@@ -88,6 +88,8 @@ cd ..
 #### Deploy
 ```bash
 cd $EE_BASE_DIR
-scp server/build/libs/ee-server.war $EE_DEPLOYMENT_URI
-scp web-client/build/libs/ee-web-client.war $EE_DEPLOYMENT_URI
+scp server/build/libs/ee-server.war $EE_DEPLOYMENT_DEST
+scp web-client/build/libs/ee-web-client.war $EE_DEPLOYMENT_DEST
+# -OR-
+scp server/build/libs/ee-server.war web-client/build/libs/ee-web-client.war $EE_DEPLOYMENT_DEST
 ```

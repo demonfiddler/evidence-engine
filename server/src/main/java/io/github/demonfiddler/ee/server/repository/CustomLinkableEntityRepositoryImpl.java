@@ -355,16 +355,16 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
          * JOIN "entity_link" topic_el
          * ON
          * -- if (!m.isRecursive) {
-         * topic_el."from_entity_id" = :topicId
+         * topic_el."to_entity_id" = :topicId
          * -- }
-         * AND topic_el."to_entity_id" = e."id"
+         * AND topic_el."from_entity_id" = e."id"
          * -- if (m.isRecursive) {
          * JOIN "sub_topic" st
-         * ON st."id" = topic_el."from_entity_id"
+         * ON st."id" = topic_el."to_entity_id"
          * -- } else {
          * JOIN "entity" topic_e
          * ON
-         * topic_e."id" = topic_el."from_entity_id"
+         * topic_e."id" = topic_el."to_entity_id"
          * AND topic_e."dtype" = 'TOP'
          * -- if (m.hasStatus) {
          * AND topic_e."status" IN (:status)
@@ -494,24 +494,24 @@ public abstract class CustomLinkableEntityRepositoryImpl<T extends ILinkableEnti
                 .append("ON");
             if (!m.isRecursive) {
                 topicJoinClause.append(NL) //
-                    .append("    topic_el.\"from_entity_id\" = :topicId");
+                    .append("    topic_el.\"to_entity_id\" = :topicId");
                 needsAnd = true;
             }
             topicJoinClause.append(NL) //
                 .append("    ");
             if (needsAnd)
                 topicJoinClause.append("AND ");
-            topicJoinClause.append("topic_el.\"to_entity_id\" = e.\"id\"");
+            topicJoinClause.append("topic_el.\"from_entity_id\" = e.\"id\"");
 
             if (m.isRecursive) {
                 topicJoinClause.append(NL) //
                     .append("JOIN \"sub_topic\" st").append(NL) //
-                    .append("ON st.\"id\" = topic_el.\"from_entity_id\"");
+                    .append("ON st.\"id\" = topic_el.\"to_entity_id\"");
             } else {
                 topicJoinClause.append(NL) //
                     .append("JOIN \"entity\" topic_e").append(NL) //
                     .append("ON").append(NL) //
-                    .append("    topic_e.\"id\" = topic_el.\"from_entity_id\"").append(NL) //
+                    .append("    topic_e.\"id\" = topic_el.\"to_entity_id\"").append(NL) //
                     .append("    AND topic_e.\"dtype\" = 'TOP'");
                 if (m.hasStatus) {
                     topicJoinClause.append(NL) //

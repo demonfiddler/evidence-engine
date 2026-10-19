@@ -340,50 +340,50 @@ type RecordLinks = { [key in RecordKind]?: MasterRecordLink }
 const recordLinkProperties: RecordLinks = {
   Claim: {
     Claim: null,
-    Declaration: FROM_TO,
-    Person: FROM_TO,
-    Publication: FROM_TO,
-    Quotation: FROM_TO,
-    Topic: TO_FROM
-  },
-  Declaration: {
-    Claim: TO_FROM,
-    Declaration: null,
-    Person: FROM_TO,
-    Publication: null,
-    Quotation: FROM_TO,
-    Topic: TO_FROM
-  },
-  Person: {
-    Claim: TO_FROM,
     Declaration: TO_FROM,
-    Person: null,
+    Person: TO_FROM,
     Publication: TO_FROM,
     Quotation: TO_FROM,
-    Topic: TO_FROM
+    Topic: FROM_TO
   },
-  Publication: {
-    Claim: TO_FROM,
+  Declaration: {
+    Claim: FROM_TO,
     Declaration: null,
-    Person: FROM_TO,
+    Person: TO_FROM,
     Publication: null,
-    Quotation: TO_FROM,
-    Topic: TO_FROM
+    Quotation: FROM_TO,
+    Topic: FROM_TO
   },
-  Quotation: {
-    Claim: TO_FROM,
-    Declaration: TO_FROM,
-    Person: FROM_TO,
-    Publication: FROM_TO,
-    Quotation: null,
-    Topic: TO_FROM
-  },
-  Topic: {
+  Person: {
     Claim: FROM_TO,
     Declaration: FROM_TO,
-    Person: FROM_TO,
+    Person: null,
     Publication: FROM_TO,
     Quotation: FROM_TO,
+    Topic: FROM_TO
+  },
+  Publication: {
+    Claim: FROM_TO,
+    Declaration: null,
+    Person: TO_FROM,
+    Publication: null,
+    Quotation: FROM_TO,
+    Topic: FROM_TO
+  },
+  Quotation: {
+    Claim: FROM_TO,
+    Declaration: TO_FROM,
+    Person: TO_FROM,
+    Publication: TO_FROM,
+    Quotation: null,
+    Topic: FROM_TO
+  },
+  Topic: {
+    Claim: TO_FROM,
+    Declaration: TO_FROM,
+    Person: TO_FROM,
+    Publication: TO_FROM,
+    Quotation: TO_FROM,
     Topic: null,
   },
 }

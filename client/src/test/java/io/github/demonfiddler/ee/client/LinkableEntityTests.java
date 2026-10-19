@@ -924,17 +924,37 @@ class LinkableEntityTests extends AbstractLinkTests {
         Long masterEntityId, List<StatusKind> status, String text, Integer pageSizeOpt, boolean sorted,
         boolean ignoreCase) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
-        LinkableEntityQueryFilter filter = topicId == null && recursive == null && masterEntityKind == null
-            && masterEntityId == null && status == null && text == null //
-                ? null //
-                : LinkableEntityQueryFilter.builder() //
-                    .withTopicId(topicId) //
-                    .withRecursive(recursive) //
-                    .withFromEntityKind(masterEntityKind) //
-                    .withFromEntityId(masterEntityId) //
-                    .withStatus(status) //
-                    .withText(text) //
-                    .build();
+        // Based on entityKind and masterEntityKind, determine which end of the entity link to use for filtering.
+        LinkableEntityQueryFilter filter;
+        if (topicId == null && recursive == null && masterEntityKind == null
+            && masterEntityId == null && status == null && text == null) {
+
+            filter = null;
+        } else {
+            LinkableEntityQueryFilter.Builder builder = LinkableEntityQueryFilter.builder() //
+                .withTopicId(topicId) //
+                .withRecursive(recursive) //
+                .withStatus(status) //
+                .withText(text);
+            if (masterEntityKind != null) {
+                LinkDirection dir = getLinkDirection(masterEntityKind, entityKind);
+                if (dir == null) {
+                    throw new IllegalArgumentException(
+                        "Unsupported combination of entityKind: " + entityKind + " and masterEntityKind: "
+                            + masterEntityKind);
+                }
+                switch (dir) {
+                    case FROM:
+                        builder.withFromEntityKind(masterEntityKind) //
+                            .withFromEntityId(masterEntityId); //
+                        break;
+                    case TO:
+                        builder.withToEntityKind(masterEntityKind) //
+                            .withToEntityId(masterEntityId); //
+                }
+            }
+            filter = builder.build();
+        }
         SortInput sort = sorted //
             ? SORT_BY_ENTITY_KIND.get(entityKind) //
             : null;

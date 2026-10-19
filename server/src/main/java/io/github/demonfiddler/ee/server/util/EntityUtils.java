@@ -94,12 +94,12 @@ public class EntityUtils {
 		List.of("dtype", "status", "rating", "created", "createdByUserId", "updated", "updatedByUserId");
 	/** Maps 'from' entity kind to legal 'to' entity kinds. */
 	private static final Map<EntityKind, Collection<EntityKind>> ENTITY_KIND_LINK_MAP = Map.of( //
-		CLA, List.of(DEC, PER, PUB, QUO), //
-		DEC, List.of(PER, QUO), //
-		PER, List.of(), //
-		PUB, List.of(PER), //
-		QUO, List.of(PER, PUB), //
-		TOP, List.of(CLA, DEC, PER, PUB, QUO) //
+		CLA, List.of(TOP), //
+		DEC, List.of(CLA, QUO, TOP), //
+		PER, List.of(CLA, DEC, PUB, QUO, TOP), //
+		PUB, List.of(CLA, QUO, TOP), //
+		QUO, List.of(CLA, TOP), //
+		TOP, List.of() //
 	);
 
 	static {
@@ -449,7 +449,7 @@ public class EntityUtils {
 				switch (order.getNullHandling()) {
 					case NULLS_FIRST:
 						sql.append("CASE WHEN ").append(qualifier).append('\"').append(property)
-							.append("\" is NULL THEN 0 ELSE 1 END, ");
+							.append("\" IS NULL THEN 0 ELSE 1 END, ");
 						if (multiline)
 							sql.append(NL).append("    ");
 						else
@@ -457,7 +457,7 @@ public class EntityUtils {
 						break;
 					case NULLS_LAST:
 						sql.append("CASE WHEN ").append(qualifier).append('\"').append(property)
-							.append("\" is NULL THEN 1 ELSE 0 END,");
+							.append("\" IS NULL THEN 1 ELSE 0 END,");
 						if (multiline)
 							sql.append(NL).append("    ");
 						else

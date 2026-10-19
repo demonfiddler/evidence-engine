@@ -320,11 +320,11 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 			if (other.createdByUser == null)
 				return false;
 			Long createdByUserId = createdByUser.getId();
-			Long otherFromEntityId = other.createdByUser.getId();
+			Long otherCreatedByUserId = other.createdByUser.getId();
 			if (createdByUserId == null) {
-				if (otherFromEntityId != null)
+				if (otherCreatedByUserId != null)
 					return false;
-			} else if (!createdByUserId.equals(otherFromEntityId))
+			} else if (!createdByUserId.equals(otherCreatedByUserId))
 				return false;
 		}
 		if (updated == null) {
@@ -339,11 +339,11 @@ public abstract class AbstractTrackedEntity extends AbstractBaseEntity implement
 			if (other.updatedByUser == null)
 				return false;
 			Long updatedByUserId = updatedByUser.getId();
-			Long otherFromEntityId = other.updatedByUser.getId();
+			Long otherUpdatedByUserId = other.updatedByUser.getId();
 			if (updatedByUserId == null) {
-				if (otherFromEntityId != null)
+				if (otherUpdatedByUserId != null)
 					return false;
-			} else if (!updatedByUserId.equals(otherFromEntityId))
+			} else if (!updatedByUserId.equals(otherUpdatedByUserId))
 				return false;
 		}
 		if (log == null) {

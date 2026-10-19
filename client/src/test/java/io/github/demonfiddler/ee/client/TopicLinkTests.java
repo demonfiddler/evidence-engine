@@ -164,7 +164,7 @@ class TopicLinkTests extends AbstractGraphQLTests {
         { 8, 0 }, // #topic-8-entity-7-filtered
         { 8, 1 }, // #topic-8-entity-8-filtered
     };
-    // Ordered on [toEntityLocations, topicId, entityId]
+    // Ordered on [fromEntityLocations, topicId, entityId]
     private static final int[][] TOPIC_LINK_INDEXES_SORTED = { //
         { 3, 0 }, // null (#topic-3-claim-3)
         { 3, 1 }, // null (#topic-3-claim-7)
@@ -184,7 +184,7 @@ class TopicLinkTests extends AbstractGraphQLTests {
         { 8, 1 }, // #topic-8-claim-8-filtered
         { 0, 0 }, // #updated-claim-location (topic-0 -> entity-0)
     };
-    // Ordered on [toEntityLocations (ignore case), topicId, entityId]
+    // Ordered on [fromEntityLocations (ignore case), topicId, entityId]
     private static final int[][] TOPIC_LINK_INDEXES_SORTED_IGNORE_CASE = { //
         { 3, 0 }, // null (#topic-3-claim-3)
         { 3, 1 }, // null (#topic-3-claim-7)
@@ -204,7 +204,7 @@ class TopicLinkTests extends AbstractGraphQLTests {
         { 8, 1 }, // #topic-8-claim-8-filtered
         { 0, 0 }, // #updated-claim-location (topic-0 -> entity-0)
     };
-    // Ordered on [toEntityLocations (nulls last), topicId, entityId]
+    // Ordered on [fromEntityLocations (nulls last), topicId, entityId]
     private static final int[][] TOPIC_LINK_INDEXES_SORTED_NULLS_LAST = { //
         { 1, 0 }, // #TOPIC-1-CLAIM-1
         { 1, 1 }, // #TOPIC-1-CLAIM-5
@@ -224,7 +224,7 @@ class TopicLinkTests extends AbstractGraphQLTests {
         { 6, 0 }, // null (#topic-6-claim-3)
         { 6, 1 }, // null (#topic-6-claim-4)
     };
-    // Ordered on [toEntityLocations (nulls last, ignore case), topicId, entityId]
+    // Ordered on [fromEntityLocations (nulls last, ignore case), topicId, entityId]
     private static final int[][] TOPIC_LINK_INDEXES_SORTED_NULLS_LAST_IGNORE_CASE = { //
         { 1, 0 }, // #TOPIC-1-CLAIM-1
         { 1, 1 }, // #TOPIC-1-CLAIM-5
@@ -253,7 +253,7 @@ class TopicLinkTests extends AbstractGraphQLTests {
         { 8, 0 }, // #topic-8-claim-7-filtered
         { 8, 1 }, // #topic-8-claim-8-filtered
     };
-    // Filtered on text, ordered on [toEntityLocations (descending), topicId, entityId]
+    // Filtered on text, ordered on [fromEntityLocations (descending), topicId, entityId]
     private static final int[][] TOPIC_LINK_INDEXES_FILTERED_SORTED = { //
         { 8, 1 }, // #topic-8-claim-8-filtered
         { 8, 0 }, // #topic-8-claim-7-filtered
@@ -411,31 +411,31 @@ class TopicLinkTests extends AbstractGraphQLTests {
     @EnabledIf("io.github.demonfiddler.ee.client.TopicLinkTests#hasExpectedEntityButNoTopicLinks")
     void readTopicLink() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
         EntityLinkQueryFilter filter = EntityLinkQueryFilter.builder() //
-            .withFromEntityKind(TOP) //
+            .withToEntityKind(TOP) //
             .build();
 
-        filter.setToEntityKind(CLA);
+        filter.setFromEntityKind(CLA);
         List<EntityLink> expected = List.of(claimTopicLink);
         EntityLinkPage actual = queryExecutor.entityLinks(PAGED_RESPONSE_SPEC, filter, null);
         // readTopicLinks(filter, null, expected, false);
         checkPage(actual, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, false);
 
-        filter.setToEntityKind(DEC);
+        filter.setFromEntityKind(DEC);
         expected = List.of(declarationTopicLink);
         actual = queryExecutor.entityLinks(PAGED_RESPONSE_SPEC, filter, null);
         checkPage(actual, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, false);
 
-        filter.setToEntityKind(PER);
+        filter.setFromEntityKind(PER);
         expected = List.of(personTopicLink);
         actual = queryExecutor.entityLinks(PAGED_RESPONSE_SPEC, filter, null);
         checkPage(actual, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, false);
 
-        filter.setToEntityKind(PUB);
+        filter.setFromEntityKind(PUB);
         expected = List.of(publicationTopicLink);
         actual = queryExecutor.entityLinks(PAGED_RESPONSE_SPEC, filter, null);
         checkPage(actual, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, false);
 
-        filter.setToEntityKind(QUO);
+        filter.setFromEntityKind(QUO);
         expected = List.of(quotationTopicLink);
         actual = queryExecutor.entityLinks(PAGED_RESPONSE_SPEC, filter, null);
         checkPage(actual, expected.size(), 1, expected.size(), 0, false, false, true, true, expected, false);
@@ -495,28 +495,31 @@ class TopicLinkTests extends AbstractGraphQLTests {
         String deletedStatus = StatusKind.DEL.name();
         claimTopicLink = mutationExecutor.deleteEntityLink(RESPONSE_SPEC, claimTopicLink.getId(), Boolean.FALSE);
         assertThat(claimTopicLink).hasStatus(deletedStatus);
-        declarationTopicLink = mutationExecutor.deleteEntityLink(RESPONSE_SPEC, declarationTopicLink.getId(), Boolean.FALSE);
+        declarationTopicLink =
+            mutationExecutor.deleteEntityLink(RESPONSE_SPEC, declarationTopicLink.getId(), Boolean.FALSE);
         assertThat(declarationTopicLink).hasStatus(deletedStatus);
         personTopicLink = mutationExecutor.deleteEntityLink(RESPONSE_SPEC, personTopicLink.getId(), Boolean.FALSE);
         assertThat(personTopicLink).hasStatus(deletedStatus);
-        publicationTopicLink = mutationExecutor.deleteEntityLink(RESPONSE_SPEC, publicationTopicLink.getId(), Boolean.FALSE);
+        publicationTopicLink =
+            mutationExecutor.deleteEntityLink(RESPONSE_SPEC, publicationTopicLink.getId(), Boolean.FALSE);
         assertThat(publicationTopicLink).hasStatus(deletedStatus);
-        quotationTopicLink = mutationExecutor.deleteEntityLink(RESPONSE_SPEC, quotationTopicLink.getId(), Boolean.FALSE);
+        quotationTopicLink =
+            mutationExecutor.deleteEntityLink(RESPONSE_SPEC, quotationTopicLink.getId(), Boolean.FALSE);
         assertThat(quotationTopicLink).hasStatus(deletedStatus);
 
         EntityLinkQueryFilter filter = EntityLinkQueryFilter.builder() //
-            .withFromEntityKind(TOP) //
+            .withToEntityKind(TOP) //
             .withStatus(List.of(StatusKind.DRA, StatusKind.PUB, StatusKind.SUS)) //
             .build();
-        filter.setToEntityKind(CLA);
+        filter.setFromEntityKind(CLA);
         assertThat(queryExecutor.entityLinks(PAGED_RESPONSE_SPEC, filter, null)).isEmpty();
-        filter.setToEntityKind(DEC);
+        filter.setFromEntityKind(DEC);
         assertThat(queryExecutor.entityLinks(PAGED_RESPONSE_SPEC, filter, null)).isEmpty();
-        filter.setToEntityKind(PER);
+        filter.setFromEntityKind(PER);
         assertThat(queryExecutor.entityLinks(PAGED_RESPONSE_SPEC, filter, null)).isEmpty();
-        filter.setToEntityKind(PUB);
+        filter.setFromEntityKind(PUB);
         assertThat(queryExecutor.entityLinks(PAGED_RESPONSE_SPEC, filter, null)).isEmpty();
-        filter.setToEntityKind(QUO);
+        filter.setFromEntityKind(QUO);
         assertThat(queryExecutor.entityLinks(PAGED_RESPONSE_SPEC, filter, null)).isEmpty();
 
         TopicLinkTests.claimTopicLink = claimTopicLink;
@@ -549,7 +552,7 @@ class TopicLinkTests extends AbstractGraphQLTests {
     void readTopicLinks() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
         EntityLinkQueryFilter filter = EntityLinkQueryFilter.builder() //
-            .withFromEntityKind(TOP) //
+            .withToEntityKind(TOP) //
             .build();
         readTopicLinksForEachEntityKind(filter, null, TOPIC_LINK_INDEXES);
     }
@@ -565,21 +568,21 @@ class TopicLinkTests extends AbstractGraphQLTests {
             if (ENTITY_INDEXES[i].length == 0)
                 continue;
 
-            filter.setFromEntityId(TopicTests.topics.get(i).getId());
+            filter.setToEntityId(TopicTests.topics.get(i).getId());
 
-            filter.setToEntityKind(CLA);
+            filter.setFromEntityKind(CLA);
             readTopicLinks(filter, claimTopicLinks[topicLinkIdx]);
 
-            filter.setToEntityKind(DEC);
+            filter.setFromEntityKind(DEC);
             readTopicLinks(filter, declarationTopicLinks[topicLinkIdx]);
 
-            filter.setToEntityKind(PER);
+            filter.setFromEntityKind(PER);
             readTopicLinks(filter, personTopicLinks[topicLinkIdx]);
 
-            filter.setToEntityKind(PUB);
+            filter.setFromEntityKind(PUB);
             readTopicLinks(filter, publicationTopicLinks[topicLinkIdx]);
 
-            filter.setToEntityKind(QUO);
+            filter.setFromEntityKind(QUO);
             readTopicLinks(filter, quotationTopicLinks[topicLinkIdx]);
 
             topicLinkIdx++;
@@ -593,23 +596,23 @@ class TopicLinkTests extends AbstractGraphQLTests {
         throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
         EntityLinkQueryFilter filter = EntityLinkQueryFilter.builder() //
-            .withFromEntityKind(TOP) //
+            .withToEntityKind(TOP) //
             .build();
 
         // Reads and checks topic entity links for all entity kinds and entityIds.
-        filter.setToEntityKind(CLA);
+        filter.setFromEntityKind(CLA);
         readTopicLinksFilteredByEntityId(filter, claimTopicLinks, ClaimTests.claims);
 
-        filter.setToEntityKind(DEC);
+        filter.setFromEntityKind(DEC);
         readTopicLinksFilteredByEntityId(filter, declarationTopicLinks, DeclarationTests.declarations);
 
-        filter.setToEntityKind(PER);
+        filter.setFromEntityKind(PER);
         readTopicLinksFilteredByEntityId(filter, personTopicLinks, PersonTests.persons);
 
-        filter.setToEntityKind(PUB);
+        filter.setFromEntityKind(PUB);
         readTopicLinksFilteredByEntityId(filter, publicationTopicLinks, PublicationTests.publications);
 
-        filter.setToEntityKind(QUO);
+        filter.setFromEntityKind(QUO);
         readTopicLinksFilteredByEntityId(filter, quotationTopicLinks, QuotationTests.quotations);
     }
 
@@ -618,7 +621,7 @@ class TopicLinkTests extends AbstractGraphQLTests {
     @EnabledIf("io.github.demonfiddler.ee.client.TopicLinkTests#hasExpectedTopicLinks")
     void readTopicLinksFilteredByText() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
         EntityLinkQueryFilter filter = EntityLinkQueryFilter.builder() //
-            .withFromEntityKind(TOP) //
+            .withToEntityKind(TOP) //
             .withText("filtered") //
             .build();
 
@@ -630,11 +633,11 @@ class TopicLinkTests extends AbstractGraphQLTests {
     @EnabledIf("io.github.demonfiddler.ee.client.TopicLinkTests#hasExpectedTopicLinks")
     void readTopicLinksSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
         EntityLinkQueryFilter filter = EntityLinkQueryFilter.builder() //
-            .withFromEntityKind(TOP) //
+            .withToEntityKind(TOP) //
             .build();
-        OrderInput locationsOrder = OrderInput.builder().withProperty("to_entity_locations").build();
-        OrderInput topicIdOrder = OrderInput.builder().withProperty("from_entity_id").build();
-        OrderInput entityIdOrder = OrderInput.builder().withProperty("to_entity_id").build();
+        OrderInput locationsOrder = OrderInput.builder().withProperty("from_entity_locations").build();
+        OrderInput topicIdOrder = OrderInput.builder().withProperty("to_entity_id").build();
+        OrderInput entityIdOrder = OrderInput.builder().withProperty("from_entity_id").build();
         List<OrderInput> orders = List.of(locationsOrder, topicIdOrder, entityIdOrder);
         SortInput sort = SortInput.builder().withOrders(orders).build();
         PageableInput pageSort = PageableInput.builder().withSort(sort).build();
@@ -648,12 +651,12 @@ class TopicLinkTests extends AbstractGraphQLTests {
     @EnabledIf("io.github.demonfiddler.ee.client.TopicLinkTests#hasExpectedTopicLinks")
     void readTopicLinksSortedIgnoreCase() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
         EntityLinkQueryFilter filter = EntityLinkQueryFilter.builder() //
-            .withFromEntityKind(TOP) //
+            .withToEntityKind(TOP) //
             .build();
         OrderInput locationsOrder =
-            OrderInput.builder().withProperty("to_entity_locations").withIgnoreCase(true).build();
-        OrderInput topicIdOrder = OrderInput.builder().withProperty("from_entity_id").build();
-        OrderInput entityIdOrder = OrderInput.builder().withProperty("to_entity_id").build();
+            OrderInput.builder().withProperty("from_entity_locations").withIgnoreCase(true).build();
+        OrderInput topicIdOrder = OrderInput.builder().withProperty("to_entity_id").build();
+        OrderInput entityIdOrder = OrderInput.builder().withProperty("from_entity_id").build();
         List<OrderInput> orders = List.of(locationsOrder, topicIdOrder, entityIdOrder);
         SortInput sort = SortInput.builder().withOrders(orders).build();
         PageableInput pageSort = PageableInput.builder().withSort(sort).build();
@@ -668,12 +671,12 @@ class TopicLinkTests extends AbstractGraphQLTests {
         throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
         EntityLinkQueryFilter filter = EntityLinkQueryFilter.builder() //
-            .withFromEntityKind(TOP) //
+            .withToEntityKind(TOP) //
             .build();
-        OrderInput locationsOrder = OrderInput.builder().withProperty("to_entity_locations")
+        OrderInput locationsOrder = OrderInput.builder().withProperty("from_entity_locations")
             .withNullHandling(NullHandlingKind.NULLS_LAST).build();
-        OrderInput topicIdOrder = OrderInput.builder().withProperty("from_entity_id").build();
-        OrderInput entityIdOrder = OrderInput.builder().withProperty("to_entity_id").build();
+        OrderInput topicIdOrder = OrderInput.builder().withProperty("to_entity_id").build();
+        OrderInput entityIdOrder = OrderInput.builder().withProperty("from_entity_id").build();
         List<OrderInput> orders = List.of(locationsOrder, topicIdOrder, entityIdOrder);
         SortInput sort = SortInput.builder().withOrders(orders).build();
         PageableInput pageSort = PageableInput.builder().withSort(sort).build();
@@ -689,13 +692,13 @@ class TopicLinkTests extends AbstractGraphQLTests {
     @EnabledIf("io.github.demonfiddler.ee.client.TopicLinkTests#hasExpectedTopicLinks")
     void readTopicLinksFilteredSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
         EntityLinkQueryFilter filter = EntityLinkQueryFilter.builder() //
-            .withFromEntityKind(TOP) //
+            .withToEntityKind(TOP) //
             .withText("filtered") //
             .build();
         OrderInput locationsOrder =
-            OrderInput.builder().withProperty("to_entity_locations").withDirection(DirectionKind.DESC).build();
-        OrderInput topicIdOrder = OrderInput.builder().withProperty("from_entity_id").build();
-        OrderInput entityIdOrder = OrderInput.builder().withProperty("to_entity_id").build();
+            OrderInput.builder().withProperty("from_entity_locations").withDirection(DirectionKind.DESC).build();
+        OrderInput topicIdOrder = OrderInput.builder().withProperty("to_entity_id").build();
+        OrderInput entityIdOrder = OrderInput.builder().withProperty("from_entity_id").build();
         List<OrderInput> orders = List.of(locationsOrder, topicIdOrder, entityIdOrder);
         SortInput sort = SortInput.builder().withOrders(orders).build();
         PageableInput pageSort = PageableInput.builder().withSort(sort).build();
@@ -708,7 +711,7 @@ class TopicLinkTests extends AbstractGraphQLTests {
     @EnabledIf("io.github.demonfiddler.ee.client.TopicLinkTests#hasExpectedTopicLinks")
     void readTopicLinksPaged() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
         EntityLinkQueryFilter filter = EntityLinkQueryFilter.builder() //
-            .withFromEntityKind(TOP) //
+            .withToEntityKind(TOP) //
             .build();
         int pageSize = 8;
         PageableInput pageSort = PageableInput.builder() //
@@ -728,11 +731,11 @@ class TopicLinkTests extends AbstractGraphQLTests {
     @EnabledIf("io.github.demonfiddler.ee.client.TopicLinkTests#hasExpectedTopicLinks")
     void readTopicLinksPagedSorted() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
         EntityLinkQueryFilter filter = EntityLinkQueryFilter.builder() //
-            .withFromEntityKind(TOP) //
+            .withToEntityKind(TOP) //
             .build();
-        OrderInput locationsOrder = OrderInput.builder().withProperty("to_entity_locations").build();
-        OrderInput topicIdOrder = OrderInput.builder().withProperty("from_entity_id").build();
-        OrderInput entityIdOrder = OrderInput.builder().withProperty("to_entity_id").build();
+        OrderInput locationsOrder = OrderInput.builder().withProperty("from_entity_locations").build();
+        OrderInput topicIdOrder = OrderInput.builder().withProperty("to_entity_id").build();
+        OrderInput entityIdOrder = OrderInput.builder().withProperty("from_entity_id").build();
         List<OrderInput> orders = List.of(locationsOrder, topicIdOrder, entityIdOrder);
         SortInput sort = SortInput.builder().withOrders(orders).build();
         int pageSize = 8;
@@ -757,12 +760,12 @@ class TopicLinkTests extends AbstractGraphQLTests {
         throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
         EntityLinkQueryFilter filter = EntityLinkQueryFilter.builder() //
-            .withFromEntityKind(TOP) //
+            .withToEntityKind(TOP) //
             .withText("filtered") //
             .build();
-        OrderInput locationsOrder = OrderInput.builder().withProperty("to_entity_locations").build();
-        OrderInput topicIdOrder = OrderInput.builder().withProperty("from_entity_id").build();
-        OrderInput entityIdOrder = OrderInput.builder().withProperty("to_entity_id").build();
+        OrderInput locationsOrder = OrderInput.builder().withProperty("from_entity_locations").build();
+        OrderInput topicIdOrder = OrderInput.builder().withProperty("to_entity_id").build();
+        OrderInput entityIdOrder = OrderInput.builder().withProperty("from_entity_id").build();
         List<OrderInput> orders = List.of(locationsOrder, topicIdOrder, entityIdOrder);
         SortInput sort = SortInput.builder().withOrders(orders).build();
         int pageSize = 3;
@@ -802,15 +805,15 @@ class TopicLinkTests extends AbstractGraphQLTests {
             for (int j = 0; j < subArrayLen; j++) {
                 int entityIndex = ENTITY_INDEXES[i][j];
                 T entity = entities.get(entityIndex);
-                String toEntityLocations = "#topic-" + topicLabelNum + '-' + getEntityName(entity) + '-' + entityIndex;
+                String fromEntityLocations = "#topic-" + topicLabelNum + '-' + getEntityName(entity) + '-' + entityIndex;
                 if (topicLabelNum % 2 != 0)
-                    toEntityLocations = toEntityLocations.toUpperCase();
+                    fromEntityLocations = fromEntityLocations.toUpperCase();
                 if (topicLabelNum % 3 == 0)
-                    toEntityLocations = null;
+                    fromEntityLocations = null;
                 else if (topicLabelNum > 4)
-                    toEntityLocations += "-filtered";
-                EntityLink actual = createTopicLink(topic, entity, toEntityLocations);
-                checkTopicLink(null, topic.getId(), entity.getId(), getEntityKind(entity), toEntityLocations, actual);
+                    fromEntityLocations += "-filtered";
+                EntityLink actual = createTopicLink(topic, entity, fromEntityLocations);
+                checkTopicLink(null, topic.getId(), entity.getId(), getEntityKind(entity), fromEntityLocations, actual);
 
                 topicLinks[topicLinkIdx][j] = actual;
             }
@@ -820,62 +823,62 @@ class TopicLinkTests extends AbstractGraphQLTests {
         return topicLinks;
     }
 
-    private <T extends ILinkableEntity> EntityLink createTopicLink(Topic topic, T entity, String toEntityLocations)
+    private <T extends ILinkableEntity> EntityLink createTopicLink(Topic topic, T entity, String fromEntityLocations)
         throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
-        return mutateTopicLink(null, topic, entity, toEntityLocations);
+        return mutateTopicLink(null, topic, entity, fromEntityLocations);
     }
 
-    private <T extends ILinkableEntity> EntityLink mutateTopicLink(Long id, Topic topic, T entity,
-        String toEntityLocations) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+    private <T extends ILinkableEntity> EntityLink mutateTopicLink(Long linkId, Topic topic, T entity,
+        String fromEntityLocations) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
         Long topicId = topic.getId();
         Long entityId = entity.getId();
         EntityKind entityKind = getEntityKind(entity);
         EntityLinkInput topicLinkInput = EntityLinkInput.builder() //
-            .withId(id) //
-            .withFromEntityId(topicId) //
-            .withToEntityId(entityId) //
-            .withToEntityLocations(toEntityLocations) //
+            .withId(linkId) //
+            .withToEntityId(topicId) //
+            .withFromEntityId(entityId) //
+            .withFromEntityLocations(fromEntityLocations) //
             .build();
-        EntityLink actual = id == null //
+        EntityLink actual = linkId == null //
             ? mutationExecutor.createEntityLink(RESPONSE_SPEC, topicLinkInput)
             : mutationExecutor.updateEntityLink(RESPONSE_SPEC, topicLinkInput);
 
-        checkTopicLink(id, topicId, entityId, entityKind, toEntityLocations, actual);
+        checkTopicLink(linkId, topicId, entityId, entityKind, fromEntityLocations, actual);
 
         return actual;
     }
 
-    private void checkTopicLink(Long id, Long topicId, Long entityId, EntityKind entityKind, String locations,
+    private void checkTopicLink(Long id, Long topicId, Long entityId, EntityKind entityKind, String fromEntityLocations,
         EntityLink actual) {
 
         if (id == null)
             assertThat(actual).id().isNotNull();
         else
             assertThat(actual).hasId(id);
-        assertThat(actual).fromEntity().hasId(topicId);
-        assertThat(actual).toEntity().hasId(entityId);
-        assertThat(actual).toEntity().hasEntityKind(entityKind.name());
-        assertThat(actual).hasToEntityLocations(locations);
+        assertThat(actual).toEntity().hasId(topicId);
+        assertThat(actual).fromEntity().hasId(entityId);
+        assertThat(actual).fromEntity().hasEntityKind(entityKind.name());
+        assertThat(actual).hasFromEntityLocations(fromEntityLocations);
     }
 
     private void readTopicLinksForEachEntityKind(EntityLinkQueryFilter filter, PageableInput pageSort,
         int[][] topicLinkIndexes) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
-        filter.setToEntityKind(CLA);
+        filter.setFromEntityKind(CLA);
         readTopicLinks(filter, pageSort, claimTopicLinks, topicLinkIndexes);
 
-        filter.setToEntityKind(DEC);
+        filter.setFromEntityKind(DEC);
         readTopicLinks(filter, pageSort, declarationTopicLinks, topicLinkIndexes);
 
-        filter.setToEntityKind(PER);
+        filter.setFromEntityKind(PER);
         readTopicLinks(filter, pageSort, personTopicLinks, topicLinkIndexes);
 
-        filter.setToEntityKind(PUB);
+        filter.setFromEntityKind(PUB);
         readTopicLinks(filter, pageSort, publicationTopicLinks, topicLinkIndexes);
 
-        filter.setToEntityKind(QUO);
+        filter.setFromEntityKind(QUO);
         readTopicLinks(filter, pageSort, quotationTopicLinks, topicLinkIndexes);
     }
 
@@ -943,7 +946,7 @@ class TopicLinkTests extends AbstractGraphQLTests {
         };
         for (int i = 0; i < entities.size(); i++) {
             Long entityId = entities.get(i).getId();
-            filter.setToEntityId(entityId);
+            filter.setFromEntityId(entityId);
             List<EntityLink> expected = subList(topicLinks, topicLinkIdxsByEntityIdx[i]);
             readTopicLinks(filter, null, expected, false);
         }

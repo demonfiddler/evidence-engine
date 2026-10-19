@@ -66,8 +66,7 @@ import io.github.demonfiddler.ee.client.util.QueryExecutor;
 public class LinkRunner extends AbstractClientRunner {
 
     /**
-     * Tracks entity create/update/delete statistics during entity link
-     * normalization.
+     * Tracks entity create/update/delete statistics during entity link normalization.
      */
     private static final class LinkData {
 
@@ -96,123 +95,128 @@ public class LinkRunner extends AbstractClientRunner {
         @Override
         public String toString() {
             return "LinkData [addedClaimLinkCount=" + addedClaimLinkCount + ", addedTopicLinkCount="
-                    + addedTopicLinkCount + ", deletedTopicLinkCount="
-                    + deletedTopicLinkCount + ", claimIds=" + claimIds + ", topicIds=" + topicIds + "]";
+                + addedTopicLinkCount + ", deletedTopicLinkCount=" + deletedTopicLinkCount + ", claimIds=" + claimIds
+                + ", topicIds=" + topicIds + "]";
         }
 
     }
 
+    private static enum LinkDirection {
+        FROM, TO
+    };
+
     private static final Logger LOGGER = LoggerFactory.getLogger(LinkRunner.class);
     private static final String FRAGMENT_PAGE_FIELDS = """
-                hasContent
-                hasNext
-                numberOfElements
-            """;
+            hasContent
+            hasNext
+            numberOfElements
+        """;
     private static final String FRAGMENT_TRACKED_ENTITY_FIELDS = """
-                    entityKind(format: SHORT)
-                    status(format: SHORT)
-            """;
+                entityKind(format: SHORT)
+                status(format: SHORT)
+        """;
     private static final String FRAGMENT_LINKED_ENTITY_FIELDS = """
-            ... on Claim {
-                id
-                entityKind(format: SHORT)
-                status(format: SHORT)
-                text
-            }
-            ... on Declaration {
-                id
-                entityKind(format: SHORT)
-                status(format: SHORT)
-                title
-            }
-            ... on Person {
-                id
-                entityKind(format: SHORT)
-                status(format: SHORT)
-                title
-                firstName
-                prefix
-                lastName
-                suffix
-            }
-            ... on Publication {
-                id
-                entityKind(format: SHORT)
-                status(format: SHORT)
-                title
-            }
-            ... on Quotation {
-                id
-                entityKind(format: SHORT)
-                status(format: SHORT)
-                text
-            }
-            ... on Topic {
-                id
-                entityKind(format: SHORT)
-                status(format: SHORT)
-                label
-            }
-            """;
-    private static final String FRAGMENT_LINKABLE_ENTITY_FIELDS = """
-                fromEntityLinks {
-                    content {
-                        id
-                        status(format: SHORT)
-                        toEntity {
-                            %s
-                        }
-                    }
-                }
-                toEntityLinks {
-                    content {
-                        id
-                        status(format: SHORT)
-                        fromEntity {
-                            %s
-                        }
-                    }
-                }
-            """.formatted(FRAGMENT_LINKED_ENTITY_FIELDS, FRAGMENT_LINKED_ENTITY_FIELDS);
-    private static final String FRAGMENT_ENTITY_LINK_FIELDS = """
-                fromEntity {
-            %s
-                }
-                toEntity {
-            %s
-                }
-            """.formatted(FRAGMENT_LINKED_ENTITY_FIELDS, FRAGMENT_LINKED_ENTITY_FIELDS);
-    private static final String FRAGMENT_SUBTOPIC_FIELDS = """
+        ... on Claim {
             id
+            entityKind(format: SHORT)
+            status(format: SHORT)
+            text
+        }
+        ... on Declaration {
+            id
+            entityKind(format: SHORT)
+            status(format: SHORT)
+            title
+        }
+        ... on Person {
+            id
+            entityKind(format: SHORT)
+            status(format: SHORT)
+            title
+            firstName
+            prefix
+            lastName
+            suffix
+        }
+        ... on Publication {
+            id
+            entityKind(format: SHORT)
+            status(format: SHORT)
+            title
+        }
+        ... on Quotation {
+            id
+            entityKind(format: SHORT)
+            status(format: SHORT)
+            text
+        }
+        ... on Topic {
+            id
+            entityKind(format: SHORT)
             status(format: SHORT)
             label
-            """.formatted(FRAGMENT_TRACKED_ENTITY_FIELDS);
+        }
+        """;
+    private static final String FRAGMENT_LINKABLE_ENTITY_FIELDS = """
+            fromEntityLinks {
+                content {
+                    id
+                    status(format: SHORT)
+                    toEntity {
+                        %s
+                    }
+                }
+            }
+            toEntityLinks {
+                content {
+                    id
+                    status(format: SHORT)
+                    fromEntity {
+                        %s
+                    }
+                }
+            }
+        """.formatted(FRAGMENT_LINKED_ENTITY_FIELDS, FRAGMENT_LINKED_ENTITY_FIELDS);
+    private static final String FRAGMENT_ENTITY_LINK_FIELDS = """
+            fromEntity {
+        %s
+            }
+            toEntity {
+        %s
+            }
+        """.formatted(FRAGMENT_LINKED_ENTITY_FIELDS, FRAGMENT_LINKED_ENTITY_FIELDS);
+    private static final String FRAGMENT_SUBTOPIC_FIELDS = """
+        id
+        status(format: SHORT)
+        label
+        """.formatted(FRAGMENT_TRACKED_ENTITY_FIELDS);
     private static final Object[] SUBTOPIC_FIELDS_ARRAY = new String[10];
+
     static {
         Arrays.fill(SUBTOPIC_FIELDS_ARRAY, FRAGMENT_SUBTOPIC_FIELDS);
     }
+
     private static final String FRAGMENT_TOPIC_FIELDS_RECURSIVE = """
+        children {
+        %s
             children {
-            %s
+        %s
                 children {
-            %s
+        %s
                     children {
-            %s
+        %s
                         children {
-            %s
+        %s
                             children {
-            %s
+        %s
                                 children {
-            %s
+        %s
                                     children {
-            %s
+        %s
                                         children {
-            %s
+        %s
                                             children {
-            %s
-                                                children {
-            %s
-                                                }
+        %s
                                             }
                                         }
                                     }
@@ -222,35 +226,36 @@ public class LinkRunner extends AbstractClientRunner {
                     }
                 }
             }
-            """.formatted(SUBTOPIC_FIELDS_ARRAY);
+        }
+        """.formatted(SUBTOPIC_FIELDS_ARRAY);
     private static final String FRAGMENT_TOPIC_HIERARCHY_FIELDS = """
-            %s
-            %s
-            """.formatted(FRAGMENT_SUBTOPIC_FIELDS, FRAGMENT_TOPIC_FIELDS_RECURSIVE);
+        %s
+        %s
+        """.formatted(FRAGMENT_SUBTOPIC_FIELDS, FRAGMENT_TOPIC_FIELDS_RECURSIVE);
     private static final String RESP_LINKABLE_ENTITIES = """
-            {
-            %s
-                content {
-                    id
-            %s
-            %s
-                }
+        {
+        %s
+            content {
+                id
+        %s
+        %s
             }
-            """.formatted(FRAGMENT_PAGE_FIELDS, FRAGMENT_TRACKED_ENTITY_FIELDS, FRAGMENT_LINKABLE_ENTITY_FIELDS);
+        }
+        """.formatted(FRAGMENT_PAGE_FIELDS, FRAGMENT_TRACKED_ENTITY_FIELDS, FRAGMENT_LINKABLE_ENTITY_FIELDS);
     private static final String RESP_TOPICS = """
-            {
-            %s
-                content {
-            %s
-                }
+        {
+        %s
+            content {
+        %s
             }
-            """.formatted(FRAGMENT_PAGE_FIELDS, FRAGMENT_TOPIC_HIERARCHY_FIELDS);
+        }
+        """.formatted(FRAGMENT_PAGE_FIELDS, FRAGMENT_TOPIC_HIERARCHY_FIELDS);
     private static final String RESP_ENTITY_LINK = """
-            {
-            %s
-            %s
-            }
-            """.formatted(FRAGMENT_TRACKED_ENTITY_FIELDS, FRAGMENT_ENTITY_LINK_FIELDS);
+        {
+        %s
+        %s
+        }
+        """.formatted(FRAGMENT_TRACKED_ENTITY_FIELDS, FRAGMENT_ENTITY_LINK_FIELDS);
 
     private Map<Long, Claim> claimsById = new HashMap<>();
     private Map<Long, Person> personsById = new HashMap<>();
@@ -260,7 +265,7 @@ public class LinkRunner extends AbstractClientRunner {
     private Set<Long> personIds = new HashSet<>();
 
     public LinkRunner(ConfigurableApplicationContext context, Authenticator authenticator, QueryExecutor queryExecutor,
-            MutationExecutor mutationExecutor) {
+        MutationExecutor mutationExecutor) {
 
         super(context, authenticator, queryExecutor, mutationExecutor);
     }
@@ -271,10 +276,8 @@ public class LinkRunner extends AbstractClientRunner {
     }
 
     /**
-     * Ensures that Publication and Person linking is consistent. Ensures that
-     * Publications are linked to the same
-     * Topics as their Claims are linked to and that Persons are linked to the same
-     * Claims and Topics as the
+     * Ensures that Publication and Person linking is consistent. Ensures that Publications are linked to the same
+     * Topics as their Claims are linked to and that Persons are linked to the same Claims and Topics as the
      * Publications they have authored.
      */
     @Override
@@ -284,23 +287,28 @@ public class LinkRunner extends AbstractClientRunner {
             List<EntityKind> linkKinds = parseEntityKinds(OPT_LINK);
             List<StatusKind> status = parseStatus();
             LinkableEntityQueryFilter entityFilter = status != null || topicId != null
-                    ? LinkableEntityQueryFilter.builder().withStatus(status).withTopicId(topicId)
-                            .withRecursive(recursive).build() //
-                    : null;
+                ? LinkableEntityQueryFilter.builder() //
+                    .withStatus(status) //
+                    .withTopicId(topicId) //
+                    .withRecursive(recursive) //
+                    .build() //
+                : null;
 
-            List<Claim> claims = readPaged(ClaimPage.class, entityFilter,
-                    (f, p) -> queryExecutor.claims(RESP_LINKABLE_ENTITIES, f, p)).getContent();
+            List<Claim> claims =
+                readPaged(ClaimPage.class, entityFilter, (f, p) -> queryExecutor.claims(RESP_LINKABLE_ENTITIES, f, p))
+                    .getContent();
             claims.forEach(claim -> claimsById.put(claim.getId(), claim));
             LOGGER.trace("Loaded {} Claims", claims.size());
 
-            List<Person> persons = readPaged(PersonPage.class, entityFilter,
-                    (f, p) -> queryExecutor.persons(RESP_LINKABLE_ENTITIES, f, p)).getContent();
+            List<Person> persons =
+                readPaged(PersonPage.class, entityFilter, (f, p) -> queryExecutor.persons(RESP_LINKABLE_ENTITIES, f, p))
+                    .getContent();
             persons.forEach(person -> personsById.put(person.getId(), person));
             LOGGER.trace("Loaded {} Persons", persons.size());
 
             TopicQueryFilter topicFilter = TopicQueryFilter.builder().withStatus(status).withParentId(-1L).build();
-            List<Topic> topics = readPaged(TopicPage.class, topicFilter,
-                    (f, p) -> queryExecutor.topics(RESP_TOPICS, f, p)).getContent();
+            List<Topic> topics =
+                readPaged(TopicPage.class, topicFilter, (f, p) -> queryExecutor.topics(RESP_TOPICS, f, p)).getContent();
             int topicCount = indexTopics(null, topics);
             LOGGER.trace("Loaded {} top-level Topics, total {}", topics.size(), topicCount);
 
@@ -312,7 +320,7 @@ public class LinkRunner extends AbstractClientRunner {
             if (linkKinds.contains(EntityKind.PUB)) {
                 // Fetch ALL Publications and index them.
                 List<Publication> publications = readPaged(PublicationPage.class, entityFilter,
-                        (f, p) -> queryExecutor.publications(RESP_LINKABLE_ENTITIES, f, p)).getContent();
+                    (f, p) -> queryExecutor.publications(RESP_LINKABLE_ENTITIES, f, p)).getContent();
                 LOGGER.trace("Loaded {} Publications", publications.size());
 
                 publicationLinkData = processLinkableEntities(EntityKind.PUB, publications);
@@ -328,7 +336,7 @@ public class LinkRunner extends AbstractClientRunner {
             if (linkKinds.contains(EntityKind.QUO)) {
                 // Fetch ALL Quotations and index them.
                 List<Quotation> quotations = readPaged(QuotationPage.class, entityFilter,
-                        (f, p) -> queryExecutor.quotations(RESP_LINKABLE_ENTITIES, f, p)).getContent();
+                    (f, p) -> queryExecutor.quotations(RESP_LINKABLE_ENTITIES, f, p)).getContent();
                 LOGGER.trace("Loaded {} Quotations", quotations.size());
 
                 quotationLinkData = processLinkableEntities(EntityKind.QUO, quotations);
@@ -336,8 +344,7 @@ public class LinkRunner extends AbstractClientRunner {
             }
 
             if (linkKinds.contains(EntityKind.PER)) {
-                // Ensure that each Person is linked from the same Claims and Topics as their
-                // Publications/Quotations.
+                // Ensure that each Person is linked to the same Claims and Topics as their Publications/Quotations.
                 personLinkData = new LinkData();
                 for (Long personId : personIds) {
                     LOGGER.trace("Processing Person #{}", personId);
@@ -366,7 +373,7 @@ public class LinkRunner extends AbstractClientRunner {
     }
 
     private LinkData processLinkableEntities(EntityKind entityKind, List<? extends ILinkableEntity> entities)
-            throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+        throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
         LinkData entityLinkData = new LinkData();
         Set<Long> personIds = new HashSet<>();
@@ -375,14 +382,13 @@ public class LinkRunner extends AbstractClientRunner {
 
             // For each entity, gather its linked person IDs.
             List<EntityLink> fromEntityLinks = entity.getFromEntityLinks().getContent();
-            gatherLinkedEntityIds(fromEntityLinks, entityKind, EntityKind.PER, false, personIds, true);
+            gatherLinkedEntityIds(fromEntityLinks, entityKind, EntityKind.PER, LinkDirection.TO, personIds, true);
             this.personIds.addAll(personIds);
 
             LinkData linkData = normalizeEntityLinks(entity, null, null);
             entityLinkData.add(linkData);
 
-            // Remember the IDs of Claims and Topics from which this Person should be
-            // linked.
+            // Remember the IDs of Claims and Topics to which this Person should be linked.
             for (Long personId : personIds) {
                 addToMappedSet(requiredClaimIdsByPersonId, personId, linkData.claimIds);
                 addToMappedSet(requiredTopicIdsByPersonId, personId, linkData.topicIds);
@@ -396,35 +402,28 @@ public class LinkRunner extends AbstractClientRunner {
     }
 
     /**
-     * Normalizes the Claim and Topic links to a given {@code ILinkableEntity}.
-     * 
-     * @param entity           The {@code Publication}, {@code Quotation} or
-     *                         {@code Person}.
-     * @param requiredClaimIds The IDs of Claims that should be linked to
-     *                         {@code toEntity}. Pass {@code null} when
-     *                         {@code entity} is not Person.
-     * @param requiredTopicIds The IDs of Topics that should be linked to
-     *                         {@code toEntity}. Pass {@code null} when
-     *                         {@code entity} is not Person.
+     * Normalizes the Claim and Topic links from a given {@code ILinkableEntity}.
+     * @param entity The {@code Publication}, {@code Quotation} or {@code Person}.
+     * @param requiredClaimIds The IDs of Claims that should be linked from {@code entity}. Pass {@code null} when
+     * {@code entity} is not a Person.
+     * @param requiredTopicIds The IDs of Topics that should be linked from {@code entity}. Pass {@code null} when
+     * {@code entity} is not a Person.
      * @throws GraphQLRequestPreparationException
      * @throws GraphQLRequestExecutionException
      */
     private LinkData normalizeEntityLinks(ILinkableEntity entity, Set<Long> requiredClaimIds,
-            Set<Long> requiredTopicIds) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+        Set<Long> requiredTopicIds) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
         // Compute existing linked Claims and Topics from entity.
         //
         // Then, if required Claims are passed in:
-        // - Reconcile pre-existing Claims with required Claims, creating or deleting
-        // links as necessary.
+        // - Reconcile pre-existing Claims with required Claims, creating or deleting links as necessary.
         //
         // Then, if required Topics are passed in:
-        // - Reconcile pre-existing Topics with required Topics, creating or deleting
-        // links as necessary.
+        // - Reconcile pre-existing Topics with required Topics, creating or deleting links as necessary.
         // Else:
         // - Compute implied linked Topics transitively from existing linked Claims.
-        // - Reconcile pre-existing Topics with implied Topics, creating or deleting
-        // links as necessary.
+        // - Reconcile pre-existing Topics with implied Topics, creating or deleting links as necessary.
         //
         // Return pre-existing Claims and their implied/transitively linked Claim-Topics
 
@@ -432,19 +431,19 @@ public class LinkRunner extends AbstractClientRunner {
         Long entityId = entity.getId();
         LinkData linkData = new LinkData();
 
-        // Get existing 'to' EntityLinks and index them by fromEntityId.
-        List<EntityLink> toEntityLinks = entity.getToEntityLinks().getContent();
-        Map<Long, EntityLink> toEntityLinksByFromEntityId = new HashMap<>();
-        toEntityLinks
-                .forEach(entityLink -> toEntityLinksByFromEntityId.put(entityLink.getFromEntity().getId(), entityLink));
+        // Get existing 'from' EntityLinks and index them by toEntityId.
+        List<EntityLink> fromEntityLinks = entity.getFromEntityLinks().getContent();
+        Map<Long, EntityLink> fromEntityLinksByToEntityId = new HashMap<>();
+        fromEntityLinks
+            .forEach(entityLink -> fromEntityLinksByToEntityId.put(entityLink.getToEntity().getId(), entityLink));
 
-        // Gather existing linked Claim IDs.
+        // Gather existing linked Claim IDs from the 'to' end of fromEntityLinks.
         Set<Long> existingClaimIds = new HashSet<>();
-        gatherLinkedEntityIds(toEntityLinks, entityKind, EntityKind.CLA, true, existingClaimIds, false);
+        gatherLinkedEntityIds(fromEntityLinks, entityKind, EntityKind.CLA, LinkDirection.TO, existingClaimIds, false);
 
-        // Gather existing linked Topic IDs.
+        // Gather existing linked Topic IDs from the 'to' end of fromEntityLinks.
         Set<Long> existingTopicIds = new HashSet<>();
-        gatherLinkedEntityIds(toEntityLinks, entityKind, EntityKind.TOP, true, existingTopicIds, false);
+        gatherLinkedEntityIds(fromEntityLinks, entityKind, EntityKind.TOP, LinkDirection.TO, existingTopicIds, false);
 
         // If any required Claim IDs were passed in, ensure that they are linked.
         if (requiredClaimIds != null) {
@@ -455,7 +454,7 @@ public class LinkRunner extends AbstractClientRunner {
             // Create any missing Claim links.
             if (!missingClaimIds.isEmpty()) {
                 for (Long missingClaimId : missingClaimIds)
-                    createEntityLink(EntityKind.CLA, missingClaimId, entityKind, entityId);
+                    createEntityLink(entityKind, entityId, EntityKind.CLA, missingClaimId);
                 existingClaimIds.addAll(missingClaimIds);
 
                 linkData.addedClaimLinkCount = missingClaimIds.size();
@@ -463,15 +462,14 @@ public class LinkRunner extends AbstractClientRunner {
             }
         }
 
-        // If requiredTopicIds is unspecified, compute it from existingClaimIds (which
-        // includes the newly-added links).
+        // If requiredTopicIds is unspecified, compute it from existingClaimIds (which includes the newly-added links).
         if (requiredTopicIds == null) {
             requiredTopicIds = new HashSet<>();
             for (Long claimId : existingClaimIds) {
                 Claim claim = claimsById.get(claimId);
-                List<EntityLink> claimToEntityLinks = claim.getToEntityLinks().getContent();
-                gatherLinkedEntityIds(claimToEntityLinks, EntityKind.CLA, EntityKind.TOP, true, requiredTopicIds,
-                        false);
+                List<EntityLink> claimFromEntityLinks = claim.getFromEntityLinks().getContent();
+                gatherLinkedEntityIds(claimFromEntityLinks, EntityKind.CLA, EntityKind.TOP, LinkDirection.TO,
+                    requiredTopicIds, false);
             }
         }
         // Should we include any other Topic links or delete them as extraneous?
@@ -479,16 +477,13 @@ public class LinkRunner extends AbstractClientRunner {
         // Discard any required Topics which are descendants of any other in the set.
         removeDescendants(requiredTopicIds, requiredTopicIds);
 
-        // If any of the required Topics are ancestors or descendants of existing entity
-        // Topics, relink the latter to
-        // the former. To achieve this, for each existing entity-Topic link whose Topic
-        // IS an ancestor or descendant
-        // of one or more required Topics, hard-delete it. Then ensure that the entity
-        // is linked to all of the required
+        // If any of the required Topics are ancestors or descendants of existing entity Topics, relink the latter to
+        // the former. To achieve this, for each existing entity-Topic link whose Topic IS an ancestor or descendant
+        // of one or more required Topics, hard-delete it. Then ensure that the entity is linked to all of the required
         // Topics by creating a new link.
         Set<Long> lineageTopicIds = removeLineage(existingTopicIds, requiredTopicIds);
         for (Long lineageTopicId : lineageTopicIds) {
-            EntityLink lineageTopicLink = toEntityLinksByFromEntityId.get(lineageTopicId);
+            EntityLink lineageTopicLink = fromEntityLinksByToEntityId.get(lineageTopicId);
             deleteEntityLink(lineageTopicLink);
         }
         linkData.deletedTopicLinkCount += lineageTopicIds.size();
@@ -499,7 +494,7 @@ public class LinkRunner extends AbstractClientRunner {
 
         // Create any missing Topic links.
         for (Long missingTopicId : missingTopicIds) {
-            createEntityLink(EntityKind.TOP, missingTopicId, entityKind, entityId);
+            createEntityLink(entityKind, entityId, EntityKind.TOP, missingTopicId);
             linkData.addedTopicLinkCount++;
         }
 
@@ -517,15 +512,12 @@ public class LinkRunner extends AbstractClientRunner {
     }
 
     /**
-     * Updates a mapped set with the contents of a given collection. The method
-     * ensures that {@code mappedSets} contains
-     * a mapped {@code Set} for the key {@code key}, creating and adding one if not,
-     * then adds the contents of
+     * Updates a mapped set with the contents of a given collection. The method ensures that {@code mappedSets} contains
+     * a mapped {@code Set} for the key {@code key}, creating and adding one if not, then adds the contents of
      * {@code coll} to the mapped set.
-     * 
      * @param mappedSets Maps {@code key} to a {@code Set}.
-     * @param key        The value to use as a key into {@code mappedSets}.
-     * @param coll       The items to add to the {@code Set} mapped to {@code key}.
+     * @param key The value to use as a key into {@code mappedSets}.
+     * @param coll The items to add to the {@code Set} mapped to {@code key}.
      */
     private <T> void addToMappedSet(Map<T, Set<T>> mappedSets, T key, Collection<T> coll) {
         Set<T> mappedSet = mappedSets.get(key);
@@ -535,10 +527,8 @@ public class LinkRunner extends AbstractClientRunner {
     }
 
     /**
-     * Removes Topic IDs from {@code topicIds} if they are ancestors of any of
-     * {@code refTopicIds}.
-     * 
-     * @param topicIds    The Topic IDs to check and, if necessary, remove.
+     * Removes Topic IDs from {@code topicIds} if they are ancestors of any of {@code refTopicIds}.
+     * @param topicIds The Topic IDs to check and, if necessary, remove.
      * @param refTopicIds The Topic IDs against which to check.
      * @return The Topic IDs that were removed from {@code topicIds}.
      */
@@ -561,10 +551,8 @@ public class LinkRunner extends AbstractClientRunner {
     }
 
     /**
-     * Removes Topic IDs from {@code topicIds} if they are ancestors or descendants
-     * of any of {@code refTopicIds}.
-     * 
-     * @param topicIds    The Topic IDs to check and, if necessary, remove.
+     * Removes Topic IDs from {@code topicIds} if they are ancestors or descendants of any of {@code refTopicIds}.
+     * @param topicIds The Topic IDs to check and, if necessary, remove.
      * @param refTopicIds The Topic IDs against which to check.
      * @return The Topic IDs that were removed from {@code topicIds}.
      */
@@ -586,10 +574,8 @@ public class LinkRunner extends AbstractClientRunner {
     }
 
     /**
-     * Removes Topic IDs from {@code topicIds} if they are descendants of any of
-     * {@code refTopicIds}.
-     * 
-     * @param topicIds    The Topic IDs to check and, if necessary, remove.
+     * Removes Topic IDs from {@code topicIds} if they are descendants of any of {@code refTopicIds}.
+     * @param topicIds The Topic IDs to check and, if necessary, remove.
      * @param refTopicIds The Topic IDs against which to check.
      * @return The Topic IDs that were removed from {@code topicIds}.
      */
@@ -612,11 +598,9 @@ public class LinkRunner extends AbstractClientRunner {
 
     /**
      * Checks whether a given Topic ID is an ancestor of any given Topic IDs.
-     * 
-     * @param topicId     The Topic ID to check.
+     * @param topicId The Topic ID to check.
      * @param refTopicIds The Topic IDs against which to check.
-     * @return {@code true} if {@code topicID} is an ancestor of any in
-     *         {@code refTopicIds}.
+     * @return {@code true} if {@code topicID} is an ancestor of any in {@code refTopicIds}.
      */
     private boolean isAncestorOfAny(Long topicId, Collection<Long> refTopicIds) {
         for (Long refTopicId : refTopicIds) {
@@ -637,11 +621,9 @@ public class LinkRunner extends AbstractClientRunner {
 
     /**
      * Checks whether a given Topic ID is a descendant of any given Topic IDs.
-     * 
-     * @param topicId     The Topic ID to check.
+     * @param topicId The Topic ID to check.
      * @param refTopicIds The Topic IDs against which to check.
-     * @return {@code true} if {@code topicID} is a descendant of any in
-     *         {@code refTopicIds}.
+     * @return {@code true} if {@code topicID} is a descendant of any in {@code refTopicIds}.
      */
     private boolean isDescendantOfAny(Long topicId, Collection<Long> refTopicIds) {
         Topic topic = topicsById.get(topicId);
@@ -659,28 +641,26 @@ public class LinkRunner extends AbstractClientRunner {
 
     /**
      * Gathers the IDs of linked entities of a specified kind.
-     * 
-     * @param links            The entity links to process.
-     * @param thisEntityKind   The entity kind at 'this' end.
-     * @param otherEntityKind  The entity kind at the 'other' end.
-     * @param gatherFromEntity Whether to gather the IDs of 'from entity' (pass
-     *                         {@code true}) or 'to entity' (pass
-     *                         {@code false}) end of the links.
-     * @param result           The collection to update with the results.
-     * @param clearResult      {@code true} to clear {@code result} before adding
-     *                         the linked entity IDs.
+     * @param links The entity links to process.
+     * @param thisEntityKind The entity kind at 'this' end.
+     * @param otherEntityKind The entity kind at the 'other' end.
+     * @param gatherLinkEnd The link end from which to gather linked entity IDs.
+     * @param result The collection to update with the results.
+     * @param clearResult {@code true} to clear {@code result} before adding the linked entity IDs.
      */
     private void gatherLinkedEntityIds(Collection<EntityLink> links, EntityKind thisEntityKind,
-            EntityKind otherEntityKind, boolean gatherFromEntity, Set<Long> result, boolean clearResult) {
+        EntityKind otherEntityKind, LinkDirection gatherLinkEnd, Set<Long> result, boolean clearResult) {
 
         if (clearResult)
             result.clear();
 
         for (EntityLink link : links) {
-            String linkEntityKind = gatherFromEntity ? link.getFromEntity().getEntityKind()
-                    : link.getToEntity().getEntityKind();
-            if (linkEntityKind.equals(otherEntityKind.name()))
-                result.add((gatherFromEntity ? link.getFromEntity() : link.getToEntity()).getId());
+            ILinkableEntity otherEntity = switch (gatherLinkEnd) {
+                case FROM -> link.getFromEntity();
+                case TO -> link.getToEntity();
+            };
+            if (otherEntity.getEntityKind().equals(otherEntityKind.name()))
+                result.add(otherEntity.getId());
         }
 
         LOGGER.trace("  Found {} {}-{} links", result.size(), thisEntityKind.label(), otherEntityKind.label());
@@ -688,9 +668,7 @@ public class LinkRunner extends AbstractClientRunner {
 
     /**
      * Indexes Topics by ID and ensures that all are connected to their parent.
-     * 
-     * @param parent The current parent Topic of {@code topics} or {@code null} if
-     *               they are top-level.
+     * @param parent The current parent Topic of {@code topics} or {@code null} if they are top-level.
      * @param topics The Topics to index.
      * @return The total number of Topics in {topics}, including sub-Topics.
      */
@@ -706,17 +684,16 @@ public class LinkRunner extends AbstractClientRunner {
 
     /**
      * Creates an entity link.
-     * 
      * @param fromEntityKind The 'from Entity' kind.
-     * @param fromEntityId   The 'from Entity' ID.
-     * @param toEntityKind   The 'to Entity' kind.
-     * @param toEntityId     The 'to Entity' ID.
+     * @param fromEntityId The 'from Entity' ID.
+     * @param toEntityKind The 'to Entity' kind.
+     * @param toEntityId The 'to Entity' ID.
      * @return The new entity link or {@code null} if a dry run.
      * @throws GraphQLRequestPreparationException
      * @throws GraphQLRequestExecutionException
      */
     private EntityLink createEntityLink(EntityKind fromEntityKind, Long fromEntityId, EntityKind toEntityKind,
-            Long toEntityId) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+        Long toEntityId) throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
         EntityLink entityLink;
         Long entityLinkId = 0L;
@@ -725,21 +702,21 @@ public class LinkRunner extends AbstractClientRunner {
             entityLinkId = 0L;
         } else {
             EntityLinkInput input = EntityLinkInput.builder() //
-                    .withFromEntityId(fromEntityId) //
-                    .withToEntityId(toEntityId) //
-                    .build();
+                .withFromEntityId(fromEntityId) //
+                .withToEntityId(toEntityId) //
+                .build();
             entityLink = mutationExecutor.createEntityLink(RESP_ENTITY_LINK, input);
             entityLinkId = entityLink.getId();
         }
 
         LOGGER.trace("  Created EntityLink #{} from {} #{} to {} #{}", entityLinkId, fromEntityKind.label(),
-                fromEntityId, toEntityKind.label(), toEntityId);
+            fromEntityId, toEntityKind.label(), toEntityId);
 
         return entityLink;
     }
 
     private EntityLink deleteEntityLink(EntityLink entityLink)
-            throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
+        throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {
 
         entityLink.setStatus(StatusKind.DEL.name());
         if (!dryRun)
@@ -752,9 +729,8 @@ public class LinkRunner extends AbstractClientRunner {
             String toEntityKind = toEntity != null ? EntityKind.valueOf(toEntity.getEntityKind()).label() : null;
             Long fromEntityId = fromEntity != null ? fromEntity.getId() : null;
             Long toEntityId = toEntity != null ? toEntity.getId() : null;
-            LOGGER.trace("  Deleted EntityLink #{} from {} #{} to {} #{}", entityLink.getId(),
-                    fromEntityKind, fromEntityId,
-                    toEntityKind, toEntityId);
+            LOGGER.trace("  Deleted EntityLink #{} from {} #{} to {} #{}", entityLink.getId(), fromEntityKind,
+                fromEntityId, toEntityKind, toEntityId);
         }
 
         return entityLink;
@@ -763,18 +739,10 @@ public class LinkRunner extends AbstractClientRunner {
     private void log(LinkData linkData, EntityKind entityKind) {
         if (linkData != null && LOGGER.isDebugEnabled()) {
             String label = entityKind != null ? entityKind.label() : "Entity";
-            // if (linkData.addedClaimLinkCount != 0) {
-            LOGGER.debug("Added {} new {}-{} links", linkData.addedClaimLinkCount, label,
-                    EntityKind.CLA.label());
-            // }
-            // if (linkData.addedTopicLinkCount != 0) {
-            LOGGER.debug("Added {} new {}-{} links", linkData.addedTopicLinkCount, label,
-                    EntityKind.TOP.label());
-            // }
-            // if (linkData.deletedTopicLinkCount != 0) {
+            LOGGER.debug("Added {} new {}-{} links", linkData.addedClaimLinkCount, label, EntityKind.CLA.label());
+            LOGGER.debug("Added {} new {}-{} links", linkData.addedTopicLinkCount, label, EntityKind.TOP.label());
             LOGGER.debug("Deleted {} existing {}-{} links", linkData.deletedTopicLinkCount, label,
-                    EntityKind.TOP.label());
-            // }
+                EntityKind.TOP.label());
         }
     }
 

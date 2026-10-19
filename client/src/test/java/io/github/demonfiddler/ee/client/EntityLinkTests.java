@@ -94,12 +94,14 @@ class EntityLinkTests extends AbstractLinkTests {
     // publication_person (m:n)
     // quotation_person (n:1)
     // quotation_publication (n:1)
+    /** The following array defines the entity kinds that are linked to each other. The first element of each sub-array
+        is the "from" entity kind, and the subsequent elements are the "to" entity kinds. */
     private static final EntityKind[][] LINKED_ENTITY_KIND = { //
-        { CLA, DEC, PER, PUB, QUO }, //
-        { DEC, PER, QUO }, //
-        { PER }, //
-        { PUB, PER }, //
-        { QUO, PER, PUB }, //
+        { CLA }, // +TOP
+        { DEC, CLA, QUO }, // +TOP
+        { PER, CLA, DEC, PUB, QUO }, // +TOP
+        { PUB, CLA, QUO }, // +TOP
+        { QUO, CLA }, // +TOP
     };
     static final Map<EntityKind, List<EntityLink>> ENTITY_LINK_MAP = new LinkedHashMap<>();
     private static Boolean hasExpectedLink;
@@ -242,7 +244,8 @@ class EntityLinkTests extends AbstractLinkTests {
         }
     }
 
-    // @Test // NOTE: further work is required on the assertions.
+    // NOTE: further work is required on these assertions.
+    // @Test
     @Order(4)
     @EnabledIf("io.github.demonfiddler.ee.client.EntityLinkTests#hasExpectedLink")
     void restoreEntityLink() throws GraphQLRequestPreparationException, GraphQLRequestExecutionException {

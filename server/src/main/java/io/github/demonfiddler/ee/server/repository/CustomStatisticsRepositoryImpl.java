@@ -159,8 +159,8 @@ public class CustomStatisticsRepositoryImpl extends AbstractCustomRepositoryImpl
         FROM "entity" te
         JOIN "entity" e
         JOIN "entity_link" el
-        ON el."from_entity_id" = te."id" AND
-           el."to_entity_id" = e."id"
+        ON el."to_entity_id" = te."id" AND
+           el."from_entity_id" = e."id"
         JOIN "entity" ele
         ON ele."id" = el."id"
         WHERE te."dtype" = 'TOP' AND
@@ -175,8 +175,8 @@ public class CustomStatisticsRepositoryImpl extends AbstractCustomRepositoryImpl
             .append("FROM \"entity\" te").append(NL) //
             .append("JOIN \"entity\" e").append(NL) //
             .append("JOIN \"entity_link\" el").append(NL) //
-            .append("ON el.\"from_entity_id\" = te.\"id\" AND ").append(NL) //
-            .append("  el.\"to_entity_id\" = e.\"id\"").append(NL) //
+            .append("ON el.\"to_entity_id\" = te.\"id\" AND ").append(NL) //
+            .append("  el.\"from_entity_id\" = e.\"id\"").append(NL) //
             .append("JOIN \"entity\" ele").append(NL) //
             .append("ON ele.\"id\" = el.\"id\"").append(NL) //
             .append("WHERE te.\"dtype\" = 'TOP'");

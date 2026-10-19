@@ -247,8 +247,8 @@ public class LoadCsvRunner extends AbstractClientRunner {
                     }
                     if (topicId != null) {
                         EntityLinkInput input = EntityLinkInput.builder() //
-                            .withFromEntityId(topicId) //
-                            .withToEntityId(record.getId()) //
+                            .withFromEntityId(record.getId()) //
+                            .withToEntityId(topicId) //
                             .build();
                         try {
                             EntityLink link = mutationExecutor.createEntityLink(RESPONSEDEF_ID, input);

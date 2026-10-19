@@ -27,23 +27,65 @@ import static io.github.demonfiddler.ee.client.EntityKind.QUO;
 import static io.github.demonfiddler.ee.client.EntityKind.TOP;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import com.graphql_java_generator.exception.GraphQLRequestExecutionException;
 import com.graphql_java_generator.exception.GraphQLRequestPreparationException;
 
 abstract class AbstractLinkTests extends AbstractGraphQLTests {
 
+    static enum LinkDirection {
+        FROM, TO
+    };
+    /** Maps 'from' master entity kind to the 'to' entity kinds that can be linked to it. */
     private static final Map<EntityKind, EntityKind[]> LINKED_ENTITY_KIND_MAP = Map.of( //
-        CLA, new EntityKind[] {DEC, PER, PUB, QUO}, //
-        DEC, new EntityKind[] {PER, QUO}, //
-        PER, new EntityKind[] {}, //
-        PUB, new EntityKind[] {PER}, //
-        QUO, new EntityKind[] {PER, PUB} //
+        CLA, new EntityKind[] {}, //
+        DEC, new EntityKind[] {CLA, QUO}, //
+        PER, new EntityKind[] {CLA, DEC, PUB, QUO}, //
+        PUB, new EntityKind[] {CLA, QUO}, //
+        QUO, new EntityKind[] {CLA} //
+    );
+    /** Maps entity kinds to link directions. The direction pertains to the outer key. */
+    private static final Map<EntityKind, Map<EntityKind, LinkDirection>> LINK_DIRECTION_MAP = Map.of( //
+        CLA, Map.of( //
+            DEC, LinkDirection.TO, //
+            PER, LinkDirection.TO, //
+            PUB, LinkDirection.TO, //
+            QUO, LinkDirection.TO, //
+            TOP, LinkDirection.FROM //
+        ), //
+        DEC, Map.of( //
+            CLA, LinkDirection.FROM, //
+            PER, LinkDirection.TO, //
+            QUO, LinkDirection.FROM, //
+            TOP, LinkDirection.FROM //
+        ), //
+        PER, Map.of( //
+            CLA, LinkDirection.FROM, //
+            DEC, LinkDirection.FROM, //
+            PUB, LinkDirection.FROM, //
+            QUO, LinkDirection.FROM, //
+            TOP, LinkDirection.FROM //
+        ), //
+        PUB, Map.of( //
+            CLA, LinkDirection.FROM, //
+            PER, LinkDirection.TO, //
+            QUO, LinkDirection.FROM, //
+            TOP, LinkDirection.FROM //
+        ), //
+        QUO, Map.of( //
+            CLA, LinkDirection.FROM, //
+            DEC, LinkDirection.TO, //
+            PER, LinkDirection.TO, //
+            PUB, LinkDirection.TO, //
+            TOP, LinkDirection.FROM //
+        ) //
     );
     static final int[][] ENTITY_LINK_INDEXES = { //
         { 0 }, //
@@ -116,6 +158,20 @@ abstract class AbstractLinkTests extends AbstractGraphQLTests {
 
     EntityKind[] getLinkedEntityKinds(EntityKind masterEntityKind) {
         return LINKED_ENTITY_KIND_MAP.get(masterEntityKind);
+    }
+
+    /**
+     * Returns the link direction between two entity kinds.
+     * @param entityKind the first entity kind
+     * @param otherEntityKind the second entity kind
+     * @return the link direction relative to the first entity kind, or {@code null} if links are not permitted between
+     * the two entity kinds.
+     * @throws NullPointerException if either entity kind is {@code null}.
+     */
+    LinkDirection getLinkDirection(EntityKind entityKind, EntityKind otherEntityKind) {
+        Objects.requireNonNull(entityKind, "entityKind must not be null");
+        Objects.requireNonNull(otherEntityKind, "otherEntityKind must not be null");
+        return LINK_DIRECTION_MAP.getOrDefault(entityKind, Collections.emptyMap()).get(otherEntityKind);
     }
 
     @SuppressWarnings("unchecked")

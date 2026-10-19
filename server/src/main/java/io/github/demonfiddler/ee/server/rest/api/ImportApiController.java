@@ -738,8 +738,8 @@ public class ImportApiController implements ImportApi {
 
         if (masterTopicId != null) {
             EntityLinkInput input = EntityLinkInput.builder() //
-                .withFromEntityId(masterTopicId) //
-                .withToEntityId(entity.getId()) //
+                .withFromEntityId(entity.getId()) //
+                .withToEntityId(masterTopicId) //
                 .build();
             try {
                 EntityLink topicLink = (EntityLink)mutationController.createEntityLink(null, input);

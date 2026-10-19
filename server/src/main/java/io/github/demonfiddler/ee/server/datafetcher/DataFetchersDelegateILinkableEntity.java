@@ -96,7 +96,7 @@ public interface DataFetchersDelegateILinkableEntity<T extends AbstractLinkableE
 	/**
 	 * Description for the toEntityLinks field: <br/>
 	 * Inbound links for which the receiver is the 'linked-to' entity <br/>
-	 * Loads the data for Claim.toEntityLinks. It may return whatever is accepted by the Spring Controller,
+	 * Loads the data for ILinkableEntity.toEntityLinks. It may return whatever is accepted by the Spring Controller,
 	 * that is:
 	 * <ul>
 	 * <li>A resolved value of any type (typically, an EntityLinkPage)</li>

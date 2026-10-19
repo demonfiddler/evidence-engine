@@ -444,10 +444,10 @@ export default function usePageLogic<
                 } = options
                 const topicLinkInput = linkMasterTopic && masterTopicId
                   ? {
-                      fromEntityId: masterTopicId,
-                      fromEntityLocations: null,
-                      toEntityId: newRecord.id,
-                      toEntityLocations: thisRecordLocationsForTopic || null,
+                      fromEntityId: newRecord.id,
+                      fromEntityLocations: thisRecordLocationsForTopic || null,
+                      toEntityId: masterTopicId,
+                      toEntityLocations: null,
                     }
                   : undefined
                 let masterRecordLinkInput
